@@ -1,9 +1,6 @@
 import React, { useMemo } from "react";
 import Guide from "@components/ui/Guide";
-import {
-	useGetArtifZonageIndexQuery,
-	useGetLandArtifStockIndexQuery,
-} from "@services/api";
+import { useGetArtifZonageIndexQuery, useGetLandArtifStockIndexQuery } from "@services/api";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType, MillesimeByIndex } from "@services/types/land";
@@ -12,25 +9,15 @@ import styled, { css } from "styled-components";
 import { ArtifPercentRate } from "@components/charts/artificialisation/ArtifPercentRate";
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/widgets/LandMillesimeTable";
-import {
-	defautLandArtifStockIndex,
-	LandArtifStockIndex,
-} from "@services/types/landartifstockindex";
+import { defautLandArtifStockIndex, LandArtifStockIndex } from "@services/types/landartifstockindex";
 import { SeuilsSchemas } from "@components/features/SeuilsSchemas";
 import { ZonageType } from "scripts/types/ZonageType";
+import ChartSource from "@components/charts/ChartSource";
 
-export const BigNumberStyle = css`
+export const BigNumber = styled.div`
 	font-size: 3rem;
 	font-weight: bold;
 	line-height: 3rem;
-`;
-
-export const SurfaceArtif = styled.div`
-	${BigNumberStyle}
-`;
-
-export const PercentArtif = styled.div`
-	${BigNumberStyle}
 `;
 
 interface OcsgeMillesimeSelectorProps {
@@ -201,9 +188,9 @@ const ArtifLastMillesimeSection: React.FC<{
 							/>
 						</div>
 						<div className="fr-col-12 fr-col-md-5">
-							<SurfaceArtif className="fr-mt-3w">
+							<BigNumber className="fr-mt-3w">
 								{formatNumber({ number: landArtifStockIndex.surface })} ha
-							</SurfaceArtif>
+							</BigNumber>
 							<span
 								className={`fr-badge ${
 									landArtifStockIndex.flux_surface >= 0
@@ -228,12 +215,13 @@ const ArtifLastMillesimeSection: React.FC<{
 								between={true}
 								className="fr-text--sm fr-ml-1w"
 							/>
-							<PercentArtif className="fr-mt-3w">
+							<BigNumber className="fr-mt-3w">
 								{formatNumber({ number: landArtifStockIndex.percent })}%
-							</PercentArtif>
+							</BigNumber>
 							<p>du territoire est artificialisé</p>
 						</div>
 					</div>
+					<ChartSource sources={['ocsge']} chartId="artificialisation-tableau" />
 				</div>
 			</div>
 			<div className="fr-col-12 fr-col-lg-4">
@@ -570,7 +558,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					Répartition des surfaces artificialisées par type de couverture et
 					d'usage
 				</h2>
-				<div className="bg-white fr-p-4w rounded">
+				<div className="bg-white fr-px-4w fr-pt-4w rounded">
 					<OcsgeMillesimeSelector
 						millesimes_by_index={millesimes_by_index}
 						index={stockIndex}
@@ -586,9 +574,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 								.map((m) => (
 									<div
 										key={`${m.index}_${m.departement}`}
-										className={`fr-col-${Math.round(
-											12 / millesimes_by_index.length
-										)}`}
+										className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
 									>
 										<OcsgeGraph
 											id="pie_artif_by_couverture"
@@ -598,6 +584,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 												index: m.index,
 												departement: m.departement,
 											}}
+											sources={['ocsge']}
 										/>
 										<OcsgeGraph
 											id="pie_artif_by_usage"
@@ -607,6 +594,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 												index: m.index,
 												departement: m.departement,
 											}}
+											sources={['ocsge']}
 										/>
 									</div>
 								))
@@ -620,6 +608,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										params={{
 											index: stockIndex,
 										}}
+										sources={['ocsge']}
 									/>
 								</div>
 								<div className="fr-col-12 fr-col-lg-6">
@@ -630,6 +619,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										params={{
 											index: stockIndex,
 										}}
+										sources={['ocsge']}
 									/>
 								</div>
 							</>
@@ -673,6 +663,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										previous_index: stockIndex - 1,
 										child_land_type: childLandType,
 									}}
+									sources={['ocsge']}
 								/>
 							</div>
 						</div>
@@ -716,6 +707,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						artifZonageIndex={artifZonageIndex}
 						is_interdepartemental={is_interdepartemental}
 					/>
+					<ChartSource sources={['ocsge', 'gpu']} chartId="artificialisation-zonage-tableau" />
 				</div>
 			</div>
 			<h2>Calcul de l'artificialisation des sols</h2>

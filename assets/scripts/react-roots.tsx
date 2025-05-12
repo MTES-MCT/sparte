@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
-import HighchartsMapOcsge from '@components/charts/HighchartsMapOcsge'
+import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/widgets/SearchBar'
 
 const searchBar = document.getElementById('react-search-bar')
@@ -20,12 +20,12 @@ if (searchBar)
 }
 
 
-const highchartsMapOcsge = document.getElementById('react-highcharts-ocsge')
-if (highchartsMapOcsge)
+const ocsgeImplementationMap = document.getElementById('react-highcharts-ocsge')
+if (ocsgeImplementationMap)
 {
-  createRoot(highchartsMapOcsge).render(
+  createRoot(ocsgeImplementationMap).render(
     <Provider store={store}>
-        <HighchartsMapOcsge />
+        <OcsgeImplementationMap />
     </Provider>,
   )
 }

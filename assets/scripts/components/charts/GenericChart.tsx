@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 
 import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
+import styled from 'styled-components';
 
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
@@ -9,6 +10,7 @@ import Exporting from 'highcharts/modules/exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
 
 import Loader from '@components/ui/Loader';
+import ChartSource from '@components/charts/ChartSource';
 
 // Initialize the modules
 HighchartsHeatmap(Highcharts);
@@ -23,6 +25,7 @@ type GenericChartProps = {
     isLoading?: boolean;
     error?: any;
     showToolbar?: boolean;
+    sources?: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel']
 }
 
 const GenericChart = ({ 
@@ -31,7 +34,8 @@ const GenericChart = ({
     isMap = false,
     isLoading = false,
     error = null,
-    showToolbar = true
+    showToolbar = true,
+    sources = []
 } : GenericChartProps) => {
     const chartRef = useRef<any>(null);
 
@@ -60,6 +64,12 @@ const GenericChart = ({
     }
 
     const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions || {}))
+    
+    // Génère un ID unique basé sur le titre du graphique
+    const chartId = `chart-${String(mutableChartOptions.title.text)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')}`
 
     const shouldRedraw = true
     const oneToOne = true
@@ -70,7 +80,7 @@ const GenericChart = ({
     };
 
     return (
-        <div className="chart-container">
+        <div>
             {showToolbar && (
                 <div className="d-flex justify-content-end align-items-center fr-mb-2w">
                     <button 
@@ -93,6 +103,7 @@ const GenericChart = ({
                 containerProps={{ ...defaultContainerProps, ...containerProps }}
                 constructorType={isMap ? 'mapChart' : 'chart'}
             />
+            {sources.length > 0 && <ChartSource sources={sources} chartId={chartId} />}
         </div>
     )
 }
