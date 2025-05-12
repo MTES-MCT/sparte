@@ -40,6 +40,7 @@ LEFT JOIN LATERAL (
 LEFT JOIN LATERAL (
     SELECt array_agg(jsonb_build_object(
         'departement', land_millesimes.departement,
+        'departement_name', land_millesimes.departement_name,
         'year', land_millesimes.year,
         'index', land_millesimes.index
     )) as millesimes
