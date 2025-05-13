@@ -16,8 +16,8 @@ const Header = styled.div`
 `;
 
 const DataContainer = styled.div<{ isVisible: boolean }>`
-    max-height: ${props => props.isVisible ? '300px' : '0'};
-    overflow: auto;
+    max-height: ${props => props.isVisible ? 'auto' : '0'};
+    overflow: hidden;
     transition: max-height 0.3s ease;
     padding: ${props => props.isVisible ? '1rem' : '0'};
 `;
