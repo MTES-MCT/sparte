@@ -1,6 +1,6 @@
 from highcharts import charts
 from project.models import Project
-from public_data.models import Land
+from public_data.models import LandModel
 
 from .constants import NO_DATA_STYLE
 
@@ -53,7 +53,7 @@ class DiagnosticChart(charts.Chart):
 
     def __init__(
         self,
-        land: Land,
+        land: LandModel,
         params: dict,
     ):
         self.params = params

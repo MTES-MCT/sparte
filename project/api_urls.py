@@ -9,23 +9,15 @@ from project.charts.artificialisation import (
 from public_data.models import (
     ArtifZonageIndexViewset,
     ArtifZonageViewset,
-    Land,
     LandArtifStockCouvertureCompositionViewset,
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
+    LandModel,
     LandModelViewset,
 )
 
 app_name = "api"
-
-
-def get_land_or_404(land_type, land_id):
-    land_key = f"{land_type}_{land_id}"
-    try:
-        return Land(land_key)
-    except Exception as e:
-        raise Http404("Could not find land" + str(e))
 
 
 def get_chart_klass_or_404(chart_id):
@@ -42,10 +34,15 @@ def get_chart_klass_or_404(chart_id):
 
 
 def chart_view(request, id, land_type, land_id, *args, **kwargs):
-    land = get_land_or_404(land_type, land_id)
+    land = LandModel.objects.get(land_type=land_type, land_id=land_id)
     chart_klass = get_chart_klass_or_404(id)
     chart_params = request.GET.dict()
-    return JsonResponse(data=chart_klass(land=land, params=chart_params).chart)
+    chart = chart_klass(land=land, params=chart_params)
+    data = {
+        "highcharts_options": chart.chart,
+        "data_table": chart.data_table,
+    }
+    return JsonResponse(data=data)
 
 
 urlpatterns = [

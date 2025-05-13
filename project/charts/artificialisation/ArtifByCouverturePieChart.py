@@ -21,14 +21,14 @@ class ArtifByCouverturePieChart(DiagnosticChart):
     def data(self):
         if self.params.get("departement"):
             composition = self.by_departement_klass.objects.filter(
-                land_id=self.land.id,
+                land_id=self.land.land_id,
                 land_type=self.land.land_type,
                 millesime_index=self.params.get("index"),
                 departement=self.params.get("departement"),
             )
         else:
             composition = self.by_index_klass.objects.filter(
-                land_id=self.land.id,
+                land_id=self.land.land_id,
                 land_type=self.land.land_type,
                 millesime_index=self.params.get("index"),
             )
