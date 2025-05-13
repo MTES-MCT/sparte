@@ -66,6 +66,10 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
 
 class ArtifUsagePieChartExport(ArtifByUsagePieChart):
     @property
+    def title_end(self):
+        return f"sur le territoire de {self.land.name} {super().title_end}"
+
+    @property
     def param(self):
         return super().param | {
             "credits": OCSGE_CREDITS,
@@ -83,5 +87,4 @@ class ArtifUsagePieChartExport(ArtifByUsagePieChart):
                     },
                 },
             },
-            "title": {"text": super().param["title"]["text"] + f"pour {self.land.name}"},
         }

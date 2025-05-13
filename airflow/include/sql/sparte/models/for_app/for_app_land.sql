@@ -15,6 +15,11 @@ SELECT
     {{ m2_to_ha('artif.surface') }} as surface_artif,
     artif.percent as percent_artif,
     artif.years as years_artif,
+    CASE
+        WHEN land_millesimes.millesimes IS NULL THEN false
+        ELSE true
+    END as has_ocsge,
+    land_zonages.zonage_count > 0 as has_zonage,
     land_millesimes.millesimes as millesimes,
     land_millesimes_by_index.millesimes_by_index as millesimes_by_index,
     land.child_land_types,
@@ -67,3 +72,10 @@ LEFT JOIN LATERAL (
         year is not null
     group by index) as foo
 ) land_millesimes_by_index ON true
+LEFT JOIN LATERAL (
+    SELECT count(*) as zonage_count
+    FROM {{ ref('artif_zonage_land') }}
+    WHERE
+        artif_zonage_land.land_id = land.land_id AND
+        artif_zonage_land.land_type = land.land_type
+) land_zonages ON true

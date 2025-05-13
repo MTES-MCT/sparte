@@ -3,33 +3,40 @@ import json
 from django.core.serializers import serialize
 
 from project.charts.base_project_chart import DiagnosticChart
+from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
 from public_data.models import AdminRef, LandArtifStockIndex, LandModel
 
 
 class ArtifMap(DiagnosticChart):
     @property
-    def param(self):
-        lands = LandModel.objects.filter(
+    def lands(self):
+        return LandModel.objects.filter(
             parent_land_type=self.land.land_type,
             parent_land_ids__contains=[self.land.id],
             land_type=self.params.get("child_land_type"),
         )
 
-        artif = LandArtifStockIndex.objects.filter(
-            land_id__in=lands.values_list("land_id", flat=True),
+    @property
+    def artif(self):
+        return LandArtifStockIndex.objects.filter(
+            land_id__in=self.lands.values_list("land_id", flat=True),
             land_type=self.params.get("child_land_type"),
             millesime_index=self.params.get("index"),
         ).order_by("land_id")
 
-        previous_artif = LandArtifStockIndex.objects.filter(
-            land_id__in=lands.values_list("land_id", flat=True),
+    @property
+    def previous_artif(self):
+        return LandArtifStockIndex.objects.filter(
+            land_id__in=self.lands.values_list("land_id", flat=True),
             land_type=self.params.get("child_land_type"),
             millesime_index=self.params.get("previous_index"),
         ).order_by("land_id")
 
+    @property
+    def param(self):
         geojson = serialize(
             "geojson",
-            lands,
+            self.lands,
             geometry_field="geom",
             fields=(
                 "land_id",
@@ -50,7 +57,7 @@ class ArtifMap(DiagnosticChart):
                 "years_str": ", ".join(map(str, current.years)),
                 "previous_years_str": ", ".join(map(str, previous.years)),
             }
-            for current, previous in zip(artif.all(), previous_artif.all())
+            for current, previous in zip(self.artif.all(), self.previous_artif.all())
         ]
 
         return super().param | {
@@ -170,4 +177,37 @@ class ArtifMap(DiagnosticChart):
                     },
                 },
             ],
+        }
+
+
+class ArtifMapExport(ArtifMap):
+    @property
+    def is_interdepartemental(self):
+        return self.lands.values("departements").distinct().count() > 1
+
+    @property
+    def title_end(self):
+        if self.is_interdepartemental:
+            return f"au millésime n°{self.params.get('index')}"
+        else:
+            previous_year = self.previous_artif.first().years[0]
+            year = self.artif.first().years[-1]
+            return f"entre {previous_year} et {year}"
+
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {
+                **super().param["chart"],
+                "height": "800px",
+            },
+            "credits": OCSGE_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
+            "title": {
+                "text": f"{super().param['title']['text']} {self.title_end}",
+            },
+            "subtitle": {"text": ""},
         }

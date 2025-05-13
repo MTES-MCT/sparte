@@ -28,20 +28,25 @@ class ArtifByCouverturePieChart(DiagnosticChart):
             )
         else:
             composition = self.by_index_klass.objects.filter(
-                land_id=self.land.id, land_type=self.land.land_type, millesime_index=self.params.get("index")
+                land_id=self.land.id,
+                land_type=self.land.land_type,
+                millesime_index=self.params.get("index"),
             )
         return list(composition.all())
 
     @cached_property
+    def is_interdepartemental(self):
+        return len(self.data[0].departements) > 1
+
+    @cached_property
     def title_end(self):
         if self.params.get("departement"):
-            return f" au millésime n° {self.data[0].millesime_index} ({self.data[0].departement})"
-        elif len(self.data[0].departements) > 1:
+            return f" en {self.data[0].year} ({self.data[0].departement})"
+
+        if self.is_interdepartemental:
             return f" au millésime n° {self.data[0].millesime_index}"
-        elif len(self.data[0].departements) == 1:
-            return f" en {self.data[0].years[0]}"
         else:
-            return f" en {self.data[0].year}"
+            return f" en {self.data[0].years[0]}"
 
     @property
     def series(self):
@@ -92,6 +97,10 @@ class ArtifByCouverturePieChart(DiagnosticChart):
 
 
 class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
+    @cached_property
+    def title_end(self):
+        return f"sur le territoire de {self.land.name} {super().title_end}"
+
     @property
     def param(self):
         return super().param | {
@@ -110,5 +119,4 @@ class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
                     },
                 },
             },
-            "title": {"text": super().param["title"]["text"] + f"pour {self.land.name}"},
         }
