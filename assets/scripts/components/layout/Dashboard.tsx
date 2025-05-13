@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetLandQuery, useGetProjectQuery, useGetLandArtifStockIndexQuery } from '@services/api';
+import { useGetLandQuery, useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
+import { useArtificialisation } from '@hooks/useArtificialisation';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
@@ -55,18 +56,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
         }
     );
 
-    const { data: landArtifStockIndexes } = useGetLandArtifStockIndexQuery(
-        {
-            land_type: projectData?.land_type,
-            land_id: projectData?.land_id,
-            millesime_index: landData?.millesimes_by_index?.length > 0 
-                ? Math.max(...landData.millesimes_by_index.map((e) => e.index))
-                : 2
-        },
-        {
-            skip: !projectData || !landData
-        }
-    );
+    const { landArtifStockIndex } = useArtificialisation({
+        projectData: projectData as any,
+        landData: landData as any
+    });
     
     const { urls } = projectData || {};
 
@@ -78,14 +71,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             dispatch(setProjectData(projectData));        
         }
     }, [projectData, dispatch]);
-
-    const defaultStockIndex = landData?.millesimes_by_index?.length > 0
-        ? Math.max(...landData.millesimes_by_index.map((e: { index: number }) => e.index))
-        : 2;
-
-    const landArtifStockIndex = landArtifStockIndexes?.find(
-        (e: { millesime_index: number }) => e.millesime_index === defaultStockIndex
-    );
 
     return (
         <>
@@ -118,7 +103,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                         millesime_index: landArtifStockIndex.millesime_index,
                                                         flux_previous_years: landArtifStockIndex.flux_previous_years,
                                                         millesimes: landData.millesimes,
-                                                        territory_name: projectData.territory_name
+                                                        territory_name: projectData.territory_name,
+                                                        land_type: projectData.land_type,
+                                                        land_id: projectData.land_id,
+                                                        millesimes_by_index: landData.millesimes_by_index
                                                     } : undefined}
                                                 />
                                             </RouteWrapper>

@@ -18,7 +18,10 @@ Exporting(Highcharts);
 Fullscreen(Highcharts);
 
 type GenericChartProps = {
-    chartOptions: Highcharts.Options;
+    chartOptions: {
+        highcharts_options: Highcharts.Options;
+        data_table?: any;
+    };
     containerProps?: React.HTMLAttributes<HTMLDivElement>;
     isMap?: boolean; // optional. When true, the chart is displayed in a map
     isLoading?: boolean;
@@ -58,7 +61,7 @@ const GenericChart = ({
         </div>
     }
 
-    if (error || !chartOptions) {
+    if (error || !chartOptions?.highcharts_options) {
         return <div>Erreur lors du chargement des données</div>
     }
 
@@ -67,10 +70,10 @@ const GenericChart = ({
     avec l'environnement qui ne supporte pas les mutations. Pour éviter cela, on clone les options du graphique
     avant de les passer à HighchartsReact.
     */
-    const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions || {}))
+    const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
     
     // Génère un ID basé sur le titre du graphique
-    const chartId = `chart-${String(mutableChartOptions.title.text)
+    const chartId = `chart-${String(mutableChartOptions.title?.text || '')
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
             .replace(/^-+|-+$/g, '')}`

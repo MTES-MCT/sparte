@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import Guide from "@components/ui/Guide";
-import { useGetArtifZonageIndexQuery, useGetLandArtifStockIndexQuery } from "@services/api";
+import { useGetArtifZonageIndexQuery } from "@services/api";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
@@ -9,12 +9,14 @@ import styled from "styled-components";
 import { ArtifPercentRate } from "@components/charts/artificialisation/ArtifPercentRate";
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
-import { defautLandArtifStockIndex, LandArtifStockIndex } from "@services/types/landartifstockindex";
 import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
 import ChartSource from "@components/charts/ChartSource";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ArtificialisationZonage } from "@components/features/ocsge/ArtificialisationZonage";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
+import { useArtificialisation } from "@hooks/useArtificialisation";
+import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
+import { LandArtifStockIndex } from "@services/types/landartifstockindex";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -167,37 +169,29 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 		is_interdepartemental,
 	} = landData || {};
 	
-	const defaultStockIndex = useMemo(() => 
-		millesimes_by_index.length > 0
-			? Math.max(...millesimes_by_index.map((e) => e.index))
-			: 2,
-		[millesimes_by_index]
-	);
-
-	const [stockIndex, setStockIndex] = React.useState(defaultStockIndex);
-	const [byDepartement, setByDepartement] = React.useState(false);
-	const [childLandType, setChildLandType] = React.useState(
-		child_land_types ? child_land_types[0] : undefined
-	);
-
-	const { data: artifZonageIndex } = useGetArtifZonageIndexQuery({
-		land_type: land_type,
-		land_id: land_id,
-		millesime_index: stockIndex,
+	const {
+		stockIndex,
+		setStockIndex,
+		defaultStockIndex,
+		byDepartement,
+		setByDepartement,
+		childLandType,
+		setChildLandType,
+		landArtifStockIndex,
+		isLoading,
+		error
+	} = useArtificialisation({
+		projectData,
+		landData
 	});
 
-	const { data: landArtifStockIndexes } = useGetLandArtifStockIndexQuery({
-		land_type: land_type,
-		land_id: land_id,
-		millesime_index: defaultStockIndex,
+	const { artifZonageIndex } = useArtificialisationZonage({
+		projectData,
+		stockIndex
 	});
 
-	const landArtifStockIndex: LandArtifStockIndex = useMemo(() =>
-		landArtifStockIndexes?.find(
-			(e: LandArtifStockIndex) => e.millesime_index === defaultStockIndex
-		) ?? defautLandArtifStockIndex,
-		[landArtifStockIndexes, defaultStockIndex]
-	);
+	if (isLoading) return <div>Chargement...</div>;
+	if (error) return <div>Erreur : {error}</div>;
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
@@ -431,7 +425,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					Une fois les espaces qualifiés en artificiels ou non-artificiels à
 					partir du tableau de croisement,{" "}
 					<strong>des seuils d'interprétation sont appliqués</strong>, comme
-					définis dans le{" "}
+					défini dans le{" "}
 					<a
 						target="_blank"
 						rel="noopener noreferrer"

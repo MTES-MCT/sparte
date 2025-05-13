@@ -4,9 +4,10 @@ import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import Loader from '@components/ui/Loader';
 import { formatNumber } from "@utils/formatUtils";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
-import { LandArtifStockIndex } from "@services/types/landartifstockindex";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
-import { Millesime } from "@services/types/land";
+import { Millesime, MillesimeByIndex } from "@services/types/land";
+import { useArtificialisation } from "@hooks/useArtificialisation";
+import { ProjectDetailResultType } from "@services/types/project";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -28,6 +29,9 @@ interface ArtificialisationData {
     flux_previous_years: number[];
     millesimes: Millesime[];
     territory_name: string;
+    land_type: string;
+    land_id: string;
+    millesimes_by_index: MillesimeByIndex[];
 }
 
 interface UrlsType {
@@ -38,11 +42,18 @@ const ArtificialisationSection: React.FC<{
     data: ArtificialisationData;
     urls: UrlsType;
 }> = ({ data, urls }) => {
-    const millesimeData: Partial<LandArtifStockIndex> = {
-        millesime_index: data.millesime_index,
-        years: data.years,
-        flux_previous_years: data.flux_previous_years
-    };
+    const { landArtifStockIndex, isLoading, error } = useArtificialisation({
+        projectData: {
+            land_type: data.land_type,
+            land_id: data.land_id
+        } as ProjectDetailResultType,
+        landData: {
+            millesimes_by_index: data.millesimes_by_index
+        } as any
+    });
+
+    if (isLoading) return <Loader />;
+    if (error) return <div>Erreur : {error}</div>;
 
     return (
         <div className="fr-mt-7w">
@@ -56,7 +67,7 @@ const ArtificialisationSection: React.FC<{
                             {" "}
                             <MillesimeDisplay 
                                 is_interdepartemental={data.is_interdepartemental}
-                                landArtifStockIndex={millesimeData as LandArtifStockIndex}
+                                landArtifStockIndex={landArtifStockIndex}
                             />
                         </p>
                         <span className={`fr-badge ${
@@ -76,7 +87,7 @@ const ArtificialisationSection: React.FC<{
                         </span>
                         <MillesimeDisplay 
                             is_interdepartemental={data.is_interdepartemental}
-                            landArtifStockIndex={millesimeData as LandArtifStockIndex}
+                            landArtifStockIndex={landArtifStockIndex}
                             between={true}
                             className="fr-text--sm fr-ml-1w"
                         />
