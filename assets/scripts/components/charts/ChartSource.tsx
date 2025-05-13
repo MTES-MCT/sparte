@@ -5,7 +5,6 @@ const Container = styled.div`
     margin-top: 1rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     padding: 1rem;
     border: 1px solid #EEF2F7;
 `;
@@ -56,7 +55,7 @@ const ChartSource: React.FC<ChartSourceProps> = ({ sources, chartId }) => {
     if (!sources || sources.length === 0) return null;
     return (
         <Container>
-            <span className="fr-text--sm fr-mb-0 fr-mr-1w">Sources de données :</span>
+            <span className="fr-text--sm fr-mb-0 fr-mr-1w">Source de données :</span>
             <TagGroup>
                 {sources.map((src) => {
                     const source = SOURCES_DETAILS[src];

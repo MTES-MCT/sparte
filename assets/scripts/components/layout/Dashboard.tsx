@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetLandQuery, useGetProjectQuery } from '@services/api';
+import { useGetLandQuery, useGetProjectQuery, useGetLandArtifStockIndexQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
@@ -54,6 +54,19 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             skip: !projectData
         }
     );
+
+    const { data: landArtifStockIndexes } = useGetLandArtifStockIndexQuery(
+        {
+            land_type: projectData?.land_type,
+            land_id: projectData?.land_id,
+            millesime_index: landData?.millesimes_by_index?.length > 0 
+                ? Math.max(...landData.millesimes_by_index.map((e) => e.index))
+                : 2
+        },
+        {
+            skip: !projectData || !landData
+        }
+    );
     
     const { urls } = projectData || {};
 
@@ -61,11 +74,18 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const { isMobile } = useWindowSize();
 
     useEffect(() => {
-    if (projectData) {        
-        dispatch(setProjectData(projectData));        
-    }
+        if (projectData) {        
+            dispatch(setProjectData(projectData));        
+        }
     }, [projectData, dispatch]);
 
+    const defaultStockIndex = landData?.millesimes_by_index?.length > 0
+        ? Math.max(...landData.millesimes_by_index.map((e: { index: number }) => e.index))
+        : 2;
+
+    const landArtifStockIndex = landArtifStockIndexes?.find(
+        (e: { millesime_index: number }) => e.millesime_index === defaultStockIndex
+    );
 
     return (
         <>
@@ -86,7 +106,21 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 title="Synthèse"
                                                 consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
-                                                <Synthese endpoint={urls.synthese} />
+                                                <Synthese 
+                                                    endpoint={urls.synthese}
+                                                    urls={projectData.urls}
+                                                    artificialisationData={landArtifStockIndex ? {
+                                                        surface: landArtifStockIndex.surface,
+                                                        percent: landArtifStockIndex.percent,
+                                                        flux_surface: landArtifStockIndex.flux_surface,
+                                                        years: landArtifStockIndex.years,
+                                                        is_interdepartemental: landData.is_interdepartemental,
+                                                        millesime_index: landArtifStockIndex.millesime_index,
+                                                        flux_previous_years: landArtifStockIndex.flux_previous_years,
+                                                        millesimes: landData.millesimes,
+                                                        territory_name: projectData.territory_name
+                                                    } : undefined}
+                                                />
                                             </RouteWrapper>
                                         }
                                     />
