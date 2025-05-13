@@ -34,6 +34,30 @@ class ArtifByCouverturePieChart(DiagnosticChart):
             )
         return list(composition.all())
 
+    @property
+    def data_table(self):
+        headers = [
+            "Code",
+            "Couverture",
+            "Surface (ha)",
+            "Pourcentage du sol artificiel (%)",
+            "Pourcentage du territoire (%)",
+        ]
+
+        return [
+            headers,
+            [
+                [
+                    item.couverture,
+                    item.label,
+                    item.surface,
+                    item.percent_of_artif,
+                    item.percent_of_land,
+                ]
+                for item in self.data
+            ],
+        ]
+
     @cached_property
     def is_interdepartemental(self):
         return len(self.data[0].departements) > 1
