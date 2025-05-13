@@ -1,6 +1,5 @@
 import React from "react";
 import Guide from "@components/ui/Guide";
-import { useGetArtifZonageIndexQuery } from "@services/api";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
@@ -10,7 +9,7 @@ import { ArtifPercentRate } from "@components/charts/artificialisation/ArtifPerc
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
-import ChartSource from "@components/charts/ChartSource";
+import ChartDataWrapper from "@components/ui/ChartDataWrapper";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ArtificialisationZonage } from "@components/features/ocsge/ArtificialisationZonage";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
@@ -86,7 +85,7 @@ const ArtifLastMillesimeSection: React.FC<{
 							<p>du territoire est artificialisé</p>
 						</div>
 					</div>
-					<ChartSource sources={['ocsge']} chartId="artificialisation-tableau" />
+					<ChartDataWrapper sources={['ocsge']} chartId="artificialisation-tableau" />
 				</div>
 			</div>
 			<div className="fr-col-12 fr-col-lg-4">

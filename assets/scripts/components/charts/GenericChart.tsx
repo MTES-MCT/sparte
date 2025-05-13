@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import styled from 'styled-components';
 
 import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
@@ -9,7 +10,7 @@ import Exporting from 'highcharts/modules/exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
 
 import Loader from '@components/ui/Loader';
-import ChartSource from '@components/charts/ChartSource';
+import ChartDataWrapper from '@components/ui/ChartDataWrapper';
 
 // Initialize the modules
 HighchartsHeatmap(Highcharts);
@@ -29,6 +30,14 @@ type GenericChartProps = {
     showToolbar?: boolean;
     sources?: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel']
 }
+
+const LoaderContainer = styled.div`
+    height: 400px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
 
 const GenericChart = ({ 
     chartOptions, 
@@ -56,9 +65,9 @@ const GenericChart = ({
     };
 
     if (isLoading) {
-        return <div style={{ height: "400px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        return <LoaderContainer>
             <Loader />
-        </div>
+        </LoaderContainer>
     }
 
     if (error || !chartOptions?.highcharts_options) {
@@ -110,7 +119,11 @@ const GenericChart = ({
                 containerProps={{ ...defaultContainerProps, ...containerProps }}
                 constructorType={isMap ? 'mapChart' : 'chart'}
             />
-            {sources.length > 0 && <ChartSource sources={sources} chartId={chartId} />}
+            <ChartDataWrapper 
+                sources={sources}
+                data={chartOptions.data_table}
+                chartId={chartId}
+            />
         </div>
     )
 }

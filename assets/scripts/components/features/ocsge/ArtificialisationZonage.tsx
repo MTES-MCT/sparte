@@ -1,7 +1,7 @@
 import React from "react";
 import { formatNumber } from "@utils/formatUtils";
 import { ZonageType } from "scripts/types/ZonageType";
-import ChartSource from "@components/charts/ChartSource";
+import ChartDataWrapper from "@components/ui/ChartDataWrapper";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
 
@@ -91,7 +91,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 						</div>
 					</div>
 				</div>
-				<ChartSource sources={['ocsge', 'gpu']} chartId="artificialisation-zonage-tableau" />
+				<ChartDataWrapper sources={['ocsge', 'gpu']} chartId="artificialisation-zonage-tableau" />
 			</div>
 		</div>
 	);
