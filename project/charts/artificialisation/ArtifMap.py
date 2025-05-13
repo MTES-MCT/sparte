@@ -1,6 +1,7 @@
 import json
 
 from django.core.serializers import serialize
+from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
@@ -12,7 +13,7 @@ class ArtifMap(DiagnosticChart):
     def lands(self):
         return LandModel.objects.filter(
             parent_land_type=self.land.land_type,
-            parent_land_ids__contains=[self.land.id],
+            parent_land_ids__contains=[self.land.land_id],
             land_type=self.params.get("child_land_type"),
         )
 
@@ -32,20 +33,9 @@ class ArtifMap(DiagnosticChart):
             millesime_index=self.params.get("previous_index"),
         ).order_by("land_id")
 
-    @property
-    def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
-        )
-
-        data = [
+    @cached_property
+    def data(self):
+        return [
             {
                 "land_id": current.land_id,
                 "percent": current.percent,
@@ -60,14 +50,73 @@ class ArtifMap(DiagnosticChart):
             for current, previous in zip(self.artif.all(), self.previous_artif.all())
         ]
 
+    @property
+    def year_or_index_before(self):
+        if self.is_interdepartemental:
+            return f"millesime n°{self.params.get('previous_index')}"
+        else:
+            return str(self.previous_artif.first().years[0])
+
+    @property
+    def year_or_index_after(self):
+        if self.is_interdepartemental:
+            return f"millesime n°{self.params.get('index')}"
+        else:
+            return str(self.artif.first().years[-1])
+
+    @property
+    def data_table(self):
+        headers = [
+            "Identifiant du territoire",
+            "Type de territoire",
+            f"Part artificialisée (%) - {self.year_or_index_after}",
+            f"Surface artificialisée (ha) - {self.year_or_index_after}",
+            f"Flux d'artificialisation (ha) - {self.year_or_index_before} -> {self.year_or_index_after}",
+            f"Flux d'artificialisation (%) - {self.year_or_index_before} -> {self.year_or_index_after}",
+        ]
+
+        return [
+            headers,
+            [
+                [
+                    d["land_id"],
+                    AdminRef.get_label(self.params.get("child_land_type")).lower(),
+                    d["percent"],
+                    d["surface"],
+                    d["flux_surface"],
+                    d["flux_percent"],
+                ]
+                for d in self.data
+            ],
+        ]
+
+    @property
+    def is_interdepartemental(self):
+        return self.lands.values("departements").distinct().count() > 1
+
+    @property
+    def title_end(self):
+        return f"entre {self.year_or_index_before} et {self.year_or_index_after}"
+
+    @property
+    def param(self):
+        geojson = serialize(
+            "geojson",
+            self.lands,
+            geometry_field="geom",
+            fields=(
+                "land_id",
+                "name",
+            ),
+            srid=3857,
+        )
         return super().param | {
             "chart": {
                 "map": json.loads(geojson),
             },
             "title": {
                 "text": (
-                    f"Artificialisation des {AdminRef.get_label(self.params.get('child_land_type')).lower()}s "
-                    f"de {self.land.name} "
+                    f"Artificialisation des {AdminRef.get_label(self.params.get('child_land_type')).lower()}s {self.title_end}"  # noqa: E501
                 )
             },
             "mapNavigation": {"enabled": False},
@@ -86,8 +135,8 @@ class ArtifMap(DiagnosticChart):
                 },
             },
             "colorAxis": {
-                "min": min([d["percent"] for d in data]),
-                "max": max([d["percent"] for d in data]),
+                "min": min([d["percent"] for d in self.data]),
+                "max": max([d["percent"] for d in self.data]),
                 "minColor": "#FFFFFF",
                 "maxColor": "#6a6af4",
                 "dataClassColor": "category",
@@ -95,7 +144,7 @@ class ArtifMap(DiagnosticChart):
             "series": [
                 {
                     "name": "Sols artificiels",
-                    "data": data,
+                    "data": self.data,
                     "joinBy": ["land_id"],
                     "colorKey": "percent",
                     "opacity": 1,
@@ -132,7 +181,7 @@ class ArtifMap(DiagnosticChart):
                             "years": d["years_str"],
                             "previous_years": d["previous_years_str"],
                         }
-                        for d in data
+                        for d in self.data
                         if d["flux_surface"] > 0
                     ],
                     "tooltip": {
@@ -164,7 +213,7 @@ class ArtifMap(DiagnosticChart):
                             "years": d["years_str"],
                             "previous_years": d["previous_years_str"],
                         }
-                        for d in data
+                        for d in self.data
                         if d["flux_surface"] < 0
                     ],
                     "tooltip": {
@@ -181,19 +230,6 @@ class ArtifMap(DiagnosticChart):
 
 
 class ArtifMapExport(ArtifMap):
-    @property
-    def is_interdepartemental(self):
-        return self.lands.values("departements").distinct().count() > 1
-
-    @property
-    def title_end(self):
-        if self.is_interdepartemental:
-            return f"au millésime n°{self.params.get('index')}"
-        else:
-            previous_year = self.previous_artif.first().years[0]
-            year = self.artif.first().years[-1]
-            return f"entre {previous_year} et {year}"
-
     @property
     def param(self):
         return super().param | {
