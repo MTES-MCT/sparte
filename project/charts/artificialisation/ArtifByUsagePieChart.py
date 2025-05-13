@@ -36,6 +36,30 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
         ]
 
     @property
+    def data_table(self):
+        headers = [
+            "Code",
+            "Usage",
+            "Surface (ha)",
+            "Pourcentage du sol artificiel (%)",
+            "Pourcentage du territoire (%)",
+        ]
+
+        return [
+            headers,
+            [
+                [
+                    item.usage,
+                    item.label,
+                    item.surface,
+                    item.percent_of_artif,
+                    item.percent_of_land,
+                ]
+                for item in self.data
+            ],
+        ]
+
+    @property
     def param(self):
         return super().param | {
             "title": {"text": f"Surfaces artificialisées par usage {self.title_end}"},
