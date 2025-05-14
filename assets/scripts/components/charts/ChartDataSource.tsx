@@ -1,15 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Container = styled.div`
-    margin-top: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    border: 1px solid #EEF2F7;
-`;
-
 const TagGroup = styled.div`
     display: flex;
     align-items: center;
@@ -47,16 +38,16 @@ const SOURCES_DETAILS: Record<string, { label: string; html: string }> = {
     },
 };
 
-interface ChartSourceProps {
+interface ChartDataSourceProps {
   sources: (keyof typeof SOURCES_DETAILS)[];
   chartId: string;
 }
 
-const ChartSource: React.FC<ChartSourceProps> = ({ sources, chartId }) => {
+const ChartDataSource: React.FC<ChartDataSourceProps> = ({ sources, chartId }) => {
     if (!sources || sources.length === 0) return null;
     return (
-        <Container>
-            <span className="fr-text--sm fr-mb-0 fr-mr-1w">Sources de données :</span>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+            <span className="fr-text--xs fr-mb-0 fr-mr-1w">Source de données :</span>
             <TagGroup>
                 {sources.map((src) => {
                     const source = SOURCES_DETAILS[src];
@@ -73,8 +64,8 @@ const ChartSource: React.FC<ChartSourceProps> = ({ sources, chartId }) => {
                     );
                 })}
             </TagGroup>
-        </Container>
+        </div>
     );
 };
 
-export default ChartSource;
+export default ChartDataSource;

@@ -8,6 +8,7 @@ import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
+import { useArtificialisation } from '@hooks/useArtificialisation';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
@@ -54,6 +55,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             skip: !projectData
         }
     );
+
+    const { landArtifStockIndex } = useArtificialisation({
+        projectData: projectData as any,
+        landData: landData as any
+    });
     
     const { urls } = projectData || {};
 
@@ -61,11 +67,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const { isMobile } = useWindowSize();
 
     useEffect(() => {
-    if (projectData) {        
-        dispatch(setProjectData(projectData));        
-    }
+        if (projectData) {        
+            dispatch(setProjectData(projectData));        
+        }
     }, [projectData, dispatch]);
-
 
     return (
         <>
@@ -86,7 +91,24 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 title="Synthèse"
                                                 consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
-                                                <Synthese endpoint={urls.synthese} />
+                                                <Synthese 
+                                                    endpoint={urls.synthese}
+                                                    urls={projectData.urls}
+                                                    artificialisationData={landArtifStockIndex ? {
+                                                        surface: landArtifStockIndex.surface,
+                                                        percent: landArtifStockIndex.percent,
+                                                        flux_surface: landArtifStockIndex.flux_surface,
+                                                        years: landArtifStockIndex.years,
+                                                        is_interdepartemental: landData.is_interdepartemental,
+                                                        millesime_index: landArtifStockIndex.millesime_index,
+                                                        flux_previous_years: landArtifStockIndex.flux_previous_years,
+                                                        millesimes: landData.millesimes,
+                                                        territory_name: projectData.territory_name,
+                                                        land_type: projectData.land_type,
+                                                        land_id: projectData.land_id,
+                                                        millesimes_by_index: landData.millesimes_by_index
+                                                    } : undefined}
+                                                />
                                             </RouteWrapper>
                                         }
                                     />

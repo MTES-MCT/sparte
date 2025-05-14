@@ -1,4 +1,4 @@
-import { ConsoCorrectionStatusEnum } from "@components/features/ConsoCorrectionStatus";
+import { ConsoCorrectionStatusEnum } from "@components/features/status/ConsoCorrectionStatus";
 import { GeoJsonObject } from "geojson";
 import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { FetchArgs, BaseQueryFn } from "@reduxjs/toolkit/query";
