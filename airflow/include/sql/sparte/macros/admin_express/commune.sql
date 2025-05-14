@@ -1,7 +1,15 @@
 {% macro commune(source_table_name) %}
     {{ config(materialized="table") }}
-    with
-        epci_and_ept as (
+    with simplified as (
+        {{
+            simplify(
+                source=source('public', source_table_name),
+                geo_field='geom',
+                id_field='insee_com',
+                tolerance='50'
+            )
+        }}
+    ), epci_and_ept as (
             select
                 insee_com as commune_code,
                 case
@@ -29,8 +37,10 @@
         insee_reg as region,
         {{ get_ept_from_epci_array("epci_and_ept.epcis") }} as ept,
         {{ get_non_ept_from_epci_array("epci_and_ept.epcis") }} as epci,
-        st_area(geom) as surface,
-        geom
+        st_area(commune.geom) as surface,
+        commune.geom,
+        simplified.geom as simple_geom
     from {{ source("public", source_table_name) }} as commune
     left join epci_and_ept on commune.insee_com = epci_and_ept.commune_code
+    left join simplified on commune.insee_com = simplified.id_field
 {% endmacro %}

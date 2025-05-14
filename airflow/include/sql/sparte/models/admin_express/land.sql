@@ -9,7 +9,7 @@
 }}
 
 
-{% set common_fields = "geom, surface" %}
+{% set common_fields = "geom, simple_geom, surface" %}
 {% set admin_express_common_fields = "name" %}
 
 SELECT
