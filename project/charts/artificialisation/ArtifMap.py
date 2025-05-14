@@ -67,28 +67,29 @@ class ArtifMap(DiagnosticChart):
     @property
     def data_table(self):
         headers = [
-            "Identifiant du territoire",
-            "Type de territoire",
+            AdminRef.get_label(self.params.get("child_land_type")),
             f"Part artificialisée (%) - {self.year_or_index_after}",
             f"Surface artificialisée (ha) - {self.year_or_index_after}",
             f"Flux d'artificialisation (ha) - {self.year_or_index_before} -> {self.year_or_index_after}",
             f"Flux d'artificialisation (%) - {self.year_or_index_before} -> {self.year_or_index_after}",
         ]
 
-        return [
-            headers,
-            [
-                [
-                    d["land_id"],
-                    AdminRef.get_label(self.params.get("child_land_type")).lower(),
-                    d["percent"],
-                    d["surface"],
-                    d["flux_surface"],
-                    d["flux_percent"],
-                ]
+        return {
+            "headers": headers,
+            "rows": [
+                {
+                    "name": "",  # not used
+                    "data": [
+                        d["land_id"],
+                        round(d["percent"], 2),
+                        round(d["surface"], 2),
+                        round(d["flux_surface"], 2),
+                        round(d["flux_percent"], 2),
+                    ],
+                }
                 for d in self.data
             ],
-        ]
+        }
 
     @property
     def is_interdepartemental(self):
