@@ -22,7 +22,7 @@ from public_data.infra.consommation.progression.export.ConsoComparisonExportTabl
 from public_data.infra.consommation.progression.export.ConsoProportionalComparisonExportTableMapper import (
     ConsoProportionalComparisonExportTableMapper,
 )
-from public_data.models import Land, LandArtifStockIndex, LandModel
+from public_data.models import LandArtifStockIndex, LandModel
 from public_data.models.administration import AdminRef
 from utils.functions import get_url_with_domain
 
@@ -33,66 +33,6 @@ def save_to_local_temp_image(field: ImageField) -> str:
     os.write(fd, field.open().read())
     os.close(fd)
     return img_path
-
-
-class SolInterface:
-    surface_territory = None
-
-    def __init__(self, item):
-        self.item = item
-
-    @property
-    def code(self):
-        if self.item.level == 1:
-            spacer = ""
-        else:
-            spacer = "".join(["-"] * (self.item.level - 1))
-        return f"{spacer} {self.item.code}"
-
-    @property
-    def label(self):
-        return self.item.get_label_short()
-
-    @property
-    def surface_first(self):
-        return str(round(self.item.surface_first, 1))
-
-    @property
-    def surface_last(self):
-        return str(round(self.item.surface_last, 1))
-
-    @property
-    def surface_diff(self):
-        val = round(self.item.surface_diff, 2)
-        if self.item.surface_diff > 0:
-            return f"+{val}"
-        elif self.item.surface_diff == 0:
-            return "-"
-        else:
-            return str(val)
-
-    @property
-    def percent(self):
-        val = 100 * float(self.item.surface_last) / self.surface_territory
-        return f"{round(val)}%"
-
-
-class ReprDetailArtif:
-    total_artif = None
-    total_renat = None
-
-    def __init__(self, item):
-        self.label = item["code_prefix"]
-        self.artif = str(round(item["artif"], 1))
-        self.renat = str(round(item["renat"], 1))
-        if self.total_artif > 0:
-            self.artif_percent = str(round(100 * item["artif"] / self.total_artif))
-        else:
-            self.artif_percent = "N/A"
-        if self.total_renat > 0:
-            self.renat_percent = str(round(100 * item["renat"] / self.total_renat))
-        else:
-            self.renat_percent = "N/A"
 
 
 class BaseRenderer:
@@ -158,8 +98,6 @@ class BaseRenderer:
             land_id=diagnostic.land_id,
             land_type=diagnostic.land_type,
         )
-        legacy_land = Land(f"{diagnostic.land_type}_{diagnostic.land_id}")
-
         # Flags
         has_different_zan_period = diagnostic.analyse_start_date != "2011" or diagnostic.analyse_end_date != "2020"
         has_neighbors = diagnostic.nb_look_a_like > 0
@@ -231,14 +169,14 @@ class BaseRenderer:
             )
 
             artif_couverture_chart = charts.ArtifByCouverturePieChartExport(
-                land=legacy_land,
+                land=land_model,
                 params={
                     "index": last_artif_stock_index.millesime_index,
                 },
             )
 
             artif_usage_chart = charts.ArtifUsagePieChartExport(
-                land=legacy_land,
+                land=land_model,
                 params={
                     "index": last_artif_stock_index.millesime_index,
                 },
@@ -254,11 +192,13 @@ class BaseRenderer:
                 "last_percent_artif": round(last_artif_stock_index.percent, 2),
                 "available_ocsge_millesimes": land_model.millesimes,
                 "artif_couverture_chart": self.prep_chart(artif_couverture_chart),
+                "artif_couverture_data_table": artif_couverture_chart.data_table,
                 "artif_usage_chart": self.prep_chart(artif_usage_chart),
+                "artif_usage_data_table": artif_usage_chart.data_table,
             }
             if not is_commune:
                 artif_map_chart = charts.ArtifMapExport(
-                    land=Land(f"{diagnostic.land_type}_{diagnostic.land_id}"),
+                    land=land_model,
                     params={
                         "index": last_artif_stock_index.millesime_index,
                         "previous_index": last_artif_stock_index.millesime_index - 1,
@@ -267,6 +207,7 @@ class BaseRenderer:
                 )
                 context |= {
                     "artif_map": self.prep_chart(artif_map_chart, width=1200),
+                    "artif_map_data_table": artif_map_chart.data_table,
                     "maille_artif_map": f"{AdminRef.get_label(land_model.child_land_types[0]).lower()}s",
                 }
 

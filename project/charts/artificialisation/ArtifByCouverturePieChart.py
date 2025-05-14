@@ -44,19 +44,22 @@ class ArtifByCouverturePieChart(DiagnosticChart):
             "Pourcentage du territoire (%)",
         ]
 
-        return [
-            headers,
-            [
-                [
-                    item.couverture,
-                    item.label,
-                    item.surface,
-                    item.percent_of_artif,
-                    item.percent_of_land,
-                ]
+        return {
+            "headers": headers,
+            "rows": [
+                {
+                    "name": "",  # not used
+                    "data": [
+                        item.couverture,
+                        item.label,
+                        round(item.surface, 2),
+                        round(item.percent_of_artif, 2),
+                        round(item.percent_of_land, 2),
+                    ],
+                }
                 for item in self.data
             ],
-        ]
+        }
 
     @cached_property
     def is_interdepartemental(self):

@@ -45,19 +45,22 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
             "Pourcentage du territoire (%)",
         ]
 
-        return [
-            headers,
-            [
-                [
-                    item.usage,
-                    item.label,
-                    item.surface,
-                    item.percent_of_artif,
-                    item.percent_of_land,
-                ]
+        return {
+            "headers": headers,
+            "rows": [
+                {
+                    "name": "",  # not used
+                    "data": [
+                        item.usage,
+                        item.label,
+                        round(item.surface, 2),
+                        round(item.percent_of_artif, 2),
+                        round(item.percent_of_land, 2),
+                    ],
+                }
                 for item in self.data
             ],
-        ]
+        }
 
     @property
     def param(self):
