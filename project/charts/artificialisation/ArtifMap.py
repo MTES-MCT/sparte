@@ -254,7 +254,7 @@ class ArtifMapExport(ArtifMap):
                 "navigation": LEGEND_NAVIGATION_EXPORT,
             },
             "title": {
-                "text": f"{super().param['title']['text']} {self.title_end}",
+                "text": f"{super().param['title']['text']} sur le territoire {self.land.name}",
             },
             "subtitle": {"text": ""},
         }
