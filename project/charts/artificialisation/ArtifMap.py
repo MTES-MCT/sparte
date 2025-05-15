@@ -130,7 +130,7 @@ class ArtifMap(DiagnosticChart):
             "title": {
                 "text": (f"Artificialisation des {self.formatted_child_land_type}s {self.title_end}")  # noqa: E501
             },
-            "mapNavigation": {"enabled": False},
+            "mapNavigation": {"enabled": self.lands.count() > 20},
             "legend": {
                 "title": {"text": "Taux d'artificialisation (%)"},
                 "backgroundColor": "#ffffff",
