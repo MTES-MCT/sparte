@@ -41,7 +41,8 @@ const ArtifLastMillesimeSection: React.FC<{
 	is_interdepartemental: boolean;
 	surface: number;
 	years_artif: number[];
-}> = ({ landArtifStockIndex, name, is_interdepartemental, surface, years_artif }) => (
+	defaultStockIndex: number;
+}> = ({ landArtifStockIndex, name, is_interdepartemental, surface, years_artif, defaultStockIndex }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<div className="fr-col-12 fr-col-lg-8">
@@ -77,7 +78,10 @@ const ArtifLastMillesimeSection: React.FC<{
 							</span>
 							<MillesimeDisplay 
 								is_interdepartemental={is_interdepartemental}
-								landArtifStockIndex={landArtifStockIndex}
+								landArtifStockIndex={{
+									...landArtifStockIndex,
+									millesime_index: defaultStockIndex
+								}}
 								between={true}
 								className="fr-text--sm fr-ml-1w"
 							/>
@@ -110,7 +114,10 @@ const ArtifLastMillesimeSection: React.FC<{
 						number: landArtifStockIndex.flux_surface,
 					})} ha <MillesimeDisplay 
 						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landArtifStockIndex}
+						landArtifStockIndex={{
+							...landArtifStockIndex,
+							millesime_index: defaultStockIndex
+						}}
 						between={true}
 					/></strong>.</p>
 				</Guide>
@@ -188,7 +195,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 	const { artifZonageIndex } = useArtificialisationZonage({
 		projectData,
-		stockIndex
+		defaultStockIndex
 	});
 
 	if (isLoading) return <div>Chargement...</div>;
@@ -229,7 +236,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				{" "}
 				<MillesimeDisplay 
 					is_interdepartemental={is_interdepartemental}
-					landArtifStockIndex={landArtifStockIndex}
+					landArtifStockIndex={{
+						...landArtifStockIndex,
+						millesime_index: defaultStockIndex
+					}}
 				/>
 			</h2>
 			<ArtifLastMillesimeSection 
@@ -238,6 +248,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				is_interdepartemental={is_interdepartemental}
 				surface={surface}
 				years_artif={years_artif}
+				defaultStockIndex={defaultStockIndex}
 			/>
 			<MillesimesTable 
 				millesimes={millesimes}
@@ -390,7 +401,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			<ArtificialisationZonage 
 				artifZonageIndex={artifZonageIndex}
 				is_interdepartemental={is_interdepartemental}
-				landArtifStockIndex={landArtifStockIndex}
+				landArtifStockIndex={{
+					...landArtifStockIndex,
+					millesime_index: defaultStockIndex
+				}}
 			/>
 			<h2>Calcul de l'artificialisation des sols</h2>
 			<div className="bg-white fr-p-4w fr-mb-7w rounded">

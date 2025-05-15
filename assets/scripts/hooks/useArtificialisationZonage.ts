@@ -3,7 +3,7 @@ import { ProjectDetailResultType } from '@services/types/project';
 
 interface UseArtificialisationZonageProps {
     projectData: ProjectDetailResultType;
-    stockIndex: number;
+    defaultStockIndex: number;
 }
 
 interface UseArtificialisationZonageReturn {
@@ -14,12 +14,12 @@ interface UseArtificialisationZonageReturn {
 
 export const useArtificialisationZonage = ({
     projectData,
-    stockIndex
+    defaultStockIndex
 }: UseArtificialisationZonageProps): UseArtificialisationZonageReturn => {
     const { data: artifZonageIndex, isLoading, error } = useGetArtifZonageIndexQuery({
         land_type: projectData.land_type,
         land_id: projectData.land_id,
-        millesime_index: stockIndex,
+        millesime_index: defaultStockIndex,
     });
 
     return {
