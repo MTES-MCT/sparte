@@ -97,6 +97,8 @@ class ArtifMap(DiagnosticChart):
 
     @property
     def title_end(self):
+        if self.is_interdepartemental:
+            return f"entre le {self.year_or_index_before} et le {self.year_or_index_after}"
         return f"entre {self.year_or_index_before} et {self.year_or_index_after}"
 
     @property
