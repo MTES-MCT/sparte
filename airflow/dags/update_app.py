@@ -434,7 +434,7 @@ def update_app():  # noqa: C901
                     "millesimes_by_index": "jsonb[]",
                 },
                 btree_index_columns=[
-                    ["land_id", "land_type", "child_land_types", "parent_land_type", "parent_land_ids"],
+                    ["land_id", "land_type", "child_land_types", "parent_keys"],
                 ],
             ),
         )

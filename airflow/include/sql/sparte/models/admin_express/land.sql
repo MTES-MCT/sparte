@@ -19,8 +19,13 @@ SELECT
     {{ common_fields }},
     {{ admin_express_common_fields }},
     array[]::varchar[] as child_land_types,
-    '{{ var("EPCI") }}' as parent_land_type,
-    string_to_array(epci, '') as parent_land_ids
+    ARRAY[
+        '{{ var("EPCI") }}_' || epci,
+        '{{ var("DEPARTEMENT") }}_' || departement,
+        '{{ var("REGION") }}_' || region,
+        '{{ var("NATION") }}_' || '{{ var("NATION") }}',
+        '{{ var("SCOT") }}_' || scot
+    ] as parent_keys
 FROM
     {{ ref('commune') }}
 UNION ALL
@@ -31,8 +36,11 @@ SELECT
     {{ common_fields }},
     {{ admin_express_common_fields }},
     string_to_array('{{ var("COMMUNE") }}', '') as child_land_types,
-    '{{ var("DEPARTEMENT") }}' as parent_land_type,
-    (SELECT array_agg(distinct departement) FROM {{ ref('commune') }} WHERE "epci" = epci.code) as parent_land_ids
+    ARRAY_CAT(
+        (SELECT array_agg(distinct '{{ var("DEPARTEMENT") }}_' || departement) FROM {{ ref('commune') }} WHERE "epci" = epci.code),
+        (SELECT array_agg(distinct '{{ var("REGION") }}_' || region) FROM {{ ref('commune') }} WHERE "epci" = epci.code)
+     ) as parent_keys
+
 FROM
     {{ ref('epci') }}
 UNION ALL
@@ -42,9 +50,14 @@ SELECT
     string_to_array(code, '') as departements,
     {{ common_fields }},
     {{ admin_express_common_fields }},
-    string_to_array('{{ var("EPCI") }},{{ var("SCOT")}}', ',') as child_land_types,
-    '{{ var("REGION") }}' as parent_land_type,
-    string_to_array(region, '') as parent_land_ids
+    ARRAY[
+        '{{ var("EPCI") }}',
+        '{{ var("SCOT") }}'
+    ] as child_land_types,
+    ARRAY[
+        '{{ var("REGION") }}_' || region,
+        '{{ var("NATION") }}_' || '{{ var("NATION") }}'
+    ] as parent_keys
 FROM
     {{ ref('departement') }}
 UNION ALL
@@ -54,9 +67,15 @@ SELECT
     (SELECT array_agg(distinct code) FROM {{ ref('departement') }} WHERE "region" = region.code) as departements,
     {{ common_fields }},
     {{ admin_express_common_fields }},
-    string_to_array('{{ var("DEPARTEMENT") }}', '') as child_land_types,
-    '{{ var("NATION") }}' as parent_land_type,
-    string_to_array('{{ var("NATION") }}', '') as parent_land_ids
+    ARRAY[
+        '{{ var("EPCI") }}',
+        '{{ var("SCOT") }}',
+        '{{ var("DEPARTEMENT") }}'
+    ] as child_land_types,
+    ARRAY[
+        '{{ var("NATION") }}_' || '{{ var("NATION") }}'
+    ] as parent_keys
+
 FROM
     {{ ref('region') }}
 UNION ALL
@@ -67,8 +86,10 @@ SELECT
     {{ common_fields }},
     nom_scot as name,
     string_to_array('{{ var("COMMUNE") }}', '') as child_land_types,
-    '{{ var("DEPARTEMENT") }}' as parent_land_type,
-    (SELECT array_agg(distinct departement) FROM {{ ref('commune') }} WHERE "scot" = scot.id_scot) as parent_land_ids
+    ARRAY_CAT(
+        (SELECT array_agg(distinct '{{ var("DEPARTEMENT") }}_' || departement) FROM {{ ref('commune') }} WHERE "scot" = scot.id_scot),
+        (SELECT array_agg(distinct '{{ var("REGION") }}_' || region) FROM {{ ref('commune') }} WHERE "scot" = scot.id_scot)
+    ) as parent_keys
 FROM
     {{ ref('scot') }}
 
