@@ -16,6 +16,7 @@ import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesim
 import { useArtificialisation } from "@hooks/useArtificialisation";
 import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
+import OcsgeMatricePNG from '@images/ocsge_matrice_passage.png';
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -415,8 +416,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					<div className="fr-collapse" id="accordion-106">
 						<img
 							width="100%"
-							src="http://localhost:3000/assets/images/fee8522683da78dec22f.png"
-							alt="Matrice de passage OCS GE"
+							src={OcsgeMatricePNG}
+							alt="Matrice de croisements d'usage et de couverture d'après la nomenclature OCS GE qui détermine la composition de l'artificialisation"
 						/>
 					</div>
 				</section>
