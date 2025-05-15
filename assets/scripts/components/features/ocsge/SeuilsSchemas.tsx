@@ -147,7 +147,7 @@ export const SeuilsSchemas = () => {
 					<ArtificializedSquare className="with-threshold" />
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
-					Une zone non-artificielle de moins de 2500m² enclavée dans une zone
+					Une zone non-artificielle de moins de 2500 m² enclavée dans une zone
 					artificielle devient artificielle.
 				</p>
 			</SchemaPair>
@@ -160,7 +160,7 @@ export const SeuilsSchemas = () => {
 					<NonArtificializedSquare className="with-threshold" />
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
-					Une zone artificielle de moins de 2500m² enclavée dans une zone
+					Une zone artificielle de moins de 2500 m² enclavée dans une zone
 					non-artificielle devient non-artificielle.
 				</p>
 			</SchemaPair>
@@ -173,7 +173,7 @@ export const SeuilsSchemas = () => {
 					<ConstructionSquare className="with-threshold" />
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
-					Une zone bâtie de plus de 50m² enclavée dans une zone
+					Une zone bâtie de plus de 50 m² enclavée dans une zone
 					non-artificielle est toujours artificielle.
 				</p>
 			</SchemaPair>
