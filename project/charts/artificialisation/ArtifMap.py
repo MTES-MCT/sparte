@@ -116,7 +116,7 @@ class ArtifMap(DiagnosticChart):
         geojson = serialize(
             "geojson",
             self.lands,
-            geometry_field="geom",
+            geometry_field="simple_geom",
             fields=(
                 "land_id",
                 "name",
