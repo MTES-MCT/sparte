@@ -1,17 +1,11 @@
 import React from 'react';
-
 import { formatNumber } from "@utils/formatUtils";
-
-interface ChartDataTableProps {
-    data: [string[], string[][]];
-}
+import { ChartDataTableProps } from 'scripts/types/chart';
 
 const ChartDataTable: React.FC<ChartDataTableProps> = ({ data }) => {
-    if (!data || !data[0] || !data[1]) return null;
+    if (!data || !data.headers || !data.rows) return null;
 
-    const headers = data[0];
-    const rows = data[1];
-
+    const { headers, rows } = data;
     return (
         <div className="fr-table--sm fr-table fr-table--bordered fr-mb-0">
             <div className="fr-table__wrapper">
@@ -20,7 +14,7 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data }) => {
                         <table>
                             <thead>
                                 <tr>
-                                    {headers.map((header, index) => (
+                                    {headers.map((header: string, index: number) => (
                                         <th key={index} scope="col">
                                             {header}
                                         </th>
@@ -28,15 +22,18 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {rows.map((row, rowIndex) => (
+                                {rows.map((row, rowIndex: number) => (
                                     <tr key={rowIndex} data-row-key={rowIndex}>
-                                        {row.map((cell, cellIndex) => (
-                                            <td key={cellIndex} className={!isNaN(Number(cell)) ? 'fr-cell--right' : ''}>
-                                                {!isNaN(Number(cell)) ? formatNumber({
-                                                    number: Number(cell),
-                                                }) : cell}
-                                            </td>
-                                        ))}
+                                        {row.data.map((cell: any, cellIndex: number) => {
+                                            const isNumeric = typeof cell === 'number' || !isNaN(Number(cell));
+                                            return (
+                                                <td key={cellIndex} className={isNumeric ? 'fr-cell--right' : ''}>
+                                                    {isNumeric ? formatNumber({
+                                                        number: Number(cell),
+                                                    }) : cell}
+                                                </td>
+                                            );
+                                        })}
                                     </tr>
                                 ))}
                             </tbody>

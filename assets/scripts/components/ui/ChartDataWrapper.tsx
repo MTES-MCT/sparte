@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import ChartDataSource from '@components/charts/ChartDataSource';
 import ChartDataTable from '@components/charts/ChartDataTable';
+import { ChartData } from 'scripts/types/chart';
 
 const Container = styled.div`
     margin-top: 1rem;
@@ -24,7 +25,7 @@ const DataContainer = styled.div<{ isVisible: boolean }>`
 
 interface DataWrapperProps {
     sources?: string[];
-    data?: any;
+    data?: ChartData;
     chartId: string;
 }
 
