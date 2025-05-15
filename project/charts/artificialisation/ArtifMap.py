@@ -11,11 +11,10 @@ from public_data.models import AdminRef, LandArtifStockIndex, LandModel
 class ArtifMap(DiagnosticChart):
     @property
     def lands(self):
-        lands = LandModel.objects.filter(
+        return LandModel.objects.filter(
             parent_keys__contains=[f"{self.land.land_type}_{self.land.land_id}"],
             land_type=self.params.get("child_land_type"),
         )
-        return lands
 
     @property
     def artif(self):
@@ -80,7 +79,7 @@ class ArtifMap(DiagnosticChart):
                 {
                     "name": "",  # not used
                     "data": [
-                        d["land_id"],
+                        self.lands.get(land_id=d["land_id"]).name,
                         round(d["percent"], 2),
                         round(d["surface"], 2),
                         round(d["flux_surface"], 2),
