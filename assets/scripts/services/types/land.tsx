@@ -32,8 +32,7 @@ export type Millesime = {
     millesimes: Millesime[]
     millesimes_by_index: MillesimeByIndex[]
     child_land_types: string[];
-    parent_land_type: string;
-    parent_land_ids: string[];
+    parent_keys: string[];
     departements: string[];
     is_interdepartemental: boolean;
   };

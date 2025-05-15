@@ -11,11 +11,11 @@ from public_data.models import AdminRef, LandArtifStockIndex, LandModel
 class ArtifMap(DiagnosticChart):
     @property
     def lands(self):
-        return LandModel.objects.filter(
-            parent_land_type=self.land.land_type,
-            parent_land_ids__contains=[self.land.land_id],
+        lands = LandModel.objects.filter(
+            parent_keys__contains=[f"{self.land.land_type}_{self.land.land_id}"],
             land_type=self.params.get("child_land_type"),
         )
+        return lands
 
     @property
     def artif(self):
@@ -100,6 +100,16 @@ class ArtifMap(DiagnosticChart):
         return f"entre {self.year_or_index_before} et {self.year_or_index_after}"
 
     @property
+    def formatted_child_land_type(self):
+        """
+        Retourne le label de EPCI et SCOT en majuscule, sinon en minuscule
+        """
+        child_land_type = self.params.get("child_land_type")
+        if child_land_type in [AdminRef.SCOT, AdminRef.EPCI]:
+            return AdminRef.get_label(self.params.get("child_land_type"))
+        return AdminRef.get_label(self.params.get("child_land_type")).lower()
+
+    @property
     def param(self):
         geojson = serialize(
             "geojson",
@@ -116,9 +126,7 @@ class ArtifMap(DiagnosticChart):
                 "map": json.loads(geojson),
             },
             "title": {
-                "text": (
-                    f"Artificialisation des {AdminRef.get_label(self.params.get('child_land_type')).lower()}s {self.title_end}"  # noqa: E501
-                )
+                "text": (f"Artificialisation des {self.formatted_child_land_type}s {self.title_end}")  # noqa: E501
             },
             "mapNavigation": {"enabled": False},
             "legend": {
