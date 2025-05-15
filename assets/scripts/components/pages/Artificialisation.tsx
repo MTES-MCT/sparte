@@ -498,7 +498,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 								</span>
 								<a className="fr-notice__desc fr-text--sm" target="_blank" href="/newsletter/inscription">
 									{" "}
-									Inscrivez-vous à la newsletter pour être prévenu(e) de la
+									Inscrivez-vous à notre lettre d'infos pour être prévenu(e) de la
 									disponibilité de ces données
 								</a>
 							</p>
