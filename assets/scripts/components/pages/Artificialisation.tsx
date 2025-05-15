@@ -434,7 +434,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					>
 						décret du 27 novembre 2023
 					</a>
-					. Ces seuils indiquent que des surfaces de moins de 2500m2 ne peuvent
+					. Ces seuils indiquent que des surfaces de moins de 2500 m² ne peuvent
 					pas être comptabilisées comme artificialisées ou désartificialisées, à
 					l'exception des espaces bâtis.
 				</p>
@@ -450,7 +450,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				<SeuilsSchemas />
 				<p className="fr-text--sm">
 					Le détail de la méthode de calcul de l'artificlisation avec les seuils
-					d'interprétation est disponibles sur le portail de l'artificialisation
+					d'interprétation est disponible sur le portail de l'artificialisation
 					:&nbsp;{" "}
 					<a
 						className="fr-link fr-text--sm"
