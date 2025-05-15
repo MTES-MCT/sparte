@@ -56,6 +56,7 @@ const ArtifLastMillesimeSection: React.FC<{
 								{formatNumber({ number: landArtifStockIndex.surface })} ha
 							</BigNumber>
 							<span
+								style={{textTransform: 'lowercase'}}
 								className={`fr-badge ${
 									landArtifStockIndex.flux_surface >= 0
 										? "fr-badge--error"
