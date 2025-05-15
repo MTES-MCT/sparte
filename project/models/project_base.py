@@ -205,7 +205,6 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
-    async_add_city_done = models.BooleanField(default=False)
     async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
     async_add_comparison_lands_done = models.BooleanField(default=False)
@@ -217,9 +216,7 @@ class Project(BaseProject):
 
     @property
     def async_complete(self) -> bool:
-        calculations_and_extend_ready = (
-            self.async_add_city_done and self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
-        )
+        calculations_and_extend_ready = self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
 
         static_maps_ready = self.async_cover_image_done
 
@@ -235,9 +232,7 @@ class Project(BaseProject):
 
     @property
     def is_ready_to_be_displayed(self) -> bool:
-        return (
-            self.async_add_city_done and self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
-        )
+        return self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
 
     class Meta:
         ordering = ["-created_date"]

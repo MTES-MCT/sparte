@@ -37,7 +37,6 @@ class ProjectAdmin(SimpleHistoryAdmin):
     )
     change_form_template = "project/admin/project_detail.html"
     history_list_display = [
-        "async_add_city_done",
         "async_set_combined_emprise_done",
         "async_cover_image_done",
         "async_add_comparison_lands_done",

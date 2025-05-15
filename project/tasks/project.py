@@ -52,29 +52,6 @@ def race_protection_save_map(
 
 
 @shared_task(bind=True, max_retries=5)
-def add_city(self, project_id: int, public_keys: str) -> list[str]:
-    """Add cities to project."""
-    logger.info("Start add_city project_id==%d", project_id)
-    logger.info("public_keys=%s", public_keys)
-    try:
-        project = Project.objects.get(pk=project_id)
-        lands = Land.get_lands(public_keys.split("-"))
-        for land in lands:
-            project.cities.add(*land.get_cities())
-        race_protection_save(project_id, {"async_add_city_done": True})
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-    except Exception as exc:
-        logger.error(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=60)
-    finally:
-        logger.info("End add_city project_id=%d", project_id)
-
-    return [city.insee for city in project.cities.all()]
-
-
-@shared_task(bind=True, max_retries=5)
 def set_combined_emprise(self, project_id: int) -> list[int]:
     """Use linked cities to create project emprise."""
     logger.info("Start set_combined_emprise project_id==%d", project_id)

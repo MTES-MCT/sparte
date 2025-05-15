@@ -38,13 +38,7 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
-    if not public_key:
-        public_key = project.get_public_key()
-
     tasks_list = []
-
-    if not project.async_add_city_done:
-        tasks_list.append(t.add_city.si(project.id, public_key))
 
     if not project.async_set_combined_emprise_done:
         tasks_list.append(t.set_combined_emprise.si(project.id))
@@ -85,9 +79,9 @@ def create_from_public_key(
         user=user if user and user.is_authenticated else None,
     )
     project._change_reason = ProjectChangeReason.CREATED_FROM_PUBLIC_KEY
-
     project.save()
-
+    project.cities.set(land.get_cities())
+    project.save()
     trigger_async_tasks(project, public_key)
 
     return project
