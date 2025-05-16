@@ -1,9 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const TagGroup = styled.div`
+const Container = styled.div<{ $displayMode: 'tag' | 'text' }>`
+    display: flex;
+    align-items: ${props => props.$displayMode === 'tag' ? 'center' : 'flex-start'};
+    flex-direction: ${props => props.$displayMode === 'tag' ? 'row' : 'column'};
+    gap: ${props => props.$displayMode === 'tag' ? '0' : '0.3rem'};
+`;
+
+const SourceLabel = styled.div<{ $displayMode: 'tag' | 'text' }>`
+    margin: 0;
+    font-size: ${props => props.$displayMode === 'tag' ? '0.75rem' : ''};
+`;
+
+const TagsContainer = styled.div`
     display: flex;
     align-items: center;
+`;
+
+const TextContainer = styled.div`
+    display: flex;
+    flex-direction: column;
     gap: 0.5rem;
 `;
 
@@ -40,31 +57,40 @@ const SOURCES_DETAILS: Record<string, { label: string; html: string }> = {
 
 interface ChartDataSourceProps {
   sources: (keyof typeof SOURCES_DETAILS)[];
-  chartId: string;
+  displayMode?: 'tag' | 'text';
 }
 
-const ChartDataSource: React.FC<ChartDataSourceProps> = ({ sources, chartId }) => {
+const ChartDataSource: React.FC<ChartDataSourceProps> = ({ sources, displayMode = 'tag' }) => {
     if (!sources || sources.length === 0) return null;
     return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-            <span className="fr-text--xs fr-mb-0 fr-mr-1w">Source de données :</span>
-            <TagGroup>
-                {sources.map((src) => {
-                    const source = SOURCES_DETAILS[src];
-                    if (!source) return null;
-                    const tooltipId = `tooltip-${chartId}-${src}`;
-                    const tagId = `tag-${chartId}-${src}`;
-                    return (
-                        <React.Fragment key={src}>
-                            <span className="fr-tag fr-tag--sm fr-tag--blue fr-text--bold" role="button" id={tagId} aria-describedby={tooltipId} tabIndex={0}>
-                            {source.label}
+        <Container $displayMode={displayMode}>
+            <SourceLabel as={displayMode === 'text' ? 'h6' : 'span'} $displayMode={displayMode}>
+                Source de données :
+            </SourceLabel>
+            {displayMode === 'text' ? (
+                <TextContainer>
+                    {sources.map((src) => {
+                        const source = SOURCES_DETAILS[src];
+                        if (!source) return null;
+                        return (
+                            <p key={src} className="fr-text--xs fr-mb-0" dangerouslySetInnerHTML={{ __html: source.html }} />
+                        );
+                    })}
+                </TextContainer>
+            ) : (
+                <TagsContainer>
+                    {sources.map((src) => {
+                        const source = SOURCES_DETAILS[src];
+                        if (!source) return null;
+                        return (
+                            <span key={src} className="fr-tag fr-tag--sm fr-tag--blue fr-text--bold fr-ml-1w">
+                                {source.label}
                             </span>
-                            <span className="fr-tooltip fr-placement" id={tooltipId} role="tooltip" aria-hidden="true" dangerouslySetInnerHTML={{ __html: source.html }} />
-                        </React.Fragment>
-                    );
-                })}
-            </TagGroup>
-        </div>
+                        );
+                    })}
+                </TagsContainer>
+            )}
+        </Container>
     );
 };
 

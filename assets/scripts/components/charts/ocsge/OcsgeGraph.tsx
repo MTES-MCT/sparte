@@ -11,6 +11,8 @@ type OcsgeGraphProps = {
     params?: object;
     containerProps?: object;
     sources?: string[];
+    children?: React.ReactNode;
+    showDataTable?: boolean;
 };
 
 export const OcsgeGraph = ({
@@ -20,18 +22,23 @@ export const OcsgeGraph = ({
     isMap = false,
     params,
     containerProps,
-    sources = []
+    sources = [],
+    children,
+    showDataTable = false
 } : OcsgeGraphProps) => {
     const { data, isLoading, error } = useGetChartConfigQuery({ id, land_id, land_type, ...params })
 
     return (
         <GenericChart 
             isMap={isMap} 
-            chartOptions={data} 
+            chartOptions={data}
             containerProps={containerProps}
             isLoading={isLoading}
             error={error}
             sources={sources}
-        />
+            showDataTable={showDataTable}
+        >
+            {children}
+        </GenericChart>
     )
 }

@@ -1,17 +1,29 @@
 import React from 'react';
 import { formatNumber } from "@utils/formatUtils";
-import { ChartDataTableProps } from 'scripts/types/chart';
+interface ChartData {
+    headers: string[];
+    rows: Array<{
+        name: string;
+        data: any[];
+    }>;
+}
 
-const ChartDataTable: React.FC<ChartDataTableProps> = ({ data }) => {
+interface ChartDataTableProps {
+    data: ChartData;
+    title: string;
+} 
+
+const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
     if (!data || !data.headers || !data.rows) return null;
 
     const { headers, rows } = data;
     return (
-        <div className="fr-table--sm fr-table fr-table--bordered fr-mb-0">
+        <div className="fr-table--sm fr-table fr-table--bordered fr-mb-0 fr-mt-0">
             <div className="fr-table__wrapper">
                 <div className="fr-table__container">
                     <div className="fr-table__content">
                         <table>
+                            <caption>{title}</caption>
                             <thead>
                                 <tr>
                                     {headers.map((header: string, index: number) => (
