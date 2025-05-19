@@ -11,7 +11,7 @@ export interface OcsgeStatusProps {
     status: "COMPLETE_UNIFORM" | "COMPLETE_NOT_UNIFORM" | "PARTIAL" | "NO_DATA" | "UNDEFINED";
 }
 
-const defaultMessage = "Les données OCS GE ne sont pas encore disponibles sur ce territoire pour les dates sélectionnées.";
+const defaultMessage = "Les données OCS GE ne sont pas encore disponibles sur ce territoire.";
 const detailMessage = "Vous n'avez donc pas accès aux informations relatives à l'artificialisation, l'imperméabilisation, l'usage et la couverture.";
 const errorMessage = `${defaultMessage} ${detailMessage}`;
 
