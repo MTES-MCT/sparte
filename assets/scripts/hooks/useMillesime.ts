@@ -7,8 +7,8 @@ interface UseMillesimeProps {
 }
 
 interface UseMillesimeReturn {
-    stockIndex: number;
-    setStockIndex: (index: number) => void;
+    selectedIndex: number;
+    setSelectedIndex: (index: number) => void;
     defaultStockIndex: number;
     currentMillesime: MillesimeByIndex | undefined;
     millesimes: MillesimeByIndex[];
@@ -25,17 +25,17 @@ export const useMillesime = ({
     }, [millesimes_by_index, defaultIndex]);
 
     // État du millésime sélectionné
-    const [stockIndex, setStockIndex] = useState(defaultStockIndex);
+    const [selectedIndex, setSelectedIndex] = useState(defaultStockIndex);
 
     // Récupération du millésime sélectionné
     const currentMillesime = useMemo(() => 
-        millesimes_by_index.find((e) => e.index === stockIndex),
-        [millesimes_by_index, stockIndex]
+        millesimes_by_index.find((e) => e.index === selectedIndex),
+        [millesimes_by_index, selectedIndex]
     );
 
     return {
-        stockIndex,
-        setStockIndex,
+        selectedIndex,
+        setSelectedIndex,
         defaultStockIndex,
         currentMillesime,
         millesimes: millesimes_by_index
