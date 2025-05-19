@@ -189,7 +189,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 		isLoading,
 		error
 	} = useArtificialisation({
-		projectData,
 		landData
 	});
 

@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useGetLandArtifStockIndexQuery } from '@services/api';
-import { ProjectDetailResultType } from '@services/types/project';
 import { LandDetailResultType } from '@services/types/land';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
 import { useMemo } from 'react';
 
 interface UseArtificialisationProps {
-    projectData: ProjectDetailResultType;
     landData: LandDetailResultType;
 }
 
@@ -27,7 +25,6 @@ interface UseArtificialisationReturn {
 }
 
 export const useArtificialisation = ({
-    projectData,
     landData
 }: UseArtificialisationProps): UseArtificialisationReturn => {
     // Millésime par défaut
@@ -51,11 +48,11 @@ export const useArtificialisation = ({
 
     // Récupération des données d'artificialisation
     const { data: landArtifStockIndexes, isLoading, error } = useGetLandArtifStockIndexQuery({
-        land_type: projectData?.land_type,
-        land_id: projectData?.land_id,
+        land_type: landData?.land_type,
+        land_id: landData?.land_id,
         millesime_index: defaultStockIndex,
     }, {
-        skip: !projectData
+        skip: !landData
     });
 
     // Récupère les données d'artificialisation du millésime sélectionné

@@ -55,11 +55,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             skip: !projectData
         }
     );
-
-    const { landArtifStockIndex } = useArtificialisation({
-        projectData: projectData as any,
-        landData: landData as any
-    });
     
     const { urls } = projectData || {};
 
@@ -91,23 +86,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 title="Synthèse"
                                                 consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
-                                                <Synthese 
+                                                <Synthese
                                                     endpoint={urls.synthese}
                                                     urls={projectData.urls}
-                                                    artificialisationData={landArtifStockIndex ? {
-                                                        surface: landArtifStockIndex.surface,
-                                                        percent: landArtifStockIndex.percent,
-                                                        flux_surface: landArtifStockIndex.flux_surface,
-                                                        years: landArtifStockIndex.years,
-                                                        is_interdepartemental: landData.is_interdepartemental,
-                                                        millesime_index: landArtifStockIndex.millesime_index,
-                                                        flux_previous_years: landArtifStockIndex.flux_previous_years,
-                                                        millesimes: landData.millesimes,
-                                                        territory_name: projectData.territory_name,
-                                                        land_type: projectData.land_type,
-                                                        land_id: projectData.land_id,
-                                                        millesimes_by_index: landData.millesimes_by_index
-                                                    } : undefined}
+                                                    landData={landData}
                                                 />
                                             </RouteWrapper>
                                         }
@@ -138,7 +120,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         path={urls.artificialisation}
                                         element={
                                             <RouteWrapper
-                                                title="Artificialisation des sols">
+                                                title="Artificialisation des sols"
+                                                ocsgeStatus={landData.has_ocsge ? 'COMPLETE_UNIFORM' : 'NO_DATA'}
+                                            >
                                                     <Artificialisation
                                                         projectData={projectData}
                                                         landData={landData}
