@@ -48,8 +48,7 @@ const ArtifLastMillesimeSection: React.FC<{
 	is_interdepartemental: boolean;
 	surface: number;
 	years_artif: number[];
-	defaultStockIndex: number;
-}> = ({ landArtifStockIndex, name, is_interdepartemental, surface, years_artif, defaultStockIndex }) => (
+}> = ({ landArtifStockIndex, name, is_interdepartemental, surface, years_artif }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<div className="fr-col-12 fr-col-lg-8">
@@ -85,10 +84,7 @@ const ArtifLastMillesimeSection: React.FC<{
 							</span>
 							<MillesimeDisplay 
 								is_interdepartemental={is_interdepartemental}
-								landArtifStockIndex={{
-									...landArtifStockIndex,
-									millesime_index: defaultStockIndex
-								}}
+								landArtifStockIndex={landArtifStockIndex}
 								between={true}
 								className="fr-text--sm fr-ml-1w"
 							/>
@@ -124,10 +120,7 @@ const ArtifLastMillesimeSection: React.FC<{
 						number: landArtifStockIndex.flux_surface,
 					})} ha <MillesimeDisplay 
 						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={{
-							...landArtifStockIndex,
-							millesime_index: defaultStockIndex
-						}}
+						landArtifStockIndex={landArtifStockIndex}
 						between={true}
 					/></strong>.</p>
 				</Guide>
@@ -188,8 +181,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	} = landData || {};
 	
 	const {
-		stockIndex,
-		setStockIndex,
+		selectedIndex,
+		setSelectedIndex,
 		defaultStockIndex,
 		byDepartement,
 		setByDepartement,
@@ -245,10 +238,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				{" "}
 				<MillesimeDisplay 
 					is_interdepartemental={is_interdepartemental}
-					landArtifStockIndex={{
-						...landArtifStockIndex,
-						millesime_index: defaultStockIndex
-					}}
+					landArtifStockIndex={landArtifStockIndex}
 				/>
 			</h2>
 			<ArtifLastMillesimeSection 
@@ -257,7 +247,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				is_interdepartemental={is_interdepartemental}
 				surface={surface}
 				years_artif={years_artif}
-				defaultStockIndex={defaultStockIndex}
 			/>
 			<MillesimesTable 
 				millesimes={millesimes}
@@ -272,8 +261,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				<div className="bg-white fr-px-4w fr-pt-4w rounded">
 					<OcsgeMillesimeSelector
 						millesimes_by_index={millesimes_by_index}
-						index={stockIndex}
-						setIndex={setStockIndex}
+						index={selectedIndex}
+						setIndex={setSelectedIndex}
 						byDepartement={byDepartement}
 						setByDepartement={setByDepartement}
 						shouldDisplayByDepartementBtn={is_interdepartemental}
@@ -281,7 +270,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
 						{byDepartement ? (
 							millesimes
-								.filter((e) => e.index === stockIndex)
+								.filter((e) => e.index === selectedIndex)
 								.map((m) => (
 									<div
 										key={`${m.index}_${m.departement}`}
@@ -323,7 +312,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										land_id={land_id}
 										land_type={land_type}
 										params={{
-											index: stockIndex,
+											index: selectedIndex,
 										}}
 										sources={['ocsge']}
 										showDataTable={true}
@@ -337,7 +326,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										land_id={land_id}
 										land_type={land_type}
 										params={{
-											index: stockIndex,
+											index: selectedIndex,
 										}}
 										sources={['ocsge']}
 										showDataTable={true}
@@ -425,10 +414,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			<ArtificialisationZonage 
 				artifZonageIndex={artifZonageIndex}
 				is_interdepartemental={is_interdepartemental}
-				landArtifStockIndex={{
-					...landArtifStockIndex,
-					millesime_index: defaultStockIndex
-				}}
+				landArtifStockIndex={landArtifStockIndex}
 			/>
 			<h2>Calcul de l'artificialisation des sols</h2>
 			<div className="bg-white fr-p-4w fr-mb-7w rounded">
