@@ -1,0 +1,47 @@
+
+version: 2
+
+models:
+  - name: commune_artif_by_year
+    columns:
+    - name: commune_code
+      data_tests:
+      - not_null
+      - unique
+      - relationships:
+          to: ref('commune')
+          field: code
+    - name: nom
+      data_tests:
+      - not_null
+    - name: pourcent_artif
+      data_tests:
+      - not_null
+      - is_percent_between_0_and_100
+    - name: surface_artif
+      data_tests:
+      - not_null
+    - name: ocsge_millesime
+      data_tests:
+      - not_null
+    - name: population
+      data_tests:
+      - not_null
+    - name: canton
+    - name: departement
+      data_tests:
+      - not_null
+    - name: region
+      data_tests:
+      - not_null
+    - name: ept
+    - name: epci
+    - name: scot
+    - name: commune_surface
+      data_tests:
+      - not_null
+    - name: geom
+      data_tests:
+      - not_null
+      - is_valid_geom
+      - is_not_empty_geom

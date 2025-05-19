@@ -6,8 +6,8 @@ SELECT
     {{ group_by_column }},
     year_old,
     year_new,
-    sum(imper_net_flux_commune.impermeable_surface) as impermeable_surface,
-    sum(imper_net_flux_commune.desimper_surface) as desimper_surface,
+    sum(imper_net_flux_commune.flux_imper) as flux_imper,
+    sum(imper_net_flux_commune.flux_desimper) as flux_desimper,
     sum(commune.surface) as surface,
     array_agg(distinct commune.departement) as departements
  FROM
@@ -22,7 +22,7 @@ GROUP BY
 )
 SELECt
     *,
-    impermeable_surface - desimper_surface as imper_net
+    flux_imper - flux_desimper as flux_imper_net
  FROM without_percent
 
 

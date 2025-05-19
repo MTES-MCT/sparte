@@ -1,6 +1,6 @@
 import { Protocol } from "pmtiles";
 import React, { useRef, useEffect } from "react";
-import maplibregl from "maplibre-gl";
+import maplibregl, { FilterSpecification } from "maplibre-gl";
 import ReactDOMClient from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { UserFilter, Selection } from "./constants/selections";
@@ -17,6 +17,7 @@ import { getStats, Stat } from "./utils/getStats";
 import styled from "styled-components";
 import { OcgeMapStats } from "./OcsgeMapStats";
 import { OcsgeTileFeatureProperties } from "./VectorTileFeature";
+import { Millesime, MillesimeByIndex } from "@services/types/land";
 
 const LoaderWrapper = styled.div`
   height: 100%;
@@ -37,10 +38,12 @@ interface OcsgeMapProps {
   readonly userFilters: any;
   readonly setSelection: (selection: Selection) => void;
   readonly setUserFilters: (filters: UserFilter[]) => void;
-  readonly setYear: (year: number) => void;
-  readonly year: number;
-  readonly departement?: string;
-  readonly availableMillesimes: number[];
+  readonly globalFilter: any;
+  readonly setIndex: (index: number) => void;
+  readonly index: number;
+  readonly departements?: string[];
+  readonly availableMillesimes: Millesime[];
+  readonly availableMillesimesByIndex: MillesimeByIndex[];
   readonly emprise: any;
   readonly bounds: [number, number, number, number];
   readonly maxBounds: [number, number, number, number];
@@ -51,17 +54,18 @@ export function OcsgeMap({
   selection,
   setSelection,
   setUserFilters,
-  setYear,
+  setIndex,
   userFilters,
-  departement,
+  globalFilter,
+  departements,
   availableMillesimes,
-  year,
+  availableMillesimesByIndex,
+  index,
   emprise,
   bounds,
   maxBounds,
   vectorTilesLocation,
 }: OcsgeMapProps) {
-  const [clickedFeatureId, setClickedFeatureId] = React.useState(null);
   const [mapMovedEvent, setMapMovedEvent] = React.useState(null);
   const [controls, setControls] = React.useState([]);
   const [initialLoaded, setInitialLoaded] = React.useState(false);
@@ -85,7 +89,7 @@ export function OcsgeMap({
     right: initialPadding.right / 2,
   };
 
-  const filters = getMaplibreFilters(selection.matrix, userFilters);
+  const filters = getMaplibreFilters(selection.matrix, userFilters, globalFilter) as FilterSpecification
   const paint = getMaplibrePaint(selection.matrix);
 
   const leftPanelControlElementId = "ocsge-matrix-selector";
@@ -100,7 +104,7 @@ export function OcsgeMap({
     source: empriseSourceId,
     type: "line",
     paint: {
-      "line-color": "#000",
+      "line-color": "black",
       "line-width": 3,
       "line-opacity": 0.5,
     },
@@ -109,46 +113,60 @@ export function OcsgeMap({
     },
   };
 
-  const ocsgeSourceId = `ocsge`;
-  const ocsgeSource: maplibregl.VectorSourceSpecification = {
-    type: "vector",
-    url: getOcsgeVectorTilesURL({
-      tilesLocation: vectorTilesLocation,
-      year: year,
-      departement: departement,
-    }),
-    promoteId: "id",
-  };
-  const sourceLayer = `occupation_du_sol_${year}_${departement}`;
-  const ocsgeLayerId = `ocsge`;
-  const ocsgeLayer: maplibregl.FillLayerSpecification = {
-    id: ocsgeLayerId,
-    source: ocsgeSourceId,
-    "source-layer": sourceLayer,
-    type: "fill",
-    paint: {
-      "fill-color": paint,
-      "fill-opacity": [
-        "case",
-        ["boolean", ["feature-state", "clicked"], false],
-        1,
-        0.8,
-      ],
-    },
-  };
+  const ocsgeLayers : {
+    ocsgeSourceId: string;
+    ocsgeSource: maplibregl.VectorSourceSpecification;
+    sourceLayer: string;
+    ocsgeLayer: maplibregl.FillLayerSpecification;
+    ocsgeLayerId: string;
+  }[] = []
+
+  for (const departement of departements) {
+    const ocsgeSourceId = `ocsge-${departement}`;
+
+    const ocsgeSource: maplibregl.VectorSourceSpecification = {
+      type: "vector",
+      url: getOcsgeVectorTilesURL({
+        tilesLocation: vectorTilesLocation,
+        index,
+        departement,
+      }),
+      promoteId: "id",
+    };
+    const sourceLayer = `occupation_du_sol_${index}_${departement}`;
+    const ocsgeLayerId = `ocsge-${departement}`;
+    const ocsgeLayer: maplibregl.FillLayerSpecification = {
+      id: ocsgeLayerId,
+      source: ocsgeSourceId,
+      "source-layer": sourceLayer,
+      type: "fill",
+      paint: {
+        "fill-color": paint,
+        "fill-opacity": [
+          "case",
+          ["boolean", ["feature-state", "clicked"], false],
+          1,
+          0.8,
+        ],
+      },
+      filter: filters,
+    };
+
+    ocsgeLayers.push({ ocsgeSourceId, ocsgeSource, sourceLayer, ocsgeLayer, ocsgeLayerId })
+  }
 
   const orthophotoSourceId = `orthophoto`;
   const orthophotoSource: maplibregl.RasterSourceSpecification = {
     type: "raster",
-    tiles: [getOrthophotoURL(year)],
-    tileSize: 128,
+    tiles: [getOrthophotoURL(2021)],
+    tileSize: 256,
   };
   const orthophotoLayer: maplibregl.RasterLayerSpecification = {
     id: "orthophoto",
     source: orthophotoSourceId,
     type: "raster",
     paint: {
-      "raster-opacity": 0.7,
+      "raster-opacity": 0.8,
     },
   };
 
@@ -156,7 +174,7 @@ export function OcsgeMap({
     map.current.once("idle", () => {
       const features = map.current.queryRenderedFeatures({
         validate: false,
-        layers: [ocsgeLayerId],
+        layers: ocsgeLayers.map(({ ocsgeLayerId }) => ocsgeLayerId),
       });
   
       if (features.length === 0) {
@@ -220,11 +238,15 @@ export function OcsgeMap({
       style: {
         version: 8,
         sources: {
-          [ocsgeSourceId]: ocsgeSource,
+          ...ocsgeLayers.reduce((acc, { ocsgeSourceId, ocsgeSource }) => {
+            acc[ocsgeSourceId] = ocsgeSource;
+            return acc;
+          }, {} as { [key: string]: maplibregl.VectorSourceSpecification }),
           [orthophotoSourceId]: orthophotoSource,
           [empriseSourceId]: empriseSource,
         },
-        layers: [orthophotoLayer, ocsgeLayer, empriseLayer],
+        layers: [orthophotoLayer, ...ocsgeLayers.map(({ ocsgeLayer }) => ocsgeLayer) , empriseLayer],
+
       },
       bounds: bounds,
       maxBounds: maxBounds,
@@ -241,31 +263,29 @@ export function OcsgeMap({
     });
 
     map.current.on("moveend", setMapMovedEvent);
-    map.current.on("click", ocsgeLayerId, (e: any) => {
-      const noFeatureUnderCursor = e.features.length === 0;
-      if (noFeatureUnderCursor) {
-        return setClickedFeatureId(null);
-      }
-      const firstFeature = e.features[0] as maplibregl.Feature;
-      setClickedFeatureId(firstFeature.id);
-      const { code_cs, code_us, surface, is_artificial, is_impermeable } =
-        firstFeature.properties as OcsgeTileFeatureProperties;
+    for (const ocsgeLayer of ocsgeLayers) {
+      map.current.on("click", ocsgeLayer.ocsgeLayerId, (e: any) => {
+        const firstFeature = e.features[0] as maplibregl.Feature;
+        const { code_cs, code_us, surface, is_artificial, is_impermeable, critere_seuil } =
+          firstFeature.properties as OcsgeTileFeatureProperties;
 
-      popup.current
-        .setLngLat(e.lngLat)
-        .setHTML(
-          renderToString(
-            <Popup
-              couverture={code_cs}
-              usage={code_us}
-              surface={surface}
-              isArtificial={is_artificial}
-              isImpermeable={is_impermeable}
-            />
+        popup.current
+          .setLngLat(e.lngLat)
+          .setHTML(
+            renderToString(
+              <Popup
+                couverture={code_cs}
+                usage={code_us}
+                surface={surface}
+                isArtificial={is_artificial}
+                critereSeuil={critere_seuil}
+                isImpermeable={is_impermeable}
+              />
+            )
           )
-        )
-        .addTo(map.current);
-    });
+          .addTo(map.current);
+      });
+    }
 
     map.current.on("load", () => {
       if (map.current.loaded()) {
@@ -274,31 +294,6 @@ export function OcsgeMap({
     });
   }, [vectorTilesLocation]);
 
-  // Met à jour l'état "clicked" des features
-  useEffect(() => {
-    if (clickedFeatureId === null) {
-      return;
-    }
-
-    map.current.setFeatureState(
-      {
-        source: ocsgeSourceId,
-        sourceLayer: sourceLayer,
-        id: clickedFeatureId,
-      },
-      { clicked: true }
-    );
-    return () => {
-      map.current.setFeatureState(
-        {
-          source: ocsgeSourceId,
-          sourceLayer: sourceLayer,
-          id: clickedFeatureId,
-        },
-        { clicked: false }
-      );
-    };
-  }, [clickedFeatureId]);
 
   // Met à jour les filtres, les styles et les contrôles de la carte
   useEffect(() => {
@@ -308,8 +303,11 @@ export function OcsgeMap({
       initialLoaded &&
       !!map.current
     ) {
-      map.current.setFilter(ocsgeLayerId, ["any", ...filters]);
-      map.current.setPaintProperty(ocsgeLayerId, "fill-color", paint);
+      for (const ocsgeLayer of ocsgeLayers) {
+        map.current.setFilter(ocsgeLayer.ocsgeLayerId, filters);
+        map.current.setPaintProperty(ocsgeLayer.ocsgeLayerId, "fill-color", paint);
+      }
+
 
       controls.forEach((control) => map.current.removeControl(control));
 
@@ -335,14 +333,15 @@ export function OcsgeMap({
           setSelection={setSelection}
           selection={selection}
           availableMillesimes={availableMillesimes}
-          setYear={setYear}
-          year={year}
+          availableMillesimesByIndex={availableMillesimesByIndex}
+          setIndex={setIndex}
+          index={index}
           userFilters={userFilters}
           setUserFilters={setUserFilters}
         />
       );
     }
-  }, [selection, initialLoaded, userFilters, year]);
+  }, [selection, initialLoaded, userFilters, index]);
 
   // Met à jour les sources et les layers de la carte
   useEffect(() => {
@@ -354,10 +353,14 @@ export function OcsgeMap({
       map.current.addLayer(orthophotoLayer);
 
       // Ocsge
-      map.current.removeLayer(ocsgeLayerId);
-      map.current.removeSource(ocsgeSourceId);
-      map.current.addSource(ocsgeSourceId, ocsgeSource);
-      map.current.addLayer(ocsgeLayer);
+      for (const ocsgeLayer of ocsgeLayers) {
+      map.current.removeLayer(ocsgeLayer.ocsgeLayerId);
+      map.current.removeSource(ocsgeLayer.ocsgeSourceId);
+      map.current.addSource(ocsgeLayer.ocsgeSourceId, ocsgeLayer.ocsgeSource);
+      map.current.addLayer(ocsgeLayer.ocsgeLayer);
+      map.current.setFilter(ocsgeLayer.ocsgeLayerId, filters);
+      }
+      
 
       // Emprise
       map.current.removeLayer(empriseLayer.id);
@@ -365,7 +368,7 @@ export function OcsgeMap({
       map.current.addSource(empriseSourceId, empriseSource);
       map.current.addLayer(empriseLayer);
     }
-  }, [year]);
+  }, [index]);
 
   // Met à jour les stats de la carte
   useEffect(() => {

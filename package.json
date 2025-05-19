@@ -1,6 +1,6 @@
 {
   "name": "sparte",
-  "version": "8.5.0",
+  "version": "9.0.0",
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development webpack serve --mode development",
@@ -15,6 +15,7 @@
     "@babel/preset-react": "^7.24.1",
     "@babel/preset-typescript": "^7.24.7",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
+    "@types/bootstrap": "^5.2.10",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.73",
@@ -47,6 +48,7 @@
     "@remixicon/react": "^4.6.0",
     "@svgr/webpack": "^8.1.0",
     "@turf/turf": "^7.2.0",
+    "@types/geojson": "^7946.0.16",
     "@types/mapbox-gl": "^3.4.1",
     "@uidotdev/usehooks": "^2.4.1",
     "bootstrap": "^5.3.3",

@@ -35,18 +35,12 @@ class ProjectAdmin(SimpleHistoryAdmin):
         "name",
         "user__email",
     )
-    # filter_horizontal = ("cities",)
     change_form_template = "project/admin/project_detail.html"
     history_list_display = [
-        "async_add_city_done",
         "async_set_combined_emprise_done",
         "async_cover_image_done",
-        "async_find_first_and_last_ocsge_done",
-        "async_ocsge_coverage_status_done",
         "async_add_comparison_lands_done",
         "async_generate_theme_map_conso_done",
-        "async_generate_theme_map_artif_done",
-        "async_generate_theme_map_understand_artif_done",
     ]
 
     def response_change(self, request, obj):

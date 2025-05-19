@@ -4,9 +4,13 @@ import sqlalchemy
 from dependency_injector import containers, providers
 from gdaltools import PgConnectionString
 from include.domain.file_handling import (
+    DataGouvHandler,
     RemoteToS3FileHandler,
     S3CSVFileToDBTableHandler,
+    S3ToDataGouvHandler,
+    SQLToCSVOnS3Handler,
     SQLToGeojsonSeqOnS3Handler,
+    SQLToGeopackageOnS3Handler,
 )
 from include.infra.file_handling import (
     CSVFileIngestor,
@@ -83,6 +87,33 @@ class Container(containers.DeclarativeContainer):
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
         db_connection=gdal_dbt_conn().encode(),
+    )
+
+    sql_to_geopackage_on_s3_handler = providers.Factory(
+        provides=SQLToGeopackageOnS3Handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=gdal_dbt_conn().encode(),
+    )
+
+    sql_to_csv_on_s3_handler = providers.Factory(
+        provides=SQLToCSVOnS3Handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=gdal_dbt_conn().encode(),
+    )
+
+    data_gouv = providers.Factory(
+        provides=DataGouvHandler,
+        key=getenv("DATA_GOUV_API_KEY"),
+        endpoint="https://www.data.gouv.fr/api/1",
+    )
+
+    s3_to_data_gouv = providers.Factory(
+        provides=S3ToDataGouvHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        data_gouv_handler=data_gouv,
     )
 
     notification = providers.Factory(

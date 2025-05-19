@@ -18,18 +18,25 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from two_factor.admin import AdminSiteOTPRequired
+from two_factor.urls import urlpatterns as tf_urls
+from two_factor.views import LoginView
 
 from config.views import EnvironmentView
 
 admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
-
+if settings.TWO_FACTOR_ENABLED:
+    admin.site.__class__ = AdminSiteOTPRequired
 
 urlpatterns = [
-    path("", include("home.urls")),
+    path("", include(tf_urls)),
+    path("admin/login/", LoginView.as_view(), name="admin_login_2fa"),  # Forcer l'admin à utiliser 2FA
     path("admin/", admin.site.urls),
+    path("", include("home.urls")),
     path("users/", include("users.urls")),
     path("public/", include("public_data.urls")),
     path("project/", include("project.urls")),
+    path("api/", include("project.api_urls")),
     path("carte/", include("carto.urls")),
     path("word/", include("diagnostic_word.urls")),
     path("statistiques/", include("metabase.urls")),

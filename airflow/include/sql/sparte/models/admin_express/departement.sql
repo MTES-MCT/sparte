@@ -6,7 +6,8 @@
             {'columns': ['code'], 'type': 'btree'},
             {'columns': ['name'], 'type': 'btree'},
             {'columns': ['region'], 'type': 'btree'},
-            {'columns': ['geom'], 'type': 'gist'}
+            {'columns': ['geom'], 'type': 'gist'},
+            {'columns': ['srid_source'], 'type': 'btree'},
         ])
 }}
 

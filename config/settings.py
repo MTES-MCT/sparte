@@ -22,7 +22,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "8.5.0"
+OFFICIAL_VERSION = "9.0.0"
 
 
 root = environ.Path(__file__) - 2  # get root of the project
@@ -55,6 +55,9 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 DOMAIN_URL = env.str("DOMAIN_URL")
 
+# 2FA
+TWO_FACTOR_ENABLED = env.bool("TWO_FACTOR_ENABLED", default=True)
+
 # Application definition
 
 DJANGO_APPS = [
@@ -84,6 +87,12 @@ THIRD_APPS = [
     "corsheaders",
     "fancy_cache",
     "webpack_loader",
+    "two_factor",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_static",
+    "qrcode",
+    "django_filters",
 ]
 
 # upper app should not communicate with lower ones
@@ -115,6 +124,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",

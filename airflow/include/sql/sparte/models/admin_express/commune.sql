@@ -8,6 +8,7 @@
             {"columns": ["departement"], "type": "btree"},
             {"columns": ["region"], "type": "btree"},
             {"columns": ["epci"], "type": "btree"},
+            {"columns": ["scot"], "type": "btree"},
             {"columns": ["geom"], "type": "gist"},
             {"columns": ["ST_Transform(geom, 4326)"], "type": "gist"},
         ],

@@ -50,6 +50,7 @@ not_null_cs_us_config_staging: &not_null_cs_us_config_staging
 models:
   - name: occupation_du_sol_commune
   - name: artificial_commune
+  - name: occupation_du_sol_with_artif
   - name: zone_construite
     columns:
       - name: loaded_date
@@ -168,12 +169,6 @@ models:
         data_tests:
           - not_null
       - name: new_not_impermeable
-        data_tests:
-          - not_null
-      - name: new_is_artificial
-        data_tests:
-          - not_null
-      - name: new_not_artificial
         data_tests:
           - not_null
       - name: geom

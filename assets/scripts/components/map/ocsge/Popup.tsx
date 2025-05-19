@@ -8,6 +8,7 @@ type PopupProps = {
   surface: number;
   isArtificial: boolean;
   isImpermeable: boolean;
+  critereSeuil: boolean;
 };
 
 export const Popup = ({
@@ -16,6 +17,7 @@ export const Popup = ({
   surface,
   isArtificial,
   isImpermeable,
+  critereSeuil,
 }: PopupProps) => {
   return (
     <div>
@@ -34,6 +36,8 @@ export const Popup = ({
       Est artificiel : <strong>{isArtificial ? "Oui" : "Non"}</strong>
       <br />
       Est imperméable : <strong>{isImpermeable ? "Oui" : "Non"}</strong>
+      <br />
+      Critère seuil : <strong>{critereSeuil ? "Oui" : "Non"}</strong>
     </div>
   );
 };

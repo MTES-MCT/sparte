@@ -9,4 +9,4 @@ class ConsommationStatisticsComparison:
     relevance_level: str
     start_date: int
     end_date: int
-    total_median: float
+    median_ratio_pop_conso: float

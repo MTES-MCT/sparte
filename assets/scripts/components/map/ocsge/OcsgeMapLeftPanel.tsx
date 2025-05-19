@@ -3,7 +3,8 @@ import { OcsgeMatrixSelector } from './OcsgeMatrixSelector';
 import { OcsgeMapLegend } from './OcsgeMapLegend';
 import { Selection, UserFilter } from './constants/selections';
 import styled from 'styled-components';
-import { OcsgeYearSelector } from './OcsgeYearSelector';
+import { OcsgeIndexSelector } from './OcsgeIndexSelector';
+import { Millesime, MillesimeByIndex } from '@services/types/land';
 
 const LeftPanelTitle = styled.div`
     font-size: 1.2em;
@@ -22,16 +23,16 @@ const LeftPanelDescriptionWrapper = styled.span`
 interface OcsgeMapLeftPanelProps {
     readonly setSelection: (selection: Selection) => void;
     readonly selection: Selection;
-    readonly availableMillesimes: number[];
-    readonly setYear: (year: number) => void;
-    readonly year: number;
+    readonly availableMillesimes: Millesime[];
+    readonly availableMillesimesByIndex: MillesimeByIndex[];
+    readonly setIndex: (index: number) => void;
+    readonly index: number;
     readonly userFilters: UserFilter[];
     readonly setUserFilters: (filters: UserFilter[]) => void;
 }
 
 const OcsgeMapLeftPanelWrapper = styled.aside`
-    background-color: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(8px);
+    background-color: #ffffff;
     padding: 15px;
     max-width: 450px;
     width: 450px;
@@ -45,8 +46,9 @@ export const OcsgeMapLeftPanel = ({
     setSelection,
     selection,
     availableMillesimes,
-    setYear,
-    year,
+    availableMillesimesByIndex,
+    setIndex,
+    index,
 }: OcsgeMapLeftPanelProps) => {
     return (
         <OcsgeMapLeftPanelWrapper>
@@ -59,10 +61,11 @@ export const OcsgeMapLeftPanel = ({
                 <selection.Description />
             </LeftPanelDescriptionWrapper>
             <LeftPanelTitle>Année</LeftPanelTitle>
-            <OcsgeYearSelector
-                year={year}
-                setYear={setYear}
+            <OcsgeIndexSelector
+                index={index}
+                setIndex={setIndex}
                 availableMillesimes={availableMillesimes}
+                availableMillesimesByIndex={availableMillesimesByIndex}
             />
             <LeftPanelDescriptionWrapper>
                 <p>

@@ -10,10 +10,7 @@ def do_project_post_save(instance, created: bool, **kwargs):
     from metabase.tasks import async_create_stat_for_project
 
     logger.info("Receiving post save project signal then queue async_create_stat_for_project")
-    async_create_stat_for_project.delay(
-        instance.id,
-        kwargs.get("update_fields") == {"async_add_city_done"},
-    )
+    async_create_stat_for_project.delay(instance.id, True)
 
 
 def do_request_post_save(instance, created: bool, **kwargs):
@@ -29,12 +26,6 @@ class MetabaseConfig(AppConfig):
     name = "metabase"
 
     def ready(self):
-        # disable because it's triggered too many times when building a project (each async task trigger it)
-        # post_save.connect(
-        #     do_project_post_save,
-        #     sender="project.Project",
-        #     dispatch_uid="post_save_stat_diagnostic_for_project",
-        # )
         post_save.connect(
             do_request_post_save,
             sender="project.Request",

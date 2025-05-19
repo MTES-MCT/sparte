@@ -15,12 +15,16 @@ with
             code_cs,
             code_us,
             is_artificial,
+            index,
+            departement,
             is_impermeable
         from {{ ref("occupation_du_sol_commune") }}
         group by
             commune_code,
             commune_surface,
             year,
+            departement,
+            index,
             code_cs,
             code_us,
             is_artificial,
@@ -28,13 +32,13 @@ with
     )
 select
     commune_code,
+    departement,
     year,
+    index,
     surface,
     code_cs,
     code_us,
-    case
-        when commune_surface = 0 then 0 else surface / commune_surface * 100
-    end as percent,
+    surface * 100.0 / commune_surface as percent,
     is_artificial,
     is_impermeable
 from without_percent

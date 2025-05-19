@@ -1,20 +1,25 @@
 {{ config(materialized='table') }}
 
 SELECT
-    from_year,
-    to_year,
-    {{ sum_percent_median_avg('total', 'epci.surface') }},
-    {{ sum_percent_median_avg('activite', 'epci.surface') }},
-    {{ sum_percent_median_avg('habitat', 'epci.surface') }},
-    {{ sum_percent_median_avg('mixte', 'epci.surface') }},
-    {{ sum_percent_median_avg('route', 'epci.surface') }},
-    {{ sum_percent_median_avg('ferroviaire', 'epci.surface') }},
-    {{ sum_percent_median_avg('inconnu', 'epci.surface') }}
+    conso.from_year,
+    conso.to_year,
+        percentile_disc(0.5) WITHIN GROUP (ORDER BY (
+        CASE
+            WHEN pop.evolution = 0
+            THEN 0
+            ELSE conso.total / pop.evolution
+        END
+    )) as median_ratio_pop_conso
 FROM
     {{ ref('period_consommation_epci') }} as conso
 LEFT JOIN
     {{ ref('epci') }} as epci
     ON epci.code = conso.epci
+LEFT JOIN
+    {{ ref('period_flux_population_epci')}} as pop
+    ON conso.epci = pop.epci
+    AND conso.from_year = pop.from_year
+    AND conso.to_year = pop.to_year
 GROUP BY
-    from_year,
-    to_year
+    conso.from_year,
+    conso.to_year

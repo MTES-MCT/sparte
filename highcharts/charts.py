@@ -71,9 +71,10 @@ class Chart:
     def get_options(self, serie_name) -> Dict[str, Any]:
         return self.options.get(serie_name, dict())
 
-    def __init__(self):
+    def __init__(self, add_series=True):
         self.chart = self.get_param()
-        self.add_series()
+        if add_series:
+            self.add_series()
 
     def get_series(self) -> List[Dict[str, Any]]:
         return self.series
@@ -136,16 +137,22 @@ class Chart:
     def get_js_name(self) -> str:
         return slugify(self.get_name()).replace("-", "_")
 
-    def request_b64_image_from_server(self) -> bytes:
+    @property
+    def chart_is_a_map(self) -> bool:
+        return self.chart.get("chart", {}).get("map") is not None
+
+    def request_b64_image_from_server(self, width) -> bytes:
         json_option = copy.deepcopy(self.chart)
+
         data = {
             "infile": json_option,
-            "width": 1000,
+            "width": width,
             "scale": False,
-            "constr": "chart",
+            "constr": "mapChart" if self.chart_is_a_map else "chart",
             "type": "image/png",
             "b64": True,
         }
+
         r = requests.post(
             settings.HIGHCHART_SERVER,
             data=json.dumps(obj=data, default=decimal2float),
@@ -157,8 +164,8 @@ class Chart:
             raise RateLimitExceededException()
         return r.content + b"==="
 
-    def get_temp_image(self) -> str:
-        b64_content = self.request_b64_image_from_server()
+    def get_temp_image(self, width=1000) -> str:
+        b64_content = self.request_b64_image_from_server(width=width)
         fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
         os.write(fd, base64.decodebytes(b64_content))
         os.close(fd)

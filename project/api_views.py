@@ -1,5 +1,6 @@
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import ParseError
+from rest_framework.response import Response
 
 from .models import Emprise, Project
 from .serializers import EmpriseSerializer, ProjectDetailSerializer
@@ -27,3 +28,7 @@ class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
 class ProjectDetailView(generics.RetrieveAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectDetailSerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_object(), context={"request": request})
+        return Response(data=serializer.data)

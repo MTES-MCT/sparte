@@ -1,10 +1,11 @@
 import json
 
 import requests
-from airflow.decorators import dag, task
 from bs4 import BeautifulSoup
 from include.domain.container import Container
 from pendulum import datetime
+
+from airflow.decorators import dag, task
 
 with open("include/domain/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)

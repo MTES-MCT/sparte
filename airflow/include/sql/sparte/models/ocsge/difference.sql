@@ -35,13 +35,7 @@ select
     ) as new_is_impermeable,
     coalesce(
         foo.old_is_imper = true and foo.new_is_imper = false, false
-    ) as new_not_impermeable,
-    coalesce(
-        foo.old_is_artif = false and foo.new_is_artif = true, false
-    ) as new_is_artificial,
-    coalesce(
-        foo.old_is_artif = true and foo.new_is_artif = false, false
-    ) as new_not_artificial
+    ) as new_not_impermeable
 from
     (
         select
@@ -60,9 +54,7 @@ from
                     ))
                 )
             ).geom as geom,
-            {{ is_artificial("cs_old", "us_old") }} as old_is_artif,
             {{ is_impermeable("cs_old") }} as old_is_imper,
-            {{ is_artificial("cs_new", "us_new") }} as new_is_artif,
             {{ is_impermeable("cs_new") }} as new_is_imper,
             ocsge.uuid::uuid,
             departement_table.srid_source as srid_source

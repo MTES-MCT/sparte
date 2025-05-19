@@ -4,55 +4,6 @@ from rest_framework_gis import serializers
 from public_data import models
 
 
-class OcsgeSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "couverture",
-            "usage",
-            "millesime",
-            "map_color",
-            "year",
-        )
-        geo_field = "mpoly"
-        model = models.Ocsge
-
-
-class OcsgeDiffSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "year_old",
-            "year_new",
-            "is_new_artif",
-            "is_new_natural",
-        )
-        geo_field = "mpoly"
-        model = models.OcsgeDiff
-
-
-class CouvertureSolSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "parent",
-            "code",
-            "label",
-        )
-        model = models.CouvertureSol
-
-
-class UsageSolSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "parent",
-            "code",
-            "label",
-        )
-        model = models.UsageSol
-
-
 class DepartementSerializer(s.ModelSerializer):
     class Meta:
         fields = (

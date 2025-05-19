@@ -1,7 +1,7 @@
 import { MatrixSelection, UserFilter } from "../constants/selections";
 
-export const getMaplibreFilters = (matrix: MatrixSelection[], userFilters: UserFilter[]) => {
-    return matrix.filter(({ couverture, usage }) => {
+export const getMaplibreFilters = (matrix: MatrixSelection[], userFilters: UserFilter[], globalFilter: any) => {
+    const baseFilters =  matrix.filter(({ couverture, usage }) => {
         return userFilters.some(({ couverture: userCouverture, usage: userUsage }) => {
           if (couverture && usage) {
             return couverture === userCouverture && usage === userUsage
@@ -28,4 +28,16 @@ export const getMaplibreFilters = (matrix: MatrixSelection[], userFilters: UserF
     
         return [...acc, customFilter]
       }, [])
+
+      let filters = [
+        "all",
+        ["any", ...baseFilters]
+      ]
+
+      if (globalFilter) {
+        filters.push(globalFilter);
+      }
+      
+
+      return filters
 }
