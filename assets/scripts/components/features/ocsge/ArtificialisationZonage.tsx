@@ -1,7 +1,7 @@
 import React from "react";
 import { formatNumber } from "@utils/formatUtils";
 import { ZonageType } from "scripts/types/ZonageType";
-import ChartDataWrapper from "@components/ui/ChartDataWrapper";
+import ChartDetails from "@components/charts/ChartDetails";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
 
@@ -91,7 +91,12 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 						</div>
 					</div>
 				</div>
-				<ChartDataWrapper sources={['ocsge', 'gpu']} chartId="artificialisation-zonage-tableau" />
+				<ChartDetails sources={['ocsge', 'gpu']} chartId="artificialisation-zonage-tableau">
+					<div>
+						<h6 className="fr-mb-0">Calcul</h6>
+						<p className="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation. Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+					</div>
+				</ChartDetails>
 			</div>
 		</div>
 	);

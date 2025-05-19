@@ -9,7 +9,6 @@ import { ArtifPercentRate } from "@components/charts/artificialisation/ArtifPerc
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
-import ChartDataWrapper from "@components/ui/ChartDataWrapper";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ArtificialisationZonage } from "@components/features/ocsge/ArtificialisationZonage";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
@@ -17,6 +16,7 @@ import { useArtificialisation } from "@hooks/useArtificialisation";
 import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
 import OcsgeMatricePNG from '@images/ocsge_matrice_passage.png';
+import ChartDetails from "@components/charts/ChartDetails";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -34,6 +34,13 @@ interface Millesime {
 	index: number;
 	departement: string;
 }
+
+const DetaislCalculationOcsge: React.FC = () => (
+	<div>
+		<h6 className="fr-mb-0">Calcul</h6>
+		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la matrice de passage.</p>
+	</div>
+)
 
 const ArtifLastMillesimeSection: React.FC<{
 	landArtifStockIndex: LandArtifStockIndex;
@@ -91,7 +98,10 @@ const ArtifLastMillesimeSection: React.FC<{
 							<p>du territoire est artificialisé</p>
 						</div>
 					</div>
-					<ChartDataWrapper sources={['ocsge']} chartId="artificialisation-tableau" />
+					<ChartDetails
+						sources={['ocsge']}
+						chartId="artif_last_millesime"
+					/>
 				</div>
 			</div>
 			<div className="fr-col-12 fr-col-lg-4">
@@ -286,7 +296,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 												departement: m.departement,
 											}}
 											sources={['ocsge']}
-										/>
+											showDataTable={true}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
 										<OcsgeGraph
 											id="pie_artif_by_usage"
 											land_id={land_id}
@@ -296,7 +309,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 												departement: m.departement,
 											}}
 											sources={['ocsge']}
-										/>
+											showDataTable={true}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
 									</div>
 								))
 						) : (
@@ -310,7 +326,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											index: stockIndex,
 										}}
 										sources={['ocsge']}
-									/>
+										showDataTable={true}
+									>
+										<DetaislCalculationOcsge />
+									</OcsgeGraph>
 								</div>
 								<div className="fr-col-12 fr-col-lg-6">
 									<OcsgeGraph
@@ -321,7 +340,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											index: stockIndex,
 										}}
 										sources={['ocsge']}
-									/>
+										showDataTable={true}
+									>
+										<DetaislCalculationOcsge />
+									</OcsgeGraph>
 								</div>
 							</>
 						)}
@@ -365,7 +387,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										child_land_type: childLandType,
 									}}
 									sources={['ocsge']}
-								/>
+									showDataTable={true}
+								>
+									<DetaislCalculationOcsge />
+								</OcsgeGraph>
 							</div>
 						</div>
 						<div className="fr-col-12 fr-col-lg-4">

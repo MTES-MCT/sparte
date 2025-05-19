@@ -10,7 +10,7 @@ import Exporting from 'highcharts/modules/exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
 
 import Loader from '@components/ui/Loader';
-import ChartDataWrapper from '@components/ui/ChartDataWrapper';
+import ChartDetails from './ChartDetails';
 
 // Initialize the modules
 HighchartsHeatmap(Highcharts);
@@ -29,6 +29,8 @@ type GenericChartProps = {
     error?: any;
     showToolbar?: boolean;
     sources?: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel']
+    children?: React.ReactNode;
+    showDataTable?: boolean;
 }
 
 const LoaderContainer = styled.div`
@@ -46,7 +48,9 @@ const GenericChart = ({
     isLoading = false,
     error = null,
     showToolbar = true,
-    sources = []
+    sources = [],
+    children,
+    showDataTable = false
 } : GenericChartProps) => {
     const chartRef = useRef<any>(null);
 
@@ -81,7 +85,7 @@ const GenericChart = ({
     */
     const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
     
-    // Génère un ID basé sur le titre du graphique
+    // Génère un ID basé sur le titre du graphique (utilisé pour l'accessibilité des dataTable)
     const chartId = `chart-${String(mutableChartOptions.title?.text || '')
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
@@ -94,6 +98,11 @@ const GenericChart = ({
     const defaultContainerProps = {
         style: { height: "400px", width: "100%", marginBottom: "2rem" }
     };
+
+    const dataTable = showDataTable ? {
+        headers: chartOptions.data_table?.headers,
+        rows: chartOptions.data_table?.rows
+    } : undefined;
 
     return (
         <div>
@@ -119,11 +128,15 @@ const GenericChart = ({
                 containerProps={{ ...defaultContainerProps, ...containerProps }}
                 constructorType={isMap ? 'mapChart' : 'chart'}
             />
-            <ChartDataWrapper 
+            <ChartDetails
                 sources={sources}
-                data={chartOptions.data_table}
+                showDataTable={showDataTable}
                 chartId={chartId}
-            />
+                dataTable={dataTable}
+                chartTitle={mutableChartOptions.title?.text}
+            >
+                {children}
+            </ChartDetails>
         </div>
     )
 }
