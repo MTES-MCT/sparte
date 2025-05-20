@@ -93,10 +93,12 @@ def create_project_api_view(request: DRFRequest) -> JsonResponse:
         land_id=str(land.official_id),
         land_type=land.land_type,
         territory_name=land.name,
-        user=request.user or None,
+        user=request.user if request.user and request.user.is_authenticated else None,
     )
     project._change_reason = ProjectChangeReason.CREATED_FROM_PUBLIC_KEY
 
+    project.save()
+    project.cities.set(land.get_cities())
     project.save()
 
     trigger_async_tasks(project, public_key)
