@@ -1,18 +1,18 @@
 from django.test import TestCase
 
+from users.models import User
 from utils.validators import MISSING_SPECIAL_CHAR_ERROR
 
 valid_payload = {
     "first_name": "John",
     "last_name": "Doe",
     "email": "john.doe@gmail.com",
-    "organism": "Test",
-    "function": "Test",
     "password1": "ycvqB:U7aj%umbG3H<f8@D",
     "password2": "ycvqB:U7aj%umbG3H<f8@D",
 }
 
 form_url = "/users/signup/"
+success_url = "/users/signin/"
 
 
 class SignupTest(TestCase):
@@ -20,18 +20,14 @@ class SignupTest(TestCase):
 
     def test_signup_form_with_working_payload(self) -> None:
         response = self.client.post(path=form_url, data=valid_payload)
-        self.assertFormError(
-            response=response,
-            form="form",
-            field=None,
-            errors=[],
-        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, success_url)
+        self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())
 
     def test_signup_form_with_html_in_payload(self) -> None:
         fields_to_test = {
             "first_name": "<h1>John</h1>",
             "last_name": "<h1>Doe</h1>",
-            "function": "<h1>Test</h1>",
         }
 
         for field, value in fields_to_test.items():
@@ -69,39 +65,28 @@ class SignupTest(TestCase):
         fields_to_test = {
             "first_name": "John-Doe",
             "last_name": "John Do'e",
-            "function": "Test",
         }
 
         data = {**valid_payload, **fields_to_test}
-
         response = self.client.post(path=form_url, data=data)
-        self.assertFormError(
-            response=response,
-            form="form",
-            field=None,
-            errors=[],
-        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, success_url)
+        self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())
 
     def test_accents_are_accepted(self):
         data = {**valid_payload, **{"first_name": "Jérôme"}}
         response = self.client.post(path=form_url, data=data)
-        self.assertFormError(
-            response=response,
-            form="form",
-            field=None,
-            errors=[],
-        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, success_url)
+        self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())
 
     def test_strong_password_are_accepted(self):
         strong_password = "ycvqB:U7aj%umbG3H<f8@D"
         data = {**valid_payload, **{"password1": strong_password, "password2": strong_password}}
         response = self.client.post(path=form_url, data=data)
-        self.assertFormError(
-            response=response,
-            form="form",
-            field=None,
-            errors=[],
-        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, success_url)
+        self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())
 
     def test_password_do_not_contain_common_password(self):
         password_payload = {

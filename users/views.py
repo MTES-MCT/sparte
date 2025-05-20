@@ -3,12 +3,19 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
-from django.views.generic import RedirectView
-from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import RedirectView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, FormView
 
 from brevo.tasks import send_user_subscription_to_brevo
-from users.forms import SigninForm, SignupForm, UpdatePasswordForm
+from config.settings import IS_TEST
+from users.forms import (
+    ProfileCompletionForm,
+    ProfileForm,
+    SigninForm,
+    SignupForm,
+    UpdatePasswordForm,
+)
 from users.models import User
 from utils.views_mixins import BreadCrumbMixin
 
@@ -29,7 +36,15 @@ class SignoutView(RedirectView):
     url = reverse_lazy("users:signin")
 
     def get_redirect_url(self, *args, **kwargs):
+        # Vérifier si l'utilisateur a un token OIDC dans la session
+        if "oidc_id_token" in self.request.session:
+            # Si oui, rediriger vers la déconnexion OIDC
+            return reverse("oidc:oidc_proconnect_logout")
+
+        # Déconnexion classique Django
         logout(self.request)
+
+        # Si l'utilisateur n'est pas authentifié via OIDC, rediriger vers la page de connexion classique
         return super().get_redirect_url(*args, **kwargs)
 
 
@@ -41,8 +56,9 @@ class UserCreateView(BreadCrumbMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        send_user_subscription_to_brevo.delay(self.object.id)
-        login(self.request, self.object)
+        if not IS_TEST:
+            send_user_subscription_to_brevo.delay(self.object.id)
+        login(self.request, self.object, backend="django.contrib.auth.backends.ModelBackend")
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -83,13 +99,12 @@ class UserDeleteView(BreadCrumbMixin, DeleteView):
 
 class ProfilFormView(BreadCrumbMixin, LoginRequiredMixin, UpdateView):
     template_name = "users/profile.html"
-    success_url = reverse_lazy("users:profile")
+    success_url = reverse_lazy("home:home")
     model = User
-    fields = ["first_name", "last_name", "organism", "function"]
+    form_class = ProfileForm
     extra_context = {
         "label_validate_btn": "Mettre à jour",
-        "page_title": "Profil",
-        "title": "Votre profil",
+        "show_identity_fields": True,
     }
 
     def get_context_breadcrumbs(self):
@@ -111,9 +126,9 @@ class UpdatePwFormView(BreadCrumbMixin, LoginRequiredMixin, FormView):
     form_class = UpdatePasswordForm
     success_url = reverse_lazy("users:profile")
     extra_context = {
-        "label_validate_btn": "Changer",
-        "page_title": "Changer de mot de passe",
-        "title": "Changer de mot de passe",
+        "label_validate_btn": "Modifier",
+        "page_title": "Modifier mon mot de passe",
+        "title": "Modifier mon mot de passe",
     }
 
     def get_context_breadcrumbs(self):
@@ -132,3 +147,17 @@ class UpdatePwFormView(BreadCrumbMixin, LoginRequiredMixin, FormView):
         messages.success(self.request, "Votre mot de passe a été changé.")
         form.save()
         return super().form_valid(form)
+
+
+class ProfileCompletionView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = ProfileCompletionForm
+    template_name = "users/profile_completion.html"
+    success_url = reverse_lazy("home:home")
+    extra_context = {
+        "label_validate_btn": "Finaliser mon inscription",
+        "show_identity_fields": False,
+    }
+
+    def get_object(self):
+        return self.request.user

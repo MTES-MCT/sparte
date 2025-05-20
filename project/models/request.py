@@ -25,8 +25,7 @@ class Request(models.Model):
     organism = models.CharField(
         "Organisme",
         max_length=30,
-        choices=User.ORGANISMS.choices,
-        default=User.ORGANISMS.COMMUNE,
+        choices=User.ORGANISM.choices,
         validators=[is_alpha_validator],
     )
     email = models.EmailField("E-mail")

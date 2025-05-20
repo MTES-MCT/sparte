@@ -166,7 +166,7 @@ const Header = ({ projectData }: { projectData: ProjectDetailResultType}) => {
             <Tooltip id="tooltip-close-menu" className="fr-text--xs" />
             <ButtonContainer $isMobile={isMobile} $isMenuOpen={isMenuOpen}>
                 <SearchBarContainer $isMobile={isMobile}>
-                    <SearchBar createUrl={header?.search.createUrl} />
+                    <SearchBar />
                 </SearchBarContainer>
                 <NavLinks $isMobile={isMobile}>
                     {header?.menuItems.filter(({ shouldDisplay }) => shouldDisplay).map(item => (

@@ -1,0 +1,78 @@
+{% load crispy_forms_tags %}
+
+{% if show_identity_fields %}
+    <div class="fr-form-group">
+        {{ form.first_name|as_crispy_field }}
+    </div>
+    <div class="fr-form-group">
+        {{ form.last_name|as_crispy_field }}
+    </div>
+{% endif %}
+
+<div class="fr-form-group">
+    {{ form.organism|as_crispy_field }}
+</div>
+
+<div class="fr-form-group">
+    {{ form.function|as_crispy_field }}
+</div>
+
+<div class="fr-form-group">
+    {{ form.service|as_crispy_field }}
+</div>
+
+<div class="fr-my-4w profile-territory-container">
+    <label class="form-label" for="search-bar-territory">Sélectionnez votre territoire principal d'intérêt*</label>
+    <span class="fr-hint-text">Vous pourrez modifier ce territoire plus tard depuis votre profil.</span>
+    <div id="react-search-bar-profile" 
+         data-land-id="{% if form.main_land_id.value %}{{ form.main_land_id.value }}{% endif %}"
+         data-land-type="{% if form.main_land_type.value %}{{ form.main_land_type.value }}{% endif %}">
+    </div>
+    {{ form.main_land_id.as_hidden }}
+    {{ form.main_land_type.as_hidden }}
+    {% if form.main_land_id.errors or form.main_land_type.errors %}
+        <div class="fr-error-text fr-mt-1w">
+            Vous devez sélectionner un territoire principal d'intérêt
+        </div>
+    {% endif %}
+</div>
+
+<button class="fr-btn" type="submit">{{ label_validate_btn }}</button>
+
+<style>
+    .hidden-field {
+        display: none !important;
+    }
+</style>
+
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+    document.addEventListener('DOMContentLoaded', () => {
+        const organismField = document.querySelector('select[name="organism"]');
+        const functionField = document.querySelector('select[name="function"]');
+        const serviceField = document.querySelector('select[name="service"]');
+        const functionWrapper = functionField?.closest('.fr-form-group');
+        const serviceWrapper = serviceField?.closest('.fr-form-group');
+
+        if (!organismField || !functionWrapper || !serviceWrapper) return;
+
+        const toggleFields = () => {
+            const value = organismField.value.trim();
+
+            const showFunction = ['COMMUNE', 'EPCI', 'SCOT'].includes(value);
+            const showService = ['SERVICES_REGIONAUX', 'SERVICES_DEPARTEMENTAUX'].includes(value);
+
+            functionWrapper.classList.toggle('hidden-field', !showFunction);
+            serviceWrapper.classList.toggle('hidden-field', !showService);
+
+            if (functionField && !showFunction) {
+                functionField.value = '';
+            }
+            if (serviceField && !showService) {
+                serviceField.value = '';
+            }
+        };
+
+        organismField.addEventListener('change', toggleFields);
+        toggleFields();
+    });
+</script>

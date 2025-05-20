@@ -6,19 +6,27 @@ import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/ui/SearchBar'
+import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
 
 const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
 {
-  const createUrl = searchBar.dataset.createUrl;
-  const origin = searchBar.dataset.origin;
   createRoot(searchBar).render(
     <Provider store={store}>
-      <SearchBar createUrl={createUrl} origin={origin} />
+      <SearchBar />
     </Provider>,
   )
 }
 
+const searchBarProfile = document.getElementById('react-search-bar-profile')
+if (searchBarProfile)
+{  
+  createRoot(searchBarProfile).render(
+    <Provider store={store}>
+      <MainTerritorySearchBar />
+    </Provider>,
+  )
+}
 
 const ocsgeImplementationMap = document.getElementById('react-highcharts-ocsge')
 if (ocsgeImplementationMap)

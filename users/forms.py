@@ -34,8 +34,6 @@ class SignupForm(forms.ModelForm):
     class Meta:
         model = User
         fields = (
-            "organism",
-            "function",
             "first_name",
             "last_name",
             "email",
@@ -66,7 +64,7 @@ class SignupForm(forms.ModelForm):
 
 class SigninForm(AuthenticationForm):
     username = forms.EmailField(
-        label="E-mail",
+        label="Adresse E-mail",
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     password = forms.CharField(
@@ -77,14 +75,14 @@ class SigninForm(AuthenticationForm):
 
 
 class UpdatePasswordForm(forms.Form):
-    old_password = forms.CharField(label="Ancien mot de passe", widget=forms.PasswordInput())
+    old_password = forms.CharField(label="Mot de passe actuel", widget=forms.PasswordInput())
     new_password = forms.CharField(
         label="Nouveau mot de passe",
         widget=forms.PasswordInput(),
         validators=[validate_password],
     )
     new_password2 = forms.CharField(
-        label="Répétez votre nouveau mot de passe",
+        label="Confirmer votre nouveau mot de passe",
         widget=forms.PasswordInput(),
     )
 
@@ -110,3 +108,74 @@ class UpdatePasswordForm(forms.Form):
         self.user.set_password(passwrd)
         self.user.save()
         return self.user
+
+
+class ProfileFormBase(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        organism = cleaned_data.get("organism")
+
+        # Validation pour le champ function/service en fonction de l'organisme
+        if organism:
+            if organism in [User.ORGANISM.COMMUNE, User.ORGANISM.EPCI, User.ORGANISM.SCOT]:
+                if not cleaned_data.get("function"):
+                    self.add_error("function", "Ce champ est obligatoire pour ce type d'organisme")
+            elif organism in [User.ORGANISM.SERVICES_REGIONAUX, User.ORGANISM.SERVICES_DEPARTEMENTAUX]:
+                if not cleaned_data.get("service"):
+                    self.add_error("service", "Ce champ est obligatoire pour ce type d'organisme")
+
+        # Validation pour les champs cachés
+        if not cleaned_data.get("main_land_id"):
+            self.add_error("main_land_id", "Vous devez sélectionner un territoire")
+        if not cleaned_data.get("main_land_type"):
+            self.add_error("main_land_type", "Le type de territoire est obligatoire")
+
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["organism"].required = True
+        self.fields["main_land_id"].required = True
+        self.fields["main_land_type"].required = True
+
+
+class ProfileCompletionForm(ProfileFormBase):
+    class Meta:
+        model = User
+        fields = (
+            "organism",
+            "function",
+            "service",
+            "main_land_type",
+            "main_land_id",
+        )
+        widgets = {
+            "organism": forms.Select(attrs={"class": "form-select"}),
+            "function": forms.Select(attrs={"class": "form-select"}),
+            "service": forms.Select(attrs={"class": "form-select"}),
+            "main_land_type": forms.Select(attrs={"class": "form-select"}),
+            "main_land_id": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+
+class ProfileForm(ProfileFormBase):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "organism",
+            "function",
+            "service",
+            "main_land_type",
+            "main_land_id",
+        )
+        widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "organism": forms.Select(attrs={"class": "form-select"}),
+            "function": forms.Select(attrs={"class": "form-select"}),
+            "service": forms.Select(attrs={"class": "form-select"}),
+            "main_land_type": forms.Select(attrs={"class": "form-select"}),
+            "main_land_id": forms.TextInput(attrs={"class": "form-control"}),
+        }
