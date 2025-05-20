@@ -54,6 +54,7 @@ def load_shapefile_to_postgres(source: dict):
         subprocess.run(" ".join(cmd), shell=True, check=True)
 
     shutil.rmtree(TMP_PATH)
+    return source
 
 
 @dag(

@@ -29,7 +29,7 @@ with known_years as (
         code_commune
 ), predictions as (
     {% set first_unknown_year = 2021 %}
-    {% for year in range(first_unknown_year, 2023) %}
+    {% for year in range(first_unknown_year, 2024) %}
         {% set next_year = year + 1 %}
             SELECT
                 code_commune,

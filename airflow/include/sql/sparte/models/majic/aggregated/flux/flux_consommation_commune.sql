@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-{% for year in range(2009, 2023) %}
+{% for year in range(2009, 2024) %}
     SELECT
         commune_code,
         correction_status,
