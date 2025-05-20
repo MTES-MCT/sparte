@@ -70,8 +70,8 @@ def create_from_public_key(
     project = Project(
         name=f"Diagnostic de {land.name}",
         is_public=True,
-        analyse_start_date=start,
-        analyse_end_date=end,
+        analyse_start_date="2011",
+        analyse_end_date="2023",
         level=level,
         land_id=str(land.official_id),
         land_type=land.land_type,
