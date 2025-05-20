@@ -1,5 +1,5 @@
 
-{% macro majic(source_table_name) %}
+{% macro majic(source_table_name, from_year, to_year) %}
     {{ config(materialized='table') }}
 
     SELECT
@@ -102,13 +102,20 @@
         art22rou23::int as conso_2022_route,
         art22fer23::int as conso_2022_ferroviaire,
         art22inc23::int as conso_2022_inconnu,
-        naf09art23::int as conso_2009_2023,
-        art09act23::int as conso_2009_2023_activite,
-        art09hab23::int as conso_2009_2023_habitat,
-        art09mix23::int as conso_2009_2023_mixte,
-        art09rou23::int as conso_2009_2023_route,
-        art09fer23::int as conso_2009_2023_ferroviaire,
-        art09inc23::int as conso_2009_2023_inconnu
+        naf23art24::int as conso_2023,
+        art23act24::int as conso_2023_activite,
+        art23hab24::int as conso_2023_habitat,
+        art23mix24::int as conso_2023_mixte,
+        art23rou24::int as conso_2023_route,
+        art23fer24::int as conso_2023_ferroviaire,
+        art23inc24::int as conso_2023_inconnu,
+        naf{{ from_year }}art{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }},
+        art{{ from_year }}act{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_activite,
+        art{{ from_year }}hab{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_habitat,
+        art{{ from_year }}mix{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_mixte,
+        art{{ from_year }}rou{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_route,
+        art{{ from_year }}fer{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_ferroviaire,
+        art{{ from_year }}inc{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_inconnu
     FROM
         {{ source('public', source_table_name) }}
 {% endmacro %}

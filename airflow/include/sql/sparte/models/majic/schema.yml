@@ -68,8 +68,8 @@ models:
 sources:
   - name: public
     tables:
-    - name: majic_france_metropolitaine
-    - name: majic_guadeloupe
-    - name: majic_guyane
-    - name: majic_martinique
-    - name: majic_la_reunion
+    - name: majic_france_metropolitaine_2024
+    - name: majic_guadeloupe_2024
+    - name: majic_guyane_2024
+    - name: majic_martinique_2024
+    - name: majic_la_reunion_2024

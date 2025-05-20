@@ -99,13 +99,22 @@ SELECT
         conso_2022_route * {{ percent }} / 100  as conso_2022_route,
         conso_2022_ferroviaire * {{ percent }} / 100  as conso_2022_ferroviaire,
         conso_2022_inconnu * {{ percent }} / 100  as conso_2022_inconnu,
-        conso_2009_2023 * {{ percent }} / 100  as conso_2009_2023,
-        conso_2009_2023_activite * {{ percent }} / 100  as conso_2009_2023_activite,
-        conso_2009_2023_habitat * {{ percent }} / 100  as conso_2009_2023_habitat,
-        conso_2009_2023_mixte * {{ percent }} / 100  as conso_2009_2023_mixte,
-        conso_2009_2023_route * {{ percent }} / 100  as conso_2009_2023_route,
-        conso_2009_2023_ferroviaire * {{ percent }} / 100  as conso_2009_2023_ferroviaire,
-        conso_2009_2023_inconnu * {{ percent }} / 100  as conso_2009_2023_inconnu
+
+        conso_2023 * {{ percent }} / 100  as conso_2023,
+        conso_2023_activite * {{ percent }} / 100  as conso_2023_activite,
+        conso_2023_habitat * {{ percent }} / 100  as conso_2023_habitat,
+        conso_2023_mixte * {{ percent }} / 100  as conso_2023_mixte,
+        conso_2023_route * {{ percent }} / 100  as conso_2023_route,
+        conso_2023_ferroviaire * {{ percent }} / 100  as conso_2023_ferroviaire,
+        conso_2023_inconnu * {{ percent }} / 100  as conso_2023_inconnu,
+
+        conso_2009_2024 * {{ percent }} / 100  as conso_2009_2024,
+        conso_2009_2024_activite * {{ percent }} / 100  as conso_2009_2024_activite,
+        conso_2009_2024_habitat * {{ percent }} / 100  as conso_2009_2024_habitat,
+        conso_2009_2024_mixte * {{ percent }} / 100  as conso_2009_2024_mixte,
+        conso_2009_2024_route * {{ percent }} / 100  as conso_2009_2024_route,
+        conso_2009_2024_ferroviaire * {{ percent }} / 100  as conso_2009_2024_ferroviaire,
+        conso_2009_2024_inconnu * {{ percent }} / 100  as conso_2009_2024_inconnu
 FROM
     {{ ref('consommation') }}
 WHERE

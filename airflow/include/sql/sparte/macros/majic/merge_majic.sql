@@ -99,13 +99,20 @@ SELECT
         sum(conso_2022_route) as conso_2022_route,
         sum(conso_2022_ferroviaire) as conso_2022_ferroviaire,
         sum(conso_2022_inconnu) as conso_2022_inconnu,
-        sum(conso_2009_2023) as conso_2009_2023,
-        sum(conso_2009_2023_activite) as conso_2009_2023_activite,
-        sum(conso_2009_2023_habitat) as conso_2009_2023_habitat,
-        sum(conso_2009_2023_mixte) as conso_2009_2023_mixte,
-        sum(conso_2009_2023_route) as conso_2009_2023_route,
-        sum(conso_2009_2023_ferroviaire) as conso_2009_2023_ferroviaire,
-        sum(conso_2009_2023_inconnu) as conso_2009_2023_inconnu
+        sum(conso_2023) as conso_2023,
+        sum(conso_2023_activite) as conso_2023_activite,
+        sum(conso_2023_habitat) as conso_2023_habitat,
+        sum(conso_2023_mixte) as conso_2023_mixte,
+        sum(conso_2023_route) as conso_2023_route,
+        sum(conso_2023_ferroviaire) as conso_2023_ferroviaire,
+        sum(conso_2023_inconnu) as conso_2023_inconnu,
+        sum(conso_2009_2024) as conso_2009_2024,
+        sum(conso_2009_2024_activite) as conso_2009_2024_activite,
+        sum(conso_2009_2024_habitat) as conso_2009_2024_habitat,
+        sum(conso_2009_2024_mixte) as conso_2009_2024_mixte,
+        sum(conso_2009_2024_route) as conso_2009_2024_route,
+        sum(conso_2009_2024_ferroviaire) as conso_2009_2024_ferroviaire,
+        sum(conso_2009_2024_inconnu) as conso_2009_2024_inconnu
 FROM
     {{ ref('consommation') }}
 WHERE
