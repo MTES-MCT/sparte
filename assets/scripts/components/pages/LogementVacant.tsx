@@ -40,6 +40,16 @@ const LogementVacant: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                         Dans cette perpective, l'analyse proposée s'appuie sur une définition différenciée selon le type de parc : sont ainsi pris en compte les logements vacants depuis plus de deux ans dans le parc privé et ceux inoccupés depuis plus de 3 mois dans le parc des bailleurs sociaux.
                     </Guide>
                     <div dangerouslySetInnerHTML={{ __html: content }} />
+                    <div className="fr-callout fr-icon-information-line fr-mt-7w">
+                        <h3 className="fr-callout__title">Réduisez votre consommation d'espaces NAF en mobilisant le parc de logements vacants</h3>
+                        <p className="fr-callout__text">
+                        Zéro Logement Vacant est un outil gratuit qui accompagne les territoires dans leur démarche de remise sur le marché des logements vacants.
+                        </p>
+                        <br />
+                        <a target="_blank" rel="noopener noreferrer external" title="" href="https://zerologementvacant.beta.gouv.fr/zero-logement-vacant/la-plateforme/?src=mda" className="fr-notice__link">
+                                        Accèder à Zéro Logement Vacant
+                                    </a>
+                    </div>
                 </div>
             </div>
         </div>
