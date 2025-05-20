@@ -18,6 +18,7 @@ class ProfileCompletionMiddleware:
             reverse("users:signout"),
             "/admin/",
             "/public/",
+            "/api/",
         ]
 
         # Vérifier si l'utilisateur est connecté et si son profil est incomplet
