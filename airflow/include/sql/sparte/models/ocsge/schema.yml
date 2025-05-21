@@ -25,6 +25,7 @@ us_accepted_values: &us_accepted_values
     "US1.2",
     "US1.3",
     "US1.4",
+    "US1.5",
     "US2",
     "US3",
     "US5",
