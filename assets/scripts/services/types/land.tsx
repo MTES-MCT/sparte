@@ -1,6 +1,7 @@
 import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
+import { OcsgeStatusEnum } from "@components/features/status/OcsgeStatus";
 
 
 
@@ -37,6 +38,7 @@ export type Millesime = {
     is_interdepartemental: boolean;
     has_zonage: boolean;
     has_ocsge: boolean;
+    ocsge_status: OcsgeStatusEnum
   };
 
   type LandDetailQueryArg = string | FetchArgs | {
