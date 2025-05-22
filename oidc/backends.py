@@ -16,6 +16,7 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
             user.first_name = claims.get("given_name", "")
             user.last_name = claims.get("usual_name", "")
             user.siret = claims.get("siret", "")
+            user.proconnect = True
             user.save()
 
         except Exception as e:
@@ -65,6 +66,7 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
                 first_name=claims.get("given_name", ""),
                 last_name=claims.get("usual_name", ""),
                 siret=claims.get("siret", ""),
+                proconnect=True,
             )
 
             return user

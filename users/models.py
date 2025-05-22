@@ -75,6 +75,7 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    proconnect = models.BooleanField("Proconnect", default=False)
     siret = models.CharField(
         "SIRET",
         max_length=14,

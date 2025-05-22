@@ -13,6 +13,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "is_staff",
         "is_active",
+        "proconnect",
     )
     list_filter = (
         "is_staff",
@@ -25,7 +26,7 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (
             None,
-            {"fields": ("first_name", "last_name", "email", "organism", "function", "service", "siret")},
+            {"fields": ("first_name", "last_name", "email", "organism", "function", "service", "siret", "proconnect")},
         ),
         (
             "Territoire principal d'intérêt",
