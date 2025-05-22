@@ -11,6 +11,19 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def update_user(self, user, claims):
+        try:
+            user.first_name = claims.get("given_name", "")
+            user.last_name = claims.get("usual_name", "")
+            user.siret = claims.get("siret", "")
+            user.save()
+
+        except Exception as e:
+            logger.error(f"Erreur lors de la mise à jour de l'utilisateur: {str(e)}")
+            raise SuspiciousOperation("Impossible de mettre à jour l'utilisateur") from e
+
+        return user
+
     def get_userinfo(self, access_token, id_token, payload):
         """
         On surcharge la méthode parente car ProConnect retourne un token JWT
