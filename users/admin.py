@@ -13,6 +13,7 @@ class CustomUserAdmin(UserAdmin):
         "email",
         "is_staff",
         "is_active",
+        "proconnect",
     )
     list_filter = (
         "is_staff",
@@ -25,7 +26,11 @@ class CustomUserAdmin(UserAdmin):
     fieldsets = (
         (
             None,
-            {"fields": ("first_name", "last_name", "email", "organism", "function")},
+            {"fields": ("first_name", "last_name", "email", "organism", "function", "service", "siret", "proconnect")},
+        ),
+        (
+            "Territoire principal d'intérêt",
+            {"fields": ("main_land_type", "main_land_id")},
         ),
         (
             "Password",
@@ -67,6 +72,10 @@ class CustomUserAdmin(UserAdmin):
                     "is_active",
                     "organism",
                     "function",
+                    "service",
+                    "siret",
+                    "main_land_type",
+                    "main_land_id",
                 ),
             },
         ),

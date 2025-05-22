@@ -18,6 +18,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from mozilla_django_oidc.urls import urlpatterns as oidc_urls
 from two_factor.admin import AdminSiteOTPRequired
 from two_factor.urls import urlpatterns as tf_urls
 from two_factor.views import LoginView
@@ -28,10 +29,18 @@ admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_
 if settings.TWO_FACTOR_ENABLED:
     admin.site.__class__ = AdminSiteOTPRequired
 
-urlpatterns = [
-    path("", include(tf_urls)),
-    path("admin/login/", LoginView.as_view(), name="admin_login_2fa"),  # Forcer l'admin à utiliser 2FA
+if settings.TWO_FACTOR_ENABLED:
+    urlpatterns = [
+        path("admin/login/", LoginView.as_view(), name="admin_login_2fa"),  # Forcer l'admin à utiliser 2FA
+        path("", include(tf_urls)),  # URLs de two_factor
+    ]
+else:
+    urlpatterns = []
+
+urlpatterns += [
     path("admin/", admin.site.urls),
+    path("", include("oidc.urls")),  # URLs OIDC custom pour ProConnect
+    path("oidc/", include(oidc_urls)),  # URLs OIDC standard pour ProConnect
     path("", include("home.urls")),
     path("users/", include("users.urls")),
     path("public/", include("public_data.urls")),

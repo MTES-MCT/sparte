@@ -8,6 +8,34 @@ from rest_framework.response import Response
 
 
 class LandModel(models.Model):
+    class OcsgeCoverageStatus(models.TextChoices):
+        COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complet et uniforme"
+        """
+        All cities of the project have OCS GE data for the selected millésimes,
+        and the cities spreads over only one departement. This definition could
+        evolve in the future if two departements have the same millésimes
+        available, and the code allow for that verification.
+        """
+
+        COMPLETE_NOT_UNIFORM = "COMPLETE_NOT_UNIFORM", "Complet mais non uniforme"
+        """
+        All cities of the project have OCS GE data for the selected millésimes
+        but the cities spreads over more than one departement.
+        """
+
+        PARTIAL = "PARTIAL", "Partiel"
+        """
+        At least one city of the project have OCS GE data for the selected
+        millésimes.
+        """
+
+        NO_DATA = "NO_DATA", "Aucune donnée"
+        """
+        0 city of the project have OCS GE data for the selected millésimes.
+        """
+
+        UNDEFINED = "UNDEFINED", "Non défini"
+
     land_id = models.CharField()
     land_type = models.CharField()
     name = models.CharField()
@@ -24,6 +52,7 @@ class LandModel(models.Model):
     parent_keys = ArrayField(base_field=models.CharField())
     departements = ArrayField(base_field=models.CharField())
     is_interdepartemental = models.BooleanField()
+    ocsge_status = models.TextField(choices=OcsgeCoverageStatus.choices)
     has_ocsge = models.BooleanField()
     has_zonage = models.BooleanField()
 

@@ -1,19 +1,12 @@
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import usePageTitle from '@hooks/usePageTitle';
-import OcsgeStatus, { OcsgeStatusProps } from '@components/features/status/OcsgeStatus';
-import GpuStatus from '@components/features/status/GpuStatus';
-import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
-import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum} from '@components/features/status/ConsoCorrectionStatus';
-
-
 interface RouteWrapperProps {
     title: string;
-    ocsgeStatus?: OcsgeStatusProps["status"];
-    consoCorrectionStatus?: ConsoCorrectionStatusEnum;
-    hasGpu?: boolean;
-    hasLogementVacant?: boolean;
     children: ReactNode;
+    showPage?: boolean;
+    showStatus?: boolean;
+    status?: ReactNode;
 }
 
 const Title = styled.h1`
@@ -23,25 +16,12 @@ const Title = styled.h1`
 
 const RouteWrapper: React.FC<RouteWrapperProps> = ({
     title,
-    ocsgeStatus,
-    hasGpu,
-    consoCorrectionStatus,
-    hasLogementVacant,
     children,
+    status = null,
+    showPage = true,
+    showStatus = false,
+    
 }) => {
-    const shouldDisplayOcsgeStatus = ocsgeStatus !== undefined && ocsgeStatus !== "COMPLETE_UNIFORM";
-    const shouldDisplayGpuStatus = hasGpu !== undefined && hasGpu === false;
-    const shouldDisplayConsoCorrectionStatus = consoCorrectionStatus !== undefined && consoCorrectionStatus !== ConsoCorrectionStatusEnum.UNCHANGED;
-    const shouldDisplayConsoChildren = consoCorrectionStatus === undefined || [
-        ConsoCorrectionStatusEnum.UNCHANGED,
-        ConsoCorrectionStatusEnum.FUSION
-    ].includes(consoCorrectionStatus);
-    const shouldDisplayLogementVacantStatus = hasLogementVacant !== undefined && hasLogementVacant === false;
-
-    const shouldDisplayChildren = !shouldDisplayOcsgeStatus &&
-        !shouldDisplayGpuStatus &&
-        !shouldDisplayLogementVacantStatus &&
-        shouldDisplayConsoChildren;
 
     usePageTitle(title);
 
@@ -51,15 +31,12 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
                 <div className="fr-grid-row">
                     <div className="fr-col-12">
                         <Title>{title}</Title>
-                        {shouldDisplayOcsgeStatus && <OcsgeStatus status={ocsgeStatus} />}
-                        {shouldDisplayGpuStatus && <GpuStatus />}
-                        {shouldDisplayConsoCorrectionStatus && <ConsoCorrectionStatus status={consoCorrectionStatus} />}
-                        {shouldDisplayLogementVacantStatus && <LogementVacantStatus />}
+                        {showStatus && status}
                     </div>
                 </div>
             </div>
-                
-            {shouldDisplayChildren && children}
+            
+            {showPage && children}
         </>
     );
 };

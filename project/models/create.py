@@ -1,6 +1,9 @@
 from typing import List
 
 import celery
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.request import Request as DRFRequest
 
 from project import tasks
 from project.models import Project
@@ -57,36 +60,6 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     return celery.chain(*tasks_list).run()
 
 
-def create_from_public_key(
-    public_key: str,
-    start: str = "2011",
-    end: str = "2022",
-    user: User | None = None,
-) -> Project:
-    """Create a project from one only public_key"""
-
-    land = Land(public_key)
-    level = AdminRef.get_analysis_default_level(public_key.split("_")[0])
-    project = Project(
-        name=f"Diagnostic de {land.name}",
-        is_public=True,
-        analyse_start_date="2011",
-        analyse_end_date="2023",
-        level=level,
-        land_id=str(land.official_id),
-        land_type=land.land_type,
-        territory_name=land.name,
-        user=user if user and user.is_authenticated else None,
-    )
-    project._change_reason = ProjectChangeReason.CREATED_FROM_PUBLIC_KEY
-    project.save()
-    project.cities.set(land.get_cities())
-    project.save()
-    trigger_async_tasks(project, public_key)
-
-    return project
-
-
 @celery.shared_task
 def create_request_rnu_package_one_off(project_id: int) -> None:
     project = Project.objects.get(pk=project_id)
@@ -104,3 +77,32 @@ def create_request_rnu_package_one_off(project_id: int) -> None:
         competence_urba=False,
     )
     return request.id
+
+
+@api_view(http_method_names=["POST"])
+def create_project_api_view(request: DRFRequest) -> JsonResponse:
+    land_id = request.data.get("land_id")
+    land_type = request.data.get("land_type")
+    public_key = f"{land_type}_{land_id}"
+    land = Land(public_key)
+    level = AdminRef.get_analysis_default_level(public_key.split("_")[0])
+    project = Project(
+        name=f"Diagnostic de {land.name}",
+        is_public=True,
+        level=level,
+        land_id=str(land.official_id),
+        land_type=land.land_type,
+        territory_name=land.name,
+        user=request.user if request.user and request.user.is_authenticated else None,
+        analyse_start_date="2011",
+        analyse_end_date="2023",
+    )
+    project._change_reason = ProjectChangeReason.CREATED_FROM_PUBLIC_KEY
+
+    project.save()
+    project.cities.set(land.get_cities())
+    project.save()
+
+    trigger_async_tasks(project, public_key)
+
+    return JsonResponse({"id": project.pk}, status=201)

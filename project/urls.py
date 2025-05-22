@@ -2,6 +2,8 @@ from django.urls import path
 from django.views.generic.base import RedirectView
 from rest_framework import routers
 
+from project.models.create import create_project_api_view
+
 from . import views
 from .api_views import EmpriseViewSet, ProjectDetailView
 
@@ -13,7 +15,7 @@ app_name = "project"
 urlpatterns = [
     # ### PROJECTS ###
     # CREATE
-    path("nouveau", views.CreateProjectViews.as_view(), name="create"),
+    path("nouveau", create_project_api_view, name="create"),
     path("<int:pk>/en-construction", views.SplashScreenView.as_view(), name="splash"),
     path(
         "<int:pk>/en-construction/progress",
