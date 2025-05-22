@@ -1,46 +1,104 @@
 from typing import List
 
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.constraints import UniqueConstraint
 from django.db.models.functions import Lower
 from django.utils import timezone
 
+from public_data.models import AdminRef
 from utils.validators import is_alpha_validator
 
 from .managers import UserManager
 
 
 class User(AbstractUser):
-    class ORGANISMS(models.TextChoices):
-        AGENCE_URBA = "AGENCE", "Agence d'urbanisme"
-        ASSOCIATION = "ASSOCI", "Association"
-        BUREAU_ETUDE = "BUREAU", "Bureau d'études"
-        COMMUNE = "COMMUN", "Commune"
-        DDT = "DDT", "DDT"
-        DDTM = "DDTM", "DDTM"
-        DEAL = "DEAL", "DEAL"
-        DREAL = "DREAL", "DREAL"
-        DRIEAT = "DRIEAT", "DRIEAT"
+    class ORGANISM(models.TextChoices):
+        COMMUNE = "COMMUNE", "Commune"
         EPCI = "EPCI", "EPCI"
-        PARTICULIER = "PARTIC", "Particulier"
-        SCOT = "SCOT", "SCOT"
+        SCOT = "SCOT", "SCoT"
+        SERVICES_REGIONAUX = "SERVICES_REGIONAUX", "DREAL / DRIEAT / DRIHL"
+        SERVICES_DEPARTEMENTAUX = "SERVICES_DEPARTEMENTAUX", "DDT / DDTM / DEAL"
+        EXPERTS_URBANISTES = "EXPERTS_URBANISTES", "Bureaux d'études / Agence d'urbanisme"
+        ACTEURS_CITOYENS = "ACTEURS_CITOYENS", "Association / Particulier"
+
+    class SERVICE(models.TextChoices):
+        AMENAGEMENT_URBANISME_ET_PAYSAGE = "AMENAGEMENT_URBANISME_ET_PAYSAGE", "Aménagement Urbanisme et Paysage"
+        ETUDES_ET_EVALUATIONS = "ETUDES_ET_EVALUATIONS", "Etudes et évaluations"
+        SECURITE_PREVENTION_ET_GESTION_DES_RISQUES = (
+            "SECURITE_PREVENTION_ET_GESTION_DES_RISQUES",
+            "Sécurité Prévention et Gestion des Risques",
+        )
+        ELABORATION_ET_PILOTAGE_DE_POLITIQUES_PUBLIQUES = (
+            "ELABORATION_ET_PILOTAGE_DE_POLITIQUES_PUBLIQUES",
+            "Elaboration et pilotage de politiques publiques",
+        )
+        RESSOURCES_NATURELLES_ET_BIODIVERSITE = (
+            "RESSOURCES_NATURELLES_ET_BIODIVERSITE",
+            "Ressources naturelles et biodiversité",
+        )
+        HABITAT_LOGEMENT = "HABITAT_LOGEMENT", "Habitat Logement"
+        AUTRE = "AUTRE", "Autre"
+
+    class FUNCTION(models.TextChoices):
+        RESPONSABLE_URBANISME = "RESPONSABLE_URBANISME", "Chargé(e) ou responsable de mission urbanisme"
+        RESPONSABLE_PLANIFICATION = "RESPONSABLE_PLANIFICATION", "Chargé(e) ou responsable de planification"
+        RESPONSABLE_AMENAGEMENT = "RESPONSABLE_AMENAGEMENT", "Chargé(e) aménagement"
+        SECRETAIRE_MAIRIE = "SECRETAIRE_MAIRIE", "Secrétaire de mairie (commune)"
+        ELU = "ELU", "Élu(e)"
         AUTRE = "AUTRE", "Autre"
 
     username = None
     first_name = models.CharField("Prénom", max_length=150, validators=[is_alpha_validator])
     last_name = models.CharField("Nom", max_length=150, validators=[is_alpha_validator])
-    email = models.EmailField("E-mail", unique=True)
+    email = models.EmailField("E-mail (Identifiant)", unique=True)
     email_checked = models.DateTimeField("E-mail vérifie", blank=True, null=True)
     organism = models.CharField(
         "Organisme",
         max_length=250,
-        choices=ORGANISMS.choices,
-        default=ORGANISMS.COMMUNE,
-        validators=[is_alpha_validator],
+        choices=ORGANISM.choices,
+        blank=True,
+        null=True,
     )
-    organism_group = models.CharField("Groupe d'organisme", max_length=250, blank=True, null=True)
-    function = models.CharField("Fonction", max_length=250, validators=[is_alpha_validator])
+    service = models.CharField(
+        "Service*",
+        max_length=250,
+        choices=SERVICE.choices,
+        blank=True,
+        null=True,
+    )
+    function = models.CharField(
+        "Fonction*",
+        max_length=250,
+        choices=FUNCTION.choices,
+        blank=True,
+        null=True,
+    )
+    siret = models.CharField(
+        "SIRET",
+        max_length=14,
+        blank=True,
+        null=True,
+    )
+    main_land_type = models.CharField(
+        "Type de territoire principal",
+        choices=AdminRef.CHOICES,
+        max_length=7,
+        blank=True,
+        null=True,
+        help_text=(
+            "Indique le niveau administratif du territoire principal de l'utilisateur. "
+            "Cela va de la commune à la région."
+        ),
+    )
+    main_land_id = models.CharField(
+        "Identifiant du territoire principal",
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Identifiant unique du territoire principal de l'utilisateur.",
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: List[str] = []
@@ -52,27 +110,41 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-    @staticmethod
-    def get_group(organism):
-        if organism in [
-            User.ORGANISMS.COMMUNE,
-            User.ORGANISMS.EPCI,
-            User.ORGANISMS.SCOT,
+    def clean(self):
+        super().clean()
+
+        # Validation pour le champ function
+        if self.function and self.organism not in [
+            self.ORGANISM.COMMUNE,
+            self.ORGANISM.EPCI,
+            self.ORGANISM.SCOT,
         ]:
-            return "Collectivités"
-        elif organism in [User.ORGANISMS.AGENCE_URBA, User.ORGANISMS.BUREAU_ETUDE]:
-            return "Bureaux d'études"
-        elif organism in [
-            User.ORGANISMS.DDT,
-            User.ORGANISMS.DREAL,
-            User.ORGANISMS.DDTM,
-            User.ORGANISMS.DEAL,
-            User.ORGANISMS.DRIEAT,
+            raise ValidationError(
+                {
+                    "function": (
+                        "Le champ fonction ne peut être renseigné que pour les organismes "
+                        "de type Commune, EPCI ou SCoT."
+                    )
+                }
+            )
+
+        # Validation pour le champ service
+        if self.service and self.organism not in [
+            self.ORGANISM.SERVICES_REGIONAUX,
+            self.ORGANISM.SERVICES_DEPARTEMENTAUX,
         ]:
-            return "Services de l'Etat"
-        elif organism in [User.ORGANISMS.ASSOCIATION, User.ORGANISMS.PARTICULIER]:
-            return "Grand public"
-        return "Non regroupé"
+            raise ValidationError(
+                {
+                    "service": (
+                        "Le champ service ne peut être renseigné que pour les organismes "
+                        "de type Services régionaux ou Services départementaux."
+                    )
+                }
+            )
+
+    @property
+    def is_profile_complete(self) -> bool:
+        return self.organism is not None and self.main_land_id is not None
 
     @property
     def greetings(self):
@@ -90,7 +162,7 @@ class User(AbstractUser):
         return self.created_at.date() == timezone.now().date()
 
     def save(self, *args, **kwargs):
-        self.organism_group = User.get_group(self.organism)
+        self.full_clean()
         super().save(*args, **kwargs)
 
     class Meta:

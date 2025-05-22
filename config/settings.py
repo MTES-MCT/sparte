@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
 
+import sys
 from pathlib import Path
 from typing import Any, Dict
 
@@ -59,7 +60,6 @@ DOMAIN_URL = env.str("DOMAIN_URL")
 TWO_FACTOR_ENABLED = env.bool("TWO_FACTOR_ENABLED", default=True)
 
 # Application definition
-
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -93,6 +93,7 @@ THIRD_APPS = [
     "django_otp.plugins.otp_static",
     "qrcode",
     "django_filters",
+    "mozilla_django_oidc",
 ]
 
 # upper app should not communicate with lower ones
@@ -108,6 +109,7 @@ PROJECT_APPS = [
     "metabase.apps.MetabaseConfig",
     "brevo.apps.BrevoConfig",
     "crisp.apps.CrispConfig",
+    "oidc.apps.OidcConfig",
 ]
 
 
@@ -124,11 +126,13 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
     "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "users.middleware.ProfileCompletionMiddleware",
 ]
 
 
@@ -195,6 +199,35 @@ AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
 
+AUTHENTICATION_BACKENDS = [
+    # Authentification Django par défaut
+    "django.contrib.auth.backends.ModelBackend",
+    # OIDC / ProConnect
+    "oidc.backends.ProConnectAuthenticationBackend",
+]
+
+# ProConnect
+PROCONNECT_DOMAIN = env.str("PROCONNECT_DOMAIN")
+PROCONNECT_CLIENT_ID = env.str("PROCONNECT_CLIENT_ID")
+PROCONNECT_SECRET = env.str("PROCONNECT_SECRET")
+
+# Configuration OIDC ProConnect
+OIDC_RP_CLIENT_ID = PROCONNECT_CLIENT_ID
+OIDC_RP_CLIENT_SECRET = PROCONNECT_SECRET
+OIDC_OP_JWKS_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/jwks"
+OIDC_OP_AUTHORIZATION_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/authorize"
+OIDC_OP_TOKEN_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/token"
+OIDC_OP_USER_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/userinfo"
+OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/session/end"
+
+# Configuration OIDC
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_STORE_ID_TOKEN = True
+ALLOW_LOGOUT_GET_METHOD = True
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 4 * 60 * 60
+
+# Configuration des scopes demandés OIDC
+OIDC_RP_SCOPES = "openid email given_name usual_name siret"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -698,3 +731,5 @@ CRISP_WEBHOOK_SECRET_KEY = env.str("CRISP_WEBHOOK_SECRET_KEY")
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]
+
+IS_TEST = "test" in sys.argv

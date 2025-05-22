@@ -1,0 +1,46 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}Finaliser mon inscription{% endblock pagetitle %}
+
+{% block content %}
+<div class="fr-container fr-mt-8v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <h1 class="fr-h2">Finaliser mon inscription</h1>
+            <div class="fr-notice fr-notice--info fr-mb-3w">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p>
+                            <span class="fr-notice__title fr-text--sm">Pourquoi ces informations sont-elles utiles ?</span>
+                            <br>
+                            <span class="fr-notice__desc fr-text--sm">
+                                Ces informations nous permettent de mieux comprendre votre contexte et de vous proposer des diagnostics et des analyses adaptés à vos besoins.
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fr-container fr-mb-8v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-stepper">
+                <h2 class="fr-stepper__title">
+                    Compléter mon profil
+                    <span class="fr-stepper__state">Étape 2 sur 2</span>
+                </h2>
+                <div class="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="2"></div>
+            </div>
+            <hr>
+            <div>
+                <form {% if next %}action="?next={{ next }}"{% endif %} method="post">
+                    {% csrf_token %}
+                    {% include "users/partials/profile_form.html" %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

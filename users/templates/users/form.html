@@ -4,17 +4,17 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-center">
-    <div class="col-12 col-md-5 col-lg-4">
+<div class="fr-container">
+    <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <h1 class="mb-5 fw-bold text-center">{{ title }}</h1>
 
-        <h1 class="mb-5 fw-bold text-center">{{ title }}</h1>
-
-        <form action="" method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button id="btn-validate" class="fr-btn mt-2" type="submit">{{ label_validate_btn }}</button>
-        </form>
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button id="btn-validate" class="fr-btn mt-2" type="submit">{{ label_validate_btn }}</button>
+            </form>
+        </div>
     </div>
 </div>
-
 {% endblock content %}

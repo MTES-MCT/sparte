@@ -8,7 +8,6 @@ from django.utils import timezone
 from django.views.generic import (
     DeleteView,
     DetailView,
-    FormView,
     ListView,
     RedirectView,
     UpdateView,
@@ -16,12 +15,12 @@ from django.views.generic import (
 from django.views.generic.edit import FormMixin
 
 from project import tasks
-from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
-from project.models import Project, create_from_public_key
+from project.forms import KeywordForm, UpdateProjectForm
+from project.models import Project
 from project.models.enums import ProjectChangeReason
 from public_data.exceptions import LandException
 from public_data.models import Land
-from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
+from utils.views_mixins import RedirectURLMixin
 
 from .mixins import GroupMixin, ReactMixin
 
@@ -44,31 +43,6 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
             project._change_reason = ProjectChangeReason.USER_CLAIMED_PROJECT
             project.save()
         return super().get(request, *args, **kwargs)
-
-
-class CreateProjectViews(BreadCrumbMixin, FormView):
-    template_name = "project/pages/advanced_search.html"
-    form_class = SelectTerritoryForm
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
-            {"title": "Nouveau diagnostic"},
-        )
-        return breadcrumbs
-
-    def get_context_data(self, **kwargs):
-        kwargs.update({"next": self.request.GET.get("next", "")})
-        return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        """If the form is valid, redirect to the supplied URL."""
-        project = create_from_public_key(form.cleaned_data["selection"], user=self.request.user)
-
-        if self.request.GET.get("next") == "download":
-            return redirect("project:report_download", pk=project.id)
-        else:
-            return redirect("project:home", pk=project.id)
 
 
 class ProjectUpdateView(ReactMixin, UpdateView):
