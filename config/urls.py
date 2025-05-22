@@ -29,18 +29,16 @@ admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_
 if settings.TWO_FACTOR_ENABLED:
     admin.site.__class__ = AdminSiteOTPRequired
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-]
-
 if settings.TWO_FACTOR_ENABLED:
     urlpatterns = [
         path("admin/login/", LoginView.as_view(), name="admin_login_2fa"),  # Forcer l'admin à utiliser 2FA
-        path("admin/", admin.site.urls),
         path("", include(tf_urls)),  # URLs de two_factor
-    ] + urlpatterns
+    ]
+else:
+    urlpatterns = []
 
 urlpatterns += [
+    path("admin/", admin.site.urls),
     path("", include("oidc.urls")),  # URLs OIDC custom pour ProConnect
     path("oidc/", include(oidc_urls)),  # URLs OIDC standard pour ProConnect
     path("", include("home.urls")),
