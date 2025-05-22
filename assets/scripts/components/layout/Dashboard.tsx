@@ -8,7 +8,6 @@ import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
-import { useArtificialisation } from '@hooks/useArtificialisation';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
@@ -21,6 +20,9 @@ import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import Update from '@components/pages/Update';
 import RouteWrapper from '@components/ui/RouteWrapper';
+import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
+import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
+import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
 
 interface DashboardProps {
     projectId: string;
@@ -56,7 +58,8 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
         }
     );
     
-    const { urls } = projectData || {};
+    const { ocsge_status, has_ocsge } = landData || {};
+    const { urls, consommation_correction_status, logements_vacants_available } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
     const { isMobile } = useWindowSize();
@@ -84,7 +87,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
-                                                consoCorrectionStatus={projectData.consommation_correction_status}
+                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                status={
+                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
+                                                }
                                             >
                                                 <Synthese
                                                     endpoint={urls.synthese}
@@ -99,7 +105,15 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
-                                                consoCorrectionStatus={projectData.consommation_correction_status}
+                                                showPage={[
+                                                        ConsoCorrectionStatusEnum.UNCHANGED,
+                                                        ConsoCorrectionStatusEnum.FUSION
+                                                    ].includes(consommation_correction_status)
+                                                }
+                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                status={
+                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
+                                                }
                                             >
                                                 <Consommation endpoint={urls.consommation} />
                                             </RouteWrapper>
@@ -110,7 +124,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Trajectoire de sobriété foncière"
-                                                consoCorrectionStatus={projectData.consommation_correction_status}
+                                                showPage={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                status={
+                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
+                                                }
                                             >
                                                 <Trajectoires endpoint={urls.trajectoires} />
                                             </RouteWrapper>
@@ -121,7 +139,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Artificialisation des sols"
-                                                ocsgeStatus={landData.has_ocsge ? 'COMPLETE_UNIFORM' : 'NO_DATA'}
+                                                showPage={has_ocsge}
+                                                showStatus={ocsge_status !== OcsgeStatusEnum.COMPLETE_UNIFORM}
+                                                status={
+                                                    <OcsgeStatus status={ocsge_status} />
+                                                }
                                             >
                                                     <Artificialisation
                                                         projectData={projectData}
@@ -138,7 +160,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper 
                                                 title="Vacance des logements"
-                                                hasLogementVacant={projectData.logements_vacants_available}
+                                                showPage={logements_vacants_available}
+                                                showStatus={!logements_vacants_available}
+                                                status={
+                                                    <LogementVacantStatus />
+                                                }
                                             >
                                                 <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
@@ -149,7 +175,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Rapport triennal local"
-                                                consoCorrectionStatus={projectData.consommation_correction_status}
+                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                status={
+                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
+                                                }
                                             >
                                                 <RapportLocal endpoint={urls.rapportLocal} projectData={projectData} />
                                             </RouteWrapper>
