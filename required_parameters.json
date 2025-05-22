@@ -1,4 +1,5 @@
-[{
+[
+    {
         "name": "Adresse e-mail de l'équipe",
         "slug": "TEAM_EMAIL",
         "value_type": "STR",
@@ -53,14 +54,14 @@
         "name": "Hauteur de l'iframe des statistiques (px)",
         "slug": "STATS_HEIGHT",
         "value_type": "STR",
-        "value": "1050",
+        "value": "5240",
         "is_global": false
     },
     {
         "name": "URL de l'iframe des statistiques (px)",
         "slug": "STATS_URL",
         "value_type": "STR",
-        "value": "http://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/67c2adfb-b21d-4d53-bd88-2be2186eccd6",
+        "value": "http://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/8dc81856-e117-4431-8c5d-1ec7b04887b3",
         "is_global": false
     },
     {
