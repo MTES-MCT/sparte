@@ -13,7 +13,7 @@ hello world
 
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Literal
 
 import environ
 import pkg_resources
@@ -42,8 +42,7 @@ if env_path.is_file():
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-# Should be one of : local, staging, production
-ENVIRONMENT = env.str("ENVIRONMENT")
+ENVIRONMENT: Literal["local", "staging", "production"] = env.str("ENVIRONMENT")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str("SECRET")
