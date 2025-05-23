@@ -67,6 +67,11 @@ urlpatterns = [
         name="report_logement_vacant",
     ),
     path(
+        "<int:pk>/tableau-de-bord/friches-urbaines",
+        views.diagnostic.DiagnosticFrichesView.as_view(),
+        name="report_friches",
+    ),
+    path(
         "<int:pk>/tableau-de-bord/trajectoires",
         views.diagnostic.DiagnosticTarget2031View.as_view(),
         name="report_target_2031",

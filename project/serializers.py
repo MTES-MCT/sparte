@@ -31,6 +31,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "trajectoires": reverse("project:report_target_2031", kwargs=kwargs),
             "consommation": reverse("project:report_conso", kwargs=kwargs),
             "logementVacant": reverse("project:report_logement_vacant", kwargs=kwargs),
+            "friches": reverse("project:report_friches", kwargs=kwargs),
             "update": reverse("project:update", kwargs=kwargs),
             "downloads": reverse("project:report_downloads", kwargs=kwargs),
         }
@@ -77,8 +78,8 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                         },
                         {
                             "label": "Friches urbaines",
-                            "url": None,
-                            "soon": True,
+                            "url": reverse("project:report_friches", kwargs=kwargs),
+                            "new": True,
                         },
                     ],
                 },
