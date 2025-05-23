@@ -35,3 +35,5 @@ OR
 OR
     land_name = 'Région Guyane' AND
     land_type = 'Autre'
+AND
+    {{ secretisation_zlv() }} -- On applique la secretisation
