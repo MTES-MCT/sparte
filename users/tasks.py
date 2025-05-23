@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from celery import shared_task
 
+from config.settings import ENVIRONMENT
 from utils.mattermost import DevMattermost
 
 from .models import User
@@ -12,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def check_inactive_admins() -> int:
+    if ENVIRONMENT != "production":
+        logger.info("Skipping check_inactive_admins task in non-prod environment")
+        return 0
+
     users = User.objects.filter(
         is_superuser=True,
         last_login__lte=datetime.now().date() - timedelta(days=60),
