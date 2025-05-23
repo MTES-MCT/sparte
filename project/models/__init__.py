@@ -13,7 +13,7 @@ __all__ = [
 ]
 
 
-from .project_base import Emprise, Project, ProjectCommune
+from .project_base import Emprise, Project
 from .request import ErrorTracking, Request, RequestedDocumentChoices
 from .RNUPackage import RNUPackage
 from .RNUPackageRequest import RNUPackageRequest

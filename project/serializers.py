@@ -1,13 +1,11 @@
 from django.templatetags.static import static
 from django.urls import reverse
 from django_app_parameter.models import Parameter
-from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 from rest_framework_gis import serializers as gis_serializers
 from rest_framework_gis.serializers import GeometrySerializerMethodField
 
 from project.models import Project
-from public_data.models import Commune
 
 from .models import Emprise
 
@@ -201,26 +199,3 @@ class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
         )
         geo_field = "mpoly"
         model = Emprise
-
-
-class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
-    artif_area = serializers.FloatField()
-    conso_1121_art = serializers.FloatField()
-    conso_1121_hab = serializers.FloatField()
-    conso_1121_act = serializers.FloatField()
-    surface_artif = serializers.FloatField()
-
-    class Meta:
-        fields = (
-            "id",
-            "name",
-            "insee",
-            "area",
-            "map_color",
-            "artif_area",
-            "conso_1121_art",
-            "conso_1121_hab",
-            "conso_1121_act",
-        )
-        geo_field = "mpoly"
-        model = Commune
