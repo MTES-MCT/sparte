@@ -48,3 +48,5 @@ models:
       +schema: rpls
     zlv:
       +schema: zlv
+    cartofriches:
+      +schema: cartofriches
