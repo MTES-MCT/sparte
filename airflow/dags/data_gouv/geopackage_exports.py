@@ -13,7 +13,7 @@ for config in configs:
     @dag(
         dag_id=config.dag_id,
         start_date=pendulum.datetime(2024, 1, 1),
-        schedule="@once",
+        schedule=config.frequency,
         catchup=False,
         doc_md=__doc__,
         max_active_runs=1,
