@@ -28,6 +28,8 @@ export type Logo = {
     target?: string;
     subMenu?: SubMenuItem[];
     shouldDisplay?: boolean;
+    new?: boolean;
+    soon?: boolean;
   };
 
   export type ProjectDetailResultType = {
@@ -63,6 +65,7 @@ export type Logo = {
       dowloadConsoReport: string;
       downloadFullReport: string;
       dowloadLocalReport: string;
+      downloads: string;
     };
     navbar: {
       menuItems: MenuItem[];
