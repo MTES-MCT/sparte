@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class BaseConfig:
+    frequency: str = "@once"
     dag_id: str
     format: str
     filename: str
@@ -10,12 +11,12 @@ class BaseConfig:
     data_gouv_resource: str
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class GeopackageConfig(BaseConfig):
     sql_to_layer_name_mapping: dict
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class CSVConfig(BaseConfig):
     sql: str
 
