@@ -90,6 +90,11 @@ urlpatterns = [
     ),
     # DOWNLOAD
     path(
+        "<int:pk>/tableau-de-bord/telechargements",
+        views.diagnostic.DiagnosticDownloadsView.as_view(),
+        name="report_downloads",
+    ),
+    path(
         "<int:pk>/tableau-de-bord/telechargement/<slug:requested_document>",
         views.diagnostic.DiagnosticDownloadView.as_view(),
         name="report_download",
