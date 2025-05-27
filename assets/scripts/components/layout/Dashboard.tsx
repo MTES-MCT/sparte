@@ -19,6 +19,7 @@ import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import Update from '@components/pages/Update';
+import { Friches } from '@components/pages/Friches';
 import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
@@ -156,9 +157,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 </RouteWrapper>
                                         }
                                     />
-
-                                    
-
                                     <Route
                                         path={urls.logementVacant}
                                         element={
@@ -172,6 +170,19 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             >
                                                 <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.friches}
+                                        element={
+                                            <RouteWrapper
+                                                title="Friches urbaines"
+                                            >
+                                                    <Friches
+                                                        projectData={projectData}
+                                                        landData={landData}
+                                                    />
+                                                </RouteWrapper>
                                         }
                                     />
                                     <Route
