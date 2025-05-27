@@ -131,6 +131,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                 },
                 {"label": "Mes diagnostics", "url": reverse("project:list"), "shouldDisplay": is_authenticated},
                 {"label": "Mon compte", "url": reverse("users:profile"), "shouldDisplay": is_authenticated},
+                {"label": "Se déconnecter", "url": reverse("users:signout"), "shouldDisplay": is_authenticated},
                 {"label": "Se connecter", "url": reverse("users:signin"), "shouldDisplay": not is_authenticated},
                 {"label": "S'inscrire", "url": reverse("users:signup"), "shouldDisplay": not is_authenticated},
             ],
