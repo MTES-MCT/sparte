@@ -80,9 +80,9 @@
     },
     {
         "name": "URL vers le formulaire d'inscription aux webinaires",
-        "slug": "JOTFORM_URL",
+        "slug": "WEBINAIRE_URL",
         "value_type": "STR",
-        "value": "https://form.jotform.com/231703451991355",
+        "value": "https://app.livestorm.co/mte/mon-diag-artif-webinaire-de-presentation?s=7425e75c-4336-47c8-acd2-5459b8261af6",
         "is_global": true
     },
     {
