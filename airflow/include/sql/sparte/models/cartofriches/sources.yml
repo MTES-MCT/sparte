@@ -1,0 +1,4 @@
+sources:
+  - name: public
+    tables:
+    - name: cartofriches_friches
