@@ -54,12 +54,12 @@
                 <div class="fr-mb-8v">
 					<h2>S'inscrire avec ProConnect</h2>
 					<div class="fr-connect-group">
-						<a href="{% url 'oidc_authentication_init' %}" class="fr-connect">
-							<span class="fr-connect__login">S’identifier avec</span>
+						<a href="{% url 'oidc_authentication_init' %}{% if next %}?next={{ next }}{% endif %}" class="fr-connect">
+							<span class="fr-connect__login">S'identifier avec</span>
 							<span class="fr-connect__brand">ProConnect</span>
 						</a>
 						<p>
-							<a href="https://www.proconnect.gouv.fr/" target="_blank"  rel="noopener" title="Qu’est-ce que ProConnect ? - nouvelle fenêtre">Qu’est-ce que ProConnect ?</a>
+							<a href="https://www.proconnect.gouv.fr/" target="_blank"  rel="noopener" title="Qu'est-ce que ProConnect ? - nouvelle fenêtre">Qu'est-ce que ProConnect ?</a>
 						</p>
 					</div>
               	</div>

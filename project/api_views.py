@@ -45,11 +45,12 @@ class ProjectDetailView(generics.RetrieveAPIView):
 class DiagnosticDownloadAPIView(generics.RetrieveAPIView):
     def get(self, request, pk, requested_document):
         if not request.user.is_authenticated:
-            login_url = reverse("users:signin") + f"?next={request.path}"
-            signup_url = reverse("users:signup") + f"?next={request.path}"
+            next_url = reverse("project:report_downloads", kwargs={"pk": pk})
+            login_url = reverse("users:signin") + f"?next={next_url}"
+            signup_url = reverse("users:signup") + f"?next={next_url}"
             error_message = (
                 "Le téléchargement des rapports n'est accessible qu'aux utilisateurs connectés.</br>"
-                f'Veuillez vous <a class="fr-link fr-text--sm" href="{login_url}">connecter</a> ou '
+                f'<a class="fr-link fr-text--sm" href="{login_url}">Se connecter</a> ou '
                 f'<a class="fr-link fr-text--sm" href="{signup_url}">créer un compte</a>.'
             )
             return JsonResponse({"error": error_message}, status=401)
