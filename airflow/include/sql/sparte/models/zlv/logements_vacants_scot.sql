@@ -17,6 +17,8 @@ ON
     scot_communes.commune_code = logements_vacants_commune.code_commune
 WHERE
     scot_communes.id_scot IS NOT NULL
+AND
+    {{ secretisation_zlv() }} -- On applique la secretisation
 GROUP BY
     scot_communes.id_scot,
     logements_vacants_commune.year
