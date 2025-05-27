@@ -5,7 +5,7 @@ from rest_framework import routers
 from project.models.create import create_project_api_view
 
 from . import views
-from .api_views import EmpriseViewSet, ProjectDetailView
+from .api_views import DiagnosticDownloadAPIView, EmpriseViewSet, ProjectDetailView
 
 app_name = "project"
 
@@ -95,8 +95,8 @@ urlpatterns = [
         name="report_downloads",
     ),
     path(
-        "<int:pk>/tableau-de-bord/telechargement/<slug:requested_document>",
-        views.diagnostic.DiagnosticDownloadView.as_view(),
+        "<int:pk>/telechargement/<slug:requested_document>",
+        DiagnosticDownloadAPIView.as_view(),
         name="report_download",
     ),
     path(

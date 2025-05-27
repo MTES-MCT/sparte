@@ -1,35 +1,141 @@
-import React from 'react';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
-import Loader from '@components/ui/Loader';
+import React, { useState, ReactNode } from 'react';
 import Guide from '@components/ui/Guide';
+import { useDownloadDiagnosticMutation } from '@services/api';
+import { ProjectDetailResultType } from "@services/types/project";
 
-/*
-Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
-Cette approche progressive facilite la migration des éléments de contenu existants vers React, tout en permettant de conserver certaines fonctionnalités serveur le temps de la transition.
+interface ReportConfig {
+    title: string;
+    description: string;
+    documentType: string;
+}
 
-### Injection HTML contrôlée :
-Le contenu récupéré du serveur est inséré directement dans le DOM à l'aide de `dangerouslySetInnerHTML`.
-Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais il est important de prendre des précautions contre les injections de code malveillant (XSS).
-Dans ce cas, les données provenant de Django sont considérées comme fiables.
-*/
+interface NoticeProps {
+    type: 'success' | 'warning';
+    message: string | ReactNode;
+    reportTitle: string;
+}
 
-const Downloads: React.FC<{ endpoint: string }> = ({ endpoint }) => {
-    const { content, isLoading, error } = useHtmlLoader(endpoint);
+interface DownloadCardProps {
+    report: ReportConfig;
+    onDownload: (report: ReportConfig) => void;
+    isDisabled: boolean;
+}
 
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
+interface DownloadsProps {
+    projectData: ProjectDetailResultType;
+}
+
+const NOTICE_TITLES = {
+    success: (reportTitle: string) => `Votre demande de téléchargement du rapport ${reportTitle} a bien été prise en compte`,
+    warning: (reportTitle: string) => `Erreur lors de votre demande de téléchargement du rapport ${reportTitle}`
+} as const;
+
+const REPORTS: ReportConfig[] = [
+    {
+        title: "complet",
+        description: "Analyse détaillée de l'évolution de la consommation d'espaces NAF et de l'artificialisation des sols sur votre territoire, incluant les indicateurs clés, les tendances observées et les recommandations pour une gestion durable des espaces.",
+        documentType: "rapport-complet"
+    },
+    {
+        title: "triennal local",
+        description: "Trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire réalisée en partenariat avec la DGALN.",
+        documentType: "rapport-local"
+    }
+];
+
+const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) => (
+    <div className={`bg-white fr-mt-2w fr-alert fr-alert--${type}`}>
+        <h3 className="fr-alert__title">{NOTICE_TITLES[type](reportTitle)}</h3>
+        <p>{message}</p>
+    </div>
+);
+
+const DownloadCard: React.FC<DownloadCardProps> = ({ report, onDownload, isDisabled }) => (
+    <div className={`fr-card fr-enlarge-link ${isDisabled ? 'fr-card--disabled' : ''}`}>
+        <div className="fr-card__body">
+            <div className="fr-card__content">
+                <h3 className="fr-card__title">
+                    <a 
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (!isDisabled) onDownload(report);
+                        }} 
+                        href="#"
+                        aria-disabled={isDisabled}
+                    >
+                        Rapport {report.title}
+                    </a>
+                </h3>
+                <p className="fr-card__desc">{report.description}</p>
+                <div className="fr-card__end">
+                    <p className="fr-card__detail">
+                        Télécharger le rapport {report.title} au format Word
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
+    const [message, setMessage] = useState<string | null>(null);
+    const [error, setError] = useState<ReactNode | null>(null);
+    const [disabledDocuments, setDisabledDocuments] = useState<Set<string>>(new Set());
+    const [currentReport, setCurrentReport] = useState<ReportConfig | null>(null);
+    const [downloadDiagnostic] = useDownloadDiagnosticMutation();
+
+    const handleDownload = async (report: ReportConfig) => {
+        if (disabledDocuments.has(report.documentType)) return;
+
+        setError(null);
+        setMessage(null);
+        setCurrentReport(report);
+        setDisabledDocuments(new Set([report.documentType]));
+
+        try {
+            const response = await downloadDiagnostic({ 
+                projectId: projectData.id, 
+                documentType: report.documentType 
+            }).unwrap();
+            setMessage(response.message);
+        } catch (error: any) {
+            setError(error.data?.error || 'Une erreur est survenue');
+        }
+    };
 
     return (
         <div className="fr-container--fluid fr-p-3w">
             <div className="fr-grid-row">
                 <div className="fr-col-12">
-                    <Guide
-                        title="Qu'y a-t-il dans nos rapports téléchargeables ?"
-                    >
+                    <Guide title="Qu'y a-t-il dans nos rapports téléchargeables ?">
                         <p>Nos rapports téléchargeables vous permettent d'accéder à des analyses détaillées de l'évolution de l'artificialisation des sols, des données quantitatives sur la consommation d'espaces NAF, ainsi qu'à des cartographies des zones concernées.</p>
                         <p>Ces documents sont régulièrement mis à jour pour refléter les dernières données disponibles et les évolutions réglementaires.</p>
                     </Guide>
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
+                    {message && currentReport && (
+                        <Notice 
+                            type="success" 
+                            message={message} 
+                            reportTitle={currentReport.title} 
+                        />
+                    )}
+                    {error && currentReport && (
+                        <Notice 
+                            type="warning" 
+                            message={<span dangerouslySetInnerHTML={{ __html: error }} />} 
+                            reportTitle={currentReport.title} 
+                        />
+                    )}
+                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+                        {REPORTS.map((report) => (
+                            <div key={report.documentType} className="fr-col-12 fr-col-md-6">
+                                <DownloadCard
+                                    report={report}
+                                    onDownload={handleDownload}
+                                    isDisabled={disabledDocuments.has(report.documentType)}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

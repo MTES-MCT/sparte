@@ -64,12 +64,19 @@ export const djangoApi = createApi({
         };
       },
     }),
+    downloadDiagnostic: builder.mutation<{ message: string }, { projectId: number; documentType: string }>({
+      query: ({ projectId, documentType }) => ({
+        url: `/project/${projectId}/telechargement/${documentType}`,
+        method: 'GET'
+      }),
+    }),
   }),
 });
 
 const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
-const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery
+const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
+const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
 
 const {
   useGetDepartementListQuery,
@@ -88,4 +95,5 @@ export {
   useGetLandQuery,
   useGetArtifZonageIndexQuery,
   useGetLandArtifStockIndexQuery,
+  useDownloadDiagnosticMutation,
 };

@@ -21,13 +21,13 @@ class RequestedDocumentChoices(models.TextChoices):
 class Request(models.Model):
     first_name = models.CharField("Prénom", max_length=150, validators=[is_alpha_validator], null=True)
     last_name = models.CharField("Nom", max_length=150, validators=[is_alpha_validator], null=True)
-    function = models.CharField("Fonction", max_length=250, validators=[is_alpha_validator], null=True)
     organism = models.CharField(
         "Organisme",
-        max_length=30,
+        max_length=250,
         choices=User.ORGANISM.choices,
-        validators=[is_alpha_validator],
     )
+    service = models.CharField("Service", max_length=250, choices=User.SERVICE.choices, null=True)
+    function = models.CharField("Fonction", max_length=250, choices=User.FUNCTION.choices, null=True)
     email = models.EmailField("E-mail")
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True)
     user = models.ForeignKey(

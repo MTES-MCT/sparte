@@ -202,7 +202,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Téléchargements"
                                             >
-                                                <Downloads endpoint={urls.downloads} />
+                                                <Downloads projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />
