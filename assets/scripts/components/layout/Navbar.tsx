@@ -106,11 +106,9 @@ const Icon = styled.i`
 `;
 
 const DownloadLink = styled(Link)`
-    display: block;
-    width: 100%;
-    display: flex;
-    text-decoration: none;
+    width: 90%;
     font-size: 0.85em;
+    margin: 1em;
 `;
 
 const NavContainer = styled.div`
