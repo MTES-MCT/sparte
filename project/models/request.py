@@ -26,8 +26,8 @@ class Request(models.Model):
         max_length=250,
         choices=User.ORGANISM.choices,
     )
-    service = models.CharField("Service", max_length=250, choices=User.SERVICE.choices, null=True)
-    function = models.CharField("Fonction", max_length=250, choices=User.FUNCTION.choices, null=True)
+    service = models.CharField("Service", max_length=250, choices=User.SERVICE.choices, null=True, blank=True)
+    function = models.CharField("Fonction", max_length=250, choices=User.FUNCTION.choices, null=True, blank=True)
     email = models.EmailField("E-mail")
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True)
     user = models.ForeignKey(
