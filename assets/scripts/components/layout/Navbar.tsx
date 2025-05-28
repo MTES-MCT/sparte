@@ -181,7 +181,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
         }
     }, [isOpen, isMobile]);
 
-    const renderMenuItems = (items: MenuItem[]) => (
+    const MenuItems = (items: MenuItem[]) => (
         <SubMenuList>
             {items.map(item => (
                 <SubMenu
@@ -207,7 +207,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
         </SubMenuList>
     );
 
-    const renderDownloadItems = () => (
+    const DownloadItems = () => (
         <DownloadLink 
             to={urls.downloads}
             className="fr-btn fr-btn--icon-left fr-icon-download-line"
@@ -242,13 +242,13 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
                                         {menu.label}
                                     </MenuTitle>
                                 )}
-                                {menu.subMenu && renderMenuItems(menu.subMenu)}
+                                {menu.subMenu && MenuItems(menu.subMenu)}
                             </Menu>
                         ))}
                     </MenuList>
                 </NavContainer>
                 {shouldDisplayDownloads && urls.downloads && (
-                    renderDownloadItems()
+                    DownloadItems()
                 )}
             </Container>
         </>
