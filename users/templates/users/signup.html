@@ -78,7 +78,7 @@
                     </form>
                 </div>
                 <p class="fr-mb-0 fr-mt-2w fr-text--sm text-center text-muted">
-                    Vous avez déjà un compte ? <a href="{% url 'users:signin' %}">connectez-vous</a>.
+                    Vous avez déjà un compte ? <a href="{% url 'users:signin' %}{% if next %}?next={{ next }}{% endif %}">connectez-vous</a>.
                 </p>
             </div>
         </div>
