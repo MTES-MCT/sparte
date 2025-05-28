@@ -33,7 +33,7 @@ const NOTICE_TITLES = {
 const REPORTS: ReportConfig[] = [
     {
         title: "complet",
-        description: "Analyse détaillée de l'évolution de la consommation d'espaces NAF et de l'artificialisation des sols sur votre territoire, incluant les indicateurs clés, les tendances observées et les recommandations pour une gestion durable des espaces.",
+        description: "Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols sur votre territoire, incluant les indicateurs clés, au regard de la loi climat et résilience.",
         documentType: "rapport-complet"
     },
     {
@@ -108,7 +108,7 @@ const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
             <div className="fr-grid-row">
                 <div className="fr-col-12">
                     <Guide title="Qu'y a-t-il dans nos rapports téléchargeables ?">
-                        <p>Nos rapports téléchargeables vous permettent d'accéder à des analyses détaillées de l'évolution de l'artificialisation des sols, des données quantitatives sur la consommation d'espaces NAF (naturel, agricole et forestier), ainsi qu'à des cartographies des zones concernées.</p>
+                        <p>Nos rapports téléchargeables vous permettent d'accéder à des analyses détaillées de l'évolution de l'artificialisation des sols, des données quantitatives sur la consommation d'espaces NAF (naturels, agricoles et forestiers), ainsi qu'à des cartographies des zones concernées.</p>
                         <p>Ces documents sont régulièrement mis à jour pour refléter les dernières données disponibles et les évolutions réglementaires.</p>
                     </Guide>
                     {message && currentReport && (
