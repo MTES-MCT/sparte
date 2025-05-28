@@ -2,7 +2,6 @@ __all__ = [
     "Emprise",
     "ErrorTracking",
     "Project",
-    "ProjectCommune",
     "Request",
     "trigger_async_tasks",
     "user_directory_path",
@@ -13,7 +12,7 @@ __all__ = [
 ]
 
 
-from .project_base import Emprise, Project, ProjectCommune
+from .project_base import Emprise, Project
 from .request import ErrorTracking, Request, RequestedDocumentChoices
 from .RNUPackage import RNUPackage
 from .RNUPackageRequest import RNUPackageRequest

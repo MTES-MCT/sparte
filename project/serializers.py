@@ -1,13 +1,11 @@
 from django.templatetags.static import static
 from django.urls import reverse
 from django_app_parameter.models import Parameter
-from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 from rest_framework_gis import serializers as gis_serializers
 from rest_framework_gis.serializers import GeometrySerializerMethodField
 
 from project.models import Project
-from public_data.models import Commune
 
 from .models import Emprise
 
@@ -34,15 +32,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "consommation": reverse("project:report_conso", kwargs=kwargs),
             "logementVacant": reverse("project:report_logement_vacant", kwargs=kwargs),
             "update": reverse("project:update", kwargs=kwargs),
-            "dowloadConsoReport": reverse(
-                "project:report_download", kwargs={"requested_document": "rapport-conso", **kwargs}
-            ),
-            "downloadFullReport": reverse(
-                "project:report_download", kwargs={"requested_document": "rapport-complet", **kwargs}
-            ),
-            "dowloadLocalReport": reverse(
-                "project:report_download", kwargs={"requested_document": "rapport-local", **kwargs}
-            ),
+            "downloads": reverse("project:report_downloads", kwargs=kwargs),
         }
 
     def get_navbar(self, obj):
@@ -141,6 +131,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                 },
                 {"label": "Mes diagnostics", "url": reverse("project:list"), "shouldDisplay": is_authenticated},
                 {"label": "Mon compte", "url": reverse("users:profile"), "shouldDisplay": is_authenticated},
+                {"label": "Se déconnecter", "url": reverse("users:signout"), "shouldDisplay": is_authenticated},
                 {"label": "Se connecter", "url": reverse("users:signin"), "shouldDisplay": not is_authenticated},
                 {"label": "S'inscrire", "url": reverse("users:signup"), "shouldDisplay": not is_authenticated},
             ],
@@ -201,26 +192,3 @@ class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
         )
         geo_field = "mpoly"
         model = Emprise
-
-
-class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
-    artif_area = serializers.FloatField()
-    conso_1121_art = serializers.FloatField()
-    conso_1121_hab = serializers.FloatField()
-    conso_1121_act = serializers.FloatField()
-    surface_artif = serializers.FloatField()
-
-    class Meta:
-        fields = (
-            "id",
-            "name",
-            "insee",
-            "area",
-            "map_color",
-            "artif_area",
-            "conso_1121_art",
-            "conso_1121_hab",
-            "conso_1121_act",
-        )
-        geo_field = "mpoly"
-        model = Commune

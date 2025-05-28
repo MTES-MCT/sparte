@@ -26,7 +26,7 @@
             <div class="fr-mb-8v">
                 <h2>Se connecter avec ProConnect</h2>
                 <div class="fr-connect-group">
-                    <a href="{% url 'oidc_authentication_init' %}" class="fr-connect">
+                    <a href="{% url 'oidc_authentication_init' %}{% if next %}?next={{ next }}{% endif %}" class="fr-connect">
                         <span class="fr-connect__login">S’identifier avec</span>
                         <span class="fr-connect__brand">ProConnect</span>
                     </a>
@@ -51,7 +51,7 @@
             <h2>Vous n’avez pas de compte ?</h2>
             <ul class="fr-btns-group">
                 <li>
-                    <a class="fr-btn fr-btn--secondary" href="{% url 'users:signup' %}?next={{ next }}">
+                    <a class="fr-btn fr-btn--secondary" href="{% url 'users:signup' %}{% if next %}?next={{ next }}{% endif %}">
                         Créer un compte
                     </a>
                 </li>

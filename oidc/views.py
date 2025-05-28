@@ -14,9 +14,18 @@ logger = logging.getLogger(__name__)
 
 @require_http_methods(["GET"])
 def oidc_login(request):
-    return HttpResponseRedirect(
-        redirect_to=reverse("oidc_authentication_init") + f"?{request.META.get('QUERY_STRING')}"
-    )
+    # Récupération du paramètre next
+    next_url = request.GET.get("next")
+    query_string = request.META.get("QUERY_STRING", "")
+
+    # Construction de l'URL de redirection
+    redirect_url = reverse("oidc_authentication_init")
+    if next_url:
+        redirect_url += f"?next={next_url}"
+    elif query_string:
+        redirect_url += f"?{query_string}"
+
+    return HttpResponseRedirect(redirect_to=redirect_url)
 
 
 @require_http_methods(["GET"])

@@ -27,6 +27,8 @@ class ProfileCompletionMiddleware:
             and not request.user.is_profile_complete
             and not any(request.path.startswith(url) for url in excluded_urls)
         ):
-            return redirect("users:complete_profile")
+            # Conserver l'URL complète avec tous les paramètres
+            next_url = request.get_full_path()
+            return redirect(f"{reverse('users:complete_profile')}?next={next_url}")
 
         return self.get_response(request)

@@ -1,0 +1,16 @@
+
+version: 2
+
+models:
+  - name: ocsge_surface_cover_percent
+    columns:
+    - name: surface_france
+      data_tests:
+      - not_null
+    - name: pourcentage_couvert_par_ocsge
+      data_tests:
+      - not_null
+      - is_percent_between_0_and_100
+    - name: surface_couverte_par_ocsge
+      data_tests:
+      - not_null
