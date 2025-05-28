@@ -2,7 +2,6 @@ __all__ = [
     "Emprise",
     "ErrorTracking",
     "Project",
-    "ProjectCommune",
     "Request",
     "trigger_async_tasks",
     "user_directory_path",
