@@ -32,15 +32,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "consommation": reverse("project:report_conso", kwargs=kwargs),
             "logementVacant": reverse("project:report_logement_vacant", kwargs=kwargs),
             "update": reverse("project:update", kwargs=kwargs),
-            "dowloadConsoReport": reverse(
-                "project:report_download", kwargs={"requested_document": "rapport-conso", **kwargs}
-            ),
-            "downloadFullReport": reverse(
-                "project:report_download", kwargs={"requested_document": "rapport-complet", **kwargs}
-            ),
-            "dowloadLocalReport": reverse(
-                "project:report_download", kwargs={"requested_document": "rapport-local", **kwargs}
-            ),
+            "downloads": reverse("project:report_downloads", kwargs=kwargs),
         }
 
     def get_navbar(self, obj):
@@ -139,6 +131,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                 },
                 {"label": "Mes diagnostics", "url": reverse("project:list"), "shouldDisplay": is_authenticated},
                 {"label": "Mon compte", "url": reverse("users:profile"), "shouldDisplay": is_authenticated},
+                {"label": "Se déconnecter", "url": reverse("users:signout"), "shouldDisplay": is_authenticated},
                 {"label": "Se connecter", "url": reverse("users:signin"), "shouldDisplay": not is_authenticated},
                 {"label": "S'inscrire", "url": reverse("users:signup"), "shouldDisplay": not is_authenticated},
             ],

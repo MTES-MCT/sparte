@@ -19,6 +19,7 @@ import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import Update from '@components/pages/Update';
+import Downloads from '@components/pages/Downloads';
 import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
@@ -156,9 +157,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 </RouteWrapper>
                                         }
                                     />
-
-                                    
-
                                     <Route
                                         path={urls.logementVacant}
                                         element={
@@ -195,6 +193,16 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 title="Paramètres du diagnostic"
                                             >
                                                 <Update endpoint={urls.update} />
+                                            </RouteWrapper>
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.downloads}
+                                        element={
+                                            <RouteWrapper
+                                                title="Téléchargements"
+                                            >
+                                                <Downloads projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />

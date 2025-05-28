@@ -5,10 +5,9 @@ import styled, { css } from 'styled-components';
 import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
-import Button from '@components/ui/Button';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 import { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
-import { MenuItem, ProjectDetailResultType } from '@services/api';
+import { MenuItem, ProjectDetailResultType } from '@services/types/project';
 
 const primaryColor = '#313178';
 const activeColor = '#4318FF';
@@ -94,67 +93,22 @@ const SubMenuTitleLink = styled(Link)<{ $isActive: boolean, $disabled: boolean }
     ${MenuStyle}
     ${LinkStyle}
     cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+`;
 
+const SubMenuTitle = styled.div`
+    ${MenuStyle}
+    color: ${primaryColor};
+    cursor: not-allowed;
 `;
 
 const Icon = styled.i`
     margin-right: 0.7em;
 `;
 
-const DownloadList = styled.ul<{ $isMobile: boolean }>`
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    ${({ $isMobile }) => !$isMobile && `
-        height: 0;
-        overflow: hidden;
-        transition: height 0.3s ease;
-    `}
-`;
-
-const DownloadContainer = styled.div<{ $isMobile: boolean }>`
-    margin: 1rem;
-    padding: 1rem;
-    border-radius: 6px;
-    background: #cacafb;
-
-    ${({ $isMobile }) => !$isMobile && `
-        &:hover ${DownloadList} {
-            height: 145px;
-        }
-    `}
-`;
-
-const DownloadTitle = styled.div`
-    color: ${activeColor};
-    font-size: 0.9em;
-    display: flex;
-    align-items: center;
-    gap: 0.2rem;
-    flex-direction: column;
-    font-weight: 500;
-
-    i {
-        font-size: 1.2em;
-        background: ${activeColor};
-        color: #fff;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-    }
-`;
-
-const DownloadListItem = styled.li`
-    & > a, & > button {
-        width: 100%;
-    }
-
-    &:first-child {
-        margin-top: 1rem;
-    }
+const DownloadLink = styled(Link)`
+    width: 90%;
+    font-size: 0.85em;
+    margin: 1em;
 `;
 
 const NavContainer = styled.div`
@@ -181,10 +135,25 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
     z-index: 999;
 `;
 
+const MenuText = styled.span<{ $disabled?: boolean }>`
+    color: ${({ $disabled }) => $disabled ? 'var(--grey-200-850-hover)' : 'inherit'};
+`;
+
+const MenuItemContent: React.FC<{ item: MenuItem }> = ({ item }) => (
+    <>
+        {item.icon && <Icon className={`bi ${item.icon}`} />}
+        <div className="d-flex flex-column items-center">
+            {item.new && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
+            {item.soon && (<p className="fr-badge fr-badge--sm fr-badge--info">Bientôt</p>)}
+            <MenuText $disabled={!item.url}>{item.label}</MenuText>
+        </div>
+    </>
+);
 
 const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectData }) => {
     const location = useLocation();
     const { navbar, urls } = projectData
+
     const htmxRef = useHtmx([urls]);
 
     const dispatch = useDispatch();
@@ -199,14 +168,6 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
 
     const isActive = (url?: string) => location.pathname === url;
 
-    // Temporaire => Il faudrait utiliser la modal de react dsfr
-    const resetModalContent = () => {
-        const modalContent = document.getElementById('diag_word_form');
-        if (modalContent) {
-            modalContent.innerHTML = '<div class="fr-custom-loader"></div>';
-        }
-    };
-
     // responsive
     useEffect(() => {
         dispatch(handleResponsiveNavbar({ isMobile }));
@@ -220,111 +181,39 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
         }
     }, [isOpen, isMobile]);
 
-    const renderMenuItems = (items: MenuItem[]) => (
+    const MenuItems = (items: MenuItem[]) => (
         <SubMenuList>
             {items.map(item => (
                 <SubMenu
                     key={item.label}
                     role="treeitem"
                 >
-                    <SubMenuTitleLink
-                        to={item.url}
-                        $isActive={isActive(item.url)}
-                        $disabled={item.soon}
-                        onClick={() => isMobile && dispatch(toggleNavbar())}
-                    >
-                        {item.icon && <Icon className={`bi ${item.icon}`} />}
-                        <div className="d-flex flex-column items-center">
-                            {item.new && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
-                            {item.soon && (<p className="fr-badge fr-badge--sm fr-badge--info">Bientôt</p>)}
-
-                            {item.soon ? (
-                                <span style={{color: 'var(--grey-50-1000'}}>{item.label}</span>
-                            ) : (
-                                <span>{item.label}</span>
-                            )}
-                        </div>
-                    </SubMenuTitleLink>
+                    {item.url ? (
+                        <SubMenuTitleLink
+                            to={item.url}
+                            $isActive={isActive(item.url)}
+                            $disabled={item.soon}
+                            onClick={() => isMobile && dispatch(toggleNavbar())}
+                        >
+                            <MenuItemContent item={item} />
+                        </SubMenuTitleLink>
+                    ) : (
+                        <SubMenuTitle>
+                            <MenuItemContent item={item} />
+                        </SubMenuTitle>
+                    )}
                 </SubMenu>
             ))}
         </SubMenuList>
     );
 
-    const renderDownloadItems = () => (
-        <DownloadContainer $isMobile={isMobile}>
-            <DownloadTitle>
-                <i className="bi bi-box-arrow-down"></i>
-                <div>Téléchargements</div>
-            </DownloadTitle>
-            <DownloadList $isMobile={isMobile}>
-                <DownloadListItem>
-                    <Button
-                        type="htmx"
-                        icon="bi bi-file-earmark-word"
-                        label="Analyse de Consommation"
-                        htmxAttrs={{
-                            'data-hx-get': urls?.dowloadConsoReport,
-                            'data-hx-target': '#diag_word_form',
-                            'data-fr-opened': 'false',
-                            'aria-controls': 'fr-modal-download-word',
-                        }}
-                        onClick={() => {
-                            resetModalContent();
-                            if (window.trackEvent)
-                                window.trackEvent(
-                                    'diagnostic_download_funnel',
-                                    'click_button_conso_report_download',
-                                    'conso_report_download_button_clicked'
-                                );
-                        }}
-                    />
-                </DownloadListItem>
-                <DownloadListItem>
-                    <Button
-                        type="htmx"
-                        icon="bi bi-file-earmark-word"
-                        label="Analyse complète"
-                        htmxAttrs={{
-                            'data-hx-get': urls?.downloadFullReport,
-                            'data-hx-target': '#diag_word_form',
-                            'data-fr-opened': 'false',
-                            'aria-controls': 'fr-modal-download-word',
-                        }}
-                        onClick={() => {
-                            resetModalContent();
-                            if (window.trackEvent)
-                                window.trackEvent(
-                                    'diagnostic_download_funnel',
-                                    'click_button_diagnostic_download_word',
-                                    'diagnostic_download_word_button_clicked'
-                                );
-                        }}
-                    />
-                </DownloadListItem>
-                <DownloadListItem>
-                    <Button
-                        type="htmx"
-                        icon="bi bi-file-earmark-word"
-                        label="Rapport triennal local"
-                        htmxAttrs={{
-                            'data-hx-get': urls?.dowloadLocalReport,
-                            'data-hx-target': '#diag_word_form',
-                            'data-fr-opened': 'false',
-                            'aria-controls': 'fr-modal-download-word',
-                        }}
-                        onClick={() => {
-                            resetModalContent();
-                            if (window.trackEvent)
-                                window.trackEvent(
-                                    'diagnostic_download_funnel',
-                                    'click_button_local_report_download',
-                                    'local_report_download_button_clicked'
-                                );
-                        }}
-                    />
-                </DownloadListItem>
-            </DownloadList>
-        </DownloadContainer>
+    const DownloadItems = () => (
+        <DownloadLink 
+            to={urls.downloads}
+            className="fr-btn fr-btn--icon-left fr-icon-download-line"
+        >
+            Téléchargements
+        </DownloadLink>
     );
 
     return (
@@ -353,16 +242,13 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
                                         {menu.label}
                                     </MenuTitle>
                                 )}
-                                {menu.subMenu && renderMenuItems(menu.subMenu)}
+                                {menu.subMenu && MenuItems(menu.subMenu)}
                             </Menu>
                         ))}
                     </MenuList>
-                    {urls && shouldDisplayDownloads && isMobile && (
-                        renderDownloadItems()
-                    )}
                 </NavContainer>
-                {urls && shouldDisplayDownloads && !isMobile && (
-                    renderDownloadItems()
+                {shouldDisplayDownloads && urls.downloads && (
+                    DownloadItems()
                 )}
             </Container>
         </>
