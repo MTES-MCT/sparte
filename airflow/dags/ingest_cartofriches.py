@@ -78,7 +78,7 @@ def ingest_cartofriches():
 
     @task.bash
     def dbt_build() -> str:
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s friches.sql+'
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s friche.sql+'
 
     @task.bash
     def cleanup() -> str:
