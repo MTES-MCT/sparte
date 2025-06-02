@@ -125,6 +125,13 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landartifstockusagecomposition",
                 "copy_public_data_landartifstockusagecompositionindex",
                 "copy_public_data_land",
+                "copy_public_data_landfrichepollution",
+                "copy_public_data_landfrichestatut",
+                "copy_public_data_landfrichesurfacerank",
+                "copy_public_data_landfrichetype",
+                "copy_public_data_landfrichezonageenvironnementale",
+                "copy_public_data_landfrichezonagetype",
+                "copy_public_data_landfrichezoneactivite",
             ],
             type="array",
         ),
@@ -439,6 +446,83 @@ def update_app():  # noqa: C901
             ),
         )
 
+    @task.python
+    def copy_public_data_landfrichepollution(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichepollution",
+            to_table="public.public_data_landfrichepollution",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichestatut(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichestatut",
+            to_table="public.public_data_landfrichestatut",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichesurfacerank(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichesurfacerank",
+            to_table="public.public_data_landfrichesurfacerank",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichetype(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichetype",
+            to_table="public.public_data_landfrichetype",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichezonageenvironnementale(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichezonageenvironnementale",
+            to_table="public.public_data_landfrichezonageenvironnementale",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichezonagetype(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichezonagetype",
+            to_table="public.public_data_landfrichezonagetype",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichezoneactivite(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichezoneactivite",
+            to_table="public.public_data_landfrichezoneactivite",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
     @task.branch
     def copy_public_data_branch(**context):
         return context["params"]["tasks"]
@@ -469,6 +553,13 @@ def update_app():  # noqa: C901
         copy_public_data_landartifstockusagecomposition(),
         copy_public_data_landartifstockusagecompositionindex(),
         copy_public_data_land(),
+        copy_public_data_landfrichepollution(),
+        copy_public_data_landfrichestatut(),
+        copy_public_data_landfrichesurfacerank(),
+        copy_public_data_landfrichetype(),
+        copy_public_data_landfrichezonageenvironnementale(),
+        copy_public_data_landfrichezonagetype(),
+        copy_public_data_landfrichezoneactivite(),
     ]
 
 
