@@ -19,6 +19,7 @@ SELECT
     land_ocsge_status.status as ocsge_status,
     land_ocsge_status.has_ocsge as has_ocsge,
     land_zonages.zonage_count > 0 as has_zonage,
+    land_friche.friche_count > 0 as has_friche,
     land_millesimes.millesimes as millesimes,
     land_millesimes_by_index.millesimes_by_index as millesimes_by_index,
     land.child_land_types,
@@ -86,3 +87,12 @@ LEFT JOIN LATERAL (
         land_ocsge_status.land_id = land.land_id AND
         land_ocsge_status.land_type = land.land_type
 ) land_ocsge_status ON true
+LEFT JOIN LATERAL (
+    SELECT
+        count(*) as friche_count
+    FROM
+        {{ ref('friche_land') }}
+    WHERE
+        friche_land.land_id = land.land_id AND
+        friche_land.land_type = land.land_type
+) land_friche ON true

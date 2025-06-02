@@ -1,0 +1,15 @@
+{{
+    count_friche_by_value(
+        'type_zone',
+        'friche_type_zone',
+        [
+                'N',
+                'U',
+                'A',
+                'AU',
+                'ZC',
+                'ZCa',
+                'ZnC'
+        ]
+    )
+}}
