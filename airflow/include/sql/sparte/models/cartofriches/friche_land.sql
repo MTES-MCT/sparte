@@ -1,4 +1,14 @@
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+        indexes=[
+            {"columns": ["site_id"], "type": "btree"},
+            {"columns": ["land_id"], "type": "btree"},
+            {"columns": ["land_type"], "type": "btree"},
+            {"columns": ["geom"], "type": "gist"},
+        ],
+    )
+}}
 
 SELECT
     friche.site_id,

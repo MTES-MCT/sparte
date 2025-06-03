@@ -100,7 +100,9 @@ LEFT JOIN
 ON st_transform(commune.geom, 4326) && friche.geom
 AND st_contains(
     st_transform(commune.geom, 4326), st_pointonsurface(friche.geom)
-)), with_surface as (
+)
+WHERE friche.site_statut != 'friche potentielle'
+), with_surface as (
 SELECT
 *,
 ST_Area(geom) as surface
