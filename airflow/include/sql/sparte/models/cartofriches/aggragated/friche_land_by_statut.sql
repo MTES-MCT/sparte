@@ -4,7 +4,6 @@
     [
         'friche reconvertie',
         'friche avec projet',
-        'friche sans projet',
-        'friche potentielle'
+        'friche sans projet'
     ]
 ) }}

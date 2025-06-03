@@ -12,7 +12,6 @@ class LandFricheStatut(BaseLandFriche):
         FRICHE_RECONVERTIE = "friche reconvertie"
         FRICHE_AVEC_PROJET = "friche avec projet"
         FRICHE_SANS_PROJET = "friche sans projet"
-        FRICHE_POTENTIELLE = "friche potentielle"
 
     friche_statut = models.CharField(choices=StatutChoices.choices)
 

@@ -10,8 +10,7 @@ models:
               values: [
                 'friche reconvertie',
                 'friche avec projet',
-                'friche sans projet',
-                'friche potentielle'
+                'friche sans projet'
               ]
       - name: surface
         data_tests:
