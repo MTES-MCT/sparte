@@ -23,7 +23,7 @@ from public_data.infra.consommation.progression.export.ConsoProportionalComparis
     ConsoProportionalComparisonExportTableMapper,
 )
 from public_data.models import LandArtifStockIndex, LandModel
-from public_data.models.administration import AdminRef
+from public_data.models.administration import AdminRef, Land
 from utils.functions import get_url_with_domain
 
 
@@ -106,8 +106,32 @@ class BaseRenderer:
         has_zonage = land_model.has_zonage
 
         # Charts
-        chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
         annual_total_conso_chart = charts.AnnualTotalConsoChartExport(diagnostic)
+
+        if diagnostic.land_type == AdminRef.COMMUNE:
+            annual_total_conso_data_table = add_total_line_column(annual_total_conso_chart.get_series(), line=False)
+        else:
+            # TODO : refactor to only use new type of land model
+            child_lands = LandModel.objects.filter(
+                parent_keys__contains=[f"{diagnostic.land_type}_{diagnostic.land_id}"], land_type=diagnostic.level
+            )
+            old_lands = [Land(f"{land.land_type}_{land.land_id}") for land in child_lands]
+
+            communes_conso = PublicDataContainer.consommation_progression_service().get_by_lands(
+                lands=old_lands,
+                start_date=int(diagnostic.analyse_start_date),
+                end_date=int(diagnostic.analyse_end_date),
+            )
+
+            annual_total_conso_data_table = {}
+
+            for commune_conso in communes_conso:
+                annual_total_conso_data_table[commune_conso.land.name] = {
+                    f"{year.year}": year.total for year in commune_conso.consommation
+                }
+
+            annual_total_conso_data_table = add_total_line_column(annual_total_conso_data_table, line=False)
+
         det_chart = charts.AnnualConsoByDeterminantChartExport(diagnostic)
         pie_det_chart = charts.ConsoByDeterminantPieChartExport(diagnostic)
         objective_chart = charts.ObjectiveChartExport(diagnostic)
@@ -137,10 +161,7 @@ class BaseRenderer:
             "projection_zan_2031": self.prep_chart(objective_chart),
             # Charts datatables
             "table_headers_years": diagnostic.years + ["Total"],
-            "annual_total_conso_data_table": add_total_line_column(
-                series=annual_total_conso_chart.get_series(), line=False
-            ),
-            "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
+            "annual_total_conso_data_table": annual_total_conso_data_table,
             "determinants_data_table": ConsoByDeterminantExportTableMapper.map(
                 consommation_progression=PublicDataContainer.consommation_progression_service()
                 .get_by_land(
