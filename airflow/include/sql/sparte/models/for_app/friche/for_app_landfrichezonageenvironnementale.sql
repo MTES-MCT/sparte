@@ -10,6 +10,6 @@ SELECT
     land_type,
     friche_zonage_environnemental,
     friche_count,
-    friche_surface
+    friche_surface / 10000 as friche_surface
 FROM
     {{ ref('friche_land_by_zonage_environnemental')}}
