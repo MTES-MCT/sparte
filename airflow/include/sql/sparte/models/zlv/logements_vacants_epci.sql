@@ -13,3 +13,4 @@ FROM
 WHERE
     code_siren in (SELECT code FROM {{ ref('epci') }})
 AND not code_insee && array{{ commune_changed_since('2019') }}
+AND {{ secretisation_zlv() }} -- On applique la secretisation

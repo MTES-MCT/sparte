@@ -25,3 +25,5 @@ OR
 OR
     land_name = 'Région Corse' AND
     land_type = 'Autre'
+AND
+    {{ secretisation_zlv() }} -- On applique la secretisation
