@@ -1,5 +1,6 @@
 import React from "react";
 import Guide from "@components/ui/Guide";
+import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
 import { useGetLandFrichesStatutQuery } from "@services/api";
@@ -59,6 +60,15 @@ const STATUT_CONFIG = {
     'friche potentielle': { icon: 'bi bi-building-exclamation' }
 } as const;
 
+const FRICHES_CHARTS = [
+    { id: 'friche_pollution' },
+    { id: 'friche_surface' },
+    { id: 'friche_type' },
+    { id: 'friche_zonage_environnemental' },
+    { id: 'friche_zonage_type' },
+    { id: 'friche_zone_activite' }
+] as const;
+
 const FrichesStatut: React.FC<{
     friche_count: number;
     friche_surface: number;
@@ -100,32 +110,30 @@ export const Friches: React.FC<FrichesProps> = ({
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
-			<div className="fr-mb-3w">
-				<div className="fr-grid-row fr-grid-row--gutters">
-					<div className="fr-col-12">
-                        <Guide
-                            title="Qu'est-ce qu'une friche urbaine ?"
-                            DrawerTitle="Qu'est-ce qu'une friche urbaine ?"
-                            drawerChildren={
-                                <>
-                                    <p className="fr-text--sm mb-3">
-                                        La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables".
-                                    </p>
-                                    <p className="fr-text--sm mb-3">
-                                        Une friche est donc une zone désaffectée après avoir connu une activité économique (industrielle ou commerciale), des usages résidentiels ou des équipements. On estime que ces sites pourraient représenter en France entre 90 000 et 150 000 hectares d'espaces inemployés, l'équivalent de plus de six ans d'artificialisation.
-                                    </p>
-                                    <p className="fr-text--sm mb-3">
-                                        Recycler des friches urbaines peut être un moyen non seulement de limiter l'artificialisation des sols, mais aussi de redynamiser des territoires et de réhabiliter des sites pollués.
-                                    </p>
-                                </>
-                            }
-                        >
-                            La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables".
-                        </Guide>
-					</div>
+			<div className="fr-grid-row fr-grid-row--gutters">
+				<div className="fr-col-12">
+                    <Guide
+                        title="Qu'est-ce qu'une friche urbaine ?"
+                        DrawerTitle="Qu'est-ce qu'une friche urbaine ?"
+                        drawerChildren={
+                            <>
+                                <p className="fr-text--sm mb-3">
+                                    La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables".
+                                </p>
+                                <p className="fr-text--sm mb-3">
+                                    Une friche est donc une zone désaffectée après avoir connu une activité économique (industrielle ou commerciale), des usages résidentiels ou des équipements. On estime que ces sites pourraient représenter en France entre 90 000 et 150 000 hectares d'espaces inemployés, l'équivalent de plus de six ans d'artificialisation.
+                                </p>
+                                <p className="fr-text--sm mb-3">
+                                    Recycler des friches urbaines peut être un moyen non seulement de limiter l'artificialisation des sols, mais aussi de redynamiser des territoires et de réhabiliter des sites pollués.
+                                </p>
+                            </>
+                        }
+                    >
+                        La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables".
+                    </Guide>
 				</div>
 			</div>
-            <h2>Les friches sur le territoire de {name}</h2>
+            <h2 className="fr-mt-5w">Vue d'ensemble</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 {data?.map((friche) => (
                     <div key={friche.id} className="fr-col-12 fr-col-md-6 fr-col-lg-3">
@@ -133,6 +141,18 @@ export const Friches: React.FC<FrichesProps> = ({
                             friche_count={friche.friche_count}
                             friche_surface={friche.friche_surface}
                             friche_statut={friche.friche_statut}
+                        />
+                    </div>
+                ))}
+            </div>
+            <h2 className="fr-mt-7w">Détails</h2>
+            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+                {FRICHES_CHARTS.map((chart, index) => (
+                    <div key={chart.id} className="fr-col-12 fr-col-md-6 bg-white">
+                        <FrichesChart
+                            id={chart.id}
+                            land_id={projectData.land_id}
+                            land_type={projectData.land_type}
                         />
                     </div>
                 ))}
