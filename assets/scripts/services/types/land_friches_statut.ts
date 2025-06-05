@@ -1,4 +1,5 @@
 export interface LandFrichesStatut {
+    id: number;
     land_id: string;
     land_type: string;
     friche_statut: 'friche reconvertie' | 'friche avec projet' | 'friche sans projet' | 'friche potentielle';
