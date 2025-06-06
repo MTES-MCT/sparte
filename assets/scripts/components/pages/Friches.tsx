@@ -6,6 +6,7 @@ import { LandDetailResultType } from "@services/types/land";
 import { useGetLandFrichesStatutQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
+import { FrichesMap } from "@components/map/friches/FrichesMap";
 
 interface FrichesProps {
 	projectData: ProjectDetailResultType;
@@ -96,10 +97,6 @@ export const Friches: React.FC<FrichesProps> = ({
 	projectData,
     landData,
 }) => {
-    const {
-		name,
-	} = landData || {};
-
     const { data, isLoading, error }  = useGetLandFrichesStatutQuery({
         land_type: projectData.land_type,
         land_id: projectData.land_id
@@ -144,6 +141,12 @@ export const Friches: React.FC<FrichesProps> = ({
                         />
                     </div>
                 ))}
+            </div>
+            <h2 className="fr-mt-7w">Carte des friches</h2>
+            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+                <div className="fr-col-12">
+                    <FrichesMap projectData={projectData} />
+                </div>
             </div>
             <h2 className="fr-mt-7w">Détails</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
