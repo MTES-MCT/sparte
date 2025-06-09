@@ -2,7 +2,7 @@
 
 SELECT
     site_id as id,
-    site_statut,
+    friche_statut,
     site_nom,
     surface,
     source_nom,

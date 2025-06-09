@@ -4,7 +4,7 @@ version: 2
 models:
   - name: friche
     columns:
-      - name: site_statut
+      - name: friche_statut
         data_tests:
           - accepted_values:
               values: [
@@ -16,10 +16,10 @@ models:
         data_tests:
           - not_null
           - is_positive_number
-      - name: zone_activites
+      - name: friche_is_in_zone_activite
         data_tests:
           - not_null
-      - name: sol_pollution_existe
+      - name: friche_sol_pollution
         data_tests:
           - not_null
           - accepted_values:
@@ -32,7 +32,7 @@ models:
                 'pollution supposée',
                 'inconnu'
               ]
-      - name: zonage_enviro
+      - name: friche_zonage_environnemental
         data_tests:
           - not_null
           - accepted_values:
@@ -45,7 +45,7 @@ models:
                 'proximite_zone (znieff)',
                 'proximite_zone (natura_2000)'
               ]
-      - name: type_zone
+      - name: friche_type_zone
         data_tests:
           - accepted_values:
               values: [
@@ -57,7 +57,7 @@ models:
                 'ZCa',
                 'ZnC'
               ]
-      - name: site_type
+      - name: friche_type
         data_tests:
           - not_null
           - accepted_values:

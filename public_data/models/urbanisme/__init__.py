@@ -1,4 +1,6 @@
 from .AutorisationLogement import AutorisationLogement
+from .LandFriche import LandFriche
+from .LandFricheGeojson import LandFricheGeojson
 from .LandFrichePollution import LandFrichePollution, LandFrichePollutionViewset
 from .LandFricheStatut import LandFricheStatut, LandFricheStatutViewset
 from .LandFricheSurfaceRank import LandFricheSurfaceRank, LandFricheSurfaceRankViewset
@@ -19,6 +21,8 @@ __all__ = [
     "LogementVacant",
     "LandFrichePollution",
     "LandFrichePollutionViewset",
+    "LandFriche",
+    "LandFricheGeojson",
     "LandFricheStatut",
     "LandFricheStatutViewset",
     "LandFricheSurfaceRank",

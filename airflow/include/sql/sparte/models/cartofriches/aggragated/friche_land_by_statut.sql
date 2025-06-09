@@ -1,5 +1,4 @@
 {{ count_friche_by_value(
-    'site_statut',
     'friche_statut',
     [
         'friche reconvertie',
