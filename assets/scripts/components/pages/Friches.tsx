@@ -133,7 +133,7 @@ export const Friches: React.FC<FrichesProps> = ({
             <h2 className="fr-mt-5w">Vue d'ensemble</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 {data?.map((friche) => (
-                    <div key={friche.id} className="fr-col-12 fr-col-md-6 fr-col-lg-3">
+                    <div key={friche.id} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
                         <FrichesStatut
                             friche_count={friche.friche_count}
                             friche_surface={friche.friche_surface}
