@@ -6,7 +6,6 @@ from .LandFricheGeojson import (
     LandFricheGeojsonSerializer,
     LandFricheGeojsonViewset,
 )
-from .BaseLandFriche import BaseLandFriche
 from .LandFrichePollution import LandFrichePollution, LandFrichePollutionViewset
 from .LandFricheStatut import LandFricheStatut, LandFricheStatutViewset
 from .LandFricheSurfaceRank import LandFricheSurfaceRank, LandFricheSurfaceRankViewset
