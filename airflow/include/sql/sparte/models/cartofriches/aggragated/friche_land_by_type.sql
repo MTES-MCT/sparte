@@ -1,5 +1,4 @@
 {{ count_friche_by_value(
-    'site_type',
     'friche_type',
     [
         'friche logistique',

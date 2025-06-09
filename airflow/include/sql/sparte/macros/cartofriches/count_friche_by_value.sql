@@ -1,6 +1,5 @@
 {% macro count_friche_by_value(
-    source_row_name,
-    target_row_name,
+    row_name,
     values,
     value_type='text'
 )%}
@@ -10,7 +9,7 @@
     indexes=[
             {"columns": ["land_id"], "type": "btree"},
             {"columns": ["land_type"], "type": "btree"},
-            {"columns": [target_row_name], "type": "btree"},
+            {"columns": [row_name], "type": "btree"},
     ]
 ) }}
 
@@ -20,7 +19,7 @@ WITH possible_values AS (
             '{{ val }}'::{{ value_type }}
             {% if not loop.last %}, {% endif %}
         {% endfor %}
-    ]) AS {{ target_row_name }}
+    ]) AS {{ row_name }}
 ),
 
 land_base AS (
@@ -35,7 +34,7 @@ land_base AS (
 friche_data AS (
     SELECT
         site_id,
-        {{ source_row_name }},
+        {{ row_name }},
         surface
     FROM {{ ref('friche') }}
 )
@@ -44,7 +43,7 @@ SELECT
     l.land_type,
     l.land_id,
     l.land_name,
-    v.{{ target_row_name }},
+    v.{{ row_name }},
     COUNT(f.surface) AS friche_count,
     COALESCE(SUM(f.surface), 0) AS friche_surface
 FROM
@@ -54,15 +53,15 @@ CROSS JOIN
 LEFT JOIN
     friche_data f
     ON f.site_id = l.site_id
-    AND f.{{ source_row_name }} = v.{{ target_row_name }}
+    AND f.{{ row_name }} = v.{{ row_name }}
 GROUP BY
     l.land_type,
     l.land_id,
     l.land_name,
-    v.{{ target_row_name }}
+    v.{{ row_name }}
 ORDER BY
     l.land_type,
     l.land_id,
-    v.{{ target_row_name }}
+    v.{{ row_name }}
 
 {% endmacro %}

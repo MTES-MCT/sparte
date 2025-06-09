@@ -36,6 +36,7 @@ def copy_table_from_dw_to_app(
     from_table: str,
     to_table: str,
     environment: str,
+    geom_type=None,
     custom_columns_type: dict[str, str] = None,
     use_subset: bool = False,
     subset_where: str = None,
@@ -48,6 +49,9 @@ def copy_table_from_dw_to_app(
         ogr.set_sql(f"SELECT * FROM {from_table} WHERE {subset_where}")
     # the option below will an id column to the table only if it does not exist
     ogr.layer_creation_options = {"FID": "id"}
+
+    if geom_type:
+        ogr.geom_type = geom_type
 
     if custom_columns_type:
         column_type_mapping = ""
@@ -132,6 +136,8 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landfrichezonageenvironnementale",
                 "copy_public_data_landfrichezonagetype",
                 "copy_public_data_landfrichezoneactivite",
+                "copy_public_data_landfriche",
+                "copy_public_data_landfrichegeojson",
             ],
             type="array",
         ),
@@ -523,6 +529,32 @@ def update_app():  # noqa: C901
             ],
         )
 
+    @task.python
+    def copy_public_data_landfriche(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfriche",
+            to_table="public.public_data_landfriche",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+            geom_type="POINT",
+        )
+
+    @task.python
+    def copy_public_data_landfrichegeojson(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichegeojson",
+            to_table="public.public_data_landfrichegeojson",
+            environment=context["params"]["environment"],
+            custom_columns_type={
+                "geojson_feature_collection": "jsonb",
+            },
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
     @task.branch
     def copy_public_data_branch(**context):
         return context["params"]["tasks"]
@@ -560,6 +592,8 @@ def update_app():  # noqa: C901
         copy_public_data_landfrichezonageenvironnementale(),
         copy_public_data_landfrichezonagetype(),
         copy_public_data_landfrichezoneactivite(),
+        copy_public_data_landfriche(),
+        copy_public_data_landfrichegeojson(),
     ]
 
 

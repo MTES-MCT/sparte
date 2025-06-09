@@ -1,6 +1,5 @@
 {{
     count_friche_by_value(
-        'zonage_enviro',
         'friche_zonage_environnemental',
         [
             'proximite_zone (reserves_naturelles)',
