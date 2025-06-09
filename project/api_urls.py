@@ -6,6 +6,14 @@ from project.charts.artificialisation import (
     ArtifByUsagePieChart,
     ArtifMap,
 )
+from project.charts.urbanisme import (
+    FrichePollutionChart,
+    FricheSurfaceChart,
+    FricheTypeChart,
+    FricheZonageEnvironnementalChart,
+    FricheZonageTypeChart,
+    FricheZoneActiviteChart,
+)
 from public_data.models import (
     ArtifZonageIndexViewset,
     ArtifZonageViewset,
@@ -34,6 +42,12 @@ def get_chart_klass_or_404(chart_id):
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
         "pie_artif_by_usage": ArtifByUsagePieChart,
         "artif_map": ArtifMap,
+        "friche_pollution": FrichePollutionChart,
+        "friche_surface": FricheSurfaceChart,
+        "friche_type": FricheTypeChart,
+        "friche_zonage_environnemental": FricheZonageEnvironnementalChart,
+        "friche_zonage_type": FricheZonageTypeChart,
+        "friche_zone_activite": FricheZoneActiviteChart,
     }
 
     if chart_id not in charts:

@@ -28,7 +28,7 @@ const formatNumber = ({
   }
 
   const formattedNumber = number.toLocaleString('fr-FR', {
-    minimumFractionDigits: decimals,
+    minimumFractionDigits: 0,
     maximumFractionDigits: decimals,
     useGrouping,
   });
