@@ -63,10 +63,8 @@ def get_intervals(scale, nb_colors):
 
 
 def get_multicolors_gradient(colors=None, scale=9):
-    if colors is None:
-        raise ValueError("colors args can't be null")
     if len(colors) >= scale:
-        raise ValueError("You need to provide scale+1 different colors")
+        return get_2_colors_gradient(colors[0], colors[-1], scale)
     intervals = get_intervals(scale, len(colors))
     results = list()
     for i, pad in enumerate(intervals):
