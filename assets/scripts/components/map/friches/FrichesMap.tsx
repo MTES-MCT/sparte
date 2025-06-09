@@ -1,9 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { BaseMap } from "../BaseMap";
 import { orthophoto } from "../layers/orthophoto";
 import { createEmpriseLayer } from "../layers/emprise";
+import { createFrichesLayer } from "../layers/friches";
 import { MapControls } from "../types";
-import maplibregl from "maplibre-gl";
 import { ProjectDetailResultType } from "@services/types/project";
 
 interface FrichesMapProps {
@@ -20,13 +20,9 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 		cooperativeGestures: true,
 	},
 }) => {
-	const { bounds, max_bounds, emprise } = projectData;
+	const { bounds, max_bounds, emprise, land_type, land_id } = projectData;
 	const empriseLayer = createEmpriseLayer(emprise);
-
-	const handleMapLoad = useCallback((map: maplibregl.Map) => {
-		console.log("Map loaded:", map);
-		// Future interactions here
-	}, []);
+	const frichesLayer = createFrichesLayer(land_type, land_id);
 
 	return (
 		<BaseMap
@@ -34,9 +30,8 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 			bounds={bounds}
 			maxBounds={max_bounds}
 			controls={controls}
-			sources={[orthophoto.source, empriseLayer.source]}
-			layers={[orthophoto.layer, empriseLayer.layer]}
-			onMapLoad={handleMapLoad}
+			sources={[orthophoto.source, empriseLayer.source, frichesLayer.source]}
+			layers={[orthophoto.layer, empriseLayer.layer, frichesLayer.layer]}
 		/>
 	);
 };
