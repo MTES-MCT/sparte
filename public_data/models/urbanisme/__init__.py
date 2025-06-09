@@ -1,12 +1,11 @@
 from .AutorisationLogement import AutorisationLogement
+from .BaseLandFriche import BaseLandFriche
 from .LandFriche import LandFriche, LandFricheSerializer, LandFricheViewset
 from .LandFricheGeojson import (
     LandFricheGeojson,
     LandFricheGeojsonSerializer,
     LandFricheGeojsonViewset,
 )
-
-from .BaseLandFriche import BaseLandFriche
 from .LandFrichePollution import LandFrichePollution, LandFrichePollutionViewset
 from .LandFricheStatut import LandFricheStatut, LandFricheStatutViewset
 from .LandFricheSurfaceRank import LandFricheSurfaceRank, LandFricheSurfaceRankViewset
