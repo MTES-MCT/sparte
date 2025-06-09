@@ -1,5 +1,7 @@
 from django.db import models
 
+from .BaseLandFriche import BaseLandFricheSerializer, BaseLandFricheViewset
+
 
 class LandFricheGeojson(models.Model):
     land_id = models.CharField()
@@ -10,3 +12,12 @@ class LandFricheGeojson(models.Model):
     class Meta:
         managed = False
         db_table = "public_data_landfrichegeojson"
+
+
+class LandFricheGeojsonSerializer(BaseLandFricheSerializer):
+    class Meta(BaseLandFricheSerializer.Meta):
+        model = LandFricheGeojson
+
+
+class LandFricheGeojsonViewset(BaseLandFricheViewset):
+    serializer_class = LandFricheGeojsonSerializer

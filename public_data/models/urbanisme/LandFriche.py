@@ -3,6 +3,7 @@ from django.db import models
 
 from public_data.models.administration import AdminRef
 
+from .BaseLandFriche import BaseLandFricheSerializer, BaseLandFricheViewset
 from .LandFrichePollution import LandFrichePollution
 from .LandFricheStatut import LandFricheStatut
 from .LandFricheSurfaceRank import LandFricheSurfaceRank
@@ -39,3 +40,12 @@ class LandFriche(models.Model):
     class Meta:
         managed = False
         db_table = "public_data_landfriche"
+
+
+class LandFricheSerializer(BaseLandFricheSerializer):
+    class Meta(BaseLandFricheSerializer.Meta):
+        model = LandFriche
+
+
+class LandFricheViewset(BaseLandFricheViewset):
+    serializer_class = LandFricheSerializer
