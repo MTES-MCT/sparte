@@ -4,6 +4,7 @@ import { UseGetProjectQueryType } from "./types/project";
 import { UseLandDetailType } from "./types/land";
 import { ArtifZonageIndexType } from "./types/artif_zonage";
 import { UseLandFrichesStatutType } from "./types/land_friches_statut";
+import { UseLandFrichesType } from "./types/land_friches";
 
 export const djangoApi = createApi({
 	reducerPath: "djangoApi",
@@ -48,6 +49,15 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getLandFriches: builder.query({
+			query: ({land_type, land_id}) => {
+				return `/api/landfriche/?${new URLSearchParams({
+					land_type,
+					land_id,
+					ordering: 'friche_statut,-surface'
+				})}`
+			},
+		}),
 		getEnvironment: builder.query({
 			query: () => "/env",
 		}),
@@ -85,6 +95,7 @@ const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
 const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
+const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
 
 const {
 	useGetDepartementListQuery,
@@ -105,4 +116,5 @@ export {
 	useGetLandArtifStockIndexQuery,
 	useDownloadDiagnosticMutation,
 	useGetLandFrichesStatutQuery,
+	useGetLandFrichesQuery,
 };

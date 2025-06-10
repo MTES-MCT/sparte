@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
-import { useGetLandFrichesStatutQuery } from "@services/api";
+import { useGetLandFrichesStatutQuery, useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
 import { FrichesMap } from "@components/map/friches/FrichesMap";
@@ -54,11 +54,20 @@ const StatutLabel = styled.p`
     text-transform: lowercase;
 `;
 
+const IconZoneActivite = styled.i`
+    font-size: 1.5rem;
+`;
+
 const STATUT_CONFIG = {
     'friche avec projet': { icon: 'bi bi-building' },
     'friche sans projet': { icon: 'bi bi-building-x' },
     'friche reconvertie': { icon: 'bi bi-building-check' },
-    'friche potentielle': { icon: 'bi bi-building-exclamation' }
+} as const;
+
+const STATUT_BADGE_CONFIG = {
+    'friche reconvertie': 'fr-badge--success',
+    'friche avec projet': 'fr-badge--info',
+    'friche sans projet': 'fr-badge--warning',
 } as const;
 
 const FRICHES_CHARTS = [
@@ -69,6 +78,13 @@ const FRICHES_CHARTS = [
     { id: 'friche_zonage_type' },
     { id: 'friche_zone_activite' }
 ] as const;
+
+const TableRow = styled.tr`
+    cursor: pointer;
+    &:hover {
+        background-color: var(--background-contrast-grey);
+    }
+`;
 
 const FrichesStatut: React.FC<{
     friche_count: number;
@@ -97,13 +113,23 @@ export const Friches: React.FC<FrichesProps> = ({
 	projectData,
     landData,
 }) => {
-    const { data, isLoading, error }  = useGetLandFrichesStatutQuery({
+    const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
+    const { data: statutData, isLoading: isLoadingStatut, error: statutError } = useGetLandFrichesStatutQuery({
         land_type: projectData.land_type,
         land_id: projectData.land_id
 	});
 
-    if (isLoading) return <div>Chargement...</div>;
-    if (error) return <div>Erreur : {error}</div>;
+    const { data: frichesData, isLoading: isLoadingFriches, error: frichesError } = useGetLandFrichesQuery({
+        land_type: projectData.land_type,
+        land_id: projectData.land_id
+    });
+
+    const handleFricheClick = (point: { type: "Point"; coordinates: [number, number] }) => {
+        setSelectedFriche(point.coordinates);
+    };
+
+    if (isLoadingStatut || isLoadingFriches) return <div>Chargement...</div>;
+    if (statutError || frichesError) return <div>Erreur : {statutError || frichesError}</div>;
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
@@ -132,7 +158,7 @@ export const Friches: React.FC<FrichesProps> = ({
 			</div>
             <h2 className="fr-mt-5w">Vue d'ensemble</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                {data?.map((friche) => (
+                {statutData?.map((friche) => (
                     <div key={friche.id} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
                         <FrichesStatut
                             friche_count={friche.friche_count}
@@ -142,13 +168,79 @@ export const Friches: React.FC<FrichesProps> = ({
                     </div>
                 ))}
             </div>
+            <h2 className="fr-mt-7w">Détail des friches</h2>
+            <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-12">
+                    <div className="fr-table fr-table--caption-bottom fr-table--no-caption">
+                        <div className="fr-table__wrapper fr-mb-0">
+                            <div className="fr-table__container">
+                                <div className="fr-table__content">
+                                    <table>
+                                        <caption>
+                                            Liste détaillée des friches du territoire
+                                        </caption>
+                                        <thead>
+                                            <tr>
+                                                <th className="fr-cell--fixed" role="columnheader"></th>
+                                                <th scope="col">Identifiant</th>
+                                                <th scope="col">Type</th>
+                                                <th scope="col">Statut</th>
+                                                <th scope="col">Pollution</th>
+                                                <th scope="col">Surface (ha)</th>
+                                                <th scope="col">Zone d'activité</th>
+                                                <th scope="col">Zonage environnemental</th>
+                                                <th scope="col">Type de zone</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {frichesData?.map((friche) => (
+                                                <TableRow 
+                                                    key={friche.site_id} 
+                                                    data-row-key={friche.site_id}
+                                                >
+                                                    <th className="fr-cell--fixed">
+                                                        <button
+                                                            className="fr-btn fr-btn--sm fr-btn--secondary"
+                                                            onClick={() => handleFricheClick(friche.point_on_surface)}
+                                                        >
+                                                            <i className="bi bi-map fr-mr-1w"></i>
+                                                            Voir sur la carte
+                                                        </button>
+                                                    </th>
+                                                    <td>{friche.site_id}</td>
+                                                    <td>{friche.friche_type}</td>
+                                                    <td>
+                                                        <span className={`fr-badge fr-badge--no-icon text-lowercase ${STATUT_BADGE_CONFIG[friche.friche_statut as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
+                                                            {friche.friche_statut}
+                                                        </span>
+                                                    </td>
+                                                    <td>{friche.friche_sol_pollution}</td>
+                                                    <td>{formatNumber({ number: friche.surface / 10000 })}</td>
+                                                    <td>
+                                                        <IconZoneActivite className={`bi ${friche.friche_is_in_zone_activite ? 'bi-check text-success' : 'bi-x text-danger'}`}/>
+                                                    </td>
+                                                    <td>{friche.friche_zonage_environnemental}</td>
+                                                    <td>{friche.friche_type_zone}</td>
+                                                </TableRow>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <h2 className="fr-mt-7w">Carte des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 <div className="fr-col-12">
-                    <FrichesMap projectData={projectData} />
+                    <FrichesMap 
+                        projectData={projectData} 
+                        center={selectedFriche}
+                    />
                 </div>
             </div>
-            <h2 className="fr-mt-7w">Détails</h2>
+            <h2 className="fr-mt-7w">Indicateurs</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 {FRICHES_CHARTS.map((chart, index) => (
                     <div key={chart.id} className="fr-col-12 fr-col-md-6 bg-white">
