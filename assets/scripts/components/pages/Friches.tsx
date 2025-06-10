@@ -58,6 +58,75 @@ const IconZoneActivite = styled.i`
     font-size: 1.5rem;
 `;
 
+
+const FricheCard = styled.div`
+    background-color: white;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+    }
+
+    &.selected {
+        border: 2px solid var(--blue-france-500);
+    }
+`;
+
+const FricheCardHeader = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+`;
+
+const FricheCardTitle = styled.h3`
+    margin: 0;
+    font-size: 1rem;
+`;
+
+const FricheCardContent = styled.div`
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.1rem;
+    font-size: 0.875rem;
+`;
+
+const FricheCardLabel = styled.span`
+    color: var(--text-mention-grey);
+    font-size: 0.75rem;
+`;
+
+const FricheCardValue = styled.span`
+    font-weight: 500;
+    font-size: 0.75rem;
+`;
+
+const FricheListWrapper = styled.div`
+    height: 75vh;
+    position: relative;
+`;
+
+const FricheListContainer = styled.div`
+    height: 100%;
+    overflow-y: auto;
+`;
+
+const FricheListGradient = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(transparent, #F8F9FF);
+    pointer-events: none;
+`;
+
 const STATUT_CONFIG = {
     'friche avec projet': { icon: 'bi bi-building' },
     'friche sans projet': { icon: 'bi bi-building-x' },
@@ -79,12 +148,6 @@ const FRICHES_CHARTS = [
     { id: 'friche_zone_activite' }
 ] as const;
 
-const TableRow = styled.tr`
-    cursor: pointer;
-    &:hover {
-        background-color: var(--background-contrast-grey);
-    }
-`;
 
 const FrichesStatut: React.FC<{
     friche_count: number;
@@ -170,70 +233,53 @@ export const Friches: React.FC<FrichesProps> = ({
             </div>
             <h2 className="fr-mt-7w">Détail des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12">
-                    <div className="fr-table fr-table--caption-bottom fr-table--no-caption">
-                        <div className="fr-table__wrapper fr-mb-0">
-                            <div className="fr-table__container">
-                                <div className="fr-table__content">
-                                    <table>
-                                        <caption>
-                                            Liste détaillée des friches du territoire
-                                        </caption>
-                                        <thead>
-                                            <tr>
-                                                <th className="fr-cell--fixed" role="columnheader"></th>
-                                                <th scope="col">Identifiant</th>
-                                                <th scope="col">Type</th>
-                                                <th scope="col">Statut</th>
-                                                <th scope="col">Pollution</th>
-                                                <th scope="col">Surface (ha)</th>
-                                                <th scope="col">Zone d'activité</th>
-                                                <th scope="col">Zonage environnemental</th>
-                                                <th scope="col">Type de zone</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {frichesData?.map((friche) => (
-                                                <TableRow 
-                                                    key={friche.site_id} 
-                                                    data-row-key={friche.site_id}
-                                                >
-                                                    <th className="fr-cell--fixed">
-                                                        <button
-                                                            className="fr-btn fr-btn--sm fr-btn--secondary"
-                                                            onClick={() => handleFricheClick(friche.point_on_surface)}
-                                                        >
-                                                            <i className="bi bi-map fr-mr-1w"></i>
-                                                            Voir sur la carte
-                                                        </button>
-                                                    </th>
-                                                    <td>{friche.site_id}</td>
-                                                    <td>{friche.friche_type}</td>
-                                                    <td>
-                                                        <span className={`fr-badge fr-badge--no-icon text-lowercase ${STATUT_BADGE_CONFIG[friche.friche_statut as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
-                                                            {friche.friche_statut}
-                                                        </span>
-                                                    </td>
-                                                    <td>{friche.friche_sol_pollution}</td>
-                                                    <td>{formatNumber({ number: friche.surface / 10000 })}</td>
-                                                    <td>
-                                                        <IconZoneActivite className={`bi ${friche.friche_is_in_zone_activite ? 'bi-check text-success' : 'bi-x text-danger'}`}/>
-                                                    </td>
-                                                    <td>{friche.friche_zonage_environnemental}</td>
-                                                    <td>{friche.friche_type_zone}</td>
-                                                </TableRow>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div className="fr-col-12 fr-col-md-4">
+                    <FricheListWrapper>
+                        <FricheListContainer>
+                            {frichesData?.map((friche) => (
+                                <FricheCard 
+                                    key={friche.site_id}
+                                    onClick={() => handleFricheClick(friche.point_on_surface)}
+                                    className={selectedFriche === friche.point_on_surface.coordinates ? 'selected' : ''}
+                                >
+                                    <FricheCardHeader>
+                                        <FricheCardTitle>
+                                            <span className={`fr-badge fr-badge--no-icon text-lowercase ${STATUT_BADGE_CONFIG[friche.friche_statut as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
+                                                {friche.friche_statut}
+                                            </span>
+                                        </FricheCardTitle>
+                                    </FricheCardHeader>
+                                    <FricheCardContent>
+                                        <FricheCardLabel>Identifiant</FricheCardLabel>
+                                        <FricheCardValue>{friche.site_id}</FricheCardValue>
+                                        
+                                        <FricheCardLabel>Type</FricheCardLabel>
+                                        <FricheCardValue>{friche.friche_type}</FricheCardValue>
+                                        
+                                        <FricheCardLabel>Pollution</FricheCardLabel>
+                                        <FricheCardValue>{friche.friche_sol_pollution}</FricheCardValue>
+                                        
+                                        <FricheCardLabel>Surface</FricheCardLabel>
+                                        <FricheCardValue>{formatNumber({ number: friche.surface / 10000 })} ha</FricheCardValue>
+                                        
+                                        <FricheCardLabel>Zone d'activité</FricheCardLabel>
+                                        <FricheCardValue>
+                                            <IconZoneActivite className={`bi ${friche.friche_is_in_zone_activite ? 'bi-check text-success' : 'bi-x text-danger'}`}/>
+                                        </FricheCardValue>
+                                        
+                                        <FricheCardLabel>Zonage environnemental</FricheCardLabel>
+                                        <FricheCardValue>{friche.friche_zonage_environnemental}</FricheCardValue>
+                                        
+                                        <FricheCardLabel>Type de zone</FricheCardLabel>
+                                        <FricheCardValue>{friche.friche_type_zone}</FricheCardValue>
+                                    </FricheCardContent>
+                                </FricheCard>
+                            ))}
+                        </FricheListContainer>
+                        <FricheListGradient />
+                    </FricheListWrapper>
                 </div>
-            </div>
-            <h2 className="fr-mt-7w">Carte des friches</h2>
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                <div className="fr-col-12">
+                <div className="fr-col-12 fr-col-md-8">
                     <FrichesMap 
                         projectData={projectData} 
                         center={selectedFriche}
