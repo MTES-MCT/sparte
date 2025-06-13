@@ -8,7 +8,7 @@ from pendulum import datetime
 
 from airflow.decorators import dag, task
 
-URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques-1876-2021.xlsx"
+URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques-1876-2022.xlsx"
 
 
 @dag(
