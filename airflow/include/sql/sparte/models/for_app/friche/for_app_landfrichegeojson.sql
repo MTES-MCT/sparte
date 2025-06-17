@@ -19,7 +19,8 @@ with friche_land_4326 as (
         friche_land.friche_type,
         friche_land.friche_surface_percentile_rank,
         friche_land.surface,
-        st_transform(geom, 4326) as geom
+        st_transform(geom, 4326) as geom,
+        st_transform(st_centroid(geom), 4326) as centroid
     FROM
         {{ ref('friche_land') }}
 )
@@ -34,7 +35,15 @@ SELECT
             geom_column => 'geom',
             id_column => 'site_id'
         )::json)
-    ) as geojson_feature_collection
+    ) as geojson_feature_collection,
+    jsonb_build_object(
+        'type', 'FeatureCollection',
+        'features', json_agg(ST_AsGeoJSON(
+            friche_land.*,
+            geom_column => 'centroid',
+            id_column => 'site_id'
+        )::json)
+    ) as geojson_centroid_feature_collection
 FROM
     friche_land_4326 as friche_land
 GROUP BY
