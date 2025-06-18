@@ -26,6 +26,7 @@ export const useMap = (config: MapConfig) => {
             cooperativeGestures: config.controls?.cooperativeGestures,
             maplibreLogo: false,
             attributionControl: false,
+            fadeDuration: 0,
         });
 
         mapRef.current.on("load", () => {

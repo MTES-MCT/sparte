@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useMap } from "./hooks/useMap";
 import { BaseMapProps } from "./types";
@@ -18,11 +18,26 @@ const MapContainer = styled.div<{ $isLoaded: boolean }>`
 	transition: opacity 0.3s ease-in-out;
 `;
 
+const ZoomIndicator = styled.div`
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	background: rgba(0, 0, 0, 0.7);
+	color: white;
+	padding: 5px 10px;
+	border-radius: 4px;
+	z-index: 10;
+	font-size: 12px;
+	font-family: monospace;
+	pointer-events: none;
+`;
+
 const defaultStyle: StyleSpecification = {
 	version: 8,
 	name: "Empty",
 	metadata: { "mapbox:autocomposite": true },
 	sources: {},
+	glyphs: '/static/carto/fonts/{fontstack}/{range}.pbf',
 	layers: [
 		{
 			id: "background",
@@ -48,8 +63,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 	style = defaultStyle,
 	controls = DEFAULT_CONTROLS,
 	onMapLoad,
+	showZoomIndicator = false,
 }) => {
 	const mapDiv = useRef<HTMLDivElement>(null);
+	const [currentZoom, setCurrentZoom] = useState<number>(0);
 	const mapConfig = { style, bounds, maxBounds, controls, sources, layers };
 	const {
 		mapRef,
@@ -69,12 +86,25 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 		if (isMapLoaded && mapRef.current) {
 			updateControls();
 			updateSourcesAndLayers();
+			
+			if (showZoomIndicator) {
+				setCurrentZoom(mapRef.current.getZoom());
+				mapRef.current.on('zoom', () => {
+					setCurrentZoom(mapRef.current!.getZoom());
+				});
+			}
+			
 			onMapLoad?.(mapRef.current);
 		}
-	}, [isMapLoaded, updateControls, updateSourcesAndLayers, onMapLoad]);
+	}, [isMapLoaded, updateControls, updateSourcesAndLayers, onMapLoad, showZoomIndicator]);
 
 	return (
 		<MapWrapper>
+			{showZoomIndicator && (
+				<ZoomIndicator>
+					Zoom: {currentZoom.toFixed(2)}
+				</ZoomIndicator>
+			)}
 			<MapContainer
 				id={id}
 				ref={mapDiv}

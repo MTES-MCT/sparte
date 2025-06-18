@@ -3,6 +3,7 @@ import { BaseMap } from "../BaseMap";
 import { orthophoto } from "../layers/orthophoto";
 import { createEmpriseLayer } from "../layers/emprise";
 import { createFrichesLayer } from "../layers/friches";
+import { createFrichesCentroidLayer } from "../layers/frichesCentroid";
 import { MapControls } from "../types";
 import { ProjectDetailResultType } from "@services/types/project";
 import { Map } from "maplibre-gl";
@@ -27,6 +28,7 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 	const { bounds, max_bounds, emprise, land_type, land_id } = projectData;
 	const empriseLayer = createEmpriseLayer(emprise);
 	const frichesLayer = createFrichesLayer(land_type, land_id);
+	const frichesCentroidLayer = createFrichesCentroidLayer(land_type, land_id);
 
 	useEffect(() => {
 		if (center && mapRef.current) {
@@ -44,8 +46,14 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 			bounds={bounds}
 			maxBounds={max_bounds}
 			controls={controls}
-			sources={[orthophoto.source, empriseLayer.source, frichesLayer.source]}
-			layers={[orthophoto.layer, empriseLayer.layer, frichesLayer.layer]}
+			sources={[orthophoto.source, empriseLayer.source, frichesLayer.source, frichesCentroidLayer.source]}
+			layers={[
+				orthophoto.layer, 
+				empriseLayer.layer, 
+				frichesLayer.layer, 
+				...frichesCentroidLayer.layers
+			]}
+			showZoomIndicator={true}
 			onMapLoad={(map) => {
 				mapRef.current = map;
 			}}
