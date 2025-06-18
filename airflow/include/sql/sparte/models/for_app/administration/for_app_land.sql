@@ -39,22 +39,9 @@ SELECT
     land.child_land_types,
     land.parent_keys,
     land.departements,
-    CASE
-        WHEN array_length(land.departements, 1) = 1
-        THEN false
-        ELSE true
-    END as is_interdepartemental
+    is_interdepartemental
 FROM
-    {{ ref('land') }}
-LEFT JOIN LATERAL (
-    SELECT surface, percent, years
-    FROM {{ ref('artif_land_by_index') }}
-    WHERE
-        artif_land_by_index.land_id = land.land_id AND
-        artif_land_by_index.land_type = land.land_type
-    ORDER BY index DESC
-    limit 1
-) artif ON true
+    {{ ref('land_details') }} as land
 LEFT JOIN LATERAL (
     SELECt array_agg(jsonb_build_object(
         'departement', land_millesimes.departement,
