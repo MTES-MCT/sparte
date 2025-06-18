@@ -1,4 +1,5 @@
-import { Map, SourceSpecification, LayerSpecification, StyleSpecification, NavigationControl, FullscreenControl } from "maplibre-gl";
+import React from "react";
+import { Map, SourceSpecification, LayerSpecification, StyleSpecification, NavigationControl, FullscreenControl, MapLayerMouseEvent } from "maplibre-gl";
 
 export interface MapControls {
 	scrollZoom?: boolean;
@@ -11,6 +12,12 @@ export type ControlRefs = {
 	navigationControl?: NavigationControl;
 	fullscreenControl?: FullscreenControl;
 };
+
+// Types pour les popups
+export interface PopupConfig {
+	layerId: string;
+	renderContent: (feature: any, event: MapLayerMouseEvent) => React.ReactNode | string;
+}
 
 export interface BaseMapProps {
 	id: string;
@@ -29,6 +36,7 @@ export interface BaseMapProps {
 	controls?: MapControls;
 	onMapLoad?: (map: Map) => void;
 	showZoomIndicator?: boolean;
+	popups?: PopupConfig[];
 }
 
 export interface MapSource {
@@ -48,4 +56,5 @@ export interface MapConfig {
 	controls?: MapControls;
 	sources?: MapSource[];
 	layers?: MapLayer[];
+	popups?: PopupConfig[];
 } 

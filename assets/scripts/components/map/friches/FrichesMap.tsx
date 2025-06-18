@@ -4,9 +4,10 @@ import { orthophoto } from "../layers/orthophoto";
 import { createEmpriseLayer } from "../layers/emprise";
 import { createFrichesLayer } from "../layers/friches";
 import { createFrichesCentroidLayer } from "../layers/frichesCentroid";
-import { MapControls } from "../types";
+import { MapControls, PopupConfig } from "../types";
 import { ProjectDetailResultType } from "@services/types/project";
 import { Map } from "maplibre-gl";
+import { FrichesPopup } from "./FrichesPopup";
 
 interface FrichesMapProps {
 	projectData: ProjectDetailResultType;
@@ -29,6 +30,13 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 	const empriseLayer = createEmpriseLayer(emprise);
 	const frichesLayer = createFrichesLayer(land_type, land_id);
 	const frichesCentroidLayer = createFrichesCentroidLayer(land_type, land_id);
+
+	const popupConfigs: PopupConfig[] = [
+		{
+			layerId: frichesLayer.layer.id,
+			renderContent: (feature) => <FrichesPopup feature={feature} />,
+		}
+	];
 
 	useEffect(() => {
 		if (center && mapRef.current) {
@@ -53,6 +61,7 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 				frichesLayer.layer, 
 				...frichesCentroidLayer.layers
 			]}
+			popups={popupConfigs}
 			showZoomIndicator={true}
 			onMapLoad={(map) => {
 				mapRef.current = map;

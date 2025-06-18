@@ -4,7 +4,6 @@ export const createFrichesCentroidLayer = (landType: string, landId: string) => 
     const source: SourceSpecification = {
         type: "geojson",
         data: `/api/landfrichecentroid/?land_type=${landType}&land_id=${landId}`,
-        generateId: true,
         cluster: true,
         clusterMaxZoom: 14,
         clusterRadius: 100,

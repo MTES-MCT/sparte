@@ -22,14 +22,15 @@ const ZoomIndicator = styled.div`
 	position: absolute;
 	top: 10px;
 	left: 10px;
-	background: rgba(0, 0, 0, 0.7);
-	color: white;
-	padding: 5px 10px;
+	background: #FFFFFF;
+	color: #181818;
+	padding: 0.2em 0.6em;
 	border-radius: 4px;
 	z-index: 10;
-	font-size: 12px;
-	font-family: monospace;
+	font-size: 0.75em;
 	pointer-events: none;
+	font-weight: 600;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const defaultStyle: StyleSpecification = {
@@ -64,16 +65,18 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 	controls = DEFAULT_CONTROLS,
 	onMapLoad,
 	showZoomIndicator = false,
+	popups = [],
 }) => {
 	const mapDiv = useRef<HTMLDivElement>(null);
 	const [currentZoom, setCurrentZoom] = useState<number>(0);
-	const mapConfig = { style, bounds, maxBounds, controls, sources, layers };
+	const mapConfig = { style, bounds, maxBounds, controls, sources, layers, popups };
 	const {
 		mapRef,
 		isMapLoaded,
 		initializeMap,
 		updateControls,
 		updateSourcesAndLayers,
+		setupPopups,
 	} = useMap(mapConfig);
 
 	useEffect(() => {
@@ -86,6 +89,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 		if (isMapLoaded && mapRef.current) {
 			updateControls();
 			updateSourcesAndLayers();
+			setupPopups();
 			
 			if (showZoomIndicator) {
 				setCurrentZoom(mapRef.current.getZoom());
@@ -96,13 +100,13 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 			
 			onMapLoad?.(mapRef.current);
 		}
-	}, [isMapLoaded, updateControls, updateSourcesAndLayers, onMapLoad, showZoomIndicator]);
+	}, [isMapLoaded, updateControls, updateSourcesAndLayers, setupPopups, onMapLoad, showZoomIndicator]);
 
 	return (
 		<MapWrapper>
 			{showZoomIndicator && (
 				<ZoomIndicator>
-					Zoom: {currentZoom.toFixed(2)}
+					Zoom: {currentZoom.toFixed(1)}
 				</ZoomIndicator>
 			)}
 			<MapContainer
