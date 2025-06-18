@@ -4,7 +4,6 @@ export const createFrichesLayer = (landType: string, landId: string) => {
     const source: SourceSpecification = {
         type: "geojson",
         data: `/api/landfrichegeojson/?land_type=${landType}&land_id=${landId}`,
-        generateId: true,
     };
 
     const layer: LayerSpecification = {

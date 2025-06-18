@@ -7,6 +7,7 @@ import { useGetLandFrichesStatutQuery, useGetLandFrichesQuery } from "@services/
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
 import { FrichesMap } from "@components/map/friches/FrichesMap";
+import { STATUT_BADGE_CONFIG, STATUT_CONFIG } from "@components/map/friches/constants";
 
 interface FrichesProps {
 	projectData: ProjectDetailResultType;
@@ -57,18 +58,6 @@ const StatutLabel = styled.p`
 const IconZoneActivite = styled.i`
     font-size: 1.5rem;
 `;
-
-const STATUT_CONFIG = {
-    'friche avec projet': { icon: 'bi bi-building' },
-    'friche sans projet': { icon: 'bi bi-building-x' },
-    'friche reconvertie': { icon: 'bi bi-building-check' },
-} as const;
-
-const STATUT_BADGE_CONFIG = {
-    'friche reconvertie': 'fr-badge--success',
-    'friche avec projet': 'fr-badge--info',
-    'friche sans projet': 'fr-badge--warning',
-} as const;
 
 const FRICHES_CHARTS = [
     { id: 'friche_pollution' },
