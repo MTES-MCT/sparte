@@ -28,6 +28,7 @@ export interface BaseMapProps {
 	}>;
 	controls?: MapControls;
 	onMapLoad?: (map: Map) => void;
+	showZoomIndicator?: boolean;
 }
 
 export interface MapSource {
