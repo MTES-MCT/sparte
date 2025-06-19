@@ -53,8 +53,7 @@ export const djangoApi = createApi({
 			query: ({land_type, land_id}) => {
 				return `/api/landfriche/?${new URLSearchParams({
 					land_type,
-					land_id,
-					ordering: 'friche_statut,-surface'
+					land_id
 				})}`
 			},
 		}),
