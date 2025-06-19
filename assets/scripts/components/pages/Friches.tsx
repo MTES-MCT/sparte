@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { ProjectDetailResultType } from "@services/types/project";
-import { LandDetailResultType } from "@services/types/land";
 import { useGetLandFrichesStatutQuery, useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
@@ -16,7 +15,6 @@ import { SearchInput } from "@components/ui/SearchInput";
 
 interface FrichesProps {
 	projectData: ProjectDetailResultType;
-	landData: LandDetailResultType;
 }
 
 const StatutCard = styled.div`
@@ -37,11 +35,6 @@ const StatutHeader = styled.div`
 
 const StatutIcon = styled.i`
     font-size: 2.5rem;
-`;
-
-const StatutTitle = styled.h3`
-    margin: 0;
-    font-size: 1.25rem;
 `;
 
 const StatutBadge = styled.span`
@@ -72,8 +65,16 @@ const IconZoneActivite = styled.i`
 `;
 
 const DisplayPaginationInfo = styled.div`
-    margin-top: 1rem;
+    margin-top: 0.8rem;
     font-size: 0.8rem;
+    font-weight: 500;
+    margin-left: auto;
+    color: var(--text-mention-grey);
+`;
+
+const SearchContainer = styled.div`
+    max-width: 600px;
+    margin-left: auto;
 `;
 
 const FRICHES_CHARTS = [
@@ -110,9 +111,16 @@ const FrichesStatut: React.FC<{
     );
 };
 
+const DetailsFricheZonageEnvironnemental: React.FC = () => (
+	<div>
+        <h6>Informations complémentaires</h6>
+		<p className="fr-text--xs"><strong>La zone naturelle d'intérêt écologique, faunistique et floristique (en abrégé ZNIEFF)</strong> est un espace naturel inventorié en raison de son caractère remarquable. Elle complète les zonages réglementaires (aires protégées) pour guider les décisions d'aménagement du territoire (documents d'urbanisme, créations d'espaces protégés, schémas départementaux de carrière…) et éviter l'artificialisation des zones à fort enjeu écologique.</p>
+        <p className="fr-text--xs fr-mb-0"><strong>Le réseau Natura 2000</strong> rassemble des aires protégées créées par les États membres de l'Union européenne sur la base d'une liste d'habitats et d'espèces menacés, définies par les deux directives européennes Oiseaux et Habitats, Faune, Flore.</p>
+	</div>
+)
+
 export const Friches: React.FC<FrichesProps> = ({
 	projectData,
-    landData,
 }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
     const mapSectionRef = useRef<HTMLDivElement>(null);
@@ -267,15 +275,35 @@ export const Friches: React.FC<FrichesProps> = ({
                     </div>
                 ))}
             </div>
+            <h2 className="fr-mt-5w">Analyses et statistiques</h2>
+            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+                {FRICHES_CHARTS.map((chart) => (
+                    <div key={chart.id} className="fr-col-12 fr-col-md-6">
+                        <div className="bg-white fr-p-2w rounded">
+                            <FrichesChart
+                                id={chart.id}
+                                land_id={projectData.land_id}
+                                land_type={projectData.land_type}
+                                sources={['cartofriches']}
+                                showDataTable={true}
+                            >
+                                {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
+                            </FrichesChart>
+                        </div>
+                    </div>
+                ))}
+            </div>
             <h2 className="fr-mt-7w">Détail des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 <div className="fr-col-12">
-                    <SearchInput
-                        id="search-friches"
-                        placeholder="Recherchez par identifiant, type, statut, pollution, zonage..."
-                        value={searchTerm}
-                        onChange={setSearchTerm}
-                    />
+                    <SearchContainer>
+                        <SearchInput
+                            id="search-friches"
+                            placeholder="Recherchez par identifiant, type, statut, pollution, zonage..."
+                            value={searchTerm}
+                            onChange={setSearchTerm}
+                        />
+                    </SearchContainer>
                     <DataTable
                         data={paginatedData}
                         columns={columns}
@@ -290,19 +318,21 @@ export const Friches: React.FC<FrichesProps> = ({
                                 : "Aucune friche disponible pour ce territoire."
                         }
                     />
-                    <div className="d-flex justify-content-between align-items-center gap-2">
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={setPage}
-                        />
+                    <div className="d-flex justify-content-start align-items-center gap-2">
+                        {totalPages > 1 && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setPage}
+                            />
+                        )}
                         <DisplayPaginationInfo className="fr-text--xs">
                             {displayInfo.start}-{displayInfo.end} sur {displayInfo.total}
                         </DisplayPaginationInfo>
                     </div>
                 </div>
             </div>
-            <h2 className="fr-mt-7w">Carte des friches</h2>
+            <h2 className="fr-mt-2w">Carte des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w" ref={mapSectionRef}>
                 <div className="fr-col-12">
                     <FrichesMap 
@@ -311,17 +341,22 @@ export const Friches: React.FC<FrichesProps> = ({
                     />
                 </div>
             </div>
-            <h2 className="fr-mt-7w">Indicateurs</h2>
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                {FRICHES_CHARTS.map((chart, index) => (
-                    <div key={chart.id} className="fr-col-12 fr-col-md-6 bg-white">
-                        <FrichesChart
-                            id={chart.id}
-                            land_id={projectData.land_id}
-                            land_type={projectData.land_type}
-                        />
-                    </div>
-                ))}
+            <h4 className="fr-mt-10w">Pour aller plus loin dans votre démarche de réhabilitation de friches </h4>
+            <div className="fr-callout fr-icon-information-line">
+                <h3 className="fr-callout__title fr-text--md">Estimez les impacts environnementaux, sociaux et économiques de votre projet de réhabilitation grâce à Bénéfriches</h3>
+                <p className="fr-callout__text fr-text--sm">Vous avez un projet d'aménagement urbain ou un projet photovoltaïque sur une friche ? Calculez les impacts de votre projet grâce à la plateforme Bénéfriches !</p>
+                <br />
+                <a target="_blank" rel="noopener noreferrer external" title="" href="https://benefriches.ademe.fr/" className="fr-notice__link fr-link fr-text--sm">
+                    Accèder à Bénéfriches
+                </a>
+            </div>
+            <div className="fr-callout fr-icon-information-line">
+                <h3 className="fr-callout__title fr-text--md">Faites-vous accompagner gratuitement dans la réhabilitation des friches de votre territoire grâce à UrbanVitaliz</h3>
+                <p className="fr-callout__text fr-text--sm">UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que les conseillers publics (selon les territoires : DDT, DREAL, EPF...)</p>
+                <br />
+                <a target="_blank" rel="noopener noreferrer external" title="" href="https://urbanvitaliz.fr/" className="fr-notice__link fr-link fr-text--sm">
+                    Accèder à UrbanVitaliz
+                </a>
             </div>
 		</div>
 	);

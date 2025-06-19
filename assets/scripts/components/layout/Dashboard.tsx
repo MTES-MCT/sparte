@@ -181,7 +181,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             >
                                                     <Friches
                                                         projectData={projectData}
-                                                        landData={landData}
                                                     />
                                                 </RouteWrapper>
                                         }

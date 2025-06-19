@@ -7,7 +7,6 @@ interface SearchInputProps {
     placeholder?: string;
     value: string;
     onChange: (value: string) => void;
-    className?: string;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -16,7 +15,6 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     placeholder,
     value,
     onChange,
-    className = ""
 }) => {
     const [inputValue, setInputValue] = useState(value);
 
@@ -30,23 +28,21 @@ export const SearchInput: React.FC<SearchInputProps> = ({
     };
 
     return (
-        <div className={`fr-mb-3w ${className}`}>
-            <SearchBar
-                id={id}
-                label={label}
-                renderInput={({ id, type, className }) => (
-                    <input
-                        id={id}
-                        type={type}
-                        className={className}
-                        placeholder={placeholder}
-                        value={inputValue}
-                        onChange={(e) => handleInputChange(e.target.value)}
-                    />
-                )}
-                onButtonClick={handleInputChange}
-                clearInputOnSearch={false}
-            />
-        </div>
+        <SearchBar
+            id={id}
+            label={label}
+            renderInput={({ id, type, className }) => (
+                <input
+                    id={id}
+                    type={type}
+                    className={className}
+                    placeholder={placeholder}
+                    value={inputValue}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                />
+            )}
+            onButtonClick={handleInputChange}
+            clearInputOnSearch={false}
+        />
     );
 }; 

@@ -8,13 +8,6 @@ class FricheZoneActiviteChart(BaseFricheChart):
     friche_field = "friche_is_in_zone_activite"
     title = "Intersection avec une zone d'activité économique"
     series_name = title
-    colors = [
-        "#FF5733",  # Rouge
-        "#33FF57",  # Vert
-        "#3357FF",  # Bleu
-        "#F1C40F",  # Jaune
-        "#8E44AD",  # Violet
-    ]
 
     def format_boolean_field(self, item):
         return "oui" if getattr(item, self.friche_field) else "non"
