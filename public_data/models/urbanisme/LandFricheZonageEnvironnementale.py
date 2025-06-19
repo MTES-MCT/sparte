@@ -9,13 +9,13 @@ from .BaseLandFriche import (
 
 class LandFricheZonageEnvironnementale(BaseLandFriche):
     class ZonageEnvironnementalChoices(models.TextChoices):
-        PROXIMITE_ZONE_RESERVE_NATURELLE = "proximite_zone (reserves_naturelles)"
-        RESERVE_NATURELLE = "reserve_naturelle"
-        NATURA_2000 = "natura_2000"
+        PROXIMITE_ZONE_RESERVE_NATURELLE = "proche d'une réserve naturelle"
+        RESERVE_NATURELLE = "réserve naturelle"
+        NATURA_2000 = "natura 2000"
         HORS_ZONE = "hors zone"
-        ZNIEFF = "znieff"
-        PROXIMITE_ZONE_ZNIEFF = "proximite_zone (znieff)"
-        PROXIMITE_ZONE_NATURA_2000 = "proximite_zone (natura_2000)"
+        ZNIEFF = "ZNIEFF"
+        PROXIMITE_ZONE_ZNIEFF = "proche d'une ZNIEFF"
+        PROXIMITE_ZONE_NATURA_2000 = "proche d'une zone Natura 2000"
 
     friche_zonage_environnemental = models.CharField(choices=ZonageEnvironnementalChoices.choices)
 

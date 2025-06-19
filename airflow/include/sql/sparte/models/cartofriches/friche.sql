@@ -12,7 +12,7 @@ with without_surface as (
 SELECT
     site_id,
     site_nom,
-    site_type as friche_type,
+    {{ standardize_friche_type('site_type') }} as friche_type,
     site_adresse,
     site_identif_date,
     site_actu_date,
@@ -82,7 +82,7 @@ SELECT
     monuhisto,
     monuhisto500,
     emprise_sol_bati,
-    zonage_enviro as friche_zonage_environnemental,
+    {{ standardize_friche_zonage_environnemental('zonage_enviro') }} as friche_zonage_environnemental,
     site_statut as friche_statut,
     long,
     lat,
