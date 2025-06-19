@@ -15,31 +15,30 @@ const IconZoneActivite = styled.i`
 export const FrichesPopup: React.FC<FrichesPopupProps> = ({ feature }) => {
     const properties = feature.properties;
     
-    console.log(feature);
     if (!properties) {
         return <GenericPopup title="Aucune information disponible" data={[]} />;
     }
 
     const getBadgeClass = (statut: string) => {
-        return STATUT_BADGE_CONFIG[statut as keyof typeof STATUT_BADGE_CONFIG] || 'fr-badge--info';
+        return STATUT_BADGE_CONFIG[statut as keyof typeof STATUT_BADGE_CONFIG] ?? 'fr-badge--info';
     };
 
     const popupData = [
         {
             label: "Type",
-            value: properties.friche_type || 'Non renseigné'
+            value: properties.friche_type ?? 'Non renseigné'
         },
         {
             label: "Statut",
             value: (
                 <span className={`fr-badge fr-badge--no-icon text-lowercase fr-text--xs ${getBadgeClass(properties.friche_statut)}`}>
-                    {properties.friche_statut || 'Non renseigné'}
+                    {properties.friche_statut ?? 'Non renseigné'}
                 </span>
             )
         },
         {
             label: "Pollution",
-            value: properties.friche_sol_pollution || 'Non renseigné'
+            value: properties.friche_sol_pollution ?? 'Non renseigné'
         },
         {
             label: "Surface",
@@ -53,11 +52,11 @@ export const FrichesPopup: React.FC<FrichesPopupProps> = ({ feature }) => {
         },
         {
             label: "Zonage environnemental",
-            value: properties.friche_zonage_environnemental || 'Non renseigné'
+            value: properties.friche_zonage_environnemental ?? 'Non renseigné'
         },
         {
             label: "Type de zone",
-            value: properties.friche_type_zone || 'Non renseigné'
+            value: properties.friche_type_zone ?? 'Non renseigné'
         }
     ];
 
