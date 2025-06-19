@@ -72,9 +72,6 @@ const NoDataMessage = styled.div`
     padding: 2rem;
     color: var(--text-mention-grey);
     font-style: italic;
-    background-color: var(--background-contrast-grey);
-    border-radius: 0.5rem;
-    margin: 1rem 0;
 `;
 
 export function DataTable<T>({

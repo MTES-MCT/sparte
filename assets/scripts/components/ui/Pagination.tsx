@@ -5,14 +5,12 @@ interface PaginationProps {
     currentPage: number;
     totalPages: number;
     onPageChange: (page: number) => void;
-    ariaLabel?: string;
 }
 
 export const Pagination: React.FC<PaginationProps> = ({
     currentPage,
     totalPages,
-    onPageChange,
-    ariaLabel = "Pagination navigation"
+    onPageChange
 }) => {
     if (totalPages <= 1) return null;
 
