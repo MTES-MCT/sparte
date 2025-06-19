@@ -14,6 +14,7 @@ from .LandFricheZonageType import LandFricheZonageType
 
 class LandFriche(models.Model):
     site_id = models.CharField(max_length=255)
+    site_nom = models.CharField(max_length=255)
     land_id = models.CharField()
     land_type = models.CharField(choices=AdminRef.CHOICES)
     land_name = models.CharField()
