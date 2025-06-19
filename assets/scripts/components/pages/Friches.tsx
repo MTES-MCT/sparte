@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { ProjectDetailResultType } from "@services/types/project";
@@ -307,8 +307,8 @@ export const Friches: React.FC<FrichesProps> = ({
                     return (
                         <div key={statut} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
                             <FrichesStatut
-                                friche_count={statutDataItem?.friche_count || 0}
-                                friche_surface={statutDataItem?.friche_surface || 0}
+                                friche_count={statutDataItem?.friche_count ?? 0}
+                                friche_surface={statutDataItem?.friche_surface ?? 0}
                                 friche_statut={statut}
                             />
                         </div>
