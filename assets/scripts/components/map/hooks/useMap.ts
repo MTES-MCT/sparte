@@ -2,7 +2,6 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { MapConfig, ControlRefs } from "../types";
-import ReactDOMClient from "react-dom/client";
 import { renderToString } from "react-dom/server";
 
 const FIT_OPTIONS = {
@@ -92,7 +91,7 @@ export const useMap = (config: MapConfig) => {
                     popupRef.current!
                         .setLngLat(e.lngLat)
                         .setHTML(htmlContent)
-                        .addTo(mapRef.current!);
+                        .addTo(mapRef.current);
                 }
             });
         });

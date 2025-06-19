@@ -2,21 +2,21 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface Column<T> {
-    key: keyof T;
-    label: string;
-    sortable?: boolean;
-    render?: (value: any, item: T) => React.ReactNode;
+    readonly key: keyof T;
+    readonly label: string;
+    readonly sortable?: boolean;
+    readonly render?: (value: any, item: T) => React.ReactNode;
 }
 
-interface DataTableProps<T> {
-    data: T[];
-    columns: Column<T>[];
-    sortField?: keyof T;
-    sortDirection?: 'asc' | 'desc';
-    onSort?: (field: keyof T) => void;
-    caption?: string;
-    className?: string;
-    noDataMessage?: string;
+interface DataTableProps<T extends { id: number | string }> {
+    readonly data: ReadonlyArray<T>;
+    readonly columns: ReadonlyArray<Column<T>>;
+    readonly sortField?: keyof T;
+    readonly sortDirection?: 'asc' | 'desc';
+    readonly onSort?: (field: keyof T) => void;
+    readonly caption?: string;
+    readonly className?: string;
+    readonly noDataMessage?: string;
 }
 
 const SortableHeader = styled.th<{ $isSortable?: boolean; $sortDirection?: 'asc' | 'desc' | null }>`
@@ -74,7 +74,7 @@ const NoDataMessage = styled.div`
     font-style: italic;
 `;
 
-export function DataTable<T>({
+export function DataTable<T extends { id: number | string }>({
     data,
     columns,
     sortField,
@@ -143,8 +143,8 @@ export function DataTable<T>({
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item, index) => (
-                                    <tr key={index}>
+                                {data.map((item) => (
+                                    <tr key={item.id}>
                                         {columns.map((column) => (
                                             <TableCell 
                                                 key={String(column.key)}

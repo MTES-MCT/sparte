@@ -179,8 +179,7 @@ export const Friches: React.FC<FrichesProps> = ({
                     className="fr-btn fr-btn--sm fr-btn--secondary"
                     onClick={() => handleFricheClick(friche.point_on_surface)}
                 >
-                    <i className="bi bi-map fr-mr-1w"></i>
-                    Voir sur la carte
+                    <i className="bi bi-map"></i>&nbsp;Voir sur la carte
                 </button>
             )
         },
@@ -236,7 +235,7 @@ export const Friches: React.FC<FrichesProps> = ({
     ];
 
     if (isLoadingStatut || isLoadingFriches) return <div>Chargement...</div>;
-    if (statutError || frichesError) return <div>Erreur : {statutError || frichesError}</div>;
+    if (statutError || frichesError) return <div>Erreur : {statutError ?? frichesError}</div>;
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">

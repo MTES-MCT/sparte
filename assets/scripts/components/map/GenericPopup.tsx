@@ -53,7 +53,7 @@ export const GenericPopup: React.FC<GenericPopupProps> = ({
             <PopupTitle>{title}</PopupTitle>
             <PopupContent>
                 {data.map((item, index) => (
-                    <PopupRow key={index}>
+                    <PopupRow key={`${item.label}-${index}`}>
                         <PopupLabel>{item.label}</PopupLabel>
                         <PopupValue>{item.value}</PopupValue>
                     </PopupRow>
