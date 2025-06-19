@@ -1,5 +1,6 @@
 export interface LandFriche {
     site_id: string;
+    site_nom: string;
     land_id: string;
     land_type: string;
     land_name: string;

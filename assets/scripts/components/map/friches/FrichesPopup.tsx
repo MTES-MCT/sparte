@@ -62,7 +62,7 @@ export const FrichesPopup: React.FC<FrichesPopupProps> = ({ feature }) => {
 
     return (
         <GenericPopup 
-            title={`Friche ${feature.site_id}`}
+            title={`Friche ${feature.site_nom}`}
             data={popupData}
         />
     );

@@ -149,7 +149,15 @@ export const Friches: React.FC<FrichesProps> = ({
         displayInfo
     } = useDataTable({
         data: frichesData || [],
-        searchFields: ['site_id', 'friche_type', 'friche_statut', 'friche_sol_pollution', 'friche_zonage_environnemental', 'friche_type_zone'],
+        searchFields: [
+            'site_id',
+            'site_nom',
+            'friche_type',
+            'friche_statut',
+            'friche_sol_pollution',
+            'friche_zonage_environnemental',
+            'friche_type_zone',
+        ],
         itemsPerPage: 10,
         defaultSortField: 'friche_statut',
         defaultSortDirection: 'asc'
@@ -182,6 +190,11 @@ export const Friches: React.FC<FrichesProps> = ({
                     <i className="bi bi-map"></i>&nbsp;Voir sur la carte
                 </button>
             )
+        },
+        {
+            key: 'site_nom' as keyof LandFriche,
+            label: 'Nom',
+            sortable: true,
         },
         {
             key: 'site_id' as keyof LandFriche,
