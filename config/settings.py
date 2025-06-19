@@ -93,6 +93,7 @@ THIRD_APPS = [
     "qrcode",
     "django_filters",
     "mozilla_django_oidc",
+    "formtools",
 ]
 
 # upper app should not communicate with lower ones
