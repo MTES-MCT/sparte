@@ -19,7 +19,7 @@ export const createFrichesLayer = (landType: string, landId: string) => {
                 "friche sans projet", "#B34000",
                 "#FFFFFF" // couleur par défaut
             ],
-            "fill-opacity": 0.5,
+            "fill-opacity": 0.4,
         },
     };
 

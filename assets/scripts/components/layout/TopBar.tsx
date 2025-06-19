@@ -80,8 +80,10 @@ const TopBar: React.FC = () => {
     const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
     const location = useLocation();
-    const pathsToHidePeriod = ['vacance-des-logements', 'artificialisation'];
+    const pathsToHidePeriod = ['vacance-des-logements', 'artificialisation', 'friches-urbaines'];
     const shouldDisplayPeriod = !pathsToHidePeriod.some(path => location.pathname.endsWith(path));
+    const pathsToHideLevel = ['friches-urbaines'];
+    const shouldDisplayLevel = !pathsToHideLevel.some(path => location.pathname.endsWith(path));
     const { isMobile } = useWindowSize(980);
     const isOpen = useSelector(selectIsNavbarOpen);
     
@@ -107,10 +109,12 @@ const TopBar: React.FC = () => {
                             <Divider color="#e3e4e9" size="30px" />
                         </>
                     )}
-                    <Item>
-                        <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
-                        <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
-                    </Item>
+                    { shouldDisplayLevel && (
+                        <Item>
+                            <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
+                            <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
+                        </Item>
+                    )}
                 </ItemContainer>
             )}
         </Container>

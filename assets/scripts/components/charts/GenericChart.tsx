@@ -28,7 +28,7 @@ type GenericChartProps = {
     isLoading?: boolean;
     error?: any;
     showToolbar?: boolean;
-    sources?: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel']
+    sources?: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel', 'cartofriches']
     children?: React.ReactNode;
     showDataTable?: boolean;
 }

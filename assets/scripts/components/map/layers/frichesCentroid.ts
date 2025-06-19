@@ -47,7 +47,7 @@ export const createFrichesCentroidLayer = (landType: string, landId: string) => 
         source: "friches-centroid",
         filter: ["!", ["has", "point_count"]],
         paint: {
-            "circle-radius": 4,
+            "circle-radius": 10,
             "circle-color": "#4318FF",
             "circle-opacity": 0.8
         },

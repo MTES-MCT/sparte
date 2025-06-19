@@ -53,6 +53,10 @@ const SOURCES_DETAILS: Record<string, { label: string; html: string }> = {
         label: 'SITADEL',
         html: `Base des permis de construire et autres autorisations d'urbanisme (SITADEL) produite par le Ministère de la Transition écologique.`
     },
+    cartofriches: {
+        label: 'Cartofriches',
+        html: `Cartofriches utilise des données nationales (BASIAS et BASOL1, appels à projets...) pour assurer une pré-identification des friches sur tout le territoire. Il a vocation à consolider ce recensement avec la participation des acteurs locaux au plus près du terrain, en intégrant les données des observatoires locaux et des études de recensement portées par des acteurs de l’aménagement. <a href='https://cartofriches.cerema.fr/cartofriches/' target='_blank' rel='noopener'>En savoir plus</a>`
+    }
 };
 
 interface ChartDataSourceProps {
