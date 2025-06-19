@@ -15,6 +15,7 @@ export const useMap = (config: MapConfig) => {
     const controlsRef = useRef<ControlRefs>({});
     const popupRef = useRef<maplibregl.Popup | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const hasInitializedRef = useRef(false);
 
     const initializeMap = useCallback((container: HTMLElement) => {
         const protocol = new Protocol();
@@ -122,7 +123,11 @@ export const useMap = (config: MapConfig) => {
     const updateSourcesAndLayers = useCallback(() => {
         if (!mapRef.current) return;
 
-        mapRef.current.fitBounds(config.bounds, FIT_OPTIONS);
+        // Ne faire fitBounds que lors de l'initialisation
+        if (!hasInitializedRef.current) {
+            mapRef.current.fitBounds(config.bounds, FIT_OPTIONS);
+            hasInitializedRef.current = true;
+        }
 
         config.sources?.forEach(({ id, source }) => {
             if (!mapRef.current!.getSource(id)) {
