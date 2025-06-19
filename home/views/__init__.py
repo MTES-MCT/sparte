@@ -14,6 +14,7 @@ from .NewsletterEmailValidationView import NewsletterEmailValidationView
 from .NewsletterSubscriptionView import NewsletterSubscriptionView
 from .PrivacyView import PrivacyView
 from .RobotView import RobotView
+from .SatisfactionView import SatisfactionView
 from .StatsView import StatsView
 
 __all__ = [
@@ -32,4 +33,5 @@ __all__ = [
     "PrivacyView",
     "RobotView",
     "StatsView",
+    "SatisfactionView",
 ]
