@@ -2,21 +2,21 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface Column<T> {
-    readonly key: keyof T;
-    readonly label: string;
-    readonly sortable?: boolean;
-    readonly render?: (value: any, item: T) => React.ReactNode;
+    key: keyof T;
+    label: string;
+    sortable?: boolean;
+    render?: (value: any, item: T) => React.ReactNode;
 }
 
-interface DataTableProps<T extends { id: number | string }> {
-    readonly data: ReadonlyArray<T>;
-    readonly columns: ReadonlyArray<Column<T>>;
-    readonly sortField?: keyof T;
-    readonly sortDirection?: 'asc' | 'desc';
-    readonly onSort?: (field: keyof T) => void;
-    readonly caption?: string;
-    readonly className?: string;
-    readonly noDataMessage?: string;
+interface DataTableProps<T> {
+    data: T[];
+    columns: Column<T>[];
+    sortField?: keyof T;
+    sortDirection?: 'asc' | 'desc';
+    onSort?: (field: keyof T) => void;
+    caption?: string;
+    className?: string;
+    keyField?: keyof T;
 }
 
 const SortableHeader = styled.th<{ $isSortable?: boolean; $sortDirection?: 'asc' | 'desc' | null }>`
@@ -74,7 +74,7 @@ const NoDataMessage = styled.div`
     font-style: italic;
 `;
 
-export function DataTable<T extends { id: number | string }>({
+export function DataTable<T>({
     data,
     columns,
     sortField,
@@ -82,43 +82,9 @@ export function DataTable<T extends { id: number | string }>({
     onSort,
     caption,
     className = "",
-    noDataMessage = "Aucune donnée à afficher"
+    keyField
 }: DataTableProps<T>) {
-    if (data.length === 0) {
-        return (
-            <div className={`fr-table fr-table--bordered fr-table--no-caption ${className}`}>
-                <div className="fr-table__wrapper">
-                    <div className="fr-table__container">
-                        <div className="fr-table__content">
-                            <table>
-                                {caption && <caption>{caption}</caption>}
-                                <thead>
-                                    <tr>
-                                        {columns.map((column) => (
-                                            <th key={String(column.key)} scope="col">
-                                                {column.label}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colSpan={columns.length}>
-                                            <NoDataMessage>
-                                                {noDataMessage}
-                                            </NoDataMessage>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
+    const renderTableStructure = (children: React.ReactNode) => (
         <div className={`fr-table fr-table--bordered fr-table--no-caption ${className}`}>
             <div className="fr-table__wrapper">
                 <div className="fr-table__container">
@@ -143,21 +109,7 @@ export function DataTable<T extends { id: number | string }>({
                                 </tr>
                             </thead>
                             <tbody>
-                                {data.map((item) => (
-                                    <tr key={item.id}>
-                                        {columns.map((column) => (
-                                            <TableCell 
-                                                key={String(column.key)}
-                                                className={column.key === 'actions' ? 'fr-cell--fixed' : undefined}
-                                            >
-                                                {column.render 
-                                                    ? column.render(item[column.key], item)
-                                                    : String(item[column.key] || '')
-                                                }
-                                            </TableCell>
-                                        ))}
-                                    </tr>
-                                ))}
+                                {children}
                             </tbody>
                         </table>
                     </div>
@@ -165,4 +117,34 @@ export function DataTable<T extends { id: number | string }>({
             </div>
         </div>
     );
-} 
+
+    if (data.length === 0) {
+        return renderTableStructure(
+            <tr>
+                <td colSpan={columns.length}>
+                    <NoDataMessage>
+                        Il n'y a aucun résultat pour votre recherche.
+                    </NoDataMessage>
+                </td>
+            </tr>
+        );
+    }
+
+    return renderTableStructure(
+        data.map((item) => (
+            <tr key={String(item[keyField])}>
+                {columns.map((column) => (
+                    <TableCell 
+                        key={String(column.key)}
+                        className={column.key === 'actions' ? 'fr-cell--fixed' : undefined}
+                    >
+                        {column.render 
+                            ? column.render(item[column.key], item)
+                            : String(item[column.key] || '')
+                        }
+                    </TableCell>
+                ))}
+            </tr>
+        ))
+    );
+}

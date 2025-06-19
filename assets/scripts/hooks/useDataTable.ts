@@ -6,6 +6,7 @@ interface UseDataTableOptions<T> {
     itemsPerPage?: number;
     defaultSortField?: keyof T;
     defaultSortDirection?: 'asc' | 'desc';
+    customSortFunction?: (a: T, b: T, field: keyof T, direction: 'asc' | 'desc') => number;
 }
 
 interface UseDataTableReturn<T> {
@@ -37,7 +38,8 @@ export function useDataTable<T>({
     searchFields, 
     itemsPerPage = 10,
     defaultSortField,
-    defaultSortDirection = 'asc'
+    defaultSortDirection = 'asc',
+    customSortFunction
 }: UseDataTableOptions<T>): UseDataTableReturn<T> {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -65,6 +67,12 @@ export function useDataTable<T>({
     // Tri des données
     const sortedData = useMemo(() => {
         return [...filteredData].sort((a, b) => {
+            // Si une fonction de tri personnalisée est fournie, l'utiliser
+            if (customSortFunction) {
+                return customSortFunction(a, b, sortField, sortDirection);
+            }
+            
+            // Sinon, utiliser le tri par défaut
             const aValue = a[sortField];
             const bValue = b[sortField];
             
@@ -80,7 +88,7 @@ export function useDataTable<T>({
             
             return 0;
         });
-    }, [filteredData, sortField, sortDirection]);
+    }, [filteredData, sortField, sortDirection, customSortFunction]);
 
     // Pagination
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
