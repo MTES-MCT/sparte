@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import { useMap } from "./hooks/useMap";
 import { BaseMapProps } from "./types";
@@ -69,7 +69,18 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 }) => {
 	const mapDiv = useRef<HTMLDivElement>(null);
 	const [currentZoom, setCurrentZoom] = useState<number>(0);
-	const mapConfig = { style, bounds, maxBounds, controls, sources, layers, popups };
+	
+	// Mémoriser mapConfig pour éviter les re-renders inutiles
+	const mapConfig = useMemo(() => ({ 
+		style, 
+		bounds, 
+		maxBounds, 
+		controls, 
+		sources, 
+		layers, 
+		popups 
+	}), [style, bounds, maxBounds, controls, sources, layers, popups]);
+	
 	const {
 		mapRef,
 		isMapLoaded,
