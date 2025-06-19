@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { ProjectDetailResultType } from "@services/types/project";
@@ -110,6 +110,7 @@ export const Friches: React.FC<FrichesProps> = ({
     landData,
 }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
+    const mapSectionRef = useRef<HTMLDivElement>(null);
 
     const { data: statutData, isLoading: isLoadingStatut, error: statutError } = useGetLandFrichesStatutQuery({
         land_type: projectData.land_type,
@@ -142,6 +143,16 @@ export const Friches: React.FC<FrichesProps> = ({
     const handleFricheClick = (point: { type: "Point"; coordinates: [number, number] }) => {
         setSelectedFriche(point.coordinates);
     };
+
+    // Scroll vers la carte quand une friche est sélectionnée
+    useEffect(() => {
+        if (selectedFriche && mapSectionRef.current) {
+            mapSectionRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }, [selectedFriche]);
 
     const columns = [
         {
@@ -285,7 +296,7 @@ export const Friches: React.FC<FrichesProps> = ({
                 </div>
             </div>
             <h2 className="fr-mt-7w">Carte des friches</h2>
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w" ref={mapSectionRef}>
                 <div className="fr-col-12">
                     <FrichesMap 
                         projectData={projectData} 
