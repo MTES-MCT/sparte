@@ -1,5 +1,6 @@
 from django.contrib.gis.db.models import PointField
 from django.db import models
+from rest_framework import serializers
 
 from public_data.models.administration import AdminRef
 
@@ -43,6 +44,19 @@ class LandFriche(models.Model):
 
 
 class LandFricheSerializer(BaseLandFricheSerializer):
+    friche_zonage_environnemental = serializers.SerializerMethodField()
+    friche_type = serializers.SerializerMethodField()
+    friche_sol_pollution = serializers.SerializerMethodField()
+
+    def get_friche_zonage_environnemental(self, obj):
+        return obj.get_friche_zonage_environnemental_display()
+
+    def get_friche_type(self, obj):
+        return obj.get_friche_type_display()
+
+    def get_friche_sol_pollution(self, obj):
+        return obj.get_friche_sol_pollution_display()
+
     class Meta(BaseLandFricheSerializer.Meta):
         model = LandFriche
 

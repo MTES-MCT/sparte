@@ -16,7 +16,7 @@ class LandFricheType(BaseLandFriche):
         AUTRE = ("autre",)
         MIXTE = ("mixte",)
         FRICHE_ENSEIGNEMENT = "friche enseignement"
-        FRICHE_CULTURELLE = "friche cultuelle"
+        FRICHE_CULTURELLE = "friche cultuelle", "friche culturelle"
         INCONNU = "inconnu"
         FRICHE_PORTUAIRE = "friche portuaire"
         FRICHE_CARRIERE_MINE = "friche carrière ou mine"
