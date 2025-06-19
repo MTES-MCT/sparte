@@ -137,7 +137,9 @@ export const Friches: React.FC<FrichesProps> = ({
     } = useDataTable({
         data: frichesData || [],
         searchFields: ['site_id', 'friche_type', 'friche_statut', 'friche_sol_pollution', 'friche_zonage_environnemental', 'friche_type_zone'],
-        itemsPerPage: 10
+        itemsPerPage: 10,
+        defaultSortField: 'friche_statut',
+        defaultSortDirection: 'asc'
     });
 
     const handleFricheClick = (point: { type: "Point"; coordinates: [number, number] }) => {

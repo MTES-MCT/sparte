@@ -4,6 +4,8 @@ interface UseDataTableOptions<T> {
     data: T[];
     searchFields: (keyof T)[];
     itemsPerPage?: number;
+    defaultSortField?: keyof T;
+    defaultSortDirection?: 'asc' | 'desc';
 }
 
 interface UseDataTableReturn<T> {
@@ -33,12 +35,14 @@ interface UseDataTableReturn<T> {
 export function useDataTable<T>({ 
     data, 
     searchFields, 
-    itemsPerPage = 10 
+    itemsPerPage = 10,
+    defaultSortField,
+    defaultSortDirection = 'asc'
 }: UseDataTableOptions<T>): UseDataTableReturn<T> {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortField, setSortField] = useState<keyof T>(Object.keys(data[0] || {})[0] as keyof T);
-    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+    const [sortField, setSortField] = useState<keyof T>(defaultSortField || Object.keys(data[0] || {})[0] as keyof T);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(defaultSortDirection);
 
     // Filtrage des données
     const filteredData = useMemo(() => {
