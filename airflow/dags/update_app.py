@@ -549,6 +549,7 @@ def update_app():  # noqa: C901
             environment=context["params"]["environment"],
             custom_columns_type={
                 "geojson_feature_collection": "jsonb",
+                "geojson_centroid_feature_collection": "jsonb",
             },
             btree_index_columns=[
                 ["land_id", "land_type"],
