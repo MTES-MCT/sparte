@@ -14,9 +14,9 @@ export const createFrichesLayer = (landType: string, landId: string) => {
             "fill-color": [
                 "match",
                 ["get", "friche_statut"],
-                "friche reconvertie", "#48D5A7",
-                "friche avec projet", "#34BAB5",
-                "friche sans projet", "#FA6E6E",
+                "friche reconvertie", "#18753C",
+                "friche avec projet", "#0063CB",
+                "friche sans projet", "#B34000",
                 "#FFFFFF" // couleur par défaut
             ],
             "fill-opacity": 0.5,

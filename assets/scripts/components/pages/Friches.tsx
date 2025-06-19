@@ -44,6 +44,11 @@ const StatutTitle = styled.h3`
     font-size: 1.25rem;
 `;
 
+const StatutBadge = styled.span`
+    font-size: 1rem;
+    text-transform: lowercase;
+`;
+
 const StatutContent = styled.div`
     display: flex;
     flex-direction: column;
@@ -57,7 +62,9 @@ const StatutValue = styled.div`
 `;
 
 const StatutLabel = styled.p`
-    text-transform: lowercase;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0;
 `;
 
 const IconZoneActivite = styled.i`
@@ -65,12 +72,8 @@ const IconZoneActivite = styled.i`
 `;
 
 const DisplayPaginationInfo = styled.div`
-    margin-top: 0.5rem;
-    background-color: var(--background-contrast-grey);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+    margin-top: 1rem;
     font-size: 0.8rem;
-    color: var(--text-mention-grey);
 `;
 
 const FRICHES_CHARTS = [
@@ -95,11 +98,13 @@ const FrichesStatut: React.FC<{
         <StatutCard>
             <StatutHeader>
                 <StatutIcon className={icon} />
-                <StatutTitle>{friche_statut}</StatutTitle>
+                <StatutBadge className={`fr-badge fr-badge--no-icon ${STATUT_BADGE_CONFIG[friche_statut as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
+                    {friche_statut}
+                </StatutBadge>
             </StatutHeader>
             <StatutContent>
                 <StatutValue>{friche_count}</StatutValue>
-                <StatutLabel className="fr-badge fr-badge--info">Soit {formatNumber({ number: friche_surface / 10000 })} ha</StatutLabel>
+                <StatutLabel>Soit {formatNumber({ number: friche_surface })} ha</StatutLabel>
             </StatutContent>
         </StatutCard>
     );
