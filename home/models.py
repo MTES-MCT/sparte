@@ -9,6 +9,10 @@ from django.utils import timezone
 from utils.functions import get_url_with_domain
 
 
+class SatisfactionFormEntry(models.Model):
+    test = models.BooleanField(default=False, verbose_name="Test")
+
+
 class ContactForm(models.Model):
     class StatusChoices(models.TextChoices):
         PENDING = "PENDING", "Awaiting celery to process the task"
