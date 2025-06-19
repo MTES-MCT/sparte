@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { ProjectDetailResultType } from "@services/types/project";
@@ -6,7 +6,7 @@ import { useGetLandFrichesStatutQuery, useGetLandFrichesQuery } from "@services/
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
 import { FrichesMap } from "@components/map/friches/FrichesMap";
-import { STATUT_BADGE_CONFIG, STATUT_CONFIG } from "@components/map/friches/constants";
+import { STATUT_BADGE_CONFIG, STATUT_CONFIG, STATUT_ORDER } from "@components/map/friches/constants";
 import { LandFriche } from "@services/types/land_friches";
 import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
@@ -160,7 +160,31 @@ export const Friches: React.FC<FrichesProps> = ({
         ],
         itemsPerPage: 10,
         defaultSortField: 'friche_statut',
-        defaultSortDirection: 'asc'
+        defaultSortDirection: 'asc',
+        customSortFunction: (a, b, field, direction) => {
+            // Tri personnalisé pour le champ friche_statut
+            if (field === 'friche_statut') {
+                const aIndex = STATUT_ORDER.indexOf(a.friche_statut as any);
+                const bIndex = STATUT_ORDER.indexOf(b.friche_statut as any);
+                return direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
+            }
+            
+            // Pour les autres champs, utiliser le tri par défaut
+            const aValue = a[field];
+            const bValue = b[field];
+            
+            if (typeof aValue === 'string' && typeof bValue === 'string') {
+                return direction === 'asc' 
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            }
+            
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                return direction === 'asc' ? aValue - bValue : bValue - aValue;
+            }
+            
+            return 0;
+        }
     });
 
     const handleFricheClick = (point: { type: "Point"; coordinates: [number, number] }) => {
@@ -277,15 +301,19 @@ export const Friches: React.FC<FrichesProps> = ({
 			</div>
             <h2 className="fr-mt-5w">Vue d'ensemble</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                {statutData?.map((friche) => (
-                    <div key={friche.id} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                        <FrichesStatut
-                            friche_count={friche.friche_count}
-                            friche_surface={friche.friche_surface}
-                            friche_statut={friche.friche_statut}
-                        />
-                    </div>
-                ))}
+                {STATUT_ORDER.map((statut) => {
+                    const statutDataItem = statutData?.find(item => item.friche_statut === statut);
+                    
+                    return (
+                        <div key={statut} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+                            <FrichesStatut
+                                friche_count={statutDataItem?.friche_count || 0}
+                                friche_surface={statutDataItem?.friche_surface || 0}
+                                friche_statut={statut}
+                            />
+                        </div>
+                    );
+                })}
             </div>
             <h2 className="fr-mt-5w">Analyses et statistiques</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
@@ -324,11 +352,7 @@ export const Friches: React.FC<FrichesProps> = ({
                         onSort={setSort}
                         caption="Liste détaillée des friches du territoire"
                         className="fr-mb-2w"
-                        noDataMessage={
-                            searchTerm 
-                                ? `Aucune friche trouvée pour "${searchTerm}". Essayez avec d'autres termes de recherche.`
-                                : "Aucune friche disponible pour ce territoire."
-                        }
+                        keyField="site_id"
                     />
                     <div className="d-flex justify-content-start align-items-center gap-2">
                         {totalPages > 1 && (

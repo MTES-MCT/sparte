@@ -8,4 +8,10 @@ export const STATUT_CONFIG = {
     'friche avec projet': { icon: 'bi bi-building' },
     'friche sans projet': { icon: 'bi bi-building-x' },
     'friche reconvertie': { icon: 'bi bi-building-check' },
-} as const; 
+} as const;
+
+export const STATUT_ORDER = [
+    'friche sans projet',
+    'friche avec projet',
+    'friche reconvertie'
+] as const; 
