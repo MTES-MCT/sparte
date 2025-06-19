@@ -12,6 +12,7 @@
 
 SELECT
     friche.site_id,
+    friche.site_nom,
     friche.geom,
     land.land_type AS land_type,
     land.land_id as land_id,

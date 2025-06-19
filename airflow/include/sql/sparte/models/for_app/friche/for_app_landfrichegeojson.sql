@@ -9,6 +9,7 @@ with friche_land_4326 as (
     SELECT
         friche_land.site_id as id,
         friche_land.site_id as site_id,
+        friche_land.site_nom,
         friche_land.land_id,
         friche_land.land_type,
         friche_land.land_name,
