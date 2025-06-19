@@ -2,15 +2,37 @@ import string
 import traceback
 from random import choices
 
+from django.core import validators
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
+from users.models import User
 from utils.functions import get_url_with_domain
 
 
 class SatisfactionFormEntry(models.Model):
-    test = models.BooleanField(default=False, verbose_name="Test")
+    user = models.ForeignKey(
+        User,
+        verbose_name="Utilisateur",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    nps = models.IntegerField(
+        "NPS",
+        help_text="Note de satisfaction de 0 à 10, où 0 est très insatisfait et 10 très satisfait.",
+        validators=[
+            validators.MinValueValidator(0),
+            validators.MaxValueValidator(10),
+        ],
+    )
+    suggested_change = models.TextField(
+        "Changement suggéré",
+        help_text="Suggérez un changement pour améliorer le service.",
+        blank=True,
+        null=True,
+    )
 
 
 class ContactForm(models.Model):

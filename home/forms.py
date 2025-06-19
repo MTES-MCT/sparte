@@ -9,7 +9,13 @@ class NewsletterForm(forms.ModelForm):
         fields = ("email",)
 
 
-class SatisfactionForm(forms.ModelForm):
+class SatisfactionFormNPS(forms.ModelForm):
     class Meta:
         model = SatisfactionFormEntry
-        fields = ("test",)
+        fields = ("nps",)
+
+
+class SatisfactionFormSuggestedChange(forms.ModelForm):
+    class Meta:
+        model = SatisfactionFormEntry
+        fields = ("suggested_change",)
