@@ -19,6 +19,8 @@ SELECT
     friche.friche_type,
     friche.friche_surface_percentile_rank,
     friche.surface,
+    friche.nature,
+    friche.source_producteur,
     st_transform(st_pointonsurface(friche.geom), 4326) AS point_on_surface
 
 FROM
