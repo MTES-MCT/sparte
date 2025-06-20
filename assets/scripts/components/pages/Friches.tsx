@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { ProjectDetailResultType } from "@services/types/project";
@@ -17,7 +17,7 @@ interface FrichesProps {
 	projectData: ProjectDetailResultType;
 }
 
-const StatutCard = styled.div`
+const StatutCard = styled.div<{ $isHighlighted?: boolean }>`
     background-color: white;
     border-radius: 4px;
     padding: 1.5rem;
@@ -25,6 +25,26 @@ const StatutCard = styled.div`
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    ${({ $isHighlighted }) => $isHighlighted && `
+        border: 3px solid var(--artwork-major-blue-france);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        position: relative;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+    `}
+`;
+
+const HighlightBadge = styled.div`
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: var(--artwork-major-blue-france);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 `;
 
 const StatutHeader = styled.div`
@@ -33,8 +53,11 @@ const StatutHeader = styled.div`
     gap: 0.5rem;
 `;
 
-const StatutIcon = styled.i`
+const StatutIcon = styled.i<{ $isHighlighted?: boolean }>`
     font-size: 2.5rem;
+    ${({ $isHighlighted }) => $isHighlighted && `
+        color: var(--artwork-major-blue-france);
+    `}
 `;
 
 const StatutBadge = styled.span`
@@ -48,10 +71,13 @@ const StatutContent = styled.div`
     gap: 0.5rem;
 `;
 
-const StatutValue = styled.div`
+const StatutValue = styled.div<{ $isHighlighted?: boolean }>`
 	font-size: 3rem;
 	font-weight: bold;
 	line-height: 3rem;
+	${({ $isHighlighted }) => $isHighlighted && `
+	    color: var(--artwork-major-blue-france);
+	`}
 `;
 
 const StatutLabel = styled.p`
@@ -86,6 +112,18 @@ const FRICHES_CHARTS = [
     { id: 'friche_zone_activite' }
 ] as const;
 
+const useHasFrichesSansProjet = (statutData: any[] | undefined) => {
+    return useMemo(() => {
+        return statutData?.find(item => item.friche_statut === 'friche sans projet')?.friche_count > 0;
+    }, [statutData]);
+};
+
+const useFrichesSansProjetData = (statutData: any[] | undefined) => {
+    return useMemo(() => {
+        return statutData?.find(item => item.friche_statut === 'friche sans projet');
+    }, [statutData]);
+};
+
 const FrichesStatut: React.FC<{
     friche_count: number;
     friche_surface: number;
@@ -94,17 +132,24 @@ const FrichesStatut: React.FC<{
     const { icon } = STATUT_CONFIG[friche_statut as keyof typeof STATUT_CONFIG] || { 
         icon: 'bi bi-circle'
     };
+    
+    const isHighlighted = friche_statut === 'friche sans projet';
 
     return (
-        <StatutCard>
+        <StatutCard $isHighlighted={isHighlighted}>
+            {isHighlighted && (
+                <HighlightBadge>
+                    <i className="bi bi-lightning-charge"></i> Actionnable
+                </HighlightBadge>
+            )}
             <StatutHeader>
-                <StatutIcon className={icon} />
+                <StatutIcon className={icon} $isHighlighted={isHighlighted} />
                 <StatutBadge className={`fr-badge fr-badge--no-icon ${STATUT_BADGE_CONFIG[friche_statut as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
                     {friche_statut}
                 </StatutBadge>
             </StatutHeader>
             <StatutContent>
-                <StatutValue>{friche_count}</StatutValue>
+                <StatutValue $isHighlighted={isHighlighted}>{friche_count}</StatutValue>
                 <StatutLabel>Soit {formatNumber({ number: friche_surface })} ha</StatutLabel>
             </StatutContent>
         </StatutCard>
@@ -132,7 +177,7 @@ const DetailsFricheByZonageType: React.FC = () => (
 		<p className="fr-text--xs">
             N : Naturelle et Forestière, U : Urbaine, A : Agricole, AU : A Urbaniser, ZC : Zone Constructible, Zca : Zone Construstible d'activité, ZnC : Zone Non Constructible
         </p>
-        <p className="fr-text--xs fr-mb-0">Une zone d’activité ou encore une zone d’activités économiques (ZAE) est, en France, un site réservé à l’implantation d’entreprises dans un périmètre donné. <a href="https://outil2amenagement.cerema.fr/outils/linventaire-des-zones-dactivites-economiques-izae" target="_blank" rel="noopener noreferrer">En savoir plus</a></p>
+        <p className="fr-text--xs fr-mb-0">Une zone d'activité ou encore une zone d'activités économiques (ZAE) est, en France, un site réservé à l'implantation d'entreprises dans un périmètre donné. <a href="https://outil2amenagement.cerema.fr/outils/linventaire-des-zones-dactivites-economiques-izae" target="_blank" rel="noopener noreferrer">En savoir plus</a></p>
 	</div>
 )
 
@@ -151,6 +196,9 @@ export const Friches: React.FC<FrichesProps> = ({
         land_type: projectData.land_type,
         land_id: projectData.land_id
     });
+
+    const hasFrichesSansProjet = useHasFrichesSansProjet(statutData);
+    const frichesSansProjetData = useFrichesSansProjetData(statutData);
 
     // Tableau
     const {
@@ -332,26 +380,79 @@ export const Friches: React.FC<FrichesProps> = ({
                     );
                 })}
             </div>
-            <h2 className="fr-mt-5w">Analyses et statistiques des friches sans projet</h2>
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                {FRICHES_CHARTS.map((chart) => (
-                    <div key={chart.id} className="fr-col-12 fr-col-md-6">
-                        <div className="bg-white fr-p-2w rounded">
-                            <FrichesChart
-                                id={chart.id}
-                                land_id={projectData.land_id}
-                                land_type={projectData.land_type}
-                                sources={['cartofriches']}
-                                showDataTable={true}
-                            >
-                                {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
-                                {chart.id === 'friche_surface' && <DetailsFricheBySize />}
-                                {chart.id === 'friche_zonage_type' && <DetailsFricheByZonageType />}
-                            </FrichesChart>
+            
+            <div className="fr-mb-5w fr-mt-5w">
+                <div className="bg-white fr-p-4w rounded fr-mb-4w">
+                    <div className="fr-grid-row fr-grid-row--gutters">
+                        <div className="fr-col-12">
+                            <h3 className="fr-text--lg fr-mb-2w">
+                                <i className="bi bi-lightning-charge text-primary fr-mr-1w"></i>
+                                Les friches sans projet : un levier majeur actionnable pour la sobriété foncière
+                            </h3>
+                            {hasFrichesSansProjet ? (
+                                <p className="fr-text--sm fr-mb-2w">
+                                    Sur ce territoire, <strong>{frichesSansProjetData?.friche_count} friches sans projet</strong>
+                                    {" "}
+                                    représentant un potentiel de <strong>{formatNumber({ number: frichesSansProjetData?.friche_surface ?? 0 })} hectares</strong>,
+                                    {" "}
+                                    ne font pas encore l'objet d'un projet de réhabilitation, et constituent à ce titre un gisement potentiel de sobriété foncière.
+                                </p>
+                            ) : (
+                                <p className="fr-text--sm fr-mb-2w">
+                                    Aucune friche sans projet n'a été identifiée sur ce territoire. Toutes les friches recensées font déjà l'objet d'un projet de réhabilitation ou sont en cours de traitement, ce qui témoigne d'une bonne dynamique de reconversion des friches sur ce territoire.
+                                </p>
+                            )}
                         </div>
                     </div>
-                ))}
+                </div>
             </div>
+            <div className="fr-mb-7w fr-mt-5w">
+				<div className="bg-white fr-p-4w rounded">
+					<h6>
+                        D'où proviennent ces données ? 
+					</h6>
+					<div className="fr-highlight fr-highlight--no-margin">
+						<p className="fr-text--sm">
+                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches.<br />
+                            On distingue deux sources de données : les friches pré-identifiées au niveau national par le Cerema, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études. Ces contributeurs locaux à Cartofriches sont listés ici : <a href="https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux</a><br />
+						</p>
+                        <p className="fr-text--sm">
+                            Il est important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+                        </p>
+					</div>
+				</div>
+			</div>
+            {hasFrichesSansProjet && (
+                <>
+                    <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
+                    <div className="fr-callout fr-icon-information-line fr-mb-3w">
+                        <h3 className="fr-callout__title fr-text--md">Pourquoi se concentrer sur les friches sans projet ?</h3>
+                        <p className="fr-callout__text fr-text--sm">
+                            Les friches sans projet représentent des opportunités concrètes pour limiter l'artificialisation des sols. 
+                            Comprendre leurs caractéristiques (type, surface, pollution, zonage, ...) permet d'identifier les opportunités de réhabilitation les plus pertinentes.
+                        </p>
+                    </div>
+                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+                        {FRICHES_CHARTS.map((chart) => (
+                            <div key={chart.id} className="fr-col-12 fr-col-md-6">
+                                <div className="bg-white fr-p-2w rounded">
+                                    <FrichesChart
+                                        id={chart.id}
+                                        land_id={projectData.land_id}
+                                        land_type={projectData.land_type}
+                                        sources={['cartofriches']}
+                                        showDataTable={true}
+                                    >
+                                        {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
+                                        {chart.id === 'friche_surface' && <DetailsFricheBySize />}
+                                        {chart.id === 'friche_zonage_type' && <DetailsFricheByZonageType />}
+                                    </FrichesChart>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
             <h2 className="fr-mt-7w">Détail des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 <div className="fr-col-12">
