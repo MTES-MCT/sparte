@@ -18,7 +18,7 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
 
     const { headers, rows } = data;
     return (
-        <div className="fr-table--sm fr-table fr-table--bordered fr-mb-0 fr-mt-0">
+        <div className="fr-table--sm fr-table fr-table--bordered fr-table--no-caption fr-mb-0 fr-mt-0">
             <div className="fr-table__wrapper">
                 <div className="fr-table__container">
                     <div className="fr-table__content">

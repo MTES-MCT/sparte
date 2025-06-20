@@ -25,6 +25,7 @@ import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
 import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
+import FricheStatus from '@components/features/status/FricheStatus';
 
 interface DashboardProps {
     projectId: string;
@@ -60,7 +61,8 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
         }
     );
     
-    const { ocsge_status, has_ocsge } = landData || {};
+    const { ocsge_status, has_ocsge, has_friche } = landData || {};
+
     const { urls, consommation_correction_status, logements_vacants_available } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
@@ -178,6 +180,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Friches urbaines"
+                                                showPage={has_friche}
+                                                showStatus={!has_friche}
+                                                status={
+                                                    <FricheStatus />
+                                                }
                                             >
                                                     <Friches
                                                         projectData={projectData}
