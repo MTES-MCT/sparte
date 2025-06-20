@@ -6,5 +6,5 @@ from .BaseFricheChart import BaseFricheChart
 class FricheTypeChart(BaseFricheChart):
     model = LandFricheType
     friche_field = "friche_type"
-    title = "Type de friches"
+    title = "Répartition par type (en surface)"
     series_name = title

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Tooltip } from "@codegouvfr/react-dsfr/Tooltip";
 
 interface Column<T> {
     key: keyof T;
@@ -17,6 +18,7 @@ interface DataTableProps<T> {
     caption?: string;
     className?: string;
     keyField?: keyof T;
+    tooltipFields?: (keyof T)[];
 }
 
 const SortableHeader = styled.th<{ $isSortable?: boolean; $sortDirection?: 'asc' | 'desc' | null }>`
@@ -82,7 +84,8 @@ export function DataTable<T>({
     onSort,
     caption,
     className = "",
-    keyField
+    keyField,
+    tooltipFields
 }: DataTableProps<T>) {
     const renderTableStructure = (children: React.ReactNode) => (
         <div className={`fr-table fr-table--bordered fr-table--no-caption ${className}`}>
@@ -138,10 +141,24 @@ export function DataTable<T>({
                         key={String(column.key)}
                         className={column.key === 'actions' ? 'fr-cell--fixed' : undefined}
                     >
-                        {column.render 
-                            ? column.render(item[column.key], item)
-                            : String(item[column.key] || '')
-                        }
+                        {tooltipFields?.includes(column.key) ? (
+                            <>
+                                <Tooltip
+                                    kind="hover"
+                                    title={String(item[column.key])}
+                                />
+                                <span className="fr-ml-1w">
+                                    {column.render 
+                                        ? column.render(item[column.key], item)
+                                        : String(item[column.key])
+                                    }
+                                </span>
+                            </>
+                        ) : (
+                            column.render 
+                                ? column.render(item[column.key], item)
+                                : String(item[column.key])
+                        )}
                     </TableCell>
                 ))}
             </tr>

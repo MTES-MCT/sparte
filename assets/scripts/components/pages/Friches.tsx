@@ -113,9 +113,26 @@ const FrichesStatut: React.FC<{
 
 const DetailsFricheZonageEnvironnemental: React.FC = () => (
 	<div>
-        <h6>Informations complémentaires</h6>
+        <h6 className="fr-mb-1w">Informations complémentaires</h6>
 		<p className="fr-text--xs"><strong>La zone naturelle d'intérêt écologique, faunistique et floristique (en abrégé ZNIEFF)</strong> est un espace naturel inventorié en raison de son caractère remarquable. Elle complète les zonages réglementaires (aires protégées) pour guider les décisions d'aménagement du territoire (documents d'urbanisme, créations d'espaces protégés, schémas départementaux de carrière…) et éviter l'artificialisation des zones à fort enjeu écologique.</p>
         <p className="fr-text--xs fr-mb-0"><strong>Le réseau Natura 2000</strong> rassemble des aires protégées créées par les États membres de l'Union européenne sur la base d'une liste d'habitats et d'espèces menacés, définies par les deux directives européennes Oiseaux et Habitats, Faune, Flore.</p>
+	</div>
+)
+
+const DetailsFricheBySize: React.FC = () => (
+	<div>
+        <h6 className="fr-mb-1w">Calcul</h6>
+		<p className="fr-text--xs">Les 4 catégories de taille sont déterminées à partir de l'ensemble des tailles des friches à l'échelle nationale, d'après les friches incluent dans les données <strong>Cartofriches</strong>.</p>
+	</div>
+)
+
+const DetailsFricheByZonageType: React.FC = () => (
+	<div>
+        <h6 className="fr-mb-1w">Informations complémentaires</h6>
+		<p className="fr-text--xs">
+            N : Naturelle et Forestière, U : Urbaine, A : Agricole, AU : A Urbaniser, ZC : Zone Constructible, Zca : Zone Construstible d'activité, ZnC : Zone Non Constructible
+        </p>
+        <p className="fr-text--xs fr-mb-0">Une zone d’activité ou encore une zone d’activités économiques (ZAE) est, en France, un site réservé à l’implantation d’entreprises dans un périmètre donné. <a href="https://outil2amenagement.cerema.fr/outils/linventaire-des-zones-dactivites-economiques-izae" target="_blank" rel="noopener noreferrer">En savoir plus</a></p>
 	</div>
 )
 
@@ -315,7 +332,7 @@ export const Friches: React.FC<FrichesProps> = ({
                     );
                 })}
             </div>
-            <h2 className="fr-mt-5w">Analyses et statistiques</h2>
+            <h2 className="fr-mt-5w">Analyses et statistiques des friches sans projet</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 {FRICHES_CHARTS.map((chart) => (
                     <div key={chart.id} className="fr-col-12 fr-col-md-6">
@@ -328,6 +345,8 @@ export const Friches: React.FC<FrichesProps> = ({
                                 showDataTable={true}
                             >
                                 {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
+                                {chart.id === 'friche_surface' && <DetailsFricheBySize />}
+                                {chart.id === 'friche_zonage_type' && <DetailsFricheByZonageType />}
                             </FrichesChart>
                         </div>
                     </div>
@@ -353,6 +372,7 @@ export const Friches: React.FC<FrichesProps> = ({
                         caption="Liste détaillée des friches du territoire"
                         className="fr-mb-2w"
                         keyField="site_id"
+                        tooltipFields={['site_nom']}
                     />
                     <div className="d-flex justify-content-start align-items-center gap-2">
                         {totalPages > 1 && (

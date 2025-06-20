@@ -3,25 +3,20 @@ import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
 import { OcsgeStatusEnum } from "@components/features/status/OcsgeStatus";
 
-
-
-
-
-
 export type Millesime = {
     index: number;
     year: number;
     departement: string;
     departement_name?: string;
-  }
+}
   
-  export type MillesimeByIndex = {
+export type MillesimeByIndex = {
     index: number;
     years: string;
     departements: string;
-  }
+}
   
-  export type LandDetailResultType = {
+export type LandDetailResultType = {
     land_id: string;
     land_type: string;
     name: string;
@@ -38,19 +33,19 @@ export type Millesime = {
     is_interdepartemental: boolean;
     has_zonage: boolean;
     has_ocsge: boolean;
-    ocsge_status: OcsgeStatusEnum
-  };
+    ocsge_status: OcsgeStatusEnum;
+	has_friche: boolean;
+};
 
-  type LandDetailQueryArg = string | FetchArgs | {
+type LandDetailQueryArg = string | FetchArgs | {
     land_id: string;
     land_type: string;
-  }
-  type LandDetailBaseQuery = BaseQueryFn<LandDetailQueryArg, unknown, FetchBaseQueryError>;
+}
+
+type LandDetailBaseQuery = BaseQueryFn<LandDetailQueryArg, unknown, FetchBaseQueryError>;
   
-  export type UseLandDetailType = TypedUseQuery<
+export type UseLandDetailType = TypedUseQuery<
     LandDetailResultType,
     LandDetailQueryArg,
     LandDetailBaseQuery
-  >;
-  
-  
+ >;  

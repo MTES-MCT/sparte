@@ -6,7 +6,7 @@ from .BaseFricheChart import BaseFricheChart
 class FricheZoneActiviteChart(BaseFricheChart):
     model = LandFricheZoneActivite
     friche_field = "friche_is_in_zone_activite"
-    title = "Intersection avec une zone d'activité économique"
+    title = "Répartition par intersection avec une zone d'activité économique (en surface)"
     series_name = title
 
     def format_boolean_field(self, item):

@@ -4,7 +4,7 @@ from .BaseFricheChart import BaseFricheChart
 
 
 class FricheSurfaceChart(BaseFricheChart):
-    title = "Catégorie de taille de friche"
+    title = "Répartition par catégorie de taille (en nombre)"
     series_name = title
 
     def format_min_max_rank(self, item: LandFricheSurfaceRank) -> str:
