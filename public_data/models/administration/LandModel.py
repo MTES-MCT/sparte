@@ -55,6 +55,7 @@ class LandModel(models.Model):
     ocsge_status = models.TextField(choices=OcsgeCoverageStatus.choices)
     has_ocsge = models.BooleanField()
     has_zonage = models.BooleanField()
+    has_friche = models.BooleanField()
 
     class Meta:
         managed = False

@@ -21,6 +21,7 @@ from public_data.models import (
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
+    LandFricheCentroidViewset,
     LandFricheGeojsonViewset,
     LandFrichePollutionViewset,
     LandFricheStatutViewset,
@@ -121,6 +122,7 @@ urlpatterns = [
     ),
     path("landfriche/", LandFricheViewset.as_view(), name="landfriche"),
     path("landfrichegeojson/", LandFricheGeojsonViewset.as_view(), name="landfrichegeojson"),
+    path("landfrichecentroid/", LandFricheCentroidViewset.as_view(), name="landfrichecentroid"),
     path("lands/", LandModelViewset.as_view({"get": "list"}), name="lands"),
     path("lands/<str:land_type>/<str:land_id>", LandModelViewset.as_view({"get": "retrieve"}), name="land"),
 ]

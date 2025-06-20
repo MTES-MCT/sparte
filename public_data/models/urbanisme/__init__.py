@@ -2,6 +2,7 @@ from .AutorisationLogement import AutorisationLogement
 from .BaseLandFriche import BaseLandFriche
 from .LandFriche import LandFriche, LandFricheSerializer, LandFricheViewset
 from .LandFricheGeojson import (
+    LandFricheCentroidViewset,
     LandFricheGeojson,
     LandFricheGeojsonSerializer,
     LandFricheGeojsonViewset,
@@ -33,6 +34,7 @@ __all__ = [
     "LandFricheGeojson",
     "LandFricheGeojsonViewset",
     "LandFricheGeojsonSerializer",
+    "LandFricheCentroidViewset",
     "LandFricheStatut",
     "LandFricheStatutViewset",
     "LandFricheSurfaceRank",
