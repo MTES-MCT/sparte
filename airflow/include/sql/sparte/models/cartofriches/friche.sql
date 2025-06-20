@@ -68,7 +68,7 @@ SELECT
     producteur_fk,
     source_nom,
     source_producteur,
-    nature,
+    {{ standardize_friche_nature('nature') }} as nature,
     source_contact,
     source_url,
     site_reconv_annee,

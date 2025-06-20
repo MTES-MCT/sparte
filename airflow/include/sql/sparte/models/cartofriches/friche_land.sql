@@ -24,7 +24,9 @@ SELECT
     friche.friche_type_zone,
     friche.friche_type,
     friche.friche_surface_percentile_rank,
-    friche.surface
+    friche.surface,
+    friche.source_producteur,
+    friche.nature
 FROM
     {{ ref('friche') }}
 LEFT JOIN

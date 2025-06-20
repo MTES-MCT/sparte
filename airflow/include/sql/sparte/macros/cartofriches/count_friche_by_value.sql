@@ -35,7 +35,8 @@ friche_data AS (
     SELECT
         site_id,
         {{ row_name }},
-        surface
+        surface,
+        friche_statut as statut
     FROM {{ ref('friche') }}
 )
 
@@ -45,7 +46,13 @@ SELECT
     l.land_name,
     v.{{ row_name }},
     COUNT(f.surface) AS friche_count,
-    COALESCE(SUM(f.surface), 0) AS friche_surface
+    COUNT(f.surface) filter (where f.statut = 'friche sans projet') AS friche_sans_projet_count,
+    COUNT(f.surface) filter (where f.statut = 'friche avec projet') AS friche_avec_projet_count,
+    COUNT(f.surface) filter (where f.statut = 'friche reconvertie') AS friche_reconvertie_count,
+    COALESCE(SUM(f.surface), 0) AS friche_surface,
+    COALESCE(SUM(f.surface) filter (where f.statut = 'friche sans projet'), 0) AS friche_sans_projet_surface,
+    COALESCE(SUM(f.surface) filter (where f.statut = 'friche avec projet'), 0) AS friche_avec_projet_surface,
+    COALESCE(SUM(f.surface) filter (where f.statut = 'friche reconvertie'), 0) AS friche_reconvertie_surface
 FROM
     land_base l
 CROSS JOIN
