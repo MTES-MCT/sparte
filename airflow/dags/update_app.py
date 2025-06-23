@@ -106,7 +106,6 @@ def copy_table_from_dw_to_app(
             default=[
                 "copy_public_data_commune",
                 "copy_public_data_departement",
-                "copy_public_data_zoneurba",
                 "copy_public_data_epci",
                 "copy_public_data_scot",
                 "copy_public_data_region",
@@ -169,21 +168,6 @@ def update_app():  # noqa: C901
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["source_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_zoneurba(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_zoneurba",
-            to_table="public.public_data_zoneurba",
-            use_subset=context["params"]["use_subset"],
-            subset_where=f"mpoly && ({context['params']['subset_geom']})",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["checksum"],
-                ["libelle"],
-                ["typezone"],
             ],
         )
 
@@ -563,7 +547,6 @@ def update_app():  # noqa: C901
     copy_public_data_branch() >> [
         copy_public_data_commune(),
         copy_public_data_departement(),
-        copy_public_data_zoneurba(),
         copy_public_data_epci(),
         copy_public_data_scot(),
         copy_public_data_region(),
