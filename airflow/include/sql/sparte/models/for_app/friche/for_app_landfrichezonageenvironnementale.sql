@@ -9,7 +9,6 @@ SELECT
     land_id,
     land_type,
     friche_zonage_environnemental,
-    friche_count,
-    friche_surface / 10000 as friche_surface
+    {{ common_friche_for_app_fields() }}
 FROM
     {{ ref('friche_land_by_zonage_environnemental')}}
