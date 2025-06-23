@@ -77,7 +77,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                             "url": reverse("project:report_logement_vacant", kwargs=kwargs),
                         },
                         {
-                            "label": "Friches urbaines",
+                            "label": "Friches",
                             "url": reverse("project:report_friches", kwargs=kwargs),
                             "new": True,
                         },

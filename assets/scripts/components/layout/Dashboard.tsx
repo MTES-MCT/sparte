@@ -179,7 +179,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         path={urls.friches}
                                         element={
                                             <RouteWrapper
-                                                title="Friches urbaines"
+                                                title="Friches"
                                                 showPage={has_friche}
                                                 showStatus={!has_friche}
                                                 status={

@@ -355,7 +355,7 @@ export const Friches: React.FC<FrichesProps> = ({
                                     Une friche est donc une zone désaffectée après avoir connu une activité économique (industrielle ou commerciale), des usages résidentiels ou des équipements. On estime que ces sites pourraient représenter en France entre 90 000 et 150 000 hectares d'espaces inemployés, l'équivalent de plus de six ans d'artificialisation.
                                 </p>
                                 <p className="fr-text--sm mb-3">
-                                    Recycler des friches urbaines peut être un moyen non seulement de limiter l'artificialisation des sols, mais aussi de redynamiser des territoires et de réhabiliter des sites pollués.
+                                    Recycler des friches peut être un moyen non seulement de limiter l'artificialisation des sols, mais aussi de redynamiser des territoires et de réhabiliter des sites pollués.
                                 </p>
                             </>
                         }

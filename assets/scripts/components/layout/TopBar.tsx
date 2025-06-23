@@ -80,9 +80,9 @@ const TopBar: React.FC = () => {
     const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
     const location = useLocation();
-    const pathsToHidePeriod = ['vacance-des-logements', 'artificialisation', 'friches-urbaines'];
+    const pathsToHidePeriod = ['vacance-des-logements', 'artificialisation', 'friches'];
     const shouldDisplayPeriod = !pathsToHidePeriod.some(path => location.pathname.endsWith(path));
-    const pathsToHideLevel = ['friches-urbaines'];
+    const pathsToHideLevel = ['friches'];
     const shouldDisplayLevel = !pathsToHideLevel.some(path => location.pathname.endsWith(path));
     const { isMobile } = useWindowSize(980);
     const isOpen = useSelector(selectIsNavbarOpen);
