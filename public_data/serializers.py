@@ -1,5 +1,4 @@
 from rest_framework import serializers as s
-from rest_framework_gis import serializers
 
 from public_data import models
 
@@ -14,21 +13,6 @@ class DepartementSerializer(s.ModelSerializer):
             "ocsge_millesimes",
         )
         model = models.Departement
-
-
-class ZoneUrbaSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "libelle",
-            "libelong",
-            "typezone",
-            "urlfic",
-            "datappro",
-            "datvalid",
-        )
-        model = models.ZoneUrba
-        geo_field = "mpoly"
 
 
 class SearchLandSerializer(s.Serializer):

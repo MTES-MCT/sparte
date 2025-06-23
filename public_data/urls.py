@@ -14,6 +14,5 @@ urlpatterns = [
 
 router = routers.DefaultRouter()
 router.register(r"departements", views.DepartementViewSet)
-router.register(r"referentiel/zones-urbaines", views.ZoneUrbaViewSet)
 
 urlpatterns += router.urls
