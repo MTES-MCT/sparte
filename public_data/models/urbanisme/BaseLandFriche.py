@@ -13,12 +13,12 @@ class BaseLandFriche(models.Model):
     friche_count = models.IntegerField()
     friche_sans_projet_count = models.IntegerField()
     friche_avec_projet_count = models.IntegerField()
-    friche_renconvertie_count = models.IntegerField()
+    friche_reconvertie_count = models.IntegerField()
 
     friche_surface = models.FloatField()
     friche_sans_projet_surface = models.FloatField()
     friche_avec_projet_surface = models.FloatField()
-    friche_renconvertie_surface = models.FloatField()
+    friche_reconvertie_surface = models.FloatField()
 
     class Meta:
         abstract = True

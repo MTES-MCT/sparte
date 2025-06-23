@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
-import { ProjectDetailResultType } from "@services/types/project";
 import { useGetLandFrichesStatutQuery, useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
@@ -12,9 +11,10 @@ import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
+import { LandDetailResultType } from "@services/types/land";
 
 interface FrichesProps {
-	projectData: ProjectDetailResultType;
+    landData: LandDetailResultType;
 }
 
 const StatutCard = styled.div<{ $isHighlighted?: boolean }>`
@@ -182,19 +182,20 @@ const DetailsFricheByZonageType: React.FC = () => (
 )
 
 export const Friches: React.FC<FrichesProps> = ({
-	projectData,
+    landData,
 }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
     const mapSectionRef = useRef<HTMLDivElement>(null);
+    const { land_id, land_type, name } = landData;
 
     const { data: statutData, isLoading: isLoadingStatut, error: statutError } = useGetLandFrichesStatutQuery({
-        land_type: projectData.land_type,
-        land_id: projectData.land_id
+        land_type,
+        land_id,
 	});
 
     const { data: frichesData, isLoading: isLoadingFriches, error: frichesError } = useGetLandFrichesQuery({
-        land_type: projectData.land_type,
-        land_id: projectData.land_id
+        land_type,
+        land_id,
     });
 
     const hasFrichesSansProjet = useHasFrichesSansProjet(statutData);
@@ -386,12 +387,11 @@ export const Friches: React.FC<FrichesProps> = ({
                     <div className="fr-grid-row fr-grid-row--gutters">
                         <div className="fr-col-12">
                             <h3 className="fr-text--lg fr-mb-2w">
-                                <i className="bi bi-lightning-charge text-primary fr-mr-1w"></i>
-                                Les friches sans projet : un levier majeur actionnable pour la sobriété foncière
+                                <i className="bi bi-lightning-charge text-primary fr-mr-1w" /> Les friches sans projet : un levier majeur actionnable pour la sobriété foncière
                             </h3>
                             {hasFrichesSansProjet ? (
                                 <p className="fr-text--sm fr-mb-2w">
-                                    Sur ce territoire, <strong>{frichesSansProjetData?.friche_count} friches sans projet</strong>
+                                    Sur le territoire de {name}, <strong>{frichesSansProjetData?.friche_count} friches sans projet</strong>
                                     {" "}
                                     représentant un potentiel de <strong>{formatNumber({ number: frichesSansProjetData?.friche_surface ?? 0 })} hectares</strong>,
                                     {" "}
@@ -438,8 +438,8 @@ export const Friches: React.FC<FrichesProps> = ({
                                 <div className="bg-white fr-p-2w rounded">
                                     <FrichesChart
                                         id={chart.id}
-                                        land_id={projectData.land_id}
-                                        land_type={projectData.land_type}
+                                        land_id={land_id}
+                                        land_type={land_type}
                                         sources={['cartofriches']}
                                         showDataTable={true}
                                     >
@@ -492,8 +492,8 @@ export const Friches: React.FC<FrichesProps> = ({
             <h2 className="fr-mt-2w">Carte des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w" ref={mapSectionRef}>
                 <div className="fr-col-12">
-                    <FrichesMap 
-                        projectData={projectData} 
+                    <FrichesMap
+                        landData={landData}
                         center={selectedFriche}
                     />
                 </div>

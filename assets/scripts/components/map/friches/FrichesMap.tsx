@@ -5,18 +5,18 @@ import { createEmpriseLayer } from "../layers/emprise";
 import { createFrichesLayer } from "../layers/friches";
 import { createFrichesCentroidLayer } from "../layers/frichesCentroid";
 import { MapControls, PopupConfig } from "../types";
-import { ProjectDetailResultType } from "@services/types/project";
 import { Map } from "maplibre-gl";
 import { FrichesPopup } from "./FrichesPopup";
+import { LandDetailResultType } from "@services/types/land";
 
 interface FrichesMapProps {
-	projectData: ProjectDetailResultType;
+	landData: LandDetailResultType;
 	controls?: MapControls;
 	center?: [number, number] | null;
 }
 
 export const FrichesMap: React.FC<FrichesMapProps> = ({
-	projectData,
+	landData,
 	controls = {
 		scrollZoom: true,
 		navigationControl: true,
@@ -26,8 +26,8 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 	center
 }) => {
 	const mapRef = useRef<Map | null>(null);
-	const { bounds, max_bounds, emprise, land_type, land_id } = projectData;
-	const empriseLayer = createEmpriseLayer(emprise);
+	const { land_type, land_id, simple_geom, bounds, max_bounds } = landData;
+	const empriseLayer = createEmpriseLayer(simple_geom);
 	const frichesLayer = createFrichesLayer(land_type, land_id);
 	const frichesCentroidLayer = createFrichesCentroidLayer(land_type, land_id);
 

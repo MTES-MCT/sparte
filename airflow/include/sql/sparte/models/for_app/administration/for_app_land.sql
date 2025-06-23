@@ -11,6 +11,18 @@ SELECT
     name,
     {{ m2_to_ha('land.surface') }} as surface,
     'ha' as surface_unit,
+    ARRAY[
+        ST_XMin(ST_Transform(geom, 4326)),
+        ST_YMin(ST_Transform(geom, 4326)),
+        ST_XMax(ST_Transform(geom, 4326)),
+        ST_YMax(ST_Transform(geom, 4326))
+    ] as bounds,
+    ARRAY[
+        ST_XMin(ST_Transform(ST_buffer(geom, 0.2), 4326)),
+        ST_YMin(ST_Transform(ST_buffer(geom, 0.2), 4326)),
+        ST_XMax(ST_Transform(ST_buffer(geom, 0.2), 4326)),
+        ST_YMax(ST_Transform(ST_buffer(geom, 0.2), 4326))
+    ] as max_bounds,
     ST_Transform(geom, 4326) as geom,
     ST_Transform(simple_geom, 4326) as simple_geom,
     {{ m2_to_ha('artif.surface') }} as surface_artif,

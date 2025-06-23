@@ -2,6 +2,7 @@ import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
 import { OcsgeStatusEnum } from "@components/features/status/OcsgeStatus";
+import { GeoJsonObject } from "geojson";
 
 export type Millesime = {
     index: number;
@@ -35,6 +36,9 @@ export type LandDetailResultType = {
     has_ocsge: boolean;
     ocsge_status: OcsgeStatusEnum;
 	has_friche: boolean;
+    simple_geom: GeoJsonObject;
+    bounds: [number, number, number, number];
+    max_bounds: [number, number, number, number];
 };
 
 type LandDetailQueryArg = string | FetchArgs | {

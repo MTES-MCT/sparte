@@ -58,6 +58,8 @@ class LandModel(models.Model):
     has_friche = models.BooleanField()
     friche_source_producteurs = ArrayField(base_field=models.CharField())
     friche_natures = ArrayField(base_field=models.CharField())
+    bounds = ArrayField(base_field=models.FloatField())
+    max_bounds = ArrayField(base_field=models.FloatField())
 
     class Meta:
         managed = False
