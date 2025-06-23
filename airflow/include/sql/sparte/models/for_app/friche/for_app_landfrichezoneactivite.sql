@@ -10,7 +10,6 @@ SELECT
     land_id,
     land_type,
     friche_is_in_zone_activite,
-    friche_count,
-    friche_surface / 10000 as friche_surface
+    {{ common_friche_for_app_fields() }}
 FROM
     {{ ref('friche_land_by_zone_activite')}}

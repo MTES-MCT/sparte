@@ -12,8 +12,7 @@ SELECT
     friche_surface_percentile_rank,
     friche_surface_ranks.min_surface / 10000 as rank_min_surface,
     friche_surface_ranks.max_surface / 10000 as rank_max_surface,
-    friche_count,
-    friche_surface / 10000 as friche_surface
+    {{ common_friche_for_app_fields() }}
 FROM
     {{ ref('friche_land_by_surface')}}
 LEFT JOIN
