@@ -17,7 +17,7 @@ from public_data.infra.demography.population.progression.table.PopulationConsoCo
 from public_data.infra.demography.population.progression.table.PopulationConsoProgressionTableMapper import (
     PopulationConsoProgressionTableMapper,
 )
-from public_data.models.administration import AdminRef
+from public_data.models.administration import AdminRef, Land, LandModel
 
 from .DiagnosticBaseView import DiagnosticBaseView
 
@@ -28,7 +28,6 @@ class DiagnosticConsoView(DiagnosticBaseView):
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
-
         # Retrieve request level of analysis
         level = self.request.GET.get("level_conso", project.level)
 
@@ -37,8 +36,26 @@ class DiagnosticConsoView(DiagnosticBaseView):
         if project.land_type == AdminRef.COMMUNE:
             annual_conso_data_table = add_total_line_column(annual_total_conso_chart.get_series(), line=False)
         else:
-            annual_conso_chart = charts.AnnualConsoChart(project, level=level)
-            annual_conso_data_table = add_total_line_column(annual_conso_chart.get_series())
+            # TODO : refactor to only use new type of land model
+            child_lands = LandModel.objects.filter(
+                parent_keys__contains=[f"{project.land_type}_{project.land_id}"], land_type=level
+            )
+            old_lands = [Land(f"{land.land_type}_{land.land_id}") for land in child_lands]
+
+            communes_conso = PublicDataContainer.consommation_progression_service().get_by_lands(
+                lands=old_lands,
+                start_date=int(project.analyse_start_date),
+                end_date=int(project.analyse_end_date),
+            )
+
+            annual_conso_data_table = {}
+
+            for commune_conso in communes_conso:
+                annual_conso_data_table[commune_conso.land.name] = {
+                    f"{year.year}": year.total for year in commune_conso.consommation
+                }
+
+            annual_conso_data_table = add_total_line_column(annual_conso_data_table)
 
         conso_period = project.get_bilan_conso_time_scoped()
 

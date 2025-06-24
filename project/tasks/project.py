@@ -211,11 +211,7 @@ class WordAlreadySentException(Exception):
 
 @shared_task(bind=True, max_retries=10, queue="long")
 def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
-    from diagnostic_word.renderers import (
-        ConsoReportRenderer,
-        FullReportRenderer,
-        LocalReportRenderer,
-    )
+    from diagnostic_word.renderers import FullReportRenderer, LocalReportRenderer
 
     project = Project.objects.get(id=int(project_id))
     request = Request.objects.filter(project=project).first()
@@ -240,7 +236,6 @@ def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
         renderer_class = {
             RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
             RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
-            RequestedDocumentChoices.RAPPORT_CONSO: ConsoReportRenderer,
         }[req.requested_document]
 
         with renderer_class(request=req) as renderer:
@@ -262,11 +257,7 @@ def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
 
 @shared_task(bind=True, max_retries=6, queue="long")
 def generate_word_diagnostic(self, request_id) -> int:
-    from diagnostic_word.renderers import (
-        ConsoReportRenderer,
-        FullReportRenderer,
-        LocalReportRenderer,
-    )
+    from diagnostic_word.renderers import FullReportRenderer, LocalReportRenderer
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request_id={request_id}")
@@ -288,7 +279,6 @@ def generate_word_diagnostic(self, request_id) -> int:
         renderer_class = {
             RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
             RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
-            RequestedDocumentChoices.RAPPORT_CONSO: ConsoReportRenderer,
         }[req.requested_document]
 
         with renderer_class(request=req) as renderer:
