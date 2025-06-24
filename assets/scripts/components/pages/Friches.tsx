@@ -178,9 +178,7 @@ const FricheStatus = ({ landData }: { landData: LandDetailResultType}) => {
         return (
             <p className="fr-text--sm">
                 D'après les données disponible, il n'y actuellement <strong>aucune friche sans projet</strong> sur le territoire de {name}.<br />
-                <strong>La réhabilitation de friches n'est donc pas un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
-                Il est cependant important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du
-                territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+                <strong>La réhabilitation de friches semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
             </p>
         )
     }
@@ -190,11 +188,9 @@ const FricheStatus = ({ landData }: { landData: LandDetailResultType}) => {
             <p className="fr-text--sm">
                 D'après les données disponible, il n'y actuellement <strong>aucune friche sans projet</strong> sur le territoire de {name}.
                 L'absence de friches sans projet est due à l'exploitation du potentiel des friches existantes.<br />
-                En effet {friche_reconvertie_count} friche{friche_reconvertie_count > 0 ? 's' : ''} ont été reconvertie{friche_reconvertie_count > 0 ? 's' : ''}, représentant une surface totale de {formatNumber({ number: friche_reconvertie_surface })} ha,
-                et {friche_avec_projet_count} friche{friche_avec_projet_count > 0 ? 's' : ''} sont actuellement en projet, représentant une surface totale de {formatNumber({ number: friche_avec_projet_surface })} ha.<br />
+                En effet {friche_reconvertie_count} friche{friche_reconvertie_count > 0 ? 's' : ''} ont été reconvertie{friche_reconvertie_count > 0 ? 's' : ''}, représentant une surface totale de <strong>{formatNumber({ number: friche_reconvertie_surface })} ha</strong>,
+                et {friche_avec_projet_count} friche{friche_avec_projet_count > 0 ? 's' : ''} sont actuellement en projet, représentant une surface totale de <strong>{formatNumber({ number: friche_avec_projet_surface })} ha.</strong><br />
                 <strong>La réhabilitation de friches ne semble plus être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
-                Il est cependant important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du
-                territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
             </p>
         )
     }
@@ -202,10 +198,8 @@ const FricheStatus = ({ landData }: { landData: LandDetailResultType}) => {
     if (friche_status === FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE || friche_status === FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION) {
         return (
             <p className="fr-text--sm">
-                D'après les données disponible, il y a actuellement <strong>{friche_sans_projet_count} friche{friche_sans_projet_count > 0 ? 's' : ''} sans projet</strong> sur le territoire de {name}, représentant une surface totale de {formatNumber({ number: friche_sans_projet_surface })} ha.<br />
-                <strong>La réhabilitation de friches est donc un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
-                Il est cependant important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du
-                territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+                D'après les données disponible, il y a actuellement <strong>{friche_sans_projet_count} friche{friche_sans_projet_count > 0 ? 's' : ''} sans projet</strong> sur le territoire de {name}, représentant une surface totale de <strong>{formatNumber({ number: friche_sans_projet_surface })} ha</strong>.<br />
+                <strong>La réhabilitation de friches semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
             </p>
         )
     }
@@ -395,8 +389,8 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 			<div className="fr-grid-row fr-grid-row--gutters">
 				<div className="fr-col-12">
                     <Guide
-                        title="Qu'est-ce qu'une friche urbaine ?"
-                        DrawerTitle="Qu'est-ce qu'une friche urbaine ?"
+                        title="Qu'est-ce qu'une friche ?"
+                        DrawerTitle="Qu'est-ce qu'une friche ?"
                         drawerChildren={
                             <>
                                 <p className="fr-text--sm mb-3">
@@ -441,7 +435,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                             On distingue deux sources de données : les friches pré-identifiées au niveau national par le Cerema, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études. Ces contributeurs locaux à Cartofriches sont listés ici : <a href="https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux</a><br />
 						</p>
                         <p className="fr-text--sm">
-                            Il est important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+                            <strong>
+                            <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+                            </strong>
                         </p>
 					</div>
 				</div>
