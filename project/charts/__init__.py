@@ -11,6 +11,12 @@ __all__ = [
     "AnnualConsoProportionalComparisonChartExport",
     "ConsoByDeterminantPieChart",
     "ConsoByDeterminantPieChartExport",
+    "FrichePollutionChart",
+    "FricheSurfaceChart",
+    "FricheTypeChart",
+    "FricheZonageEnvironnementalChart",
+    "FricheZonageTypeChart",
+    "FricheZoneActiviteChart",
     "ObjectiveChart",
     "ObjectiveChartExport",
     "PopulationDensityChart",
@@ -60,6 +66,12 @@ from .demography.PopulationConsoComparisonChart import PopulationConsoComparison
 from .demography.PopulationConsoProgressionChart import PopulationConsoProgressionChart
 from .demography.PopulationDensityChart import PopulationDensityChart
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
+from .urbanisme.FrichePollutionChart import FrichePollutionChart
+from .urbanisme.FricheSurfaceChart import FricheSurfaceChart
+from .urbanisme.FricheTypeChart import FricheTypeChart
+from .urbanisme.FricheZonageEnvironnementalChart import FricheZonageEnvironnementalChart
+from .urbanisme.FricheZonageTypeChart import FricheZonageTypeChart
+from .urbanisme.FricheZoneActiviteChart import FricheZoneActiviteChart
 from .urbanisme.LogementVacantAutorisationLogementComparisonChart import (
     LogementVacantAutorisationLogementComparisonChart,
 )

@@ -7,6 +7,9 @@ models:
         data_tests:
           - not_null
           - unique
+      - name: population_2022
+        data_tests:
+          - not_null
       - name: population_2021
         data_tests:
           - not_null

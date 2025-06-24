@@ -3,6 +3,7 @@ from .DiagnosticBaseView import DiagnosticBaseView
 from .DiagnosticConsoView import DiagnosticConsoView
 from .DiagnosticDownloadsView import DiagnosticDownloadsView
 from .DiagnosticDownloadWordView import DiagnosticDownloadWordView
+from .DiagnosticFrichesView import DiagnosticFrichesView
 from .DiagnosticImpermeabilisationView import DiagnosticImpermeabilisationView
 from .DiagnosticLogementVacantView import DiagnosticLogementVacantView
 from .DiagnosticSynthesisView import DiagnosticSynthesisView
@@ -22,4 +23,5 @@ __all__ = [
     "DiagnosticArtificialisationView",
     "DiagnosticImpermeabilisationView",
     "DiagnosticDownloadsView",
+    "DiagnosticFrichesView",
 ]

@@ -6,6 +6,14 @@ from project.charts.artificialisation import (
     ArtifByUsagePieChart,
     ArtifMap,
 )
+from project.charts.urbanisme import (
+    FrichePollutionChart,
+    FricheSurfaceChart,
+    FricheTypeChart,
+    FricheZonageEnvironnementalChart,
+    FricheZonageTypeChart,
+    FricheZoneActiviteChart,
+)
 from public_data.models import (
     ArtifZonageIndexViewset,
     ArtifZonageViewset,
@@ -13,6 +21,16 @@ from public_data.models import (
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
+    LandFricheCentroidViewset,
+    LandFricheGeojsonViewset,
+    LandFrichePollutionViewset,
+    LandFricheStatutViewset,
+    LandFricheSurfaceRankViewset,
+    LandFricheTypeViewset,
+    LandFricheViewset,
+    LandFricheZonageEnvironnementaleViewset,
+    LandFricheZonageTypeViewset,
+    LandFricheZoneActiviteViewset,
     LandModel,
     LandModelViewset,
 )
@@ -25,6 +43,12 @@ def get_chart_klass_or_404(chart_id):
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
         "pie_artif_by_usage": ArtifByUsagePieChart,
         "artif_map": ArtifMap,
+        "friche_pollution": FrichePollutionChart,
+        "friche_surface": FricheSurfaceChart,
+        "friche_type": FricheTypeChart,
+        "friche_zonage_environnemental": FricheZonageEnvironnementalChart,
+        "friche_zonage_type": FricheZonageTypeChart,
+        "friche_zone_activite": FricheZoneActiviteChart,
     }
 
     if chart_id not in charts:
@@ -61,6 +85,44 @@ urlpatterns = [
         LandArtifStockUsageCompositionViewset.as_view(),
         name="artifstockusagecomposition",
     ),
+    path(
+        "landfrichepollution/",
+        LandFrichePollutionViewset.as_view(),
+        name="landfrichepollution",
+    ),
+    path(
+        "landfrichezoneactivite/",
+        LandFricheZoneActiviteViewset.as_view(),
+        name="landfrichezoneactivite",
+    ),
+    path(
+        "landfrichetype/",
+        LandFricheTypeViewset.as_view(),
+        name="landfrichetype",
+    ),
+    path(
+        "landfrichestatut/",
+        LandFricheStatutViewset.as_view(),
+        name="landfrichestatut",
+    ),
+    path(
+        "landfrichezonageenvironnementale/",
+        LandFricheZonageEnvironnementaleViewset.as_view(),
+        name="landfrichezonageenvironnementale",
+    ),
+    path(
+        "landfrichezonagetype/",
+        LandFricheZonageTypeViewset.as_view(),
+        name="landfrichezonagetype",
+    ),
+    path(
+        "landfrichesurfacerank/",
+        LandFricheSurfaceRankViewset.as_view(),
+        name="landfrichesurfacerank",
+    ),
+    path("landfriche/", LandFricheViewset.as_view(), name="landfriche"),
+    path("landfrichegeojson/", LandFricheGeojsonViewset.as_view(), name="landfrichegeojson"),
+    path("landfrichecentroid/", LandFricheCentroidViewset.as_view(), name="landfrichecentroid"),
     path("lands/", LandModelViewset.as_view({"get": "list"}), name="lands"),
     path("lands/<str:land_type>/<str:land_id>", LandModelViewset.as_view({"get": "retrieve"}), name="land"),
 ]

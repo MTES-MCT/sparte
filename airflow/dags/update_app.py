@@ -36,6 +36,7 @@ def copy_table_from_dw_to_app(
     from_table: str,
     to_table: str,
     environment: str,
+    geom_type=None,
     custom_columns_type: dict[str, str] = None,
     use_subset: bool = False,
     subset_where: str = None,
@@ -48,6 +49,9 @@ def copy_table_from_dw_to_app(
         ogr.set_sql(f"SELECT * FROM {from_table} WHERE {subset_where}")
     # the option below will an id column to the table only if it does not exist
     ogr.layer_creation_options = {"FID": "id"}
+
+    if geom_type:
+        ogr.geom_type = geom_type
 
     if custom_columns_type:
         column_type_mapping = ""
@@ -102,7 +106,6 @@ def copy_table_from_dw_to_app(
             default=[
                 "copy_public_data_commune",
                 "copy_public_data_departement",
-                "copy_public_data_zoneurba",
                 "copy_public_data_epci",
                 "copy_public_data_scot",
                 "copy_public_data_region",
@@ -125,6 +128,15 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landartifstockusagecomposition",
                 "copy_public_data_landartifstockusagecompositionindex",
                 "copy_public_data_land",
+                "copy_public_data_landfrichepollution",
+                "copy_public_data_landfrichestatut",
+                "copy_public_data_landfrichesurfacerank",
+                "copy_public_data_landfrichetype",
+                "copy_public_data_landfrichezonageenvironnementale",
+                "copy_public_data_landfrichezonagetype",
+                "copy_public_data_landfrichezoneactivite",
+                "copy_public_data_landfriche",
+                "copy_public_data_landfrichegeojson",
             ],
             type="array",
         ),
@@ -156,21 +168,6 @@ def update_app():  # noqa: C901
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["source_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_zoneurba(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_zoneurba",
-            to_table="public.public_data_zoneurba",
-            use_subset=context["params"]["use_subset"],
-            subset_where=f"mpoly && ({context['params']['subset_geom']})",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["checksum"],
-                ["libelle"],
-                ["typezone"],
             ],
         )
 
@@ -430,6 +427,7 @@ def update_app():  # noqa: C901
                 to_table="public.public_data_land",
                 environment=context["params"]["environment"],
                 custom_columns_type={
+                    "friche_status_details": "jsonb",
                     "millesimes": "jsonb[]",
                     "millesimes_by_index": "jsonb[]",
                 },
@@ -439,6 +437,110 @@ def update_app():  # noqa: C901
             ),
         )
 
+    @task.python
+    def copy_public_data_landfrichepollution(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichepollution",
+            to_table="public.public_data_landfrichepollution",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichestatut(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichestatut",
+            to_table="public.public_data_landfrichestatut",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichesurfacerank(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichesurfacerank",
+            to_table="public.public_data_landfrichesurfacerank",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichetype(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichetype",
+            to_table="public.public_data_landfrichetype",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichezonageenvironnementale(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichezonageenvironnementale",
+            to_table="public.public_data_landfrichezonageenvironnementale",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichezonagetype(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichezonagetype",
+            to_table="public.public_data_landfrichezonagetype",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfrichezoneactivite(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichezoneactivite",
+            to_table="public.public_data_landfrichezoneactivite",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landfriche(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfriche",
+            to_table="public.public_data_landfriche",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+            geom_type="POINT",
+        )
+
+    @task.python
+    def copy_public_data_landfrichegeojson(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landfrichegeojson",
+            to_table="public.public_data_landfrichegeojson",
+            environment=context["params"]["environment"],
+            custom_columns_type={
+                "geojson_feature_collection": "jsonb",
+                "geojson_centroid_feature_collection": "jsonb",
+            },
+            btree_index_columns=[
+                ["land_id", "land_type"],
+            ],
+        )
+
     @task.branch
     def copy_public_data_branch(**context):
         return context["params"]["tasks"]
@@ -446,7 +548,6 @@ def update_app():  # noqa: C901
     copy_public_data_branch() >> [
         copy_public_data_commune(),
         copy_public_data_departement(),
-        copy_public_data_zoneurba(),
         copy_public_data_epci(),
         copy_public_data_scot(),
         copy_public_data_region(),
@@ -469,6 +570,15 @@ def update_app():  # noqa: C901
         copy_public_data_landartifstockusagecomposition(),
         copy_public_data_landartifstockusagecompositionindex(),
         copy_public_data_land(),
+        copy_public_data_landfrichepollution(),
+        copy_public_data_landfrichestatut(),
+        copy_public_data_landfrichesurfacerank(),
+        copy_public_data_landfrichetype(),
+        copy_public_data_landfrichezonageenvironnementale(),
+        copy_public_data_landfrichezonagetype(),
+        copy_public_data_landfrichezoneactivite(),
+        copy_public_data_landfriche(),
+        copy_public_data_landfrichegeojson(),
     ]
 
 

@@ -42,9 +42,13 @@ models:
       +schema: for_app
     for_export:
       +schema: for_export
+    for_vector_tiles:
+      +schema: for_vector_tiles
     sitadel:
       +schema: sitadel
     rpls:
       +schema: rpls
     zlv:
       +schema: zlv
+    cartofriches:
+      +schema: cartofriches

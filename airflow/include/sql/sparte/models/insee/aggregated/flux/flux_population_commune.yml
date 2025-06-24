@@ -7,5 +7,12 @@ models:
         data_tests:
           - has_all_communes
           - relationships:
-              to: ref('commune')
               field: code
+              to: ref('commune')
+      - name: year
+        description: The year for which the population data or projection is provided, ranging from 2009 to 2023.
+        data_type: integer
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 2009
+              max_value: 2023

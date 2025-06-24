@@ -165,51 +165,6 @@ class DataViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(gradient)
 
 
-class ZoneUrbaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
-    queryset = models.ZoneUrba.objects.all()
-    serializer_class = serializers.ZoneUrbaSerializer
-    optimized_fields = {
-        "o.checksum": "id",
-        "o.libelle": "libelle",
-        "o.libelong": "libelong",
-        "o.typezone": "typezone",
-        "o.datappro": "datappro",
-        "o.datvalid": "datvalid",
-        "ST_AsEWKT((ST_MaximumInscribedCircle(o.mpoly)).center)": "label_center",
-    }
-
-    min_zoom = 10
-
-    def get_params(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        params = list(map(float, bbox))
-        if "project_id" in request.query_params:
-            params.append(request.query_params.get("project_id"))
-
-        return params
-
-    def get_sql_from(self):
-        sql_from = [
-            f"FROM {self.queryset.model._meta.db_table} o",
-            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
-            "ON ST_Intersects(o.mpoly, b.box)",
-        ]
-        if "project_id" in self.request.query_params:
-            sql_from += [
-                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
-                "ON ST_Intersects(o.mpoly, t.geom)",
-            ]
-        return " ".join(sql_from)
-
-    def get_sql_where(self):
-        where_parts = ["St_IsValid(mpoly) = true"]
-        if "type_zone" in self.request.query_params:
-            zones = [_.strip() for _ in self.request.query_params.get("type_zone").split(",")]
-            zones = [f"'{_}'" for _ in zones if _ in ["U", "A", "N", "AU"]]
-            where_parts.append(f"o.typezone in ({', '.join(zones)})")
-        return f"where {' and '.join(where_parts)}"
-
-
 # Views for referentials Couverture and Usage
 
 

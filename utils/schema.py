@@ -14,7 +14,6 @@ from public_data.models import (
     LandPopStats,
     Region,
     Scot,
-    ZoneUrba,
 )
 
 
@@ -48,7 +47,6 @@ def init_unmanaged_schema_for_tests() -> None:
         drop_and_create_model(Departement, schema_editor)
         drop_and_create_model(Epci, schema_editor)
         drop_and_create_model(Scot, schema_editor)
-        drop_and_create_model(ZoneUrba, schema_editor)
         drop_and_create_model(LandConso, schema_editor)
         drop_and_create_model(LandConsoComparison, schema_editor)
         drop_and_create_model(LandConsoStats, schema_editor)

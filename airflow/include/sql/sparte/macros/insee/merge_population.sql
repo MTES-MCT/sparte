@@ -2,6 +2,7 @@
 
 SELECT
     min('{{ final_commune_code }}') as code_commune,
+    sum(population_2022) as population_2022,
     sum(population_2021) as population_2021,
     sum(population_2020) as population_2020,
     sum(population_2019) as population_2019,
