@@ -427,6 +427,7 @@ def update_app():  # noqa: C901
                 to_table="public.public_data_land",
                 environment=context["params"]["environment"],
                 custom_columns_type={
+                    "friche_status_details": "jsonb",
                     "millesimes": "jsonb[]",
                     "millesimes_by_index": "jsonb[]",
                 },

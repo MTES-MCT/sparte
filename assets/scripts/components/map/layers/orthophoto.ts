@@ -16,7 +16,7 @@ export const orthophoto = {
 			type: "raster",
 			source: "orthophoto",
 			paint: {
-				"raster-opacity": 0.8
+				"raster-opacity": 1
 			}
 		} as LayerSpecification
 	}

@@ -11,7 +11,7 @@ import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
-import { LandDetailResultType } from "@services/types/land";
+import { FricheStatusDetails, FricheStatusEnum, LandDetailResultType } from "@services/types/land";
 
 interface FrichesProps {
     landData: LandDetailResultType;
@@ -112,17 +112,6 @@ const FRICHES_CHARTS = [
     { id: 'friche_zone_activite' }
 ] as const;
 
-const useHasFrichesSansProjet = (statutData: any[] | undefined) => {
-    return useMemo(() => {
-        return statutData?.find(item => item.friche_statut === 'friche sans projet')?.friche_count > 0;
-    }, [statutData]);
-};
-
-const useFrichesSansProjetData = (statutData: any[] | undefined) => {
-    return useMemo(() => {
-        return statutData?.find(item => item.friche_statut === 'friche sans projet');
-    }, [statutData]);
-};
 
 const FrichesStatut: React.FC<{
     friche_count: number;
@@ -181,27 +170,91 @@ const DetailsFricheByZonageType: React.FC = () => (
 	</div>
 )
 
-export const Friches: React.FC<FrichesProps> = ({
-    landData,
-}) => {
+const FricheStatus = ({ landData }: { landData: LandDetailResultType}) => {
+    const { friche_status, name, friche_status_details } = landData;
+    const { friche_reconvertie_count, friche_reconvertie_surface, friche_avec_projet_count, friche_avec_projet_surface, friche_sans_projet_count, friche_sans_projet_surface} = friche_status_details
+
+    if (friche_status === FricheStatusEnum.GISEMENT_NUL_ET_SANS_POTENTIEL) {
+        return (
+            <p className="fr-text--sm">
+                D'après les données disponible, il n'y actuellement <strong>aucune friche sans projet</strong> sur le territoire de {name}.<br />
+                <strong>La réhabilitation de friches n'est donc pas un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il est cependant important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du
+                territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+            </p>
+        )
+    }
+
+    if (friche_status === FricheStatusEnum.GISEMENT_NUL_CAR_POTENTIEL_EXPLOITE) {
+        return (
+            <p className="fr-text--sm">
+                D'après les données disponible, il n'y actuellement <strong>aucune friche sans projet</strong> sur le territoire de {name}.
+                L'absence de friches sans projet est due à l'exploitation du potentiel des friches existantes.<br />
+                En effet {friche_reconvertie_count} friche{friche_reconvertie_count > 0 ? 's' : ''} ont été reconvertie{friche_reconvertie_count > 0 ? 's' : ''}, représentant une surface totale de {formatNumber({ number: friche_reconvertie_surface })} ha,
+                et {friche_avec_projet_count} friche{friche_avec_projet_count > 0 ? 's' : ''} sont actuellement en projet, représentant une surface totale de {formatNumber({ number: friche_avec_projet_surface })} ha.<br />
+                <strong>La réhabilitation de friches ne semble plus être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il est cependant important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du
+                territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+            </p>
+        )
+    }
+
+    if (friche_status === FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE || friche_status === FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION) {
+        return (
+            <p className="fr-text--sm">
+                D'après les données disponible, il y a actuellement <strong>{friche_sans_projet_count} friche{friche_sans_projet_count > 0 ? 's' : ''} sans projet</strong> sur le territoire de {name}, représentant une surface totale de {formatNumber({ number: friche_sans_projet_surface })} ha.<br />
+                <strong>La réhabilitation de friches est donc un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il est cependant important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du
+                territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
+            </p>
+        )
+    }
+}
+
+const FricheStatutTriptic = ({ friche_status_details }: { friche_status_details: FricheStatusDetails }) => {
+    const {
+        friche_sans_projet_surface,
+        friche_avec_projet_surface,
+        friche_reconvertie_surface,
+        friche_sans_projet_count,
+        friche_avec_projet_count,
+        friche_reconvertie_count
+    } = friche_status_details;
+
+    return (
+        <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+            <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+                <FrichesStatut
+                    friche_count={friche_sans_projet_count}
+                    friche_surface={friche_sans_projet_surface}
+                    friche_statut={'friche sans projet'}
+                />
+            </div>
+            <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+                <FrichesStatut
+                    friche_count={friche_avec_projet_count}
+                    friche_surface={friche_avec_projet_surface}
+                    friche_statut={'friche avec projet'}
+                />
+            </div>
+            <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+                <FrichesStatut
+                    friche_count={friche_reconvertie_count}
+                    friche_surface={friche_reconvertie_surface}
+                    friche_statut={'friche reconvertie'}
+                />
+            </div>
+        </div>
+    )
+}
+
+
+export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
     const mapSectionRef = useRef<HTMLDivElement>(null);
-    const { land_id, land_type, name } = landData;
+    const { land_id, land_type, friche_status } = landData;
+    const { data: frichesData } = useGetLandFrichesQuery({ land_type, land_id });
 
-    const { data: statutData, isLoading: isLoadingStatut, error: statutError } = useGetLandFrichesStatutQuery({
-        land_type,
-        land_id,
-	});
-
-    const { data: frichesData, isLoading: isLoadingFriches, error: frichesError } = useGetLandFrichesQuery({
-        land_type,
-        land_id,
-    });
-
-    const hasFrichesSansProjet = useHasFrichesSansProjet(statutData);
-    const frichesSansProjetData = useFrichesSansProjetData(statutData);
-
-    // Tableau
     const {
         paginatedData,
         searchTerm,
@@ -337,9 +390,6 @@ export const Friches: React.FC<FrichesProps> = ({
         }
     ];
 
-    if (isLoadingStatut || isLoadingFriches) return <div>Chargement...</div>;
-    if (statutError || frichesError) return <div>Erreur : {statutError ?? frichesError}</div>;
-
 	return (
 		<div className="fr-container--fluid fr-p-3w">
 			<div className="fr-grid-row fr-grid-row--gutters">
@@ -366,21 +416,7 @@ export const Friches: React.FC<FrichesProps> = ({
 				</div>
 			</div>
             <h2 className="fr-mt-5w">Vue d'ensemble</h2>
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                {STATUT_ORDER.map((statut) => {
-                    const statutDataItem = statutData?.find(item => item.friche_statut === statut);
-                    
-                    return (
-                        <div key={statut} className="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                            <FrichesStatut
-                                friche_count={statutDataItem?.friche_count ?? 0}
-                                friche_surface={statutDataItem?.friche_surface ?? 0}
-                                friche_statut={statut}
-                            />
-                        </div>
-                    );
-                })}
-            </div>
+            <FricheStatutTriptic friche_status_details={landData.friche_status_details} />
             
             <div className="fr-mb-5w fr-mt-5w">
                 <div className="bg-white fr-p-4w rounded fr-mb-4w">
@@ -389,19 +425,7 @@ export const Friches: React.FC<FrichesProps> = ({
                             <h3 className="fr-text--lg fr-mb-2w">
                                 <i className="bi bi-lightning-charge text-primary fr-mr-1w" /> Les friches sans projet : un levier majeur actionnable pour la sobriété foncière
                             </h3>
-                            {hasFrichesSansProjet ? (
-                                <p className="fr-text--sm fr-mb-2w">
-                                    Sur le territoire de {name}, <strong>{frichesSansProjetData?.friche_count} friches sans projet</strong>
-                                    {" "}
-                                    représentant un potentiel de <strong>{formatNumber({ number: frichesSansProjetData?.friche_surface ?? 0 })} hectares</strong>,
-                                    {" "}
-                                    ne font pas encore l'objet d'un projet de réhabilitation, et constituent à ce titre un gisement potentiel de sobriété foncière.
-                                </p>
-                            ) : (
-                                <p className="fr-text--sm fr-mb-2w">
-                                    Aucune friche sans projet n'a été identifiée sur ce territoire. Toutes les friches recensées font déjà l'objet d'un projet de réhabilitation ou sont en cours de traitement, ce qui témoigne d'une bonne dynamique de reconversion des friches sur ce territoire.
-                                </p>
-                            )}
+                            <FricheStatus landData={landData} />
                         </div>
                     </div>
                 </div>
@@ -422,7 +446,10 @@ export const Friches: React.FC<FrichesProps> = ({
 					</div>
 				</div>
 			</div>
-            {hasFrichesSansProjet && (
+            {[
+                FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
+                FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
+            ].includes(friche_status) && (
                 <>
                     <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
                     <div className="fr-callout fr-icon-information-line fr-mb-3w">
