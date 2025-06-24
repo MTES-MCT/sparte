@@ -45,10 +45,10 @@ class FricheZoneActiviteChart(BaseFricheChart):
                         "name": self.format_boolean_field(item),
                         "surface": item.friche_sans_projet_surface,
                         "count": item.friche_sans_projet_count,
-                        "y": item.friche_sans_projet_count,
+                        "y": item.friche_sans_projet_surface,
                     }
                     for item in self.data
-                    if item.friche_sans_projet_count > 0
+                    if item.friche_sans_projet_surface > 0
                 ],
             }
         ]
