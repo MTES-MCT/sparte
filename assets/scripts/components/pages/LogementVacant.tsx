@@ -41,14 +41,12 @@ const LogementVacant: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                     </Guide>
                     <div dangerouslySetInnerHTML={{ __html: content }} />
                     <div className="fr-callout fr-icon-information-line fr-mt-7w">
-                        <h3 className="fr-callout__title">Réduisez votre consommation d'espaces NAF en mobilisant le parc de logements vacants</h3>
-                        <p className="fr-callout__text">
-                        Zéro Logement Vacant est un outil gratuit qui accompagne les territoires dans leur démarche de remise sur le marché des logements vacants.
-                        </p>
+                        <h3 className="fr-callout__title fr-text--md">Réduisez votre consommation d'espaces NAF en mobilisant le parc de logements vacants</h3>
+                        <p className="fr-callout__text fr-text--sm">Zéro Logement Vacant est un outil gratuit qui accompagne les territoires dans leur démarche de remise sur le marché des logements vacants.</p>
                         <br />
-                        <a target="_blank" rel="noopener noreferrer external" title="" href="https://zerologementvacant.beta.gouv.fr/zero-logement-vacant/la-plateforme/?src=mda" className="fr-notice__link">
-                                        Accèder à Zéro Logement Vacant
-                                    </a>
+                        <a target="_blank" rel="noopener noreferrer external" title="" href="https://zerologementvacant.beta.gouv.fr/zero-logement-vacant/la-plateforme/?src=mda" className="fr-notice__link fr-link fr-text--sm">
+                            Accèder à Zéro Logement Vacant
+                        </a>
                     </div>
                 </div>
             </div>

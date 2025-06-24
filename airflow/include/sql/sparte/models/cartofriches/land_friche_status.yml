@@ -1,0 +1,15 @@
+
+version: 2
+
+models:
+  - name: land_friche_status
+    columns:
+      - name: status
+        data_tests:
+          - accepted_values:
+              values: [
+                'gisement nul et sans potentiel',
+                'gisement nul car potentiel déjà exploité',
+                'gisement potentiel et non exploité',
+                'gisement potentiel et en cours d’exploitation'
+              ]

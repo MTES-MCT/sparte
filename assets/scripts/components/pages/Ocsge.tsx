@@ -57,7 +57,7 @@ const Ocsge: React.FC<{ endpoint: string, projectData: any, landData: any }> = (
                     >
                         L'OCS GE est une base de données vectorielle pour la description de l'occupation du sol de l'ensemble du territoire métropolitain et des départements et régions d'outre-mer (DROM). Elle est un référentiel national, constituant un socle national, utilisable au niveau national et au niveau local notamment pour contribuer aux calculs d'indicateurs exigés par les documents d'urbanisme.
                     </Guide>
-                    <OcsgeMapContainer projectData={projectData} landData={landData} />
+                    <OcsgeMapContainer landData={landData} />
                     {isLoading ? <Loader /> : <div dangerouslySetInnerHTML={{ __html: content }} /> }
                 </div>
             </div>

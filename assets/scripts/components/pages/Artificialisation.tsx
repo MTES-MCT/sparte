@@ -404,7 +404,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					</p>
 					{projectData && (
 						<OcsgeMapContainer
-							projectData={projectData}
 							landData={landData}
 							globalFilter={["==", ["get", "is_artificial"], true]}
 						/>

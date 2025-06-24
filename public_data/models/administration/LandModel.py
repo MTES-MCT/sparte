@@ -36,6 +36,12 @@ class LandModel(models.Model):
 
         UNDEFINED = "UNDEFINED", "Non défini"
 
+    class FricheStatus(models.TextChoices):
+        GISEMENT_NUL_SANS_POTENTIEL = "gisement nul et sans potentiel"
+        GISEMENT_NUL_POTENTIEL_EXPLOITE = "gisement nul car potentiel déjà exploité"
+        GISEMENT_POTENTIEL_NON_EXPLOITE = "gisement potentiel et non exploité"
+        GISEMENT_POTENTIEL_EN_COURS_EXPLOITATION = "gisement potentiel et en cours d’exploitation"
+
     land_id = models.CharField()
     land_type = models.CharField()
     name = models.CharField()
@@ -56,8 +62,10 @@ class LandModel(models.Model):
     has_ocsge = models.BooleanField()
     has_zonage = models.BooleanField()
     has_friche = models.BooleanField()
-    friche_source_producteurs = ArrayField(base_field=models.CharField())
-    friche_natures = ArrayField(base_field=models.CharField())
+    friche_status = models.TextField(choices=FricheStatus.choices)
+    friche_status_details = models.JSONField()
+    bounds = ArrayField(base_field=models.FloatField())
+    max_bounds = ArrayField(base_field=models.FloatField())
 
     class Meta:
         managed = False

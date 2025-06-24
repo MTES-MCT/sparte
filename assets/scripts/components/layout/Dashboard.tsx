@@ -20,10 +20,12 @@ import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import Update from '@components/pages/Update';
 import Downloads from '@components/pages/Downloads';
+import { Friches } from '@components/pages/Friches';
 import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
 import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
+import FricheStatus from '@components/features/status/FricheStatus';
 
 interface DashboardProps {
     projectId: string;
@@ -59,7 +61,8 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
         }
     );
     
-    const { ocsge_status, has_ocsge } = landData || {};
+    const { ocsge_status, has_ocsge, has_friche } = landData || {};
+
     const { urls, consommation_correction_status, logements_vacants_available } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
@@ -170,6 +173,24 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             >
                                                 <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.friches}
+                                        element={
+                                            <RouteWrapper
+                                                title="Friches"
+                                                showPage={has_friche}
+                                                showStatus={!has_friche}
+                                                status={
+                                                    <FricheStatus />
+                                                }
+                                            >
+                                                    <Friches
+                                                        projectData={projectData}
+                                                        landData={landData}
+                                                    />
+                                                </RouteWrapper>
                                         }
                                     />
                                     <Route

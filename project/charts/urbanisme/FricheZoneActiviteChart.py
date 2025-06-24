@@ -6,15 +6,8 @@ from .BaseFricheChart import BaseFricheChart
 class FricheZoneActiviteChart(BaseFricheChart):
     model = LandFricheZoneActivite
     friche_field = "friche_is_in_zone_activite"
-    title = "Intersection avec une zone d'activité économique"
+    title = "Répartition par intersection avec une zone d'activité économique (en surface)"
     series_name = title
-    colors = [
-        "#FF5733",  # Rouge
-        "#33FF57",  # Vert
-        "#3357FF",  # Bleu
-        "#F1C40F",  # Jaune
-        "#8E44AD",  # Violet
-    ]
 
     def format_boolean_field(self, item):
         return "oui" if getattr(item, self.friche_field) else "non"
@@ -23,8 +16,8 @@ class FricheZoneActiviteChart(BaseFricheChart):
     def data_table(self):
         headers = [
             self.series_name,
-            "Nombre de friches",
-            "Surface totale des friches (ha)",
+            "Nombre de friches sans projet",
+            "Surface totale des friches sans projet (ha)",
         ]
 
         return {
@@ -34,8 +27,8 @@ class FricheZoneActiviteChart(BaseFricheChart):
                     "name": self.format_boolean_field(item),
                     "data": [
                         self.format_boolean_field(item),
-                        item.friche_count,
-                        item.friche_surface,
+                        item.friche_sans_projet_count,
+                        item.friche_sans_projet_surface,
                     ],
                 }
                 for item in self.data
@@ -50,12 +43,12 @@ class FricheZoneActiviteChart(BaseFricheChart):
                 "data": [
                     {
                         "name": self.format_boolean_field(item),
-                        "surface": item.friche_surface,
-                        "count": item.friche_count,
-                        "y": item.friche_count,
+                        "surface": item.friche_sans_projet_surface,
+                        "count": item.friche_sans_projet_count,
+                        "y": item.friche_sans_projet_surface,
                     }
                     for item in self.data
-                    if item.friche_count > 0
+                    if item.friche_sans_projet_surface > 0
                 ],
             }
         ]

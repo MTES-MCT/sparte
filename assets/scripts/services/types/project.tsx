@@ -4,24 +4,20 @@ import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { FetchArgs, BaseQueryFn } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
 
-
-
-
-
 export type Logo = {
-    src: string;
-    alt: string;
-    height: string;
-    url?: string;
-  };
+	src: string;
+	alt: string;
+	height: string;
+	url?: string;
+};
 
-  export type SubMenuItem = {
+export type SubMenuItem = {
     label: string;
     url?: string;
-    new?: boolean;
-  };
+	new?: boolean;
+};
 
-  export type MenuItem = {
+export type MenuItem = {
     label: string;
     url?: string;
     icon?: string;
@@ -30,9 +26,9 @@ export type Logo = {
     shouldDisplay?: boolean;
     new?: boolean;
     soon?: boolean;
-  };
+};
 
-  export type ProjectDetailResultType = {
+export type ProjectDetailResultType = {
     id: number;
     created_date: string;
     level_label: string;
@@ -49,38 +45,39 @@ export type Logo = {
     bounds: [number, number, number, number];
     max_bounds: [number, number, number, number];
     centroid: {
-      latitude: number;
-      longitude: number;
+		latitude: number;
+		longitude: number;
     };
     emprise: GeoJsonObject;
     urls: {
-      synthese: string;
-      artificialisation: string;
-      impermeabilisation: string;
-      rapportLocal: string;
-      trajectoires: string;
-      consommation: string;
-      logementVacant: string;
-      update: string;
-      dowloadConsoReport: string;
-      downloadFullReport: string;
-      dowloadLocalReport: string;
-      downloads: string;
+		synthese: string;
+		artificialisation: string;
+		friches: string;
+		impermeabilisation: string;
+		rapportLocal: string;
+		trajectoires: string;
+		consommation: string;
+		logementVacant: string;
+		update: string;
+		dowloadConsoReport: string;
+		downloadFullReport: string;
+		dowloadLocalReport: string;
+		downloads: string;
     };
     navbar: {
-      menuItems: MenuItem[];
+    	menuItems: MenuItem[];
     };
     footer: {
-      menuItems: MenuItem[];
+      	menuItems: MenuItem[];
     };
     header: {
-      logos: Logo[];
-      search: {
-        createUrl: string;
-      };
-      menuItems: MenuItem[];
+		logos: Logo[];
+		search: {
+			createUrl: string;
+		};
+      	menuItems: MenuItem[];
     };
-  };
+};
   
 type ProjectDetailQueryArg = string | FetchArgs
 type ProjectDetailBaseQuery = BaseQueryFn<ProjectDetailQueryArg, unknown, FetchBaseQueryError>;
