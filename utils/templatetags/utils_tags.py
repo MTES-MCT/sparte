@@ -10,6 +10,7 @@ def tracking_code(context):
         "CSP_NONCE": context["CSP_NONCE"],
         "MATOMO_ACTIVATE": settings.MATOMO_ACTIVATE,
         "DEBUG": settings.DEBUG,
+        "REQUEST": context.get("request"),
     }
 
 

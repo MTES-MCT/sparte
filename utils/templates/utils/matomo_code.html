@@ -2,6 +2,9 @@
 <script nonce="[NONCE_PLACEHOLDER]">
     var _paq = window._paq = window._paq || [];
     /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    {% if REQUEST.user.is_authenticated %}
+    _paq.push(['setUserId', '{{ REQUEST.user.email }}']);
+    {% endif %}
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
     (function() {
