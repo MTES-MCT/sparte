@@ -224,8 +224,9 @@ sources:
               values: ["artif", "non artif"]
       - name: crit_seuil
         data_tests:
+          - not_null
           - accepted_values:
-              values: [true, false, NULL]
+              values: [true, false]
     - name: ocsge_zone_construite_staging
       columns:
       - name: loaded_date
