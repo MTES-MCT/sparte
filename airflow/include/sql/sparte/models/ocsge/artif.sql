@@ -44,7 +44,7 @@ with
                 WHEN artif = 'non artif' THEN false
                 ELSE null
             END AS is_artificial,
-            crit_seuil as critere_seuil,
+            COALESCE(crit_seuil, false) as critere_seuil,
             (
                 st_dump(st_intersection(
                     departement_table.geom,
