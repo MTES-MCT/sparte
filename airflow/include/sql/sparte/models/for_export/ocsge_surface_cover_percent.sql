@@ -1,31 +1,26 @@
 {{ config(materialized="table") }}
 
-{% set surface_france = 543940.0 %} /* km2 */
+{% set surface_france = 641184 %}
+-- Source : https://fr.wikipedia.org/wiki/Superficie_de_la_France
 
-
-with latest_millesimes_marked as (
-    SELECT
-        departement,
-        index,
-        row_number() over (partition by
-            departement
-            order by index desc
-        ) as rn
-
-    from {{ ref('millesimes') }}
-), surface_by_departements as (
 SELECT
-    latest_millesimes_marked.departement,
-    departement.surface / 1000000.0 as surface
+    departement.code as code,
+    departement.name as name,
+    departement.surface / 1000000.0 as surface_km2,
+    departement.surface / 1000000.0 * 100 / {{ surface_france }} as percent_of_france,
+    land_ocsge_status.has_ocsge
 FROM
-    latest_millesimes_marked
+     {{ ref('departement')}}
 LEFT JOIN
-    {{ ref('departement')}} ON latest_millesimes_marked.departement = departement.code
-WHERE rn = 1
-)
+    {{ ref('land_ocsge_status')}}
+    ON land_ocsge_status.land_id = departement.code
+    AND land_ocsge_status.land_type = 'DEPART'
+UNION
 SELECT
-    round(sum(surface)::numeric, 2) as surface_couverte_par_ocsge,
-    {{ surface_france }}::numeric as surface_france,
-    round((sum(surface) / {{ surface_france }} * 100.0)::numeric, 2) as pourcentage_couvert_par_ocsge
-FROM
-    surface_by_departements
+    '976' as code,
+    'Mayotte' as name,
+    374.0 as surface_km2,
+    374.0 * 100 / {{ surface_france }} as percent_of_france,
+    false as has_ocsge
+ORDER BY
+    code
