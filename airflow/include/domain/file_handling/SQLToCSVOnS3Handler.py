@@ -31,6 +31,7 @@ class SQLToCSVOnS3Handler:
             f'"{self.db_connection}"',
             "public_ocsge.occupation_du_sol",
             f'-sql "{sql}"',
+            "-lco STRING_QUOTING=ALWAYS",
         ]
         try:
             subprocess.run(" ".join(cmd), shell=True, stderr=subprocess.STDOUT, check=True)
