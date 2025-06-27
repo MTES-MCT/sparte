@@ -46,6 +46,10 @@ def ingest_app_tables():  # noqa: C901
     def ingest_newsletter():
         return ingest_table("home_newsletter", "app_newsletter")
 
+    @task.python
+    def ingest_satisfaction_form_entry():
+        return ingest_table("home_satisfactionformentry", "app_satisfactionformentry")
+
     @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
     def dbt_run(**context):
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt run -s app'
@@ -55,6 +59,7 @@ def ingest_app_tables():  # noqa: C901
         >> ingest_request()
         >> ingest_newsletter()
         >> ingest_project()
+        >> ingest_satisfaction_form_entry()
         # >> dbt_run()
     )
 
