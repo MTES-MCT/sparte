@@ -53,12 +53,6 @@ const RapportLocal: React.FC<{ endpoint: string, projectData: any }> = ({ endpoi
                                     }}
                                     onClick={() => {
                                         resetModalContent();
-                                        if (window.trackEvent)
-                                            window.trackEvent(
-                                                'diagnostic_download_funnel',
-                                                'click_button_local_report_download',
-                                                'local_report_download_button_clicked'
-                                            );
                                     }}
                                 />
                             </div>
