@@ -25,9 +25,10 @@ SELECT
     ] as max_bounds,
     ST_Transform(geom, 4326) as geom,
     ST_Transform(simple_geom, 4326) as simple_geom,
-    {{ m2_to_ha('artif.surface') }} as surface_artif,
-    artif.percent as percent_artif,
-    artif.years as years_artif,
+
+    {{ m2_to_ha('land.surface_artif') }} as surface_artif,
+    land.percent_artif as percent_artif,
+    land.years_artif as years_artif,
     land_ocsge_status.status as ocsge_status,
     land_ocsge_status.has_ocsge as has_ocsge,
     land_zonages.zonage_count > 0 as has_zonage,
