@@ -15,6 +15,7 @@ urlpatterns = [
     path("accessibilite", views.AccessView.as_view(), name="accessibilite"),
     path("robots.txt", views.RobotView.as_view(), name="robots"),
     path("contact", views.ContactView.as_view(), name="contact"),
+    path("satisfaction", views.SatisfactionView.as_view(), name="satisfaction"),
     path(
         "newsletter/inscription",
         views.NewsletterSubscriptionView.as_view(),
