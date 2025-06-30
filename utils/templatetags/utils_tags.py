@@ -11,6 +11,7 @@ def tracking_code(context):
         "MATOMO_ACTIVATE": settings.MATOMO_ACTIVATE,
         "DEBUG": settings.DEBUG,
         "REQUEST": context.get("request"),
+        "ENVIRONMENT": settings.ENVIRONMENT,
     }
 
 

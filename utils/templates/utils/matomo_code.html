@@ -1,18 +1,59 @@
 {% if MATOMO_ACTIVATE %}
-<script nonce="[NONCE_PLACEHOLDER]">
 <!-- Matomo Tag Manager -->
+{% if ENVIRONMENT == "local" %}
+<!-- Matomo Tag Manager -->
+<script nonce="[NONCE_PLACEHOLDER]">
   var _mtm = window._mtm = window._mtm || [];
   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+  {% if REQUEST.user.is_authenticated %}
+  _mtm.push({'uid': '{{ REQUEST.user.email }}' });
+    {% endif %}
   (function() {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src='https://stats.beta.gouv.fr/js/container_mlVvm9TG.js'; s.parentNode.insertBefore(g,s);
+    g.async=true; g.src='https://stats.beta.gouv.fr/js/container_26e5XOBD.js'; s.parentNode.insertBefore(g,s);
   })();
+</script>
 <!-- End Matomo Tag Manager -->
+{% elif ENVIRONMENT == "staging" %}
+<!-- Matomo Tag Manager -->
+<script nonce="[NONCE_PLACEHOLDER]">
+  var _mtm = window._mtm = window._mtm || [];
+  _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+  {% if REQUEST.user.is_authenticated %}
+  _mtm.push({'uid': '{{ REQUEST.user.email }}' });
+    {% endif %}
+  (function() {
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.async=true; g.src='https://stats.beta.gouv.fr/js/container_rdwHksJR.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Tag Manager -->
+
+{% elif ENVIRONMENT == "production" %}
+<script nonce="[NONCE_PLACEHOLDER]">
+  var _mtm = (window._mtm = window._mtm || []);
+  _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
+  {% if REQUEST.user.is_authenticated %}
+  _mtm.push({'uid': '{{ REQUEST.user.email }}' });
+    {% endif %}
+  (function () {
+    var d = document,
+      g = d.createElement("script"),
+      s = d.getElementsByTagName("script")[0];
+    g.async = true;
+    g.src = "https://stats.beta.gouv.fr/js/container_mlVvm9TG.js";
+    s.parentNode.insertBefore(g, s);
+  })();
 </script>
 
-<noscript>
-    <img referrerpolicy="no-referrer-when-downgrade" src="https://stats.beta.gouv.fr/matomo.php?idsite=17&amp;rec=1" style="border:0" alt="" />
-</noscript>
+{% else }
+<script nonce="[NONCE_PLACEHOLDER]">
+  console.warn(
+    "Matomo Tag Manager: ENVIRONMENT variable is not set or is invalid. Please check your settings."
+  );
+</script>
+{% endif %}
+<!-- End Matomo Tag Manager -->
 {% else %}
 <!-- Matomo is not activated -->
 {% endif %}
