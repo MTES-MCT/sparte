@@ -1,0 +1,17 @@
+models:
+  - name: matomo_log_action
+    columns:
+      - name: idaction
+        data_type: integer
+        data_tests:
+          - unique
+          - not_null
+      - name: name
+        data_type: character varying
+      - name: hash
+        data_type: bigint
+      - name: type
+        data_type: smallint
+      - name: url_prefix
+        data_type: smallint
+    description: The matomo_log_action model represents the log of actions tracked by Matomo, a web analytics platform. It includes details about specific actions such as their unique identifier, name, hash value, type, and URL prefix. This model is useful for analyzing user interactions and behavior on websites.

@@ -1,0 +1,8 @@
+version: 2
+sources:
+  - name: public
+    tables:
+    - name: matomo_log_visit
+    - name: matomo_log_link_visit_action
+    - name: matomo_log_conversion
+    - name: matomo_log_action

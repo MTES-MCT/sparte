@@ -52,3 +52,5 @@ models:
       +schema: zlv
     cartofriches:
       +schema: cartofriches
+    matomo:
+      +schema: matomo
