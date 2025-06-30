@@ -6,7 +6,7 @@
 
 
 SELECT
-    user_table.id as user_id,
+    user_table.id as id,
     user_table.last_login as user_last_login_date,
     user_table.is_superuser as user_is_superuser,
     user_table.first_name as user_firstname,
@@ -37,7 +37,8 @@ SELECT
     land.ocsge_status as main_land_ocsge_status,
     newsletter.created_date as newsletter_opt_in_date,
     newsletter.confirmation_date as newsletter_double_opt_in_date,
-    newsletter.created_date is not null and newsletter.confirmation_date is not null as newsletter_fully_opted_in
+    newsletter.created_date is not null and newsletter.confirmation_date is not null as newsletter_fully_opted_in,
+    matomo_log_visit.*
 FROM
     {{ ref('user') }} as user_table
 LEFT JOIN LATERAL (
@@ -70,3 +71,36 @@ LEFt JOIN LATERAL (
         user_table.email = newsletter.email
     LIMIT 1
 ) AS newsletter ON true
+LEFT JOIN LATERAL (
+    SELECT
+        visitor_returning,
+        visitor_seconds_since_first,
+        visitor_seconds_since_order,
+        visitor_count_visits,
+        visitor_localtime,
+        visitor_seconds_since_last,
+        config_resolution,
+        config_cookie,
+        config_flash,
+        config_java,
+        config_pdf,
+        config_quicktime,
+        config_realplayer,
+        config_silverlight,
+        config_windowsmedia,
+        visit_total_time,
+        location_city,
+        location_country,
+        location_latitude,
+        location_longitude,
+        location_region,
+        custom_dimension_1,
+        custom_dimension_2,
+        custom_dimension_3,
+        custom_dimension_4,
+        custom_dimension_5
+    FROM {{ ref('matomo_log_visit') }} as matomo_log_visit
+    WHERE user_table.email = matomo_log_visit.user_id
+    ORDER BY visitor_count_visits DESC
+    LIMIT 1
+) AS matomo_log_visit ON true

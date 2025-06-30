@@ -1,4 +1,12 @@
-{{ config(materialized="table") }}
+{{
+    config(
+        materialized="table",
+        indexes=[
+            {"columns": ["user_id"], "type": "btree"},
+            {"columns": ["visitor_count_visits"], "type": "btree"},
+        ]
+    )
+}}
 
 SELECt
     idvisit,

@@ -1,0 +1,18 @@
+models:
+  - name: idvisitor_user_id
+    columns:
+      - name: user_id
+        data_type: character varying
+        data_tests:
+          - unique
+          - not_null
+      - name: idvisitor
+        data_type: bytea
+        data_tests:
+          - not_null
+          - unique
+      - name: idvisitor_hex
+        data_type: text
+        data_tests:
+          - not_null
+          - unique
