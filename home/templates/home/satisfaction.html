@@ -1,4 +1,5 @@
 
+{% extends "index.html" %}
 {% load i18n %}
 
 {% block head %}
@@ -6,23 +7,36 @@
 {% endblock %}
 
 {% block content %}
-<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
-<form action="" method="post">{% csrf_token %}
-<table>
-{{ wizard.management_form }}
-{% if wizard.form.forms %}
-    {{ wizard.form.management_form }}
-    {% for form in wizard.form.forms %}
-        {{ form.as_table }}
-    {% endfor %}
-{% else %}
-    {{ wizard.form }}
-{% endif %}
-</table>
-{% if wizard.steps.prev %}
-<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
-<button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
-{% endif %}
-<input type="submit" value="{% translate "submit" %}"/>
-</form>
+<div class="d-flex justify-content-center">
+    <div class="fr-col-4 fr-p-10v">
+        <h1>Questionnaire de satisfaction</h1>
+        <p>Etape {{ wizard.steps.step1 }} / {{ wizard.steps.count }}</p>
+    </div>
+    <div class="fr-col-8 fr-p-10v">
+        <form action="" method="post">{% csrf_token %}
+        <table class="fr-table">
+        {{ wizard.management_form }}
+        {% for field in wizard.form %}
+            <tr>
+                <td>{{ field.label_tag }}</td>
+                <td>
+                    {% if field.errors %}
+                        <span class="fr-error-text">{{ field.errors }}</span>
+                    {% endif %}
+                    {{ field}}
+                    {% if field.help_text %}
+                        <span class="fr-help-text">{{ field.help_text }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+        {% if wizard.steps.prev %}
+            <button class="fr-btn" name="wizard_go to_step" type="submit" value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
+            <button class="fr-btn" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
+        {% endif %}
+            <input class="fr-btn" type="submit" value="{% translate "submit" %}"/>
+        </form>
+        </div>
+</div>
 {% endblock %}

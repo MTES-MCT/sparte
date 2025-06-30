@@ -20,7 +20,7 @@ class SatisfactionFormEntry(models.Model):
         null=True,
     )
     nps = models.IntegerField(
-        "NPS",
+        "Score NPS",
         help_text="Note de satisfaction de 0 à 10, où 0 est très insatisfait et 10 très satisfait.",
         validators=[
             validators.MinValueValidator(0),
