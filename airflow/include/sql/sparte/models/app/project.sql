@@ -17,5 +17,6 @@ SELECT
     cover_image,
     folder_name,
     territory_name,
-    target_2031
+    target_2031,
+    target_2031 != 50 AS target_2031_modified
 FROM {{ source('public', 'app_project') }}
