@@ -5,7 +5,6 @@ données PostgreSQL, puis lance un job dbt pour les transformer.
 
 from gdaltools import ogr2ogr
 from include.container import Container
-from include.pools import DBT_POOL
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -49,10 +48,6 @@ def ingest_app_tables():  # noqa: C901
     @task.python
     def ingest_satisfaction_form_entry():
         return ingest_table("home_satisfactionformentry", "app_satisfactionformentry")
-
-    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
-    def dbt_run(**context):
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt run -s app'
 
     (
         ingest_user()

@@ -33,6 +33,11 @@ class SatisfactionFormEntry(models.Model):
         blank=True,
         null=True,
     )
+    recorded_date = models.DateTimeField(
+        "Date d'enregistrement",
+        auto_now_add=True,
+        help_text="Date à laquelle le formulaire a été enregistré.",
+    )
 
 
 class ContactForm(models.Model):

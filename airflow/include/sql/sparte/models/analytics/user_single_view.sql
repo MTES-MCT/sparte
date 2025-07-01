@@ -40,7 +40,8 @@ SELECT
     newsletter.confirmation_date as newsletter_double_opt_in_date,
     newsletter.created_date is not null and newsletter.confirmation_date is not null as newsletter_fully_opted_in,
     matomo_log_visit.*,
-    visited_pages.*
+    visited_pages.*,
+    satisfaction_form.*
 FROM
     {{ ref('user') }} as user_table
 LEFT JOIN LATERAL (
@@ -126,3 +127,12 @@ LEFT JOIN LATERAL (
         coalesce('trajectoires' = any(raw_visited_pages.pages), false) as visited_page_trajectoires,
         coalesce('vacance-des-logements	' = any(raw_visited_pages.pages), false) as visited_page_vacance_des_logements
 ) AS visited_pages ON true
+LEFT JOIN LATERAL (
+    SELECT
+        nps,
+        suggested_change
+    FROM {{ ref('satisfaction_form_entry')}}
+    where user_table.id = satisfaction_form_entry.user_id
+    ORDER BY recorded_date DESC
+    LIMIT 1
+) AS satisfaction_form ON true
