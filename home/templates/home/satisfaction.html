@@ -11,8 +11,10 @@
     <div class="fr-col-4 fr-p-10v">
         <h1>Questionnaire de satisfaction</h1>
         <p>Etape {{ wizard.steps.step1 }} / {{ wizard.steps.count }}</p>
+                <img src="{{ wizard.form.image }}" class="fr-responsive-img" />
+
     </div>
-    <div class="fr-col-8 fr-p-10v">
+    <div class="fr-col-4 fr-p-10v">
         <form action="" method="post">{% csrf_token %}
         <table class="fr-table">
         {{ wizard.management_form }}
@@ -31,12 +33,15 @@
             </tr>
         {% endfor %}
         </table>
+        <div class="fr-btns-group">
         {% if wizard.steps.prev %}
             <button class="fr-btn" name="wizard_go to_step" type="submit" value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
             <button class="fr-btn" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
         {% endif %}
             <input class="fr-btn" type="submit" value="{% translate "submit" %}"/>
+            </div>
         </form>
         </div>
+    
 </div>
 {% endblock %}
