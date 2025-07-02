@@ -34,6 +34,7 @@ __all__ = [
     "ArtifMapExport",
     "ArtifByCouverturePieChartExport",
     "ArtifUsagePieChartExport",
+    "ArtifPercent",
 ]
 
 from .AnnualConsoByDeterminantChart import (
@@ -48,6 +49,7 @@ from .artificialisation import (
     ArtifByUsagePieChart,
     ArtifMap,
     ArtifMapExport,
+    ArtifPercent,
     ArtifUsagePieChartExport,
 )
 from .ConsoByDeterminantPieChart import (

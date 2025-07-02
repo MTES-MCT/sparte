@@ -4,6 +4,7 @@ from .ArtifByCouverturePieChart import (
 )
 from .ArtifByUsagePieChart import ArtifByUsagePieChart, ArtifUsagePieChartExport
 from .ArtifMap import ArtifMap, ArtifMapExport
+from .ArtifPercent import ArtifPercent
 
 __all__ = [
     "ArtifByCouverturePieChart",
@@ -12,4 +13,5 @@ __all__ = [
     "ArtifUsagePieChartExport",
     "ArtifMap",
     "ArtifMapExport",
+    "ArtifPercent",
 ]

@@ -48,15 +48,26 @@ const ArtifLastMillesimeSection: React.FC<{
 	is_interdepartemental: boolean;
 	surface: number;
 	years_artif: number[];
-}> = ({ landArtifStockIndex, name, is_interdepartemental, surface, years_artif }) => (
+	land_id: string;
+	land_type: string;
+}> = ({ landArtifStockIndex, name, is_interdepartemental, surface, years_artif, land_id, land_type }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<div className="fr-col-12 fr-col-lg-8">
 				<div className="bg-white fr-p-2w h-100 rounded">
 					<div className="fr-grid-row fr-grid-row--gutters">
 						<div className="fr-col-12 fr-col-md-7">
-							<ArtifPercentRate
-								percentageArtificialized={landArtifStockIndex.percent}
+							<OcsgeGraph
+								id="artif_percent"
+								land_id={land_id}
+								land_type={land_type}
+								params={{
+									index:landArtifStockIndex.millesime_index,
+								}}
+								containerProps={{
+									style: {height: '250px'}
+								}}
+								
 							/>
 						</div>
 						<div className="fr-col-12 fr-col-md-5">
@@ -247,6 +258,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				is_interdepartemental={is_interdepartemental}
 				surface={surface}
 				years_artif={years_artif}
+				land_id={land_id}
+				land_type={land_type}
 			/>
 			<MillesimesTable 
 				millesimes={millesimes}
