@@ -1,8 +1,9 @@
 import { useGetArtifZonageIndexQuery } from '@services/api';
-import { ProjectDetailResultType } from '@services/types/project';
+import { LandDetailResultType } from "@services/types/land";
+
 
 interface UseArtificialisationZonageProps {
-    projectData: ProjectDetailResultType;
+    landData: LandDetailResultType;
     defaultStockIndex: number;
 }
 
@@ -13,12 +14,12 @@ interface UseArtificialisationZonageReturn {
 }
 
 export const useArtificialisationZonage = ({
-    projectData,
+    landData,
     defaultStockIndex
 }: UseArtificialisationZonageProps): UseArtificialisationZonageReturn => {
     const { data: artifZonageIndex, isLoading, error } = useGetArtifZonageIndexQuery({
-        land_type: projectData.land_type,
-        land_id: projectData.land_id,
+        land_type: landData.land_type,
+        land_id: landData.land_id,
         millesime_index: defaultStockIndex,
     });
 
