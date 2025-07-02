@@ -7,14 +7,21 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center">
-    <div class="fr-col-4 fr-p-10v">
-        <h1>Questionnaire de satisfaction</h1>
-        <p>Etape {{ wizard.steps.step1 }} / {{ wizard.steps.count }}</p>
-                <img src="{{ wizard.form.image }}" class="fr-responsive-img" />
-
+<div class="fr-container fr-mt-8v fr-mt-md-14v fr-mb-2v fr-mb-md-8v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+    <div class="fr-col-12">
+        <h1 style="text-align: center;">Questionnaire de satisfaction</h1>
+        <h4 style="text-align: center;">Etape {{ wizard.steps.step1 }} / {{ wizard.steps.count }}</h4>
     </div>
+</div>
+</div>
+    <div  class="fr-container fr-container--fluid fr-mb-md-14v">
+        <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+
     <div class="fr-col-4 fr-p-10v">
+        <img alt="{{ wizard.form.alt }}" src="{{ wizard.form.image }}" class="fr-responsive-img" />
+    </div>
+    <div style="background-color: #F6F6F6"  class="fr-col-6 fr-p-10v">
         <form action="" method="post">{% csrf_token %}
         <table class="fr-table">
         {{ wizard.management_form }}
@@ -35,13 +42,12 @@
         </table>
         <div class="fr-btns-group">
         {% if wizard.steps.prev %}
-            <button class="fr-btn" name="wizard_go to_step" type="submit" value="{{ wizard.steps.first }}">{% translate "first step" %}</button>
             <button class="fr-btn" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
         {% endif %}
             <input class="fr-btn" type="submit" value="{% translate "submit" %}"/>
             </div>
         </form>
         </div>
-    
+    </div>
 </div>
 {% endblock %}

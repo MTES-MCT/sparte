@@ -21,7 +21,7 @@ class SatisfactionFormEntry(models.Model):
     )
     nps = models.IntegerField(
         "Score NPS",
-        help_text="Note de satisfaction de 0 à 10, où 0 est très insatisfait et 10 très satisfait.",
+        help_text="A quel point êtes-vous succeptible de recommander ce service ? 0 étant peu probable et 10 très probable.",  # noqa: E501
         validators=[
             validators.MinValueValidator(0),
             validators.MaxValueValidator(10),
@@ -29,7 +29,7 @@ class SatisfactionFormEntry(models.Model):
     )
     suggested_change = models.TextField(
         "Changement suggéré",
-        help_text="Suggérez un changement pour améliorer le service.",
+        help_text="Suggérez un changement ou une nouvelle fonctionnalité pour nous permettre d'améliorer le service.",
         blank=True,
         null=True,
     )
