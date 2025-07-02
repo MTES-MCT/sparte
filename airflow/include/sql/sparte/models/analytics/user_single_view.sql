@@ -13,7 +13,6 @@ SELECT
     user_table.last_name as user_lastname,
     user_table.email as user_email,
     user_table.is_staff as user_is_staff,
-    /* is_active, -> champs supprimé car non défini */
     user_table.date_joined as user_created_date,
     user_table.email_checked as user_email_verified,
     user_table.function as user_function,
