@@ -1,11 +1,12 @@
 from django.templatetags.static import static
 from django.urls import reverse
 from django_app_parameter.models import Parameter
+from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 from rest_framework_gis import serializers as gis_serializers
 from rest_framework_gis.serializers import GeometrySerializerMethodField
 
-from project.models import Project
+from project.models import Project, Request, RequestedDocumentChoices
 
 from .models import Emprise
 
@@ -182,6 +183,43 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "navbar",
             "footer",
             "header",
+        ]
+
+
+class ProjectDownloadLinkSerializer(serializers.ModelSerializer):
+    rapport_local_url = SerializerMethodField()
+    rapport_complet_url = SerializerMethodField()
+
+    def get_rapport_local_url(self, obj):
+        project: Project = obj
+        requests = Request.objects.filter(
+            project=project,
+            requested_document=RequestedDocumentChoices.RAPPORT_LOCAL,
+        ).order_by("-created_date")
+
+        if requests.exists():
+            return requests.first().sent_file.url if requests.first().sent_file else None
+
+        return None
+
+    def get_rapport_complet_url(self, obj):
+        project: Project = obj
+        requests = Request.objects.filter(
+            project=project,
+            requested_document=RequestedDocumentChoices.RAPPORT_COMPLET,
+        ).order_by("-created_date")
+
+        if requests.exists():
+            return requests.first().sent_file.url if requests.first().sent_file else None
+
+        return None
+
+    class Meta:
+        model = Project
+        fields = [
+            "id",
+            "rapport_local_url",
+            "rapport_complet_url",
         ]
 
 

@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.urls import reverse
 from rest_framework import generics, viewsets
 from rest_framework.exceptions import ParseError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from brevo.tasks import send_diagnostic_request_to_brevo
@@ -11,7 +12,11 @@ from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh impo
 )
 
 from .models import Emprise, Project, Request, RequestedDocumentChoices
-from .serializers import EmpriseSerializer, ProjectDetailSerializer
+from .serializers import (
+    EmpriseSerializer,
+    ProjectDetailSerializer,
+    ProjectDownloadLinkSerializer,
+)
 
 
 class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
@@ -39,6 +44,16 @@ class ProjectDetailView(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         serializer = self.get_serializer(self.get_object(), context={"request": request})
+        return Response(data=serializer.data)
+
+
+class ProjectDownloadLinkView(generics.RetrieveAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectDownloadLinkSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(self.get_object())
         return Response(data=serializer.data)
 
 
@@ -89,9 +104,8 @@ class DiagnosticDownloadAPIView(generics.RetrieveAPIView):
                 "success": True,
                 "message": (
                     "Vous recevrez le document par email dans quelques minutes. Si vous ne recevez "
-                    "pas le document, veuillez vérifier votre dossier spams ou ajouter notre "
-                    "adresse email (contact@mondiagartif.beta.gouv.fr) à la "
-                    "liste blanche de votre pare-feu."
+                    "pas le document, veuillez vérifier votre dossier spams. Si le problème persiste, "
+                    "vous pouvez revenir sur cette page une fois le diagnostic crée et télécharger le document directement."  # noqa: E501
                 ),
             }
         )
