@@ -26,6 +26,8 @@ vars:
 
 models:
   sparte:
+    analytics:
+      +schema: analytics
     app:
       +schema: app
     ocsge:
