@@ -5,6 +5,7 @@ from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByUsagePieChart,
     ArtifMap,
+    ArtifPercent,
 )
 from project.charts.urbanisme import (
     FrichePollutionChart,
@@ -43,6 +44,7 @@ def get_chart_klass_or_404(chart_id):
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
         "pie_artif_by_usage": ArtifByUsagePieChart,
         "artif_map": ArtifMap,
+        "artif_percent": ArtifPercent,
         "friche_pollution": FrichePollutionChart,
         "friche_surface": FricheSurfaceChart,
         "friche_type": FricheTypeChart,
