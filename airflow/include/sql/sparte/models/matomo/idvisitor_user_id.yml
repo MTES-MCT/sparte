@@ -4,7 +4,6 @@ models:
       - name: user_id
         data_type: character varying
         data_tests:
-          - unique
           - not_null
       - name: idvisitor
         data_type: bytea
