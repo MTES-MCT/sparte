@@ -5,7 +5,6 @@ import { UseLandDetailType } from "./types/land";
 import { ArtifZonageIndexType } from "./types/artif_zonage";
 import { UseLandFrichesStatutType } from "./types/land_friches_statut";
 import { UseLandFrichesType } from "./types/land_friches";
-import { UseGetMeQueryType } from "./types/user";
 
 export const djangoApi = createApi({
 	reducerPath: "djangoApi",
@@ -17,14 +16,6 @@ export const djangoApi = createApi({
 				url: `/project/${projectId}/telechargement-liens`,
 				method: "GET",
 			}),
-		}),
-		getMe: builder.query({
-			query: () => {
-				return {
-					url: "/users/me",
-					method: "GET",
-				}
-			}
 		}),
 		getChartConfig: builder.query({
 			query: ({id, land_type, land_id, ...params}) => {
@@ -110,7 +101,6 @@ const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZ
 const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
-const useGetMeQuery: UseGetMeQueryType = djangoApi.useGetMeQuery;
 const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
 
 const {
@@ -133,6 +123,5 @@ export {
 	useDownloadDiagnosticMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
-	useGetMeQuery,
 	useGetProjectDownloadLinksQuery,
 };
