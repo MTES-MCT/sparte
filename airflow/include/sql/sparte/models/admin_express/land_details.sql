@@ -17,6 +17,7 @@ SELECT
     land.child_land_types,
     land.parent_keys,
     land.departements,
+    coalesce(sudocuh.competence_planification, false) as competence_planification,
     CASE
         WHEN array_length(land.departements, 1) = 1
         THEN false
@@ -58,3 +59,12 @@ LEFT JOIN LATERAL (
         friche_land.land_id = land.land_id AND
         friche_land.land_type = land.land_type
 ) land_friche ON true
+LEFT JOIN LATERAL (
+    SELECT
+        competence_planification
+    FROM {{ ref('competence_plan_land')}}
+    WHERE
+        competence_plan_land.land_id = land.land_id AND
+        competence_plan_land.land_type = land.land_type
+    LIMIT 1
+)  sudocuh ON true

@@ -35,6 +35,7 @@ SELECT
     land.percent_artif as main_land_percent_artif,
     land.years_artif as main_land_years_artif,
     land.ocsge_status as main_land_ocsge_status,
+    land.competence_planification as main_land_competence_planification,
     newsletter.created_date as newsletter_opt_in_date,
     newsletter.confirmation_date as newsletter_double_opt_in_date,
     newsletter.created_date is not null and newsletter.confirmation_date is not null as newsletter_fully_opted_in,
