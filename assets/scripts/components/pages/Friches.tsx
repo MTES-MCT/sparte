@@ -417,7 +417,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     <div className="fr-grid-row fr-grid-row--gutters">
                         <div className="fr-col-12">
                             <h3 className="fr-text--lg fr-mb-2w">
-                                <i className="bi bi-lightning-charge text-primary fr-mr-1w" /> Les friches sans projet : un levier majeur actionnable pour la sobriété foncière
+                                <i className="bi bi-lightning-charge text-primary fr-mr-1w" /> Les friches sans projet : un levier actionnable pour la sobriété foncière
                             </h3>
                             <FricheStatus landData={landData} />
                         </div>
