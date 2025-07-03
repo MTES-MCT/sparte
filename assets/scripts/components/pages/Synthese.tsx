@@ -1,46 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
+import { ProjectDetailResultType } from "@services/types/project";
+import { LandDetailResultType } from "@services/types/land";
 import Loader from '@components/ui/Loader';
 import { formatNumber } from "@utils/formatUtils";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
-import { LandDetailResultType, Millesime, MillesimeByIndex } from "@services/types/land";
 import { useArtificialisation } from "@hooks/useArtificialisation";
+import Guide from "@components/ui/Guide";
 
-/*
-Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
-Cette approche progressive facilite la migration des éléments de contenu existants vers React, tout en permettant de conserver certaines fonctionnalités serveur le temps de la transition.
-
-### Injection HTML contrôlée :
-Le contenu récupéré du serveur est inséré directement dans le DOM à l'aide de `dangerouslySetInnerHTML`.
-Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais il est important de prendre des précautions contre les injections de code malveillant (XSS).
-Dans ce cas, les données provenant de Django sont considérées comme fiables.
-*/
-
-interface ArtificialisationData {
-    surface: number;
-    percent: number;
-    flux_surface: number;
-    years: number[];
-    is_interdepartemental: boolean;
-    millesime_index: number;
-    flux_previous_years: number[];
-    millesimes: Millesime[];
-    territory_name: string;
-    land_type: string;
-    land_id: string;
-    millesimes_by_index: MillesimeByIndex[];
-}
-
-interface UrlsType {
-    [key: string]: string;
+interface SyntheseProps {
+	projectData: ProjectDetailResultType;
+	landData: LandDetailResultType;
 }
 
 const ArtificialisationSection: React.FC<{ 
-    urls: UrlsType;
+    projectData: ProjectDetailResultType;
     landData: LandDetailResultType;
-}> = ({ landData, urls }) => {
+}> = ({ landData, projectData }) => {
+    const { urls } = projectData;
+
     const { landArtifStockIndex : data, isLoading, error } = useArtificialisation({
         landData
     });
@@ -107,24 +86,57 @@ const ArtificialisationSection: React.FC<{
     );
 };
 
-const Synthese: React.FC<{ 
-    endpoint: string; 
-    urls: UrlsType; 
-    landData?: LandDetailResultType; 
-}> = ({ endpoint, urls, landData }) => {
-    const { content, isLoading, error } = useHtmlLoader(endpoint);
+const Synthese: React.FC<SyntheseProps> = ({ 
+	projectData,
+	landData,
+}) => {
+    const {
+        isLoading,
+        error
+    } = useArtificialisation({
+        landData
+    });
 
     if (isLoading) return <Loader />;
     if (error) return <div>Erreur : {error}</div>;
 
     return (
         <div className="fr-container--fluid fr-p-3w">
-            <div className="fr-grid-row">
-                <div className="fr-col-12">
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="fr-grid-row fr-grid-row--gutters">
+				<div className="fr-col-12">
+                    <Guide
+                        title="Pourquoi la sobriété foncière ?"
+                        DrawerTitle="Pourquoi la sobriété foncière ?"
+                        drawerChildren={
+                            <>
+                                <p className="fr-text--sm mb-3">
+                                    La sobriété foncière est essentielle pour préserver les sols naturels, agricoles et forestiers, indispensables à la biodiversité.
+                                    Elle limite l'artificialisation, qui fragilise les écosystèmes et accentue les risques climatiques. Réduire l'étalement urbain permet de contenir les émissions de gaz à effet de serre, 
+                                    et constitue un levier clé pour protéger les ressources et renforcer la résilience écologique des territoires.
+                                </p>
+                            </>
+                        }
+                    >
+                         La sobriété foncière est essentielle pour préserver les sols naturels, agricoles et forestiers, indispensables à la biodiversité.
+                        Elle limite l'artificialisation, qui fragilise les écosystèmes et accentue les risques climatiques. Réduire l'étalement urbain permet de contenir les émissions de gaz à effet de serre, 
+                        et constitue un levier clé pour protéger les ressources et renforcer la résilience écologique des territoires.
+                    </Guide>
+				</div>
+			</div>
+            <h2 className="fr-mt-5w">Comprendre : les enjeux de la sobriété foncière</h2>
+            <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-12 fr-col-md-6 fr-grid-row">
+                    <div className="fr-callout bg-white w-100">
+                        1
+                    </div>
+                </div>
+                <div className="fr-col-12 fr-col-md-6 fr-grid-row">
+                <div className="fr-callout bg-white w-100">
+                        2
+                    </div>
                 </div>
             </div>
-            {landData?.has_ocsge && <ArtificialisationSection landData={landData} urls={urls} />}
+            {landData?.has_ocsge && <ArtificialisationSection landData={landData} projectData={projectData} />}
         </div>
     );
 };

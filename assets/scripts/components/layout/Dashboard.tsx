@@ -97,8 +97,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 }
                                             >
                                                 <Synthese
-                                                    endpoint={urls.synthese}
-                                                    urls={projectData.urls}
+                                                    projectData={projectData}
                                                     landData={landData}
                                                 />
                                             </RouteWrapper>
