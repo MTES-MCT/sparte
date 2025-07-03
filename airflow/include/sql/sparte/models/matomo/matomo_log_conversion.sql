@@ -40,4 +40,5 @@ SELECT
     custom_dimension_4,
     custom_dimension_5,
     pageviews_before
-FROM {{ source('public', 'matomo_log_conversion') }}
+FROM
+    {{ source('public', 'matomo_log_conversion') }}

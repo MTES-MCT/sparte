@@ -26,6 +26,8 @@ vars:
 
 models:
   sparte:
+    app:
+      +schema: app
     ocsge:
       +schema: ocsge
     admin_express:

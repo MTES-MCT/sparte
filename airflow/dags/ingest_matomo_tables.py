@@ -25,6 +25,10 @@ def ingest_table(source_table_name: str, destination_table_name: str):
 )
 def ingest_matomo_tables():  # noqa: C901
     @task.python
+    def ingest_action_types():
+        return ingest_table("matomo.actions_types", "matomo_action_types")
+
+    @task.python
     def ingest_log_visit():
         return ingest_table("matomo.matomo_log_visit", "matomo_log_visit")
 
@@ -40,7 +44,13 @@ def ingest_matomo_tables():  # noqa: C901
     def ingest_log_action():
         return ingest_table("matomo.matomo_log_action", "matomo_log_action")
 
-    (ingest_log_visit() >> ingest_log_link_visit_action() >> ingest_log_conversion() >> ingest_log_action())
+    (
+        ingest_log_visit()
+        >> ingest_log_link_visit_action()
+        >> ingest_log_conversion()
+        >> ingest_log_action()
+        >> ingest_action_types()
+    )
 
 
 ingest_matomo_tables()

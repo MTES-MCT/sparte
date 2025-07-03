@@ -1,0 +1,8 @@
+sources:
+  - name: public
+    tables:
+    - name: app_user
+    - name: app_request
+    - name: app_newsletter
+    - name: app_project
+    - name: app_satisfactionformentry

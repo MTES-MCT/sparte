@@ -6,3 +6,4 @@ sources:
     - name: matomo_log_link_visit_action
     - name: matomo_log_conversion
     - name: matomo_log_action
+    - name: matomo_action_types
