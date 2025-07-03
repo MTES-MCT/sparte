@@ -1,0 +1,53 @@
+
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="fr-container fr-mt-8v fr-mt-md-14v fr-mb-2v fr-mb-md-8v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+    <div class="fr-col-12">
+        <h1 style="text-align: center;">Questionnaire de satisfaction</h1>
+        <h4 style="text-align: center;">Etape {{ wizard.steps.step1 }} / {{ wizard.steps.count }}</h4>
+    </div>
+</div>
+</div>
+    <div  class="fr-container fr-container--fluid fr-mb-md-14v">
+        <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+
+    <div class="fr-col-4 fr-p-10v">
+        <img alt="{{ wizard.form.alt }}" src="{{ wizard.form.image }}" class="fr-responsive-img" />
+    </div>
+    <div style="background-color: #F6F6F6"  class="fr-col-6 fr-p-10v">
+        <form action="" method="post">{% csrf_token %}
+        <table class="fr-table">
+        {{ wizard.management_form }}
+        {% for field in wizard.form %}
+            <tr>
+                <td>{{ field.label_tag }}</td>
+                <td>
+                    {% if field.errors %}
+                        <span class="fr-error-text">{{ field.errors }}</span>
+                    {% endif %}
+                    {{ field}}
+                    {% if field.help_text %}
+                        <span class="fr-help-text">{{ field.help_text }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+        <div class="fr-btns-group">
+        {% if wizard.steps.prev %}
+            <button class="fr-btn" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% translate "prev step" %}</button>
+        {% endif %}
+            <input class="fr-btn" type="submit" value="{% translate "submit" %}"/>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

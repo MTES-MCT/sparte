@@ -93,6 +93,7 @@ THIRD_APPS = [
     "qrcode",
     "django_filters",
     "mozilla_django_oidc",
+    "formtools",
 ]
 
 # upper app should not communicate with lower ones
@@ -289,9 +290,15 @@ else:
 # CORSHEADERS
 # https://github.com/adamchainz/django-cors-headers
 
-CORS_ORIGIN_WHITELIST = ["https://sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CORS_ORIGIN_WHITELIST = [
+    "https://sparte-metabase.osc-secnum-fr1.scalingo.io",
+    "https://stats.beta.gouv.fr",
+]
+CORS_ALLOWED_ORIGINS = [
+    "https://stats.beta.gouv.fr",
+    "http://127.0.0.1:8080",
+]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_ALLOW_ALL = False
 
 
 # Default primary key field type
@@ -548,7 +555,7 @@ if USE_CSP:
     MIDDLEWARE.insert(2, "config.middlewares.ForceNonceCSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
-CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob:"]
+CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob:", "stats.beta.gouv.fr"]
 CSP_WORKER_SRC = ["blob:"]
 CSP_SCRIPT_SRC = [
     "'self'",
@@ -559,6 +566,7 @@ CSP_SCRIPT_SRC = [
     # Crisp
     "https://client.crisp.chat",
     "https://settings.crisp.chat",
+    "https://stats.beta.gouv.fr",
 ]
 CSP_STYLE_SRC = [
     "'self'",
@@ -567,6 +575,7 @@ CSP_STYLE_SRC = [
     "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
+    "https://stats.beta.gouv.fr/",
 ]
 CSP_IMG_SRC = [
     "'self'",
@@ -594,10 +603,11 @@ CSP_FRAME_SRC = (
     "https://plugins.crisp.chat/",
     "https://www.googletagmanager.com/",
     "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
+    "https://stats.beta.gouv.fr/",
 )
 CSP_MEDIA_SRC = (
     # Crisp
-    "https://client.crisp.chat"
+    "https://client.crisp.chat",
 )
 CSP_INCLUDE_NONCE_IN = ["script-src"]
 CSP_FONT_SRC = (
@@ -607,11 +617,13 @@ CSP_FONT_SRC = (
     "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
+    "https://stats.beta.gouv.fr",
 )
 CSP_CONNECT_SRC = [
     "'self'",
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
+    "stats.beta.gouv.fr",
     "google.com",
     "https://www.google.com/",
     "https://www.google.fr",
@@ -633,7 +645,7 @@ CSP_CONNECT_SRC = [
     "http://localhost:3000",
     "https://airflow-staging.s3.fr-par.scw.cloud",
 ]
-CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
+CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io", "https://stats.beta.gouv.fr")
 
 
 # MAP SETTINGS

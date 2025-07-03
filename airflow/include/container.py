@@ -57,6 +57,24 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DBT_DB_PORT"),
     )
 
+    # Matomo connections
+    gdal_matomo_conn = providers.Factory(
+        PgConnectionString,
+        dbname=getenv("MATOMO_DB_NAME"),
+        user=getenv("MATOMO_DB_USER"),
+        password=getenv("MATOMO_DB_PASSWORD"),
+        host=getenv("MATOMO_DB_HOST"),
+        port=getenv("MATOMO_DB_PORT"),
+    )
+    psycopg2_matomo_conn = providers.Factory(
+        provides=connect,
+        dbname=getenv("MATOMO_DB_NAME"),
+        user=getenv("MATOMO_DB_USER"),
+        password=getenv("MATOMO_DB_PASSWORD"),
+        host=getenv("MATOMO_DB_HOST"),
+        port=getenv("MATOMO_DB_PORT"),
+    )
+
     # DEV connections
     gdal_dev_conn = providers.Factory(
         PgConnectionString,

@@ -4,13 +4,24 @@ version: 2
 models:
   - name: ocsge_surface_cover_percent
     columns:
-    - name: surface_france
+    - name: code
       data_tests:
-      - not_null
-    - name: pourcentage_couvert_par_ocsge
+        - not_null
+        - unique
+        - has_all_departements
+    - name: name
       data_tests:
-      - not_null
-      - is_percent_between_0_and_100
-    - name: surface_couverte_par_ocsge
+        - not_null
+        - unique
+    - name: surface_km2
       data_tests:
-      - not_null
+        - not_null
+    - name: percent_of_france
+      data_tests:
+        - not_null
+        - is_percent_between_0_and_100
+    - name: has_ocsge
+      data_tests:
+        - not_null
+        - accepted_values:
+            values: [true, false]

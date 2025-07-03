@@ -30,7 +30,7 @@ const NOTICE_TITLES = {
     warning: (reportTitle: string) => `Erreur lors de votre demande de téléchargement du rapport ${reportTitle}`
 } as const;
 
-const REPORTS: ReportConfig[] = [
+export const REPORTS: ReportConfig[] = [
     {
         title: "complet",
         description: "Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols sur votre territoire, incluant les indicateurs clés, au regard de la loi climat et résilience.",
@@ -43,7 +43,7 @@ const REPORTS: ReportConfig[] = [
     }
 ];
 
-const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) => (
+export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) => (
     <div className={`bg-white fr-mt-2w fr-alert fr-alert--${type}`}>
         <h3 className="fr-alert__title">{NOTICE_TITLES[type](reportTitle)}</h3>
         <p>{message}</p>

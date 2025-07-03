@@ -1,0 +1,120 @@
+models:
+  - name: matomo_log_conversion
+    columns:
+      - name: idvisit
+        description: A unique identifier for a specific visit or session. This ID is generated for each user session and is used to track the activities performed during that session.
+        data_type: bigint
+      - name: idsite
+        description: A unique identifier for the website or application being tracked. This ID corresponds to the specific site configuration in the Matomo analytics platform.
+        data_type: integer
+      - name: idvisitor
+        description: A unique identifier for the visitor. This ID is typically derived from a combination of cookies and other tracking mechanisms to distinguish individual users across sessions.
+        data_type: bytea
+      - name: server_time
+        description: The timestamp indicating when the conversion event occurred on the server. This is useful for tracking the exact time of user actions and analyzing time-based trends.
+        data_type: timestamp with time zone
+      - name: idaction_url
+        description: The unique identifier for the action URL associated with the conversion. This helps in identifying the specific page or resource that contributed to the conversion.
+        data_type: integer
+      - name: idlink_va
+        description: The unique identifier for the link or value-added action related to the conversion. This is used to track interactions that are linked to the conversion event.
+        data_type: bigint
+      - name: idgoal
+        description: Represents the unique identifier for a specific goal in the Matomo analytics system. Goals are predefined actions or events that users are expected to complete, such as form submissions or purchases.
+        data_type: integer
+      - name: buster
+        description: A unique value used to differentiate multiple conversions for the same goal within a single visit. This helps in tracking repeated goal completions accurately.
+        data_type: integer
+      - name: idorder
+        description: The unique identifier for an order associated with a conversion. This is typically used in e-commerce tracking to link conversions to specific transactions.
+        data_type: character varying
+      - name: items
+        description: Represents the number of items involved in the conversion event. This column is useful for analyzing the quantity of products or services purchased during a specific transaction.
+        data_type: smallint
+      - name: url
+        description: Stores the URL associated with the conversion event. This can be used to identify the landing page or the specific page where the conversion occurred.
+        data_type: character varying
+      - name: revenue
+        description: Indicates the total revenue generated from the conversion event. This value is typically expressed in monetary terms and is crucial for financial analysis and performance tracking.
+        data_type: double precision
+      - name: revenue_shipping
+        description: Represents the shipping cost associated with the conversion. This value is typically extracted from the transaction data and is used to calculate the total revenue.
+        data_type: double precision
+      - name: revenue_subtotal
+        description: Indicates the subtotal amount for the conversion before applying taxes, shipping costs, or discounts. This value is useful for analyzing the base revenue generated from the transaction.
+        data_type: double precision
+      - name: revenue_tax
+        description: Captures the tax amount applied to the conversion. This column is essential for understanding the tax implications and calculating the total revenue.
+        data_type: double precision
+      - name: revenue_discount
+        description: Represents the monetary value of discounts applied to the transaction. This column is useful for analyzing the impact of discounts on revenue generation.
+        data_type: double precision
+      - name: visitor_returning
+        description: Indicates whether the visitor is a returning user. A value of true suggests the visitor has interacted with the site previously, which can be used for tracking user retention and engagement.
+        data_type: smallint
+      - name: visitor_seconds_since_first
+        description: Captures the total number of seconds elapsed since the visitor's first interaction with the site. This column is helpful for understanding user behavior and the time gap between visits.
+        data_type: integer
+      - name: visitor_seconds_since_order
+        description: The number of seconds that have elapsed since the visitor's last order. This column is useful for analyzing the time gap between purchases and understanding customer behavior patterns.
+        data_type: integer
+      - name: visitor_count_visits
+        description: The total number of visits made by the visitor. This column helps in identifying repeat visitors and measuring engagement levels over time.
+        data_type: integer
+      - name: referer_keyword
+        description: The keyword used by the visitor in the referring search engine or external link. This column is valuable for tracking the effectiveness of SEO strategies and understanding how visitors are finding the site.
+        data_type: character varying
+      - name: referer_name
+        description: The name of the referring website or source that directed the visitor to the site. This column is useful for analyzing traffic sources and understanding referral patterns.
+        data_type: character varying
+      - name: referer_type
+        description: The type of referral source, such as 'search engine', 'website', 'social media', or 'direct'. This column helps categorize the origin of the visitor's traffic.
+        data_type: smallint
+      - name: config_browser_name
+        description: The name of the browser used by the visitor, such as 'Chrome', 'Firefox', or 'Safari'. This column is essential for understanding user behavior and optimizing for specific browsers.
+        data_type: character varying
+      - name: config_client_type
+        description: Indicates the type of client used by the visitor, such as 'browser', 'mobile app', or 'desktop application'. This column helps in identifying the platform through which the user interacted with the site.
+        data_type: smallint
+      - name: config_device_brand
+        description: Represents the brand of the device used by the visitor, such as 'Apple', 'Samsung', or 'Google'. This column is useful for analyzing device-specific trends and user preferences.
+        data_type: character varying
+      - name: config_device_model
+        description: Specifies the model of the device used by the visitor, such as 'iPhone 13', 'Galaxy S21', or 'Pixel 6'. This column provides detailed insights into the specific hardware used during the interaction.
+        data_type: character varying
+      - name: config_device_type
+        description: Indicates the type of device used by the visitor, such as desktop, tablet, or mobile. This column helps in understanding the distribution of device types among users.
+        data_type: smallint
+      - name: location_city
+        description: Represents the city from which the visitor accessed the site. This column is useful for geographic analysis and identifying user trends based on city-level data.
+        data_type: character varying
+      - name: location_country
+        description: Denotes the country from which the visitor accessed the site. This column is essential for understanding the global reach and distribution of visitors.
+        data_type: character varying
+      - name: location_latitude
+        description: The latitude coordinate of the user's location during the conversion event, represented as a decimal value. Useful for geospatial analysis and mapping.
+        data_type: numeric
+      - name: location_longitude
+        description: The longitude coordinate of the user's location during the conversion event, represented as a decimal value. Useful for geospatial analysis and mapping.
+        data_type: numeric
+      - name: location_region
+        description: The region or state associated with the user's location during the conversion event, typically derived from IP-based geolocation data. Useful for regional segmentation and analysis.
+        data_type: character varying
+      - name: custom_dimension_1
+        description: Represents the first custom dimension defined in Matomo. This column is used to store additional metadata or attributes associated with a conversion event, as configured by the user in Matomo.
+        data_type: character varying
+      - name: custom_dimension_2
+        description: Represents the second custom dimension defined in Matomo. Similar to custom_dimension_1, this column holds user-defined metadata or attributes tied to a conversion event.
+        data_type: character varying
+      - name: custom_dimension_3
+        description: Represents the third custom dimension defined in Matomo. It provides flexibility for storing extra information about a conversion event, as specified by the user in Matomo's configuration.
+        data_type: character varying
+      - name: custom_dimension_4
+        description: Represents a user-defined custom attribute or metric associated with the conversion event. This field is configurable and can be used to store additional metadata relevant to the business context.
+        data_type: character varying
+      - name: custom_dimension_5
+        description: Represents another user-defined custom attribute or metric associated with the conversion event. Similar to custom_dimension_4, this field is configurable and provides flexibility for storing extra data.
+        data_type: character varying
+      - name: pageviews_before
+        description: Indicates the number of pageviews recorded for the visitor prior to the conversion event. This metric can be used to analyze user behavior leading up to the conversion.
+        data_type: smallint

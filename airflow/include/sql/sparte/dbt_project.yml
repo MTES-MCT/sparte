@@ -26,6 +26,8 @@ vars:
 
 models:
   sparte:
+    app:
+      +schema: app
     ocsge:
       +schema: ocsge
     admin_express:
@@ -52,3 +54,5 @@ models:
       +schema: zlv
     cartofriches:
       +schema: cartofriches
+    matomo:
+      +schema: matomo

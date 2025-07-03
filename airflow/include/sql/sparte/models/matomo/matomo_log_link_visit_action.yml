@@ -1,0 +1,84 @@
+models:
+  - name: matomo_log_link_visit_action
+    description: The matomo_log_link_visit_action model represents detailed logs of user interactions and actions within a website tracked by Matomo. It includes information such as visit IDs, site IDs, visitor IDs, timestamps, pageview positions, and various action-related metrics like product categories, event actions, and content interactions. This model is essential for analyzing user behavior, tracking specific actions, and understanding engagement patterns on the website.
+    columns:
+      - name: idlink_va
+        data_type: bigint
+      - name: idsite
+        data_type: integer
+      - name: idvisitor
+        data_type: bytea
+      - name: idvisit
+        data_type: bigint
+      - name: idaction_url_ref
+        data_type: integer
+      - name: idaction_name_ref
+        data_type: integer
+      - name: custom_float
+        data_type: double precision
+      - name: pageview_position
+        data_type: integer
+      - name: server_time
+        data_type: timestamp with time zone
+      - name: idpageview
+        data_type: character varying
+      - name: idaction_name
+        data_type: integer
+      - name: idaction_url
+        data_type: integer
+      - name: search_count
+        data_type: integer
+      - name: time_spent_ref_action
+        data_type: integer
+      - name: idaction_product_cat
+        data_type: integer
+      - name: idaction_product_cat2
+        data_type: integer
+      - name: idaction_product_cat3
+        data_type: integer
+      - name: idaction_product_cat4
+        data_type: integer
+      - name: idaction_product_cat5
+        data_type: integer
+      - name: idaction_product_name
+        data_type: integer
+      - name: product_price
+        data_type: double precision
+      - name: idaction_product_sku
+        data_type: integer
+      - name: idaction_event_action
+        data_type: integer
+      - name: idaction_event_category
+        data_type: integer
+      - name: idaction_content_interaction
+        data_type: integer
+      - name: idaction_content_name
+        data_type: integer
+      - name: idaction_content_piece
+        data_type: integer
+      - name: idaction_content_target
+        data_type: integer
+      - name: time_dom_completion
+        data_type: integer
+      - name: time_dom_processing
+        data_type: integer
+      - name: time_network
+        data_type: integer
+      - name: time_on_load
+        data_type: integer
+      - name: time_server
+        data_type: integer
+      - name: time_transfer
+        data_type: integer
+      - name: time_spent
+        data_type: integer
+      - name: custom_dimension_1
+        data_type: character varying
+      - name: custom_dimension_2
+        data_type: character varying
+      - name: custom_dimension_3
+        data_type: character varying
+      - name: custom_dimension_4
+        data_type: character varying
+      - name: custom_dimension_5
+        data_type: character varying
