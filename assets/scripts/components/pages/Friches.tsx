@@ -5,14 +5,14 @@ import { useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
 import { FrichesMap } from "@components/map/friches/FrichesMap";
-import { STATUT_BADGE_CONFIG, STATUT_ORDER } from "@components/map/friches/constants";
+import { STATUT_BADGE_CONFIG, STATUT_ORDER } from "@components/features/friches/constants";
 import { LandFriche } from "@services/types/land_friches";
 import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
 import { FricheStatusEnum, LandDetailResultType } from "@services/types/land";
-import { FricheOverview } from "@components/features/friches";
+import { FricheOverview, FricheStatus } from "@components/features/friches";
 
 interface FrichesProps {
     landData: LandDetailResultType;
@@ -238,8 +238,8 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             <h2 className="fr-mt-5w">Vue d'ensemble</h2>
             <FricheOverview 
                 friche_status_details={landData.friche_status_details} 
-                landData={landData}
             />
+            <FricheStatus landData={landData} />
             <div className="fr-mb-7w fr-mt-5w">
 				<div className="bg-white fr-p-4w rounded">
 					<h6>
