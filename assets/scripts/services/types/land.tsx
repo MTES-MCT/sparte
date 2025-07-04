@@ -98,4 +98,4 @@ export type UseLandDetailType = TypedUseQuery<
     LandDetailResultType,
     LandDetailQueryArg,
     LandDetailBaseQuery
- >;  
+ >;

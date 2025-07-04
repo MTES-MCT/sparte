@@ -9,7 +9,7 @@ import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTabl
 import { useArtificialisation } from "@hooks/useArtificialisation";
 import Guide from "@components/ui/Guide";
 import styled from 'styled-components';
-import { FricheOverview } from "@components/features/friches";
+import { FricheOverview, FricheStatus } from "@components/features/friches";
 
 const ChartSkeleton = styled.div`
     width: 100%;
@@ -266,17 +266,20 @@ const Synthese: React.FC<SyntheseProps> = ({
             
             <div className="fr-mt-3w">
                 <h3>Réhabilitation des friches</h3>
-                <p className="fr-text--sm fr-mb-3w">
-                    Les friches représentent un potentiel important pour limiter l'artificialisation des sols. 
-                    La réhabilitation de ces espaces permet de redynamiser les territoires tout en préservant les espaces naturels.
-                </p>
+                <div className="fr-callout fr-icon-information-line">
+                    <p className="fr-callout__text fr-text--sm">
+                        Une friche est une zone désaffectée après avoir connu une activité économique (industrielle ou commerciale), des usages résidentiels ou des équipements. 
+                        Recycler des friches urbaines peut être un moyen non seulement de limiter l’artificialisation des sols, mais aussi de redynamiser des territoires et de réhabiliter des sites pollués.
+                    </p>
+                </div>
                 <FricheOverview 
                     friche_status_details={landData.friche_status_details} 
-                    landData={landData}
+                    className="fr-mb-3w"
                 />
+                <FricheStatus landData={landData}>
+                    <Link to={projectData.urls.friches} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right">Accéder au détail des friches</Link>
+                </FricheStatus>
             </div>
-            
-            {/* {landData?.has_ocsge && <ArtificialisationSection landData={landData} projectData={projectData} />} */}
         </div>
     );
 };
