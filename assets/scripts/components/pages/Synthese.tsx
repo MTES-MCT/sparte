@@ -9,7 +9,8 @@ import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTabl
 import { useArtificialisation } from "@hooks/useArtificialisation";
 import Guide from "@components/ui/Guide";
 import styled from 'styled-components';
-import { FricheOverview, FricheStatus } from "@components/features/friches";
+import { FricheOverview, FricheAbstract } from "@components/features/friches";
+import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
 
 const ChartSkeleton = styled.div`
     width: 100%;
@@ -263,8 +264,22 @@ const Synthese: React.FC<SyntheseProps> = ({
                 </div>
             </div>
             <h2 className="fr-mt-5w">Agir : les leviers de la sobriété foncière</h2>
-            
-            <div className="fr-mt-3w">
+            <div className="fr-mt-7w">
+                <h3>Vacance des Logements</h3>
+                <div className="fr-callout fr-icon-information-line">
+                    <p className="fr-callout__text fr-text--sm">
+                        Lutter contre la vacance des logements est un levier de sobriété foncière qui permet de réduire la consommation d'espaces en limitant la construction de nouveaux logements et donc l'artificialisation des sols.
+                    </p>
+                </div>
+                <LogementVacantOverview 
+                    friche_status_details={landData.friche_status_details} 
+                    className="fr-mb-3w"
+                />
+                <LogementVacantAbstract landData={landData}>
+                    <Link to={projectData.urls.logementVacant} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right">Accéder au détail des logements vacants</Link>
+                </LogementVacantAbstract>
+            </div>
+            <div className="fr-mt-7w">
                 <h3>Réhabilitation des friches</h3>
                 <div className="fr-callout fr-icon-information-line">
                     <p className="fr-callout__text fr-text--sm">
@@ -276,9 +291,9 @@ const Synthese: React.FC<SyntheseProps> = ({
                     friche_status_details={landData.friche_status_details} 
                     className="fr-mb-3w"
                 />
-                <FricheStatus landData={landData}>
+                <FricheAbstract landData={landData}>
                     <Link to={projectData.urls.friches} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right">Accéder au détail des friches</Link>
-                </FricheStatus>
+                </FricheAbstract>
             </div>
         </div>
     );

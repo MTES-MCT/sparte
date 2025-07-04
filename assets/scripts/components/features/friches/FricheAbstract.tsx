@@ -3,22 +3,22 @@ import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
 import { FricheStatusEnum, LandDetailResultType } from "@services/types/land";
 
-const FricheStatusContainer = styled.div`
+const FricheAbstractContainer = styled.div`
     background-color: white;
     padding: 2rem;
     border-radius: 4px;
     margin-top: 2rem;
 `;
 
-interface FricheStatusProps {
+interface FricheAbstractProps {
     landData: LandDetailResultType;
     children?: React.ReactNode;
 }
 
-const FricheStatus: React.FC<FricheStatusProps> = ({ landData, children }) => {
+const FricheAbstract: React.FC<FricheAbstractProps> = ({ landData, children }) => {
     const { friche_status, name, friche_status_details } = landData;
     
-    const generateStatusContent = () => {
+    const generateAbstractContent = () => {
         if (friche_status === FricheStatusEnum.GISEMENT_NUL_ET_SANS_POTENTIEL) {
             return (
                 <>
@@ -53,23 +53,23 @@ const FricheStatus: React.FC<FricheStatusProps> = ({ landData, children }) => {
     };
 
     return (
-        <FricheStatusContainer>
+        <FricheAbstractContainer>
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                     <h3 className="fr-text--lg fr-mb-2w">
                         <i className="bi bi-lightning-charge text-primary fr-mr-1w" /> 
                         Les friches sans projet : un levier actionnable pour la sobriété foncière
                     </h3>
-                    {generateStatusContent() && (
+                    {generateAbstractContent() && (
                         <p className="fr-text--sm fr-mb-0">
-                            {generateStatusContent()}
+                            {generateAbstractContent()}
                         </p>
                     )}
                     {children}
                 </div>
             </div>
-        </FricheStatusContainer>
+        </FricheAbstractContainer>
     );
 };
 
-export default FricheStatus;
+export default FricheAbstract;
