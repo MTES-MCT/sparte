@@ -1,15 +1,13 @@
 import React from 'react';
 import { formatNumber } from "@utils/formatUtils";
 import { FricheStatusDetails } from "@services/types/land";
-import { FRICHE_STATUS_CONFIG } from "./constants";
+import { FRICHE_STATUS_CONFIG, STATUT_BADGE_CONFIG } from "./constants";
 import Card from "@components/ui/Card";
 
 interface FricheOverviewProps {
     friche_status_details: FricheStatusDetails;
     className?: string;
 }
-
-
 
 const FricheStatusCards: React.FC<{ friche_status_details: FricheStatusDetails; className?: string }> = ({ 
     friche_status_details,
@@ -28,7 +26,8 @@ const FricheStatusCards: React.FC<{ friche_status_details: FricheStatusDetails; 
             <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
                 <Card
                     icon={FRICHE_STATUS_CONFIG['friche sans projet']?.icon || 'bi bi-circle'}
-                    badge={'friche sans projet'}
+                    badgeClass={STATUT_BADGE_CONFIG['friche sans projet']}
+                    badgeLabel={'friche sans projet'}
                     value={friche_sans_projet_count}
                     label={`Soit ${formatNumber({ number: friche_sans_projet_surface })} ha`}
                     isHighlighted={true}
@@ -38,7 +37,8 @@ const FricheStatusCards: React.FC<{ friche_status_details: FricheStatusDetails; 
             <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
                 <Card
                     icon={FRICHE_STATUS_CONFIG['friche avec projet']?.icon || 'bi bi-circle'}
-                    badge={'friche avec projet'}
+                    badgeClass={STATUT_BADGE_CONFIG['friche avec projet']}
+                    badgeLabel={'friche avec projet'}
                     value={friche_avec_projet_count}
                     label={`Soit ${formatNumber({ number: friche_avec_projet_surface })} ha`}
                     isHighlighted={false}
@@ -47,7 +47,8 @@ const FricheStatusCards: React.FC<{ friche_status_details: FricheStatusDetails; 
             <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
                 <Card
                     icon={FRICHE_STATUS_CONFIG['friche reconvertie']?.icon || 'bi bi-circle'}
-                    badge={'friche reconvertie'}
+                    badgeClass={STATUT_BADGE_CONFIG['friche reconvertie']}
+                    badgeLabel={'friche reconvertie'}
                     value={friche_reconvertie_count}
                     label={`Soit ${formatNumber({ number: friche_reconvertie_surface })} ha`}
                     isHighlighted={false}

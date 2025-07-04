@@ -12,7 +12,7 @@ import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
 import { FricheStatusEnum, LandDetailResultType } from "@services/types/land";
-import { FricheOverview, FricheStatus } from "@components/features/friches";
+import { FricheOverview, FricheAbstract } from "@components/features/friches";
 
 interface FrichesProps {
     landData: LandDetailResultType;
@@ -239,7 +239,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             <FricheOverview 
                 friche_status_details={landData.friche_status_details} 
             />
-            <FricheStatus landData={landData} />
+            <FricheAbstract landData={landData} />
             <div className="fr-mb-7w fr-mt-5w">
 				<div className="bg-white fr-p-4w rounded">
 					<h6>

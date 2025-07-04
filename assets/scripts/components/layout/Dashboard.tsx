@@ -170,7 +170,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <LogementVacantStatus />
                                                 }
                                             >
-                                                <LogementVacant endpoint={urls.logementVacant} />
+                                                <LogementVacant 
+                                                    endpoint={urls.logementVacant} 
+                                                    landData={landData}
+                                                    projectData={projectData}
+                                                />
                                             </RouteWrapper>
                                         }
                                     />

@@ -1,6 +1,17 @@
 import React from 'react';
 import styled from "styled-components";
 
+interface CardProps {
+    icon: string;
+    badgeClass: string;
+    badgeLabel: string;
+    value: string | number;
+    label: string;
+    isHighlighted?: boolean;
+    highlightBadge?: string;
+    className?: string;
+}
+
 const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
     background-color: white;
     border-radius: 4px;
@@ -70,19 +81,10 @@ const CardLabel = styled.p`
     margin-bottom: 0;
 `;
 
-interface CardProps {
-    icon: string;
-    badge: string;
-    value: string | number;
-    label: string;
-    isHighlighted?: boolean;
-    highlightBadge?: string;
-    className?: string;
-}
-
 const Card: React.FC<CardProps> = ({
     icon,
-    badge,
+    badgeClass,
+    badgeLabel,
     value,
     label,
     isHighlighted = false,
@@ -98,8 +100,8 @@ const Card: React.FC<CardProps> = ({
             )}
             <CardHeader>
                 <CardIcon className={icon} $isHighlighted={isHighlighted} />
-                <CardBadge className={`fr-badge fr-badge--no-icon ${isHighlighted ? 'fr-badge--error' : 'fr-badge--info'}`}>
-                    {badge}
+                <CardBadge className={`fr-badge fr-badge--no-icon ${badgeClass}`}>
+                    {badgeLabel}
                 </CardBadge>
             </CardHeader>
             <CardContent>
