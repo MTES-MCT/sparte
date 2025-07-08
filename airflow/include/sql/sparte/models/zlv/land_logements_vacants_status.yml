@@ -1,0 +1,98 @@
+models:
+  - name: land_logements_vacants_status
+    columns:
+      - name: land_id
+        description: Unique identifier for a specific land entity. This column is used to join data from different tables and ensure accurate mapping of land-related information.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('land')
+              field: land_id
+
+      - name: land_type
+        description: Categorical attribute representing the type of land. Examples include residential, commercial, or industrial land types. This column helps classify and filter data based on land usage.
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('land')
+              field: land_type
+      - name: logements_parc_prive
+        description: The total number of housing units in the private sector for the specified land entity. This column provides insights into the private housing stock available in the area.
+        data_type: integer
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_prive
+        description: Represents the number of vacant housing units in the private housing sector for a given land area. This value is derived from the latest available year and defaults to 0 if no data is available.
+        data_type: integer
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_parc_social
+        description: Indicates the total number of housing units in the social housing sector for a given land area. This value is sourced from the latest available year and defaults to 0 if no data is available.
+        data_type: integer
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_social
+        description: Represents the number of vacant housing units in the social housing sector for a given land area. This value is derived from the latest available year and defaults to 0 if no data is available.
+        data_type: integer
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_parc_general
+        description: Represents the total number of housing units available in the general housing stock for a given land area. This includes both private and social housing units.
+        data_type: integer
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_general
+        description: Indicates the total number of vacant housing units within the general housing stock for a given land area. Vacant units are those that are unoccupied and available for use.
+        data_type: integer
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_general_percent
+        description: Calculates the percentage of vacant housing units within the general housing stock for a given land area. This is derived by dividing the number of vacant units by the total housing stock and multiplying by 100.
+        data_type: double precision
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_prive_percent
+        description: Represents the percentage of vacant housing units within the private housing stock for a given land area. Calculated as (logements_vacants_parc_prive / logements_parc_prive) * 100. This column helps in understanding the proportion of vacancies in the private sector.
+        data_type: double precision
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_social_percent
+        description: Represents the percentage of vacant housing units within the social housing stock for a given land area. Calculated as (logements_vacants_parc_social / logements_parc_social) * 100. This column is useful for analyzing vacancy rates in the social housing sector.
+        data_type: double precision
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_prive_on_parc_general_percent
+        description: Represents the percentage of vacant housing units in the private housing stock relative to the total general housing stock for a given land area. Calculated as (logements_vacants_parc_prive / logements_parc_general) * 100. This column provides insight into the contribution of private sector vacancies to the overall housing stock.
+        data_type: double precision
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: logements_vacants_parc_social_on_parc_general_percent
+        description: Represents the percentage of vacant social housing units relative to the total general housing stock. Calculated as the ratio of 'logements_vacants_parc_social' to 'logements_parc_general', expressed as a percentage. This metric helps in understanding the proportion of social housing vacancies within the overall housing landscape.
+        data_type: double precision
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: status
+        description: "Categorizes the land based on the presence and type of vacant housing stock. Possible values include: 'gisement nul' (no vacant housing), 'gisement potentiel dans le social et le privé' (potential vacancies in both social and private housing), 'gisement potentiel dans le social' (potential vacancies in social housing only), and 'gisement potentiel dans le privé' (potential vacancies in private housing only). This classification aids in identifying areas with potential housing opportunities."
+        data_type: text
+        data_tests:
+          - not_null
+      - name: has_logements_vacants
+        description: A boolean indicator that specifies whether the land has any vacant housing units. Returns 'true' if the 'status' column is not equal to 'gisement nul', otherwise 'false'. This field is useful for quickly filtering lands with vacant housing stock.
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
