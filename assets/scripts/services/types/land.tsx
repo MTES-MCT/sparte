@@ -24,6 +24,13 @@ export enum FricheStatusEnum {
     GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION = 'gisement potentiel et en cours d’exploitation'
 }
 
+export enum LogementVacantStatusEnum {
+    GISEMENT_NUL = 'gisement nul',
+    GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE = 'gisement potentiel dans le social et le privé',
+    GISEMENT_POTENTIEL_DANS_LE_SOCIAL = 'gisement potentiel dans le social',
+    GISEMENT_POTENTIEL_DANS_LE_PRIVE = 'gisement potentiel dans le privé'
+}
+
 export type FricheStatusDetails = {
     friche_surface: number;
     friche_sans_projet_surface: number;
@@ -34,7 +41,23 @@ export type FricheStatusDetails = {
     friche_avec_projet_count: number;
     friche_reconvertie_count: number;
 }
-  
+
+export type LogementsVacantsStatusDetails = {
+    logements_parc_prive: number;
+    logements_vacants_parc_prive: number;
+    logements_parc_social: number;
+    logements_vacants_parc_social: number;
+    logements_parc_general: number;
+    logements_vacants_parc_general: number;
+    logements_vacants_parc_general_percent: number;
+    logements_vacants_parc_prive_percent: number;
+    logements_vacants_parc_social_percent: number;
+    logements_vacants_parc_prive_on_parc_general_percent: number;
+    logements_vacants_parc_social_on_parc_general_percent: number;
+}
+
+
+
 export type LandDetailResultType = {
     land_id: string;
     land_type: string;
@@ -55,6 +78,9 @@ export type LandDetailResultType = {
     ocsge_status: OcsgeStatusEnum;
     friche_status: FricheStatusEnum;
     friche_status_details: FricheStatusDetails;
+    logements_vacants_status: LogementVacantStatusEnum;
+    logements_vacants_status_details: LogementsVacantsStatusDetails;
+    has_logements_vacants: boolean;
 	has_friche: boolean;
     simple_geom: GeoJsonObject;
     bounds: [number, number, number, number];
