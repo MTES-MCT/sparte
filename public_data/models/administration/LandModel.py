@@ -42,6 +42,12 @@ class LandModel(models.Model):
         GISEMENT_POTENTIEL_NON_EXPLOITE = "gisement potentiel et non exploité"
         GISEMENT_POTENTIEL_EN_COURS_EXPLOITATION = "gisement potentiel et en cours d’exploitation"
 
+    class LogementsVacantsStatus(models.TextChoices):
+        GISEMENT_NUL = "gisement nul"
+        GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE = "gisement potentiel dans le social et le privé"
+        GISEMENT_POTENTIEL_DANS_LE_SOCIAL = "gisement potentiel dans le social"
+        GISEMENT_POTENTIEL_DANS_LE_PRIVE = "gisement potentiel dans le privé"
+
     land_id = models.CharField()
     land_type = models.CharField()
     name = models.CharField()
@@ -64,6 +70,9 @@ class LandModel(models.Model):
     has_friche = models.BooleanField()
     friche_status = models.TextField(choices=FricheStatus.choices)
     friche_status_details = models.JSONField()
+    logements_vacants_status = models.TextField(choices=LogementsVacantsStatus.choices)
+    has_logements_vacants = models.BooleanField()
+    logements_vacants_status_details = models.JSONField()
     bounds = ArrayField(base_field=models.FloatField())
     max_bounds = ArrayField(base_field=models.FloatField())
 

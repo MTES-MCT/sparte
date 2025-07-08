@@ -89,6 +89,8 @@ models:
         data_type: text
         data_tests:
           - not_null
+          - accepted_values:
+              values: ['gisement nul', 'gisement potentiel dans le social et le privé', 'gisement potentiel dans le social', 'gisement potentiel dans le privé']
       - name: has_logements_vacants
         description: A boolean indicator that specifies whether the land has any vacant housing units. Returns 'true' if the 'status' column is not equal to 'gisement nul', otherwise 'false'. This field is useful for quickly filtering lands with vacant housing stock.
         data_type: boolean

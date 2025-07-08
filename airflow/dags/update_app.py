@@ -428,6 +428,7 @@ def update_app():  # noqa: C901
                 environment=context["params"]["environment"],
                 custom_columns_type={
                     "friche_status_details": "jsonb",
+                    "logements_vacants_status_details": "jsonb",
                     "millesimes": "jsonb[]",
                     "millesimes_by_index": "jsonb[]",
                 },
