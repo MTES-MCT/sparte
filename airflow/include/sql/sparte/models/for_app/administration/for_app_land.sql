@@ -35,6 +35,9 @@ SELECT
     friche_status.friche_count > 0 as has_friche,
     friche_status.status as friche_status,
     friche_status.status_details as friche_status_details,
+    logements_vacants.status as logements_vacants_status,
+    logements_vacants.has_logements_vacants,
+    logements_vacants.status_details as logements_vacants_status_details,
     land_millesimes.millesimes as millesimes,
     land_millesimes_by_index.millesimes_by_index as millesimes_by_index,
     land.child_land_types,
@@ -107,5 +110,28 @@ LEFT JOIN LATERAL (
     WHERE
         land_friche_status.land_id = land.land_id AND
         land_friche_status.land_type = land.land_type
-
 ) friche_status ON true
+LEFt JOIN LATERAL (
+        SELECT
+            status,
+            has_logements_vacants,
+            jsonb_build_object(
+                'logements_parc_prive', logements_parc_prive,
+                'logements_vacants_parc_prive', logements_vacants_parc_prive,
+                'logements_parc_social', logements_parc_social,
+                'logements_vacants_parc_social', logements_vacants_parc_social,
+                'logements_parc_general', logements_parc_general,
+                'logements_vacants_parc_general', logements_vacants_parc_general,
+                'logements_vacants_parc_general_percent', logements_vacants_parc_general_percent,
+                'logements_vacants_parc_prive_percent', logements_vacants_parc_prive_percent,
+                'logements_vacants_parc_social_percent', logements_vacants_parc_social_percent,
+                'logements_vacants_parc_prive_on_parc_general_percent', logements_vacants_parc_prive_on_parc_general_percent,
+                'logements_vacants_parc_social_on_parc_general_percent', logements_vacants_parc_social_on_parc_general_percent
+            ) as status_details
+    FROM
+        {{ ref('land_logements_vacants_status')}}
+    WHERE
+        land_logements_vacants_status.land_id = land.land_id AND
+        land_logements_vacants_status.land_type = land.land_type
+    LIMIT 1
+) logements_vacants ON true
