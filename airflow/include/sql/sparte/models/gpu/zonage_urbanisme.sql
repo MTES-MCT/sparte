@@ -10,26 +10,21 @@
             {"columns": ["srid_source"], "type": "btree"},
         ],
         pre_hook=[
-            'CREATE INDEX ON "public"."gpu_zone_urba" (checksum)',
-            'CREATE INDEX ON "public"."gpu_zone_urba" (checksum, gpu_timestamp DESC)',
             'CREATE INDEX ON "public"."gpu_zone_urba" USING GIST (geom)',
             'CREATE INDEX ON "public"."gpu_zone_urba" USING GIST (ST_PointOnSurface(geom))',
         ],
     )
 }}
 
-/*
-
-Afin de mieux pouvoir exploiter les données de zonage d'urbanisme
-avec les données OCS Ge (qui sont livrées par département), nous avons besoin de
-les enrichir avec le code du département dans lequel ils se trouvent.
-
-*/
-select foo.*, round(st_area(foo.geom)::numeric, 4) as surface
-from
-    (
-        select distinct
-            on (checksum)
+with marked_duplicates as (
+    select
+        *,
+        row_number() over (partition by ST_AsBinary(geom) ORDER BY gpu_timestamp DESC) as rn
+    FROM {{ source("public", "gpu_zone_urba") }}
+    WHERE ST_AsBinary(geom) IS NOT NULL
+    OR NOT st_isempty(geom)
+), wihtout_surface as (
+        select
             gpu_doc_id,
             gpu_status,
             gpu_timestamp::timestamptz as gpu_timestamp,
@@ -55,14 +50,14 @@ from
         datappro as date_approbation,
         datvalid as date_validation,
             nullif(idurba, '') as id_document_urbanisme,
-            checksum,
+            st_geohash(zonage.geom) as checksum,
             {{
                 make_valid_multipolygon(
                     "ST_transform(zonage.geom, commune.srid_source)"
                 )
             }} as geom,
             commune.srid_source as srid_source
-        from {{ source("public", "gpu_zone_urba") }} as zonage
+        from marked_duplicates as zonage
         left join
             {{ ref("commune") }} as commune
             on st_transform(commune.geom, 4326) && zonage.geom
@@ -71,6 +66,10 @@ from
             )
         where
             not st_isempty(zonage.geom)
-        order by checksum, gpu_timestamp desc
-    ) as foo
-where not st_isempty(foo.geom)
+            and rn = 1
+)
+select
+    wihtout_surface.*,
+    round(st_area(wihtout_surface.geom)::numeric, 4) as surface
+from
+    wihtout_surface

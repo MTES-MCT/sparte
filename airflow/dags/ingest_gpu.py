@@ -40,7 +40,6 @@ def ingest_gpu():
         Container().s3().get_file(path_on_bucket, localpath)
         sql = """
             SELECT
-                GeoHash(geom) AS checksum,
                 gpu_doc_id,
                 gpu_status,
                 gpu_timestamp,
