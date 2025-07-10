@@ -266,34 +266,31 @@ const Synthese: React.FC<SyntheseProps> = ({
             <h2 className="fr-mt-5w">Agir : les leviers de la sobriété foncière</h2>
             <div className="fr-mt-7w">
                 <h3>Vacance des Logements</h3>
-                <div className="fr-callout fr-icon-information-line">
-                    <p className="fr-callout__text fr-text--sm">
-                        Lutter contre la vacance des logements est un levier de sobriété foncière qui permet de réduire la consommation d'espaces en limitant la construction de nouveaux logements et donc l'artificialisation des sols.
-                    </p>
-                </div>
                 <LogementVacantOverview 
-                    friche_status_details={landData.friche_status_details} 
+                    logements_vacants_status_details={landData.logements_vacants_status_details} 
                     className="fr-mb-3w"
                 />
-                <LogementVacantAbstract landData={landData}>
-                    <Link to={projectData.urls.logementVacant} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right">Accéder au détail des logements vacants</Link>
-                </LogementVacantAbstract>
+                <LogementVacantAbstract
+                    logements_vacants_status={landData.logements_vacants_status}
+                    logements_vacants_status_details={landData.logements_vacants_status_details}
+                    name={landData.name}
+                    className="fr-mt-2w"
+                    link={projectData.urls.logementVacant}
+                />
             </div>
             <div className="fr-mt-7w">
                 <h3>Réhabilitation des friches</h3>
-                <div className="fr-callout fr-icon-information-line">
-                    <p className="fr-callout__text fr-text--sm">
-                        Une friche est une zone désaffectée après avoir connu une activité économique (industrielle ou commerciale), des usages résidentiels ou des équipements. 
-                        Recycler des friches urbaines peut être un moyen non seulement de limiter l’artificialisation des sols, mais aussi de redynamiser des territoires et de réhabiliter des sites pollués.
-                    </p>
-                </div>
                 <FricheOverview 
                     friche_status_details={landData.friche_status_details} 
                     className="fr-mb-3w"
                 />
-                <FricheAbstract landData={landData}>
-                    <Link to={projectData.urls.friches} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right">Accéder au détail des friches</Link>
-                </FricheAbstract>
+                <FricheAbstract
+                    friche_status={landData.friche_status}
+                    friche_status_details={landData.friche_status_details}
+                    name={landData.name}
+                    className="fr-mt-2w"
+                    link={projectData.urls.friches}
+                />
             </div>
         </div>
     );

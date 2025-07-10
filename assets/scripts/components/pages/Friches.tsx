@@ -239,7 +239,12 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             <FricheOverview 
                 friche_status_details={landData.friche_status_details} 
             />
-            <FricheAbstract landData={landData} />
+            <FricheAbstract
+                friche_status={landData.friche_status}
+                friche_status_details={landData.friche_status_details}
+                name={landData.name}
+                className="fr-mt-2w"
+            />
             <div className="fr-mb-7w fr-mt-5w">
 				<div className="bg-white fr-p-4w rounded">
 					<h6>

@@ -51,10 +51,15 @@ const LogementVacant: React.FC<LogementVacantProps> = ({ endpoint, landData, pro
                     </Guide>
                     <div className="fr-mt-7w">
                         <LogementVacantOverview 
-                            friche_status_details={landData.friche_status_details} 
+                            logements_vacants_status_details={landData.logements_vacants_status_details} 
                             className="fr-mb-3w"
                         />
-                        <LogementVacantAbstract landData={landData} />
+                        <LogementVacantAbstract
+                            logements_vacants_status={landData.logements_vacants_status}
+                            logements_vacants_status_details={landData.logements_vacants_status_details}
+                            name={landData.name}
+                            className="fr-mt-2w"
+                        />
                     </div>
                     <div dangerouslySetInnerHTML={{ __html: content }} />
                     <div className="fr-callout fr-icon-information-line fr-mt-7w">

@@ -1,6 +1,6 @@
 export const LOGEMENT_VACANT_ICON_CONFIG = {
-    'parc privé': { icon: 'bi bi-building' },
-    'bailleurs sociaux': { icon: 'bi bi-building-x' },
+    'parc privé': { icon: 'bi bi-house' },
+    'bailleurs sociaux': { icon: 'bi bi-houses' },
 } as const;
 
 export const LOGEMENT_VACANT_BADGE_CONFIG = {
