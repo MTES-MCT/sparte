@@ -1,5 +1,5 @@
 {% macro commune(source_table_name) %}
-    {{ config(materialized="table") }}
+    {{config(materialized="table") }}
     with simplified as (
         {{
             simplify(
@@ -39,7 +39,8 @@
         {{ get_non_ept_from_epci_array("epci_and_ept.epcis") }} as epci,
         st_area(commune.geom) as surface,
         commune.geom,
-        simplified.geom as simple_geom
+        simplified.geom as simple_geom,
+        ST_Transform(commune.geom, 4326) as geom_4326
     from {{ source("public", source_table_name) }} as commune
     left join epci_and_ept on commune.insee_com = epci_and_ept.commune_code
     left join simplified on commune.insee_com = simplified.id_field

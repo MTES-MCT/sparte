@@ -10,7 +10,7 @@
             {"columns": ["epci"], "type": "btree"},
             {"columns": ["scot"], "type": "btree"},
             {"columns": ["geom"], "type": "gist"},
-            {"columns": ["ST_Transform(geom, 4326)"], "type": "gist"},
+            {"columns": ["geom_4326"], "type": "gist"},
         ],
     )
 }}

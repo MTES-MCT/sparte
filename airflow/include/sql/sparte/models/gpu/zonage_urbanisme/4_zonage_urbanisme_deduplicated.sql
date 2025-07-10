@@ -3,16 +3,20 @@
         materialized="table",
         indexes=[
             {"columns": ["geom"], "type": "gist"},
-            {"columns": ["libelle"], "type": "btree"},
-            {"columns": ["type_zone"], "type": "btree"},
-            {"columns": ["checksum"], "type": "btree"},
-            {"columns": ["departement"], "type": "btree"},
-            {"columns": ["srid_source"], "type": "btree"},
         ],
     )
 }}
-
-SELECT
+with marked_duplicates as (
+    select
+        *,
+        row_number() over (
+            partition by geom
+            order by gpu_timestamp desc
+        ) as row_num
+    from
+        {{ ref("3_zonage_urbanisme_projected") }}
+)
+select
     gpu_doc_id,
     gpu_status,
     gpu_timestamp,
@@ -30,7 +34,10 @@ SELECT
     geom,
     commune_code,
     departement,
-    srid_source,
-    surface
+    srid_source
 FROM
-    {{ ref("5_zonage_urbanisme_with_surface") }}
+    marked_duplicates
+where
+    row_num = 1
+    and geom is not null
+    and not st_isempty(geom)
