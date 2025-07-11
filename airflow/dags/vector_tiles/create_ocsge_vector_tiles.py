@@ -1,14 +1,14 @@
 import json
 
 import pendulum
-from include.domain.container import Container
+from include.domain_container import Container
 from include.utils import multiline_string_to_single_line
 
 from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
 
-with open("include/domain/data/ocsge/sources.json", "r") as f:
+with open("include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 

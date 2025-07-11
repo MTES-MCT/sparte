@@ -14,22 +14,22 @@ from typing import Literal
 import pendulum
 import py7zr
 import requests
-from include.container import Container
-from include.domain.container import Container as DomainContainer
-from include.domain.data.ocsge.dag_configs import create_configs_from_sources
-from include.domain.data.ocsge.delete_in_dw import (
+from include.data.ocsge.dag_configs import create_configs_from_sources
+from include.data.ocsge.delete_in_dw import (
     delete_artif_in_dw_sql,
     delete_difference_in_dw_sql,
     delete_occupation_du_sol_in_dw_sql,
     delete_zone_construite_in_dw_sql,
 )
-from include.domain.data.ocsge.enums import DatasetName, SourceName
-from include.domain.data.ocsge.normalization import (
+from include.data.ocsge.enums import DatasetName, SourceName
+from include.data.ocsge.normalization import (
     ocsge_artif_normalization_sql,
     ocsge_diff_normalization_sql,
     ocsge_occupation_du_sol_normalization_sql,
     ocsge_zone_construite_normalization_sql,
 )
+from include.domain_container import Container as DomainContainer
+from include.infra_container import Container
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.utils import (
     get_geom_field_name,
@@ -63,7 +63,7 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
     return paths
 
 
-with open("include/domain/data/ocsge/sources.json", "r") as f:
+with open("include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 

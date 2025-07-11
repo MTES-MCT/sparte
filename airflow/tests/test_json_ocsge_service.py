@@ -1,7 +1,7 @@
 import pytest
-from include.domain.container import Container
-from include.domain.data.ocsge.BaseOcsgeSourceService import BaseOcsgeSourceService
-from include.domain.data.ocsge.enums import SourceName
+from include.data.ocsge.BaseOcsgeSourceService import BaseOcsgeSourceService
+from include.data.ocsge.enums import SourceName
+from include.domain_container import Container
 
 
 @pytest.fixture

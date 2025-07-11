@@ -1,7 +1,7 @@
 from uuid import UUID
 
 import pytest
-from include.domain.container import Container
+from include.domain_container import Container
 
 container = Container()
 

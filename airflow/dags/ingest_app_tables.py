@@ -4,7 +4,7 @@ données PostgreSQL, puis lance un job dbt pour les transformer.
 """
 
 from gdaltools import ogr2ogr
-from include.container import Container
+from include.infra_container import Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task

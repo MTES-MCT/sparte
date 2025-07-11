@@ -1,6 +1,6 @@
 import uuid
 
-from include.domain.file_handling import BaseTmpPathGenerator
+from include.file_handling import BaseTmpPathGenerator
 
 
 class TmpPathGenerator(BaseTmpPathGenerator):

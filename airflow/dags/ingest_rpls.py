@@ -1,7 +1,7 @@
 import os
 
 import pandas as pd
-from include.domain.container import Container
+from include.domain_container import Container
 from include.pools import DBT_POOL
 from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
