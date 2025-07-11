@@ -179,9 +179,14 @@ const Synthese: React.FC<SyntheseProps> = ({
                     <div className="fr-callout bg-white w-100">
                         <h4 className="fr-mb-3w">Période 2031 - 2050 : Mesure de l’artificialisation</h4>
                         <p className="fr-text--sm fr-mb-2w">
-                            La deuxième étape de loi Climat et Résilience consiste à atteindre <strong>l'objectif de zéro artificialisation nette à horizon 2050</strong>, mesurée avec les données, non plus de consommation d'espaces, mais d'artificialisation du sol, reposant sur la donnée OCSGE.
+                            La deuxième étape de loi Climat et Résilience consiste à atteindre <strong>l'objectif de zéro artificialisation nette à horizon 2050</strong>, mesurée avec les données, non plus de consommation d'espaces, mais d'artificialisation du sol, reposant sur la donnée OCS GE.
                         </p>
-                        <p className="fr-text--sm fr-mb-2w">
+                        <LandMillesimeTable 
+                            millesimes={landData.millesimes}
+                            territory_name={landData.name}
+                            is_interdepartemental={landData.is_interdepartemental}
+                        />
+                        <p className="fr-text--sm fr-mt-2w">
                             Sur le territoire de
                             {" "}
                             <strong>{landData.name}</strong>

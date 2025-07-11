@@ -41,7 +41,7 @@ export const LandMillesimeTable = ({ millesimes, territory_name, is_interdeparte
     return (
         <div className="fr-alert fr-alert--info bg-white" id="millesimes-table" style={{ scrollMarginTop: scrollMarginTop }}>
             <h6 className="fr-alert__title">
-                Millésimes disponibles pour le territoire de{" "}
+                Millésimes OCS GE disponibles pour le territoire de{" "}
                 <strong>{territory_name}</strong>
             </h6>
             {is_interdepartemental ? (
