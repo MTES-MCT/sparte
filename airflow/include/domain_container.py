@@ -20,7 +20,7 @@ from .notification import MattermostNotificationService
 
 
 class Container(containers.DeclarativeContainer):
-    infra_container = providers.Container(InfraContainer)
+    infra_container = providers.Factory(provides=InfraContainer)
 
     s3_handler = providers.Factory(provides=S3Handler, s3=infra_container().s3)
     tmp_path_generator = providers.Factory(provides=TmpPathGenerator)
