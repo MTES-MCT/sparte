@@ -1,4 +1,4 @@
-from include.domain.file_handling import BaseS3Handler
+from include.file_handling import BaseS3Handler
 
 
 class S3Handler(BaseS3Handler):

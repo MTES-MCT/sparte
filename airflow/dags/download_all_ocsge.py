@@ -10,13 +10,13 @@ import os
 
 import pendulum
 import requests
-from include.container import Container
+from include.container import InfraContainer as Container
 
 from airflow.decorators import dag
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 
-with open("include/domain/data/ocsge/sources.json", "r") as f:
+with open("include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 

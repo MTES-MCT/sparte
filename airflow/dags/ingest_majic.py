@@ -3,8 +3,8 @@ import subprocess
 from typing import List
 from zipfile import ZipFile
 
-from include.container import Container
-from include.domain.data.majic.sources import sources
+from include.container import InfraContainer as Container
+from include.data.majic.sources import sources
 from include.pools import DBT_POOL
 from include.utils import (
     get_dbt_command_from_directory,

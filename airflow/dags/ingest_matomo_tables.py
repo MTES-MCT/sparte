@@ -1,5 +1,5 @@
 from gdaltools import ogr2ogr
-from include.container import Container
+from include.container import InfraContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task

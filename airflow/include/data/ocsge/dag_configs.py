@@ -1,6 +1,6 @@
 import json
 
-from include.domain.data.ocsge.enums import DatasetName
+from .enums import DatasetName
 
 
 def create_configs_from_sources(sources: dict) -> list:

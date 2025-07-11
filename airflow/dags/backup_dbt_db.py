@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from os import getenv
 
-from include.container import Container
+from include.container import InfraContainer as Container
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator

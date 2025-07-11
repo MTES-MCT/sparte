@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from include.domain.data.ocsge.enums import SourceName
+from include.data.ocsge.enums import SourceName
 
 
 @dataclass

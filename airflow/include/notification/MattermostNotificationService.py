@@ -1,5 +1,6 @@
 import requests
-from include.domain.notification import BaseNotificationService
+
+from .BaseNotificationService import BaseNotificationService
 
 
 class MattermostNotificationService(BaseNotificationService):

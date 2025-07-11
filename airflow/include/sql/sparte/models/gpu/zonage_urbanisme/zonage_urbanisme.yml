@@ -13,12 +13,17 @@ type_zone_accepted_values: &type_zone_accepted_values
 models:
   - name: zonage_urbanisme
     columns:
+    - name: checksum
+      description: Unique identifier for the geometry, generated using GeoHash.
+      data_type: text
+      data_tests:
+      - not_null
+      - unique
     - name: gpu_timestamp
       data_tests:
       - not_null
     - name: geom
       data_tests:
-      - unique
       - is_valid_geom
       - is_not_empty_geom
     - name: type_zone

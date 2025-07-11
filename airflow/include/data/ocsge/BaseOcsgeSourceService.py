@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from include.domain.data.ocsge.entities.OcsgeSource import OcsgeSource
-from include.domain.data.ocsge.enums import SourceName
+from include.data.ocsge.entities.OcsgeSource import OcsgeSource
+from include.data.ocsge.enums import SourceName
 
 
 class BaseOcsgeSourceService(ABC):
