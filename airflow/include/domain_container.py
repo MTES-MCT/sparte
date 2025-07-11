@@ -1,4 +1,4 @@
-from os import getenv
+import os
 
 from dependency_injector import containers, providers
 
@@ -68,7 +68,7 @@ class Container(containers.DeclarativeContainer):
 
     data_gouv = providers.Factory(
         provides=DataGouvHandler,
-        key=getenv("DATA_GOUV_API_KEY"),
+        key=os.getenv("DATA_GOUV_API_KEY"),
         endpoint="https://www.data.gouv.fr/api/1",
     )
 
@@ -81,6 +81,6 @@ class Container(containers.DeclarativeContainer):
 
     notification = providers.Factory(
         provides=MattermostNotificationService,
-        mattermost_webhook_url=getenv("MATTERMOST_WEBHOOK_URL"),
-        channel=getenv("MATTERMOST_CHANNEL"),
+        mattermost_webhook_url=os.getenv("MATTERMOST_WEBHOOK_URL"),
+        channel=os.getenv("MATTERMOST_CHANNEL"),
     )

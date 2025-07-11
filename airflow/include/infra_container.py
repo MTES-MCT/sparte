@@ -1,4 +1,4 @@
-from os import getenv
+import os
 
 import pysftp
 import sqlalchemy
@@ -23,110 +23,110 @@ def create_sql_alchemy_conn(
 class Container(containers.DeclarativeContainer):
     s3 = providers.Factory(
         provides=S3FileSystem,
-        key=getenv("AIRFLOW_S3_LOGIN"),
-        secret=getenv("AIRFLOW_S3_PASSWORD"),
-        endpoint_url=getenv("AIRFLOW_S3_ENDPOINT"),
+        key=os.getenv("AIRFLOW_S3_LOGIN"),
+        secret=os.getenv("AIRFLOW_S3_PASSWORD"),
+        endpoint_url=os.getenv("AIRFLOW_S3_ENDPOINT"),
         client_kwargs={
-            "region_name": getenv("AIRFLOW_S3_REGION_NAME"),
+            "region_name": os.getenv("AIRFLOW_S3_REGION_NAME"),
         },
     )
     # DBT connections
     gdal_dbt_conn = providers.Factory(
         PgConnectionString,
-        dbname=getenv("DBT_DB_NAME"),
-        user=getenv("DBT_DB_USER"),
-        password=getenv("DBT_DB_PASSWORD"),
-        host=getenv("DBT_DB_HOST"),
-        port=getenv("DBT_DB_PORT"),
+        dbname=os.getenv("DBT_DB_NAME"),
+        user=os.getenv("DBT_DB_USER"),
+        password=os.getenv("DBT_DB_PASSWORD"),
+        host=os.getenv("DBT_DB_HOST"),
+        port=os.getenv("DBT_DB_PORT"),
     )
     psycopg2_dbt_conn: connection = providers.Factory(
         provides=connect,
-        dbname=getenv("DBT_DB_NAME"),
-        user=getenv("DBT_DB_USER"),
-        password=getenv("DBT_DB_PASSWORD"),
-        host=getenv("DBT_DB_HOST"),
-        port=getenv("DBT_DB_PORT"),
+        dbname=os.getenv("DBT_DB_NAME"),
+        user=os.getenv("DBT_DB_USER"),
+        password=os.getenv("DBT_DB_PASSWORD"),
+        host=os.getenv("DBT_DB_HOST"),
+        port=os.getenv("DBT_DB_PORT"),
     )
 
     sqlalchemy_dbt_conn = providers.Factory(
         create_sql_alchemy_conn,
-        dbname=getenv("DBT_DB_NAME"),
-        user=getenv("DBT_DB_USER"),
-        password=getenv("DBT_DB_PASSWORD"),
-        host=getenv("DBT_DB_HOST"),
-        port=getenv("DBT_DB_PORT"),
+        dbname=os.getenv("DBT_DB_NAME"),
+        user=os.getenv("DBT_DB_USER"),
+        password=os.getenv("DBT_DB_PASSWORD"),
+        host=os.getenv("DBT_DB_HOST"),
+        port=os.getenv("DBT_DB_PORT"),
     )
 
     # Matomo connections
     gdal_matomo_conn = providers.Factory(
         PgConnectionString,
-        dbname=getenv("MATOMO_DB_NAME"),
-        user=getenv("MATOMO_DB_USER"),
-        password=getenv("MATOMO_DB_PASSWORD"),
-        host=getenv("MATOMO_DB_HOST"),
-        port=getenv("MATOMO_DB_PORT"),
+        dbname=os.getenv("MATOMO_DB_NAME"),
+        user=os.getenv("MATOMO_DB_USER"),
+        password=os.getenv("MATOMO_DB_PASSWORD"),
+        host=os.getenv("MATOMO_DB_HOST"),
+        port=os.getenv("MATOMO_DB_PORT"),
     )
     psycopg2_matomo_conn = providers.Factory(
         provides=connect,
-        dbname=getenv("MATOMO_DB_NAME"),
-        user=getenv("MATOMO_DB_USER"),
-        password=getenv("MATOMO_DB_PASSWORD"),
-        host=getenv("MATOMO_DB_HOST"),
-        port=getenv("MATOMO_DB_PORT"),
+        dbname=os.getenv("MATOMO_DB_NAME"),
+        user=os.getenv("MATOMO_DB_USER"),
+        password=os.getenv("MATOMO_DB_PASSWORD"),
+        host=os.getenv("MATOMO_DB_HOST"),
+        port=os.getenv("MATOMO_DB_PORT"),
     )
 
     # DEV connections
     gdal_dev_conn = providers.Factory(
         PgConnectionString,
-        dbname=getenv("DEV_DB_NAME"),
-        user=getenv("DEV_DB_USER"),
-        password=getenv("DEV_DB_PASSWORD"),
-        host=getenv("DEV_DB_HOST"),
-        port=getenv("DEV_DB_PORT"),
+        dbname=os.getenv("DEV_DB_NAME"),
+        user=os.getenv("DEV_DB_USER"),
+        password=os.getenv("DEV_DB_PASSWORD"),
+        host=os.getenv("DEV_DB_HOST"),
+        port=os.getenv("DEV_DB_PORT"),
     )
     psycopg2_dev_conn = providers.Factory(
         provides=connect,
-        dbname=getenv("DEV_DB_NAME"),
-        user=getenv("DEV_DB_USER"),
-        password=getenv("DEV_DB_PASSWORD"),
-        host=getenv("DEV_DB_HOST"),
-        port=getenv("DEV_DB_PORT"),
+        dbname=os.getenv("DEV_DB_NAME"),
+        user=os.getenv("DEV_DB_USER"),
+        password=os.getenv("DEV_DB_PASSWORD"),
+        host=os.getenv("DEV_DB_HOST"),
+        port=os.getenv("DEV_DB_PORT"),
     )
 
     # PROD connections
     gdal_prod_conn = providers.Factory(
         PgConnectionString,
-        dbname=getenv("PROD_DB_NAME"),
-        user=getenv("PROD_DB_USER"),
-        password=getenv("PROD_DB_PASSWORD"),
-        host=getenv("PROD_DB_HOST"),
-        port=getenv("PROD_DB_PORT"),
+        dbname=os.getenv("PROD_DB_NAME"),
+        user=os.getenv("PROD_DB_USER"),
+        password=os.getenv("PROD_DB_PASSWORD"),
+        host=os.getenv("PROD_DB_HOST"),
+        port=os.getenv("PROD_DB_PORT"),
     )
     psycopg2_prod_conn = providers.Factory(
         provides=connect,
-        dbname=getenv("PROD_DB_NAME"),
-        user=getenv("PROD_DB_USER"),
-        password=getenv("PROD_DB_PASSWORD"),
-        host=getenv("PROD_DB_HOST"),
-        port=getenv("PROD_DB_PORT"),
+        dbname=os.getenv("PROD_DB_NAME"),
+        user=os.getenv("PROD_DB_USER"),
+        password=os.getenv("PROD_DB_PASSWORD"),
+        host=os.getenv("PROD_DB_HOST"),
+        port=os.getenv("PROD_DB_PORT"),
     )
 
     # STAGING connections
     gdal_staging_conn = providers.Factory(
         PgConnectionString,
-        dbname=getenv("STAGING_DB_NAME"),
-        user=getenv("STAGING_DB_USER"),
-        password=getenv("STAGING_DB_PASSWORD"),
-        host=getenv("STAGING_DB_HOST"),
-        port=getenv("STAGING_DB_PORT"),
+        dbname=os.getenv("STAGING_DB_NAME"),
+        user=os.getenv("STAGING_DB_USER"),
+        password=os.getenv("STAGING_DB_PASSWORD"),
+        host=os.getenv("STAGING_DB_HOST"),
+        port=os.getenv("STAGING_DB_PORT"),
     )
     psycopg2_staging_conn = providers.Factory(
         provides=connect,
-        dbname=getenv("STAGING_DB_NAME"),
-        user=getenv("STAGING_DB_USER"),
-        password=getenv("STAGING_DB_PASSWORD"),
-        host=getenv("STAGING_DB_HOST"),
-        port=getenv("STAGING_DB_PORT"),
+        dbname=os.getenv("STAGING_DB_NAME"),
+        user=os.getenv("STAGING_DB_USER"),
+        password=os.getenv("STAGING_DB_PASSWORD"),
+        host=os.getenv("STAGING_DB_HOST"),
+        port=os.getenv("STAGING_DB_PORT"),
     )
 
     cnopts = pysftp.CnOpts()
@@ -134,10 +134,10 @@ class Container(containers.DeclarativeContainer):
 
     gpu_sftp = providers.Factory(
         provides=pysftp.Connection,
-        host=getenv("GPU_SFTP_HOST"),
-        username=getenv("GPU_SFTP_USER"),
-        password=getenv("GPU_SFTP_PASSWORD"),
-        port=int(getenv("GPU_SFTP_PORT")),
+        host=os.getenv("GPU_SFTP_HOST"),
+        username=os.getenv("GPU_SFTP_USER"),
+        password=os.getenv("GPU_SFTP_PASSWORD"),
+        port=int(os.getenv("GPU_SFTP_PORT")),
         default_path="/pub/export-wfs/latest/",
         cnopts=cnopts,
     )
