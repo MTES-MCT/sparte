@@ -10,6 +10,8 @@ import { useArtificialisation } from "@hooks/useArtificialisation";
 import Guide from "@components/ui/Guide";
 import { FricheOverview, FricheAbstract } from "@components/features/friches";
 import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
+import FricheStatus from '@components/features/status/FricheStatus';
+import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
 
 interface SyntheseProps {
 	projectData: ProjectDetailResultType;
@@ -127,31 +129,43 @@ const Synthese: React.FC<SyntheseProps> = ({
             <h2 className="fr-mt-10w">Agir : les leviers de la sobriété foncière</h2>
             <div className="fr-mt-5w">
                 <h3>Vacance des Logements</h3>
-                <LogementVacantOverview 
-                    logements_vacants_status_details={landData.logements_vacants_status_details} 
-                    className="fr-mb-3w"
-                />
-                <LogementVacantAbstract
-                    logements_vacants_status={landData.logements_vacants_status}
-                    logements_vacants_status_details={landData.logements_vacants_status_details}
-                    name={landData.name}
-                    className="fr-mt-2w"
-                    link={projectData.urls.logementVacant}
-                />
+                { landData.has_logements_vacants ? (
+                    <>
+                        <LogementVacantOverview 
+                            logements_vacants_status_details={landData.logements_vacants_status_details} 
+                            className="fr-mb-3w"
+                        />
+                        <LogementVacantAbstract
+                            logements_vacants_status={landData.logements_vacants_status}
+                            logements_vacants_status_details={landData.logements_vacants_status_details}
+                            name={landData.name}
+                            className="fr-mt-2w"
+                            link={projectData.urls.logementVacant}
+                        />
+                    </>
+                ) : (
+                    <LogementVacantStatus />
+                )}
             </div>
             <div className="fr-mt-7w">
                 <h3>Réhabilitation des friches</h3>
-                <FricheOverview 
-                    friche_status_details={landData.friche_status_details} 
-                    className="fr-mb-3w"
-                />
-                <FricheAbstract
-                    friche_status={landData.friche_status}
-                    friche_status_details={landData.friche_status_details}
-                    name={landData.name}
-                    className="fr-mt-2w"
-                    link={projectData.urls.friches}
-                />
+                { landData.has_friche ? (
+                    <>
+                        <FricheOverview 
+                            friche_status_details={landData.friche_status_details} 
+                            className="fr-mb-3w"
+                        />
+                        <FricheAbstract
+                            friche_status={landData.friche_status}
+                            friche_status_details={landData.friche_status_details}
+                            name={landData.name}
+                            className="fr-mt-2w"
+                            link={projectData.urls.friches}
+                        />
+                    </>
+                ) : (
+                    <FricheStatus />
+                )}
             </div>
         </div>
     );
