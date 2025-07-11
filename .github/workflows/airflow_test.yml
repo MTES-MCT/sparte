@@ -58,5 +58,6 @@ jobs:
       - uses: actions/checkout@v4
       - run: curl -sSL install.astronomer.io | sudo bash -s
       - run: cd airflow
+      - run: printenv > .env
       - run: astro dev pytest
         working-directory: airflow
