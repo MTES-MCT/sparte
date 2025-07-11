@@ -57,6 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: echo "${GPU_SFTP_PORT}"
       - run: curl -sSL install.astronomer.io | sudo bash -s
       - run: cd airflow
       - run: astro dev pytest
