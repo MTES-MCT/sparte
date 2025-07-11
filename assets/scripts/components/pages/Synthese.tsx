@@ -48,78 +48,6 @@ interface SyntheseProps {
 	landData: LandDetailResultType;
 }
 
-const ArtificialisationSection: React.FC<{ 
-    projectData: ProjectDetailResultType;
-    landData: LandDetailResultType;
-}> = ({ landData, projectData }) => {
-    const { urls } = projectData;
-
-    const { landArtifStockIndex : data, isLoading, error } = useArtificialisation({
-        landData
-    });
-
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
-
-    return (
-        <div className="fr-mt-7w">
-            <h4>Artificialisation des sols </h4>
-            <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12 fr-col-md-6 fr-grid-row">
-                    <div className="fr-callout bg-white w-100">
-                        <p className="fr-callout__title">{formatNumber({ number: data.surface })} ha</p>
-                        <p>
-                            Surface artificialisée
-                            {" "}
-                            <MillesimeDisplay 
-                                is_interdepartemental={landData.is_interdepartemental}
-                                landArtifStockIndex={data}
-                            />
-                        </p>
-                        <span className={`fr-badge ${
-                            data.flux_surface >= 0
-                                ? "fr-badge--error"
-                                : "fr-badge--success"
-                        } fr-badge--error fr-badge--sm fr-badge--no-icon`}>
-                            {formatNumber({
-                                number: data.flux_surface,
-                                addSymbol: true,
-                            })} ha
-                            {data.flux_surface >= 0 ? (
-                                <i className="bi bi-arrow-up-right fr-ml-1w" />
-                            ) : (
-                                <i className="bi bi-arrow-down-right fr-ml-1w" />
-                            )}
-                        </span>
-                        <MillesimeDisplay 
-                            is_interdepartemental={landData.is_interdepartemental}
-                            landArtifStockIndex={data}
-                            between={true}
-                            className="fr-text--sm fr-ml-1w"
-                        />
-                    </div>
-                </div>
-                <div className="fr-col-12 fr-col-md-6 fr-grid-row">
-                    <div className="fr-callout bg-white w-100">
-                        <p className="fr-callout__title">{formatNumber({ number: data.percent })}%</p>
-                        <p>Taux d'artificialisation du territoire</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div className="fr-my-3w">
-                <LandMillesimeTable 
-                    millesimes={landData.millesimes}
-                    territory_name={landData.name}
-                    is_interdepartemental={landData.is_interdepartemental}
-                />
-            </div>
-            
-            <Link className="fr-link" to={urls.artificialisation}>Consulter le détail de l'artificialisation des sols</Link>
-        </div>
-    );
-};
-
 const tryptiqueConso = [
     {
         icon: 'bi-diagram-3',
@@ -154,10 +82,7 @@ const Synthese: React.FC<SyntheseProps> = ({
 	projectData,
 	landData,
 }) => {
-    const {
-        isLoading,
-        error
-    } = useArtificialisation({
+    const { landArtifStockIndex : data, isLoading, error } = useArtificialisation({
         landData
     });
 
@@ -218,7 +143,7 @@ const Synthese: React.FC<SyntheseProps> = ({
                             La première étape de loi Climat et Résilience consiste à réduire de <strong>50 %</strong> la consommation d'espaces entre 2021 et 2031, par rapport à la consommation entre 2011 et 2020 (période de référence). 
                         </p>
                         <p className="fr-text--sm fr-mb-2w">
-                            Sur le territoire de Toulon, 41,2 ha ont été consommés entre 2011 et 2022. <strong>La consommation d'espaces maximale autorisée pour ce territoire est donc de 20,6 ha pour la période 2021-2030.</strong>
+                            Sur le territoire de <strong>{landData.name}</strong>, 41,2 ha ont été consommés entre 2011 et 2022. <strong>La consommation d'espaces maximale autorisée pour ce territoire est donc de 20,6 ha pour la période 2021-2030.</strong>
                         </p>
                         <p className="fr-text--sm fr-mb-2w">
                             Depuis 2021, 10 ha ont déjà été consommés, soit 2,5 ha en moyenne annuelle. Si la consommation d'espaces de ce territoire se poursuivait au même rythme, l'objectif non-réglementaire de réduction à horizon 2031 (53%) <strong>serait dépassé en 2028.</strong>
@@ -252,14 +177,31 @@ const Synthese: React.FC<SyntheseProps> = ({
                 </div>
                 <div className="fr-col-12 fr-col-md-6 fr-grid-row">
                     <div className="fr-callout bg-white w-100">
-                        <h4 className="fr-mb-3w">Période 2021 - 2050 : Mesure de l’artificialisation</h4>
+                        <h4 className="fr-mb-3w">Période 2031 - 2050 : Mesure de l’artificialisation</h4>
                         <p className="fr-text--sm fr-mb-2w">
                             La deuxième étape de loi Climat et Résilience consiste à atteindre <strong>l'objectif de zéro artificialisation nette à horizon 2050</strong>, mesurée avec les données, non plus de consommation d'espaces, mais d'artificialisation du sol, reposant sur la donnée OCSGE.
                         </p>
                         <p className="fr-text--sm fr-mb-2w">
-                            Sur le territoire de Toulon, entre 2019 et 2021, 30,7 ha ont été artificialisés tandis que 4,9 ha ont été désartificialisés. <strong>Cela signifie que l'artificialisation nette sur la période est de 25,9 ha.</strong>
+                            Sur le territoire de
+                            {" "}
+                            <strong>{landData.name}</strong>
+                            ,
+                                <MillesimeDisplay 
+                                    is_interdepartemental={landData.is_interdepartemental}
+                                    landArtifStockIndex={data}
+                                    between={true}
+                                    className="fr-text--sm fr-ml-1w"
+                                />
+                            ,
+                            {" "}
+                            {formatNumber({
+                                number: data.flux_surface,
+                            })} ha
+                            ont été artificialisés.
+                            {" "}
+                            <strong>Cela signifie que l'artificialisation nette sur la période est de 25,9 ha.</strong>
                         </p>
-                        <Link to={projectData.urls.trajectoires} className="fr-link fr-text--sm">Visualiser la trajectoire de sobriété foncière</Link>
+                        <Link to={projectData.urls.trajectoires} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm">Visualiser la trajectoire de sobriété foncière</Link>
                     </div>
                 </div>
             </div>
