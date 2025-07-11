@@ -8,6 +8,21 @@ from psycopg2 import connect
 from psycopg2.extensions import connection
 from s3fs import S3FileSystem
 
+from .file_handling import (
+    CSVFileIngestor,
+    DataGouvHandler,
+    HTTPFileHandler,
+    RemoteToS3FileHandler,
+    S3CSVFileToDBTableHandler,
+    S3Handler,
+    S3ToDataGouvHandler,
+    SQLToCSVOnS3Handler,
+    SQLToGeojsonSeqOnS3Handler,
+    SQLToGeopackageOnS3Handler,
+    TmpPathGenerator,
+)
+from .notification import MattermostNotificationService
+
 
 def db_str_for_ogr2ogr(dbname: str, user: str, password: str, host: str, port: int) -> str:
     return f"PG:dbname='{dbname}' host='{host}' port='{port}' user='{user}' password='{password}'"
@@ -20,7 +35,7 @@ def create_sql_alchemy_conn(
     return sqlalchemy.create_engine(url)
 
 
-class Container(containers.DeclarativeContainer):
+class InfraContainer(containers.DeclarativeContainer):
     s3 = providers.Factory(
         provides=S3FileSystem,
         key=os.getenv("AIRFLOW_S3_LOGIN"),
@@ -140,4 +155,71 @@ class Container(containers.DeclarativeContainer):
         port=int(os.getenv("GPU_SFTP_PORT")),
         default_path="/pub/export-wfs/latest/",
         cnopts=cnopts,
+    )
+
+
+class DomainContainer(containers.DeclarativeContainer):
+    infra_container = providers.Container(container=InfraContainer())
+
+    s3_handler = providers.Factory(provides=S3Handler, s3=infra_container().s3)
+    tmp_path_generator = providers.Factory(provides=TmpPathGenerator)
+
+    htto_file_handler = providers.Factory(provides=HTTPFileHandler)
+
+    remote_to_s3_file_handler = providers.Factory(
+        provides=RemoteToS3FileHandler,
+        http_file_handler=htto_file_handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+    )
+
+    s3_csv_file_to_db_table_handler = providers.Factory(
+        provides=S3CSVFileToDBTableHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        csv_file_ingestor=providers.Factory(
+            provides=CSVFileIngestor,
+            db_sqlalchemy_conn=infra_container().sqlalchemy_dbt_conn,
+        ),
+    )
+
+    sql_to_geojsonseq_on_s3_handler = providers.Factory(
+        provides=SQLToGeojsonSeqOnS3Handler,
+        http_file_handler=htto_file_handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=infra_container().gdal_dbt_conn().encode(),
+    )
+
+    sql_to_geopackage_on_s3_handler = providers.Factory(
+        provides=SQLToGeopackageOnS3Handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=infra_container().gdal_dbt_conn().encode(),
+    )
+
+    sql_to_csv_on_s3_handler = providers.Factory(
+        provides=SQLToCSVOnS3Handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=infra_container().gdal_dbt_conn().encode(),
+    )
+
+    data_gouv = providers.Factory(
+        provides=DataGouvHandler,
+        key=os.getenv("DATA_GOUV_API_KEY"),
+        endpoint="https://www.data.gouv.fr/api/1",
+    )
+
+    s3_to_data_gouv = providers.Factory(
+        provides=S3ToDataGouvHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        data_gouv_handler=data_gouv,
+    )
+
+    notification = providers.Factory(
+        provides=MattermostNotificationService,
+        mattermost_webhook_url=os.getenv("MATTERMOST_WEBHOOK_URL"),
+        channel=os.getenv("MATTERMOST_CHANNEL"),
     )

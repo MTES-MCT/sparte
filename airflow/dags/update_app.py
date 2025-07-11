@@ -3,7 +3,7 @@ Ce dag met à jour les données de l'application à partir des données de l'ent
 """
 
 from gdaltools import PgConnectionString, ogr2ogr
-from include.infra_container import Container
+from include.container import InfraContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task

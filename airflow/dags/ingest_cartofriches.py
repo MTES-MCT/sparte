@@ -1,7 +1,7 @@
 import subprocess
 
 import requests
-from include.infra_container import Container
+from include.container import InfraContainer as Container
 from include.utils import multiline_string_to_single_line
 from pendulum import datetime
 

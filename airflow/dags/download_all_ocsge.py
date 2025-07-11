@@ -10,7 +10,7 @@ import os
 
 import pendulum
 import requests
-from include.infra_container import Container
+from include.container import InfraContainer as Container
 
 from airflow.decorators import dag
 from airflow.operators.empty import EmptyOperator

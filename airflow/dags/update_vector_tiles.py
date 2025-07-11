@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from include.domain_container import Container
+from include.container import DomainContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task

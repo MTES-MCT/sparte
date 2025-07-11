@@ -9,7 +9,7 @@ import subprocess
 from urllib.request import URLopener
 
 import py7zr
-from include.infra_container import Container
+from include.container import InfraContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task

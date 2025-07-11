@@ -1,7 +1,7 @@
 import json
 
 import pendulum
-from include.domain_container import Container
+from include.container import DomainContainer as Container
 from include.utils import multiline_string_to_single_line
 
 from airflow.decorators import dag, task

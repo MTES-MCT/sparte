@@ -14,6 +14,7 @@ from typing import Literal
 import pendulum
 import py7zr
 import requests
+from include.container import DomainContainer, InfraContainer
 from include.data.ocsge.dag_configs import create_configs_from_sources
 from include.data.ocsge.delete_in_dw import (
     delete_artif_in_dw_sql,
@@ -28,8 +29,6 @@ from include.data.ocsge.normalization import (
     ocsge_occupation_du_sol_normalization_sql,
     ocsge_zone_construite_normalization_sql,
 )
-from include.domain_container import Container as DomainContainer
-from include.infra_container import Container
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.utils import (
     get_geom_field_name,
@@ -154,7 +153,7 @@ def load_data_to_dw(
     mode: Literal["overwrite", "append"] = "append",
 ):
     local_path = "/tmp/ocsge.7z"
-    Container().s3().get_file(path, local_path)
+    InfraContainer().s3().get_file(path, local_path)
     extract_dir = tempfile.mkdtemp()
     py7zr.SevenZipFile(local_path, mode="r").extractall(path=extract_dir)
 
@@ -204,7 +203,7 @@ def load_data_to_dw(
             "SQLITE",
             "-f",
             '"PostgreSQL"',
-            f'"{Container().gdal_dbt_conn().encode()}"',
+            f'"{InfraContainer().gdal_dbt_conn().encode()}"',
             f"-{mode}",
             "-lco",
             "GEOMETRY_NAME=geom",
@@ -286,7 +285,7 @@ def ocsge():  # noqa: C901
         if not context["params"]["refresh_source"]:
             filename = url.split("/")[-1]
             path_on_bucket = f"{bucket_name}/{filename}"
-            if Container().s3().exists(path_on_bucket):
+            if InfraContainer().s3().exists(path_on_bucket):
                 return path_on_bucket
 
         response = requests.get(url)
@@ -299,7 +298,7 @@ def ocsge():  # noqa: C901
         filename = params.get("filename")
 
         path_on_bucket = f"{bucket_name}/{os.path.basename(filename)}"
-        with Container().s3().open(path_on_bucket, "wb") as distant_file:
+        with InfraContainer().s3().open(path_on_bucket, "wb") as distant_file:
             distant_file.write(response.content)
 
         return path_on_bucket
@@ -339,7 +338,7 @@ def ocsge():  # noqa: C901
         dataset = get_from_config(config, "dataset")
         departement = get_from_config(config, "departement")
         years = get_from_config(config, "years")
-        conn = Container().psycopg2_dbt_conn()
+        conn = InfraContainer().psycopg2_dbt_conn()
         cur = conn.cursor()
 
         results = {}
