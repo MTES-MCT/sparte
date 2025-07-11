@@ -159,9 +159,7 @@ class InfraContainer(containers.DeclarativeContainer):
 
 
 class DomainContainer(containers.DeclarativeContainer):
-    infra_container = providers.Container(container=InfraContainer())
-
-    s3_handler = providers.Factory(provides=S3Handler, s3=infra_container().s3)
+    s3_handler = providers.Factory(provides=S3Handler, s3=InfraContainer().s3)
     tmp_path_generator = providers.Factory(provides=TmpPathGenerator)
 
     htto_file_handler = providers.Factory(provides=HTTPFileHandler)
@@ -179,7 +177,7 @@ class DomainContainer(containers.DeclarativeContainer):
         tmp_path_generator=tmp_path_generator,
         csv_file_ingestor=providers.Factory(
             provides=CSVFileIngestor,
-            db_sqlalchemy_conn=infra_container().sqlalchemy_dbt_conn,
+            db_sqlalchemy_conn=InfraContainer().sqlalchemy_dbt_conn,
         ),
     )
 
@@ -188,21 +186,21 @@ class DomainContainer(containers.DeclarativeContainer):
         http_file_handler=htto_file_handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=infra_container().gdal_dbt_conn().encode(),
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
     )
 
     sql_to_geopackage_on_s3_handler = providers.Factory(
         provides=SQLToGeopackageOnS3Handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=infra_container().gdal_dbt_conn().encode(),
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
     )
 
     sql_to_csv_on_s3_handler = providers.Factory(
         provides=SQLToCSVOnS3Handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=infra_container().gdal_dbt_conn().encode(),
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
     )
 
     data_gouv = providers.Factory(
