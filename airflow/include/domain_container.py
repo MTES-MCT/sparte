@@ -1,6 +1,5 @@
 from os import getenv
 
-import sqlalchemy
 from dependency_injector import containers, providers
 
 from .file_handling import (
@@ -18,13 +17,6 @@ from .file_handling import (
 )
 from .infra_container import Container as InfraContainer
 from .notification import MattermostNotificationService
-
-
-def create_sql_alchemy_conn(
-    dbname: str, user: str, password: str, host: str, port: int
-) -> sqlalchemy.engine.base.Connection:
-    url = f"postgresql+psycopg2://{user}:{password.replace('@', '%40')}@{host}:{port}/{dbname}"
-    return sqlalchemy.create_engine(url)
 
 
 class Container(containers.DeclarativeContainer):
