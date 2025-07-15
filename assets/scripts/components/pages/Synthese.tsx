@@ -12,6 +12,8 @@ import { FricheOverview, FricheAbstract } from "@components/features/friches";
 import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
 import FricheStatus from '@components/features/status/FricheStatus';
 import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
+import { ConsommationChart } from '@components/charts/consommation/ConsommationChart';
+import CallToAction from '@components/ui/CallToAction';
 
 interface SyntheseProps {
 	projectData: ProjectDetailResultType;
@@ -53,35 +55,48 @@ const Synthese: React.FC<SyntheseProps> = ({
 				</div>
 			</div>
             <h2 className="fr-mt-5w">Mesurer : les objectifs nationaux de sobriété foncière</h2>
-            <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12 fr-col-md-6 fr-grid-row">
-                    <div className="bg-white fr-p-3w rounded w-100">
-                        <div className="fr-mb-3w">
-                            graphique
+            <div className="fr-mt-5w">
+                <h3>Période 2021 - 2031 : mesure de la consommation d'espaces NAF</h3>
+                <div className="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                    <div className="fr-col-12 fr-col-md-6 fr-grid-row">
+                        <div className="bg-white fr-p-3w rounded w-100">
+                            <div className="fr-mb-3w">
+                                <ConsommationChart
+                                    id="conso_annual"
+                                    land_id={landData.land_id}
+                                    land_type={landData.land_type}
+                                    showToolbar={false}
+                                />
+                            </div>
                         </div>
-                        <p>
-                            Depuis 2011, la consommation d'espaces NAF a tendance à diminuer sur le territoire de Toulon.
-                        </p>
-                        <Link to={projectData.urls.consommation} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm">Accéder au bilan de la consommation</Link>
+                    </div>
+                    <div className="fr-col-12 fr-col-md-6 fr-grid-row">
+                        <div className="bg-white fr-p-3w rounded w-100">
+                            <p className="fr-text--sm fr-mb-2w">
+                                La première étape de loi Climat et Résilience consiste à réduire de <strong>50 %</strong> la consommation d'espaces entre 2021 et 2031, par rapport à la consommation entre 2011 et 2020 (période de référence). 
+                            </p>
+                            <p className="fr-text--sm fr-mb-2w">
+                                Sur le territoire de <strong>{landData.name}</strong>, 41,2 ha ont été consommés entre 2011 et 2022. <strong>La consommation d'espaces maximale autorisée pour ce territoire est donc de 20,6 ha pour la période 2021-2030.</strong>
+                            </p>
+                            <p className="fr-text--sm fr-mb-2w">
+                                Depuis 2021, 10 ha ont déjà été consommés, soit 2,5 ha en moyenne annuelle. Si la consommation d'espaces de ce territoire se poursuivait au même rythme, l'objectif non-réglementaire de réduction à horizon 2031 (53%) <strong>serait dépassé en 2028.</strong>
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div className="fr-col-12 fr-col-md-6 fr-grid-row">
-                    <div className="bg-white fr-p-3w rounded w-100">
-                        <h4 className="fr-mb-3w">Période 2021 - 2031 : Mesure de la consommation d'espaces NAF</h4>
-                        <p className="fr-text--sm fr-mb-2w">
-                            La première étape de loi Climat et Résilience consiste à réduire de <strong>50 %</strong> la consommation d'espaces entre 2021 et 2031, par rapport à la consommation entre 2011 et 2020 (période de référence). 
-                        </p>
-                        <p className="fr-text--sm fr-mb-2w">
-                            Sur le territoire de <strong>{landData.name}</strong>, 41,2 ha ont été consommés entre 2011 et 2022. <strong>La consommation d'espaces maximale autorisée pour ce territoire est donc de 20,6 ha pour la période 2021-2030.</strong>
-                        </p>
-                        <p className="fr-text--sm fr-mb-2w">
-                            Depuis 2021, 10 ha ont déjà été consommés, soit 2,5 ha en moyenne annuelle. Si la consommation d'espaces de ce territoire se poursuivait au même rythme, l'objectif non-réglementaire de réduction à horizon 2031 (53%) <strong>serait dépassé en 2028.</strong>
-                        </p>
-                        <Link to={projectData.urls.trajectoires} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm">Visualiser la trajectoire de sobriété foncière</Link>
+                <CallToAction
+                    title="Pour aller plus loin"
+                    text="Découvrez dans notre bilan de consommation d’Espaces NAF : Analyse détaillée de la consommation d’Espaces NAF par destination, mise en relation avec l’évolution démographique, et comparaison avec des territoires similaires."
+                >
+                    <div className="d-flex align-items-center gap-3">
+                        <Link to={projectData.urls.consommation} className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm">Accéder au bilan de la consommation</Link>
+                        <Link to={projectData.urls.trajectoires} className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm">Visualiser la trajectoire de sobriété foncière</Link>
                     </div>
-                </div>
+                </CallToAction>
             </div>
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-5w">
+        
+            <div className="fr-grid-row fr-grid-row--gutters fr-mt-10w">
+                <h3>Période 2031 - 2050 : Mesure de l’artificialisation</h3>
                 <div className="fr-col-12 fr-col-md-6 fr-grid-row">
                     <div className="bg-white fr-p-3w rounded w-100">
                         <div className="fr-mb-3w">
@@ -95,7 +110,6 @@ const Synthese: React.FC<SyntheseProps> = ({
                 </div>
                 <div className="fr-col-12 fr-col-md-6 fr-grid-row">
                     <div className="bg-white fr-p-3w rounded w-100">
-                        <h4 className="fr-mb-3w">Période 2031 - 2050 : Mesure de l’artificialisation</h4>
                         <p className="fr-text--sm fr-mb-2w">
                             La deuxième étape de loi Climat et Résilience consiste à atteindre <strong>l'objectif de zéro artificialisation nette à horizon 2050</strong>, mesurée avec les données, non plus de consommation d'espaces, mais d'artificialisation du sol, reposant sur la donnée OCS GE.
                         </p>
