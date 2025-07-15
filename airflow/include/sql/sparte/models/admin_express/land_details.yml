@@ -1,0 +1,107 @@
+models:
+  - name: land_details
+    description: The 'land_details' model aggregates and enriches data related to land properties by combining information from multiple sources. It includes details such as land type, surface area, geometry, artificial surface metrics, OCSGE status, zoning information, friche presence, vacant housing status, planning competence, and interdepartmental status. This model is designed to provide a comprehensive view of land attributes for technical analysis and decision-making.
+    columns:
+      - name: land_id
+        description: Unique identifier for a specific land entity. This column serves as the primary key to distinguish individual land records.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('land')
+              field: land_id
+      - name: land_type
+        description: Categorical attribute representing the type of land, such as residential, commercial, agricultural, etc. Used to classify and group land entities.
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('land')
+              field: land_type
+      - name: name
+        description: Descriptive name or label assigned to the land entity, providing a human-readable identifier for easier reference.
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: surface
+        description: Represents the total surface area of the land in square meters. This value is derived from the 'land' table and provides a quantitative measure of the land's size.
+        data_type: double precision
+        data_tests:
+          - not_null
+      - name: geom
+        description: Stores the detailed geometric representation of the land as a spatial data type. This column is used for precise geospatial analysis and mapping.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: simple_geom
+        description: Contains a simplified geometric representation of the land, optimized for faster processing and visualization in geospatial applications.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: surface_artif
+        description: Represents the artificial surface area associated with the land. This value is derived from the 'artif_land_by_index' table and corresponds to the most recent index entry for the given land_id and land_type.
+        data_type: numeric
+      - name: percent_artif
+        description: Indicates the percentage of the land's surface area that is artificial. This value is calculated based on the 'artif_land_by_index' table and reflects the most recent index entry for the given land_id and land_type.
+        data_type: double precision
+      - name: years_artif
+        description: Specifies the number of years the land has been classified as artificial. This value is sourced from the 'artif_land_by_index' table and corresponds to the most recent index entry for the given land_id and land_type.
+        data_type: array
+      - name: ocsge_status
+        description: Represents the status of the land in relation to the OCSGE (Occupation du Sol à Grande Échelle) dataset. This column provides information about the classification or condition of the land based on OCSGE data.
+        data_type: text
+        data_tests:
+          - not_null
+      - name: has_ocsge
+        description: Indicates whether the land has associated data in the OCSGE dataset. A value of TRUE means the land is included in the OCSGE dataset, while FALSE means it is not.
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: has_zonage
+        description: A boolean flag that specifies whether the land has associated zoning information. TRUE indicates the presence of zoning data, while FALSE indicates its absence.
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: has_friche
+        description: Indicates whether the land has been identified as a 'friche' (unused or abandoned land). Derived from the count of entries in the 'friche_land' table for the given land_id and land_type. Returns TRUE if the count is greater than 0, otherwise FALSE.
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: child_land_types
+        description: An array containing the types of child lands associated with the current land entity. This provides hierarchical information about the land's subdivisions or related entities.
+        data_type: array
+      - name: parent_keys
+        description: An array of keys representing the parent entities of the current land. Useful for tracing hierarchical relationships and understanding the broader context of the land within its administrative structure.
+        data_type: array
+      - name: departements
+        description: An array containing the list of department codes associated with the land entity. If the array contains more than one department, the land is considered interdepartmental.
+        data_type: array
+      - name: has_logements_vacants
+        description: A boolean flag indicating whether the land has vacant housing units. Derived from the 'land_logements_vacants_status' table.
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: competence_planification
+        description: A boolean flag indicating whether the land falls under the jurisdiction of a planning authority. Defaults to FALSE if no data is available.
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+      - name: is_interdepartemental
+        description: Indicates whether the land spans multiple departments. If the array of departments associated with the land contains more than one element, this column will return TRUE; otherwise, it will return FALSE.
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]

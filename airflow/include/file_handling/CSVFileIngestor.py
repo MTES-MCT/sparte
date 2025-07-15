@@ -2,7 +2,7 @@ import logging
 import os
 
 import pandas as pd
-from include.domain.file_handling import BaseCSVFileIngestor
+from include.file_handling import BaseCSVFileIngestor
 from sqlalchemy.types import TEXT
 
 logger = logging.getLogger(__name__)

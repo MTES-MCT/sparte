@@ -7,7 +7,7 @@ import difflib
 
 import requests
 from bs4 import BeautifulSoup
-from include.domain.container import Container
+from include.container import DomainContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task

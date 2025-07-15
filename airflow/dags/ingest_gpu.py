@@ -2,7 +2,7 @@
 Ce dag ingère les données de l'IGN GPU dans une base de données PostgreSQL.
 """
 
-from include.container import Container
+from include.container import InfraContainer as Container
 from include.utils import multiline_string_to_single_line
 from pendulum import datetime
 
@@ -40,7 +40,6 @@ def ingest_gpu():
         Container().s3().get_file(path_on_bucket, localpath)
         sql = """
             SELECT
-                MD5Checksum(ST_AsText(geom)) AS checksum,
                 gpu_doc_id,
                 gpu_status,
                 gpu_timestamp,

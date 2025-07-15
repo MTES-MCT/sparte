@@ -1,12 +1,14 @@
 import React, { useState, ReactNode } from 'react';
 import Guide from '@components/ui/Guide';
-import { useDownloadDiagnosticMutation } from '@services/api';
+import { useDownloadDiagnosticMutation, useGetProjectDownloadLinksQuery } from '@services/api';
 import { ProjectDetailResultType } from "@services/types/project";
+
+type DocumentTypeLiteral = 'rapport-complet' | 'rapport-local';
 
 interface ReportConfig {
     title: string;
     description: string;
-    documentType: string;
+    documentType: DocumentTypeLiteral;
 }
 
 interface NoticeProps {
@@ -19,6 +21,7 @@ interface DownloadCardProps {
     report: ReportConfig;
     onDownload: (report: ReportConfig) => void;
     isDisabled: boolean;
+    downloadUrl?: string;
 }
 
 interface DownloadsProps {
@@ -50,27 +53,41 @@ export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) =>
     </div>
 );
 
-const DownloadCard: React.FC<DownloadCardProps> = ({ report, onDownload, isDisabled }) => (
+const DownloadCard: React.FC<DownloadCardProps> = ({ report, onDownload, isDisabled, downloadUrl }) => (
     <div className={`fr-card fr-enlarge-link ${isDisabled ? 'fr-card--disabled' : ''}`}>
         <div className="fr-card__body">
             <div className="fr-card__content">
                 <h3 className="fr-card__title">
-                    <a 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (!isDisabled) onDownload(report);
-                        }} 
+                    {downloadUrl ? (
+                        <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="fr-link">
+                            Rapport {report.title}
+                        </a>
+                    ) : (
+
+                    <a
+                        className="fr-link"
                         href="#"
+                        onClick={(e) => {
+                            if (!isDisabled) onDownload(report);
+                        }}
                         aria-disabled={isDisabled}
                     >
                         Rapport {report.title}
                     </a>
+                    )}
                 </h3>
                 <p className="fr-card__desc">{report.description}</p>
                 <div className="fr-card__end">
-                    <p className="fr-card__detail">
+                    {downloadUrl ? (
+                 <p className="fr-card__detail">
                         Télécharger le rapport {report.title} au format Word
                     </p>
+                    ) : (
+                                         <p className="fr-card__detail">
+                        Recevoir le rapport {report.title} au format Word par email
+                    </p>
+                    )}
+   
                 </div>
             </div>
         </div>
@@ -83,6 +100,17 @@ const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
     const [disabledDocuments, setDisabledDocuments] = useState<Set<string>>(new Set());
     const [currentReport, setCurrentReport] = useState<ReportConfig | null>(null);
     const [downloadDiagnostic] = useDownloadDiagnosticMutation();
+    const { data: downloadLinks } = useGetProjectDownloadLinksQuery(projectData.id)
+
+    const {
+        rapport_complet_url,
+        rapport_local_url
+    } = downloadLinks || {};
+
+    const urls = {
+        "rapport-complet": rapport_complet_url,
+        "rapport-local": rapport_local_url
+    } satisfies Record<DocumentTypeLiteral, string | null>;
 
     const handleDownload = async (report: ReportConfig) => {
         if (disabledDocuments.has(report.documentType)) return;
@@ -91,7 +119,6 @@ const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
         setMessage(null);
         setCurrentReport(report);
         setDisabledDocuments(new Set([report.documentType]));
-
         try {
             const response = await downloadDiagnostic({ 
                 projectId: projectData.id, 
@@ -131,6 +158,7 @@ const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
                                 <DownloadCard
                                     report={report}
                                     onDownload={handleDownload}
+                                    downloadUrl={urls[report.documentType]}
                                     isDisabled={disabledDocuments.has(report.documentType)}
                                 />
                             </div>

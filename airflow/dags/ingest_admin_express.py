@@ -9,13 +9,13 @@ import subprocess
 from urllib.request import URLopener
 
 import py7zr
-from include.container import Container
+from include.container import InfraContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task
 from airflow.models.param import Param
 
-with open("include/domain/data/admin_express/sources.json", "r") as f:
+with open("include/data/admin_express/sources.json", "r") as f:
     sources = json.load(f)
     zones = [source["name"] for source in sources]
 

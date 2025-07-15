@@ -3,7 +3,7 @@ Ce dag met à jour les données de l'application à partir des données de l'ent
 """
 
 from gdaltools import PgConnectionString, ogr2ogr
-from include.container import Container
+from include.container import InfraContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -428,6 +428,7 @@ def update_app():  # noqa: C901
                 environment=context["params"]["environment"],
                 custom_columns_type={
                     "friche_status_details": "jsonb",
+                    "logements_vacants_status_details": "jsonb",
                     "millesimes": "jsonb[]",
                     "millesimes_by_index": "jsonb[]",
                 },

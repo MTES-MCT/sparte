@@ -10,28 +10,6 @@ valid_srids: &valid_srids
   ]
 
 models:
-  - name: for_app_zoneurba
-    columns:
-      - name: checksum
-        data_tests:
-          - not_null
-          - unique
-      - name: mpoly
-        data_tests:
-          - not_null
-          - is_valid_geom
-          - is_not_empty_geom
-          - is_srid_4326
-          - unique
-      - name: area
-        data_tests:
-          - not_null
-      - name: typezone
-        data_tests:
-          - not_null
-      - name: libelle
-        data_tests:
-          - not_null
   - name: for_app_departement
     columns:
       - name: source_id

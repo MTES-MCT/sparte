@@ -17,6 +17,7 @@ SELECT
     land.child_land_types,
     land.parent_keys,
     land.departements,
+    logements_vacants.has_logements_vacants,
     coalesce(sudocuh.competence_planification, false) as competence_planification,
     CASE
         WHEN array_length(land.departements, 1) = 1
@@ -68,3 +69,12 @@ LEFT JOIN LATERAL (
         competence_plan_land.land_type = land.land_type
     LIMIT 1
 )  sudocuh ON true
+LEFT JOIN LATERAL (
+    SELECT
+        has_logements_vacants
+    FROM
+        {{ ref('land_logements_vacants_status') }}
+    WHERE
+        land_logements_vacants_status.land_id = land.land_id AND
+        land_logements_vacants_status.land_type = land.land_type
+) logements_vacants ON true

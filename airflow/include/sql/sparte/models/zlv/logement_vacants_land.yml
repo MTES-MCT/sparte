@@ -1,0 +1,45 @@
+models:
+  - name: logement_vacants_land
+    columns:
+      - name: land_id
+        description: A unique identifier for the geographical entity being analyzed, such as a commune, EPCI, department, region, or SCOT. This column is used to distinguish between different land areas.
+        data_type: text
+      - name: land_type
+        description: Specifies the type of geographical entity represented by the land_id. Possible values include 'COMM' for commune, 'EPCI' for intercommunal structure, 'DEPART' for department, 'REGION' for region, and 'SCOT' for territorial coherence scheme.
+        data_type: text
+      - name: year
+        description: The year for which the data is recorded. This column helps in tracking changes and trends over time for the specified land_id and land_type.
+        data_type: integer
+      - name: logements_parc_prive
+        description: Represents the total number of private housing units available in the specified geographical area (land_id) for a given year. This column is derived from the source data and is cast to an integer for consistency.
+        data_type: integer
+      - name: logements_vacants_parc_prive
+        description: Indicates the number of private housing units that have been vacant for at least two years in the specified geographical area (land_id) for a given year. This column is derived from the source data and is cast to an integer for consistency.
+        data_type: integer
+      - name: logements_parc_social
+        description: Represents the total number of social housing units available in the specified geographical area (land_id) for a given year. This value is calculated using a COALESCE function to handle missing data and is cast to an integer for consistency.
+        data_type: integer
+      - name: logements_vacants_parc_social
+        description: Represents the number of vacant housing units within the social housing sector for a given land type and year. This value is derived from the 'vacants' column in the respective RPLS source tables.
+        data_type: integer
+      - name: logements_parc_general
+        description: Represents the total number of housing units across both private and social housing sectors for a given land type and year. This value is calculated as the sum of 'logements_parc_prive' and 'logements_parc_social'.
+        data_type: integer
+      - name: logements_vacants_parc_general
+        description: Represents the total number of vacant housing units across both private and social housing sectors for a given land type and year. This value is calculated as the sum of 'logements_vacants_parc_prive' and 'logements_vacants_parc_social'.
+        data_type: integer
+      - name: logements_vacants_parc_general_percent
+        description: Represents the percentage of vacant housing units in the general housing stock (both private and social) for a given land type and year. Calculated as (logements_vacants_parc_general * 100) / logements_parc_general, where logements_parc_general is the total housing stock.
+        data_type: double precision
+      - name: logements_vacants_parc_prive_percent
+        description: Represents the percentage of vacant housing units in the private housing stock for a given land type and year. Calculated as (logements_vacants_parc_prive * 100) / logements_parc_prive, where logements_parc_prive is the total private housing stock.
+        data_type: double precision
+      - name: logements_vacants_parc_social_percent
+        description: Represents the percentage of vacant housing units in the social housing stock for a given land type and year. Calculated as (logements_vacants_parc_social * 100) / logements_parc_social, where logements_parc_social is the total social housing stock.
+        data_type: double precision
+      - name: logements_vacants_parc_prive_on_parc_general_percent
+        description: This column represents the percentage of vacant private housing units relative to the total housing stock (general housing stock) for a given land type and year. It is calculated as (logements_vacants_parc_prive / logements_parc_general) * 100, where logements_parc_general is the sum of private and social housing units.
+        data_type: double precision
+      - name: logements_vacants_parc_social_on_parc_general_percent
+        description: This column represents the percentage of vacant social housing units relative to the total housing stock (general housing stock) for a given land type and year. It is calculated as (logements_vacants_parc_social / logements_parc_general) * 100, where logements_parc_general is the sum of private and social housing units.
+        data_type: double precision

@@ -1,5 +1,5 @@
 from gdaltools import ogr2ogr
-from include.container import Container
+from include.container import InfraContainer as Container
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -18,7 +18,7 @@ def ingest_table(source_table_name: str, destination_table_name: str):
 
 @dag(
     start_date=datetime(2024, 1, 1),
-    schedule="@once",
+    schedule="@weekly",
     catchup=False,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["App"],

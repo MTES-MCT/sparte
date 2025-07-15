@@ -1,5 +1,6 @@
 import requests
-from include.domain.file_handling import BaseHTTPFileHandler
+
+from .BaseHTTPFileHandler import BaseHTTPFileHandler
 
 
 class HTTPFileHandler(BaseHTTPFileHandler):

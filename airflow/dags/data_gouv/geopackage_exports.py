@@ -1,7 +1,7 @@
 import pendulum
 from dags.data_gouv.Config import GeopackageConfig
 from dags.data_gouv.utils import get_configs
-from include.domain.container import Container
+from include.container import DomainContainer as Container
 
 from airflow.decorators import dag, task
 
