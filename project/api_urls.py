@@ -5,6 +5,7 @@ from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByUsagePieChart,
     ArtifMap,
+    ArtifSyntheseChart,
 )
 from project.charts.consommation import ConsoAnnualChart
 from project.charts.urbanisme import (
@@ -51,6 +52,7 @@ def get_chart_klass_or_404(chart_id):
         "friche_zonage_type": FricheZonageTypeChart,
         "friche_zone_activite": FricheZoneActiviteChart,
         "conso_annual": ConsoAnnualChart,
+        "artif_synthese": ArtifSyntheseChart,
     }
 
     if chart_id not in charts:

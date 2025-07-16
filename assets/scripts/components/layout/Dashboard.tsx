@@ -91,10 +91,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
-                                                status={
-                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
-                                                }
+                                                showTitle={false}
                                             >
                                                 <Synthese
                                                     projectData={projectData}

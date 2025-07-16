@@ -40,7 +40,6 @@ class ConsoAnnualChart(DiagnosticChart):
                 "y": item.total / 10000,  # Conversion m² -> ha
             }
             for item in self.data
-            if item.total > 0
         ]
 
         # Calcul de la droite de tendance (régression linéaire simple)
@@ -93,7 +92,12 @@ class ConsoAnnualChart(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Consommation d'espaces NAF (ha)"},
+            "title": {
+                "text": f"Consommation annuelle d'espaces NAF de {self.land.name} entre {self.data.first().year} et  {self.data.last().year} (ha)"  # noqa: E501
+            },
+            "subtitle": {
+                "text": "La période de référence de la loi Climat & Résilience est mise en évidence par la bande bleue.",  # noqa: E501
+            },
             "series": self.series,
             "chart": {"type": "column"},
             "yAxis": {"title": {"text": ""}},

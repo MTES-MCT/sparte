@@ -37,7 +37,7 @@ export const ConsommationChart = ({
             containerProps={containerProps}
             isLoading={isLoading}
             error={error}
-            sources={sources}
+            sources={["majic"]}
             showDataTable={showDataTable}
             showToolbar={showToolbar}
         >

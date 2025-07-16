@@ -7,6 +7,7 @@ interface RouteWrapperProps {
     showPage?: boolean;
     showStatus?: boolean;
     status?: ReactNode;
+    showTitle?: boolean;
 }
 
 const Title = styled.h1`
@@ -20,17 +21,21 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
     status = null,
     showPage = true,
     showStatus = false,
-    
+    showTitle = true,
 }) => {
 
     usePageTitle(title);
+
+    if (!showTitle && !showStatus && showPage) {
+        return <>{children}</>;
+    }
 
     return (
         <>
             <div className="fr-container--fluid fr-p-3w">
                 <div className="fr-grid-row">
                     <div className="fr-col-12">
-                        <Title>{title}</Title>
+                        {showTitle && <Title>{title}</Title>}
                         {showStatus && status}
                     </div>
                 </div>
