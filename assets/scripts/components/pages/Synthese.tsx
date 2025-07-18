@@ -52,7 +52,7 @@ const SyntheseConso = ({ landData, projectData, levierSkipLinkClickHandler }: {
           <div className="bg-white fr-p-3w rounded w-100">
             <p className="fr-text--sm fr-mb-2w">
               La première phase de loi Climat et Résilience consiste à réduire
-              de <strong>50 %</strong> la consommation d'espaces NAF (Naturels,
+              nationnalement de <strong>50 %</strong> la consommation d'espaces NAF (Naturels,
               Agricoles et Forestiers) entre 2021 et 2031, par rapport à la
               consommation de la période <strong>2011-2020</strong>, aussi
               appelée période de référence.
@@ -61,31 +61,27 @@ const SyntheseConso = ({ landData, projectData, levierSkipLinkClickHandler }: {
               Sur le territoire de {name},{" "}
               <strong>41,2 ha ont été consommés entre 2011 et 2020</strong>.{" "}
               <strong>
-                La consommation d'espaces de ce territoire ne devra donc pas
-                dépasser un total de 20,6 ha sur la période 2021-2030.
+                La consommation d'espaces de ce territoire ne devrait donc pas
+                dépasser un total de 20,6 ha sur la période 2021-2030 pour respecter l'objectif national.
               </strong>
             </p>
             <p className="fr-text--sm fr-mb-2w">
               Depuis 2021, <strong>10 ha d'espaces NAF ont été consommés</strong>.
               <strong>
-              {" "}<span className="fr-badge--success">L'objectif de réduction est donc actuellement respecté</span></strong> par le territoire 
+              {" "}<span className="fr-badge--success">L'objectif national de réduction serait donc actuellement respecté</span></strong> par le territoire 
               de {name}, avec un taux de consommation de{" "}
               <strong>{formatNumber({ number: 10 / 41.2 * 100 })}%</strong> de la consommation observée
               par rapport à celle de la période de référence.
             </p>
             <p className="fr-text--sm fr-mb-2w">
               Cependant, si la consommation d'espaces de ce territoire se poursuit au même
-              rythme,  <strong><span className="fr-badge--error">l'objectif de réduction à horizon 2031 sera dépassé en 2028.</span></strong>
+              rythme,  <strong><span className="fr-badge--error">l'objectif national de réduction à horizon 2031 serait dépassé en 2028.</span></strong>
             </p>
-            <br />
-                <Link
-                    to="#agir-leviers-sobriete-fonciere"
-                    onClick={levierSkipLinkClickHandler}
-                    className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
-                >
-                Découvrir directement les leviers de sobriété foncière
-            </Link>
-
+            <p className="fr-text--sm">
+                <strong>
+                  <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que l'objectif national est en cours de territorialisation.
+                </strong>
+            </p>
           </div>
         </div>
       </div>
@@ -264,7 +260,7 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
       <SyntheseConso landData={landData} projectData={projectData} levierSkipLinkClickHandler={levierSkipLinkClickHandler} />
       {landData.has_ocsge && (
         <>
-        <h2>Période 2031 - 2050 : mesure et objectifs de l’artificialisation des sols</h2>
+        <h2>Période 2021 - 2050 : mesure et objectifs de l’artificialisation des sols</h2>
         <SyntheseArtif landData={landData} projectData={projectData} />
         </>
       )}
