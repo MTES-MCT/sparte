@@ -37,7 +37,7 @@ const FricheAbstract: React.FC<FricheAbstractProps> = ({ friche_status, friche_s
             <>
                 D'après les données disponibles, il n'y a actuellement <strong>aucune friche sans projet</strong> sur le territoire de <strong>{name}</strong>.
                 L'absence de friches sans projet est due à l'exploitation du potentiel des friches existantes.<br />
-                En effet <strong>{friche_status_details.friche_reconvertie_count} {pluralize(friche_status_details.friche_reconvertie_count, 'friche')} ont été reconvertie{pluralize(friche_status_details.friche_reconvertie_count, 'e', 'es')}</strong>, représentant une surface totale de <strong>{formatNumber({ number: friche_status_details.friche_reconvertie_surface })} ha</strong>,
+                En effet <strong>{friche_status_details.friche_reconvertie_count} {pluralize(friche_status_details.friche_reconvertie_count, 'friche')} ont été {pluralize(friche_status_details.friche_reconvertie_count, 'reconvertie')}</strong>, représentant une surface totale de <strong>{formatNumber({ number: friche_status_details.friche_reconvertie_surface })} ha</strong>,
                 et <strong>{friche_status_details.friche_avec_projet_count} {pluralize(friche_status_details.friche_avec_projet_count, 'friche')} sont actuellement en projet</strong>, représentant une surface totale de <strong>{formatNumber({ number: friche_status_details.friche_avec_projet_surface })} ha.</strong><br />
                 <strong>La réhabilitation de friches ne semble plus être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
             </>
