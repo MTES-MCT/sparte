@@ -56,6 +56,19 @@ export type LogementsVacantsStatusDetails = {
     logements_vacants_parc_social_on_parc_general_percent: number;
 }
 
+export type ConsoDetails = {
+    conso_2011_2020: number;
+    allowed_conso_raised_to_1ha_2021_2030: boolean;
+    allowed_conso_2021_2030: number;
+    conso_since_2021: number;
+    annual_conso_since_2021: number;
+    projected_conso_2030: number;
+    currently_respecting_regulation: boolean;
+    current_percent_use: number;
+    respecting_regulation_by_2030: boolean;
+    projected_percent_use_by_2030: number;
+}
+
 
 
 export type LandDetailResultType = {
@@ -85,6 +98,7 @@ export type LandDetailResultType = {
     simple_geom: GeoJsonObject;
     bounds: [number, number, number, number];
     max_bounds: [number, number, number, number];
+    conso_details: ConsoDetails;
 };
 
 type LandDetailQueryArg = string | FetchArgs | {
@@ -98,4 +112,4 @@ export type UseLandDetailType = TypedUseQuery<
     LandDetailResultType,
     LandDetailQueryArg,
     LandDetailBaseQuery
- >;  
+ >;

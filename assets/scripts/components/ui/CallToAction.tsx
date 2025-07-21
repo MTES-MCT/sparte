@@ -6,19 +6,15 @@ const Container = styled.div`
   flex-direction: column;
   padding: 1rem;
   border-radius: 6px;
-  background-color: #ece4ff
+  background-color: #fff;
 `;
 
 const Title = styled.h3`
-  font-size: 0.9rem;
-  color: #313178;
+  font-size: 1.2rem;
   margin-bottom: 0.5rem;
 `;
 
 const Text = styled.p`
-  font-size: 0.8rem;
-  line-height: 1.2rem;
-  color: #313178;
   margin-bottom: 1rem;
 `;
 
@@ -33,7 +29,7 @@ const CallToAction: React.FC<CallToActionProps> = ({ title, text, children }) =>
   return (
     <Container>
       <Title>{title}</Title>
-      <Text>{text}</Text>
+      <Text className="fr-text--sm">{text}</Text>
       {children}
     </Container>
   );

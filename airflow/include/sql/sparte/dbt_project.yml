@@ -58,3 +58,5 @@ models:
       +schema: cartofriches
     matomo:
       +schema: matomo
+    land:
+      +schema: land

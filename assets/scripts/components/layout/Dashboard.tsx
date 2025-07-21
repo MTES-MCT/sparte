@@ -91,14 +91,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
-                                                status={
-                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
-                                                }
+                                                showTitle={false}
                                             >
                                                 <Synthese
-                                                    endpoint={urls.synthese}
-                                                    urls={projectData.urls}
+                                                    projectData={projectData}
                                                     landData={landData}
                                                 />
                                             </RouteWrapper>
@@ -171,7 +167,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <LogementVacantStatus />
                                                 }
                                             >
-                                                <LogementVacant endpoint={urls.logementVacant} />
+                                                <LogementVacant 
+                                                    endpoint={urls.logementVacant} 
+                                                    landData={landData}
+                                                    projectData={projectData}
+                                                />
                                             </RouteWrapper>
                                         }
                                     />

@@ -23,7 +23,8 @@ SELECT
         WHEN array_length(land.departements, 1) = 1
         THEN false
         ELSE true
-    END as is_interdepartemental
+    END as is_interdepartemental,
+    trajectoire.*
 FROM
     {{ ref('land') }}
 LEFT JOIN LATERAL (
@@ -78,3 +79,20 @@ LEFT JOIN LATERAL (
         land_logements_vacants_status.land_id = land.land_id AND
         land_logements_vacants_status.land_type = land.land_type
 ) logements_vacants ON true
+LEFT JOIN LATERAL (
+    SELECT
+        conso_2011_2020,
+        allowed_conso_raised_to_1ha_2021_2030,
+        allowed_conso_2021_2030,
+        conso_since_2021,
+        annual_conso_since_2021,
+        projected_conso_2030,
+        currently_respecting_regulation,
+        current_percent_use,
+        respecting_regulation_by_2030,
+        projected_percent_use_by_2030
+    FROM {{ ref('land_trajectoires') }}
+    WHERE
+        land_trajectoires.land_id = land.land_id AND
+        land_trajectoires.land_type = land.land_type
+) trajectoire ON true
