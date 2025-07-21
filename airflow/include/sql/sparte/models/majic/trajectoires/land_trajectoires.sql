@@ -44,4 +44,4 @@ LEFT JOIN LATERAL (
     ORDER BY to_year DESC
     LIMIT 1
 ) conso_since_2021 ON true
-ORDER BY projected_percent_use_by_2030 DESC
+ORDER BY projected_percent_use_by_2030 ASC

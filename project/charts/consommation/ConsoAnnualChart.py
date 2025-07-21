@@ -66,7 +66,7 @@ class ConsoAnnualChart(DiagnosticChart):
                         "y": slope * i + intercept,
                     }
                     for i, item in enumerate(self.data)
-                    if item.total > 0
+                    if slope * i + intercept > 0
                 ]
             else:
                 trend_data = []

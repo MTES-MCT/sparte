@@ -25,12 +25,23 @@ interface SyntheseProps {
 }
 
 
-const SyntheseConso = ({ landData, projectData, levierSkipLinkClickHandler }: {
+const SyntheseConso = ({ landData, projectData }: {
     landData: LandDetailResultType;
     projectData: ProjectDetailResultType;
-    levierSkipLinkClickHandler: () => void;
 }) => {
-  const { land_id, land_type, name } = landData;
+  const { land_id, land_type, name, conso_details } = landData;
+  const { 
+    conso_2011_2020,
+    allowed_conso_2021_2030,
+    conso_since_2021,
+    annual_conso_since_2021,
+    projected_conso_2030,
+    currently_respecting_regulation,
+    current_percent_use,
+    respecting_regulation_by_2030,
+    projected_percent_use_by_2030,
+    allowed_conso_raised_to_1ha_2021_2030
+  } = conso_details;
   const { urls } = projectData;
 
   return (
@@ -59,27 +70,48 @@ const SyntheseConso = ({ landData, projectData, levierSkipLinkClickHandler }: {
             </p>
             <p className="fr-text--sm fr-mb-2w">
               Sur le territoire de {name},{" "}
-              <strong>41,2 ha ont été consommés entre 2011 et 2020</strong>.{" "}
+              <strong>{formatNumber({number: conso_2011_2020})} ha ont été consommés entre 2011 et 2020</strong>.{" "}
+          
               <strong>
                 La consommation d'espaces de ce territoire ne devrait donc pas
-                dépasser un total de 20,6 ha sur la période 2021-2030 pour respecter l'objectif national.
+                dépasser un total de {formatNumber({number: allowed_conso_2021_2030})} ha sur la période 2021-2030 pour respecter l'objectif national.
               </strong>
             </p>
+            {allowed_conso_raised_to_1ha_2021_2030 && (
+              <p className="fr-text--sm fr-mb-2w">
+                  La situation de {name} est un cas particulier car sa consommation est
+                  inférieure à 2 ha sur la période de référence (2011-2020). L'objectif de réduction de 50% ne s'applique
+                  pas dans ce cas, et son objectif de consommation d'espaces NAF est donc de ne pas dépasser 1 ha sur la période 2021-2031.{" "}
+                  <a target="_blank" href="https://www.legifrance.gouv.fr/loda/id/JORFTEXT000043956924#:~:text=3%C2%B0%20bis%20Une,%C3%A0%20un%20hectare.">Source</a>.
+              </p>
+            )}
+
             <p className="fr-text--sm fr-mb-2w">
-              Depuis 2021, <strong>10 ha d'espaces NAF ont été consommés</strong>.
-              <strong>
-              {" "}<span className="fr-badge--success">L'objectif national de réduction serait donc actuellement respecté</span></strong> par le territoire 
-              de {name}, avec un taux de consommation de{" "}
-              <strong>{formatNumber({ number: 10 / 41.2 * 100 })}%</strong> de la consommation observée
+              Depuis 2021, <strong>{formatNumber({number: conso_since_2021})} ha d'espaces NAF ont été consommés</strong>.{" "}
+              <strong>{currently_respecting_regulation ? (
+                <span className="fr-badge--success">L'objectif national de réduction serait donc actuellement respecté</span>
+              ) : (
+                <span className="fr-badge--error">L'objectif national de réduction ne serait pas respecté</span>
+              )}</strong>{" "}
+
+              par le territoire  de {name}, avec un taux de consommation de{" "}
+              <strong>{formatNumber({ number: current_percent_use })}%</strong> de la consommation observée
               par rapport à celle de la période de référence.
             </p>
+
             <p className="fr-text--sm fr-mb-2w">
-              Cependant, si la consommation d'espaces de ce territoire se poursuit au même
-              rythme,  <strong><span className="fr-badge--error">l'objectif national de réduction à horizon 2031 serait dépassé en 2028.</span></strong>
+              {respecting_regulation_by_2030 ? (
+                <>Le territoire de {name} <strong><span className="fr-badge--success">devrait respecter l'objectif national de réduction à horizon 2031</span></strong></>
+              ) : (
+                <>Cependant, le territoire de {name} <strong><span className="fr-badge--error">ne devrait pas respecter l'objectif national de réduction à horizon 2031</span></strong></>
+              )}
+              , avec un taux de consommation projeté de{" "}
+              <strong>{formatNumber({ number: projected_percent_use_by_2030 })}%</strong> par rapport à la consommation de la période de référence.
             </p>
             <p className="fr-text--sm">
                 <strong>
-                  <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que l'objectif national est en cours de territorialisation.
+                  <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que l'objectif national est en cours de territorialisation
+                  et que les objectifs locaux pourront différer en fonction des documents d'urbanisme en vigueur.
                 </strong>
             </p>
           </div>
@@ -157,7 +189,8 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
               landArtifStockIndex={data}
               between={true}
               className="fr-text--sm"
-            />, <strong>l'artificialisation nette est de {formatNumber({ number: data.flux_surface })} ha</strong>.
+            />, <strong>l'artificialisation nette est de {formatNumber({ number: data.flux_surface })} ha</strong>,
+            <strong> soit {formatNumber({ number: data.flux_percent })}% de la surface totale du territoire</strong>.          
           </p>
           <p className="fr-text--sm fr-mt-2w">
             Cette donnée a pour le moment un caractère informatif puisqu'elle n'est pas encore réglementaire.
@@ -243,28 +276,19 @@ const SyntheseFriche = ({ landData, projectData }: SyntheseProps) => {
 };
 
 const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
-  const levierRef = useRef(null)
-  const levierSkipLinkClickHandler = () => {
-    const offset = 200;
-    const elementPosition = levierRef.current.getBoundingClientRect().top + window.scrollY;
-    const offsetPosition = elementPosition - offset;
-    if (levierRef.current) {
-      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
-    }
-  };
 
 
   return (
     <div className="fr-container--fluid fr-p-3w">
         <h2>Période 2021-2030 : mesure et objectifs de consommation d'espaces</h2>
-      <SyntheseConso landData={landData} projectData={projectData} levierSkipLinkClickHandler={levierSkipLinkClickHandler} />
+      <SyntheseConso landData={landData} projectData={projectData}/>
       {landData.has_ocsge && (
         <>
         <h2>Période 2021 - 2050 : mesure et objectifs de l’artificialisation des sols</h2>
         <SyntheseArtif landData={landData} projectData={projectData} />
         </>
       )}
-      <h2 ref={levierRef} id="agir-leviers-sobriete-fonciere" className="fr-mt-10w">Agir : les leviers de la sobriété foncière</h2>
+      <h2 id="agir-leviers-sobriete-fonciere" className="fr-mt-10w">Agir : les leviers de la sobriété foncière</h2>
       <h3>Vacance des Logements</h3>
       <SyntheseLogementVacant landData={landData} projectData={projectData} />
       <h3>Réhabilitation des friches</h3>

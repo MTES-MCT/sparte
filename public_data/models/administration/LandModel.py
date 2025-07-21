@@ -75,6 +75,7 @@ class LandModel(models.Model):
     logements_vacants_status_details = models.JSONField()
     bounds = ArrayField(base_field=models.FloatField())
     max_bounds = ArrayField(base_field=models.FloatField())
+    conso_details = models.JSONField()
 
     class Meta:
         managed = False

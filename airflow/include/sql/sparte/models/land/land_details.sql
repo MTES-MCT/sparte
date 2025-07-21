@@ -82,7 +82,7 @@ LEFT JOIN LATERAL (
 LEFT JOIN LATERAL (
     SELECT
         conso_2011_2020,
-        conso_below_1ha_2011_2020,
+        allowed_conso_raised_to_1ha_2021_2030,
         allowed_conso_2021_2030,
         conso_since_2021,
         annual_conso_since_2021,
