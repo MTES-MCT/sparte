@@ -4,7 +4,6 @@ import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
 import Guide from '@components/ui/Guide';
 import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
-import { Link } from 'react-router-dom';
 import { LandDetailResultType } from "@services/types/land";
 import { ProjectDetailResultType } from "@services/types/project";
 
