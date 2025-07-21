@@ -277,11 +277,12 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
 
   return (
     <div className="fr-container--fluid fr-p-3w">
-        <h2>Période 2021-2030 : mesure et objectifs de consommation d'espaces</h2>
+      <h2>Comprendre : les objectifs de sobriété foncière</h2>
+        <h3>Période 2021-2030 : mesure de la de consommation d'espaces</h3>
       <SyntheseConso landData={landData} projectData={projectData}/>
       {landData.has_ocsge && (
         <>
-        <h2>Période 2021 - 2050 : mesure et objectifs de l’artificialisation des sols</h2>
+        <h3>Période 2021 - 2050 : mesure de l’artificialisation des sols</h3>
         <SyntheseArtif landData={landData} projectData={projectData} />
         </>
       )}
