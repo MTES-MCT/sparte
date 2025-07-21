@@ -33,8 +33,6 @@ const SyntheseConso = ({ landData, projectData }: {
     conso_2011_2020,
     allowed_conso_2021_2030,
     conso_since_2021,
-    annual_conso_since_2021,
-    projected_conso_2030,
     currently_respecting_regulation,
     current_percent_use,
     respecting_regulation_by_2030,
