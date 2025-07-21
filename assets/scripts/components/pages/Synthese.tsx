@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
@@ -16,7 +16,6 @@ import FricheStatus from "@components/features/status/FricheStatus";
 import LogementVacantStatus from "@components/features/status/LogementVacantStatus";
 import { ConsommationChart } from "@components/charts/consommation/ConsommationChart";
 import CallToAction from "@components/ui/CallToAction";
-import styled from "styled-components";
 import { ArtifSyntheseChart } from "@components/charts/artificialisation/ArtifSyntheseChart";
 
 interface SyntheseProps {
