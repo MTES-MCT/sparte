@@ -66,7 +66,6 @@ class ArtifSyntheseChart(DiagnosticChart):
 
     @property
     def param(self):
-        print(self.data)
         return {
             "chart": {"type": "bar"},
             "title": {"text": self.title},
