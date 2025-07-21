@@ -13,7 +13,7 @@ class ArtifSyntheseChart(DiagnosticChart):
 
     @property
     def years(self):
-        return [f"{'-'.join(map(str,stock_index.years))}" for stock_index in self.data]
+        return [f"{'-'.join(map(str, stock_index.years))}" for stock_index in self.data]
 
     def get_formatted_flux_percent_str(self, value):
         if value is None:
