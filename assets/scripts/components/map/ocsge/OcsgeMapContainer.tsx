@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DEFAULT_SELECTION } from "./constants/selections";
 import { OcsgeMap } from "./OcsgeMap";
-import { useGetEnvironmentQuery } from "@services/api";
+import { useGetEnvironmentQuery, useGetLandGeomQuery } from "@services/api";
 import { LandDetailResultType } from "@services/types/land";
 import { FilterSpecification } from "maplibre-gl";
 
@@ -22,11 +22,14 @@ export const OcsgeMapContainer = ({ landData, globalFilter }: OcsgeMapContainerP
   const [selection, setSelection] = useState(DEFAULT_SELECTION);
   const [userFilters, setUserFilters] = useState([]);
   const {
-    simple_geom: emprise,
     bounds,
     max_bounds,
     departements,
+    land_id,
+    land_type,
   } = landData;
+  const { data: geom_data } = useGetLandGeomQuery({ land_type, land_id });
+  const { simple_geom: emprise } = geom_data || {};
 
   const { millesimes, millesimes_by_index } = landData || {};
 
