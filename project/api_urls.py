@@ -34,6 +34,7 @@ from public_data.models import (
     LandFricheZonageTypeViewset,
     LandFricheZoneActiviteViewset,
     LandModel,
+    LandModelGeomViewset,
     LandModelViewset,
 )
 
@@ -129,4 +130,7 @@ urlpatterns = [
     path("landfrichecentroid/", LandFricheCentroidViewset.as_view(), name="landfrichecentroid"),
     path("lands/", LandModelViewset.as_view({"get": "list"}), name="lands"),
     path("lands/<str:land_type>/<str:land_id>", LandModelViewset.as_view({"get": "retrieve"}), name="land"),
+    path(
+        "landsgeom/<str:land_type>/<str:land_id>", LandModelGeomViewset.as_view({"get": "retrieve"}), name="land_geom"
+    ),
 ]

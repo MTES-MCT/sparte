@@ -48,7 +48,6 @@ export type ProjectDetailResultType = {
 		latitude: number;
 		longitude: number;
     };
-    emprise: GeoJsonObject;
     urls: {
 		synthese: string;
 		artificialisation: string;

@@ -5,7 +5,7 @@ from .Epci import Epci
 from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .Land import Land
 from .LandMixin import LandMixin
-from .LandModel import LandModel, LandModelViewset
+from .LandModel import LandModel, LandModelGeomViewset, LandModelViewset
 from .Nation import Nation
 from .Region import Region
 from .Scot import Scot
@@ -20,6 +20,7 @@ __all__ = [
     "LandMixin",
     "LandModel",
     "LandModelViewset",
+    "LandModelGeomViewset",
     "Region",
     "Scot",
     "Nation",

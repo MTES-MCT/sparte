@@ -95,7 +95,6 @@ export type LandDetailResultType = {
     logements_vacants_status_details: LogementsVacantsStatusDetails;
     has_logements_vacants: boolean;
 	has_friche: boolean;
-    simple_geom: GeoJsonObject;
     bounds: [number, number, number, number];
     max_bounds: [number, number, number, number];
     conso_details: ConsoDetails;

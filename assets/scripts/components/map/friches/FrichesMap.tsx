@@ -8,6 +8,7 @@ import { MapControls, PopupConfig } from "../types";
 import { Map } from "maplibre-gl";
 import { FrichesPopup } from "./FrichesPopup";
 import { LandDetailResultType } from "@services/types/land";
+import { useGetLandGeomQuery } from "@services/api";
 
 interface FrichesMapProps {
 	landData: LandDetailResultType;
@@ -26,7 +27,9 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 	center
 }) => {
 	const mapRef = useRef<Map | null>(null);
-	const { land_type, land_id, simple_geom, bounds, max_bounds } = landData;
+	const { land_type, land_id, bounds, max_bounds } = landData;
+	const { data: geom_data } = useGetLandGeomQuery({ land_type, land_id });
+	const { simple_geom } = geom_data || {};
 	const empriseLayer = createEmpriseLayer(simple_geom);
 	const frichesLayer = createFrichesLayer(land_type, land_id);
 	const frichesCentroidLayer = createFrichesCentroidLayer(land_type, land_id);

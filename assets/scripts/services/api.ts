@@ -72,6 +72,9 @@ export const djangoApi = createApi({
 		getLand: builder.query({
 			query: ({ land_type, land_id }) => `/api/lands/${land_type}/${land_id}`,
 		}),
+		getLandGeom: builder.query({
+			query: ({ land_type, land_id }) => `/api/landsgeom/${land_type}/${land_id}`,
+		}),
 		getProject: builder.query({
 			query: (id) => `/project/${id}/detail`,
 		}),
@@ -102,6 +105,7 @@ const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
 const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
+const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
 
 const {
 	useGetDepartementListQuery,
@@ -124,4 +128,5 @@ export {
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,
+	useGetLandGeomQuery,
 };

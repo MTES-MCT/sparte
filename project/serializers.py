@@ -4,7 +4,6 @@ from django_app_parameter.models import Parameter
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
 from rest_framework_gis import serializers as gis_serializers
-from rest_framework_gis.serializers import GeometrySerializerMethodField
 
 from project.models import Project, Request, RequestedDocumentChoices
 
@@ -12,7 +11,6 @@ from .models import Emprise
 
 
 class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
-    emprise = GeometrySerializerMethodField()
     bounds = SerializerMethodField()
     max_bounds = SerializerMethodField()
     centroid = SerializerMethodField()
@@ -155,9 +153,6 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "longitude": centroid.x,
         }
 
-    def get_emprise(self, obj):
-        return obj.combined_emprise.simplify(0.001)
-
     class Meta:
         model = Project
         geo_field = "combined_emprise"
@@ -178,7 +173,6 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "bounds",
             "max_bounds",
             "centroid",
-            "emprise",
             "urls",
             "navbar",
             "footer",
