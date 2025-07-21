@@ -43,7 +43,19 @@ SELECT
     land.child_land_types,
     land.parent_keys,
     land.departements,
-    is_interdepartemental
+    is_interdepartemental,
+    jsonb_build_object(
+        'conso_2011_2020', {{ m2_to_ha('land.conso_2011_2020') }},
+        'conso_below_1ha_2011_2020', land.conso_below_1ha_2011_2020,
+        'allowed_conso_2021_2030', {{ m2_to_ha('land.allowed_conso_2021_2030') }},
+        'conso_since_2021', {{ m2_to_ha('land.conso_since_2021') }},
+        'annual_conso_since_2021', {{ m2_to_ha('land.annual_conso_since_2021') }},
+        'projected_conso_2030', {{ m2_to_ha('land.projected_conso_2030') }},
+        'currently_respecting_regulation', land.currently_respecting_regulation,
+        'current_percent_use', land.current_percent_use,
+        'respecting_regulation_by_2030', land.respecting_regulation_by_2030,
+        'projected_percent_use_by_2030', land.projected_percent_use_by_2030
+    ) as conso_details
 FROM
     {{ ref('land_details') }} as land
 LEFT JOIN LATERAL (
