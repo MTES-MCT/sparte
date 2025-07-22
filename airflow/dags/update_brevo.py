@@ -60,7 +60,12 @@ def update_brevo():
         brevo = InfraContainer().brevo()
         with open(local_tmp_file, "r") as file:
             contact_csv_str = file.read()
-        return brevo.import_contacts(contact_csv_str, list_ids=[10])
+
+        if os.getenv("ENVIRONMENT") == "production":
+            list_ids = [10]
+        else:
+            list_ids = [26]
+        return brevo.import_contacts(contact_csv_str, list_ids=list_ids)
 
     csv_file = create_user_data_csv()
     local_user_data_path = download_user_data_csv()
