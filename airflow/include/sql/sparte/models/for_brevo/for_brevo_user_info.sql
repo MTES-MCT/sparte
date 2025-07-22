@@ -1,3 +1,11 @@
+{{
+    config(
+        materialized='table',
+        docs={'node_color': 'purple'}
+    )
+}}
+
+
 SELECT
     user_email as "EMAIL",
     user_lastname as "NOM",

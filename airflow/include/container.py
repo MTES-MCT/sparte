@@ -8,6 +8,7 @@ from psycopg2 import connect
 from psycopg2.extensions import connection
 from s3fs import S3FileSystem
 
+from .connectors import Brevo
 from .file_handling import (
     CSVFileIngestor,
     DataGouvHandler,
@@ -155,6 +156,13 @@ class InfraContainer(containers.DeclarativeContainer):
         port=int(os.getenv("GPU_SFTP_PORT")),
         default_path="/pub/export-wfs/latest/",
         cnopts=cnopts,
+    )
+
+    brevo = providers.Factory(
+        provides=Brevo,
+        url="https://api.brevo.com/v3",
+        api_key=os.getenv("BREVO_API_KEY"),
+        env=os.getenv("ENVIRONMENT"),
     )
 
 
