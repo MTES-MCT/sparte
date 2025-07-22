@@ -1,6 +1,7 @@
 import os
 
 from include.container import DomainContainer, InfraContainer
+from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -18,6 +19,11 @@ from airflow.decorators import dag, task
 def update_brevo():
     s3_key = "brevo/user_data.csv"
     local_tmp_file = "/tmp/user_data.csv"
+
+    @task.bash
+    def build_suv_on_dbt():
+        cmd = "dbt build -s for_brevo"
+        return get_dbt_command_from_directory(cmd)
 
     @task.python
     def create_user_data_csv():
@@ -67,12 +73,13 @@ def update_brevo():
             list_ids = [26]
         return brevo.import_contacts(contact_csv_str, list_ids=list_ids)
 
+    build_suv = build_suv_on_dbt()
     csv_file = create_user_data_csv()
     local_user_data_path = download_user_data_csv()
     stats = get_file_stats()
     import_contacts = import_brevo_contacts()
 
-    csv_file >> local_user_data_path >> stats >> import_contacts
+    build_suv >> csv_file >> local_user_data_path >> stats >> import_contacts
 
 
 update_brevo()
