@@ -18,8 +18,6 @@ class Brevo:
             "api-key": api_key,
             "content-type": "application/json",
         }
-        if env != "production":
-            self.default_headers["X-Sib-Sandbox"] = "drop"
 
     def __post(
         self,
