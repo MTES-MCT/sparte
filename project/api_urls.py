@@ -5,7 +5,9 @@ from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByUsagePieChart,
     ArtifMap,
+    ArtifSyntheseChart,
 )
+from project.charts.consommation import ConsoAnnualChart
 from project.charts.urbanisme import (
     FrichePollutionChart,
     FricheSurfaceChart,
@@ -32,6 +34,7 @@ from public_data.models import (
     LandFricheZonageTypeViewset,
     LandFricheZoneActiviteViewset,
     LandModel,
+    LandModelGeomViewset,
     LandModelViewset,
 )
 
@@ -49,6 +52,8 @@ def get_chart_klass_or_404(chart_id):
         "friche_zonage_environnemental": FricheZonageEnvironnementalChart,
         "friche_zonage_type": FricheZonageTypeChart,
         "friche_zone_activite": FricheZoneActiviteChart,
+        "conso_annual": ConsoAnnualChart,
+        "artif_synthese": ArtifSyntheseChart,
     }
 
     if chart_id not in charts:
@@ -125,4 +130,7 @@ urlpatterns = [
     path("landfrichecentroid/", LandFricheCentroidViewset.as_view(), name="landfrichecentroid"),
     path("lands/", LandModelViewset.as_view({"get": "list"}), name="lands"),
     path("lands/<str:land_type>/<str:land_id>", LandModelViewset.as_view({"get": "retrieve"}), name="land"),
+    path(
+        "landsgeom/<str:land_type>/<str:land_id>", LandModelGeomViewset.as_view({"get": "retrieve"}), name="land_geom"
+    ),
 ]

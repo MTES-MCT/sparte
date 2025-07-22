@@ -9,6 +9,7 @@ SELECT
     {{ group_by_column}} as {{ code_name }},
     from_year,
     to_year,
+    sum(commune.surface) as {{ code_name }}_surface,
     {{ sum_percent_median_avg('total', 'commune.surface') }},
     {{ sum_percent_median_avg('activite', 'commune.surface') }},
     {{ sum_percent_median_avg('habitat', 'commune.surface') }},

@@ -80,7 +80,7 @@ const TopBar: React.FC = () => {
     const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
     const location = useLocation();
-    const pathsToHidePeriod = ['vacance-des-logements', 'artificialisation', 'friches'];
+    const pathsToHidePeriod = ['vacance-des-logements', 'artificialisation', 'friches', 'synthesis'];
     const shouldDisplayPeriod = !pathsToHidePeriod.some(path => location.pathname.endsWith(path));
     const pathsToHideLevel = ['friches'];
     const shouldDisplayLevel = !pathsToHideLevel.some(path => location.pathname.endsWith(path));

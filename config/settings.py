@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Any, Dict, Literal
 
 import environ
-import pkg_resources
 import sentry_sdk
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
@@ -474,22 +473,6 @@ SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
 
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
-
-# Jupyter configuration
-
-# used by ./manage.py shell_plus --notebook
-if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
-    INSTALLED_APPS += [
-        "django_extensions",
-    ]
-    NOTEBOOK_ARGUMENTS = [
-        "--ip",
-        "0.0.0.0",
-        "--allow-root",
-        "--notebook-dir='notebooks/'",
-        "--NotebookApp.token=''",
-        "--NotebookApp.password=''",
-    ]
 
 # RESTRAMEWORK parameters
 # https://www.django-rest-framework.org

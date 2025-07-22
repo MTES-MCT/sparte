@@ -1,7 +1,7 @@
 import React from "react";
 import { formatNumber } from "@utils/formatUtils";
 import { GenericPopup } from "../GenericPopup";
-import { STATUT_BADGE_CONFIG } from "./constants";
+import { STATUT_BADGE_CONFIG } from "@components/features/friches/constants";
 import styled from "styled-components";
 
 interface FrichesPopupProps {

@@ -75,6 +75,7 @@ class LandModel(models.Model):
     logements_vacants_status_details = models.JSONField()
     bounds = ArrayField(base_field=models.FloatField())
     max_bounds = ArrayField(base_field=models.FloatField())
+    conso_details = models.JSONField()
 
     class Meta:
         managed = False
@@ -87,7 +88,26 @@ class LandModel(models.Model):
 class LandModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = LandModel
-        exclude = ("geom",)
+        exclude = (
+            "geom",
+            "simple_geom",
+        )
+
+
+class LandModelGeomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LandModel
+        fields = ("simple_geom",)
+
+
+class LandModelGeomViewset(viewsets.ViewSet):
+    queryset = LandModel.objects.all()
+    serializer_class = LandModelGeomSerializer
+
+    def retrieve(self, request, land_type, land_id):
+        queryset = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        serializer = LandModelGeomSerializer(queryset)
+        return Response(serializer.data)
 
 
 @method_decorator(cache_control(public=True, max_age=3600), name="retrieve")

@@ -196,9 +196,11 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	});
 
 	const { artifZonageIndex } = useArtificialisationZonage({
-		projectData,
+		landData,
 		defaultStockIndex
 	});
+
+	const { has_zonage } = landData;
 
 	if (isLoading) return <div>Chargement...</div>;
 	if (error) return <div>Erreur : {error}</div>;
@@ -410,11 +412,13 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					)}
 				</div>
 			</div>
-			<ArtificialisationZonage 
-				artifZonageIndex={artifZonageIndex}
-				is_interdepartemental={is_interdepartemental}
-				landArtifStockIndex={landArtifStockIndex}
-			/>
+			{has_zonage && (
+				<ArtificialisationZonage 
+					artifZonageIndex={artifZonageIndex}
+					is_interdepartemental={is_interdepartemental}
+					landArtifStockIndex={landArtifStockIndex}
+				/>
+				)}
 			<h2>Calcul de l'artificialisation des sols</h2>
 			<div className="bg-white fr-p-4w fr-mb-7w rounded">
 				<p className="fr-text--sm">

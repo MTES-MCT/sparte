@@ -1,90 +1,22 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
-import { useGetLandFrichesStatutQuery, useGetLandFrichesQuery } from "@services/api";
+import { useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
 import { FrichesMap } from "@components/map/friches/FrichesMap";
-import { STATUT_BADGE_CONFIG, STATUT_CONFIG, STATUT_ORDER } from "@components/map/friches/constants";
+import { STATUT_BADGE_CONFIG, STATUT_ORDER } from "@components/features/friches/constants";
 import { LandFriche } from "@services/types/land_friches";
 import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
-import { FricheStatusDetails, FricheStatusEnum, LandDetailResultType } from "@services/types/land";
+import { FricheStatusEnum, LandDetailResultType } from "@services/types/land";
+import { FricheOverview, FricheAbstract } from "@components/features/friches";
 
 interface FrichesProps {
     landData: LandDetailResultType;
 }
-
-const StatutCard = styled.div<{ $isHighlighted?: boolean }>`
-    background-color: white;
-    border-radius: 4px;
-    padding: 1.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    ${({ $isHighlighted }) => $isHighlighted && `
-        border: 3px solid var(--artwork-major-blue-france);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        position: relative;
-        background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
-    `}
-`;
-
-const HighlightBadge = styled.div`
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    background: var(--artwork-major-blue-france);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-`;
-
-const StatutHeader = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-`;
-
-const StatutIcon = styled.i<{ $isHighlighted?: boolean }>`
-    font-size: 2.5rem;
-    ${({ $isHighlighted }) => $isHighlighted && `
-        color: var(--artwork-major-blue-france);
-    `}
-`;
-
-const StatutBadge = styled.span`
-    font-size: 1rem;
-    text-transform: lowercase;
-`;
-
-const StatutContent = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-`;
-
-const StatutValue = styled.div<{ $isHighlighted?: boolean }>`
-	font-size: 3rem;
-	font-weight: bold;
-	line-height: 3rem;
-	${({ $isHighlighted }) => $isHighlighted && `
-	    color: var(--artwork-major-blue-france);
-	`}
-`;
-
-const StatutLabel = styled.p`
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0;
-`;
 
 const IconZoneActivite = styled.i`
     font-size: 1.5rem;
@@ -112,39 +44,6 @@ const FRICHES_CHARTS = [
     { id: 'friche_zone_activite' }
 ] as const;
 
-
-const FrichesStatut: React.FC<{
-    friche_count: number;
-    friche_surface: number;
-    friche_statut: string;
-}> = ({ friche_count, friche_surface, friche_statut }) => {
-    const { icon } = STATUT_CONFIG[friche_statut as keyof typeof STATUT_CONFIG] || { 
-        icon: 'bi bi-circle'
-    };
-    
-    const isHighlighted = friche_statut === 'friche sans projet';
-
-    return (
-        <StatutCard $isHighlighted={isHighlighted}>
-            {isHighlighted && (
-                <HighlightBadge>
-                    <i className="bi bi-lightning-charge"></i> Actionnable
-                </HighlightBadge>
-            )}
-            <StatutHeader>
-                <StatutIcon className={icon} $isHighlighted={isHighlighted} />
-                <StatutBadge className={`fr-badge fr-badge--no-icon ${STATUT_BADGE_CONFIG[friche_statut as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
-                    {friche_statut}
-                </StatutBadge>
-            </StatutHeader>
-            <StatutContent>
-                <StatutValue $isHighlighted={isHighlighted}>{friche_count}</StatutValue>
-                <StatutLabel>Soit {formatNumber({ number: friche_surface })} ha</StatutLabel>
-            </StatutContent>
-        </StatutCard>
-    );
-};
-
 const DetailsFricheZonageEnvironnemental: React.FC = () => (
 	<div>
         <h6 className="fr-mb-1w">Informations complémentaires</h6>
@@ -169,79 +68,6 @@ const DetailsFricheByZonageType: React.FC = () => (
         <p className="fr-text--xs fr-mb-0">Une zone d'activité ou encore une zone d'activités économiques (ZAE) est, en France, un site réservé à l'implantation d'entreprises dans un périmètre donné. <a href="https://outil2amenagement.cerema.fr/outils/linventaire-des-zones-dactivites-economiques-izae" target="_blank" rel="noopener noreferrer">En savoir plus</a></p>
 	</div>
 )
-
-const FricheStatus = ({ landData }: { landData: LandDetailResultType}) => {
-    const { friche_status, name, friche_status_details } = landData;
-    const { friche_reconvertie_count, friche_reconvertie_surface, friche_avec_projet_count, friche_avec_projet_surface, friche_sans_projet_count, friche_sans_projet_surface} = friche_status_details
-
-    if (friche_status === FricheStatusEnum.GISEMENT_NUL_ET_SANS_POTENTIEL) {
-        return (
-            <p className="fr-text--sm">
-                D'après les données disponible, il n'y actuellement <strong>aucune friche sans projet</strong> sur le territoire de {name}.<br />
-                <strong>La réhabilitation de friches semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
-            </p>
-        )
-    }
-
-    if (friche_status === FricheStatusEnum.GISEMENT_NUL_CAR_POTENTIEL_EXPLOITE) {
-        return (
-            <p className="fr-text--sm">
-                D'après les données disponible, il n'y actuellement <strong>aucune friche sans projet</strong> sur le territoire de {name}.
-                L'absence de friches sans projet est due à l'exploitation du potentiel des friches existantes.<br />
-                En effet {friche_reconvertie_count} friche{friche_reconvertie_count > 0 ? 's' : ''} ont été reconvertie{friche_reconvertie_count > 0 ? 's' : ''}, représentant une surface totale de <strong>{formatNumber({ number: friche_reconvertie_surface })} ha</strong>,
-                et {friche_avec_projet_count} friche{friche_avec_projet_count > 0 ? 's' : ''} sont actuellement en projet, représentant une surface totale de <strong>{formatNumber({ number: friche_avec_projet_surface })} ha.</strong><br />
-                <strong>La réhabilitation de friches ne semble plus être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
-            </p>
-        )
-    }
-
-    if (friche_status === FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE || friche_status === FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION) {
-        return (
-            <p className="fr-text--sm">
-                D'après les données disponible, il y a actuellement <strong>{friche_sans_projet_count} friche{friche_sans_projet_count > 0 ? 's' : ''} sans projet</strong> sur le territoire de {name}, représentant une surface totale de <strong>{formatNumber({ number: friche_sans_projet_surface })} ha</strong>.<br />
-                <strong>La réhabilitation de friches semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
-            </p>
-        )
-    }
-}
-
-const FricheStatutTriptic = ({ friche_status_details }: { friche_status_details: FricheStatusDetails }) => {
-    const {
-        friche_sans_projet_surface,
-        friche_avec_projet_surface,
-        friche_reconvertie_surface,
-        friche_sans_projet_count,
-        friche_avec_projet_count,
-        friche_reconvertie_count
-    } = friche_status_details;
-
-    return (
-        <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-            <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                <FrichesStatut
-                    friche_count={friche_sans_projet_count}
-                    friche_surface={friche_sans_projet_surface}
-                    friche_statut={'friche sans projet'}
-                />
-            </div>
-            <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                <FrichesStatut
-                    friche_count={friche_avec_projet_count}
-                    friche_surface={friche_avec_projet_surface}
-                    friche_statut={'friche avec projet'}
-                />
-            </div>
-            <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
-                <FrichesStatut
-                    friche_count={friche_reconvertie_count}
-                    friche_surface={friche_reconvertie_surface}
-                    friche_statut={'friche reconvertie'}
-                />
-            </div>
-        </div>
-    )
-}
-
 
 export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
@@ -410,20 +236,15 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 				</div>
 			</div>
             <h2 className="fr-mt-5w">Vue d'ensemble</h2>
-            <FricheStatutTriptic friche_status_details={landData.friche_status_details} />
-            
-            <div className="fr-mb-5w fr-mt-5w">
-                <div className="bg-white fr-p-4w rounded fr-mb-4w">
-                    <div className="fr-grid-row fr-grid-row--gutters">
-                        <div className="fr-col-12">
-                            <h3 className="fr-text--lg fr-mb-2w">
-                                <i className="bi bi-lightning-charge text-primary fr-mr-1w" /> Les friches sans projet : un levier actionnable pour la sobriété foncière
-                            </h3>
-                            <FricheStatus landData={landData} />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <FricheOverview 
+                friche_status_details={landData.friche_status_details} 
+            />
+            <FricheAbstract
+                friche_status={landData.friche_status}
+                friche_status_details={landData.friche_status_details}
+                name={landData.name}
+                className="fr-mt-2w"
+            />
             <div className="fr-mb-7w fr-mt-5w">
 				<div className="bg-white fr-p-4w rounded">
 					<h6>

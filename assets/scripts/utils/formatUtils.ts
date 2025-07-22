@@ -60,4 +60,16 @@ const formatDateTime = (date: Date, options: Intl.DateTimeFormatOptions = {}): s
   return new Intl.DateTimeFormat('fr-FR', finalOptions).format(date);
 }
 
+/**
+ * Gère le pluriel d'un mot en fonction d'un nombre
+ * @param count - Le nombre pour déterminer le pluriel
+ * @param singular - La forme singulière du mot
+ * @param plural - La forme plurielle personnalisée (optionnel, par défaut ajoute 's')
+ * @returns Le mot au singulier ou au pluriel selon le nombre
+ */
+export const pluralize = (count: number, singular: string, plural?: string): string => {
+    const pluralForm = plural || `${singular}s`;
+    return count > 1 ? pluralForm : singular;
+};
+
 export { formatNumber, formatDateTime };

@@ -42,6 +42,8 @@ models:
       +schema: sudocuh
     insee:
       +schema: insee
+    for_brevo:
+      +schema: for_brevo
     for_app:
       +schema: for_app
     for_export:
@@ -58,3 +60,5 @@ models:
       +schema: cartofriches
     matomo:
       +schema: matomo
+    land:
+      +schema: land
