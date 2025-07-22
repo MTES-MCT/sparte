@@ -29,7 +29,7 @@ class Brevo:
         if not response.ok:
             print(response.text)
             raise BrevoException("Error while sending user's data to Brevo.", response.text)
-        return response
+        return response.json()
 
     def import_contacts(self, contact_csv_str: str, list_ids: list) -> None:
         data = {
