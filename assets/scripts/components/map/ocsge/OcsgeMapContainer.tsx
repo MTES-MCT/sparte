@@ -44,8 +44,13 @@ export const OcsgeMapContainer = ({ landData, globalFilter }: OcsgeMapContainerP
     );
   }, [selection]);
 
+  if (!emprise) {
+    return null
+  }
 
-  if (!index) { return null}
+  if (!index) {
+    return null
+}
 
   return (
     <div>
