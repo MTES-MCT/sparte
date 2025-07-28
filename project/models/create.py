@@ -37,7 +37,6 @@ def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
 
 
 def trigger_async_tasks(project: Project, public_key: str | None = None) -> None:
-    from brevo.tasks import send_diagnostic_to_brevo
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
@@ -53,7 +52,6 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
         *[
             map_tasks.si(project.id),
             async_create_stat_for_project.si(project.id, do_location=True),
-            send_diagnostic_to_brevo.si(project.id),
         ]
     ).apply_async()
 
