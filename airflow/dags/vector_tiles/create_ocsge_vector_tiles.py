@@ -46,7 +46,7 @@ def create_ocsge_vector_tiles():
         index = params.get("index")
         departement = params.get("departement")
         filename = get_pmtiles_filename(index, departement)
-        exists = Container().s3().exists(f"{bucket_name}/{vector_tiles_dir}/{filename}")
+        exists = Container().s3_handler().exists(f"{bucket_name}/{vector_tiles_dir}/{filename}")
         if exists:
             raise AirflowSkipException("Vector tiles already exist")
 
@@ -94,7 +94,7 @@ def create_ocsge_vector_tiles():
         pmtiles_filename = get_pmtiles_filename(index, departement)
         local_input = f"/tmp/{geojson_filename}"
         local_output = f"/tmp/{pmtiles_filename}"
-        Container().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{geojson_filename}", local_input)
+        Container().s3_handler().get_file(f"{bucket_name}/{vector_tiles_dir}/{geojson_filename}", local_input)
 
         cmd = [
             "tippecanoe",
@@ -119,7 +119,7 @@ def create_ocsge_vector_tiles():
         pmtiles_filename = get_pmtiles_filename(index, departement)
         local_path = f"/tmp/{pmtiles_filename}"
         path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{pmtiles_filename}"
-        Container().s3().put(local_path, path_on_s3)
+        Container().s3_handler().put(local_path, path_on_s3)
 
     @task.bash(trigger_rule="none_skipped")
     def delete_geojson_file(params: dict):
