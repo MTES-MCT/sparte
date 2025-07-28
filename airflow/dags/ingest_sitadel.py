@@ -1,4 +1,5 @@
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 from include.pools import DBT_POOL
 from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
@@ -39,7 +40,7 @@ source_to_table = [
     tags=["SITADEL"],
 )
 def ingest_sitadel():
-    bucket_name = "airflow-staging"
+    bucket_name = InfraContainer().bucket_name()
 
     @task.python()
     def download():

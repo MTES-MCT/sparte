@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -18,8 +19,8 @@ logger = getLogger(__name__)
     tags=["INSEE"],
 )
 def update_vector_tiles():
-    from_bucket_name = "airflow-staging"
-    to_bucket_name = "sparte"
+    from_bucket_name = InfraContainer().bucket_name()
+    to_bucket_name = InfraContainer().app_bucket_name()
 
     @task.python
     def get_list_of_vector_tiles() -> list[str]:

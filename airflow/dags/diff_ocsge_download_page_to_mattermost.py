@@ -8,6 +8,7 @@ import difflib
 import requests
 from bs4 import BeautifulSoup
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -26,7 +27,8 @@ def diff_ocsge_download_page_to_mattermost():
     def diff():
         url = "https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
         selector = "#block-ignpro-content > div > article > div.container > div:nth-child(2) > div"  # noqa: E501
-        s3_path = "airflow-staging/download_page_ocsge_artif.txt"
+        bucket_name = InfraContainer().bucket_name()
+        s3_path = f"{bucket_name}/download_page_ocsge_artif.txt"
         local_path = "download_page_ocsge.txt"
 
         if Container().s3().exists(s3_path):

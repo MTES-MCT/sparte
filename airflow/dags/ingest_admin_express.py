@@ -42,7 +42,7 @@ def get_source_by_name(name: str) -> dict:
     },
 )
 def ingest_admin_express():
-    bucket_name = "airflow-staging"
+    bucket_name = Container().bucket_name()
     tmp_path = "/tmp/admin_express"
 
     @task.python

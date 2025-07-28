@@ -2,6 +2,7 @@ import pendulum
 from dags.data_gouv.Config import CSVConfig
 from dags.data_gouv.utils import get_configs
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 
 from airflow.decorators import dag, task
 
@@ -21,7 +22,7 @@ for config in configs:
     )
     def create_and_publish_csv_to_data_gouv():
         s3_key = f"exports/csv/{config.filename}"
-        s3_bucket = "airflow-staging"
+        s3_bucket = InfraContainer().bucket_name()
 
         @task.python()
         def create_csv():

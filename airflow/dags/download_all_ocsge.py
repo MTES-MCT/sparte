@@ -35,7 +35,7 @@ def get_urls_from_sources(sources: dict) -> list[str]:
 
 
 def download_file_to_s3(url: str):
-    bucket_name = "airflow-staging"
+    bucket_name = Container().bucket_name()
     response = requests.get(url)
 
     if not response.ok:

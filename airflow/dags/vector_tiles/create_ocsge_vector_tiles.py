@@ -37,7 +37,7 @@ def get_pmtiles_filename(index: int, departement: str) -> str:
     },
 )
 def create_ocsge_vector_tiles():
-    bucket_name = "airflow-staging"
+    bucket_name = InfraContainer().bucket_name()
     vector_tiles_dir = "vector_tiles"
 
     @task.python()

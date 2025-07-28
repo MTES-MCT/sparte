@@ -1,4 +1,5 @@
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 from include.pools import DBT_POOL
 from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
@@ -18,7 +19,7 @@ URL = "https://api-aln.datahub.din.developpement-durable.gouv.fr/sudocuh/enquete
     tags=["SUDOCUH"],
 )
 def ingest_plan_communal():
-    bucket_name = "airflow-staging"
+    bucket_name = InfraContainer().bucket_name()
     plan_communal_filename = "plan_communal.csv"
     table_name = "sudocuh_plan_communal"
 
