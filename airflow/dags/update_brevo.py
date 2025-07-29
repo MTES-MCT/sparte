@@ -17,6 +17,7 @@ from airflow.decorators import dag, task
     tags=["BREVO"],
 )
 def update_brevo():
+    bucket_name = InfraContainer().bucket_name()
     s3_key = "brevo/user_data.csv"
     local_tmp_file = "/tmp/user_data.csv"
 
@@ -32,7 +33,7 @@ def update_brevo():
             .sql_to_csv_on_s3_handler()
             .export_sql_result_to_csv_on_s3(
                 s3_key=s3_key,
-                s3_bucket="airflow-staging",
+                s3_bucket=bucket_name,
                 sql="SELECT * FROM public_for_brevo.for_brevo_user_info",
             )
         )
@@ -43,7 +44,7 @@ def update_brevo():
             DomainContainer()
             .s3_handler()
             .download_file(
-                s3_bucket="airflow-staging",
+                s3_bucket=bucket_name,
                 s3_key=s3_key,
                 local_file_path=local_tmp_file,
             )

@@ -255,7 +255,7 @@ def load_data_to_dw(
     },
 )
 def ocsge():  # noqa: C901
-    bucket_name = "airflow-staging"
+    bucket_name = InfraContainer().bucket_name()
 
     @task.python()
     def get_url(**context) -> str:

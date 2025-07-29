@@ -19,7 +19,7 @@ from airflow.operators.bash import BashOperator
     tags=["GPU"],
 )
 def ingest_gpu():
-    bucket_name = "airflow-staging"
+    bucket_name = Container().bucket_name()
     wfs_du_filename = "wfs_du.gpkg"
     path_on_bucket = f"{bucket_name}/gpu/{wfs_du_filename}"
     wfs_folder = "/pub/export-wfs/latest/gpkg/"

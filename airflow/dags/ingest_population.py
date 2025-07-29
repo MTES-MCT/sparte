@@ -2,6 +2,7 @@ import os
 
 import pandas as pd
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 from include.pools import DBT_POOL
 from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
@@ -21,7 +22,7 @@ URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques
     tags=["INSEE"],
 )
 def ingest_population():
-    bucket_name = "airflow-staging"
+    bucket_name = InfraContainer().bucket_name()
     filename = URL.split("/")[-1]
     staging_table_name = "insee_population"
 
