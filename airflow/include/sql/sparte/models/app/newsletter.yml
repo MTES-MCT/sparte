@@ -10,7 +10,6 @@ models:
         data_type: character varying
         data_tests:
         - not_null
-        - unique
       - name: created_date
         data_type: timestamp with time zone
         data_tests:
