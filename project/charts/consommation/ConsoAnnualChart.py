@@ -107,7 +107,7 @@ class ConsoAnnualChart(DiagnosticChart):
                     {
                         "color": "#e5f3ff",
                         "from": 2,
-                        "to": 10,
+                        "to": 11,
                         "label": {
                             "text": "Période de référence de la loi Climat & Résilience",
                             "style": {"color": "#95ceff", "fontWeight": "bold"},
