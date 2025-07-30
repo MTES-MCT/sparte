@@ -1,0 +1,32 @@
+models:
+  - name: satisfaction_form_entry
+    columns:
+      - name: nps
+        data_type: integer
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "8"
+                - "10"
+                - "5"
+                - "4"
+                - "0"
+                - "3"
+                - "1"
+                - "2"
+                - "6"
+                - "7"
+                - "9"
+      - name: suggested_change
+        data_type: character varying
+      - name: user_id
+        data_type: bigint
+        data_tests:
+          - relationships:
+              field: id
+              to: ref('user')
+      - name: recorded_date
+        data_type: timestamp with time zone
+        data_tests:
+          - not_null

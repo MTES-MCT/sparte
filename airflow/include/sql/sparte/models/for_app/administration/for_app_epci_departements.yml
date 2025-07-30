@@ -1,0 +1,21 @@
+models:
+  - name: for_app_epci_departements
+    columns:
+      - name: epci_id
+        data_type: character varying
+        data_tests:
+          - relationships:
+              field: code
+              to: ref('epci')
+          - not_null
+      - name: departement_id
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')
+      - name: id
+        data_type: bigint
+        data_tests:
+          - not_null

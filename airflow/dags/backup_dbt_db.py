@@ -24,7 +24,7 @@ DB_PASSWORD = getenv("DBT_DB_PASSWORD")
 
 
 def upload_to_s3(local_file: str, s3_file: str) -> str:
-    bucket_name = "airflow-staging"
+    bucket_name = Container().bucket_name()
     path_on_bucket = f"{bucket_name}/{s3_file}"
 
     s3 = Container().s3()

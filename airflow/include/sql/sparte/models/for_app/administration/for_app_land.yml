@@ -1,0 +1,142 @@
+models:
+  - name: for_app_land
+    columns:
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - relationships:
+              field: land_id
+              to: ref('land')
+          - not_null
+      - name: land_type
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
+      - name: name
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: surface
+        data_type: double precision
+        data_tests:
+          - not_null
+      - name: surface_unit
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - ha
+      - name: bounds
+        data_type: array
+        data_tests:
+          - not_null
+      - name: max_bounds
+        data_type: array
+        data_tests:
+          - not_null
+      - name: geom
+        data_type: user-defined
+        data_tests:
+          - not_null
+      - name: simple_geom
+        data_type: user-defined
+        data_tests:
+          - not_null
+      - name: surface_artif
+        data_type: numeric
+      - name: percent_artif
+        data_type: double precision
+      - name: years_artif
+        data_type: array
+      - name: ocsge_status
+        data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - COMPLETE_NOT_UNIFORM
+                - COMPLETE_UNIFORM
+                - PARTIAL
+                - NO_DATA
+      - name: has_ocsge
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: has_zonage
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: has_friche
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: friche_status
+        data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - gisement nul car potentiel déjà exploité
+                - gisement potentiel et non exploité
+                - gisement potentiel et en cours d’exploitation
+      - name: friche_status_details
+        data_type: jsonb
+      - name: logements_vacants_status
+        data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - gisement nul
+                - gisement potentiel dans le social et le privé
+                - gisement potentiel dans le privé
+          - not_null
+      - name: has_logements_vacants
+        data_type: boolean
+        data_tests:
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+          - not_null
+      - name: logements_vacants_status_details
+        data_type: jsonb
+        data_tests:
+          - not_null
+      - name: millesimes
+        data_type: array
+      - name: millesimes_by_index
+        data_type: array
+      - name: child_land_types
+        data_type: array
+      - name: parent_keys
+        data_type: array
+      - name: departements
+        data_type: array
+        data_tests:
+          - not_null
+      - name: is_interdepartemental
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: conso_details
+        data_type: jsonb
+        data_tests:
+          - not_null

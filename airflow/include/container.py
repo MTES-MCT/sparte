@@ -37,6 +37,9 @@ def create_sql_alchemy_conn(
 
 
 class InfraContainer(containers.DeclarativeContainer):
+    bucket_name = providers.Factory(provides=str, object=os.getenv("AIRFLOW_S3_BUCKET_NAME"))
+    app_bucket_name = providers.Factory(provides=str, object=os.getenv("AIRFLOW_S3_APP_BUCKET_NAME"))
+
     s3 = providers.Factory(
         provides=S3FileSystem,
         key=os.getenv("AIRFLOW_S3_LOGIN"),

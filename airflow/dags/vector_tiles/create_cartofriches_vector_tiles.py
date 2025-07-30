@@ -1,5 +1,6 @@
 import pendulum
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 from include.utils import multiline_string_to_single_line
 
 from airflow.decorators import dag, task
@@ -16,7 +17,7 @@ from airflow.decorators import dag, task
     max_active_tasks=10,
 )
 def create_cartofriches_vector_tiles():
-    bucket_name = "airflow-staging"
+    bucket_name = InfraContainer().bucket_name()
     vector_tiles_dir = "vector_tiles"
     json_filename = "cartofriches.geojson"
     pmtiles_filename = "cartofriches.pmtiles"

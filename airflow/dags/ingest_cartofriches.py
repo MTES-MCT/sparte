@@ -19,7 +19,7 @@ URL = "https://www.data.gouv.fr/fr/datasets/r/a9084493-e742-4a2f-890b-0ebc803098
     tags=["CEREMA"],
 )
 def ingest_cartofriches():
-    bucket_name = "airflow-staging"
+    bucket_name = Container().bucket_name()
     wfs_du_filename = "friches_surfaces2025_04_25.gpkg"
     path_on_bucket = f"{bucket_name}/cartofriches/{wfs_du_filename}"
     localpath = f"/tmp/{wfs_du_filename}"

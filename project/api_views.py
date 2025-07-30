@@ -5,7 +5,6 @@ from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from brevo.tasks import send_diagnostic_request_to_brevo
 from project import tasks
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
@@ -95,7 +94,6 @@ class DiagnosticDownloadAPIView(generics.RetrieveAPIView):
         new_request.save()
 
         # Lancement des tâches
-        send_diagnostic_request_to_brevo.delay(new_request.id)
         tasks.send_email_request_bilan.delay(new_request.id)
         tasks.generate_word_diagnostic.apply_async((new_request.id,), link=tasks.send_word_diagnostic.s())
 

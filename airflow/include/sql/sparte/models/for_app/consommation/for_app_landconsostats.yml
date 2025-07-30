@@ -6,9 +6,47 @@ models:
       - name: land_id
         data_tests:
           - not_null
+        data_type: character varying
       - name: comparison_id
         data_tests:
           - not_null
           - relationships:
-              to: ref('for_app_landconsocomparison')
               field: land_id
+              to: ref('for_app_landconsocomparison')
+        data_type: character varying
+      - name: land_type
+        data_type: text
+      - name: comparison_level
+        data_type: text
+      - name: from_year
+        data_type: integer
+      - name: to_year
+        data_type: integer
+      - name: total
+        data_type: numeric
+      - name: total_percent
+        data_type: double precision
+      - name: activite
+        data_type: numeric
+      - name: activite_percent
+        data_type: double precision
+      - name: habitat
+        data_type: numeric
+      - name: habitat_percent
+        data_type: double precision
+      - name: mixte
+        data_type: numeric
+      - name: mixte_percent
+        data_type: double precision
+      - name: route
+        data_type: numeric
+      - name: route_percent
+        data_type: double precision
+      - name: ferroviaire
+        data_type: numeric
+      - name: ferroviaire_percent
+        data_type: double precision
+      - name: inconnu
+        data_type: numeric
+      - name: inconnu_percent
+        data_type: double precision

@@ -1,0 +1,78 @@
+models:
+  - name: project
+    columns:
+      - name: id
+        data_type: bigint
+        data_tests:
+          - not_null
+          - unique
+      - name: name
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: analyse_start_date
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: analyse_end_date
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: user_id
+        data_type: bigint
+        data_tests:
+          - relationships:
+              field: id
+              to: ref('user')
+      - name: is_public
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: look_a_like
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: created_date
+        data_type: timestamp with time zone
+        data_tests:
+          - not_null
+      - name: updated_date
+        data_type: timestamp with time zone
+        data_tests:
+          - not_null
+      - name: level
+        data_type: character varying
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
+      - name: land_type
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
+      - name: cover_image
+        data_type: character varying
+      - name: folder_name
+        data_type: character varying
+      - name: territory_name
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: target_2031
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: target_2031_modified
+        data_type: boolean
+        data_tests:
+          - not_null

@@ -1,0 +1,23 @@
+models:
+  - name: for_app_landartifstockindex
+    columns:
+      - name: land_id
+        data_type: character varying
+      - name: land_type
+        data_type: text
+      - name: departements
+        data_type: array
+      - name: millesime_index
+        data_type: bigint
+      - name: years
+        data_type: array
+      - name: surface
+        data_type: numeric
+      - name: percent
+        data_type: double precision
+      - name: flux_surface
+        data_type: numeric
+      - name: flux_percent
+        data_type: double precision
+      - name: flux_previous_years
+        data_type: array

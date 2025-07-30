@@ -1,4 +1,5 @@
 from include.container import DomainContainer as Container
+from include.container import InfraContainer
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -16,7 +17,7 @@ URL = "https://www.insee.fr/fr/statistiques/fichier/7766585/v_mvt_commune_2024.c
     tags=["INSEE"],
 )
 def ingest_cog_changes():
-    bucket_name = "airflow-staging"
+    bucket_name = InfraContainer().bucket_name()
     filename = "v_mvt_commune_2024.csv"
 
     @task.python

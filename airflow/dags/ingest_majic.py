@@ -15,7 +15,7 @@ from pendulum import datetime
 from airflow.decorators import dag, task
 from airflow.operators.python import PythonOperator
 
-BUCKET_NAME = "airflow-staging"
+BUCKET_NAME = Container().bucket_name()
 TMP_PATH = "/tmp/majic"
 
 
