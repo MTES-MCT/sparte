@@ -1,0 +1,63 @@
+models:
+  - name: trajectoires_communes
+    columns:
+      - name: commune
+        data_type: character varying
+        data_tests:
+          - not_null
+          - has_all_communes
+          - relationships:
+              field: code
+              to: ref('commune')
+      - name: conso_2011_2020
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: conso_autorisee_augmentee_a_1ha_2021_2030
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - oui
+                - non
+      - name: conso_autorisee_2021_2030
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: conso_depuis_2021
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: conso_annuelle_depuis_2021
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: conso_projetee_2030
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: respecte_reglementation_actuellement
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - non
+                - oui
+      - name: pourcentage_utilisation_actuelle
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: respectera_reglementation_en_2030
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - non
+                - oui
+      - name: pourcentage_utilisation_projetee_en_2030
+        data_type: numeric
+        data_tests:
+          - not_null

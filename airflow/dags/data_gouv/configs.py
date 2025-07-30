@@ -39,6 +39,15 @@ if getenv("ENVIRONMENT") == "production":
             "data_gouv_resource": "3a37cc78-4aa7-4a8e-814f-4e3714eb9a90",
             "frequency": "@weekly",
         },
+        {
+            "dag_id": "create_and_publish_trajectoires_communes_csv",
+            "format": "csv",
+            "filename": "trajectoires_communes.csv",
+            "sql": "SELECT * FROM public_for_export.trajectoires_communes",
+            "data_gouv_dataset": "688a1dcd9eaa8e9b2bd6bfc6",
+            "data_gouv_resource": "e4fa6a1d-48f1-44dd-bde9-b3c7814487bd",
+            "frequency": "@once",
+        },
     ]
 else:
     configs = []
