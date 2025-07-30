@@ -1,0 +1,22 @@
+models:
+  - name: for_app_scot_departements
+    columns:
+      - name: id
+        data_type: bigint
+        data_tests:
+          - not_null
+          - unique
+      - name: scot_id
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: id_scot
+              to: ref('scot')
+      - name: departement_id
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')

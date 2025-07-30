@@ -6,49 +6,63 @@ models:
       - name: land_id
         data_tests:
           - not_null
-          - has_all_epcis:
-              severity: warn
+          - has_all_epcis
           - has_all_departements
           - has_all_regions
           - has_all_scots
-          - has_all_communes:
-              severity: warn
+          - has_all_communes
+        data_type: text
       - name: land_type
         data_tests:
           - not_null
+        data_type: text
       - name: year
         data_tests:
           - not_null
           - has_years_from_to:
               from_year: 2019
               to_year: 2023
+        data_type: integer
       - name: logements_parc_general
         data_tests:
           - not_null
+        data_type: integer
       - name: logements_parc_prive
         data_tests:
           - not_null
+        data_type: integer
       - name: logements_vacants_parc_general
         data_tests:
           - not_null
+        data_type: integer
       - name: logements_vacants_parc_prive
         data_tests:
           - not_null
+        data_type: integer
       - name: logements_parc_social
         data_tests:
           - not_null
+        data_type: integer
       - name: logements_vacants_parc_social
         data_tests:
           - not_null
+        data_type: integer
       - name: logements_vacants_parc_general_percent
         data_tests:
           - not_null
           - is_percent_between_0_and_100
+        data_type: double precision
       - name: logements_vacants_parc_prive_percent
         data_tests:
           - not_null
           - is_percent_between_0_and_100
+        data_type: double precision
       - name: logements_vacants_parc_social_percent
         data_tests:
           - not_null
           - is_percent_between_0_and_100
+        data_type: double precision
+      - name: logements_vacants_parc_prive_on_parc_general_percent
+        data_type: double precision
+      - name: logements_vacants_parc_social_on_parc_general_percent
+        data_type: double precision

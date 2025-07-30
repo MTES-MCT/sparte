@@ -1,0 +1,13 @@
+models:
+  - name: for_app_landfrichegeojson
+    columns:
+      - name: land_id
+        data_type: character varying
+      - name: land_type
+        data_type: text
+      - name: land_name
+        data_type: character varying
+      - name: geojson_feature_collection
+        data_type: jsonb
+      - name: geojson_centroid_feature_collection
+        data_type: jsonb

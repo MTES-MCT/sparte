@@ -1,0 +1,29 @@
+models:
+  - name: for_app_landfrichesurfacerank
+    columns:
+      - name: land_id
+        data_type: character varying
+      - name: land_type
+        data_type: text
+      - name: friche_surface_percentile_rank
+        data_type: integer
+      - name: rank_min_surface
+        data_type: double precision
+      - name: rank_max_surface
+        data_type: double precision
+      - name: friche_count
+        data_type: bigint
+      - name: friche_sans_projet_count
+        data_type: bigint
+      - name: friche_avec_projet_count
+        data_type: bigint
+      - name: friche_reconvertie_count
+        data_type: bigint
+      - name: friche_surface
+        data_type: double precision
+      - name: friche_sans_projet_surface
+        data_type: double precision
+      - name: friche_avec_projet_surface
+        data_type: double precision
+      - name: friche_reconvertie_surface
+        data_type: double precision

@@ -1,0 +1,19 @@
+models:
+  - name: newsletter
+    columns:
+      - name: id
+        data_type: bigint
+        data_tests:
+        - not_null
+        - unique
+      - name: email
+        data_type: character varying
+        data_tests:
+        - not_null
+        - unique
+      - name: created_date
+        data_type: timestamp with time zone
+        data_tests:
+        - not_null
+      - name: confirmation_date
+        data_type: timestamp with time zone

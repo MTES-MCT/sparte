@@ -1,0 +1,69 @@
+models:
+  - name: for_brevo_user_info
+    columns:
+      - name: EMAIL
+        data_type: character varying
+        quote: true
+      - name: NOM
+        data_type: character varying
+        quote: true
+      - name: PRENOM
+        data_type: character varying
+        quote: true
+      - name: DATE_CREATION_COMPTE
+        data_type: timestamp with time zone
+        quote: true
+      - name: FONCTION
+        data_type: character varying
+        quote: true
+      - name: ORGANISME
+        data_type: character varying
+        quote: true
+      - name: LAST_DATE_DIAG_CREATED
+        data_type: timestamp with time zone
+        quote: true
+      - name: NOM_TERRITOIRE
+        data_type: character varying
+        quote: true
+      - name: NB_DIAG_CREES
+        data_type: bigint
+        quote: true
+      - name: NB_DIAG_TELECHARGES
+        data_type: bigint
+        quote: true
+      - name: NPS
+        data_type: integer
+        quote: true
+      - name: EST_INSCRIT_NEWSLETTER
+        data_type: boolean
+        quote: true
+      - name: DATE_INSCRIPTION_NEWSLETTER
+        data_type: timestamp with time zone
+        quote: true
+      - name: DATE_CONFIRMATION_INSCRIPTION_NEWSLETTER
+        data_type: timestamp with time zone
+        quote: true
+      - name: A_COMPETENCE_URBA
+        data_type: boolean
+        quote: true
+      - name: EXT_ID
+        data_type: bigint
+        quote: true
+      - name: ARRIVE_BAS_PAGE_TRAJ
+        data_type: boolean
+        quote: true
+      - name: ARRIVE_BAS_PAGE_VACANCE
+        data_type: boolean
+        quote: true
+      - name: A_MODIFIE_OBJ_REDUC_CONSO
+        data_type: boolean
+        quote: true
+      - name: ARRIVE_BAS_PAGE_CONSO
+        data_type: boolean
+        quote: true
+      - name: ARRIVE_BAS_PAGE_ARTIF
+        data_type: boolean
+        quote: true
+      - name: ARRIVE_BAS_DE_PAGE_FRICHES
+        data_type: boolean
+        quote: true

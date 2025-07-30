@@ -1,0 +1,15 @@
+models:
+  - name: for_app_landpop
+    columns:
+      - name: land_id
+        data_type: text
+      - name: land_type
+        data_type: text
+      - name: year
+        data_type: integer
+      - name: evolution
+        data_type: numeric
+      - name: population
+        data_type: numeric
+      - name: source
+        data_type: text
