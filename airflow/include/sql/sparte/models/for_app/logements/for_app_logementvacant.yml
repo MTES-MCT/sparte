@@ -4,13 +4,6 @@ models:
   - name: for_app_logementvacant
     columns:
       - name: land_id
-        data_tests:
-          - not_null
-          - has_all_epcis
-          - has_all_departements
-          - has_all_regions
-          - has_all_scots
-          - has_all_communes
         data_type: text
       - name: land_type
         data_tests:

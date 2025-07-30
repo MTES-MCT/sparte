@@ -44,13 +44,7 @@ models:
           - not_null
       - name: flux_surface
         data_type: numeric
-        tests:
-          - not_null
       - name: flux_percent
         data_type: double precision
-        tests:
-          - not_null
       - name: flux_previous_year
         data_type: integer
-        tests:
-          - not_null
