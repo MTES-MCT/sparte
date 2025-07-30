@@ -3,13 +3,32 @@ models:
     columns:
       - name: relevance_level
         data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - REGION
+                - COMM
+                - DEPART
+                - SCOT
+                - EPCI
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
       - name: land_id
         data_type: character varying
+        data_tests:
+          - not_null
       - name: from_year
         data_type: integer
+        data_tests:
+          - not_null
       - name: to_year
         data_type: integer
+        data_tests:
+          - not_null
       - name: median_ratio_pop_conso
         data_type: numeric
+        data_tests:
+          - not_null

@@ -3,23 +3,66 @@ models:
     columns:
       - name: land_id
         data_type: character varying
+        data_tests:
+          - not_null
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
       - name: friche_type
         data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - friche logistique
+                - friche touristique
+                - friche hospitalière
+                - friche ferroviaire
+                - autre
+                - mixte
+                - friche enseignement
+                - friche cultuelle
+                - inconnu
+                - friche portuaire
+                - friche carrière ou mine
+                - friche aéroportuaire
+                - friche d''habitat
+                - friche d''équipement public
+                - friche loisir tourisme hôtellerie
+                - friche industrielle
+                - friche agro-industrielle
+                - friche commerciale
+                - friche militaire
       - name: friche_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_sans_projet_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_avec_projet_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_reconvertie_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_sans_projet_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_avec_projet_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_reconvertie_surface
         data_type: double precision
+        data_tests:
+          - not_null

@@ -1,5 +1,5 @@
 models:
-  - name: for_app_landfrichesurfacerank
+  - name: for_app_landfrichezonageenvironnementale
     columns:
       - name: land_id
         data_type: character varying
@@ -9,24 +9,19 @@ models:
         data_type: text
         data_tests:
           - not_null
-      - name: friche_surface_percentile_rank
-        data_type: integer
+      - name: friche_zonage_environnemental
+        data_type: text
         data_tests:
           - not_null
           - accepted_values:
               values:
-                - "1"
-                - "3"
-                - "4"
-                - "2"
-      - name: rank_min_surface
-        data_type: double precision
-        data_tests:
-          - not_null
-      - name: rank_max_surface
-        data_type: double precision
-        data_tests:
-          - not_null
+                - proche d''une réserve naturelle
+                - hors zone
+                - ZNIEFF
+                - proche d''une ZNIEFF
+                - Natura 2000
+                - proche d''une zone Natura 2000
+                - réserve naturelle
       - name: friche_count
         data_type: bigint
         data_tests:

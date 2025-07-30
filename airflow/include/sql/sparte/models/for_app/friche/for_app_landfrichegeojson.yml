@@ -3,11 +3,21 @@ models:
     columns:
       - name: land_id
         data_type: character varying
+        data_tests:
+          - not_null
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
       - name: land_name
         data_type: character varying
+        data_tests:
+          - not_null
       - name: geojson_feature_collection
         data_type: jsonb
+        data_tests:
+          - not_null
       - name: geojson_centroid_feature_collection
         data_type: jsonb
+        data_tests:
+          - not_null

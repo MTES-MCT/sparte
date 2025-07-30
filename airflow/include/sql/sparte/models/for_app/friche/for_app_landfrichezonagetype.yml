@@ -1,25 +1,55 @@
 models:
-  - name: for_app_landfrichezonageenvironnementale
+  - name: for_app_landfrichezonagetype
     columns:
       - name: land_id
         data_type: character varying
+        data_tests:
+          - not_null
       - name: land_type
         data_type: text
-      - name: friche_zonage_environnemental
+        data_tests:
+          - not_null
+      - name: friche_type_zone
         data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - ZnC
+                - AU
+                - ZC
+                - ZCa
+                - U
+                - A
+                - N
       - name: friche_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_sans_projet_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_avec_projet_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_reconvertie_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_sans_projet_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_avec_projet_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_reconvertie_surface
         data_type: double precision
+        data_tests:
+          - not_null

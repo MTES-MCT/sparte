@@ -3,33 +3,133 @@ models:
     columns:
       - name: site_id
         data_type: character varying
+        data_tests:
+          - not_null
       - name: site_nom
         data_type: character varying
+        data_tests:
+          - not_null
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
       - name: land_id
         data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
       - name: land_name
         data_type: character varying
+        data_tests:
+          - not_null
       - name: friche_sol_pollution
         data_type: character varying
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - pollution peu probable
+                - pollution avérée
+                - pollution probable
+                - pollution traitée
+                - pollution inexistante
+                - pollution supposée
+                - inconnu
       - name: friche_statut
         data_type: character varying
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - friche avec projet
+                - friche reconvertie
+                - friche sans projet
       - name: friche_is_in_zone_activite
         data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
       - name: friche_zonage_environnemental
         data_type: character varying
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - proche d''une réserve naturelle
+                - hors zone
+                - ZNIEFF
+                - proche d''une ZNIEFF
+                - Natura 2000
+                - proche d''une zone Natura 2000
+                - réserve naturelle
       - name: friche_type_zone
         data_type: character varying
+        data_tests:
+          - accepted_values:
+              values:
+                - ZnC
+                - AU
+                - ZC
+                - ZCa
+                - U
+                - A
+                - N
       - name: friche_type
         data_type: character varying
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - friche logistique
+                - friche touristique
+                - friche hospitalière
+                - friche ferroviaire
+                - friche culturelle
+                - autre
+                - mixte
+                - friche enseignement
+                - inconnu
+                - friche portuaire
+                - friche carrière ou mine
+                - friche aéroportuaire
+                - friche d''habitat
+                - friche d''équipement public
+                - friche agro-industrielle
+                - friche loisir tourisme hôtellerie
+                - friche industrielle
+                - friche commerciale
+                - friche militaire
       - name: friche_surface_percentile_rank
         data_type: integer
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "1"
+                - "3"
+                - "4"
+                - "2"
       - name: surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: nature
         data_type: character varying
+        data_tests:
+          - not_null
       - name: source_producteur
         data_type: character varying
+        data_tests:
+          - not_null
       - name: point_on_surface
         data_type: user-defined
+        data_tests:
+          - not_null

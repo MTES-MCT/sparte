@@ -3,13 +3,33 @@ models:
     columns:
       - name: land_id
         data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
       - name: year
         data_type: integer
+        data_tests:
+          - not_null
       - name: evolution
         data_type: numeric
       - name: population
         data_type: numeric
+        data_tests:
+          - not_null
       - name: source
         data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - INSEE
+                - PROJECTION
