@@ -1,0 +1,22 @@
+models:
+  - name: for_app_scot_regions
+    columns:
+      - name: id
+        data_type: bigint
+        data_tests:
+          - not_null
+          - unique
+      - name: scot_id
+        data_type: text
+        data_tests:
+          - relationships:
+              field: id_scot
+              to: ref('scot')
+          - not_null
+      - name: region_id
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('region')

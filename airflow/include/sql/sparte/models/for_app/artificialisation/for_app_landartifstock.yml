@@ -6,18 +6,51 @@ models:
       - name: land_id
         data_tests:
           - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
+        data_type: character varying
       - name: land_type
         data_tests:
           - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
+        data_type: text
       - name: year
         data_tests:
           - not_null
+        data_type: integer
       - name: percent
         data_tests:
           - not_null
           - is_percent_between_0_and_100
+        data_type: double precision
       - name: surface
         data_tests:
           - not_null
-      - name: departements
+        data_type: numeric
+      - name: departements - not_null
+      - name: departement
+        data_type: character varying
+        tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')
+      - name: millesime_index
+        data_type: bigint
+        tests:
+          - not_null
+      - name: flux_surface
+        data_type: numeric
+        tests:
+          - not_null
+      - name: flux_percent
+        data_type: double precision
+        tests:
+          - not_null
+      - name: flux_previous_year
+        data_type: integer
+        tests:
           - not_null

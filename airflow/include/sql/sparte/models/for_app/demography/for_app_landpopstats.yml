@@ -1,0 +1,19 @@
+models:
+  - name: for_app_landpopstats
+    columns:
+      - name: land_id
+        data_type: text
+      - name: land_type
+        data_type: text
+      - name: comparison_level
+        data_type: text
+      - name: comparison_id
+        data_type: character varying
+      - name: from_year
+        data_type: integer
+      - name: to_year
+        data_type: integer
+      - name: evolution
+        data_type: numeric
+      - name: evolution_percent
+        data_type: numeric

@@ -1,0 +1,109 @@
+models:
+  - name: user
+    columns:
+      - name: id
+        data_type: bigint
+        data_tests:
+          - not_null
+      - name: last_login
+        data_type: timestamp with time zone
+      - name: is_superuser
+        data_type: boolean
+        data_tests:
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: first_name
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: last_name
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: email
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: is_staff
+        data_type: boolean
+        data_tests:
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+          - not_null
+      - name: is_active
+        data_type: boolean
+        data_tests:
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+          - not_null
+      - name: date_joined
+        data_type: timestamp with time zone
+        data_tests:
+          - not_null
+      - name: email_checked
+        data_type: timestamp with time zone
+      - name: function
+        data_type: character varying
+        data_tests:
+          - accepted_values:
+              values:
+                - RESPONSABLE_PLANIFICATION
+                - RESPONSABLE_URBANISME
+                - ELU
+                - RESPONSABLE_AMENAGEMENT
+                - SECRETAIRE_MAIRIE
+                - AUTRE
+      - name: organism
+        data_type: character varying
+        data_tests:
+          - accepted_values:
+              values:
+                - COMMUNE
+                - EPCI
+                - SCOT
+                - SERVICES_REGIONAUX
+                - SERVICES_DEPARTEMENTAUX
+                - EXPERTS_URBANISTES
+                - ACTEURS_CITOYENS
+      - name: created_at
+        data_type: timestamp with time zone
+      - name: main_land_id
+        data_type: character varying
+        data_tests:
+          - relationships:
+              field: land_id
+              to: ref('land')
+      - name: main_land_type
+        data_type: character varying
+        data_tests:
+          - relationships:
+              field: land_type
+              to: ref('land')
+      - name: service
+        data_type: character varying
+        data_tests:
+          - accepted_values:
+              values:
+                - AUTRE
+                - AMENAGEMENT_URBANISME_ET_PAYSAGE
+                - ETUDES_ET_EVALUATIONS
+                - SECURITE_PREVENTION_ET_GESTION_DES_RISQUES
+                - ELABORATION_ET_PILOTAGE_DE_POLITIQUES_PUBLIQUES
+                - RESSOURCES_NATURELLES_ET_BIODIVERSITE
+                - HABITAT_LOGEMENT
+      - name: siret
+        data_type: character varying
+      - name: proconnect
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"

@@ -1,0 +1,25 @@
+models:
+  - name: for_app_landconso
+    columns:
+      - name: land_id
+        data_type: character varying
+      - name: land_type
+        data_type: text
+      - name: surface
+        data_type: double precision
+      - name: year
+        data_type: integer
+      - name: total
+        data_type: numeric
+      - name: activite
+        data_type: numeric
+      - name: habitat
+        data_type: numeric
+      - name: mixte
+        data_type: numeric
+      - name: route
+        data_type: numeric
+      - name: ferroviaire
+        data_type: numeric
+      - name: inconnu
+        data_type: numeric

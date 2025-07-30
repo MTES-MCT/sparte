@@ -1,0 +1,27 @@
+models:
+  - name: for_app_landartifstockusagecomposition
+    columns:
+      - name: land_id
+        data_type: character varying
+      - name: land_type
+        data_type: text
+      - name: departement
+        data_type: character varying
+      - name: year
+        data_type: integer
+      - name: percent_of_land
+        data_type: double precision
+      - name: surface
+        data_type: numeric
+      - name: usage
+        data_type: character varying
+      - name: percent_of_artif
+        data_type: numeric
+      - name: millesime_index
+        data_type: bigint
+      - name: color
+        data_type: text
+      - name: label_short
+        data_type: text
+      - name: label
+        data_type: text

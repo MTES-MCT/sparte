@@ -1,0 +1,35 @@
+models:
+  - name: for_app_landfriche
+    columns:
+      - name: site_id
+        data_type: character varying
+      - name: site_nom
+        data_type: character varying
+      - name: land_type
+        data_type: text
+      - name: land_id
+        data_type: character varying
+      - name: land_name
+        data_type: character varying
+      - name: friche_sol_pollution
+        data_type: character varying
+      - name: friche_statut
+        data_type: character varying
+      - name: friche_is_in_zone_activite
+        data_type: boolean
+      - name: friche_zonage_environnemental
+        data_type: character varying
+      - name: friche_type_zone
+        data_type: character varying
+      - name: friche_type
+        data_type: character varying
+      - name: friche_surface_percentile_rank
+        data_type: integer
+      - name: surface
+        data_type: double precision
+      - name: nature
+        data_type: character varying
+      - name: source_producteur
+        data_type: character varying
+      - name: point_on_surface
+        data_type: user-defined
