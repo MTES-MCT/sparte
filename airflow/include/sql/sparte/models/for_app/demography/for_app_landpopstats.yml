@@ -3,16 +3,36 @@ models:
     columns:
       - name: land_id
         data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
       - name: comparison_level
         data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - EPCI
+                - NATION
+                - REGION
       - name: comparison_id
         data_type: character varying
       - name: from_year
         data_type: integer
+        data_tests:
+          - not_null
       - name: to_year
         data_type: integer
+        data_tests:
+          - not_null
       - name: evolution
         data_type: numeric
       - name: evolution_percent

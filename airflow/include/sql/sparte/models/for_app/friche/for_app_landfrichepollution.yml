@@ -3,23 +3,54 @@ models:
     columns:
       - name: land_id
         data_type: character varying
+        data_tests:
+          - not_null
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
       - name: friche_sol_pollution
         data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - pollution peu probable
+                - pollution avérée
+                - pollution probable
+                - pollution traitée
+                - pollution inexistante
+                - pollution supposée
+                - inconnu
       - name: friche_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_sans_projet_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_avec_projet_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_reconvertie_count
         data_type: bigint
+        data_tests:
+          - not_null
       - name: friche_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_sans_projet_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_avec_projet_surface
         data_type: double precision
+        data_tests:
+          - not_null
       - name: friche_reconvertie_surface
         data_type: double precision
+        data_tests:
+          - not_null

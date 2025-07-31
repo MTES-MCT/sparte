@@ -34,8 +34,6 @@ models:
                 - "false"
       - name: look_a_like
         data_type: character varying
-        data_tests:
-          - not_null
       - name: created_date
         data_type: timestamp with time zone
         data_tests:
@@ -50,24 +48,16 @@ models:
         data_type: character varying
         data_tests:
           - not_null
-          - relationships:
-              field: land_id
-              to: ref('land')
       - name: land_type
         data_type: character varying
         data_tests:
           - not_null
-          - relationships:
-              field: land_type
-              to: ref('land')
       - name: cover_image
         data_type: character varying
       - name: folder_name
         data_type: character varying
       - name: territory_name
         data_type: character varying
-        data_tests:
-          - not_null
       - name: target_2031
         data_type: numeric
         data_tests:

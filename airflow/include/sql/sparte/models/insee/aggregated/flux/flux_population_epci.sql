@@ -12,6 +12,8 @@ LEFT JOIN
     {{ ref('commune') }} as commune
 ON
     commune.code = flux_population.code_commune
+WHERE
+    commune.epci IS NOT NULL
 GROUP BY
     commune.epci,
     year

@@ -25,6 +25,10 @@ vars:
     NATION: "NATION"
 
 models:
+  +grants:
+    select: ["alexis", "sofian", "metabase", "scaleway_server", "matomo"]
+    insert: ["alexis", "sofian", "scaleway_server"]
+    update: ["alexis", "sofian", "scaleway_server"]
   sparte:
     analytics:
       +schema: analytics

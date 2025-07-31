@@ -6,6 +6,9 @@ models:
       - name: land_id
         data_tests:
           - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
         data_type: character varying
       - name: comparison_id
         data_tests:
@@ -16,37 +19,80 @@ models:
         data_type: character varying
       - name: land_type
         data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
       - name: comparison_level
         data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - EPCI
+                - NATION
+                - REGION
       - name: from_year
         data_type: integer
+        data_tests:
+          - not_null
       - name: to_year
         data_type: integer
+        data_tests:
+          - not_null
       - name: total
         data_type: numeric
+        data_tests:
+          - not_null
       - name: total_percent
         data_type: double precision
+        data_tests:
+          - not_null
       - name: activite
         data_type: numeric
+        data_tests:
+          - not_null
       - name: activite_percent
         data_type: double precision
+        data_tests:
+          - not_null
       - name: habitat
         data_type: numeric
+        data_tests:
+          - not_null
       - name: habitat_percent
         data_type: double precision
+        data_tests:
+          - not_null
       - name: mixte
         data_type: numeric
+        data_tests:
+          - not_null
       - name: mixte_percent
         data_type: double precision
+        data_tests:
+          - not_null
       - name: route
         data_type: numeric
+        data_tests:
+          - not_null
       - name: route_percent
         data_type: double precision
+        data_tests:
+          - not_null
       - name: ferroviaire
         data_type: numeric
+        data_tests:
+          - not_null
       - name: ferroviaire_percent
         data_type: double precision
+        data_tests:
+          - not_null
       - name: inconnu
         data_type: numeric
+        data_tests:
+          - not_null
       - name: inconnu_percent
         data_type: double precision
+        data_tests:
+          - not_null

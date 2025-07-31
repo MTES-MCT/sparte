@@ -16,7 +16,8 @@ LEFT JOIN
     {{ ref('scot_communes') }} as scot
 ON
     commune.code = scot.commune_code
-
+WHERE
+    scot.id_scot IS NOT NULL
 GROUP BY
     scot.id_scot,
     year
