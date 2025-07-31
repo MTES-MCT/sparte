@@ -30,25 +30,28 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values:
-                - US235
-                - US3
-                - US4.3
-                - US1.1
-                - US4.1.5
-                - US6.3
-                - US1.3
-                - US2
-                - US4.1.3
-                - US1.4
-                - US4.2
-                - US6.2
-                - US5
-                - US6.1
-                - US4.1.2
-                - US4.1.1
-                - US4.1.4
-                - US1.2
+              values: [
+                "US1.1",
+                "US1.2",
+                "US1.3",
+                "US1.4",
+                "US1.5",
+                "US2",
+                "US3",
+                "US5",
+                "US235",
+                "US4.1.1",
+                "US4.1.2",
+                "US4.1.3",
+                "US4.1.4",
+                "US4.1.5",
+                "US4.2",
+                "US4.3",
+                "US6.1",
+                "US6.2",
+                "US6.3",
+                "US6.6"
+              ]
       - name: percent_of_artif
         data_type: numeric
         data_tests:
