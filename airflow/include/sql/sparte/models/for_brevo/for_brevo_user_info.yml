@@ -16,13 +16,7 @@ models:
       - name: FONCTION
         data_type: character varying
         quote: true
-      - name: FONCTION_LIBELLE
-        data_type: character varying
-        quote: true
       - name: ORGANISME
-        data_type: character varying
-        quote: true
-      - name: ORGANISME_LIBELLE
         data_type: character varying
         quote: true
       - name: LAST_DATE_DIAG_CREATED

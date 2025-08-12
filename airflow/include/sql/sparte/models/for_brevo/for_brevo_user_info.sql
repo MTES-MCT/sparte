@@ -11,7 +11,6 @@ SELECT
     user_lastname as "NOM",
     user_firstname as "PRENOM",
     user_created_date as "DATE_CREATION_COMPTE",
-    user_function as "FONCTION",
     CASE user_function
         WHEN 'RESPONSABLE_URBANISME' THEN 'Chargé(e) urbanisme'
         WHEN 'RESPONSABLE_PLANIFICATION' THEN 'Chargé(e) planification'
@@ -19,8 +18,7 @@ SELECT
         WHEN 'SECRETAIRE_MAIRIE' THEN 'Secrétaire de mairie'
         WHEN 'ELU' THEN 'Élu(e)'
         WHEN 'AUTRE' THEN 'Autre'
-    END as "FONCTION_LIBELLE",
-    user_organism as "ORGANISME",
+    END as "FONCTION",
     CASE user_organism
         WHEN 'COMMUNE' THEN 'Commune'
         WHEN 'EPCI' THEN 'EPCI'
@@ -29,7 +27,7 @@ SELECT
         WHEN 'SERVICES_DEPARTEMENTAUX' THEN 'DDT/DDTM/DEAL'
         WHEN 'EXPERTS_URBANISTES' THEN 'Bureaux d''études/Agence d''urbanisme'
         WHEN 'ACTEURS_CITOYENS' THEN 'Association/Particulier'
-    END as "ORGANISME_LIBELLE",
+    END as "ORGANISME",
     user_last_online_diagnostic_date as "LAST_DATE_DIAG_CREATED",
     main_land_name as "NOM_TERRITOIRE",
     user_online_diagnostic_count as "NB_DIAG_CREES",
