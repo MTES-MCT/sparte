@@ -44,9 +44,16 @@ def create_gpu_sftp_connection(
     username: str,
     password: str,
     default_path: str | None = None,
+    known_hosts_line: str | None = None,
 ):
     client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    # Politique stricte: rejette les hôtes inconnus
+    client.set_missing_host_key_policy(paramiko.RejectPolicy())
+    client.load_system_host_keys()
+
+    if known_hosts_line:
+        client.load_host_keys_from_line(known_hosts_line)
+
     client.connect(
         hostname=host,
         port=port,
@@ -187,6 +194,7 @@ class InfraContainer(containers.DeclarativeContainer):
         password=os.getenv("GPU_SFTP_PASSWORD"),
         port=int(os.getenv("GPU_SFTP_PORT")),
         default_path="/pub/export-wfs/latest/",
+        known_hosts_line=os.getenv("GPU_SFTP_KNOWN_HOSTS_LINE"),
     )
 
     brevo = providers.Factory(
