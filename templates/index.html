@@ -39,6 +39,98 @@
         {% endif %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
+        <!-- Gestionnaire de consentement -->
+        <div class="fr-consent-banner" id="consent-banner" role="banner" aria-label="Gestion des cookies">
+            <div class="fr-consent-banner__header">
+                <div class="fr-consent-banner__header__content">
+                    <h2 class="fr-consent-banner__header__title">Gestion des cookies</h2>
+                    <p class="fr-consent-banner__header__desc">
+                        Nous utilisons des cookies pour mesurer l'audience et améliorer nos services.
+                    </p>
+                </div>
+            </div>
+            <div class="fr-consent-banner__actions">
+                <div class="fr-consent-banner__actions__buttons">
+                    <button class="fr-btn fr-consent-banner__actions__buttons__btn fr-consent-banner__actions__buttons__btn--primary" id="accept-all-cookies">
+                        Accepter tout
+                    </button>
+                    <button class="fr-btn fr-consent-banner__actions__buttons__btn fr-consent-banner__actions__buttons__btn--secondary" id="reject-all-cookies">
+                        Refuser tout
+                    </button>
+                    <button class="fr-btn fr-consent-banner__actions__buttons__btn fr-consent-banner__actions__buttons__btn--secondary" id="customize-cookies">
+                        Personnaliser
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="fr-modal" id="cookie-modal" aria-labelledby="cookie-modal-title" role="dialog" aria-modal="true">
+            <div class="fr-container">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" aria-controls="cookie-modal" title="Fermer">
+                            Fermer
+                        </button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h1 id="cookie-modal-title" class="fr-modal__title">Gestion des cookies</h1>
+                        <div class="fr-consent-manager">
+                            <div class="fr-consent-manager__header">
+                                <p>Vous pouvez à tout moment modifier vos préférences concernant les cookies.</p>
+                            </div>
+                            <div class="fr-consent-manager__content">
+                                <div class="fr-consent-manager__content__section">
+                                    <div class="fr-consent-manager__content__section__header">
+                                        <h3>Cookies techniques</h3>
+                                        <p>Nécessaires au fonctionnement du site. Ils ne peuvent pas être désactivés.</p>
+                                        <div class="fr-toggle">
+                                            <input type="checkbox" class="fr-toggle__input" id="technical-cookies" checked disabled>
+                                            <label class="fr-toggle__label" for="technical-cookies" aria-describedby="technical-cookies-hint">
+                                                <span class="fr-toggle__label-text">Activés</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fr-consent-manager__content__section">
+                                    <div class="fr-consent-manager__content__section__header">
+                                        <h3>Cookies de mesure d'audience (Matomo)</h3>
+                                        <p>Nous utilisons Matomo pour mesurer l'audience de manière anonyme. Ces cookies sont exemptés de consentement selon la CNIL.</p>
+                                        <div class="fr-toggle">
+                                            <input type="checkbox" class="fr-toggle__input" id="analytics-cookies" checked disabled>
+                                            <label class="fr-toggle__label" for="analytics-cookies" aria-describedby="analytics-cookies-hint">
+                                                <span class="fr-toggle__label-text">Activés</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="fr-consent-manager__content__section">
+                                    <div class="fr-consent-manager__content__section__header">
+                                        <h3>Cookies publicitaires (Google Ads)</h3>
+                                        <p>Nous utilisons Google Ads pour mesurer l'efficacité de nos campagnes d'information. Aucune donnée personnelle identifiable n'est conservée.</p>
+                                        <div class="fr-toggle">
+                                            <input type="checkbox" class="fr-toggle__input" id="advertising-cookies">
+                                            <label class="fr-toggle__label" for="advertising-cookies" aria-describedby="advertising-cookies-hint">
+                                                <span class="fr-toggle__label-text">Activer</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fr-consent-manager__footer">
+                                <div class="fr-consent-manager__footer__actions">
+                                    <button class="fr-btn fr-consent-manager__footer__actions__btn fr-consent-manager__footer__actions__btn--primary" id="save-cookie-preferences">
+                                        Enregistrer mes choix
+                                    </button>
+                                    <button class="fr-btn fr-consent-manager__footer__actions__btn fr-consent-manager__footer__actions__btn--secondary" id="cancel-cookie-preferences">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Page content wrapper-->
         <div id="page-content-wrapper" class="d-flex flex-column h-100">
             <!-- Top navigation-->
