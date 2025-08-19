@@ -48,16 +48,11 @@ const removeGoogleAds = () => {
 };
 
 const getFinalityDescription = () => {
-    const baseFinalites = {
-        "analytics": {
-            "title": "Matomo",
-            "description": "Nous utilisons Matomo pour mesurer l'audience de manière anonyme. Ces cookies sont exemptés de consentement selon la CNIL."
-        }
-    };
+    const finalites = {};
     
     if (isGoogleAdsEnabled) {
         return {
-            ...baseFinalites,
+            ...finalites,
             "advertising": {
                 "title": "Google Ads",
                 "description": "Nous utilisons Google Ads pour mesurer l'efficacité de nos campagnes d'information. Aucune donnée personnelle identifiable n'est conservée."
@@ -65,7 +60,7 @@ const getFinalityDescription = () => {
         };
     }
     
-    return baseFinalites;
+    return finalites;
 };
 
 export const { 
