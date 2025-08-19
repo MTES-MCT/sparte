@@ -7,6 +7,30 @@ import Dashboard from '@components/layout/Dashboard';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/ui/SearchBar'
 import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
+import CookieConsentManager from '@components/ui/CookieConsent'
+import { FooterConsentManagementItem } from './hooks/useConsentManagement'
+
+// Gestionnaire de consentement des cookies
+const cookieConsentRoot = document.createElement('div');
+cookieConsentRoot.id = 'cookie-consent-root';
+document.body.appendChild(cookieConsentRoot);
+
+createRoot(cookieConsentRoot).render(
+  <Provider store={store}>
+    <CookieConsentManager />
+  </Provider>,
+);
+
+const footerConsent = document.getElementById('react-footer-consent');
+if (footerConsent) {
+  createRoot(footerConsent).render(
+    <Provider store={store}>
+      <>
+        <FooterConsentManagementItem />
+      </>
+    </Provider>,
+  );
+}
 
 const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
