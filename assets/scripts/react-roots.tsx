@@ -25,9 +25,7 @@ const footerConsent = document.getElementById('react-footer-consent');
 if (footerConsent) {
   createRoot(footerConsent).render(
     <Provider store={store}>
-      <>
-        <FooterConsentManagementItem />
-      </>
+      <FooterConsentManagementItem />
     </Provider>,
   );
 }
