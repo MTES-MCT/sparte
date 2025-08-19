@@ -47,8 +47,15 @@ const removeGoogleAds = () => {
     });
 };
 
-const getFinalityDescription = () => {
-    const finalites = {};
+type FinalityDescription = {
+    advertising?: {
+        title: string;
+        description: string;
+    };
+};
+
+const getFinalityDescription = (): FinalityDescription => {
+    const finalites: FinalityDescription = {};
     
     if (isGoogleAdsEnabled) {
         return {
@@ -67,14 +74,14 @@ export const {
     ConsentBannerAndConsentManagement, 
     FooterConsentManagementItem, 
     useConsent
-} = createConsentManagement({
+} = createConsentManagement<FinalityDescription>({
     "finalityDescription": getFinalityDescription,
     "personalDataPolicyLinkProps": {
         "href": "/confidentialité",
     },
     "consentCallback": async ({ finalityConsent, finalityConsent_prev }) => {
         if (isGoogleAdsEnabled) {
-            if ((finalityConsent as any).advertising) {
+            if (finalityConsent.advertising) {
                 loadGoogleAds();
             } else {
                 removeGoogleAds();
