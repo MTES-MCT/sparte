@@ -84,8 +84,8 @@ const Consommation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                                 <p className="fr-text--sm mb-3">
                                     La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est mesurée avec les données d'évolution des fichiers fonciers produits
                                     et diffusés par le Cerema depuis 2009 à  partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale)
-                                    de la DGFIP. Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant
-                                    les évolutions réalisées au cours de l'année 2022.
+                                    de la DGFIP. Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2024, intégrant
+                                    les évolutions réalisées au cours de l'année 2023.
                                 </p>
                                 <p className="fr-text--sm mb-3">
                                     Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espaces vis à vis de l'évolution de la population.
