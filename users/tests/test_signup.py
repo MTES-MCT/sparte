@@ -9,6 +9,7 @@ valid_payload = {
     "email": "john.doe@gmail.com",
     "password1": "ycvqB:U7aj%umbG3H<f8@D",
     "password2": "ycvqB:U7aj%umbG3H<f8@D",
+    "accept_privacy": True,
 }
 
 form_url = "/users/signup/"
