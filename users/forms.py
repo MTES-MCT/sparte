@@ -5,6 +5,8 @@ from django.contrib.auth.forms import (
     UserCreationForm,
 )
 from django.contrib.auth.password_validation import validate_password
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from .models import User
 
@@ -22,6 +24,7 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class SignupForm(forms.ModelForm):
+    accept_privacy = forms.BooleanField(label="", required=True)
     password1 = forms.CharField(
         label="Mot de passe", widget=forms.PasswordInput(), validators=[validate_password], max_length=50
     )
@@ -39,6 +42,18 @@ class SignupForm(forms.ModelForm):
             "email",
             "password1",
             "password2",
+            "accept_privacy",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        privacy_url = reverse("home:privacy")
+        self.fields["accept_privacy"].label = mark_safe(
+            (
+                "En validant mon inscription, j'accepte la "
+                f'<a href="{privacy_url}" target="_blank" rel="noopener">'
+                "politique de confidentialité</a>"
+            )
         )
 
     def clean(self):
