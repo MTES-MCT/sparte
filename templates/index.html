@@ -20,6 +20,7 @@
         <link crossorigin="anonymous" rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#868686" integrity="sha256-L/SsNmrQdW36ZiLwYTlnMQpcXBAiDLWKiqj7Sos19nY=">
         <meta name="msapplication-TileColor" content="#2b5797">
         <meta name="theme-color" content="#ffffff">
+        <meta name="google-ads-enabled" content="{{ GOOGLE_ADWORDS_ACTIVATE|yesno:'true,false' }}">
 
         <!-- Webpack Bundle CSS -->
         {% if debug %}
@@ -27,12 +28,11 @@
         {% else %}
             {% render_bundle 'main' 'css' %}
         {% endif %}
+        
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
         <!-- Matomo -->
         {% tracking_code %}
-        <!-- Google Adwords -->
-        {% adwords_google_tag_code %}
         <!-- Crisp -->
         {% if request.resolver_match.url_name not in 'map-urban-zones,theme-city-artif,theme-city-conso,theme-my-artif' %}
             {% crisp_tag_code %}
