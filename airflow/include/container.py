@@ -1,3 +1,4 @@
+import base64
 import os
 from contextlib import contextmanager
 
@@ -43,16 +44,17 @@ def create_gpu_sftp_connection(
     port: int,
     username: str,
     password: str,
+    host_key: str,
     default_path: str | None = None,
-    known_hosts_line: str | None = None,
 ):
     client = paramiko.SSHClient()
-    # Politique stricte: rejette les hôtes inconnus
     client.set_missing_host_key_policy(paramiko.RejectPolicy())
     client.load_system_host_keys()
-
-    if known_hosts_line:
-        client.load_host_keys_from_line(known_hosts_line)
+    client.get_host_keys().add(
+        hostname=f"[{host}]:{port}",
+        keytype="ssh-ed25519",
+        key=paramiko.PKey.from_type_string(key_type="ssh-ed25519", key_bytes=base64.b64decode(host_key)),
+    )
 
     client.connect(
         hostname=host,
@@ -193,8 +195,8 @@ class InfraContainer(containers.DeclarativeContainer):
         username=os.getenv("GPU_SFTP_USER"),
         password=os.getenv("GPU_SFTP_PASSWORD"),
         port=int(os.getenv("GPU_SFTP_PORT")),
+        host_key=os.getenv("GPU_HOST_KEY"),
         default_path="/pub/export-wfs/latest/",
-        known_hosts_line=os.getenv("GPU_SFTP_KNOWN_HOSTS_LINE"),
     )
 
     brevo = providers.Factory(
