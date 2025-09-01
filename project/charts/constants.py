@@ -26,7 +26,7 @@ def get_multiple_line_credit_position(line_count=2) -> dict[str, int]:
 
 CEREMA_CREDITS = {
     "enabled": True,
-    "text": "Source : Fichiers fonciers au 1er janvier 2023 (Cerema)",
+    "text": "Source : Fichiers fonciers au 1er janvier 2024 (Cerema)",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
 }

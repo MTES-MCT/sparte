@@ -5,6 +5,8 @@ données PostgreSQL, puis lance un job dbt pour les transformer.
 
 from gdaltools import ogr2ogr
 from include.container import InfraContainer as Container
+from include.pools import DBT_POOL
+from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -49,13 +51,19 @@ def ingest_app_tables():  # noqa: C901
     def ingest_satisfaction_form_entry():
         return ingest_table("home_satisfactionformentry", "app_satisfactionformentry")
 
+    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
+    def dbt_run() -> str:
+        return get_dbt_command_from_directory(
+            "dbt build -s app+",
+        )
+
     (
         ingest_user()
         >> ingest_request()
         >> ingest_newsletter()
         >> ingest_project()
         >> ingest_satisfaction_form_entry()
-        # >> dbt_run()
+        >> dbt_run()
     )
 
 

@@ -7,7 +7,7 @@ requests==2.32.3
 dbt-core==1.8.2
 dbt-postgres==1.8.2
 tqdm==4.66.5
-pysftp==0.2.9
+paramiko>=3
 pyarrow==17.0.0
 adbc_driver_postgresql==1.1.0
 pandas

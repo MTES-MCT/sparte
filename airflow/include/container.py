@@ -1,6 +1,8 @@
+import base64
 import os
+from contextlib import contextmanager
 
-import pysftp
+import paramiko
 import sqlalchemy
 from dependency_injector import containers, providers
 from gdaltools import PgConnectionString
@@ -34,6 +36,45 @@ def create_sql_alchemy_conn(
 ) -> sqlalchemy.engine.base.Connection:
     url = f"postgresql+psycopg2://{user}:{password.replace('@', '%40')}@{host}:{port}/{dbname}"
     return sqlalchemy.create_engine(url)
+
+
+@contextmanager
+def create_gpu_sftp_connection(
+    host: str,
+    port: int,
+    username: str,
+    password: str,
+    host_key: str,
+    default_path: str | None = None,
+):
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.RejectPolicy())
+    client.load_system_host_keys()
+    client.get_host_keys().add(
+        hostname=f"[{host}]:{port}",
+        keytype="ssh-ed25519",
+        key=paramiko.PKey.from_type_string(key_type="ssh-ed25519", key_bytes=base64.b64decode(host_key)),
+    )
+
+    client.connect(
+        hostname=host,
+        port=port,
+        username=username,
+        password=password,
+        look_for_keys=False,
+        allow_agent=False,
+        timeout=30,
+    )
+    sftp = client.open_sftp()
+    try:
+        if default_path:
+            sftp.chdir(default_path)
+        yield sftp
+    finally:
+        try:
+            sftp.close()
+        finally:
+            client.close()
 
 
 class InfraContainer(containers.DeclarativeContainer):
@@ -148,17 +189,14 @@ class InfraContainer(containers.DeclarativeContainer):
         port=os.getenv("STAGING_DB_PORT"),
     )
 
-    cnopts = pysftp.CnOpts()
-    cnopts.hostkeys = None
-
     gpu_sftp = providers.Factory(
-        provides=pysftp.Connection,
+        create_gpu_sftp_connection,
         host=os.getenv("GPU_SFTP_HOST"),
         username=os.getenv("GPU_SFTP_USER"),
         password=os.getenv("GPU_SFTP_PASSWORD"),
         port=int(os.getenv("GPU_SFTP_PORT")),
+        host_key=os.getenv("GPU_HOST_KEY"),
         default_path="/pub/export-wfs/latest/",
-        cnopts=cnopts,
     )
 
     brevo = providers.Factory(
