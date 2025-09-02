@@ -33,6 +33,11 @@ with together as (
         *,
         2154 AS srid_source
     FROM {{ ref('epci_metropole') }}
+    UNION ALL
+    SELECT
+        *,
+        4471 AS srid_source
+    FROM {{ ref('epci_mayotte') }}
 )
 SELECT * FROM together
 WHERE is_ept = false
