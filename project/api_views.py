@@ -83,8 +83,6 @@ class DiagnosticDownloadAPIView(generics.RetrieveAPIView):
             project=project,
             first_name=request.user.first_name,
             last_name=request.user.last_name,
-            function=request.user.function,
-            organism=request.user.organism,
             email=request.user.email,
             requested_document=requested_document,
             du_en_cours=PlanningCompetencyServiceSudocuh.planning_document_in_revision(project.land),
