@@ -140,3 +140,22 @@ models:
         data_type: jsonb
         data_tests:
           - not_null
+      - name: consommation_correction_status
+        data_type: text
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - données_coriggées
+                - données_inchangées
+                - données_inchangées_avec_données_manquantes
+                - données_manquantes
+                - données_partiellement_coriggées
+      - name: has_conso
+        data_type: boolean
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"

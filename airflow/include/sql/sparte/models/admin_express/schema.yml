@@ -73,18 +73,22 @@ sources:
     - name: commune_guyane
     - name: commune_martinique
     - name: commune_reunion
+    - name: commune_mayotte
     - name: departement_metropole
     - name: departement_guadeloupe
     - name: departement_guyane
     - name: departement_martinique
     - name: departement_reunion
+    - name: departement_mayotte
     - name: epci_metropole
     - name: epci_guadeloupe
     - name: epci_guyane
     - name: epci_martinique
     - name: epci_reunion
+    - name: epci_mayotte
     - name: region_reunion
     - name: region_guadeloupe
     - name: region_guyane
     - name: region_martinique
     - name: region_metropole
+    - name: region_mayotte

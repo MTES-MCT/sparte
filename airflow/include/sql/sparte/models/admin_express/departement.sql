@@ -20,3 +20,5 @@ UNION ALL
 SELECT *, 2975 as srid_source FROM {{ ref('departement_reunion') }}
 UNION ALL
 SELECT *, 2154 as srid_source FROM {{ ref('departement_metropole') }}
+UNION ALL
+SELECT *, 4471 as srid_source FROM {{ ref('departement_mayotte') }}

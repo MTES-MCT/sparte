@@ -36,7 +36,6 @@ export type ProjectDetailResultType = {
     analyse_end_date: string;
     territory_name: string;
     has_zonage_urbanisme: boolean;
-    consommation_correction_status: ConsoCorrectionStatusEnum;
     autorisation_logement_available: boolean;
     logements_vacants_available: boolean;
     land_id: string;

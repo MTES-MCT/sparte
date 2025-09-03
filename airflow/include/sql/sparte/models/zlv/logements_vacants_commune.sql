@@ -17,7 +17,6 @@ with data_with_proper_code_commune as (
         {{ ref('logements_vacants') }}
     WHERE
         land_type = 'Commune' AND
-        NOT starts_with(code_insee[1], '976') AND -- On exclut les communes de Mayotte
         {{ secretisation_zlv() }} -- On applique la secretisation
 )
 SELECT * FROM data_with_proper_code_commune

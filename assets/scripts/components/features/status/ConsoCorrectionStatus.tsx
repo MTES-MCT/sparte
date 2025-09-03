@@ -8,11 +8,11 @@ const NoticeBody = styled.div`
 `;
 
 export enum ConsoCorrectionStatusEnum {
-    UNCHANGED = 'UNCHANGED',
-    FUSION = 'FUSION',
-    DIVISION = 'DIVISION',
-    COG_ERROR = 'COG_ERROR',
-    MISSING_FROM_SOURCE = 'MISSING_FROM_SOURCE',
+    DONNEES_CORRIGEES = 'données_coriggées',
+    DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES = 'données_inchangées_avec_données_manquantes',
+    DONNEES_PARTIELLEMENT_CORRIGEES = 'données_partiellement_coriggées',
+    DONNEES_INCHANGEES = 'données_inchangées',
+    DONNEES_MANQUANTES = 'données_manquantes'
 }
 
 interface IconsoCorrectionStatusMessages {
@@ -25,21 +25,19 @@ const warningTitle = "Données de consommation indisponibles";
 const missingMessage = `Votre territoire est absent du dernier millésime de données de consommation d'espaces NAF. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.`
 
 export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]?: IconsoCorrectionStatusMessages } = {
-    FUSION: {
+    'données_coriggées': {
         title: defaultTitle,
-        message: "Pour refléter les changements de votre territoire depuis la dernière mise à jour du code officiel géographique, nous avons fusionné les données de consommation d'espace NAF des anciennes communes le composant.",
-    },
-    DIVISION: {
-        title: warningTitle,
-        message: `Votre territoire ayant été divisé lors de la dernière mise à jour du code officiel géographique,
-        nous ne pouvons pas vous proposer d'analyse de consommation d'espaces NAF.
-        Nous vous invitons à consulter l'analyse de consommation de l'EPCI auquel votre territoire appartient.`,
-    },
-    COG_ERROR: {
-        title: warningTitle,
         message: missingMessage,
     },
-    MISSING_FROM_SOURCE: {
+    'données_partiellement_coriggées': {
+        title: defaultTitle,
+        message: `Certaines données de consommation d'espaces NAF ont été corrigées pour votre territoire, il s'agit la plupart du temps d'erreur de Code Officiel Géographique dans les données sources.`
+    },
+    'données_inchangées_avec_données_manquantes': {
+        title: "Données de consommation partiellement disponibles",
+        message: 'Certaines communes de votre territoire sont absentes du dernier millésime de données de consommation d\'espaces NAF.'
+    },
+    'données_manquantes': {
         title: warningTitle,
         message: missingMessage,
     }

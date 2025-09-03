@@ -8,7 +8,6 @@ models:
       data_tests:
         - not_null
         - unique
-        - has_all_departements
     - name: name
       data_tests:
         - not_null

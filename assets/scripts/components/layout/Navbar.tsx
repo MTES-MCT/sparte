@@ -8,6 +8,7 @@ import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 import { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import { MenuItem, ProjectDetailResultType } from '@services/types/project';
+import { LandDetailResultType } from '@services/types/land';
 
 const primaryColor = '#313178';
 const activeColor = '#4318FF';
@@ -150,7 +151,7 @@ const MenuItemContent: React.FC<{ item: MenuItem }> = ({ item }) => (
     </>
 );
 
-const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectData }) => {
+const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDetailResultType }> = ({ projectData, landData }) => {
     const location = useLocation();
     const { navbar, urls } = projectData
 
@@ -160,10 +161,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
     const isOpen = useSelector(selectIsNavbarOpen);
     const { isMobile } = useWindowSize();
 
-    const shouldDisplayDownloads = [
-        ConsoCorrectionStatusEnum.UNCHANGED,
-        ConsoCorrectionStatusEnum.FUSION,
-    ].includes(projectData.consommation_correction_status);
+    const shouldDisplayDownloads = landData.has_conso
 
 
     const isActive = (url?: string) => location.pathname === url;

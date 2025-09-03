@@ -66,8 +66,6 @@ def create_request_rnu_package_one_off(project_id: int) -> None:
         project=project,
         first_name=user.first_name,
         last_name=user.last_name,
-        function=user.function,
-        organism=user.organism,
         email=user.email,
         user=user,
         requested_document=RequestedDocumentChoices.RAPPORT_LOCAL,

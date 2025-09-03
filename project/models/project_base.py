@@ -23,6 +23,7 @@ from public_data.models import (
     Departement,
     Epci,
     Land,
+    LandModel,
     Region,
     Scot,
 )
@@ -439,6 +440,10 @@ class Project(BaseProject):
     @property
     def land_proxy(self) -> Land:
         return Land(self.get_public_key())
+
+    @property
+    def land_model(self) -> LandModel:
+        return LandModel.objects.get(land_type=self.land_type, land_id=self.land_id)
 
     def get_arbitrary_comparison_lands(self) -> QuerySet[Departement] | QuerySet[Region] | None:
         """

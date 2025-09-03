@@ -2,7 +2,7 @@ import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
 import { OcsgeStatusEnum } from "@components/features/status/OcsgeStatus";
-import { GeoJsonObject } from "geojson";
+import { ConsoCorrectionStatusEnum } from "@components/features/status/ConsoCorrectionStatus";
 
 export type Millesime = {
     index: number;
@@ -88,16 +88,18 @@ export type LandDetailResultType = {
     is_interdepartemental: boolean;
     has_zonage: boolean;
     has_ocsge: boolean;
+    has_conso: boolean;
+    has_friche: boolean;
+    has_logements_vacants: boolean;
     ocsge_status: OcsgeStatusEnum;
     friche_status: FricheStatusEnum;
     friche_status_details: FricheStatusDetails;
     logements_vacants_status: LogementVacantStatusEnum;
     logements_vacants_status_details: LogementsVacantsStatusDetails;
-    has_logements_vacants: boolean;
-	has_friche: boolean;
     bounds: [number, number, number, number];
     max_bounds: [number, number, number, number];
     conso_details: ConsoDetails;
+    consommation_correction_status: ConsoCorrectionStatusEnum;
 };
 
 type LandDetailQueryArg = string | FetchArgs | {

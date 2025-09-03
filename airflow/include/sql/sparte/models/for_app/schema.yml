@@ -1,7 +1,7 @@
 version: 2
 
 valid_srids: &valid_srids
-  values: [ 32620, 2972, 2975, 2154 ]
+  values: [ 32620, 2972, 2975, 2154, 4471 ]
 
 models:
   - name: for_app_departement
@@ -51,6 +51,7 @@ models:
                 - 2972
                 - 2975
                 - 2154
+                - 4471
         data_type: integer
       - name: ocsge_millesimes
         data_type: array
@@ -108,6 +109,7 @@ models:
                 - 2972
                 - 2975
                 - 2154
+                - 4471
         data_type: integer
       - name: ocsge_available
         data_tests:
@@ -200,6 +202,7 @@ models:
                 - 2972
                 - 2975
                 - 2154
+                - 4471
         data_type: integer
       - name: mpoly
         data_tests:
@@ -248,6 +251,7 @@ models:
                 - 2972
                 - 2975
                 - 2154
+                - 4471
         data_type: integer
       - name: mpoly
         data_tests:
@@ -292,6 +296,7 @@ models:
                 - 2972
                 - 2975
                 - 2154
+                - 4471
         data_type: integer
       - name: mpoly
         data_tests:

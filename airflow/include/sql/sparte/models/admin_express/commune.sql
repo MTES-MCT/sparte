@@ -29,6 +29,9 @@ from {{ ref("commune_reunion") }}
 union all
 select *, 2154 as srid_source
 from {{ ref("commune_metropole") }}
+union all
+select *, 4471 as srid_source
+from {{ ref("commune_mayotte") }}
 )
 SELECT
     without_scots.*,
