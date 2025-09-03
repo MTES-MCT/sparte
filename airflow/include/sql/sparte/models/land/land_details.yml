@@ -8,16 +8,16 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('land')
               field: land_id
+              to: ref('land')
       - name: land_type
         description: Categorical attribute representing the type of land, such as residential, commercial, agricultural, etc. Used to classify and group land entities.
         data_type: text
         data_tests:
           - not_null
           - relationships:
-              to: ref('land')
               field: land_type
+              to: ref('land')
       - name: name
         description: Descriptive name or label assigned to the land entity, providing a human-readable identifier for easier reference.
         data_type: character varying
@@ -60,21 +60,27 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              values:
+                - true
+                - false
       - name: has_zonage
         description: A boolean flag that specifies whether the land has associated zoning information. TRUE indicates the presence of zoning data, while FALSE indicates its absence.
         data_type: boolean
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              values:
+                - true
+                - false
       - name: has_friche
         description: Indicates whether the land has been identified as a 'friche' (unused or abandoned land). Derived from the count of entries in the 'friche_land' table for the given land_id and land_type. Returns TRUE if the count is greater than 0, otherwise FALSE.
         data_type: boolean
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              values:
+                - true
+                - false
       - name: child_land_types
         description: An array containing the types of child lands associated with the current land entity. This provides hierarchical information about the land's subdivisions or related entities.
         data_type: array
@@ -90,18 +96,91 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              values:
+                - true
+                - false
       - name: competence_planification
         description: A boolean flag indicating whether the land falls under the jurisdiction of a planning authority. Defaults to FALSE if no data is available.
         data_type: boolean
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              values:
+                - true
+                - false
       - name: is_interdepartemental
         description: Indicates whether the land spans multiple departments. If the array of departments associated with the land contains more than one element, this column will return TRUE; otherwise, it will return FALSE.
         data_type: boolean
         data_tests:
           - not_null
           - accepted_values:
-              values: [true, false]
+              values:
+                - true
+                - false
+      - name: conso_2011_2020
+        data_type: numeric
+        tests:
+          - not_null
+      - name: allowed_conso_raised_to_1ha_2021_2030
+        data_type: boolean
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "false"
+                - "true"
+      - name: allowed_conso_2021_2030
+        data_type: numeric
+        tests:
+          - not_null
+      - name: conso_since_2021
+        data_type: numeric
+        tests:
+          - not_null
+      - name: annual_conso_since_2021
+        data_type: numeric
+        tests:
+          - not_null
+      - name: projected_conso_2030
+        data_type: numeric
+        tests:
+          - not_null
+      - name: currently_respecting_regulation
+        data_type: boolean
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "false"
+                - "true"
+      - name: current_percent_use
+        data_type: numeric
+        tests:
+          - not_null
+      - name: respecting_regulation_by_2030
+        data_type: boolean
+        tests:
+          - not_null
+      - name: projected_percent_use_by_2030
+        data_type: numeric
+        tests:
+          - not_null
+      - name: consommation_correction_status
+        data_type: text
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - données_coriggées
+                - données_inchangées
+                - données_inchangées_avec_données_manquantes
+                - données_manquantes
+                - données_partiellement_coriggées
+      - name: has_conso
+        data_type: boolean
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"

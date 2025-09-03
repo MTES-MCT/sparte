@@ -61,7 +61,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
         }
     );
     
-    const { ocsge_status, has_ocsge, has_friche, consommation_correction_status } = landData || {};
+    const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status } = landData || {};
 
     const { urls, logements_vacants_available } = projectData || {};
 
@@ -105,13 +105,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
-                                                showPage={[
-                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
-                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES,
-                                                        ConsoCorrectionStatusEnum.DONNEES_CORRIGEES,
-                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES,
-                                                    ].includes(consommation_correction_status)
-                                                }
+                                                showPage={has_conso}
                                                 showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
                                                 status={
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
@@ -126,13 +120,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Trajectoire de sobriété foncière"
-                                                showPage={[
-                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
-                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES,
-                                                        ConsoCorrectionStatusEnum.DONNEES_CORRIGEES,
-                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES,
-                                                    ].includes(consommation_correction_status)
-                                                }
+                                                showPage={has_conso}
                                                 showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
                                                 status={
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
@@ -199,6 +187,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Rapport triennal local"
+                                                showPage={has_conso}
                                                 showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
                                                 status={
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />

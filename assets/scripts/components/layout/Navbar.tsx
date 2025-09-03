@@ -161,12 +161,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
     const isOpen = useSelector(selectIsNavbarOpen);
     const { isMobile } = useWindowSize();
 
-    const shouldDisplayDownloads = [
-        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
-        ConsoCorrectionStatusEnum.DONNEES_CORRIGEES,
-        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES,
-        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES,
-    ].includes(landData.consommation_correction_status);
+    const shouldDisplayDownloads = landData.has_conso
 
 
     const isActive = (url?: string) => location.pathname === url;

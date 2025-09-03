@@ -275,16 +275,16 @@ const SyntheseFriche = ({ landData, projectData }: SyntheseProps) => {
 };
 
 const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
-  const { consommation_correction_status, ocsge_status } = landData;
+  const { consommation_correction_status, ocsge_status, has_conso, has_ocsge } = landData;
   return (
     <div className="fr-container--fluid fr-p-3w">
       <h2>Comprendre : les objectifs de sobriété foncière</h2>
       <h3>Période 2021-2030 : mesure de la consommation d'espaces</h3>
-      {consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_MANQUANTES ? (
+      {has_conso ? (
           <SyntheseConso landData={landData} projectData={projectData} />
       ) : <ConsoCorrectionStatus status={consommation_correction_status} />}
       <h3>Période 2021 - 2050 : mesure de l’artificialisation des sols</h3>
-      {landData.has_ocsge ? (
+      {has_ocsge ? (
         <SyntheseArtif landData={landData} projectData={projectData} />
        ) : <OcsgeStatus status={ocsge_status} />}
       <h2 id="agir-leviers-sobriete-fonciere" className="fr-mt-10w">Agir : les leviers de la sobriété foncière</h2>

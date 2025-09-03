@@ -32,6 +32,7 @@ SELECT
     land_ocsge_status.status as ocsge_status,
     land_ocsge_status.has_ocsge as has_ocsge,
     land_zonages.zonage_count > 0 as has_zonage,
+    land.has_conso as has_conso,
     coalesce(friche_status.friche_count > 0, false) as has_friche,
     friche_status.status as friche_status,
     friche_status.status_details as friche_status_details,

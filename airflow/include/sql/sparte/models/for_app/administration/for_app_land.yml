@@ -147,7 +147,15 @@ models:
           - accepted_values:
               values:
                 - données_coriggées
-                - données_inchangées_avec_données_manquantes
-                - données_partiellement_coriggées
                 - données_inchangées
+                - données_inchangées_avec_données_manquantes
                 - données_manquantes
+                - données_partiellement_coriggées
+      - name: has_conso
+        data_type: boolean
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"

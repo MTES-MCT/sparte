@@ -14,6 +14,7 @@ SELECT
     land_ocsge_status.has_ocsge as has_ocsge,
     land_zonages.zonage_count > 0 as has_zonage,
     land_friche.friche_count > 0 as has_friche,
+    conso_correction_status.consommation_correction_status != 'données_manquantes' as has_conso,
     land.child_land_types,
     land.parent_keys,
     land.departements,

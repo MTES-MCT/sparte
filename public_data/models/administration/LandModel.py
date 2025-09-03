@@ -78,6 +78,7 @@ class LandModel(models.Model):
     has_ocsge = models.BooleanField()
     has_zonage = models.BooleanField()
     has_friche = models.BooleanField()
+    has_conso = models.BooleanField()
     friche_status = models.TextField(choices=FricheStatus.choices)
     friche_status_details = models.JSONField()
     logements_vacants_status = models.TextField(choices=LogementsVacantsStatus.choices)
