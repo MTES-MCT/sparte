@@ -61,9 +61,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
         }
     );
     
-    const { ocsge_status, has_ocsge, has_friche } = landData || {};
+    const { ocsge_status, has_ocsge, has_friche, consommation_correction_status } = landData || {};
 
-    const { urls, consommation_correction_status, logements_vacants_available } = projectData || {};
+    const { urls, logements_vacants_available } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
     const { isMobile } = useWindowSize();
@@ -81,7 +81,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                     <Header projectData={projectData} />
                     <Router>
                         <TrackingWrapper />
-                        <Navbar projectData={projectData} />
+                        <Navbar projectData={projectData} landData={landData} />
                         <Main $isOpen={isOpen} $isMobile={isMobile}>
                             <TopBar />
                             <Content>
@@ -106,11 +106,13 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
                                                 showPage={[
-                                                        ConsoCorrectionStatusEnum.UNCHANGED,
-                                                        ConsoCorrectionStatusEnum.FUSION
+                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_CORRIGEES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES,
                                                     ].includes(consommation_correction_status)
                                                 }
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
                                                 status={
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
@@ -125,11 +127,13 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Trajectoire de sobriété foncière"
                                                 showPage={[
-                                                        ConsoCorrectionStatusEnum.UNCHANGED,
-                                                        ConsoCorrectionStatusEnum.FUSION
+                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_CORRIGEES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES,
                                                     ].includes(consommation_correction_status)
                                                 }
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
                                                 status={
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
@@ -195,7 +199,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Rapport triennal local"
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.UNCHANGED}
+                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
                                                 status={
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }

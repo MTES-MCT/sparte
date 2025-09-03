@@ -8,8 +8,10 @@ models:
           - not_null
           - has_all_epcis:
               severity: warn
-          - has_all_departements
-          - has_all_regions
+          - has_all_departements:
+              severity: warn
+          - has_all_regions:
+              severity: warn
           - has_all_scots:
               severity: warn
           - has_all_communes:

@@ -67,16 +67,12 @@ UNION
         {{ ref('raw_rpls_region')}}
     WHERE
         region_code = '04'
-/*
-    Mayotte n'est pas encore pris en compte sur notre plateforme
-
 UNION
     SELECT
         region_name as departement_name,
         '976' as departement_code,
         {{ columns }}
     FROM
-        {{ ref('rpls_region')}}
+        {{ ref('raw_rpls_region')}}
     WHERE
-        region_code = '6'
-*/
+        region_code = '06'

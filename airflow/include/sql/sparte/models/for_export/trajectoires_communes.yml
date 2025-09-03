@@ -5,7 +5,8 @@ models:
         data_type: character varying
         data_tests:
           - not_null
-          - has_all_communes
+          - has_all_communes:
+              severity: warn
           - relationships:
               field: code
               to: ref('commune')

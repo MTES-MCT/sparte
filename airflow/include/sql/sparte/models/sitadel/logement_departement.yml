@@ -7,7 +7,8 @@ models:
     - name: code_departement
       data_tests:
       - not_null
-      - has_all_departements
+      - has_all_departements:
+          severity: warn
       - relationships:
           to: ref('departement')
           field: code

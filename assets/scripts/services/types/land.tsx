@@ -2,7 +2,7 @@ import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
 import { OcsgeStatusEnum } from "@components/features/status/OcsgeStatus";
-import { GeoJsonObject } from "geojson";
+import { ConsoCorrectionStatusEnum } from "@components/features/status/ConsoCorrectionStatus";
 
 export type Millesime = {
     index: number;
@@ -98,6 +98,7 @@ export type LandDetailResultType = {
     bounds: [number, number, number, number];
     max_bounds: [number, number, number, number];
     conso_details: ConsoDetails;
+    consommation_correction_status: ConsoCorrectionStatusEnum;
 };
 
 type LandDetailQueryArg = string | FetchArgs | {

@@ -24,8 +24,6 @@ WHERE
     logements_vacants.land_type = 'Département'
 AND
     land_name != 'CE d''Alsace'
-AND
-    land_name != 'Département Mayotte'
 OR
     land_name = 'DDT Corrèze' AND
     land_type = 'Service Déconcentré Départemental'

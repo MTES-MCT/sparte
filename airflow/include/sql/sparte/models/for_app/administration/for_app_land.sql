@@ -55,7 +55,8 @@ SELECT
         'current_percent_use', land.current_percent_use,
         'respecting_regulation_by_2030', land.respecting_regulation_by_2030,
         'projected_percent_use_by_2030', land.projected_percent_use_by_2030
-    ) as conso_details
+    ) as conso_details,
+    land.consommation_correction_status
 FROM
     {{ ref('land_details') }} as land
 LEFT JOIN LATERAL (

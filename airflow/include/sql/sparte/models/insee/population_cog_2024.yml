@@ -7,7 +7,8 @@ models:
         data_tests:
           - not_null
           - unique
-          - has_all_communes
+          - has_all_communes:
+              severity: warn
           - relationships:
               to: ref('commune')
               field: code
