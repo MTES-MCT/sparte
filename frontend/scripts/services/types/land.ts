@@ -1,8 +1,7 @@
 import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
-import { OcsgeStatusEnum } from "@components/features/status/OcsgeStatus";
-import { ConsoCorrectionStatusEnum } from "@components/features/status/ConsoCorrectionStatus";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { OcsgeStatusEnum } from "../../components/features/status/OcsgeStatus";
 
 export type Millesime = {
     index: number;

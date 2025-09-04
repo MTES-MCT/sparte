@@ -1,8 +1,7 @@
-import { ConsoCorrectionStatusEnum } from "@components/features/status/ConsoCorrectionStatus";
-import { GeoJsonObject } from "geojson";
+import { ConsoCorrectionStatusEnum } from "../../components/features/status/ConsoCorrectionStatus";
 import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { FetchArgs, BaseQueryFn } from "@reduxjs/toolkit/query";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 export type Logo = {
 	src: string;
