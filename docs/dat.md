@@ -220,7 +220,7 @@ flowchart LR
 ## Architecture Frontend
 
 ### Organisation
-- Assets source dans `assets/`
+- Assets source dans `frontend/`
 - Build avec Webpack
 - Framework React avec TypeScript
 - Cartographie avec MapLibre GL JS

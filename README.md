@@ -48,7 +48,7 @@ Le site est désormais accessible en local à cette adresse:
 ## Installation frontend
 
 1. Installer les dépendances `npm install`
-2. Lancer le build du bundle `npm run build:dev` ou `npm run build:prod` (génère un nouveau bundle à chaque mise à jour du fichier ./assets/scripts/index.js)
+2. Lancer le build du bundle `npm run build:dev` ou `npm run build:prod` (génère un nouveau bundle à chaque mise à jour du fichier ./frontend/scripts/index.js)
 
 ### Variables d'environnement
 

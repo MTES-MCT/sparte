@@ -2,7 +2,7 @@
 @import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-design/icons-design.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-business/icons-business.min.css';
-@import '/assets/styles/map.css';
+@import './map.css';
 @import 'maplibre-gl/dist/maplibre-gl.css';
 
 
@@ -428,7 +428,7 @@ Home Page
     position: absolute;
     right: 45px;
     bottom: 45px;
-    background-image: url('/assets/images/loi-climat-et-resilience.svg');
+    background-image: url('../images/loi-climat-et-resilience.svg');
     background-repeat: no-repeat;
     background-size: auto;
     background-position: bottom 3% right 3%;

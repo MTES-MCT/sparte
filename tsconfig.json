@@ -9,8 +9,8 @@
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "typeRoots": ["./node_modules/@types", "./assets/types"],
-        "baseUrl": "./assets",
+        "typeRoots": ["./node_modules/@types", "./frontend/types"],
+        "baseUrl": "./frontend",
         "paths": {
             "@components/*": ["scripts/components/*"],
             "@hooks/*": ["scripts/hooks/*"],
