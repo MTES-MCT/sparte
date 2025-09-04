@@ -1,3 +1,5 @@
+declare var _mtm: any;
+
 interface Window {
     htmx?: any;
     bootstrap?: any;
