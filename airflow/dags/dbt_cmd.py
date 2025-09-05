@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+from include.pools import DBT_POOL
 from include.utils import get_dbt_command_from_directory
 
 from airflow import DAG
@@ -32,6 +33,7 @@ with DAG(
     execute_dbt = BashOperator(
         task_id="execute_dbt",
         bash_command=get_dbt_command_from_directory("{{ params.command }}"),
+        pool=DBT_POOL,
     )
 
     execute_dbt
