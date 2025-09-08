@@ -22,7 +22,7 @@ const loadGoogleAds = () => {
     
     script.onload = () => {
         window.dataLayer = window.dataLayer || [];
-        function gtag(...args: any[]) { window.dataLayer.push(args); }
+        function gtag(...args: any[]) { window.dataLayer!.push(args); }
         gtag('js', new Date());
         gtag('config', 'AW-11157347812');
     };

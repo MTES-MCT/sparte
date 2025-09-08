@@ -16,7 +16,7 @@ const useMatomoTracking = (): void => {
             return;
         }
 
-        window._mtm.push({'event': 'mtm.PageView'});
+        window._mtm!.push({'event': 'mtm.PageView'});
     }, [location]);
 };
 

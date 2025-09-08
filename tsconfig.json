@@ -20,4 +20,8 @@
             "@utils/*": ["scripts/utils/*"],
         }
     },
+    "include": [
+        "frontend/**/*",
+        "frontend/types/globals.d.ts"
+    ],
 }
