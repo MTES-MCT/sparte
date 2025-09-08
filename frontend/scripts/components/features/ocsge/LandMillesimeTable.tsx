@@ -1,4 +1,4 @@
-import { Millesime, MillesimeByIndex } from "@services/types/land";
+import { Millesime } from "@services/types/land";
 import React from "react";
 import styled from "styled-components";
 

@@ -33,7 +33,10 @@ export const OcsgeMapContainer = ({ landData, globalFilter }: OcsgeMapContainerP
 
   const { millesimes, millesimes_by_index } = landData || {};
 
-  const [index, setIndex] = React.useState(Math.max(...millesimes?.map((millesime) => millesime.index)));
+  const [index, setIndex] = React.useState(() => {
+    if (!millesimes || millesimes.length === 0) return 0;
+    return Math.max(...millesimes.map((millesime) => millesime.index));
+  });
 
   useEffect(() => {
     setUserFilters(

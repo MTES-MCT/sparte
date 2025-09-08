@@ -1,6 +1,5 @@
 import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
-import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { OcsgeStatusEnum } from "../../components/features/status/OcsgeStatus";
 import { ConsoCorrectionStatusEnum } from "../../components/features/status/ConsoCorrectionStatus";
 

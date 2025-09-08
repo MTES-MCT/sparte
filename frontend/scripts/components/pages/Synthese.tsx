@@ -17,7 +17,7 @@ import LogementVacantStatus from "@components/features/status/LogementVacantStat
 import { ConsommationChart } from "@components/charts/consommation/ConsommationChart";
 import CallToAction from "@components/ui/CallToAction";
 import { ArtifSyntheseChart } from "@components/charts/artificialisation/ArtifSyntheseChart";
-import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from "@components/features/status/ConsoCorrectionStatus";
+import ConsoCorrectionStatus from "@components/features/status/ConsoCorrectionStatus";
 import OcsgeStatus from "@components/features/status/OcsgeStatus";
 
 interface SyntheseProps {

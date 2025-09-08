@@ -13,20 +13,31 @@ export const MillesimeDisplay: React.FC<MillesimeDisplayProps> = ({
     landArtifStockIndex,
     between,
     className
-}) => (
-    <span className={className}>
-        {is_interdepartemental ? (
-            between ? (
-                <>entre le <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index - 1}</a> et le <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index}</a></>
-            ) : (
+}) => {
+    const getMillesimeContent = () => {
+        if (is_interdepartemental) {
+            if (between) {
+                return (
+                    <>entre le <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index - 1}</a> et le <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index}</a></>
+                );
+            }
+            return (
                 <>au <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index}</a></>
-            )
-        ) : (
-            between ? (
+            );
+        }
+        
+        if (between) {
+            return (
                 <>entre {landArtifStockIndex.flux_previous_years?.[0]} et {landArtifStockIndex.years?.[0]}</>
-            ) : (
-                `en ${landArtifStockIndex.years?.[0]}`
-            )
-        )}
-    </span>
-); 
+            );
+        }
+        
+        return `en ${landArtifStockIndex.years?.[0]}`;
+    };
+
+    return (
+        <span className={className}>
+            {getMillesimeContent()}
+        </span>
+    );
+}; 

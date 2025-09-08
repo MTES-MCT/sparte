@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useGetLandArtifStockIndexQuery } from '@services/api';
 import { LandDetailResultType } from '@services/types/land';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
-import { useMemo } from 'react';
 import { useMillesime } from './useMillesime';
 
 interface UseArtificialisationProps {

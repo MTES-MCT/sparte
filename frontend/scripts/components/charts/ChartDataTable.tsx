@@ -14,7 +14,7 @@ interface ChartDataTableProps {
 } 
 
 const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
-    if (!data || !data.headers || !data.rows) return null;
+    if (!data?.headers || !data?.rows) return null;
 
     const { headers, rows } = data;
     return (
@@ -26,8 +26,8 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
                             <caption>{title}</caption>
                             <thead>
                                 <tr>
-                                    {headers.map((header: string, index: number) => (
-                                        <th key={index} scope="col">
+                                    {headers.map((header: string) => (
+                                        <th key={header} scope="col">
                                             {header}
                                         </th>
                                     ))}
@@ -35,11 +35,11 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
                             </thead>
                             <tbody>
                                 {rows.map((row, rowIndex: number) => (
-                                    <tr key={rowIndex} data-row-key={rowIndex}>
+                                    <tr key={`${row.name}-${rowIndex}`} data-row-key={rowIndex}>
                                         {row.data.map((cell: any, cellIndex: number) => {
                                             const isNumeric = typeof cell === 'number' || !isNaN(Number(cell));
                                             return (
-                                                <td key={cellIndex} className={isNumeric ? 'fr-cell--right' : ''}>
+                                                <td key={`${row.name}-${rowIndex}-${cellIndex}`} className={isNumeric ? 'fr-cell--right' : ''}>
                                                     {isNumeric ? formatNumber({
                                                         number: Number(cell),
                                                     }) : cell}

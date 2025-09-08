@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import useWindowSize from '@hooks/useWindowSize';
 import { Tooltip } from 'react-tooltip'
 import SearchBar from '@components/ui/SearchBar';
-import { ProjectDetailResultType } from '@services/api';
+import { ProjectDetailResultType } from '@services/types/project';
 
 interface Logo {
     src: string;
@@ -46,7 +46,10 @@ const LogoLink = styled.a`
 `;
 
 const ButtonContainer = styled.div<{ $isMobile: boolean, $isMenuOpen: boolean }>`
-    display: ${({ $isMobile, $isMenuOpen }) => ($isMobile ? ($isMenuOpen ? 'flex' : 'none') : 'flex')};
+    display: ${({ $isMobile, $isMenuOpen }) => {
+        if (!$isMobile) return 'flex';
+        return $isMenuOpen ? 'flex' : 'none';
+    }};
     flex-grow: 1;
     justify-content: end;
     ${({ $isMobile, $isMenuOpen }) => $isMobile && $isMenuOpen && `

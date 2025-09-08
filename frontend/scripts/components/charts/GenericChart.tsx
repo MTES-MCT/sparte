@@ -89,7 +89,7 @@ const GenericChart = ({
     const chartId = `chart-${String(mutableChartOptions.title?.text || '')
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '')}`
+            .replace(/(^-+)|(-+$)/g, '')}`
 
     const shouldRedraw = true
     const oneToOne = true

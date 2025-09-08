@@ -6,7 +6,6 @@ import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store
 import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
-import { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import { MenuItem, ProjectDetailResultType } from '@services/types/project';
 import { LandDetailResultType } from '@services/types/land';
 
@@ -151,6 +150,52 @@ const MenuItemContent: React.FC<{ item: MenuItem }> = ({ item }) => (
     </>
 );
 
+interface MenuItemsProps {
+    items: MenuItem[];
+    isActive: (url?: string) => boolean;
+    isMobile: boolean;
+    onToggleNavbar: () => void;
+}
+
+const MenuItems: React.FC<MenuItemsProps> = ({ items, isActive, isMobile, onToggleNavbar }) => (
+    <SubMenuList>
+        {items.map(item => (
+            <SubMenu
+                key={item.label}
+                role="treeitem"
+            >
+                {item.url ? (
+                    <SubMenuTitleLink
+                        to={item.url}
+                        $isActive={isActive(item.url)}
+                        $disabled={item.soon}
+                        onClick={() => isMobile && onToggleNavbar()}
+                    >
+                        <MenuItemContent item={item} />
+                    </SubMenuTitleLink>
+                ) : (
+                    <SubMenuTitle>
+                        <MenuItemContent item={item} />
+                    </SubMenuTitle>
+                )}
+            </SubMenu>
+        ))}
+    </SubMenuList>
+);
+
+interface DownloadItemsProps {
+    downloadsUrl: string;
+}
+
+const DownloadItems: React.FC<DownloadItemsProps> = ({ downloadsUrl }) => (
+    <DownloadLink 
+        to={downloadsUrl}
+        className="fr-btn fr-btn--icon-left fr-icon-download-line"
+    >
+        Téléchargements
+    </DownloadLink>
+);
+
 const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDetailResultType }> = ({ projectData, landData }) => {
     const location = useLocation();
     const { navbar, urls } = projectData
@@ -179,40 +224,6 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
         }
     }, [isOpen, isMobile]);
 
-    const MenuItems = (items: MenuItem[]) => (
-        <SubMenuList>
-            {items.map(item => (
-                <SubMenu
-                    key={item.label}
-                    role="treeitem"
-                >
-                    {item.url ? (
-                        <SubMenuTitleLink
-                            to={item.url}
-                            $isActive={isActive(item.url)}
-                            $disabled={item.soon}
-                            onClick={() => isMobile && dispatch(toggleNavbar())}
-                        >
-                            <MenuItemContent item={item} />
-                        </SubMenuTitleLink>
-                    ) : (
-                        <SubMenuTitle>
-                            <MenuItemContent item={item} />
-                        </SubMenuTitle>
-                    )}
-                </SubMenu>
-            ))}
-        </SubMenuList>
-    );
-
-    const DownloadItems = () => (
-        <DownloadLink 
-            to={urls.downloads}
-            className="fr-btn fr-btn--icon-left fr-icon-download-line"
-        >
-            Téléchargements
-        </DownloadLink>
-    );
 
     return (
         <>
@@ -240,13 +251,20 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
                                         {menu.label}
                                     </MenuTitle>
                                 )}
-                                {menu.subMenu && MenuItems(menu.subMenu)}
+                                {menu.subMenu && (
+                                    <MenuItems 
+                                        items={menu.subMenu}
+                                        isActive={isActive}
+                                        isMobile={isMobile}
+                                        onToggleNavbar={() => dispatch(toggleNavbar())}
+                                    />
+                                )}
                             </Menu>
                         ))}
                     </MenuList>
                 </NavContainer>
                 {shouldDisplayDownloads && urls.downloads && (
-                    DownloadItems()
+                    <DownloadItems downloadsUrl={urls.downloads} />
                 )}
             </Container>
         </>

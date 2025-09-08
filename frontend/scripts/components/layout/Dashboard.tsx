@@ -32,7 +32,10 @@ interface DashboardProps {
 }
 
 const Main = styled.main<{ $isOpen: boolean; $isMobile: boolean }>`
-    margin-left: ${({ $isOpen, $isMobile }) => ($isMobile ? '0' : $isOpen ? '280px' : '0')};
+    margin-left: ${({ $isOpen, $isMobile }) => {
+        if ($isMobile) return '0';
+        return $isOpen ? '280px' : '0';
+    }};
     margin-top: 80px;
     flex-grow: 1;
     display: flex;

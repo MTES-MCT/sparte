@@ -49,7 +49,7 @@ export const ArtifPercentRate: React.FC<ArtifPercentRateProps> = ({
   return (
     <GridContainer>
       {icons.map((type, index) => (
-        <IconContainer key={index}>
+        <IconContainer key={`${type}-${index}`}>
           {type === "house" ? <HouseIcon /> : <TreeIcon />}
         </IconContainer>
       ))}

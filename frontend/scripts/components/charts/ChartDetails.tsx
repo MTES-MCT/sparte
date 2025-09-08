@@ -15,7 +15,7 @@ const Header = styled.div`
     padding: 1rem;
 `;
 
-const DataContainer = styled.div<{ $isVisible: boolean }>`
+const DataContainer = styled.section<{ $isVisible: boolean }>`
     max-height: ${props => props.$isVisible ? 'auto' : '0'};
     overflow: hidden;
     transition: max-height 0.3s ease;
@@ -77,7 +77,6 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
                 <DataContainer 
                     $isVisible={isVisible}
                     id={`${chartId}-details`}
-                    role="region"
                     aria-label="Détails des données et calculs"
                     aria-hidden={!isVisible}
                 >
