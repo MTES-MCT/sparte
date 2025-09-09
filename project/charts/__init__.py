@@ -35,6 +35,13 @@ __all__ = [
     "ArtifByCouverturePieChartExport",
     "ArtifUsagePieChartExport",
     "ArtifSyntheseChart",
+    "ImperByCouverturePieChart",
+    "ImperByUsagePieChart",
+    "ImperMap",
+    "ImperMapExport",
+    "ImperByCouverturePieChartExport",
+    "ImperUsagePieChartExport",
+    "ImperSyntheseChart",
 ]
 
 
@@ -68,6 +75,15 @@ from .consommation.AnnualConsoProportionalComparisonChart import (
 from .demography.PopulationConsoComparisonChart import PopulationConsoComparisonChart
 from .demography.PopulationConsoProgressionChart import PopulationConsoProgressionChart
 from .demography.PopulationDensityChart import PopulationDensityChart
+from .impermeabilisation import (
+    ImperByCouverturePieChart,
+    ImperByCouverturePieChartExport,
+    ImperByUsagePieChart,
+    ImperMap,
+    ImperMapExport,
+    ImperSyntheseChart,
+    ImperUsagePieChartExport,
+)
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
 from .urbanisme.FrichePollutionChart import FrichePollutionChart
 from .urbanisme.FricheSurfaceChart import FricheSurfaceChart

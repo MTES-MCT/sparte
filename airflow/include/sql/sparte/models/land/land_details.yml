@@ -182,5 +182,13 @@ models:
           - not_null
           - accepted_values:
               values:
-                - "true"
                 - "false"
+                - "true"
+      - name: surface_imper
+        data_type: numeric
+      - name: percent_imper
+        data_type: double precision
+        tests:
+          - is_percent_between_0_and_100
+      - name: years_imper
+        data_type: array
