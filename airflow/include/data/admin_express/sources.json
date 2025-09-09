@@ -55,5 +55,17 @@
             "REGION.shp": "region_reunion"
         },
         "dbt_selector": "commune_reunion.sql+ departement_reunion.sql+ epci_reunion.sql+ region_reunion.sql+"
+    }, 
+    {
+        "name": "Mayotte",
+        "url": "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS/ADMIN-EXPRESS_3-2__SHP_RGM04UTM38S_MYT_2024-11-18/ADMIN-EXPRESS_3-2__SHP_RGM04UTM38S_MYT_2024-11-18.7z",
+        "srid": 4471,
+        "shapefile_to_table": {
+            "COMMUNE.shp": "commune_mayotte",
+            "DEPARTEMENT.shp": "departement_mayotte",
+            "EPCI.shp": "epci_mayotte",
+            "REGION.shp": "region_mayotte"
+        },
+        "dbt_selector": "commune_mayotte.sql+ departement_mayotte.sql+ epci_mayotte.sql+ region_mayotte.sql+"
     }
 ]

@@ -58,6 +58,41 @@ missing_from_source as (
     {{ divide_majic('76676', '29083', 0) }}
     union
     {{ divide_majic('76676', '29084', 0) }}
+    union
+    {{ divide_majic('76676', '97611', 0) }}
+    union
+    {{ divide_majic('76676', '97601', 0) }}
+    union
+    {{ divide_majic('76676', '97602', 0) }}
+    union
+    {{ divide_majic('76676', '97603', 0) }}
+    union
+    {{ divide_majic('76676', '97604', 0) }}
+    union
+    {{ divide_majic('76676', '97605', 0) }}
+    union
+    {{ divide_majic('76676', '97606', 0) }}
+    union
+    {{ divide_majic('76676', '97607', 0) }}
+    union
+    {{ divide_majic('76676', '97608', 0) }}
+    union
+    {{ divide_majic('76676', '97609', 0) }}
+    union
+    {{ divide_majic('76676', '97610', 0) }}
+    union
+    {{ divide_majic('76676', '97613', 0) }}
+    union
+    {{ divide_majic('76676', '97612', 0) }}
+    union
+    {{ divide_majic('76676', '97614', 0) }}
+    union
+    {{ divide_majic('76676', '97615', 0) }}
+    union
+    {{ divide_majic('76676', '97616', 0) }}
+    union
+    {{ divide_majic('76676', '97617', 0) }}
+
 ),
 together as (
     select *, 'UNCHANGED' as correction_status from unchanged

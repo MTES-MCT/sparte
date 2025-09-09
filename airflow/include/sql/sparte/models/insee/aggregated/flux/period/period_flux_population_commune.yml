@@ -24,7 +24,8 @@ models:
     columns:
       - name: code_commune
         data_tests:
-          - has_all_communes
+          - has_all_communes:
+              severity: warn
           - relationships:
               to: ref('commune')
               field: code

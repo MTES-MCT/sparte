@@ -14,6 +14,7 @@ SELECT
     land_ocsge_status.has_ocsge as has_ocsge,
     land_zonages.zonage_count > 0 as has_zonage,
     land_friche.friche_count > 0 as has_friche,
+    conso_correction_status.consommation_correction_status != 'données_manquantes' as has_conso,
     land.child_land_types,
     land.parent_keys,
     land.departements,
@@ -24,7 +25,8 @@ SELECT
         THEN false
         ELSE true
     END as is_interdepartemental,
-    trajectoire.*
+    trajectoire.*,
+    conso_correction_status.consommation_correction_status
 FROM
     {{ ref('land') }}
 LEFT JOIN LATERAL (
@@ -96,3 +98,11 @@ LEFT JOIN LATERAL (
         land_trajectoires.land_id = land.land_id AND
         land_trajectoires.land_type = land.land_type
 ) trajectoire ON true
+LEFT JOIN LATERAL (
+    SELECT
+        consommation_correction_status
+    FROM {{ ref('land_conso_correction_status') }}
+    WHERE
+        land_conso_correction_status.land_id = land.land_id AND
+        land_conso_correction_status.land_type = land.land_type
+) conso_correction_status ON true

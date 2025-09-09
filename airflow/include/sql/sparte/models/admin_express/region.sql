@@ -33,3 +33,8 @@ SELECT
     *,
     2154 AS srid_source
 FROM {{ ref('region_metropole') }}
+UNION ALL
+SELECT
+    *,
+    4471 AS srid_source
+FROM {{ ref('region_mayotte') }}

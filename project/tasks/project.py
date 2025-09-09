@@ -103,8 +103,8 @@ def send_email_request_bilan(request_id) -> None:
         params={
             "diagnostic_name": diagnostic.name,
             "user_email": request.email,
-            "user_organism": request.organism,
-            "user_function": request.function,
+            "user_organism": request.user.organism,
+            "user_function": request.user.function,
             "admin_request": relative_url,
             "image_url": image_url,
             "project_url": project_url,

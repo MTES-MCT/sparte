@@ -4,7 +4,6 @@ from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
 from project.models import Project
-from users.models import User
 from utils.validators import is_alpha_validator
 
 
@@ -21,13 +20,6 @@ class RequestedDocumentChoices(models.TextChoices):
 class Request(models.Model):
     first_name = models.CharField("Prénom", max_length=150, validators=[is_alpha_validator], null=True)
     last_name = models.CharField("Nom", max_length=150, validators=[is_alpha_validator], null=True)
-    organism = models.CharField(
-        "Organisme",
-        max_length=250,
-        choices=User.ORGANISM.choices,
-    )
-    service = models.CharField("Service", max_length=250, choices=User.SERVICE.choices, null=True, blank=True)
-    function = models.CharField("Fonction", max_length=250, choices=User.FUNCTION.choices, null=True, blank=True)
     email = models.EmailField("E-mail")
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True)
     user = models.ForeignKey(

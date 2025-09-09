@@ -1,0 +1,28 @@
+models:
+  - name: land_conso_correction_status
+    columns:
+      - name: land_type
+        data_type: text
+        tests:
+          - accepted_values:
+              values:
+                - COMM
+                - DEPART
+                - EPCI
+                - REGION
+                - SCOT
+          - not_null
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: consommation_correction_status
+        data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - données_manquantes
+                - données_coriggées
+                - données_inchangées_avec_données_manquantes
+                - données_partiellement_coriggées
+                - données_inchangées

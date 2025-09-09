@@ -15,12 +15,3 @@ LEFT JOIN
     {{ ref('land_ocsge_status')}}
     ON land_ocsge_status.land_id = departement.code
     AND land_ocsge_status.land_type = 'DEPART'
-UNION
-SELECT
-    '976' as code,
-    'Mayotte' as name,
-    374.0 as surface_km2,
-    374.0 * 100 / {{ surface_france }} as percent_of_france,
-    false as has_ocsge
-ORDER BY
-    code

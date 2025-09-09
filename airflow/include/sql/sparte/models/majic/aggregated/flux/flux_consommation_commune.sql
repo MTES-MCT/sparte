@@ -3,7 +3,6 @@
 {% for year in range(2009, 2024) %}
     SELECT
         commune_code,
-        correction_status,
         commune.surface as surface,
         {{ year }} as year,
         conso_{{ year }} as total,

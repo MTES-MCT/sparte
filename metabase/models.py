@@ -9,25 +9,6 @@ from utils.functions import get_url_with_domain
 logger = logging.getLogger(__name__)
 
 
-GROUP_ORGANISM = {
-    "AGENCE": "bureaux d'études",
-    "AMENAG": "bureaux d'études",
-    "ASSOCI": "Grand public",
-    "BUREAU": "bureaux d'études",
-    "COMMUN": "collectivités",
-    "DDT": "Services de l'Etat",
-    "DEPART": "collectivités",
-    "DREAL": "Services de l'Etat",
-    "EPCI": "collectivités",
-    "EPF": "Services de l'Etat",
-    "GIP": "bureaux d'études",
-    "PARTIC": "Grand public",
-    "REGION": "collectivités",
-    "SCOT": "collectivités",
-    "AUTRE": "AUTRE",
-}
-
-
 class StatDiagnostic(models.Model):
     project = models.OneToOneField(Project, on_delete=models.CASCADE, verbose_name="Diagnostic d'origine")
     created_date = models.DateTimeField("Date de création")
@@ -48,8 +29,6 @@ class StatDiagnostic(models.Model):
     is_downaloaded = models.BooleanField("A été téléchargé", default=False)
     request = models.ForeignKey(Request, on_delete=models.SET_NULL, null=True, blank=True)
     date_first_download = models.DateTimeField("Date du premier téléchargement", null=True, blank=True)
-    organism = models.CharField("Organisme", max_length=255, blank=True, null=True)
-    group_organism = models.CharField("Groupe d'organisme", max_length=50, blank=True, null=True)
 
     class Meta:
         verbose_name = "Statistique"
@@ -66,8 +45,6 @@ class StatDiagnostic(models.Model):
         if not self.is_downaloaded:
             self.is_downaloaded = True
             self.request = request
-            self.organism = request.organism
-            self.group_organism = GROUP_ORGANISM.get(request.organism, "AUTRE")
             self.date_first_download = request.created_date
             self.save()
 

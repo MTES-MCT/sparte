@@ -25,7 +25,8 @@ models:
       - name: epci
         data_tests:
           - not_null
-          - has_all_epcis
+          - has_all_epcis:
+              severity: warn
           - relationships:
               to: ref('epci')
               field: code

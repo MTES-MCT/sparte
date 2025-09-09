@@ -25,7 +25,8 @@ models:
       data_tests:
       - not_null
       - unique
-      - has_all_communes
+      - has_all_communes:
+          severity: warn
       - relationships:
           to: ref('commune')
           field: code
@@ -34,7 +35,8 @@ models:
     - name: departement
       data_tests:
       - not_null
-      - has_all_departements
+      - has_all_departements:
+          severity: warn
       - relationships:
           to: ref('departement')
           field: code
@@ -43,7 +45,8 @@ models:
     - name: epci
       data_tests:
       - not_null
-      - has_all_epcis
+      - has_all_epcis:
+          severity: warn
       - relationships:
           to: ref('epci')
           field: code
@@ -52,7 +55,8 @@ models:
     - name: region
       data_tests:
       - not_null
-      - has_all_regions
+      - has_all_regions:
+          severity: warn
       - relationships:
           to: ref('region')
           field: code

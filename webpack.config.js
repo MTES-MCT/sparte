@@ -9,7 +9,7 @@ const BundleTracker = require('webpack-bundle-tracker');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const common = {
-    entry: './assets/scripts/index.js',
+    entry: './frontend/scripts/index.js',
     resolve: {
         extensions: [".js", ".jsx", ".ts", ".tsx"],
         plugins: [

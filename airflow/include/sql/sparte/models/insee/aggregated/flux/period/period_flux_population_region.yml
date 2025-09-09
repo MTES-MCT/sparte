@@ -6,7 +6,8 @@ models:
       - name: region
         data_tests:
           - not_null
-          - has_all_regions
+          - has_all_regions:
+              severity: warn
           - relationships:
               to: ref('region')
               field: code

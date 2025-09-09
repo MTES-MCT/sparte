@@ -135,8 +135,6 @@ class RequestAdmin(admin.ModelAdmin):
                 "fields": (
                     "first_name",
                     "last_name",
-                    "organism",
-                    "function",
                     "email",
                     "link_to_user",
                     "created_date",
@@ -173,8 +171,6 @@ class RequestAdmin(admin.ModelAdmin):
         "requested_document",
         "first_name",
         "last_name",
-        "function",
-        "organism",
         "email",
         "project",
         "user",

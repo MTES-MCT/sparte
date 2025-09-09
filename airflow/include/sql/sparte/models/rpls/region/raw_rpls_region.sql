@@ -12,6 +12,5 @@ WHERE "LIBREG" NOT IN
     'Total France métropolitaine',
     'Total France entière',
     'Total France métropolitaine (hors IDF)',
-    'Total France entière (hors IDF)',
-    'Mayotte'
+    'Total France entière (hors IDF)'
 )

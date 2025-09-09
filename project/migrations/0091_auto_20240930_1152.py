@@ -13,10 +13,6 @@ def remove_invalid_user_inputs(apps, schema_editor):
             request.first_name = "empty"
         if not is_alpha_valid(request.last_name):
             request.last_name = "empty"
-        if not is_alpha_valid(request.function):
-            request.function = "empty"
-        if not is_alpha_valid(request.organism):
-            request.organism = "COMMUN"
         if not is_alpha_valid(request.requested_document):
             request.requested_document = "rapport-complet"
         request.save()

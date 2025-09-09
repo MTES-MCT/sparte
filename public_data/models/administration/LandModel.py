@@ -48,6 +48,16 @@ class LandModel(models.Model):
         GISEMENT_POTENTIEL_DANS_LE_SOCIAL = "gisement potentiel dans le social"
         GISEMENT_POTENTIEL_DANS_LE_PRIVE = "gisement potentiel dans le privé"
 
+    class ConsommationCorrectionStatus(models.TextChoices):
+        DONNEES_CORRIGEES = "données_coriggées", "données_coriggées"
+        DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES = (
+            "données_inchangées_avec_données_manquantes",
+            "données_inchangées_avec_données_manquantes",
+        )
+        DONNEES_PARTIELLEMENT_CORRIGEES = "données_partiellement_coriggées", "données_partiellement_coriggées"
+        DONNEES_INCHANGEES = "données_inchangées", "données_inchangées"
+        DONNEES_MANQUANTES = "données_manquantes", "données_manquantes"
+
     land_id = models.CharField()
     land_type = models.CharField()
     name = models.CharField()
@@ -68,6 +78,7 @@ class LandModel(models.Model):
     has_ocsge = models.BooleanField()
     has_zonage = models.BooleanField()
     has_friche = models.BooleanField()
+    has_conso = models.BooleanField()
     friche_status = models.TextField(choices=FricheStatus.choices)
     friche_status_details = models.JSONField()
     logements_vacants_status = models.TextField(choices=LogementsVacantsStatus.choices)
@@ -76,6 +87,7 @@ class LandModel(models.Model):
     bounds = ArrayField(base_field=models.FloatField())
     max_bounds = ArrayField(base_field=models.FloatField())
     conso_details = models.JSONField()
+    consommation_correction_status = models.TextField(choices=ConsommationCorrectionStatus.choices)
 
     class Meta:
         managed = False

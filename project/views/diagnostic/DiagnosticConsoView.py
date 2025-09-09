@@ -28,6 +28,10 @@ class DiagnosticConsoView(DiagnosticBaseView):
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
+
+        if not project.land_model.has_conso:
+            return super().get_context_data(**kwargs)
+
         # Retrieve request level of analysis
         level = self.request.GET.get("level_conso", project.level)
 

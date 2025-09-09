@@ -54,23 +54,6 @@
 	'13216'
 ] %}
 
-{% set mayotte = [
-	'97607',
-	'97611',
-	'97605',
-	'97614',
-	'97617',
-	'97610',
-	'97616',
-	'97609',
-	'97602',
-	'97608',
-	'97606',
-	'97603',
-	'97615',
-	'97604'
-] %}
-
 with raw_data as (
 SELECT
     "Commune (DEP)" as commune_name,
@@ -88,9 +71,6 @@ WHERE commune_code not in (
 		'{{ code }}',
 	{% endfor %}
 	{% for code in marseille %}
-		'{{ code }}',
-	{% endfor %}
-	{% for code in mayotte %}
 		'{{ code }}'
 		{% if not loop.last %},{% endif %}
 	{% endfor %}
