@@ -10,9 +10,12 @@ SELECT
     artif.surface as surface_artif,
     artif.percent as percent_artif,
     artif.years as years_artif,
+    imper.surface as surface_imper,
+    imper.percent as percent_imper,
+    imper.years as years_imper,
     land_ocsge_status.status as ocsge_status,
     land_ocsge_status.has_ocsge as has_ocsge,
-    land_zonages.zonage_count > 0 as has_zonage,
+    artif_land_zonages.zonage_count > 0 as has_zonage,
     land_friche.friche_count > 0 as has_friche,
     conso_correction_status.consommation_correction_status != 'données_manquantes' as has_conso,
     land.child_land_types,
@@ -31,6 +34,15 @@ FROM
     {{ ref('land') }}
 LEFT JOIN LATERAL (
     SELECT surface, percent, years
+    FROM {{ ref('imper_land_by_index') }}
+    WHERE
+        imper_land_by_index.land_id = land.land_id AND
+        imper_land_by_index.land_type = land.land_type
+    ORDER BY index DESC
+    limit 1
+) imper ON true
+LEFT JOIN LATERAL (
+    SELECT surface, percent, years
     FROM {{ ref('artif_land_by_index') }}
     WHERE
         artif_land_by_index.land_id = land.land_id AND
@@ -44,7 +56,7 @@ LEFT JOIN LATERAL (
     WHERE
         artif_zonage_land.land_id = land.land_id AND
         artif_zonage_land.land_type = land.land_type
-) land_zonages ON true
+) artif_land_zonages ON true
 LEFT JOIN LATERAL (
     SELECT
         status,

@@ -8,6 +8,12 @@ from project.charts.artificialisation import (
     ArtifSyntheseChart,
 )
 from project.charts.consommation import ConsoAnnualChart
+from project.charts.impermeabilisation import (
+    ImperByCouverturePieChart,
+    ImperByUsagePieChart,
+    ImperMap,
+    ImperSyntheseChart,
+)
 from project.charts.urbanisme import (
     FrichePollutionChart,
     FricheSurfaceChart,
@@ -19,6 +25,8 @@ from project.charts.urbanisme import (
 from public_data.models import (
     ArtifZonageIndexViewset,
     ArtifZonageViewset,
+    ImperZonageIndexViewset,
+    ImperZonageViewset,
     LandArtifStockCouvertureCompositionViewset,
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
@@ -33,6 +41,10 @@ from public_data.models import (
     LandFricheZonageEnvironnementaleViewset,
     LandFricheZonageTypeViewset,
     LandFricheZoneActiviteViewset,
+    LandImperStockCouvertureCompositionViewset,
+    LandImperStockIndexViewset,
+    LandImperStockUsageCompositionViewset,
+    LandImperStockViewset,
     LandModel,
     LandModelGeomViewset,
     LandModelViewset,
@@ -44,8 +56,11 @@ app_name = "api"
 def get_chart_klass_or_404(chart_id):
     charts = {
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
+        "pie_imper_by_couverture": ImperByCouverturePieChart,
         "pie_artif_by_usage": ArtifByUsagePieChart,
+        "pie_imper_by_usage": ImperByUsagePieChart,
         "artif_map": ArtifMap,
+        "imper_map": ImperMap,
         "friche_pollution": FrichePollutionChart,
         "friche_surface": FricheSurfaceChart,
         "friche_type": FricheTypeChart,
@@ -54,6 +69,7 @@ def get_chart_klass_or_404(chart_id):
         "friche_zone_activite": FricheZoneActiviteChart,
         "conso_annual": ConsoAnnualChart,
         "artif_synthese": ArtifSyntheseChart,
+        "imper_synthese": ImperSyntheseChart,
     }
 
     if chart_id not in charts:
@@ -77,18 +93,32 @@ def chart_view(request, id, land_type, land_id, *args, **kwargs):
 urlpatterns = [
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path("landartifstock/", LandArtifStockViewset.as_view(), name="artifstock"),
+    path("landimperstock/", LandImperStockViewset.as_view(), name="imperstock"),
     path("landartifstockindex/", LandArtifStockIndexViewset.as_view(), name="artifstockindex"),
+    path("landimperstockindex/", LandImperStockIndexViewset.as_view(), name="imperstockindex"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
+    path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
+    path("imperzonage/", ImperZonageViewset.as_view(), name="imperzonageindex"),
     path(
         "landartifstockcouverturecomposition/",
         LandArtifStockCouvertureCompositionViewset.as_view(),
         name="artifstockcouverturecomposition",
     ),
     path(
+        "landimperstockcouverturecomposition/",
+        LandImperStockCouvertureCompositionViewset.as_view(),
+        name="imperstockcouverturecomposition",
+    ),
+    path(
         "landartifstockusagecomposition/",
         LandArtifStockUsageCompositionViewset.as_view(),
         name="artifstockusagecomposition",
+    ),
+    path(
+        "landimperstockusagecomposition/",
+        LandImperStockUsageCompositionViewset.as_view(),
+        name="imperstockusagecomposition",
     ),
     path(
         "landfrichepollution/",
