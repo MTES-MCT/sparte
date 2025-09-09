@@ -972,6 +972,7 @@
         "occupation_du_sol_et_zone_construite": {
             "2020": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__GPKG_LAMB93_D074_2020-01-01/OCS-GE_2-0__GPKG_LAMB93_D074_2020-01-01.7z",
             "2023": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__GPKG_LAMB93_D074_2023-01-01/OCS-GE_2-0__GPKG_LAMB93_D074_2023-01-01.7z"
+        }
     },
     "75": {
         "artif": {
