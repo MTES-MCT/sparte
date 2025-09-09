@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "NODE_ENV=development webpack serve --mode development",
     "build": "NODE_ENV=production webpack --mode production",
-    "lint": "eslint --fix ./assets/scripts/*.js ./assets/scripts/**/*.js",
+    "lint": "eslint --fix ./frontend/scripts/*.js ./frontend/scripts/**/*.js",
     "tsc": "tsc"
   },
   "devDependencies": {
