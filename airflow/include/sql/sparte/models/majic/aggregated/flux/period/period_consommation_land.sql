@@ -1,12 +1,15 @@
-{{ config(
-    materialized='table',
-    indexes=[
-        {'columns': ['land_id'], 'type': 'btree'},
-        {'columns': ['land_type'], 'type': 'btree'},
-        {'columns': ['from_year'], 'type': 'btree'},
-        {'columns': ['to_year'], 'type': 'btree'},
-    ]
-) }}
+{{
+    config(
+        materialized='table',
+        indexes=[
+            {'columns': ['land_id'], 'type': 'btree'},
+            {'columns': ['land_type'], 'type': 'btree'},
+            {'columns': ['from_year'], 'type': 'btree'},
+            {'columns': ['to_year'], 'type': 'btree'},
+            {'columns': ['land_id', 'land_type', 'from_year', 'to_year'], 'type': 'btree'}
+        ]
+    )
+}}
 
 {% set common_fields = '''
     from_year,
