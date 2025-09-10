@@ -20,6 +20,8 @@ LEFT JOIN
     ON conso.epci = pop.epci
     AND conso.from_year = pop.from_year
     AND conso.to_year = pop.to_year
+WHERE
+    conso.total IS NOT NULL
 GROUP BY
     conso.from_year,
     conso.to_year

@@ -12,6 +12,8 @@ SELECT
     )) as median_ratio_pop_conso
 FROM
     {{ ref('period_consommation_commune') }} as conso
+WHERE
+    conso.total IS NOT NULL
 LEFT JOIN
     {{ ref('commune') }} as commune
     ON commune.code = conso.commune_code
