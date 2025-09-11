@@ -58,7 +58,8 @@ SELECT
         'currently_respecting_regulation', land.currently_respecting_regulation,
         'current_percent_use', land.current_percent_use,
         'respecting_regulation_by_2030', land.respecting_regulation_by_2030,
-        'projected_percent_use_by_2030', land.projected_percent_use_by_2030
+        'projected_percent_use_by_2030', land.projected_percent_use_by_2030,
+        'trajectoire_conso_is_territorialise', false
     ) as conso_details,
     land.consommation_correction_status
 FROM
