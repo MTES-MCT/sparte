@@ -26,22 +26,156 @@ interface SyntheseProps {
 }
 
 
-const SyntheseConso = ({ landData, projectData }: {
-    landData: LandDetailResultType;
-    projectData: ProjectDetailResultType;
+const SyntheseConsoTexteByDefault = ({
+  landData,
+}: {
+  landData: LandDetailResultType;
 }) => {
-  const { land_id, land_type, name, conso_details } = landData;
-  const { 
+  const { name } = landData;
+  const { conso_2011_2020 } = landData.conso_details;
+
+  return (
+    <>
+      <p className="fr-text--sm fr-mb-2w">
+        La première phase de loi Climat et Résilience consiste à <strong>réduire nationalement de 50 % la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) entre 2021 et 2031</strong>, par rapport à la consommation de la période 2011-2020, aussi appelée période de référence.
+      </p>
+      <p className="fr-text--sm fr-mb-2w">
+        Sur le territoire de {name}, <strong>{formatNumber({ number: conso_2011_2020 })} ha ont été consommés entre 2011 et 2020 selon les données du Portail National de l'artificialisation</strong>.
+      </p>
+    </>
+  );
+};  
+
+const SyntheseConsoTexteTerritorialise = ({
+  landData,
+}: {
+  landData: LandDetailResultType;
+}) => {
+  const { name, conso_details } = landData;
+  const {
     conso_2011_2020,
     allowed_conso_2021_2030,
-    conso_since_2021,
     currently_respecting_regulation,
+    allowed_conso_raised_to_1ha_2021_2030,
+    conso_since_2021,
     current_percent_use,
     respecting_regulation_by_2030,
     projected_percent_use_by_2030,
-    allowed_conso_raised_to_1ha_2021_2030
   } = conso_details;
+
+  return (
+    <>
+      <p className="fr-text--sm fr-mb-2w">
+        La première phase de loi Climat et Résilience consiste à réduire
+        nationnalement de <strong>50 %</strong> la consommation d'espaces NAF
+        (Naturels, Agricoles et Forestiers) entre 2021 et 2031, par rapport à la
+        consommation de la période <strong>2011-2020</strong>, aussi appelée
+        période de référence.
+      </p>
+      <p className="fr-text--sm fr-mb-2w">
+        Sur le territoire de {name},{" "}
+        <strong>
+          {formatNumber({ number: conso_2011_2020 })} ha ont été consommés entre
+          2011 et 2020
+        </strong>
+        .{" "}
+        <strong>
+          La consommation d'espaces de ce territoire ne devrait donc pas
+          dépasser un total de{" "}
+          {formatNumber({ number: allowed_conso_2021_2030 })} ha sur la période
+          2021-2030 pour respecter l'objectif national.
+        </strong>
+      </p>
+      {allowed_conso_raised_to_1ha_2021_2030 && (
+        <p className="fr-text--sm fr-mb-2w">
+          La situation de {name} est un cas particulier car sa consommation est
+          inférieure à 2 ha sur la période de référence (2011-2020). L'objectif
+          de réduction de 50% ne s'applique pas dans ce cas, et son objectif de
+          consommation d'espaces NAF est donc de ne pas dépasser 1 ha sur la
+          période 2021-2031.{" "}
+          <a
+            target="_blank"
+            href="https://www.legifrance.gouv.fr/loda/id/JORFTEXT000043956924#:~:text=3%C2%B0%20bis%20Une,%C3%A0%20un%20hectare."
+          >
+            Source
+          </a>
+          .
+        </p>
+      )}
+
+      <p className="fr-text--sm fr-mb-2w">
+        Depuis 2021,{" "}
+        <strong>
+          {formatNumber({ number: conso_since_2021 })} ha d'espaces NAF ont été
+          consommés
+        </strong>
+        .{" "}
+        <strong>
+          {currently_respecting_regulation ? (
+            <span className="fr-badge--success">
+              L'objectif national de réduction serait donc actuellement respecté
+            </span>
+          ) : (
+            <span className="fr-badge--error">
+              L'objectif national de réduction ne serait pas respecté
+            </span>
+          )}
+        </strong>{" "}
+        par le territoire de {name}, avec un taux de consommation de{" "}
+        <strong>{formatNumber({ number: current_percent_use })}%</strong> de la
+        consommation observée par rapport à celle de la période de référence.
+      </p>
+
+      <p className="fr-text--sm fr-mb-2w">
+        {respecting_regulation_by_2030 ? (
+          <>
+            Le territoire de {name}{" "}
+            <strong>
+              <span className="fr-badge--success">
+                devrait respecter l'objectif national de réduction à horizon
+                2031
+              </span>
+            </strong>
+          </>
+        ) : (
+          <>
+            Cependant, le territoire de {name}{" "}
+            <strong>
+              <span className="fr-badge--error">
+                ne devrait pas respecter l'objectif national de réduction à
+                horizon 2031
+              </span>
+            </strong>
+          </>
+        )}
+        , avec un taux de consommation projeté de{" "}
+        <strong>
+          {formatNumber({ number: projected_percent_use_by_2030 })}%
+        </strong>{" "}
+        par rapport à la consommation de la période de référence.
+      </p>
+      <p className="fr-text--sm">
+        <strong>
+          <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il
+          est important de noter que l'objectif national est en cours de
+          territorialisation et que les objectifs locaux pourront différer en
+          fonction des documents d'urbanisme en vigueur.
+        </strong>
+      </p>
+    </>
+  );
+};
+
+const SyntheseConso = ({
+  landData,
+  projectData,
+}: {
+  landData: LandDetailResultType;
+  projectData: ProjectDetailResultType;
+}) => {
+  const { land_id, land_type, name, conso_details } = landData;
   const { urls } = projectData;
+  const { trajectoire_conso_is_territorialise } = conso_details;
 
   return (
     <div className="fr-mt-5w fr-mb-10w">
@@ -60,59 +194,9 @@ const SyntheseConso = ({ landData, projectData }: {
         </div>
         <div className="fr-col-12 fr-col-md-6 fr-grid-row">
           <div className="bg-white fr-p-3w rounded w-100">
-            <p className="fr-text--sm fr-mb-2w">
-              La première phase de loi Climat et Résilience consiste à réduire
-              nationnalement de <strong>50 %</strong> la consommation d'espaces NAF (Naturels,
-              Agricoles et Forestiers) entre 2021 et 2031, par rapport à la
-              consommation de la période <strong>2011-2020</strong>, aussi
-              appelée période de référence.
-            </p>
-            <p className="fr-text--sm fr-mb-2w">
-              Sur le territoire de {name},{" "}
-              <strong>{formatNumber({number: conso_2011_2020})} ha ont été consommés entre 2011 et 2020</strong>.{" "}
-          
-              <strong>
-                La consommation d'espaces de ce territoire ne devrait donc pas
-                dépasser un total de {formatNumber({number: allowed_conso_2021_2030})} ha sur la période 2021-2030 pour respecter l'objectif national.
-              </strong>
-            </p>
-            {allowed_conso_raised_to_1ha_2021_2030 && (
-              <p className="fr-text--sm fr-mb-2w">
-                  La situation de {name} est un cas particulier car sa consommation est
-                  inférieure à 2 ha sur la période de référence (2011-2020). L'objectif de réduction de 50% ne s'applique
-                  pas dans ce cas, et son objectif de consommation d'espaces NAF est donc de ne pas dépasser 1 ha sur la période 2021-2031.{" "}
-                  <a target="_blank" href="https://www.legifrance.gouv.fr/loda/id/JORFTEXT000043956924#:~:text=3%C2%B0%20bis%20Une,%C3%A0%20un%20hectare.">Source</a>.
-              </p>
-            )}
-
-            <p className="fr-text--sm fr-mb-2w">
-              Depuis 2021, <strong>{formatNumber({number: conso_since_2021})} ha d'espaces NAF ont été consommés</strong>.{" "}
-              <strong>{currently_respecting_regulation ? (
-                <span className="fr-badge--success">L'objectif national de réduction serait donc actuellement respecté</span>
-              ) : (
-                <span className="fr-badge--error">L'objectif national de réduction ne serait pas respecté</span>
-              )}</strong>{" "}
-
-              par le territoire  de {name}, avec un taux de consommation de{" "}
-              <strong>{formatNumber({ number: current_percent_use })}%</strong> de la consommation observée
-              par rapport à celle de la période de référence.
-            </p>
-
-            <p className="fr-text--sm fr-mb-2w">
-              {respecting_regulation_by_2030 ? (
-                <>Le territoire de {name} <strong><span className="fr-badge--success">devrait respecter l'objectif national de réduction à horizon 2031</span></strong></>
-              ) : (
-                <>Cependant, le territoire de {name} <strong><span className="fr-badge--error">ne devrait pas respecter l'objectif national de réduction à horizon 2031</span></strong></>
-              )}
-              , avec un taux de consommation projeté de{" "}
-              <strong>{formatNumber({ number: projected_percent_use_by_2030 })}%</strong> par rapport à la consommation de la période de référence.
-            </p>
-            <p className="fr-text--sm">
-                <strong>
-                  <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que l'objectif national est en cours de territorialisation
-                  et que les objectifs locaux pourront différer en fonction des documents d'urbanisme en vigueur.
-                </strong>
-            </p>
+            {trajectoire_conso_is_territorialise ? (
+              <SyntheseConsoTexteTerritorialise landData={landData} />
+            ) : <SyntheseConsoTexteByDefault landData={landData} />}
           </div>
         </div>
       </div>
@@ -161,21 +245,19 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
               land_type={landData.land_type}
             />
           </div>
-
         </div>
       </div>
       <div className="fr-col-12 fr-col-md-6 fr-grid-row">
         <div className="bg-white fr-p-3w rounded w-100">
           <p className="fr-text--sm fr-mb-2w">
-            La deuxième phase de la loi Climat et Résilience consiste à atteindre{" "}
-            <strong>
-              l'objectif de Zéro Artificialisation Nette en 2050
-            </strong>
-            , mesurée avec des données, non plus de consommation d'espaces, mais
-            d'artificialisation du sol. L'artificialisation nette
-            correspond à la différence entre les surfaces artificialisées et les
-            surfaces désartificialisées. Les données d'artificialisation sont produites 
-            à partir des données OCS GE.
+            La deuxième phase de la loi Climat et Résilience consiste à
+            atteindre{" "}
+            <strong>l'objectif de Zéro Artificialisation Nette en 2050</strong>,
+            mesurée avec des données, non plus de consommation d'espaces, mais
+            d'artificialisation du sol. L'artificialisation nette correspond à
+            la différence entre les surfaces artificialisées et les surfaces
+            désartificialisées. Les données d'artificialisation sont produites à
+            partir des données OCS GE.
           </p>
           <LandMillesimeTable
             millesimes={landData.millesimes}
@@ -183,39 +265,56 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
             is_interdepartemental={landData.is_interdepartemental}
           />
           <p className="fr-text--sm fr-mt-2w">
-            Sur le territoire de {landData.name}, <MillesimeDisplay
+            Sur le territoire de {landData.name},{" "}
+            <MillesimeDisplay
               is_interdepartemental={landData.is_interdepartemental}
               landArtifStockIndex={data}
               between={true}
               className="fr-text--sm"
-            />, <strong>l'artificialisation nette est de {formatNumber({ number: data.flux_surface })} ha</strong>,
-            <strong> soit {formatNumber({ number: data.flux_percent })}% de la surface totale du territoire</strong>.          
+            />
+            ,{" "}
+            <strong>
+              l'artificialisation nette est de{" "}
+              {formatNumber({ number: data.flux_surface })} ha
+            </strong>
+            ,
+            <strong>
+              {" "}
+              soit {formatNumber({ number: data.flux_percent })}% de la surface
+              totale du territoire
+            </strong>
+            .
           </p>
           <p className="fr-text--sm fr-mt-2w">
-            Cette donnée a pour le moment un caractère informatif puisqu'elle n'est pas encore réglementaire.
-            Cependant, <strong>elle permet une analyse plus fine de l'évolution des sols et permet de se projeter
-            plus concrètement dans une dynamique de sobriété foncière</strong>.
+            Cette donnée a pour le moment un caractère informatif puisqu'elle
+            n'est pas encore réglementaire. Cependant,{" "}
+            <strong>
+              elle permet une analyse plus fine de l'évolution des sols et
+              permet de se projeter plus concrètement dans une dynamique de
+              sobriété foncière
+            </strong>
+            .
           </p>
           <p className="fr-text--sm fr-mt-2w">
-            Notamment, la notion d'artificialisation
-            {" "}<strong>nette</strong> permet de prendre en compte les surfaces désartificialisées, et ainsi de mieux valoriser
-            les initiatives locales de renaturation des sols, tout en permettant de continuer à développer son
-            territoire durablement.
-        </p>
+            Notamment, la notion d'artificialisation <strong>nette</strong>{" "}
+            permet de prendre en compte les surfaces désartificialisées, et
+            ainsi de mieux valoriser les initiatives locales de renaturation des
+            sols, tout en permettant de continuer à développer son territoire
+            durablement.
+          </p>
         </div>
       </div>
-            <CallToAction
+      <CallToAction
         title="Diagnostiquer l'artificialisation des sols et explorer les données"
         text="Découvrez dans notre diagnostic d'artificialisation : analyse détaillée de l'artificialisation des sols par destination, mise en relation avec l’évolution démographique, et comparaison avec une selection de territoires similaires."
       >
         <div className="d-flex align-items-center gap-3">
-        <Link
+          <Link
             to={projectData.urls.artificialisation}
             className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
           >
             Diagnostic de l'artificialisation
           </Link>
-
         </div>
       </CallToAction>
     </div>
@@ -275,19 +374,26 @@ const SyntheseFriche = ({ landData, projectData }: SyntheseProps) => {
 };
 
 const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
-  const { consommation_correction_status, ocsge_status, has_conso, has_ocsge } = landData;
+  const { consommation_correction_status, ocsge_status, has_conso, has_ocsge } =
+    landData;
   return (
     <div className="fr-container--fluid fr-p-3w">
       <h2>Comprendre : les objectifs de sobriété foncière</h2>
       <h3>Période 2021-2030 : mesure de la consommation d'espaces</h3>
       {has_conso ? (
-          <SyntheseConso landData={landData} projectData={projectData} />
-      ) : <ConsoCorrectionStatus status={consommation_correction_status} />}
+        <SyntheseConso landData={landData} projectData={projectData} />
+      ) : (
+        <ConsoCorrectionStatus status={consommation_correction_status} />
+      )}
       <h3>Période 2021 - 2050 : mesure de l’artificialisation des sols</h3>
       {has_ocsge ? (
         <SyntheseArtif landData={landData} projectData={projectData} />
-       ) : <OcsgeStatus status={ocsge_status} />}
-      <h2 id="agir-leviers-sobriete-fonciere" className="fr-mt-10w">Agir : les leviers de la sobriété foncière</h2>
+      ) : (
+        <OcsgeStatus status={ocsge_status} />
+      )}
+      <h2 id="agir-leviers-sobriete-fonciere" className="fr-mt-10w">
+        Agir : les leviers de la sobriété foncière
+      </h2>
       <h3>Vacance des Logements</h3>
       <SyntheseLogementVacant landData={landData} projectData={projectData} />
       <h3>Réhabilitation des friches</h3>

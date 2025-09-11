@@ -66,6 +66,7 @@ export type ConsoDetails = {
     current_percent_use: number;
     respecting_regulation_by_2030: boolean;
     projected_percent_use_by_2030: number;
+    trajectoire_conso_is_territorialise: boolean;
 }
 
 
