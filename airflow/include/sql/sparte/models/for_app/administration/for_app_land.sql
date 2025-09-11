@@ -29,6 +29,9 @@ SELECT
     {{ m2_to_ha('land.surface_artif') }} as surface_artif,
     land.percent_artif as percent_artif,
     land.years_artif as years_artif,
+    {{ m2_to_ha('land.surface_imper') }} as surface_imper,
+    land.percent_imper as percent_imper,
+    land.years_imper as years_imper,
     land_ocsge_status.status as ocsge_status,
     land_ocsge_status.has_ocsge as has_ocsge,
     land_zonages.zonage_count > 0 as has_zonage,
@@ -55,7 +58,8 @@ SELECT
         'currently_respecting_regulation', land.currently_respecting_regulation,
         'current_percent_use', land.current_percent_use,
         'respecting_regulation_by_2030', land.respecting_regulation_by_2030,
-        'projected_percent_use_by_2030', land.projected_percent_use_by_2030
+        'projected_percent_use_by_2030', land.projected_percent_use_by_2030,
+        'trajectoire_conso_is_territorialise', false
     ) as conso_details,
     land.consommation_correction_status
 FROM

@@ -5,8 +5,6 @@ SELECT
     id,
     first_name,
     last_name,
-    function,
-    organism,
     email,
     created_date,
     updated_date,
@@ -17,6 +15,5 @@ SELECT
     sent_file,
     requested_document,
     competence_urba,
-    du_en_cours,
-    service
+    du_en_cours
 FROM {{ source('public', 'app_request')}}

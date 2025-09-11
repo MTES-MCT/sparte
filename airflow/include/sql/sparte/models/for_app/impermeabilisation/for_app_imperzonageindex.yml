@@ -1,0 +1,50 @@
+models:
+  - name: for_app_imperzonageindex
+    columns:
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: land_type
+        data_type: text
+        data_tests:
+          - not_null
+      - name: departements
+        data_type: array
+        data_tests:
+          - not_null
+      - name: years
+        data_type: array
+        data_tests:
+          - not_null
+      - name: zonage_surface
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: impermeable_surface
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: zonage_type
+        data_type: character varying
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - A
+                - AU
+                - N
+                - U
+      - name: zonage_count
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: impermeable_percent
+        data_type: numeric
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100
+      - name: millesime_index
+        data_type: bigint
+        data_tests:
+          - not_null

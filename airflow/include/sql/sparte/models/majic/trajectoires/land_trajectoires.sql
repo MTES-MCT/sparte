@@ -11,9 +11,8 @@ SELECT
     conso_since_2021.projected_conso_2030 * 100 / allowed_conso_2021_2030 AS projected_percent_use_by_2030
 
 FROM
-
-    {{ ref('land')}}
-LEFt JOIN LATERAL (
+    {{ ref('land') }}
+LEFT JOIN LATERAL (
     SELECT
         total as conso_2011_2020,
         CASE

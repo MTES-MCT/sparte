@@ -14,10 +14,6 @@ models:
         data_type: character varying
         data_tests:
           - not_null
-      - name: function
-        data_type: character varying
-      - name: organism
-        data_type: character varying
       - name: email
         data_type: character varying
         data_tests:
@@ -63,5 +59,3 @@ models:
         data_type: boolean
         data_tests:
           - not_null
-      - name: service
-        data_type: character varying

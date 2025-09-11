@@ -127,6 +127,14 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landartifstockcouverturecompositionindex",
                 "copy_public_data_landartifstockusagecomposition",
                 "copy_public_data_landartifstockusagecompositionindex",
+                "copy_public_data_imperzonage",
+                "copy_public_data_imperzonageindex",
+                "copy_public_data_landimperstock",
+                "copy_public_data_landimperstockindex",
+                "copy_public_data_landimperstockcouverturecomposition",
+                "copy_public_data_landimperstockcouverturecompositionindex",
+                "copy_public_data_landimperstockusagecomposition",
+                "copy_public_data_landimperstockusagecompositionindex",
                 "copy_public_data_land",
                 "copy_public_data_landfrichepollution",
                 "copy_public_data_landfrichestatut",
@@ -420,6 +428,108 @@ def update_app():  # noqa: C901
         )
 
     @task.python
+    def copy_public_data_imperzonage(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_imperzonage",
+            to_table="public.public_data_imperzonage",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["year"],
+                ["zonage_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_imperzonageindex(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_imperzonageindex",
+            to_table="public.public_data_imperzonageindex",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["millesime_index"],
+                ["zonage_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperstock(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperstock",
+            to_table="public.public_data_landimperstock",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["year"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperstockindex(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperstockindex",
+            to_table="public.public_data_landimperstockindex",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["millesime_index"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperstockcouverturecomposition(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperstockcouverturecomposition",
+            to_table="public.public_data_landimperstockcouverturecomposition",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["year"],
+                ["couverture"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperstockcouverturecompositionindex(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperstockcouverturecompositionindex",
+            to_table="public.public_data_landimperstockcouverturecompositionindex",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["millesime_index"],
+                ["couverture"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperstockusagecomposition(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperstockusagecomposition",
+            to_table="public.public_data_landimperstockusagecomposition",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["year"],
+                ["usage"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperstockusagecompositionindex(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperstockusagecompositionindex",
+            to_table="public.public_data_landimperstockusagecompositionindex",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["millesime_index"],
+                ["usage"],
+            ],
+        )
+
+    @task.python
     def copy_public_data_land(**context):
         return (
             copy_table_from_dw_to_app(
@@ -571,6 +681,14 @@ def update_app():  # noqa: C901
         copy_public_data_landartifstockcouverturecompositionindex(),
         copy_public_data_landartifstockusagecomposition(),
         copy_public_data_landartifstockusagecompositionindex(),
+        copy_public_data_imperzonage(),
+        copy_public_data_imperzonageindex(),
+        copy_public_data_landimperstock(),
+        copy_public_data_landimperstockindex(),
+        copy_public_data_landimperstockcouverturecomposition(),
+        copy_public_data_landimperstockcouverturecompositionindex(),
+        copy_public_data_landimperstockusagecomposition(),
+        copy_public_data_landimperstockusagecompositionindex(),
         copy_public_data_land(),
         copy_public_data_landfrichepollution(),
         copy_public_data_landfrichestatut(),

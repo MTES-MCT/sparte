@@ -21,6 +21,8 @@ LEFT JOIN
     ON conso.departement = pop.departement
     AND conso.from_year = pop.from_year
     AND conso.to_year = pop.to_year
+WHERE
+    conso.total IS NOT NULL
 GROUP BY
     departement.region,
     conso.from_year,
