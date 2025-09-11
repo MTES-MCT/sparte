@@ -5,24 +5,7 @@
     )
 }}
 
-with artif_commune_partitionned as (
-    select
-        *,
-        row_number() over (partition by commune_code order by year desc) as rn
-    from
-        {{ ref('artificial_commune') }}
-
-),
-
-latest_year_artif_commune as (
-    select *
-    from
-        artif_commune_partitionned
-    where
-        rn = 1
-),
-
-first_and_last_millesimes as (
+with first_and_last_millesimes as (
     select
         commune_code,
         min(year) as first_millesime,
@@ -52,12 +35,6 @@ select
     commune.srid_source,
     millesimes.first_millesime is not NULL
     and millesimes.last_millesime is not NULL as ocsge_available,
-    case
-        when
-            artif_commune.surface is not NULL
-            then artif_commune.surface / 10000
-            else NULL
-    end    as surface_artif,
     commune.surface / 10000 as area,
     ST_Transform(commune.geom, 4326) as mpoly,
     consommation.correction_status as consommation_correction_status,
@@ -72,10 +49,6 @@ select
     ) as logements_vacants_available
 from
     {{ ref('commune') }} as commune
-left join
-    latest_year_artif_commune as artif_commune
-    on
-        commune.code = artif_commune.commune_code
 left join
     first_and_last_millesimes as millesimes
     on
