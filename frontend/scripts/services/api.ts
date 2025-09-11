@@ -38,9 +38,27 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getLandImperStockIndex: builder.query({
+			query: ({land_type, land_id, millesime_index}) => {
+				return `/api/landimperstockindex/?${new URLSearchParams({
+					land_type,
+					land_id,
+					millesime_index
+				})}`
+			},
+		}),
 		getArtifZonageIndex: builder.query({
 			query: ({land_type, land_id, millesime_index}) => {
 				return `/api/artifzonageindex/?${new URLSearchParams({
+					land_type,
+					land_id,
+					millesime_index
+				})}`
+			},
+		}),
+		getImperZonageIndex: builder.query({
+			query: ({land_type, land_id, millesime_index}) => {
+				return `/api/imperzonageindex/?${new URLSearchParams({
 					land_type,
 					land_id,
 					millesime_index
@@ -101,6 +119,7 @@ export const djangoApi = createApi({
 const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
+const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
 const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
@@ -113,6 +132,7 @@ const {
 	useSearchTerritoryQuery,
 	useGetChartConfigQuery,
 	useGetLandArtifStockIndexQuery,
+	useGetLandImperStockIndexQuery,
 } = djangoApi;
 
 export {
@@ -123,7 +143,9 @@ export {
 	useGetChartConfigQuery,
 	useGetLandQuery,
 	useGetArtifZonageIndexQuery,
+	useGetImperZonageIndexQuery,
 	useGetLandArtifStockIndexQuery,
+	useGetLandImperStockIndexQuery,
 	useDownloadDiagnosticMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
