@@ -112,6 +112,25 @@ const Trajectoires: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                         de réduction de moitié de la consommation d'espaces</strong> naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 
                         par rapport à la décennie précédente 2011-2021.
                     </Guide>
+                    <div className="fr-notice fr-notice--warning">
+                        <div className="fr-px-2w">
+                        <div className="fr-notice__body">
+                            <p>
+                            <span className="fr-notice__title fr-text--sm">
+                                L'équipe travaille à l'intégration des objectifs déjà
+                                territorialisés de réduction de la consommation d’espaces
+                                NAF.{" "}
+                            </span>
+                            <span className="fr-notice__desc fr-text--sm">
+                                Dans l'attente de cette mise à jour, vous pouvez modifier
+                                l’objectif du territoire dans le graphique ci-dessous. Par
+                                défaut, en attendant cette territorisalisation, l'outil
+                                affiche l'objectif national de réduction de 50%.
+                            </span>
+                            </p>
+                        </div>
+                        </div>
+                    </div>
                     <div dangerouslySetInnerHTML={{ __html: content }} />
                 </div>
             </div>
