@@ -3,7 +3,6 @@ import Guide from "@components/ui/Guide";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
-import { OcsgeMapContainer } from "@components/map/ocsge/OcsgeMapContainer";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
@@ -13,7 +12,7 @@ import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesim
 import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
-import ChartDetails from "@components/charts/ChartDetails";
+import Card from "@components/ui/Card";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -48,53 +47,42 @@ const ImperLastMillesimeSection: React.FC<{
 }> = ({ landImperStockIndex, name, is_interdepartemental, surface, years_artif }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-lg-8">
-				<div className="bg-white fr-p-2w h-100 rounded">
-					<div className="fr-grid-row fr-grid-row--gutters">
-						<div className="fr-col-12 fr-col-md-7">
-                        <BigNumber className="fr-mt-3w">
-								{formatNumber({ number: landImperStockIndex.surface })} ha
-							</BigNumber>
-							<span
-								style={{textTransform: 'lowercase'}}
-								className={`fr-badge ${
-									landImperStockIndex.flux_surface >= 0
-										? "fr-badge--error"
-										: "fr-badge--success"
-								} fr-badge--error fr-badge--sm fr-badge--no-icon`}
-							>
-								{formatNumber({
-									number: landImperStockIndex.flux_surface,
-									addSymbol: true,
-								})}{" "}
-								ha
-								{landImperStockIndex.flux_surface >= 0 ? (
-									<i className="bi bi-arrow-up-right fr-ml-1w" />
-								) : (
-									<i className="bi bi-arrow-down-right fr-ml-1w" />
-								)}
-							</span>
-						</div>
-						<div className="fr-col-12 fr-col-md-5">
-							<MillesimeDisplay 
-								is_interdepartemental={is_interdepartemental}
-								landArtifStockIndex={landImperStockIndex}
-								between={true}
-								className="fr-text--sm fr-ml-1w"
-							/>
-							<BigNumber className="fr-mt-3w">
-								{formatNumber({ number: landImperStockIndex.percent })}%
-							</BigNumber>
-							<p>du territoire est imperméabilisé</p>
-						</div>
-					</div>
-					<ChartDetails
-						sources={['ocsge']}
-						chartId="imper_last_millesime"
-					/>
-				</div>
+			<div className="fr-col-12 fr-col-lg-6">
+                <Card
+                    icon='bi-droplet'
+                    badgeClass='fr-badge--error'
+                    badgeLabel={'Surface imperméabilisée'}
+                    value={`${formatNumber({ number: landImperStockIndex.surface })} ha`}
+                    label={`Soit ${formatNumber({ number: landImperStockIndex.percent })}% de la surface totale`}
+                >
+                    <span
+                        style={{textTransform: 'lowercase'}}
+                        className={`fr-badge ${
+                            landImperStockIndex.flux_surface >= 0
+                                ? "fr-badge--error"
+                                : "fr-badge--success"
+                        } fr-badge--sm fr-badge--no-icon`}
+                    >
+                        {formatNumber({
+                            number: landImperStockIndex.flux_surface,
+                            addSymbol: true,
+                        })}{" "}
+                        ha
+                        {landImperStockIndex.flux_surface >= 0 ? (
+                            <i className="bi bi-arrow-up-right fr-ml-1w" />
+                        ) : (
+                            <i className="bi bi-arrow-down-right fr-ml-1w" />
+                        )}
+                    </span>
+                    <MillesimeDisplay 
+                        is_interdepartemental={is_interdepartemental}
+                        landArtifStockIndex={landImperStockIndex}
+                        between={true}
+                        className="fr-text--sm fr-ml-1w"
+                    />
+                </Card>
 			</div>
-			<div className="fr-col-12 fr-col-lg-4">
+			<div className="fr-col-12 fr-col-lg-6">
 				<Guide
 					title="Comprendre les données"
 					column
@@ -410,13 +398,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						Cette cartographie permet d'explorer les couvertures et les usages
 						des surfaces imperméabilisées du territoire, en fonction des
 						millésimes disponibles de la donnée OCS GE.
-					</p>
-					{projectData && (
-						<OcsgeMapContainer
-							landData={landData}
-							globalFilter={["==", ["get", "is_impermeable"], true]}
-						/>
-					)}
+					</p>	
 				</div>
 			</div>
 			{has_zonage && (
