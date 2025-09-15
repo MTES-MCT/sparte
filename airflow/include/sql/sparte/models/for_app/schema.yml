@@ -161,8 +161,6 @@ models:
         data_type: integer
       - name: last_millesime
         data_type: integer
-      - name: surface_artif
-        data_type: double precision
       - name: autorisation_logement_available
         data_type: boolean
         tests:
