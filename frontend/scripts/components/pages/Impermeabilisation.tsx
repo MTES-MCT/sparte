@@ -13,6 +13,7 @@ import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
 import Card from "@components/ui/Card";
+import { ImpermeabilisationMap } from "@components/map_v2/maplibre/features/ImpermeabilisationMap";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -191,6 +192,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	return (
 		<div className="fr-container--fluid fr-p-3w">
 			<div className="fr-mb-7w">
+				<ImpermeabilisationMap landData={landData} />
 				<div className="fr-grid-row fr-grid-row--gutters">
 					<div className="fr-col-12">
 						<Guide
