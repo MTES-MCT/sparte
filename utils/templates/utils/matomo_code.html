@@ -5,10 +5,9 @@
 <!-- Matomo Tag Manager -->
 <script nonce="[NONCE_PLACEHOLDER]">
   var _mtm = window._mtm = window._mtm || [];
-  var _paq = window._paq = window._paq || [];
   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
   {% if REQUEST.user.is_authenticated %}
-      _paq.push(['setUserId', '{{ REQUEST.user.email }}']);
+  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
     {% endif %}
   (function() {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -20,10 +19,9 @@
 <!-- Matomo Tag Manager -->
 <script nonce="[NONCE_PLACEHOLDER]">
   var _mtm = window._mtm = window._mtm || [];
-  var _paq = window._paq = window._paq || [];
   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
   {% if REQUEST.user.is_authenticated %}
-  _paq.push(['setUserId', '{{ REQUEST.user.email }}']);
+  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
     {% endif %}
   (function() {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -35,10 +33,9 @@
 {% elif ENVIRONMENT == "production" %}
 <script nonce="[NONCE_PLACEHOLDER]">
   var _mtm = (window._mtm = window._mtm || []);
-  var _paq = window._paq = window._paq || [];
   _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
   {% if REQUEST.user.is_authenticated %}
-  _paq.push(['setUserId', '{{ REQUEST.user.email }}']);
+  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
     {% endif %}
   (function () {
     var d = document,
