@@ -1,8 +1,10 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import { useMap } from "./hooks/useMap";
+import { useLayerVisibility } from "./hooks/useLayerVisibility";
+import { LayerControls } from "./controls/LayerControls";
 import { BaseMapProps } from "./types/";
-import { StyleSpecification } from "maplibre-gl";
+import { StyleSpecification, Map as MapLibreMap } from "maplibre-gl";
 import { MAPLIBRE_CONTROLS } from "../constants/configMaplibre";
 
 const MapWrapper = styled.div`
@@ -60,6 +62,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 	controls = MAPLIBRE_CONTROLS,
 	onMapLoad,
 	showZoomIndicator = false,
+	layerControls,
 }) => {
 	const mapDiv = useRef<HTMLDivElement>(null);
 	const [currentZoom, setCurrentZoom] = useState<number>(0);
@@ -82,6 +85,13 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 		updateSourcesAndLayers,
 	} = useMap(mapConfig);
 
+	const [mapInstance, setMapInstance] = useState<MapLibreMap | null>(null);
+	
+	const { layers: layerVisibility, toggleLayer, setLayerOpacity } = useLayerVisibility(
+		mapInstance,
+		layerControls?.layers || []
+	);
+
 	const handleMapInit = useCallback(() => {
 		if (mapDiv.current && !mapRef.current) {
 			initializeMap(mapDiv.current);
@@ -91,6 +101,29 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 	useEffect(() => {
 		handleMapInit();
 	}, [handleMapInit]);
+
+	useEffect(() => {
+		if (mapInstance && layerControls?.layers) {
+			layerControls.layers.forEach(layer => {
+				if (layer.visible) {
+					mapInstance.setLayoutProperty(layer.id, 'visibility', 'visible');
+				} else {
+					mapInstance.setLayoutProperty(layer.id, 'visibility', 'none');
+				}
+				
+				if (layer.opacity !== undefined) {
+					const mapLayer = mapInstance.getLayer(layer.id);
+					if (mapLayer) {
+						if (mapLayer.type === 'raster') {
+							mapInstance.setPaintProperty(layer.id, 'raster-opacity', layer.opacity);
+						} else if (mapLayer.type === 'line') {
+							mapInstance.setPaintProperty(layer.id, 'line-opacity', layer.opacity);
+						}
+					}
+				}
+			});
+		}
+	}, [mapInstance, layerControls?.layers]);
 
 	useEffect(() => {
 		if (isMapLoaded && mapRef.current) {
@@ -112,6 +145,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 			}
 
 			onMapLoad?.(mapRef.current);
+			setMapInstance(mapRef.current);
 		}
 
 		return () => {
@@ -134,6 +168,14 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 				ref={mapDiv}
 				$isLoaded={isMapLoaded}
 			/>
+			{layerControls && (
+				<LayerControls
+					layers={layerVisibility}
+					config={layerControls}
+					onLayerToggle={toggleLayer}
+					onOpacityChange={setLayerOpacity}
+				/>
+			)}
 		</MapWrapper>
 	);
 };

@@ -51,3 +51,15 @@ export interface RasterMapLayer extends BaseLayer {
 }
 
 export type MapLayer = LineMapLayer | RasterMapLayer;
+
+export interface LayerVisibility {
+  id: string;
+  name: string;
+  visible: boolean;
+  opacity?: number;
+}
+
+export interface LayerControlsConfig {
+  layers: LayerVisibility[];
+  showControls?: boolean;
+}

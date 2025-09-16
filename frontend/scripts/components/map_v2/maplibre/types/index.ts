@@ -1,5 +1,6 @@
 import React from "react";
 import { Map, SourceSpecification, LayerSpecification, StyleSpecification, NavigationControl, FullscreenControl } from "maplibre-gl";
+import { LayerControlsConfig } from "../../types";
 
 export interface MapControls {
 	scrollZoom?: boolean;
@@ -31,6 +32,7 @@ export interface BaseMapProps {
 	controls?: MapControls;
 	onMapLoad?: (map: Map) => void;
 	showZoomIndicator?: boolean;
+	layerControls?: LayerControlsConfig;
 }
 
 export interface MapSource {
