@@ -1,12 +1,11 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
-import { MapLibreMapper } from "../mappers";
 import { DEFAULT_MAP_STYLE, FRENCH_LOCALE } from "../constants/config";
 
 let PMTILES_PROTOCOL_REGISTERED = false;
 
-export const useMaplibre = (mapper: MapLibreMapper, bounds?: [number, number, number, number], maxBounds?: [number, number, number, number]) => {
+export const useMaplibre = (bounds?: [number, number, number, number], maxBounds?: [number, number, number, number]) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const controlsRef = useRef<{ [key: string]: any }>({});
@@ -33,8 +32,6 @@ export const useMaplibre = (mapper: MapLibreMapper, bounds?: [number, number, nu
         mapRef.current.on("load", () => {
             setIsMapLoaded(true);
         });
-
-        mapper.setMap(mapRef.current);
 
         return mapRef.current;
     }, [bounds, maxBounds]);

@@ -32,7 +32,7 @@ export class OcsgeSource extends BaseSource {
 			.replace("{departement}", this.departement);
 
 		return {
-			...this.options,
+			type: this.options.type,
 			url: `pmtiles://${tilesUrl}`,
 		};
 	}

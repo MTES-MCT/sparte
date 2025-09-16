@@ -11,7 +11,7 @@ export class OrthophotoSource extends BaseSource {
 
     getOptions() {
         return {
-            ...this.options,
+            type: this.options.type,
             tiles: [ORTHOPHOTO_TILES_URL],
             tileSize: 256,
         };

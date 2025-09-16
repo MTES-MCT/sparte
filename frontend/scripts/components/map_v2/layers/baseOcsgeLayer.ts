@@ -59,7 +59,9 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
             : null;
         const finalFilter = nomenclatureExpr ? ["all", filter, nomenclatureExpr] : filter;
         return {
-            ...this.options,
+            id: this.options.id,
+            type: this.options.type,
+            source: this.options.source,
             "source-layer": this.getSourceLayerName(),
             filter: finalFilter,
             layout: {

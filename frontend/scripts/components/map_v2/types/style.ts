@@ -1,4 +1,4 @@
-import type { LayerType } from "../../types/layer";
+import type { LayerType } from "./layer";
 
 export type FillPaint = 'fill-color' | 'fill-opacity' | 'fill-outline-color';
 export type LinePaint = 'line-color' | 'line-width' | 'line-opacity';
@@ -34,5 +34,3 @@ export type StyleDiff<T extends LayerType> = {
     paint?: Partial<Record<PaintPropertyByType[T], any>>;
     filter?: any[];
 };
-
-

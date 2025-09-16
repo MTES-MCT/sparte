@@ -14,7 +14,9 @@ export class OrthophotoLayer extends BaseLayer {
 
     getOptions() {
         return {
-            ...this.options,
+            id: this.options.id,
+            type: this.options.type,
+            source: this.options.source,
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
             },

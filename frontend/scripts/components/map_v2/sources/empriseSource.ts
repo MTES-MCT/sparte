@@ -24,7 +24,10 @@ export class EmpriseSource extends BaseSource {
     }
 
     getOptions() {
-        return { ...this.options, data: this.data };
+        return {
+            type: this.options.type,
+            data: this.data
+        };
     }
 
     updateData(data: FeatureCollection) {

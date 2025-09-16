@@ -31,3 +31,17 @@ export interface FillMapLayer {
 // Re-exports des types de base
 export type { LayerType, BaseLayerOptions } from "./layer";
 export type { SourceType, BaseSourceOptions } from "./source";
+
+export type MapLayer = LineMapLayer | RasterMapLayer;
+
+export interface LayerVisibility {
+  id: string;
+  name: string;
+  visible: boolean;
+  opacity?: number;
+}
+
+export interface LayerControlsConfig {
+  layers: LayerVisibility[];
+  showControls?: boolean;
+}

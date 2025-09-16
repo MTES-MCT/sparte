@@ -1,6 +1,6 @@
 import React from "react";
-import { BaseMaplibre } from "./BaseMaplibre";
-import { defineMapConfig } from "../types/builder";
+import { BaseMap } from "./BaseMap";
+import { defineMapConfig } from "./types/builder";
 import { LandDetailResultType } from "@services/types/land";
 
 interface ImpermeabilisationMapProps {
@@ -29,7 +29,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
     });
 
 	return (
-		<BaseMaplibre
+		<BaseMap
 			id="impermeabilisation-map"
 			config={config}
 			bounds={landData.bounds}

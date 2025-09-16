@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState, useMemo, useCallback } from "react";
+import React, { useRef, useEffect, useMemo, useCallback } from "react";
 import styled from "styled-components";
-import { MapLibreMapper } from "./mappers";
-import { LayerOrchestrator } from "../LayerOrchestrator";
+import maplibregl from "maplibre-gl";
+import { Protocol } from "pmtiles";
 import { useMaplibre } from "./hooks/useMaplibre";
-import { initMapFromConfig } from "../factory/initMapFromConfig";
+import { initMapFromConfig } from "./factory/initMapFromConfig";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -46,34 +46,23 @@ const MapContainer = styled.div<{ $isLoaded: boolean }>`
     }
 `;
 
-interface BaseMaplibreProps {
+interface BaseMapProps {
     id?: string;
     children?: React.ReactNode;
-    mapper?: MapLibreMapper;
-    orchestrator?: LayerOrchestrator;
     bounds?: [number, number, number, number];
     maxBounds?: [number, number, number, number];
     config?: any;
 }
 
-export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
+export const BaseMap: React.FC<BaseMapProps> = ({
     id = "map",
     children,
-    mapper: externalMapper,
-    orchestrator: externalOrchestrator,
     bounds,
     maxBounds,
     config,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
-    const defaultMapper = useRef(new MapLibreMapper());
-    const defaultOrchestrator = useRef(new LayerOrchestrator());
     const isInitialized = useRef(false);
-    
-    const mapper = externalMapper || defaultMapper.current;
-    const orchestrator = externalOrchestrator || defaultOrchestrator.current;
-    
-    orchestrator.setMapper(mapper);
     
     const memoizedConfig = useMemo(() => config, [config]);
 
@@ -83,14 +72,14 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
         initializeMap,
         updateControls,
         updateSourcesAndLayers,
-    } = useMaplibre(mapper, bounds, maxBounds);
+    } = useMaplibre(bounds, maxBounds);
 
     const handleMapLoad = useCallback(async (map: any) => {
         if (memoizedConfig && !isInitialized.current) {
-            await initMapFromConfig(memoizedConfig, orchestrator);
+            await initMapFromConfig(memoizedConfig, map);
             isInitialized.current = true;
         }
-    }, [memoizedConfig, orchestrator]);
+    }, [memoizedConfig]);
 
     useEffect(() => {
         if (mapDiv.current && !mapRef.current) {
