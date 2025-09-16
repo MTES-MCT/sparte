@@ -1,4 +1,4 @@
-assets/scripts
-assets/styles
-assets/types
+frontend/scripts
+frontend/styles
+frontend/types
 /node_modules

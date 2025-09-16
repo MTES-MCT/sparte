@@ -7,7 +7,7 @@
   var _mtm = window._mtm = window._mtm || [];
   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
   {% if REQUEST.user.is_authenticated %}
-  _mtm.push({'uid': '{{ REQUEST.user.email }}' });
+  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
     {% endif %}
   (function() {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -21,7 +21,7 @@
   var _mtm = window._mtm = window._mtm || [];
   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
   {% if REQUEST.user.is_authenticated %}
-  _mtm.push({'uid': '{{ REQUEST.user.email }}' });
+  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
     {% endif %}
   (function() {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -35,7 +35,7 @@
   var _mtm = (window._mtm = window._mtm || []);
   _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
   {% if REQUEST.user.is_authenticated %}
-  _mtm.push({'uid': '{{ REQUEST.user.email }}' });
+  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
     {% endif %}
   (function () {
     var d = document,
