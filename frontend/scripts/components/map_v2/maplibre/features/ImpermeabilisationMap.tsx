@@ -10,11 +10,13 @@ import { toMapLibreSources, toMapLibreLayers } from "../mappers";
 import { empriseSource as getEmpriseSource } from "../../sources/empriseSource";
 import { orthophotoSource } from "../../sources/orthophotoSource";
 import { APP_DEFAULTS } from "../../constants/config";
+import { LayerControlsConfig } from "../../types";
 
 interface ImpermeabilisationMapProps {
 	landData: LandDetailResultType;
 	controls?: MapControls;
 	center?: [number, number] | null;
+	layerControls?: LayerControlsConfig;
 }
 
 export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
@@ -25,7 +27,14 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		fullscreenControl: true,
 		cooperativeGestures: true,
 	},
-	center
+	center,
+	layerControls = {
+		showControls: true,
+		layers: [
+			{ id: 'orthophoto', name: 'Orthophoto', visible: true, opacity: 1 },
+			{ id: 'emprise', name: 'Emprise', visible: true, opacity: 0.7 },
+		],
+	}
 }) => {
 	const mapRef = useRef<Map | null>(null);
 	const { land_type, land_id, bounds, max_bounds } = landData;
@@ -65,6 +74,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 				mapRef.current = map;
 				flyToCenter(map);
 			}}
+			layerControls={layerControls}
 		/>
 	);
 };
