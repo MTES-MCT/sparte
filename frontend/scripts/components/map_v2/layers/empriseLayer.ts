@@ -1,9 +1,27 @@
-import { LineMapLayer } from "../types";
-import { MAPLIBRE_STYLES } from "../constants/configMaplibre";
+import { BaseLayer } from "./baseLayer";
 
-export const empriseLayer: LineMapLayer = {
-    id: "emprise",
-    type: "line",
-    source: "emprise",
-    style: MAPLIBRE_STYLES.EMPRISE,
-};
+export class EmpriseLayer extends BaseLayer {
+    constructor() {
+        super({
+            id: "emprise-layer",
+            type: "line",
+            source: "emprise-source",
+            visible: true,
+        });
+    }
+
+    getOptions() {
+        return {
+            ...this.options,
+            layout: {
+                visibility: this.options.visible ? "visible" : "none",
+                "line-cap": "round",
+            },
+            paint: {
+                "line-color": "black",
+                "line-width": 1.7,
+                "line-opacity": this.options.opacity ?? 0.7,
+            },
+        };
+    }
+}

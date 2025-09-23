@@ -13,7 +13,7 @@ import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
 import Card from "@components/ui/Card";
-import { ImpermeabilisationMap } from "@components/map_v2/maplibre/features/ImpermeabilisationMap";
+import { ImpermeabilisationMap } from "@components/map_v2/maplibre/ImpermeabilisationMap";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -396,11 +396,11 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			<div className="fr-mb-7w">
 				<h2>Carte des sols imperméabilisés</h2>
 				<div className="bg-white fr-p-4w rounded">
-					<p className="fr-text--sm">
+					<p className="fr-text--sm fr-mb-4w">
 						Cette cartographie permet d'explorer les couvertures et les usages
 						des surfaces imperméabilisées du territoire, en fonction des
 						millésimes disponibles de la donnée OCS GE.
-					</p>	
+					</p>
 				</div>
 			</div>
 			{has_zonage && (

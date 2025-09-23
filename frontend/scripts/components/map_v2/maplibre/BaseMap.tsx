@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useMap } from "./hooks/useMap";
 import { useLayerVisibility } from "./hooks/useLayerVisibility";
 import { LayerControls } from "./controls/LayerControls";
-import { BaseMapProps } from "./types/";
+import { BaseMapProps } from "./types";
 import { StyleSpecification, Map as MapLibreMap } from "maplibre-gl";
 import { MAPLIBRE_CONTROLS } from "../constants/configMaplibre";
 
