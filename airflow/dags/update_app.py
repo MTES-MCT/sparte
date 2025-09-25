@@ -135,6 +135,12 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landimperstockcouverturecompositionindex",
                 "copy_public_data_landimperstockusagecomposition",
                 "copy_public_data_landimperstockusagecompositionindex",
+                "copy_public_data_landimperflux",
+                "copy_public_data_landimperfluxindex",
+                "copy_public_data_landimperfluxcouverturecomposition",
+                "copy_public_data_landimperfluxcouverturecompositionindex",
+                "copy_public_data_landimperfluxusagecomposition",
+                "copy_public_data_landimperfluxusagecompositionindex",
                 "copy_public_data_land",
                 "copy_public_data_landfrichepollution",
                 "copy_public_data_landfrichestatut",
@@ -530,6 +536,67 @@ def update_app():  # noqa: C901
         )
 
     @task.python
+    def copy_public_data_landimperflux(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperflux",
+            to_table="public.public_data_landimperflux",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["departement"]],
+        )
+
+    @task.python
+    def copy_public_data_landimperfluxindex(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperfluxindex",
+            to_table="public.public_data_landimperfluxindex",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["millesime_old_index", "millesime_new_index"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperfluxcouverturecomposition(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperfluxcouverturecomposition",
+            to_table="public.public_data_landimperfluxcouverturecomposition",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["couverture"]],
+        )
+
+    @task.python
+    def copy_public_data_landimperfluxcouverturecompositionindex(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperfluxcouverturecompositionindex",
+            to_table="public.public_data_landimperfluxcouverturecompositionindex",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["millesime_old_index", "millesime_new_index"],
+                ["couverture"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landimperfluxusagecomposition(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperfluxusagecomposition",
+            to_table="public.public_data_landimperfluxusagecomposition",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["usage"]],
+        )
+
+    @task.python
+    def copy_public_data_landimperfluxusagecompositionindex(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landimperfluxusagecompositionindex",
+            to_table="public.public_data_landimperfluxusagecompositionindex",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"], ["millesime_old_index", "millesime_new_index"], ["usage"]],
+        )
+
+    @task.python
     def copy_public_data_land(**context):
         return (
             copy_table_from_dw_to_app(
@@ -689,6 +756,12 @@ def update_app():  # noqa: C901
         copy_public_data_landimperstockcouverturecompositionindex(),
         copy_public_data_landimperstockusagecomposition(),
         copy_public_data_landimperstockusagecompositionindex(),
+        copy_public_data_landimperflux(),
+        copy_public_data_landimperfluxindex(),
+        copy_public_data_landimperfluxcouverturecomposition(),
+        copy_public_data_landimperfluxcouverturecompositionindex(),
+        copy_public_data_landimperfluxusagecomposition(),
+        copy_public_data_landimperfluxusagecompositionindex(),
         copy_public_data_land(),
         copy_public_data_landfrichepollution(),
         copy_public_data_landfrichestatut(),
