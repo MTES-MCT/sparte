@@ -3,48 +3,45 @@ import { BaseSource } from "./sources/baseSource";
 import { MapLibreMapper } from "./maplibre/mappers";
 
 export class LayerOrchestrator {
-    private layers: Map<string, BaseLayer> = new Map();
-    private sources: Map<string, BaseSource> = new Map();
+    private layers = new Map<string, BaseLayer>();
+    private sources = new Map<string, BaseSource>();
     private mapper: MapLibreMapper | null = null;
 
     setMapper(mapper: MapLibreMapper): void {
         this.mapper = mapper;
     }
 
-    addLayer(layer: BaseLayer): void {
+    async addSource(source: BaseSource): Promise<void> {
+        await source.load();
+        this.sources.set(source.options.id, source);
+        if (this.mapper && source.loaded) {
+            this.mapper.addSource(source);
+        }
+    }
+
+    async addLayer(layer: BaseLayer): Promise<void> {
+        await layer.load();
         this.layers.set(layer.options.id, layer);
-        if (this.mapper) {
+        if (this.mapper && layer.loaded) {
             this.mapper.addLayer(layer);
         }
     }
 
     removeLayer(layerId: string): void {
-        const layer = this.layers.get(layerId);
-        if (layer) {
-            this.layers.delete(layerId);
-            if (this.mapper) {
-                this.mapper.removeLayer(layerId);
-            }
-        }
+        this.layers.delete(layerId);
+        this.mapper?.removeLayer(layerId);
+    }
+
+    removeSource(sourceId: string): void {
+        this.sources.delete(sourceId);
+        this.mapper?.removeSource(sourceId);
     }
 
     toggleLayer(layerId: string, visible: boolean): void {
         const layer = this.layers.get(layerId);
         if (layer) {
             layer.setVisible(visible);
-            if (this.mapper) {
-                this.mapper.toggleVisibility(layerId, visible);
-            }
-        }
-    }
-
-    updateFilter(layerId: string, filters: any[]): void {
-        const layer = this.layers.get(layerId);
-        if (layer) {
-            layer.setFilters(filters);
-            if (this.mapper) {
-                this.mapper.updateLayerFilters(layerId, filters);
-            }
+            this.mapper?.toggleVisibility(layerId, visible);
         }
     }
 
@@ -52,30 +49,12 @@ export class LayerOrchestrator {
         const layer = this.layers.get(layerId);
         if (layer) {
             layer.setOptions(options);
-            if (this.mapper) {
-                this.mapper.updateLayerStyle(layerId, options);
-            }
+            this.mapper?.updateLayerStyle(layerId, options);
         }
     }
 
     updateLayerStyle(layerId: string, style: Record<string, any>): void {
-        if (this.mapper) {
-            this.mapper.updateLayerStyle(layerId, style);
-        }
-    }
-
-    addSource(source: BaseSource): void {
-        this.sources.set(source.options.id, source);
-        if (this.mapper) {
-            this.mapper.addSource(source);
-        }
-    }
-
-    removeSource(sourceId: string): void {
-        this.sources.delete(sourceId);
-        if (this.mapper) {
-            this.mapper.removeSource(sourceId);
-        }
+        this.mapper?.updateLayerStyle(layerId, style);
     }
 
     getLayer(layerId: string): BaseLayer | undefined {

@@ -1,37 +1,52 @@
-type LayerType = "fill" | "line" | "symbol" | "circle" | "heatmap" | "fill-extrusion" | "raster" | "hillshade" | "background";
+export type LayerType =
+	| "fill"
+	| "line"
+	| "symbol"
+	| "circle"
+	| "heatmap"
+	| "fill-extrusion"
+	| "raster"
+	| "hillshade"
+	| "background";
 
-interface BaseLayerOptions {
-    id: string;
-    type: LayerType;
-    source: string;
-    visible?: boolean;
-    opacity?: number;
-    filters?: any[];
-    options?: Record<string, any>;
-    onClick?: (event: any) => void;
-    legend?: {
-        title: string;
-        items: Array<{
-            color: string;
-            label: string;
-        }>;
-    };
+export interface BaseLayerOptions {
+	id: string;
+	type: LayerType;
+	source: string;
+	visible?: boolean;
+	opacity?: number;
+	filters?: any[];
+	options?: Record<string, any>;
+	onClick?: (event: any) => void;
+	legend?: {
+		title: string;
+		items: Array<{ color: string; label: string }>;
+	};
 }
 
 export abstract class BaseLayer {
-    constructor(readonly options: BaseLayerOptions) {}
+	readonly options: BaseLayerOptions;
+	loaded = false;
 
-    abstract getOptions(): Record<string, any>;
+	constructor(options: BaseLayerOptions) {
+		this.options = { ...options };
+	}
 
-    setVisible(visible: boolean): void {
-        this.options.visible = visible;
-    }
+	async load(): Promise<void> {
+		this.loaded = true;
+	}
 
-    setFilters(filters: any[]): void {
-        this.options.filters = filters;
-    }
+	abstract getOptions(): Record<string, any>;
 
-    setOptions(options: Record<string, any>): void {
-        Object.assign(this.options, options);
-    }
+	setVisible(visible: boolean): void {
+		this.options.visible = visible;
+	}
+
+	setFilters(filters: any[]): void {
+		this.options.filters = filters;
+	}
+
+	setOptions(options: Partial<BaseLayerOptions>): void {
+		Object.assign(this.options, options);
+	}
 }
