@@ -1,5 +1,8 @@
 {{
-    config(materialized="table")
+    config(
+        materialized="table",
+        indexes=[{"columns": ["land_id", "land_type"], "type": "btree"}]
+    )
 }}
 
 with

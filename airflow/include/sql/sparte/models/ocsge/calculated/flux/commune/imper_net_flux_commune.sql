@@ -11,7 +11,10 @@ SELECT
     COALESCE(flux_desimper, 0) as flux_desimper,
     COALESCE(flux_imper, 0) - COALESCE(flux_desimper, 0) as flux_imper_net,
     COALESCE(imper.year_old, desimper.year_old) as year_old,
-    COALESCE(imper.year_new, desimper.year_new) as year_new
+    COALESCE(imper.year_new, desimper.year_new) as year_new,
+    COALESCE(imper.year_old_index, desimper.year_old_index) as year_old_index,
+    COALESCE(imper.year_new_index, desimper.year_new_index) as year_new_index,
+    imper.departement
 
 FROM {{ ref('imper_flux_commune') }} as imper
 LEFT JOIN

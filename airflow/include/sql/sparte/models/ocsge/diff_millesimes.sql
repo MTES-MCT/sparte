@@ -13,4 +13,4 @@
     )
 }}
 
-SELECT DISTINCT departement, year_old, year_new FROM {{ ref('difference') }}
+SELECT DISTINCT departement, year_old, year_new, year_old_index, year_new_index FROM {{ ref('difference') }}

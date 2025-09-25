@@ -22,13 +22,15 @@ SELECT
     commune_surface,
     year_old,
     year_new,
+    year_old_index,
+    year_new_index,
     sum(surface) as impermeable_surface
 FROM
     {{ ref('commune_flux_couverture_et_usage')}}
 WHERE
     new_is_impermeable
 group by
-    commune_code, commune_surface,  year_old, year_new
+    commune_code, commune_surface,  year_old, year_new, year_old_index, year_new_index
 ), with_percent as (
 SELECT
    without_percent.*,
@@ -41,8 +43,11 @@ SELECT
     commune.surface as commune_surface,
     diff_millesimes.year_old,
     diff_millesimes.year_new,
+    diff_millesimes.year_old_index,
+    diff_millesimes.year_new_index,
     COALESCE(with_percent.impermeable_surface, 0) as flux_imper,
-    COALESCE(with_percent.percent, 0) as flux_imper_percent
+    COALESCE(with_percent.percent, 0) as flux_imper_percent,
+    commune.departement
 
 FROM {{ ref('commune')}}
 INNER JOIN
