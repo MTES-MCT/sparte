@@ -50,7 +50,6 @@ models:
                 "CS2.2.1",
                 "CS2.2.2"
               ]
-      - name: flux_
       - name: flux_imper
         data_type: numeric
         data_tests:
