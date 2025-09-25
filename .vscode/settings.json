@@ -38,5 +38,8 @@
     "[jinja-sql]": {
         "editor.defaultFormatter": "yassun7010.vscode-shandy-sqlfmt"
     },
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
 }
 

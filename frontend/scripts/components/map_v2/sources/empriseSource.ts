@@ -1,18 +1,33 @@
 import { BaseSource } from "./baseSource";
 import type { FeatureCollection } from "geojson";
+import { fetchLandGeom } from "@services/fetchers";
 
 export class EmpriseSource extends BaseSource {
-    constructor(private readonly data: FeatureCollection) {
-        super({
-            id: "emprise-source",
-            type: "geojson",
-        });
+    private data: FeatureCollection = { type: "FeatureCollection", features: [] };
+
+    constructor(
+        private readonly land_type: string,
+        private readonly land_id: string
+    ) {
+        super({ id: "emprise-source", type: "geojson" });
+    }
+
+    async load(): Promise<void> {
+        try {
+            const { simple_geom } = await fetchLandGeom(this.land_type, this.land_id);
+            this.data = simple_geom;
+        } catch {
+            this.data = { type: "FeatureCollection", features: [] };
+        } finally {
+            this.loaded = true;
+        }
     }
 
     getOptions() {
-        return {
-            ...this.options,
-            data: this.data,
-        };
+        return { ...this.options, data: this.data };
+    }
+
+    updateData(data: FeatureCollection) {
+        this.data = data;
     }
 }

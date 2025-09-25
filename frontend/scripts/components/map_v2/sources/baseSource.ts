@@ -1,6 +1,10 @@
-type SourceType = "geojson" | "vector" | "raster" | "raster-dem";
+export type SourceType =
+    | "geojson"
+    | "vector"
+    | "raster"
+    | "raster-dem";
 
-interface BaseSourceOptions {
+export interface BaseSourceOptions {
     id: string;
     type: SourceType;
     attribution?: string;
@@ -9,7 +13,16 @@ interface BaseSourceOptions {
 }
 
 export abstract class BaseSource {
-    constructor(readonly options: BaseSourceOptions) {}
+    readonly options: BaseSourceOptions;
+    loaded = false;
+
+    constructor(options: BaseSourceOptions) {
+        this.options = { ...options };
+    }
+
+    async load(): Promise<void> {
+        this.loaded = true;
+    }
 
     abstract getOptions(): Record<string, any>;
 }

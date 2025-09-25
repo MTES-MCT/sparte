@@ -10,6 +10,10 @@ export class EmpriseLayer extends BaseLayer {
         });
     }
 
+    async load(): Promise<void> {
+        this.loaded = true;
+    }
+
     getOptions() {
         return {
             ...this.options,

@@ -41,7 +41,7 @@ export const useMaplibre = (mapper: MapLibreMapper, bounds?: [number, number, nu
 
     const addControl = useCallback((control: any, id: string) => {
         if (!mapRef.current || controlsRef.current[id]) return;
-        
+
         controlsRef.current[id] = control;
         mapRef.current.addControl(control, "top-right");
     }, []);
