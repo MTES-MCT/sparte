@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { MapLibreMapper } from "./mappers";
 import { LayerOrchestrator } from "../LayerOrchestrator";
 import { useMaplibre } from "./hooks/useMaplibre";
-import { useLayerVisibility } from "../hooks/useLayerVisibility";
 import { LayerControls } from "../controls/LayerControls";
 import { LayerControlsConfig } from "../types";
 
@@ -71,11 +70,17 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
     
     orchestrator.setMapper(mapper);
 
-    // Hook pour gérer la visibilité des layers
-    const { layers: layerVisibility, toggleLayer, setLayerOpacity } = useLayerVisibility(
-        orchestrator,
-        layerControls?.layers || []
-    );
+    const [layerVisibility, setLayerVisibility] = useState(layerControls?.layers || []);
+
+    const handleLayerToggle = (layerId: string, visible: boolean) => {
+        setLayerVisibility(prev => prev.map(l => l.id === layerId ? { ...l, visible } : l));
+        orchestrator.toggleLayer(layerId, visible);
+    };
+
+    const handleOpacityChange = (layerId: string, opacity: number) => {
+        setLayerVisibility(prev => prev.map(l => l.id === layerId ? { ...l, opacity } : l));
+        orchestrator.setLayerOpacity(layerId, opacity);
+    };
 
     const {
         mapRef,
@@ -138,8 +143,8 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
                 <LayerControls
                     layers={layerVisibility}
                     config={layerControls}
-                    onLayerToggle={toggleLayer}
-                    onOpacityChange={setLayerOpacity}
+                    onLayerToggle={handleLayerToggle}
+                    onOpacityChange={handleOpacityChange}
                 />
             )}
         </MapWrapper>

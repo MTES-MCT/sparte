@@ -27,6 +27,7 @@ export interface BaseLayerOptions {
 export abstract class BaseLayer {
 	readonly options: BaseLayerOptions;
 	loaded = false;
+	private lastEnabledOpacity?: number;
 
 	constructor(options: BaseLayerOptions) {
 		this.options = { ...options };
@@ -48,5 +49,22 @@ export abstract class BaseLayer {
 
 	setOptions(options: Partial<BaseLayerOptions>): void {
 		Object.assign(this.options, options);
+	}
+
+	getOpacityStyleProperty(): string | null {
+		const mapping: Partial<Record<LayerType, string>> = {
+			raster: "raster-opacity",
+			line: "line-opacity",
+			fill: "fill-opacity",
+		};
+		return mapping[this.options.type] ?? null;
+	}
+
+	setLastEnabledOpacity(opacity: number | undefined): void {
+		this.lastEnabledOpacity = opacity;
+	}
+
+	getLastEnabledOpacity(): number | undefined {
+		return this.lastEnabledOpacity;
 	}
 }
