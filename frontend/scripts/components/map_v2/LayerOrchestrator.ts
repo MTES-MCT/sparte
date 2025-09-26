@@ -39,9 +39,23 @@ export class LayerOrchestrator {
 
     toggleLayer(layerId: string, visible: boolean): void {
         const layer = this.layers.get(layerId);
-        if (layer) {
-            layer.setVisible(visible);
-            this.mapper?.toggleVisibility(layerId, visible);
+        if (!layer) return;
+
+        if (layer.options.visible === visible) return;
+        layer.setVisible(visible);
+
+        const opacityProp = layer.getOpacityStyleProperty();
+        if (!opacityProp) return;
+
+        if (!visible) {
+            layer.setLastEnabledOpacity(layer.options.opacity);
+            layer.setOptions({ opacity: 0 });
+            this.mapper?.updateLayerStyle(layerId, { [opacityProp]: 0 });
+        } else {
+            const restore = layer.getLastEnabledOpacity();
+            const targetOpacity = restore !== undefined ? restore : 1;
+            layer.setOptions({ opacity: targetOpacity });
+            this.mapper?.updateLayerStyle(layerId, { [opacityProp]: targetOpacity });
         }
     }
 
@@ -71,5 +85,18 @@ export class LayerOrchestrator {
 
     getAllSources(): BaseSource[] {
         return Array.from(this.sources.values());
+    }
+
+    setLayerOpacity(layerId: string, opacity: number): void {
+        const layer = this.layers.get(layerId);
+        if (!layer) return;
+
+        if (layer.options.opacity === opacity) return;
+        layer.setOptions({ opacity });
+
+        const opacityProperty = layer.getOpacityStyleProperty();
+        if (opacityProperty) {
+            this.mapper?.updateLayerStyle(layerId, { [opacityProperty]: opacity });
+        }
     }
 }
