@@ -107,3 +107,5 @@ models:
               values:
                 - "true"
                 - "false"
+      - name: updated_at
+        data_type: timestamp with time zone
