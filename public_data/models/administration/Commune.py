@@ -57,13 +57,6 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         null=True,
     )
     area = models.DecimalField("Surface", max_digits=15, decimal_places=4)
-    surface_artif = models.DecimalField(
-        "Surface artificielle",
-        max_digits=15,
-        decimal_places=4,
-        blank=True,
-        null=True,
-    )
     ocsge_available = models.BooleanField(
         "Statut de couverture OCSGE",
         default=False,
