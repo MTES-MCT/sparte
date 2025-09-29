@@ -17,17 +17,20 @@ const useMatomoTracking = (): void => {
         if (!isMatomoEnabled()) {
             return;
         }
+        if (!env?.matomo_container_src) {
+            return;
+        }
     
-    const d = document
-    const g = d.createElement('script')
-    const s = d.getElementsByTagName('script')[0]
-    g.async = true
-    g.src = env.matomo_container_src;
-    s.parentNode.insertBefore(g,s)
+        const d = document
+        const g = d.createElement('script')
+        const s = d.getElementsByTagName('script')[0]
+        g.async = true
+        g.src = env.matomo_container_src;
+        s.parentNode.insertBefore(g,s)
 
-    window._mtm!.push({'event': 'mtm.PageView'});
+        window._mtm!.push({'event': 'mtm.PageView'});
 
-    }, [location]);
+    }, [location, env]);
 };
 
 export default useMatomoTracking;
