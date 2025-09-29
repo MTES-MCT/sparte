@@ -17,6 +17,10 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 
 	orchestrator.current.setMapper(mapper.current);
 
+	// Calculer les paramètres OCSGE
+	const lastMillesimeIndex = landData.millesimes ? Math.max(...landData.millesimes.map(m => m.index)) : 1;
+	const firstDepartement = landData.departements ? landData.departements[0] : "";
+
 	const config = {
 		sources: [
 			{ id: "orthophoto-source", type: "orthophoto" },
@@ -26,7 +30,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		layers: [
 			{ id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
 			{ id: "emprise-layer", type: "emprise", source: "emprise-source" },
-			{ id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source" },
+			{ id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement },
 		],
 		layerControls: {
 			showControls: true,

@@ -1,4 +1,4 @@
-import { CouvertureColors, UsageColors } from "../types/ocsge";
+import { CouvertureColors, UsageColors, Couverture, Usage } from "../types/ocsge";
 
 export const COUVERTURE_COLORS: CouvertureColors = {
     "CS1.1.1.1": [255, 55, 122],
@@ -38,3 +38,17 @@ export const USAGE_COLORS: UsageColors = {
     "US6.3": [240, 240, 40],
     "US6.6": [255, 204, 0],
 };
+
+export const ALL_OCSGE_COUVERTURE_CODES: Couverture[] = Object.keys(COUVERTURE_COLORS) as Couverture[];
+export const ALL_OCSGE_USAGE_CODES: Usage[] = Object.keys(USAGE_COLORS) as Usage[];
+
+export const OCSGE_LAYER_NOMENCLATURES = {
+    impermeabilisation: {
+        couverture: ["CS1.1.1.1", "CS1.1.1.2"] as Couverture[],
+        usage: ALL_OCSGE_USAGE_CODES
+    },
+    artificialisation: {
+        couverture: ALL_OCSGE_COUVERTURE_CODES,
+        usage: ALL_OCSGE_USAGE_CODES
+    }
+} as const;
