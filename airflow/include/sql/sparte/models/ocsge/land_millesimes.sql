@@ -1,6 +1,9 @@
 {{
     config(
-        materialized="table") }}
+        materialized="table",
+        indexes=[{"columns": ["land_id", "land_type"], "type": "btree"}],
+    )
+}}
 
 SELECT
     land_id,

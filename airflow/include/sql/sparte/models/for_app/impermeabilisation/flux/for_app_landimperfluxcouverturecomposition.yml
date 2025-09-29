@@ -1,0 +1,64 @@
+models:
+  - name: for_app_landimperfluxcouverturecomposition
+    columns:
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: land_type
+        data_type: text
+        data_tests:
+          - not_null
+      - name: departement
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: year_old
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: year_new
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: millesime_old_index
+        data_type: bigint
+        data_tests:
+          - not_null
+      - name: millesime_new_index
+        data_type: bigint
+        data_tests:
+          - not_null
+      - name: couverture
+        data_type: character varying
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [
+                "CS1.1.1.1",
+                "CS1.1.1.2",
+                "CS1.1.2.1",
+                "CS1.1.2.2",
+                "CS1.2.1",
+                "CS1.2.2",
+                "CS1.2.3",
+                "CS2.1.1.1",
+                "CS2.1.1.2",
+                "CS2.1.1.3",
+                "CS2.1.2",
+                "CS2.1.3",
+                "CS2.2.1",
+                "CS2.2.2"
+              ]
+      - name: flux_imper
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: flux_desimper
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: flux_imper_net
+        data_type: numeric
+        data_tests:
+          - not_null

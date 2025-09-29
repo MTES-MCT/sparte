@@ -1,8 +1,6 @@
 {% if MATOMO_ACTIVATE %}
 <!-- Matomo Tag Manager -->
 <meta name="matomo-enabled" content="true">
-{% if ENVIRONMENT == "local" %}
-<!-- Matomo Tag Manager -->
 <script nonce="[NONCE_PLACEHOLDER]">
   var _mtm = window._mtm = window._mtm || [];
   _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
@@ -11,50 +9,9 @@
     {% endif %}
   (function() {
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src='https://stats.beta.gouv.fr/js/container_26e5XOBD.js'; s.parentNode.insertBefore(g,s);
+    g.async=true; g.src='{{ MATOMO_CONTAINER_SRC }}'; s.parentNode.insertBefore(g,s);
   })();
-</script>
-<!-- End Matomo Tag Manager -->
-{% elif ENVIRONMENT == "staging" %}
-<!-- Matomo Tag Manager -->
-<script nonce="[NONCE_PLACEHOLDER]">
-  var _mtm = window._mtm = window._mtm || [];
-  _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-  {% if REQUEST.user.is_authenticated %}
-  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
-    {% endif %}
-  (function() {
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src='https://stats.beta.gouv.fr/js/container_rdwHksJR.js'; s.parentNode.insertBefore(g,s);
-  })();
-</script>
-<!-- End Matomo Tag Manager -->
-
-{% elif ENVIRONMENT == "production" %}
-<script nonce="[NONCE_PLACEHOLDER]">
-  var _mtm = (window._mtm = window._mtm || []);
-  _mtm.push({ "mtm.startTime": new Date().getTime(), event: "mtm.Start" });
-  {% if REQUEST.user.is_authenticated %}
-  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
-    {% endif %}
-  (function () {
-    var d = document,
-      g = d.createElement("script"),
-      s = d.getElementsByTagName("script")[0];
-    g.async = true;
-    g.src = "https://stats.beta.gouv.fr/js/container_mlVvm9TG.js";
-    s.parentNode.insertBefore(g, s);
-  })();
-</script>
-
-{% else %}
-<script nonce="[NONCE_PLACEHOLDER]">
-  console.warn(
-    "Matomo Tag Manager: ENVIRONMENT variable is not set or is invalid. Please check your settings."
-  );
 </script>
 {% endif %}
-<!-- End Matomo Tag Manager -->
-{% else %}
-<!-- Matomo is not activated -->
-{% endif %}
+
+

@@ -5,6 +5,7 @@ import { UseLandDetailType } from "./types/land";
 import { ArtifZonageIndexType } from "./types/artif_zonage";
 import { UseLandFrichesStatutType } from "./types/land_friches_statut";
 import { UseLandFrichesType } from "./types/land_friches";
+import { UseEnvTypes } from "./types/env";
 
 export const djangoApi = createApi({
 	reducerPath: "djangoApi",
@@ -105,11 +106,11 @@ const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
 const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
+const useGetEnvironmentQuery: UseEnvTypes = djangoApi.useGetEnvironmentQuery;
 const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
 
 const {
 	useGetDepartementListQuery,
-	useGetEnvironmentQuery,
 	useSearchTerritoryQuery,
 	useGetChartConfigQuery,
 	useGetLandArtifStockIndexQuery,

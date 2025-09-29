@@ -2,13 +2,15 @@
 
 with without_percent as (
 SELECT
-    commune.{{ group_by_column }},
+    commune.{{ group_by_column }} as code,
     year_old,
+    year_old_index,
     year_new,
+    year_new_index,
     sum(imper_commune.flux_imper) as flux_imper,
     sum(imper_commune.flux_desimper) as flux_desimper,
     sum(commune.surface) as surface,
-    array_agg(distinct commune.departement) as departements
+    commune.departement
  FROM
     {{ ref('imper_net_flux_commune') }} as imper_commune
 LEFT JOIN
@@ -17,14 +19,16 @@ LEFT JOIN
 WHERE
     commune.{{ group_by_column }} IS NOT NULL
 GROUP BY
-    commune.{{ group_by_column }}, year_old, year_new
+    commune.{{ group_by_column }}, year_old, year_new, year_old_index, year_new_index, commune.departement
 )
-SELECt
-    without_percent.{{ group_by_column }},
-    without_percent.departements,
-    without_percent.surface as {{ group_by_column }}_surface,
+SELECT
+    without_percent.code,
+    without_percent.departement,
+    without_percent.surface as surface,
     without_percent.year_old,
     without_percent.year_new,
+    without_percent.year_old_index,
+    without_percent.year_new_index,
     without_percent.flux_imper as flux_imper,
     without_percent.flux_desimper as flux_desimper,
     without_percent.flux_imper - without_percent.flux_desimper as flux_imper_net

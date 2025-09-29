@@ -2,6 +2,7 @@
 {{
     config(
         materialized='table',
+        indexes=[{"columns": ["land_id", "land_type"], "type": "btree"}],
     )
 }}
 

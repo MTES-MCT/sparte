@@ -1,7 +1,7 @@
 {{
     config(
         materialized="table",
-        indexes=[{"columns": ["scot"], "type": "btree"}],
+        indexes=[{"columns": ["code"], "type": "btree"}],
     )
 }}
 

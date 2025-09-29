@@ -36,6 +36,8 @@ class ProjectChart(charts.Chart):
 
 
 class DiagnosticChart(charts.Chart):
+    print_width = 1000
+
     @property
     def param(self):
         return {

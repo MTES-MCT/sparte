@@ -12,6 +12,9 @@ with
             commune_surface,
             year_old,
             year_new,
+            year_old_index,
+            year_new_index,
+            departement,
             round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface,
             us_old,
             us_new
@@ -23,6 +26,9 @@ with
             commune_surface,
             year_new,
             year_old,
+            year_old_index,
+            year_new_index,
+            departement,
             us_old,
             us_new
     )
