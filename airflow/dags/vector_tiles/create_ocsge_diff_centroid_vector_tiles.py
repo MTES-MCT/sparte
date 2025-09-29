@@ -14,11 +14,11 @@ with open("include/data/ocsge/sources.json", "r") as f:
 
 
 def get_geojson_filename(indexes: list[int], departement: str) -> str:
-    return f"occupation_du_sol_diff_{'_'.join(map(str, indexes))}_{departement}.geojson"
+    return f"occupation_du_sol_diff_centroid_{'_'.join(map(str, indexes))}_{departement}.geojson"
 
 
 def get_pmtiles_filename(indexes: list[int], departement: str) -> str:
-    return f"occupation_du_sol_diff_{'_'.join(map(str, indexes))}_{departement}.pmtiles"
+    return f"occupation_du_sol_diff_centroid_{'_'.join(map(str, indexes))}_{departement}.pmtiles"
 
 
 @dag(
@@ -36,7 +36,7 @@ def get_pmtiles_filename(indexes: list[int], departement: str) -> str:
         "indexes": Param([1, 2], type="array", items={"type": "integer", "enum": [1, 2]}),
     },
 )
-def create_ocsge_diff_vector_tiles():
+def create_ocsge_diff_centroid_vector_tiles():
     bucket_name = InfraContainer().bucket_name()
     vector_tiles_dir = "vector_tiles"
 
@@ -63,7 +63,7 @@ def create_ocsge_diff_vector_tiles():
             SELECT
                 *
             FROM
-                public_for_vector_tiles.for_vector_tiles_difference_ocsge
+                public_for_vector_tiles.for_vector_tiles_difference_ocsge_centroid
             WHERE
                 year_old_index = {year_old_index} AND
                 year_new_index = {year_new_index} AND
@@ -139,4 +139,4 @@ def create_ocsge_diff_vector_tiles():
     )
 
 
-create_ocsge_diff_vector_tiles()
+create_ocsge_diff_centroid_vector_tiles()
