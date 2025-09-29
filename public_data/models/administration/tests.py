@@ -79,7 +79,6 @@ class TestLandNaturalKeys(TestCase):
             first_millesime=None,
             last_millesime=None,
             area=15.0,
-            surface_artif=None,
             ocsge_available=False,
             epci=self.first_epci,
         )
@@ -94,7 +93,6 @@ class TestLandNaturalKeys(TestCase):
             first_millesime=None,
             last_millesime=None,
             area=15.0,
-            surface_artif=None,
             ocsge_available=False,
             epci=self.first_epci,
         )
