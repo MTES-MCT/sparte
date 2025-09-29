@@ -67,3 +67,9 @@ models:
       - name: ARRIVE_BAS_DE_PAGE_FRICHES
         data_type: boolean
         quote: true
+      - name: SERVICE
+        data_type: text
+        quote: true
+      - name: DATE_MAJ_PROFIL
+        data_type: timestamp with time zone
+        quote: true
