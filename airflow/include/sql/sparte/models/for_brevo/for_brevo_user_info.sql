@@ -13,6 +13,7 @@ SELECT
     user_function_display as "FONCTION",
     user_organism_display as "ORGANISME",
     user_service_display as "SERVICE",
+    user_updated_date as "DATE_MAJ_PROFIL",
     user_last_online_diagnostic_date as "LAST_DATE_DIAG_CREATED",
     main_land_name as "NOM_TERRITOIRE",
     user_online_diagnostic_count as "NB_DIAG_CREES",

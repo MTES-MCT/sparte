@@ -15,6 +15,7 @@ SELECT
     function,
     organism,
     created_at,
+    updated_at,
     main_land_id,
     main_land_type,
     service,
