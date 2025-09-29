@@ -4,6 +4,7 @@ import { MapLibreMapper } from "./mappers";
 import { LayerOrchestrator } from "../LayerOrchestrator";
 import { useMaplibre } from "./hooks/useMaplibre";
 import { LayerControls } from "../controls/LayerControls";
+import { NomenclatureType } from "../types/ocsge";
 import { LayerControlsConfig } from "../types";
 
 const MapWrapper = styled.div`
@@ -82,6 +83,17 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
         orchestrator.setLayerOpacity(layerId, opacity);
     };
 
+    const handleLayerControlChange = (layerId: string, controlType: string, value: any) => {
+        const layer = orchestrator.getLayer(layerId);
+        if (layer && (layer as any).getControlsConfig) {
+            const config = (layer as any).getControlsConfig();
+            if (config[controlType] && config[controlType].onChange) {
+                config[controlType].onChange(value);
+                orchestrator.applyLayerChanges(layerId);
+            }
+        }
+    };
+
     const {
         mapRef,
         isMapLoaded,
@@ -145,6 +157,8 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
                     config={layerControls}
                     onLayerToggle={handleLayerToggle}
                     onOpacityChange={handleOpacityChange}
+                    onLayerControlChange={handleLayerControlChange}
+                    orchestrator={orchestrator}
                 />
             )}
         </MapWrapper>

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { LayerControlsConfig, LayerVisibility } from "../types";
+import { LayerOrchestrator } from "../LayerOrchestrator";
 
 const ControlsContainer = styled.div`
 	position: absolute;
@@ -111,6 +112,8 @@ interface LayerControlsProps {
 	config: LayerControlsConfig;
 	onLayerToggle: (layerId: string, visible: boolean) => void;
 	onOpacityChange: (layerId: string, opacity: number) => void;
+	onLayerControlChange: (layerId: string, controlType: string, value: any) => void;
+	orchestrator: LayerOrchestrator;
 }
 
 export const LayerControls: React.FC<LayerControlsProps> = ({
@@ -118,6 +121,8 @@ export const LayerControls: React.FC<LayerControlsProps> = ({
 	config,
 	onLayerToggle,
 	onOpacityChange,
+	onLayerControlChange,
+	orchestrator,
 }) => {
 	if (!config.showControls || layers.length === 0) {
 		return null;
@@ -126,36 +131,60 @@ export const LayerControls: React.FC<LayerControlsProps> = ({
 	return (
 		<ControlsContainer>
 			<Title>Couches</Title>
-			{layers.map((layer) => (
-				<LayerItem key={layer.id}>
-				<CheckboxContainer>
-					<Checkbox
-						type="checkbox"
-						id={`layer-${layer.id}`}
-						checked={layer.visible}
-						onChange={(e) => onLayerToggle(layer.id, e.target.checked)}
-					/>
-					<Label htmlFor={`layer-${layer.id}`}>
-						{layer.name}
-					</Label>
-				</CheckboxContainer>
-				{layer.visible && layer.opacity !== undefined && (
-					<OpacityContainer>
-						<OpacitySlider
-							type="range"
-							min="0"
-							max="1"
-							step="0.1"
-							value={layer.opacity}
-							onChange={(e) => onOpacityChange(layer.id, parseFloat(e.target.value))}
-						/>
-						<OpacityValue>
-							{Math.round(layer.opacity * 100)}%
-						</OpacityValue>
-					</OpacityContainer>
-				)}
-				</LayerItem>
-			))}
+			{layers.map((layer) => {
+				const layerControlsConfig = orchestrator.getLayerControlsConfig(layer.id);
+				return (
+					<React.Fragment key={layer.id}>
+						<LayerItem>
+							<CheckboxContainer>
+								<Checkbox
+									type="checkbox"
+									id={`layer-${layer.id}`}
+									checked={layer.visible}
+									onChange={(e) => onLayerToggle(layer.id, e.target.checked)}
+								/>
+								<Label htmlFor={`layer-${layer.id}`}>
+									{layer.name}
+								</Label>
+							</CheckboxContainer>
+							{layer.visible && layer.opacity !== undefined && (
+								<OpacityContainer>
+									<OpacitySlider
+										type="range"
+										min="0"
+										max="1"
+										step="0.1"
+										value={layer.opacity}
+										onChange={(e) => onOpacityChange(layer.id, parseFloat(e.target.value))}
+									/>
+									<OpacityValue>
+										{Math.round(layer.opacity * 100)}%
+									</OpacityValue>
+								</OpacityContainer>
+							)}
+						</LayerItem>
+						{layerControlsConfig && Object.entries(layerControlsConfig).map(([controlType, controlConfig]: [string, any]) => (
+							<LayerItem key={`${layer.id}-${controlType}`}>
+								<CheckboxContainer>
+									<Label>
+										{controlType === 'nomenclature' ? 'Nomenclature' : controlType}
+										<select
+											value={controlConfig.current}
+											onChange={(e) => onLayerControlChange(layer.id, controlType, e.target.value)}
+										>
+											{controlConfig.options.map((option: any) => (
+												<option key={option.value} value={option.value}>
+													{option.label}
+												</option>
+											))}
+										</select>
+									</Label>
+								</CheckboxContainer>
+							</LayerItem>
+						))}
+					</React.Fragment>
+				);
+			})}
 		</ControlsContainer>
 	);
 };

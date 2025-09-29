@@ -1,7 +1,6 @@
 import { BaseLayer } from "./layers/baseLayer";
 import { BaseSource } from "./sources/baseSource";
 import { MapLibreMapper } from "./maplibre/mappers";
-
 export class LayerOrchestrator {
     private layers = new Map<string, BaseLayer>();
     private sources = new Map<string, BaseSource>();
@@ -98,5 +97,23 @@ export class LayerOrchestrator {
         if (opacityProperty) {
             this.mapper?.updateLayerStyle(layerId, { [opacityProperty]: opacity });
         }
+    }
+
+    applyLayerChanges(layerId: string): void {
+        const layer = this.layers.get(layerId);
+        if (layer && (layer as any).applyChanges && this.mapper) {
+            const map = this.mapper.getMap();
+            if (map) {
+                (layer as any).applyChanges(map);
+            }
+        }
+    }
+
+    getLayerControlsConfig(layerId: string): any {
+        const layer = this.layers.get(layerId);
+        if (layer && (layer as any).getControlsConfig) {
+            return (layer as any).getControlsConfig();
+        }
+        return null;
     }
 }
