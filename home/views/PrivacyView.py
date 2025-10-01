@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from django_app_parameter import app_parameter
 
-from utils.views_mixins import BreadCrumbMixin
+from utils.views import BreadCrumbMixin
 
 
 class PrivacyView(BreadCrumbMixin, TemplateView):

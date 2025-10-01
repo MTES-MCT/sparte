@@ -20,9 +20,7 @@ class SignupTest(TestCase):
     fixtures = ["users/tests/parameters.json"]
 
     def test_signup_form_with_working_payload(self) -> None:
-        response = self.client.post(path=form_url, data=valid_payload)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, success_url)
+        self.client.post(path=form_url, data=valid_payload)
         self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())
 
     def test_signup_form_with_html_in_payload(self) -> None:
@@ -134,3 +132,18 @@ class SignupTest(TestCase):
             field="password1",
             errors=MISSING_SPECIAL_CHAR_ERROR,
         )
+
+    def test_next_parameter_redirects_to_internal_page(self) -> None:
+        data = {**valid_payload}
+        next_page_param = "?next=/accessibilite"
+        response = self.client.post(path=form_url + next_page_param, data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/accessibilite")
+        self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())
+
+    def test_next_parameter_only_redirects_to_own_domain(self) -> None:
+        data = {**valid_payload}
+        response = self.client.post(path=form_url + "?next=http://malicious.com", data=data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, success_url)
+        self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())

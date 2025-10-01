@@ -3,7 +3,6 @@ from django.shortcuts import resolve_url
 from django.utils.http import url_has_allowed_host_and_scheme
 
 
-# en attendant Django 4
 class RedirectURLMixin:
     next_page = None
     redirect_field_name = "next"
