@@ -67,11 +67,8 @@ def update_brevo():
         brevo = InfraContainer().brevo()
         with open(local_tmp_file, "r") as file:
             contact_csv_str = file.read()
-
-        if os.getenv("ENVIRONMENT") == "production":
-            list_ids = [10]
-        else:
-            list_ids = [26]
+        list_ids = [10]
+        # TODO : different env with different list ids
         return brevo.import_contacts(contact_csv_str, list_ids=list_ids)
 
     build_suv = build_suv_on_dbt()
