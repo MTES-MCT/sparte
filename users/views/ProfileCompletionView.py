@@ -11,7 +11,6 @@ class ProfileCompletionView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = ProfileCompletionForm
     template_name = "users/profile_completion.html"
-    success_url = reverse_lazy("home:home")
     extra_context = {
         "label_validate_btn": "Finaliser mon inscription",
         "show_identity_fields": False,
@@ -28,6 +27,6 @@ class ProfileCompletionView(LoginRequiredMixin, UpdateView):
             allowed_hosts={self.request.get_host()},
             require_https=self.request.is_secure(),
         ):
-            return super().get_success_url()
+            return reverse_lazy("home:home")
 
         return next_url
