@@ -1,4 +1,5 @@
 import { BaseLayer } from "./baseLayer";
+import type { LayerState } from "../types";
 
 export class EmpriseLayer extends BaseLayer {
     constructor() {
@@ -7,6 +8,8 @@ export class EmpriseLayer extends BaseLayer {
             type: "line",
             source: "emprise-source",
             visible: true,
+            label: "Emprise",
+            description: "Limites du territoire.",
         });
     }
 
@@ -26,6 +29,16 @@ export class EmpriseLayer extends BaseLayer {
                 "line-width": 1.7,
                 "line-opacity": this.options.opacity ?? 0.7,
             },
+        };
+    }
+
+    getDefaultState(): LayerState {
+        return {
+            id: this.options.id,
+            type: this.options.type,
+            visibility: this.options.visible ?? true,
+            opacity: this.options.opacity ?? 0.7,
+            params: {},
         };
     }
 }

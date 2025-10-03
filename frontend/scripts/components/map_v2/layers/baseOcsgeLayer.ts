@@ -1,5 +1,6 @@
 import { BaseLayer, BaseLayerOptions } from "./baseLayer";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
+import { ControlDefinition, ControlAppliers, LayerState } from "../types";
 import { COUVERTURE_COLORS, USAGE_COLORS } from "../constants/ocsge_nomenclatures";
 
 export abstract class BaseOcsgeLayer extends BaseLayer {
@@ -22,17 +23,44 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         this.nomenclature = nomenclature;
     }
 
-    getControlsConfig() {
+    getDefaultState(): LayerState {
+        const allCodesForLayer = this.getLayerNomenclature();
+        const defaultCodes = this.nomenclature === "couverture" ? allCodesForLayer.couverture : allCodesForLayer.usage;
         return {
-            nomenclature: {
-                current: this.nomenclature,
+            ...super.getDefaultState(),
+            opacity: this.options.opacity ?? 0.7,
+            params: {
+                nomenclature: this.nomenclature,
+                codes: defaultCodes,
+            },
+        } as LayerState;
+    }
+
+    getControlDefinitions(): ControlDefinition[] {
+        const standard = super.getControlDefinitions();
+        const allCodesForLayer = this.getLayerNomenclature();
+        const fullList = this.nomenclature === "couverture" ? allCodesForLayer.couverture : allCodesForLayer.usage;
+        return [
+            ...standard,
+            {
+                id: "nomenclature",
+                type: "select",
+                label: "Nomenclature",
+                valuePath: "params.nomenclature",
                 options: [
                     { value: "couverture", label: "Couverture" },
-                    { value: "usage", label: "Usage" }
+                    { value: "usage", label: "Usage" },
                 ],
-                onChange: (n: NomenclatureType) => this.setNomenclature(n)
-            }
-        };
+            } as any,
+            {
+                id: "codes",
+                type: "multiselect",
+                label: this.nomenclature === "couverture" ? "Codes couverture" : "Codes usage",
+                valuePath: "params.codes",
+                options: fullList.map(code => ({ value: code, label: code })),
+                disabledWhenHidden: true,
+            } as any,
+        ];
     }
 
     applyChanges(map: any) {
@@ -49,6 +77,39 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
             const finalFilter = ["all", baseFilter, nomenclatureExpr];
             map.setFilter(this.options.id, finalFilter);
         }
+    }
+
+    getControlAppliers(): ControlAppliers {
+        const base = super.getControlAppliers();
+        return {
+            ...base,
+            nomenclature: (state, value) => {
+                const v = value as NomenclatureType;
+                const all = this.getLayerNomenclature();
+                const allowed = v === "couverture" ? all.couverture : all.usage;
+                // garder la classe en cohérence pour applyChanges
+                this.nomenclature = v;
+                this.allowedCodes = {
+                    couverture: all.couverture,
+                    usage: all.usage,
+                };
+                const nextState = {
+                    ...state,
+                    params: { ...state.params, nomenclature: v, codes: allowed },
+                };
+                return { nextState };
+            },
+            codes: (state, value) => {
+                // mettre à jour allowedCodes selon la nomenclature actuelle
+                if (this.nomenclature === "couverture") {
+                    this.allowedCodes = { ...this.allowedCodes, couverture: value as Couverture[] };
+                } else {
+                    this.allowedCodes = { ...this.allowedCodes, usage: value as Usage[] };
+                }
+                const nextState = { ...state, params: { ...state.params, codes: value } };
+                return { nextState };
+            },
+        };
     }
 
     protected abstract getBaseFilter(): any[];

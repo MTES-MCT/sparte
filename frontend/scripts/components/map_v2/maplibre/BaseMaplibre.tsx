@@ -2,10 +2,10 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { MapLibreMapper } from "./mappers";
 import { LayerOrchestrator } from "../LayerOrchestrator";
+import { LayerControlsConfig, LayerVisibility } from "../types";
 import { useMaplibre } from "./hooks/useMaplibre";
-import { LayerControls } from "../controls/LayerControls";
+import { Controls } from "../controls/Controls";
 import { NomenclatureType } from "../types/ocsge";
-import { LayerControlsConfig } from "../types";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -34,6 +34,7 @@ const ZoomIndicator = styled.div`
 	pointer-events: none;
 	font-weight: 600;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: none;
 `;
 
 interface BaseMaplibreProps {
@@ -70,29 +71,11 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
     const orchestrator = externalOrchestrator || defaultOrchestrator.current;
     
     orchestrator.setMapper(mapper);
+    
+    // Forcer le re-render quand les contrôles changent et rafraîchir la visibilité
+    const [, forceUpdate] = useState({});
 
-    const [layerVisibility, setLayerVisibility] = useState(layerControls?.layers || []);
-
-    const handleLayerToggle = (layerId: string, visible: boolean) => {
-        setLayerVisibility(prev => prev.map(l => l.id === layerId ? { ...l, visible } : l));
-        orchestrator.toggleLayer(layerId, visible);
-    };
-
-    const handleOpacityChange = (layerId: string, opacity: number) => {
-        setLayerVisibility(prev => prev.map(l => l.id === layerId ? { ...l, opacity } : l));
-        orchestrator.setLayerOpacity(layerId, opacity);
-    };
-
-    const handleLayerControlChange = (layerId: string, controlType: string, value: any) => {
-        const layer = orchestrator.getLayer(layerId);
-        if (layer && (layer as any).getControlsConfig) {
-            const config = (layer as any).getControlsConfig();
-            if (config[controlType] && config[controlType].onChange) {
-                config[controlType].onChange(value);
-                orchestrator.applyLayerChanges(layerId);
-            }
-        }
-    };
+    const [layerVisibility, setLayerVisibility] = useState<LayerVisibility[]>([]);
 
     const {
         mapRef,
@@ -101,6 +84,27 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
         updateControls,
         updateSourcesAndLayers,
     } = useMaplibre(mapper, bounds, maxBounds);
+
+    useEffect(() => {
+        const refresh = () => {
+            if (layerControls?.layers && layerControls.layers.length > 0) {
+                const updated = layerControls.layers
+                    .map(layerConfig => orchestrator.getLayerUIState(layerConfig.id))
+                    .filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
+                setLayerVisibility(updated);
+            } else {
+                const all = orchestrator.getAllLayers().map(l => orchestrator.getLayerUIState(l.options.id)).filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
+                setLayerVisibility(all);
+            }
+        };
+        const cb = () => { forceUpdate({}); refresh(); };
+        orchestrator.setOnChangeCallback(cb);
+        refresh();
+        return () => {
+            // rétablir un callback vide pour éviter undefined
+            orchestrator.setOnChangeCallback(() => {});
+        };
+    }, [orchestrator, layerControls]);
 
     useEffect(() => {
         if (mapDiv.current && !mapRef.current) {
@@ -115,11 +119,19 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
     }, [isMapLoaded, onMapLoad]);
 
     useEffect(() => {
-        if (isMapLoaded) {
-            updateControls();
-            updateSourcesAndLayers();
+        if (!isMapLoaded) return;
+        updateControls();
+        updateSourcesAndLayers();
+        if (layerControls?.layers && layerControls.layers.length > 0) {
+            const updated = layerControls.layers
+                .map(layerConfig => orchestrator.getLayerUIState(layerConfig.id))
+                .filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
+            setLayerVisibility(updated);
+        } else {
+            const all = orchestrator.getAllLayers().map(l => orchestrator.getLayerUIState(l.options.id)).filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
+            setLayerVisibility(all);
         }
-    }, [isMapLoaded, updateControls, updateSourcesAndLayers]);
+    }, [isMapLoaded, updateControls, updateSourcesAndLayers, layerControls]);
 
     // Gestion du zoom indicator
     useEffect(() => {
@@ -151,13 +163,10 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
                 $isLoaded={isMapLoaded}
             />
             {children}
-            {layerControls && (
-                <LayerControls
+            {layerControls?.showControls && (
+                <Controls
                     layers={layerVisibility}
-                    config={layerControls}
-                    onLayerToggle={handleLayerToggle}
-                    onOpacityChange={handleOpacityChange}
-                    onLayerControlChange={handleLayerControlChange}
+                    config={{ showControls: true }}
                     orchestrator={orchestrator}
                 />
             )}
