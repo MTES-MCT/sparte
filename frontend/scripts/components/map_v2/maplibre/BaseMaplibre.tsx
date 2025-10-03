@@ -5,7 +5,6 @@ import { LayerOrchestrator } from "../LayerOrchestrator";
 import { LayerControlsConfig, LayerVisibility } from "../types";
 import { useMaplibre } from "./hooks/useMaplibre";
 import { Controls } from "../controls/Controls";
-import { NomenclatureType } from "../types/ocsge";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -21,21 +20,6 @@ const MapContainer = styled.div<{ $isLoaded: boolean }>`
 	transition: opacity 0.3s ease-in-out;
 `;
 
-const ZoomIndicator = styled.div`
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	background: #FFFFFF;
-	color: #181818;
-	padding: 0.2em 0.6em;
-	border-radius: 4px;
-	z-index: 10;
-	font-size: 0.75em;
-	pointer-events: none;
-	font-weight: 600;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    display: none;
-`;
 
 interface BaseMaplibreProps {
     id?: string;
@@ -47,7 +31,6 @@ interface BaseMaplibreProps {
     orchestrator?: LayerOrchestrator;
     bounds?: [number, number, number, number];
     maxBounds?: [number, number, number, number];
-    showZoomIndicator?: boolean;
     layerControls?: LayerControlsConfig;
 }
 
@@ -59,13 +42,11 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
     orchestrator: externalOrchestrator,
     bounds,
     maxBounds,
-    showZoomIndicator = false,
     layerControls,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const defaultMapper = useRef(new MapLibreMapper());
     const defaultOrchestrator = useRef(new LayerOrchestrator());
-    const [currentZoom, setCurrentZoom] = useState<number>(0);
     
     const mapper = externalMapper || defaultMapper.current;
     const orchestrator = externalOrchestrator || defaultOrchestrator.current;
@@ -133,30 +114,9 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
         }
     }, [isMapLoaded, updateControls, updateSourcesAndLayers, layerControls]);
 
-    // Gestion du zoom indicator
-    useEffect(() => {
-        if (!isMapLoaded || !mapRef.current) return;
-
-        const map = mapRef.current;
-        
-        if (showZoomIndicator) {
-            setCurrentZoom(map.getZoom());
-            const handleZoom = () => setCurrentZoom(map.getZoom());
-            
-            map.on('zoom', handleZoom);
-            return () => {
-                map.off('zoom', handleZoom);
-            };
-        }
-    }, [isMapLoaded, showZoomIndicator]);
 
     return (
         <MapWrapper>
-            {showZoomIndicator && (
-                <ZoomIndicator>
-                    Zoom: {currentZoom.toFixed(1)}
-                </ZoomIndicator>
-            )}
             <MapContainer
                 id={id}
                 ref={mapDiv}
