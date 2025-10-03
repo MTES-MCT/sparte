@@ -3,6 +3,7 @@ import { BaseMaplibre } from "./BaseMaplibre";
 import { LayerOrchestrator } from "../LayerOrchestrator";
 import { MapLibreMapper } from "./mappers";
 import { initMapFromConfig } from "../factory/initMapFromConfig";
+import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 
 interface ImpermeabilisationMapProps {
@@ -21,19 +22,19 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 	const lastMillesimeIndex = landData.millesimes ? Math.max(...landData.millesimes.map(m => m.index)) : 1;
 	const firstDepartement = landData.departements ? landData.departements[0] : "";
 
-    const config = {
+    const config = defineMapConfig({
 		sources: [
 			{ id: "orthophoto-source", type: "orthophoto" },
 			{ id: "emprise-source", type: "emprise", land_type:landData.land_type, land_id: landData.land_id },
 			{ id: "ocsge-source", type: "ocsge", millesimes: landData.millesimes, departements: landData.departements },
 		],
 		layers: [
-			{ id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
-			{ id: "emprise-layer", type: "emprise", source: "emprise-source" },
-			{ id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement },
+            { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
+            { id: "emprise-layer", type: "emprise", source: "emprise-source" },
+            { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement },
 		],
         layerControls: { showControls: true },
-	};
+    });
 
 	const handleMapLoad = async (map: any) => {
 		await initMapFromConfig(config, orchestrator.current);

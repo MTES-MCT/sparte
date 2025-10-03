@@ -15,6 +15,6 @@ const layerRegistry: Record<string, LayerFactory> = {
 
 export function createLayer(cfg: any): BaseLayer {
     const factory = layerRegistry[cfg.type];
-    if (!factory) throw new Error(`Unknown layer type: ${cfg.type}`);
+    if (!factory) throw new Error(`Unknown layer type: ${cfg?.type}`);
     return factory(cfg);
 }

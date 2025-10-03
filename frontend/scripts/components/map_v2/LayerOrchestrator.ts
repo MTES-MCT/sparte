@@ -83,7 +83,7 @@ export class LayerOrchestrator {
         const defs = layer ? layer.getControlDefinitions() : [];
         const state = this.layerStates.get(layerId);
         if (!state) return [];
-        return defs.map(def => ({ ...def, value: this.resolveValueByPath(state, def.valuePath) }));
+        return defs.map(def => ({ ...def, value: (def as any).valueSelector(state) }));
     }
 
     applyLayerControl(layerId: string, controlId: string, value: any): void {
@@ -171,16 +171,6 @@ export class LayerOrchestrator {
             return (layer as any).getControlsConfig();
         }
         return null;
-    }
-
-    private resolveValueByPath(state: LayerState, path: string): any {
-        const parts = path.split('.');
-        let current: any = state;
-        for (const p of parts) {
-            if (current == null) return undefined;
-            current = current[p];
-        }
-        return current;
     }
 
     private applyStyleDiff(layerId: string, diff?: StyleDiff) {
