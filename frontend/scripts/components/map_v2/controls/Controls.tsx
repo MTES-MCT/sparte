@@ -220,42 +220,42 @@ export const Controls: React.FC<LayerControlsProps> = ({
 								
 								<SectionContent>
 									<ControlsContainer>
-                                    	{controls.map((control) => (
+                                        {controls.map((control) => (
 											<ControlItem
 												key={control.id}
 												style={{ opacity: control.id === 'visible' ? 1 : (selectedLayer.visible ? 1 : 0.5) }}
 											>
-												{control.type === 'slider' ? (
+                                                {control.type === 'slider' ? (
 													<Range
 														hideMinMax
 														small
-														min={(control as any).min}
-														max={(control as any).max}
-														step={(control as any).step || 1}
+                                                        min={control.min as number}
+                                                        max={control.max as number}
+                                                        step={(control as any).step || 1}
 														label=""
-														disabled={(control as any).disabledWhenHidden ? !selectedLayer.visible : false}
+                                                        disabled={control.disabledWhenHidden ? !selectedLayer.visible : false}
 														nativeInputProps={{
-															value: control.value as any,
-															onChange: (control as any).disabledWhenHidden && !selectedLayer.visible ? undefined : (e: React.ChangeEvent<HTMLInputElement>) => orchestrator.applyLayerControl(selectedLayer.id, control.id, parseFloat(e.target.value))
+                                                            value: control.value as number,
+                                                            onChange: control.disabledWhenHidden && !selectedLayer.visible ? undefined : (e: React.ChangeEvent<HTMLInputElement>) => orchestrator.applyLayerControl(selectedLayer.id, control.id, parseFloat(e.target.value))
 														}}
 													/>
                                                 ) : control.type === 'multiselect' ? (
 													<MultiSelectControl
-														value={control.value as any}
-														options={(control as any).options}
-                                                        onChange={(control as any).disabledWhenHidden && !selectedLayer.visible ? undefined : (v) => orchestrator.applyLayerControl(selectedLayer.id, control.id, v)}
-                                                        disabled={(control as any).disabledWhenHidden ? !selectedLayer.visible : false}
+                                                        value={control.value as string[]}
+                                                        options={(control as any).options as Array<{ value: string; label: string }>}
+                                                        onChange={control.disabledWhenHidden && !selectedLayer.visible ? undefined : (v) => orchestrator.applyLayerControl(selectedLayer.id, control.id, v)}
+                                                        disabled={control.disabledWhenHidden ? !selectedLayer.visible : false}
 													/>
 												) : control.type === 'select' ? (
 													<Select
 														label=""
 														nativeSelectProps={{
-															value: control.value as any,
-                                                	        onChange: (control as any).disabledWhenHidden && !selectedLayer.visible ? undefined : (e) => orchestrator.applyLayerControl(selectedLayer.id, control.id, e.target.value),
-                                                	        disabled: (control as any).disabledWhenHidden ? !selectedLayer.visible : false,
+                                                            value: control.value as string,
+                                                            onChange: control.disabledWhenHidden && !selectedLayer.visible ? undefined : (e) => orchestrator.applyLayerControl(selectedLayer.id, control.id, e.target.value),
+                                                            disabled: control.disabledWhenHidden ? !selectedLayer.visible : false,
 														}}
 													>
-														{(control as any).options.map((option: any) => (
+                                                        {(control as any).options.map((option: { value: string; label: string }) => (
 															<option key={option.value} value={option.value}>
 																{option.label}
 															</option>
@@ -266,10 +266,10 @@ export const Controls: React.FC<LayerControlsProps> = ({
                                                         inputTitle={control.label}
                                                         label={control.label}
                                                         labelPosition="left"
-                                                        checked={!!control.value}
+                                                        checked={!!(control.value as boolean)}
                                                         onChange={(checked) => orchestrator.applyLayerControl(selectedLayer.id, control.id, checked)}
                                                         classes={{ label: "fr-text--sm" }}
-                                                        disabled={(control as any).disabledWhenHidden ? !selectedLayer.visible : false}
+                                                        disabled={control.disabledWhenHidden ? !selectedLayer.visible : false}
                                                     />
                                                 ) : null}
 											</ControlItem>

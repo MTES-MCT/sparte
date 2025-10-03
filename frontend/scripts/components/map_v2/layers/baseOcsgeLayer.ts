@@ -46,7 +46,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                 id: "nomenclature",
                 type: "select",
                 label: "Nomenclature",
-                valuePath: "params.nomenclature",
+                valueSelector: (s: LayerState) => (s.params as any).nomenclature,
                 options: [
                     { value: "couverture", label: "Couverture" },
                     { value: "usage", label: "Usage" },
@@ -56,7 +56,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                 id: "codes",
                 type: "multiselect",
                 label: this.nomenclature === "couverture" ? "Codes couverture" : "Codes usage",
-                valuePath: "params.codes",
+                valueSelector: (s: LayerState) => (s.params as any).codes,
                 options: fullList.map(code => ({ value: code, label: code })),
                 disabledWhenHidden: true,
             } as any,
@@ -87,7 +87,6 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                 const v = value as NomenclatureType;
                 const all = this.getLayerNomenclature();
                 const allowed = v === "couverture" ? all.couverture : all.usage;
-                // garder la classe en cohérence pour applyChanges
                 this.nomenclature = v;
                 this.allowedCodes = {
                     couverture: all.couverture,
@@ -100,7 +99,6 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                 return { nextState };
             },
             codes: (state, value) => {
-                // mettre à jour allowedCodes selon la nomenclature actuelle
                 if (this.nomenclature === "couverture") {
                     this.allowedCodes = { ...this.allowedCodes, couverture: value as Couverture[] };
                 } else {

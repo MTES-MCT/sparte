@@ -12,10 +12,12 @@ export interface LayerControlsConfig {
 }
 
 import type { LayerType } from "../layers/baseLayer";
+import type { LayerId, LayerCategory } from "./registry";
 
 export interface LayerState {
-	id: string;
+	id: LayerId;
 	type: LayerType;
+	kind?: LayerCategory;
 	visibility: boolean;
 	opacity: number;
 	params: Record<string, unknown>;
@@ -29,19 +31,19 @@ export interface StyleDiff {
 
 export type ControlType = "toggle" | "slider" | "select" | "multiselect" | "button";
 
-export interface BaseControlDefinition {
+export interface BaseControlDefinition<T = any> {
 	id: string;
 	type: ControlType;
 	label: string;
-	valuePath: string;
+	valueSelector: (state: LayerState) => T;
 	disabledWhenHidden?: boolean;
 }
 
-export interface ToggleControlDefinition extends BaseControlDefinition {
+export interface ToggleControlDefinition extends BaseControlDefinition<boolean> {
 	type: "toggle";
 }
 
-export interface SliderControlDefinition extends BaseControlDefinition {
+export interface SliderControlDefinition extends BaseControlDefinition<number> {
 	type: "slider";
 	min: number;
 	max: number;
@@ -53,12 +55,12 @@ export interface SelectOption<T = string> {
 	label: string;
 }
 
-export interface SelectControlDefinition<T = string> extends BaseControlDefinition {
+export interface SelectControlDefinition<T = string> extends BaseControlDefinition<T> {
 	type: "select";
 	options: Array<SelectOption<T>>;
 }
 
-export interface MultiSelectControlDefinition<T = string> extends BaseControlDefinition {
+export interface MultiSelectControlDefinition<T = string> extends BaseControlDefinition<T[]> {
 	type: "multiselect";
 	options: Array<SelectOption<T>>;
 }
