@@ -9,8 +9,8 @@ type LayerFactory = (config: any) => BaseLayer;
 const layerRegistry: Record<string, LayerFactory> = {
     emprise: () => new EmpriseLayer(),
     orthophoto: () => new OrthophotoLayer(),
-    impermeabilisation: (cfg) => new ImpermeabilisationLayer(cfg.millesimeIndex, cfg.departement),
-    artificialisation: (cfg) => new ArtificialisationLayer(cfg.millesimeIndex, cfg.departement),
+    impermeabilisation: (cfg) => new ImpermeabilisationLayer(cfg.millesimeIndex, cfg.departement, cfg.nomenclature ?? "couverture", cfg.millesimes ?? []),
+    artificialisation: (cfg) => new ArtificialisationLayer(cfg.millesimeIndex, cfg.departement, cfg.nomenclature ?? "couverture", cfg.millesimes ?? []),
 };
 
 export function createLayer(cfg: any): BaseLayer {
