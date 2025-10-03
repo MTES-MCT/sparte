@@ -22,6 +22,8 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 	const lastMillesimeIndex = landData.millesimes ? Math.max(...landData.millesimes.map(m => m.index)) : 1;
 	const firstDepartement = landData.departements ? landData.departements[0] : "";
 
+    const availableMillesimes = (landData.millesimes || []).map(m => ({ index: m.index, year: m.year }));
+
     const config = defineMapConfig({
 		sources: [
 			{ id: "orthophoto-source", type: "orthophoto" },
@@ -31,7 +33,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		layers: [
             { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
             { id: "emprise-layer", type: "emprise", source: "emprise-source" },
-            { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement },
+            { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement, millesimes: availableMillesimes },
 		],
         layerControls: { showControls: true },
     });

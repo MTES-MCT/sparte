@@ -34,6 +34,10 @@ export class OcsgeSource extends BaseSource {
 		return this.departement;
 	}
 
+	setMillesime(index: number): void {
+		this.millesimeIndex = index;
+	}
+
 	getOptions() {
 		const tilesUrl = OCSGE_TILES_URL
 			.replace("{millesime}", this.millesimeIndex.toString())

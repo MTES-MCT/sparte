@@ -1,5 +1,6 @@
 import { BaseLayer, BaseLayerOptions } from "./baseLayer";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
+import type { Millesime } from "@services/types/land";
 import { ControlDefinition, ControlAppliers, LayerState } from "../types";
 import { COUVERTURE_COLORS, USAGE_COLORS } from "../constants/ocsge_nomenclatures";
 
@@ -8,12 +9,15 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
     protected departement: string;
     protected nomenclature: NomenclatureType;
     protected allowedCodes: { couverture: Couverture[]; usage: Usage[] };
+    protected availableMillesimes: Array<{ index: number; year?: number }>;
+    protected needsRebuild?: boolean;
 
-    constructor(options: BaseLayerOptions, millesimeIndex: number, departement: string, nomenclature: NomenclatureType = "couverture") {
+    constructor(options: BaseLayerOptions, millesimeIndex: number, departement: string, nomenclature: NomenclatureType = "couverture", availableMillesimes: Array<{ index: number; year?: number }> = []) {
         super(options);
         this.millesimeIndex = millesimeIndex;
         this.departement = departement;
         this.nomenclature = nomenclature;
+        this.availableMillesimes = availableMillesimes && availableMillesimes.length > 0 ? availableMillesimes : [{ index: millesimeIndex }];
 
         this.allowedCodes = this.getLayerNomenclature();
     }
@@ -32,6 +36,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
             params: {
                 nomenclature: this.nomenclature,
                 codes: defaultCodes,
+                millesime: this.millesimeIndex,
             },
         } as LayerState;
     }
@@ -43,6 +48,16 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return [
             ...standard,
             {
+                id: "millesime",
+                type: "select",
+                label: "Millésime",
+                valueSelector: (s: LayerState) => (s.params as any).millesime,
+                options: [...this.availableMillesimes]
+                    .sort((a, b) => (b.year ?? b.index) - (a.year ?? a.index))
+                    .map(m => ({ value: m.index as any, label: String(m.year ?? m.index) })),
+                disabledWhenHidden: true,
+            } as any,
+            {
                 id: "nomenclature",
                 type: "select",
                 label: "Nomenclature",
@@ -51,6 +66,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                     { value: "couverture", label: "Couverture" },
                     { value: "usage", label: "Usage" },
                 ],
+                disabledWhenHidden: true,
             } as any,
             {
                 id: "codes",
@@ -83,6 +99,14 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         const base = super.getControlAppliers();
         return {
             ...base,
+            millesime: (state, value) => {
+                const numeric = typeof value === 'number' ? value : parseInt(String(value), 10);
+                if (!Number.isNaN(numeric)) {
+                    this.millesimeIndex = numeric;
+                }
+                const nextState = { ...state, params: { ...state.params, millesime: this.millesimeIndex } } as LayerState;
+                return { nextState };
+            },
             nomenclature: (state, value) => {
                 const v = value as NomenclatureType;
                 const all = this.getLayerNomenclature();

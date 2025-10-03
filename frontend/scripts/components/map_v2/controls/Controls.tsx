@@ -6,43 +6,43 @@ import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { Range } from "@codegouvfr/react-dsfr/Range";
 import { LayerControlsConfig, LayerVisibility, ControlView } from "../types";
 import { LayerOrchestrator } from "../LayerOrchestrator";
-import { MultiSelectControl } from "./MultiSelectControl";
+import { OcsgeMultiSelectControl } from "./OcsgeMultiSelectControl";
+
+const ToogleButton = styled(Button)`
+    position: absolute;
+    bottom: 1vw;
+    left: 1vw;
+    z-index: 1001;
+`;
 
 const ControlPanel = styled.div<{ $isOpen: boolean }>`
-	position: absolute;
-	bottom: 20px;
-	left: 20px;
-	z-index: 1000;
-	background: #ffffff;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column-reverse;
-	
-	${props => props.$isOpen ? `
-		width: 380px;
-		top: 20px;
-	` : `
-		width: auto;
-	`}
+    position: absolute;
+    bottom: 1vw;
+    left: 1vw;
+	top: 1vw;
+	width: 25vw;
+    z-index: 1000;
+    background: #ffffff;
+    overflow: hidden;
+	opacity: ${props => props.$isOpen ? 1 : 0};
+	visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
+	transition: opacity 0.1s ease, visibility 0.1s ease;
+	padding-bottom: 32px;
 `;
 
 const SlidingContainer = styled.div<{ $showDetails: boolean }>`
+    width: 200%;
+	height: 100%;
 	display: flex;
-	width: 760px;
-	transform: translateX(${props => props.$showDetails ? '-380px' : '0px'});
-	transition: transform 0.3s ease;
-	flex-grow: 1;
+    transform: translateX(${props => props.$showDetails ? '-50%' : '0'});
+    transition: transform 0.3s ease;
 `;
 
-const LayerListSection = styled.div`
-	width: 380px;
-	flex-shrink: 0;
-`;
-
-const LayerDetailsSection = styled.div`
-	width: 380px;
-	flex-shrink: 0;
-	border-left: 1px solid #EBEBEC;
+const SlidingContainerSection = styled.div`
+    display: flex;
+	flex-direction: column;
+    width: 50%;
+	height: 100%;
 `;
 
 const SectionHeader = styled.div`
@@ -51,9 +51,14 @@ const SectionHeader = styled.div`
 	background: #f8f9ff;
 `;
 
+const SectionContent = styled.div`
+	flex-grow: 1;
+	overflow-y: auto;
+`;
+
 const SectionTitle = styled.div`
 	margin: 0.5em 0 0.2em 0;
-	font-size: 1em;
+	font-size: 0.95em;
 	font-weight: 500;
 	color: #161616;
 `;
@@ -64,31 +69,20 @@ const SectionSubtitle = styled.p`
 	margin-bottom: 0;
 `;
 
-const SectionContent = styled.div`
-	flex: 1;
-	overflow-y: auto;
-	padding: 0;
-`;
-
-const LayerList = styled.div`
-	padding: 0;
-`;
-
 const LayerItem = styled.div`
-	padding: 12px 20px;
-	border-bottom: 1px solid #eee;
-	cursor: pointer;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid #EBEBEC;
+    cursor: pointer;
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	
-	&:hover {
-		background: #f8f9ff;
-	}
-	
-	&:last-child {
-		border-bottom: none;
-	}
+    
+    &:hover {
+        background: #f8f9ff;
+    }
+    
+    &:last-child {
+        border-bottom: none;
+    }
 `;
 
 const LayerInfo = styled.div`
@@ -96,10 +90,10 @@ const LayerInfo = styled.div`
 `;
 
 const LayerInfoIcons = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	color: #666;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
 `;
 
 const LayerName = styled.h4`
@@ -110,30 +104,25 @@ const LayerName = styled.h4`
 `;
 
 const ChevronIcon = styled.svg`
-	width: 16px;
-	height: 16px;
+    width: 1rem;
+    height: 1rem;
 `;
 
 const ControlsContainer = styled.div`
-	padding: 16px;
-	max-height: 400px;
 	overflow-y: auto;
 `;
 
 const ControlItem = styled.div`
-	margin-bottom: 16px;
-	
-	&:last-child {
-		margin-bottom: 0;
-	}
-`;
+    padding: 1.2rem 1.3rem;
+    border-top: 1px solid #EBEBEC;
 
-const ControlLabel = styled.label`
-	display: block;
-	font-size: 13px;
-	font-weight: 500;
-	color: #161616;
-	margin-bottom: 6px;
+    &:first-child {
+        border-top: none;
+    }
+
+	.fr-label {
+		padding-bottom: 0 !important;
+	}
 `;
 
 interface LayerControlsProps {
@@ -158,47 +147,44 @@ export const Controls: React.FC<LayerControlsProps> = ({
 	const controls: ControlView[] = selectedLayerId ? orchestrator.getLayerControls(selectedLayerId) as any : [];
 
 	return (
-		<ControlPanel $isOpen={isOpen}>
-			<Button
+		<>
+			<ToogleButton
 				iconId={isOpen ? "fr-icon-arrow-down-s-fill" : "fr-icon-arrow-up-s-fill"}
 				iconPosition="right"
 				onClick={() => setIsOpen(!isOpen)}
 				size="small"
 			>
 				<i className="bi bi-layers-fill fr-mr-1w"></i> Calques
-			</Button>
-
-			{isOpen && (
+			</ToogleButton>
+			<ControlPanel $isOpen={isOpen}>
 				<SlidingContainer $showDetails={!!selectedLayerId}>
-					<LayerListSection>
+					<SlidingContainerSection>
 						<SectionHeader>
 							<SectionTitle>Paramètres de la carte</SectionTitle>
 							<SectionSubtitle>Sélectionnez un calque pour configurer ses paramètres.</SectionSubtitle>
 						</SectionHeader>
 						
 						<SectionContent>
-							<LayerList>
-								{layers.map((layer) => (
-									<LayerItem
-										key={layer.id}
-										onClick={() => setSelectedLayerId(layer.id)}
-									>
-										<LayerInfo>
-											<LayerName>{layer.label}</LayerName>
-										</LayerInfo>
-										<LayerInfoIcons>
-											<i className={layer.visible ? 'bi bi-eye' : 'bi bi-eye-slash'}></i>
-											<ChevronIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-												<path d="M9 18l6-6-6-6" />
-											</ChevronIcon>
-										</LayerInfoIcons>
-									</LayerItem>
-								))}
-							</LayerList>
+							{layers.map((layer) => (
+								<LayerItem
+									key={layer.id}
+									onClick={() => setSelectedLayerId(layer.id)}
+								>
+									<LayerInfo>
+										<LayerName>{layer.label}</LayerName>
+									</LayerInfo>
+									<LayerInfoIcons>
+										<i className={layer.visible ? 'bi bi-eye' : 'bi bi-eye-slash'}></i>
+										<ChevronIcon viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+											<path d="M9 18l6-6-6-6" />
+										</ChevronIcon>
+									</LayerInfoIcons>
+								</LayerItem>
+							))}
 						</SectionContent>
-					</LayerListSection>
+					</SlidingContainerSection>
 
-					<LayerDetailsSection>
+					<SlidingContainerSection>
 						{selectedLayer && (
 							<>
 								<SectionHeader>
@@ -220,11 +206,8 @@ export const Controls: React.FC<LayerControlsProps> = ({
 								
 								<SectionContent>
 									<ControlsContainer>
-                                        {controls.map((control) => (
-											<ControlItem
-												key={control.id}
-												style={{ opacity: control.id === 'visible' ? 1 : (selectedLayer.visible ? 1 : 0.5) }}
-											>
+                                    {controls.map((control) => (
+                                            <ControlItem key={control.id}>
                                                 {control.type === 'slider' ? (
 													<Range
 														hideMinMax
@@ -232,7 +215,8 @@ export const Controls: React.FC<LayerControlsProps> = ({
                                                         min={control.min as number}
                                                         max={control.max as number}
                                                         step={(control as any).step || 1}
-														label=""
+														label={control.label}
+														classes={{ label: "fr-text--sm fr-mb-0" }}
                                                         disabled={control.disabledWhenHidden ? !selectedLayer.visible : false}
 														nativeInputProps={{
                                                             value: control.value as number,
@@ -240,21 +224,29 @@ export const Controls: React.FC<LayerControlsProps> = ({
 														}}
 													/>
                                                 ) : control.type === 'multiselect' ? (
-													<MultiSelectControl
+                                                    <OcsgeMultiSelectControl
+                                                        label={control.label}
                                                         value={control.value as string[]}
                                                         options={(control as any).options as Array<{ value: string; label: string }>}
+                                                        nomenclature={(() => {
+                                                            const nCtrl = controls.find(c => c.id === 'nomenclature');
+                                                            return (nCtrl?.value as 'couverture' | 'usage') || 'couverture';
+                                                        })()}
                                                         onChange={control.disabledWhenHidden && !selectedLayer.visible ? undefined : (v) => orchestrator.applyLayerControl(selectedLayer.id, control.id, v)}
                                                         disabled={control.disabledWhenHidden ? !selectedLayer.visible : false}
-													/>
-												) : control.type === 'select' ? (
-													<Select
-														label=""
-														nativeSelectProps={{
+                                                    />
+                                                ) : control.type === 'select' ? (
+                                                    <Select
+														label={ (
+															<span className="fr-text--sm">{control.label}</span>
+														)}
+                                                        disabled={control.disabledWhenHidden ? !selectedLayer.visible : false}
+                                                        nativeSelectProps={{
                                                             value: control.value as string,
                                                             onChange: control.disabledWhenHidden && !selectedLayer.visible ? undefined : (e) => orchestrator.applyLayerControl(selectedLayer.id, control.id, e.target.value),
                                                             disabled: control.disabledWhenHidden ? !selectedLayer.visible : false,
-														}}
-													>
+                                                        }}
+                                                    >
                                                         {(control as any).options.map((option: { value: string; label: string }) => (
 															<option key={option.value} value={option.value}>
 																{option.label}
@@ -268,7 +260,7 @@ export const Controls: React.FC<LayerControlsProps> = ({
                                                         labelPosition="left"
                                                         checked={!!(control.value as boolean)}
                                                         onChange={(checked) => orchestrator.applyLayerControl(selectedLayer.id, control.id, checked)}
-                                                        classes={{ label: "fr-text--sm" }}
+                                                        classes={{ label: "fr-text--sm fr-mb-0" }}
                                                         disabled={control.disabledWhenHidden ? !selectedLayer.visible : false}
                                                     />
                                                 ) : null}
@@ -278,14 +270,9 @@ export const Controls: React.FC<LayerControlsProps> = ({
 								</SectionContent>
 							</>
 						)}
-					</LayerDetailsSection>
-				</SlidingContainer>
-			)}
-		</ControlPanel>
+					</SlidingContainerSection>
+				</SlidingContainer>				
+			</ControlPanel>
+		</>
 	);
 };
-
-
-
-
-

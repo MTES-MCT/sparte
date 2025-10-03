@@ -101,6 +101,26 @@ export class LayerOrchestrator {
 
         const map = this.mapper?.getMap();
         if (map) {
+            // Le changement de millésime OCSGE nécessite de reconstruire source et layer
+            if (controlId === 'millesime') {
+                const sourceId = (layer as any).options?.source as string;
+                if (sourceId && this.mapper) {
+                    const src = this.sources.get(sourceId) as any;
+                    if (src && typeof src.getOptions === 'function') {
+                        if (typeof src.setMillesime === 'function') {
+                            src.setMillesime((nextState.params as any).millesime);
+                        }
+                        // Retirer d'abord les layers qui utilisent cette source
+                        const layersUsingSource = Array.from(this.layers.values()).filter(l => l.options.source === sourceId);
+                        layersUsingSource.forEach(l => this.mapper?.removeLayer(l.options.id));
+                        // Remplacer la source
+                        this.mapper.removeSource(sourceId);
+                        this.mapper.addSource(src);
+                        // Ré-ajouter les layers
+                        layersUsingSource.forEach(l => this.mapper?.addLayer(l));
+                    }
+                }
+            }
             layer.applyChanges(map);
         }
         if (this.onChangeCallback) this.onChangeCallback();
