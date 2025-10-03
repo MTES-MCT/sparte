@@ -21,7 +21,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 	const lastMillesimeIndex = landData.millesimes ? Math.max(...landData.millesimes.map(m => m.index)) : 1;
 	const firstDepartement = landData.departements ? landData.departements[0] : "";
 
-	const config = {
+    const config = {
 		sources: [
 			{ id: "orthophoto-source", type: "orthophoto" },
 			{ id: "emprise-source", type: "emprise", land_type:landData.land_type, land_id: landData.land_id },
@@ -32,14 +32,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 			{ id: "emprise-layer", type: "emprise", source: "emprise-source" },
 			{ id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement },
 		],
-		layerControls: {
-			showControls: true,
-			layers: [
-				{ id: "orthophoto-layer", name: "Orthophoto", visible: true, opacity: 1 },
-				{ id: "emprise-layer", name: "Emprise", visible: true, opacity: 1 },
-				{ id: "impermeabilisation-layer", name: "Imperméabilisation", visible: true, opacity: 1 },
-			],
-		},
+        layerControls: { showControls: true },
 	};
 
 	const handleMapLoad = async (map: any) => {
@@ -55,7 +48,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 			bounds={landData.bounds}
 			maxBounds={landData.max_bounds}
 			showZoomIndicator
-			layerControls={config.layerControls}
+            layerControls={config.layerControls}
 		/>
 	);
 };

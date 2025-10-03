@@ -1,3 +1,4 @@
+import type { LayerState, ControlDefinition, ControlAppliers } from "../types";
 export type LayerType =
 	| "fill"
 	| "line"
@@ -22,12 +23,13 @@ export interface BaseLayerOptions {
 		title: string;
 		items: Array<{ color: string; label: string }>;
 	};
+	label?: string;
+	description?: string;
 }
 
 export abstract class BaseLayer {
 	readonly options: BaseLayerOptions;
 	loaded = false;
-	private lastEnabledOpacity?: number;
 
 	constructor(options: BaseLayerOptions) {
 		this.options = { ...options };
@@ -60,11 +62,67 @@ export abstract class BaseLayer {
 		return mapping[this.options.type] ?? null;
 	}
 
-	setLastEnabledOpacity(opacity: number | undefined): void {
-		this.lastEnabledOpacity = opacity;
+	getDefaultState(): LayerState {
+		return {
+			id: this.options.id,
+			type: this.options.type,
+			visibility: this.options.visible ?? true,
+			opacity: this.options.opacity ?? 1,
+			params: {},
+		};
 	}
 
-	getLastEnabledOpacity(): number | undefined {
-		return this.lastEnabledOpacity;
+	getControlDefinitions(): ControlDefinition[] {
+		return [
+			{
+				id: "visible",
+				type: "toggle",
+				label: "Visibilité",
+				valuePath: "visibility",
+			},
+			{
+				id: "opacity",
+				type: "slider",
+				label: "Opacité",
+				valuePath: "opacity",
+				min: 0,
+				max: 1,
+				step: 0.1,
+				disabledWhenHidden: true,
+			} as any,
+		];
 	}
+
+	getControlAppliers(): ControlAppliers {
+		return {
+			visible: (state, value) => {
+				const visible = !!value;
+				return {
+					nextState: { ...state, visibility: visible },
+					styleDiff: { layout: { visibility: visible ? "visible" : "none" } },
+				};
+			},
+			opacity: (state, value) => {
+				const numeric = typeof value === 'number' ? value : parseFloat(value);
+				const safe = Number.isNaN(numeric) ? state.opacity : numeric;
+				const opacityProp = this.getOpacityStyleProperty();
+				const paint = opacityProp ? { [opacityProp]: safe } : undefined;
+				return {
+					nextState: { ...state, opacity: safe },
+					styleDiff: paint ? { paint } : {},
+				};
+			},
+		};
+	}
+
+	getLabel(): string {
+		return this.options.label || this.options.id;
+	}
+
+	getDescription(): string {
+		return this.options.description || "Couche de données géographiques";
+	}
+
+	// Hook d'application de changements (par défaut: no-op)
+	applyChanges(_map: any): void { }
 }
