@@ -5,6 +5,7 @@ class DatasetName(StrEnum):
     OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE = "occupation_du_sol_et_zone_construite"
     DIFFERENCE = "difference"
     ARTIF = "artif"
+    ARTIF_DIFFERENCE = "artif_difference"
 
 
 class SourceName(StrEnum):
@@ -12,3 +13,4 @@ class SourceName(StrEnum):
     ZONE_CONSTRUITE = "zone_construite"
     DIFFERENCE = "difference"
     ARTIF = "artif"
+    ARTIF_DIFFERENCE = "artif_difference"
