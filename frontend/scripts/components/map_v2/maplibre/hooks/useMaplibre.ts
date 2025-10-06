@@ -26,6 +26,7 @@ export const useMaplibre = (mapper: MapLibreMapper, bounds?: [number, number, nu
             maplibreLogo: false,
             attributionControl: false,
             fadeDuration: 0,
+            cooperativeGestures: true,
             locale: FRENCH_LOCALE,
         });
 
@@ -33,7 +34,6 @@ export const useMaplibre = (mapper: MapLibreMapper, bounds?: [number, number, nu
             setIsMapLoaded(true);
         });
 
-        // Passer la carte au mapper
         mapper.setMap(mapRef.current);
 
         return mapRef.current;
@@ -51,7 +51,14 @@ export const useMaplibre = (mapper: MapLibreMapper, bounds?: [number, number, nu
     }, [addControl]);
 
     const addFullscreenControl = useCallback(() => {
-        addControl(new maplibregl.FullscreenControl(), 'fullscreenControl');
+        const mapContainer = mapRef.current?.getContainer();
+        const mapWrapper = mapContainer?.parentElement;
+
+        if (mapWrapper && mapWrapper.id) {
+            addControl(new maplibregl.FullscreenControl({ container: mapWrapper }), 'fullscreenControl');
+        } else {
+            addControl(new maplibregl.FullscreenControl(), 'fullscreenControl');
+        }
     }, [addControl]);
 
     const removeControls = useCallback(() => {

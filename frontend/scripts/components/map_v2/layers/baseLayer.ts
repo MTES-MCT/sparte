@@ -1,4 +1,4 @@
-import type { LayerState, ControlDefinition, ControlAppliers } from "../types";
+import type { LayerState, ControlDefinition, ControlAppliers, RebuildConfig } from "../types";
 import type { LayerType, BaseLayerOptions } from "../types/layer";
 
 export abstract class BaseLayer {
@@ -95,6 +95,10 @@ export abstract class BaseLayer {
 
 	getDescription(): string {
 		return this.options.description || "Couche de données géographiques";
+	}
+
+	getRebuildConfig(): RebuildConfig {
+		return { dependencies: [] };
 	}
 
 	// Hook d'application de changements (par défaut: no-op)
