@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { MapLibreMapper } from "./mappers";
 import { LayerOrchestrator } from "../LayerOrchestrator";
-import { LayerControlsConfig, LayerVisibility } from "../types";
+import { LayerVisibility } from "../types";
 import { useMaplibre } from "./hooks/useMaplibre";
 import { Controls } from "../controls/Controls";
 
@@ -31,7 +31,6 @@ interface BaseMaplibreProps {
     orchestrator?: LayerOrchestrator;
     bounds?: [number, number, number, number];
     maxBounds?: [number, number, number, number];
-    layerControls?: LayerControlsConfig;
 }
 
 export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
@@ -42,7 +41,6 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
     orchestrator: externalOrchestrator,
     bounds,
     maxBounds,
-    layerControls,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const defaultMapper = useRef(new MapLibreMapper());
@@ -68,15 +66,8 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
 
     useEffect(() => {
         const refresh = () => {
-            if (layerControls?.layers && layerControls.layers.length > 0) {
-                const updated = layerControls.layers
-                    .map(layerConfig => orchestrator.getLayerUIState(layerConfig.id))
-                    .filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
-                setLayerVisibility(updated);
-            } else {
-                const all = orchestrator.getAllLayers().map(l => orchestrator.getLayerUIState(l.options.id)).filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
-                setLayerVisibility(all);
-            }
+            const all = orchestrator.getAllLayers().map(l => orchestrator.getLayerUIState(l.options.id)).filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
+            setLayerVisibility(all);
         };
         const cb = () => { forceUpdate({}); refresh(); };
         orchestrator.setOnChangeCallback(cb);
@@ -85,7 +76,7 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
             // rétablir un callback vide pour éviter undefined
             orchestrator.setOnChangeCallback(() => {});
         };
-    }, [orchestrator, layerControls]);
+    }, [orchestrator]);
 
     useEffect(() => {
         if (mapDiv.current && !mapRef.current) {
@@ -103,16 +94,9 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
         if (!isMapLoaded) return;
         updateControls();
         updateSourcesAndLayers();
-        if (layerControls?.layers && layerControls.layers.length > 0) {
-            const updated = layerControls.layers
-                .map(layerConfig => orchestrator.getLayerUIState(layerConfig.id))
-                .filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
-            setLayerVisibility(updated);
-        } else {
-            const all = orchestrator.getAllLayers().map(l => orchestrator.getLayerUIState(l.options.id)).filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
-            setLayerVisibility(all);
-        }
-    }, [isMapLoaded, updateControls, updateSourcesAndLayers, layerControls]);
+        const all = orchestrator.getAllLayers().map(l => orchestrator.getLayerUIState(l.options.id)).filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
+        setLayerVisibility(all);
+    }, [isMapLoaded, updateControls, updateSourcesAndLayers]);
 
 
     return (
@@ -123,13 +107,11 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
                 $isLoaded={isMapLoaded}
             />
             {children}
-            {layerControls?.showControls && (
-                <Controls
-                    layers={layerVisibility}
-                    config={{ showControls: true }}
-                    orchestrator={orchestrator}
-                />
-            )}
+            <Controls
+                layers={layerVisibility}
+                config={{ showControls: true }}
+                orchestrator={orchestrator}
+            />
         </MapWrapper>
     );
 };
