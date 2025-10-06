@@ -294,6 +294,64 @@ sources:
         data_tests:
           - not_null
           - unique
+    - name: ocsge_artif_difference_staging
+      columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null
+      - name: cs_new
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *cs_accepted_values
+      - name: cs_old
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *cs_accepted_values
+      - name: us_new
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *us_accepted_values
+      - name: us_old
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *us_accepted_values
+      - name: artif_new
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ["artif", "non artif"]
+      - name: artif_old
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ["artif", "non artif"]
+      - name: artif
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [-1, 1]
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+      - name: geom
+        data_tests:
+          - unique
+          - not_null
+          - is_valid_geom_warning
+          - is_not_empty_geom
     - name: ocsge_difference_staging
       columns:
       - name: loaded_date
@@ -341,3 +399,4 @@ sources:
     - name: ocsge_occupation_du_sol
     - name: ocsge_zone_construite
     - name: ocsge_artif
+    - name: ocsge_artif_difference
