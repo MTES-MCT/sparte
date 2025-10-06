@@ -4,7 +4,7 @@ from django import forms
 from django.db.models import Q
 from django.urls import reverse_lazy
 
-from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
+from utils.views import BreadCrumbMixin
 
 
 class UserQuerysetOnlyMixin:
@@ -32,7 +32,7 @@ class UserQuerysetOrPublicMixin:
             return qs.filter(is_public=True)
 
 
-class GroupMixin(GetObjectMixin, UserQuerysetOrPublicMixin, BreadCrumbMixin):
+class GroupMixin(UserQuerysetOrPublicMixin, BreadCrumbMixin):
     """Simple trick to not repeat myself. Pertinence to be evaluated."""
 
     context_object_name = "project"

@@ -1,4 +1,4 @@
-from django.http import Http404, JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.urls import path
 
 from project.charts.artificialisation import (
@@ -11,7 +11,12 @@ from project.charts.consommation import ConsoAnnualChart
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
     ImperByUsagePieChart,
+    ImperFluxByCouverture,
+    ImperFluxByCouvertureExport,
+    ImperFluxByUsage,
+    ImperFluxByUsageExport,
     ImperMap,
+    ImperNetFluxChart,
     ImperSyntheseChart,
 )
 from project.charts.urbanisme import (
@@ -41,6 +46,7 @@ from public_data.models import (
     LandFricheZonageEnvironnementaleViewset,
     LandFricheZonageTypeViewset,
     LandFricheZoneActiviteViewset,
+    LandImperFluxViewset,
     LandImperStockCouvertureCompositionViewset,
     LandImperStockIndexViewset,
     LandImperStockUsageCompositionViewset,
@@ -70,6 +76,11 @@ def get_chart_klass_or_404(chart_id):
         "conso_annual": ConsoAnnualChart,
         "artif_synthese": ArtifSyntheseChart,
         "imper_synthese": ImperSyntheseChart,
+        "imper_net_flux": ImperNetFluxChart,
+        "imper_flux_by_couverture": ImperFluxByCouverture,
+        "imper_flux_by_couverture_export": ImperFluxByCouvertureExport,
+        "imper_flux_by_usage": ImperFluxByUsage,
+        "imper_flux_by_usage_export": ImperFluxByUsageExport,
     }
 
     if chart_id not in charts:
@@ -78,16 +89,32 @@ def get_chart_klass_or_404(chart_id):
     return charts[chart_id]
 
 
+def chart_view_json_response(chart):
+    return JsonResponse(
+        data={
+            "highcharts_options": chart.chart,
+            "data_table": chart.data_table,
+        }
+    )
+
+
+def chart_view_file_response(chart, id, land_type, land_id):
+    return FileResponse(
+        open(chart.get_temp_image(width=chart.print_width), "rb"),
+        filename=f"{id}_{land_type}_{land_id}.png",
+        as_attachment=False,
+    )
+
+
 def chart_view(request, id, land_type, land_id, *args, **kwargs):
     land = LandModel.objects.get(land_type=land_type, land_id=land_id)
     chart_klass = get_chart_klass_or_404(id)
     chart_params = request.GET.dict()
     chart = chart_klass(land=land, params=chart_params)
-    data = {
-        "highcharts_options": chart.chart,
-        "data_table": chart.data_table,
-    }
-    return JsonResponse(data=data)
+
+    if "format" in chart_params and chart_params["format"] == "png":
+        return chart_view_file_response(chart=chart, id=id, land_type=land_type, land_id=land_id)
+    return chart_view_json_response(chart=chart)
 
 
 urlpatterns = [
@@ -100,6 +127,7 @@ urlpatterns = [
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
     path("imperzonage/", ImperZonageViewset.as_view(), name="imperzonageindex"),
+    path("landimperflux/", LandImperFluxViewset.as_view(), name="imperflux"),
     path(
         "landartifstockcouverturecomposition/",
         LandArtifStockCouvertureCompositionViewset.as_view(),

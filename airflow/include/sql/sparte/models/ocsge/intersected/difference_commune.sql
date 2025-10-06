@@ -26,6 +26,8 @@ with
             ocsge.year_old,
             -- les attributs communs aux deux tables sont sans préfixe
             ocsge.year_new,
+            ocsge.year_old_index,
+            ocsge.year_new_index,
             ocsge.departement,
             ocsge.new_is_impermeable,
             ocsge.new_not_impermeable,

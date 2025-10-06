@@ -26,14 +26,14 @@ def get_multiple_line_credit_position(line_count=2) -> dict[str, int]:
 
 CEREMA_CREDITS = {
     "enabled": True,
-    "text": "Source : Fichiers fonciers au 1er janvier 2024 (Cerema)",
+    "text": "Graphique : MonDiagnosticArtificialisation | Données : Fichiers fonciers au 1er janvier 2024 (Cerema)",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
 }
 
 OCSGE_CREDITS = {
     "enabled": True,
-    "text": "Source : OCS GE (IGN)",
+    "text": "Graphique : MonDiagnosticArtificialisation | Données : OCS GE (IGN)",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
 }
@@ -41,12 +41,12 @@ OCSGE_CREDITS = {
 IMPERMEABLE_OCSGE_CREDITS = {
     **OCSGE_CREDITS,
     "position": get_multiple_line_credit_position(line_count=3),
-    "text": "Source : OCS GE (IGN)",  # noqa E501
+    "text": "Graphique : MonDiagnosticArtificialisation | Données : OCS GE (IGN)",  # noqa E501
 }
 
 INSEE_CREDITS = {
     "enabled": True,
-    "text": "Source : INSEE",
+    "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
 }

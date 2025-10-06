@@ -20,6 +20,8 @@
 select
     foo.year_old,
     foo.year_new,
+    foo.year_old_index,
+    foo.year_new_index,
     foo.cs_new,
     foo.cs_old,
     foo.us_new,
@@ -42,6 +44,8 @@ from
             ocsge.loaded_date,
             ocsge.year_old,
             ocsge.year_new,
+            year_new_millesimes.index as year_new_index,
+            year_old_millesimes.index as year_old_index,
             ocsge.cs_new,
             ocsge.cs_old,
             ocsge.us_new,
@@ -62,9 +66,24 @@ from
         left join
             {{ ref("departement") }} as departement_table
             on departement = departement_table.code
-        where
+        left join lateral (
+            SELECT index FROM {{ ref("millesimes") }}
+            WHERE
+                ocsge.year_old = millesimes.year
+                and ocsge.departement = millesimes.departement
+
+        ) as year_old_millesimes on true
+        left join lateral (
+            SELECT index FROM {{ ref("millesimes") }}
+            WHERE
+                ocsge.year_new = millesimes.year
+                and ocsge.departement = millesimes.departement
+
+        ) as year_new_millesimes on true
+                    where
             ocsge.cs_new is not null
             and ocsge.cs_old is not null
             and ocsge.us_new is not null
             and ocsge.us_old is not null
+
     ) as foo

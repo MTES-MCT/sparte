@@ -42,6 +42,7 @@ __all__ = [
     "ImperByCouverturePieChartExport",
     "ImperUsagePieChartExport",
     "ImperSyntheseChart",
+    "ImperNetFluxChart",
 ]
 
 
@@ -81,6 +82,7 @@ from .impermeabilisation import (
     ImperByUsagePieChart,
     ImperMap,
     ImperMapExport,
+    ImperNetFluxChart,
     ImperSyntheseChart,
     ImperUsagePieChartExport,
 )

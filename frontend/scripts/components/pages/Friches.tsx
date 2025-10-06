@@ -342,7 +342,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     />
                 </div>
             </div>
-            <h4 className="fr-mt-10w">Pour aller plus loin dans votre démarche de réhabilitation de friches </h4>
+            <h2 className="fr-mt-10w">Pour aller plus loin dans votre démarche de réhabilitation de friches </h2>
             <div className="fr-callout fr-icon-information-line">
                 <h3 className="fr-callout__title fr-text--md">Estimez les impacts environnementaux, sociaux et économiques de votre projet de réhabilitation grâce à Bénéfriches</h3>
                 <p className="fr-callout__text fr-text--sm">Vous avez un projet d'aménagement urbain ou un projet photovoltaïque sur une friche ? Calculez les impacts de votre projet grâce à la plateforme Bénéfriches !</p>

@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from home.forms import NewsletterForm
 from project.models import RNUPackage
-from utils.views_mixins import BreadCrumbMixin
+from utils.views import BreadCrumbMixin
 
 
 class DownloadView(LoginRequiredMixin, BreadCrumbMixin, TemplateView):

@@ -14,6 +14,7 @@ SELECT
     user_table.email as user_email,
     user_table.is_staff as user_is_staff,
     user_table.date_joined as user_created_date,
+    user_table.updated_at as user_updated_date,
     user_table.email_checked as user_email_verified,
     user_table.function as user_function,
     user_table.organism as user_organism,
