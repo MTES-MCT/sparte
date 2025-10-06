@@ -97,7 +97,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                 {"label": "Mentions légales", "url": reverse("home:cgv")},
                 {"label": "Données personnelles", "url": reverse("home:privacy")},
                 {"label": "Statistiques", "url": reverse("metabase:stats")},
-                {"label": "FAQ", "url": Parameter.objects.get(slug="FAQ_URL").value, "target": "_blank"},
+                {"label": "Centre d'aide", "url": Parameter.objects.get(slug="FAQ_URL").value, "target": "_blank"},
                 {"label": "Contactez-nous", "url": reverse("home:contact")},
             ]
         }
@@ -124,7 +124,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             },
             "menuItems": [
                 {
-                    "label": "FAQ",
+                    "label": "Centre d'aide",
                     "url": Parameter.objects.get(slug="FAQ_URL").value,
                     "target": "_blank",
                     "shouldDisplay": True,

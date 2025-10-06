@@ -159,7 +159,7 @@
         "model": "django_app_parameter.parameter",
         "pk": 14,
         "fields": {
-            "name": "URL vers la faq Crisp",
+            "name": "URL vers le centre d'aide Crisp",
             "slug": "FAQ_URL",
             "value_type": "STR",
             "description": "",
