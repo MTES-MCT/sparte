@@ -3,9 +3,11 @@ import logging
 from django.conf import settings
 from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousOperation
+from django.http import HttpRequest
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_http_methods
 from mozilla_django_oidc.views import OIDCLogoutView
 
@@ -13,17 +15,29 @@ logger = logging.getLogger(__name__)
 
 
 @require_http_methods(["GET"])
-def oidc_login(request):
-    # Récupération du paramètre next
-    next_url = request.GET.get("next")
+def oidc_login(request: HttpRequest):
+    next_url = request.GET.get("next", "/")
+
+    if not url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        next_url = "/"
+
     query_string = request.META.get("QUERY_STRING", "")
 
-    # Construction de l'URL de redirection
-    redirect_url = reverse("oidc_authentication_init")
-    if next_url:
-        redirect_url += f"?next={next_url}"
-    elif query_string:
-        redirect_url += f"?{query_string}"
+    if "next=" in query_string:
+        query_string = "&".join(param for param in query_string.split("&") if not param.startswith("next="))
+
+    if next_url and query_string:
+        query_string = f"next={next_url}&{query_string}"
+    elif next_url:
+        query_string = f"next={next_url}"
+    else:
+        query_string = ""
+
+    redirect_url = reverse("oidc_authentication_init") + f"?{query_string}"
 
     return HttpResponseRedirect(redirect_to=redirect_url)
 

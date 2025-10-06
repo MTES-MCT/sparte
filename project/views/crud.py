@@ -20,7 +20,7 @@ from project.models import Project
 from project.models.enums import ProjectChangeReason
 from public_data.exceptions import LandException
 from public_data.models import Land
-from utils.views_mixins import RedirectURLMixin
+from utils.views import RedirectURLMixin
 
 from .mixins import GroupMixin, ReactMixin
 

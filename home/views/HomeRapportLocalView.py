@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 
 from home.forms import NewsletterForm
-from utils.views_mixins import BreadCrumbMixin
+from utils.views import BreadCrumbMixin
 
 
 class HomeRapportLocalView(BreadCrumbMixin, TemplateView):
