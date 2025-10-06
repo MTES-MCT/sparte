@@ -20,7 +20,7 @@ export class MapLibreMapper {
     }
 
     addLayer(layer: BaseLayer): void {
-        if (!this.map) return;
+        if (!this.map || this.map.getLayer(layer.options.id)) return;
 
         const layerConfig = layer.getOptions();
 
@@ -59,7 +59,7 @@ export class MapLibreMapper {
     }
 
     addSource(source: BaseSource): void {
-        if (!this.map) return;
+        if (!this.map || this.map.getSource(source.options.id)) return;
 
         const sourceConfig = source.getOptions();
 
@@ -67,7 +67,7 @@ export class MapLibreMapper {
             this.sourcesMapper.addSource(this.map, sourceConfig);
         } else {
             this.map.on('styledata', () => {
-                if (this.map) {
+                if (this.map && !this.map.getSource(source.options.id)) {
                     this.sourcesMapper.addSource(this.map, sourceConfig);
                 }
             });
@@ -79,6 +79,7 @@ export class MapLibreMapper {
 
         this.sourcesMapper.removeSource(this.map, sourceId);
     }
+
 
     updateLayerFilters(layerId: string, filters: any[]): void {
         if (!this.map) return;

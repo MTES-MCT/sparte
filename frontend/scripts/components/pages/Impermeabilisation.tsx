@@ -192,7 +192,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	return (
 		<div className="fr-container--fluid fr-p-3w">
 			<div className="fr-mb-7w">
-				<ImpermeabilisationMap landData={landData} />
 				<div className="fr-grid-row fr-grid-row--gutters">
 					<div className="fr-col-12">
 						<Guide
@@ -395,13 +394,12 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			)}
 			<div className="fr-mb-7w">
 				<h2>Carte des sols imperméabilisés</h2>
-				<div className="bg-white fr-p-4w rounded">
-					<p className="fr-text--sm fr-mb-4w">
-						Cette cartographie permet d'explorer les couvertures et les usages
-						des surfaces imperméabilisées du territoire, en fonction des
-						millésimes disponibles de la donnée OCS GE.
-					</p>
-				</div>
+				<p className="fr-text--sm fr-mb-4w">
+					Cette cartographie permet d'explorer les couvertures et les usages
+					des surfaces imperméabilisées du territoire, en fonction des
+					millésimes disponibles de la donnée OCS GE.
+				</p>
+				<ImpermeabilisationMap landData={landData} />
 			</div>
 			{has_zonage && (
 				<ImpermeabilisationZonage 

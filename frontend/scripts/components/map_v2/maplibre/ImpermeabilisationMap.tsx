@@ -1,8 +1,5 @@
-import React, { useRef } from "react";
+import React from "react";
 import { BaseMaplibre } from "./BaseMaplibre";
-import { LayerOrchestrator } from "../LayerOrchestrator";
-import { MapLibreMapper } from "./mappers";
-import { initMapFromConfig } from "../factory/initMapFromConfig";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 
@@ -13,15 +10,9 @@ interface ImpermeabilisationMapProps {
 export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
   	landData,
 }) => {
-	const mapper = useRef(new MapLibreMapper());
-	const orchestrator = useRef(new LayerOrchestrator());
-
-	orchestrator.current.setMapper(mapper.current);
-
 	// Calculer les paramètres OCSGE
 	const lastMillesimeIndex = landData.millesimes ? Math.max(...landData.millesimes.map(m => m.index)) : 1;
 	const firstDepartement = landData.departements ? landData.departements[0] : "";
-
     const availableMillesimes = (landData.millesimes || []).map(m => ({ index: m.index, year: m.year }));
 
     const config = defineMapConfig({
@@ -37,16 +28,10 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		],
     });
 
-	const handleMapLoad = async (map: any) => {
-		await initMapFromConfig(config, orchestrator.current);
-	};
-
 	return (
 		<BaseMaplibre
 			id="impermeabilisation-map"
-			onMapLoad={handleMapLoad}
-			mapper={mapper.current}
-			orchestrator={orchestrator.current}
+			config={config}
 			bounds={landData.bounds}
 			maxBounds={landData.max_bounds}
 		/>

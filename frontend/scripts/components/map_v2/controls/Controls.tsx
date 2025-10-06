@@ -12,7 +12,7 @@ const ToogleButton = styled(Button)`
     position: absolute;
     bottom: 1vw;
     left: 1vw;
-    z-index: 1001;
+    z-index: 2;
 `;
 
 const ControlPanel = styled.div<{ $isOpen: boolean }>`
@@ -21,7 +21,7 @@ const ControlPanel = styled.div<{ $isOpen: boolean }>`
     left: 1vw;
 	top: 1vw;
 	width: 25vw;
-    z-index: 1000;
+    z-index: 1;
     background: #ffffff;
     overflow: hidden;
 	opacity: ${props => props.$isOpen ? 1 : 0};

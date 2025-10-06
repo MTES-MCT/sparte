@@ -86,6 +86,16 @@ export type ControlApplier = (state: LayerState, value: any) => ControlApplierRe
 export type ControlAppliers = Record<string, ControlApplier>;
 export type ControlView = (ControlDefinition & { value: any });
 
+export interface RebuildDependency {
+	controlId: string;
+	requiresSourceRebuild?: boolean;
+	requiresLayerRebuild?: boolean;
+}
+
+export interface RebuildConfig {
+	dependencies: RebuildDependency[];
+}
+
 export interface FillMapLayer {
 	id: string;
 	type: "fill";

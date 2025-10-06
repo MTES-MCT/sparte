@@ -1,4 +1,5 @@
 import type { SourceType, BaseSourceOptions } from "../types/source";
+import type { RebuildConfig } from "../types";
 
 export abstract class BaseSource {
     readonly options: BaseSourceOptions;
@@ -13,4 +14,8 @@ export abstract class BaseSource {
     }
 
     abstract getOptions(): Record<string, any>;
+
+    getRebuildConfig(): RebuildConfig {
+        return { dependencies: [] };
+    }
 }

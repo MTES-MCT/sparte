@@ -20,6 +20,8 @@ export class LayerOrchestrator {
     }
 
     async addSource(source: BaseSource): Promise<void> {
+        if (this.sources.has(source.options.id)) return;
+
         await source.load();
         this.sources.set(source.options.id, source);
         if (this.mapper && source.loaded) {
@@ -29,13 +31,14 @@ export class LayerOrchestrator {
     }
 
     async addLayer(layer: BaseLayer): Promise<void> {
+        if (this.layers.has(layer.options.id)) return;
+
         await layer.load();
         this.layers.set(layer.options.id, layer);
         if (this.mapper && layer.loaded) {
             this.mapper.addLayer(layer);
         }
 
-        // initialisation des états et des contrôles
         const state = layer.getDefaultState();
         this.layerStates.set(layer.options.id, state);
         this.controlAppliers.set(layer.options.id, layer.getControlAppliers());
@@ -50,6 +53,50 @@ export class LayerOrchestrator {
     removeSource(sourceId: string): void {
         this.sources.delete(sourceId);
         this.mapper?.removeSource(sourceId);
+    }
+
+    updateSource(source: BaseSource): void {
+        if (!this.mapper) return;
+
+        const sourceId = source.options.id;
+        const layersUsingSource = Array.from(this.layers.values())
+            .filter(l => l.options.source === sourceId)
+            .map(l => l.options.id);
+
+        layersUsingSource.forEach(layerId => this.mapper?.removeLayer(layerId));
+        this.mapper.removeSource(sourceId);
+        this.mapper.addSource(source);
+        layersUsingSource.forEach(layerId => {
+            const layer = this.layers.get(layerId);
+            if (layer) {
+                this.mapper?.addLayer(layer);
+            }
+        });
+
+        this.sources.set(sourceId, source);
+    }
+
+    private handleRebuildDependencies(layer: BaseLayer, controlId: string, nextState: LayerState): void {
+        const rebuildConfig = layer.getRebuildConfig();
+        const dependency = rebuildConfig.dependencies.find(dep => dep.controlId === controlId);
+
+        if (!dependency) return;
+
+        if (dependency.requiresSourceRebuild) {
+            const sourceId = layer.options.source;
+            if (sourceId) {
+                const source = this.sources.get(sourceId) as any;
+                if (source && typeof source.setMillesime === 'function') {
+                    source.setMillesime((nextState.params as any).millesime);
+                    this.updateSource(source);
+                }
+            }
+        }
+
+        if (dependency.requiresLayerRebuild) {
+            this.mapper?.removeLayer(layer.options.id);
+            this.mapper?.addLayer(layer);
+        }
     }
 
     toggleLayer(layerId: string, visible: boolean): void {
@@ -101,26 +148,7 @@ export class LayerOrchestrator {
 
         const map = this.mapper?.getMap();
         if (map) {
-            // Le changement de millésime OCSGE nécessite de reconstruire source et layer
-            if (controlId === 'millesime') {
-                const sourceId = (layer as any).options?.source as string;
-                if (sourceId && this.mapper) {
-                    const src = this.sources.get(sourceId) as any;
-                    if (src && typeof src.getOptions === 'function') {
-                        if (typeof src.setMillesime === 'function') {
-                            src.setMillesime((nextState.params as any).millesime);
-                        }
-                        // Retirer d'abord les layers qui utilisent cette source
-                        const layersUsingSource = Array.from(this.layers.values()).filter(l => l.options.source === sourceId);
-                        layersUsingSource.forEach(l => this.mapper?.removeLayer(l.options.id));
-                        // Remplacer la source
-                        this.mapper.removeSource(sourceId);
-                        this.mapper.addSource(src);
-                        // Ré-ajouter les layers
-                        layersUsingSource.forEach(l => this.mapper?.addLayer(l));
-                    }
-                }
-            }
+            this.handleRebuildDependencies(layer, controlId, nextState);
             layer.applyChanges(map);
         }
         if (this.onChangeCallback) this.onChangeCallback();

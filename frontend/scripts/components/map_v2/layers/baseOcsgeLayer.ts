@@ -1,7 +1,8 @@
-import { BaseLayer, BaseLayerOptions } from "./baseLayer";
+import { BaseLayer } from "./baseLayer";
+import type { BaseLayerOptions } from "../types/layer";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import type { Millesime } from "@services/types/land";
-import { ControlDefinition, ControlAppliers, LayerState } from "../types";
+import { ControlDefinition, ControlAppliers, LayerState, RebuildConfig } from "../types";
 import { COUVERTURE_COLORS, USAGE_COLORS } from "../constants/ocsge_nomenclatures";
 
 export abstract class BaseOcsgeLayer extends BaseLayer {
@@ -77,6 +78,17 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                 disabledWhenHidden: true,
             } as any,
         ];
+    }
+
+    getRebuildConfig(): RebuildConfig {
+        return {
+            dependencies: [
+                {
+                    controlId: "millesime",
+                    requiresSourceRebuild: true,
+                }
+            ]
+        };
     }
 
     applyChanges(map: any) {
