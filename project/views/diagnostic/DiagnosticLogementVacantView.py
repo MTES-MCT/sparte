@@ -28,7 +28,7 @@ class DiagnosticLogementVacantView(DiagnosticBaseView):
         project: Project = self.get_object()
         start_date = 2019
         end_date = 2023
-        end_date_conso = 2022
+        end_date_conso = 2023
         has_logement_vacant = project.logements_vacants_available
         has_autorisation_logement = project.autorisation_logement_available
 
