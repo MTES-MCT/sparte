@@ -1,0 +1,26 @@
+
+{{
+    config(
+        materialized="table",
+        indexes=[
+            {"columns": ["land_id", "land_type"], "type": "btree"},
+            {"columns": ["usage"], "type": "btree"},
+        ],
+    )
+}}
+
+SELECT
+    land_id,
+    land_type,
+    array_agg(distinct departement) as departements,
+    array_agg(distinct year_old) as years_old,
+    array_agg(distinct year_new) as years_new,
+    year_old_index,
+    year_new_index,
+    usage,
+    sum(flux_imper) as flux_imper,
+    sum(flux_desimper) as flux_desimper,
+    sum(flux_imper_net) as flux_imper_net
+FROM
+    {{ ref('imper_flux_land_by_usage')}}
+GROUP BY land_id, land_type, year_old_index, year_new_index, usage

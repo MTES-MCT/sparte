@@ -4,7 +4,7 @@ SELECt
     idlink_va,
     idsite,
     idvisitor_user_id.idvisitor,
-    idvisitor_user_id.user_id,
+    idvisitor_user_id.user_id, -- DO NOT USE. Use custom_dimension_1 instead.
     idvisit,
     idaction_url_ref,
     idaction_name_ref,
@@ -50,4 +50,3 @@ SELECt
 LEFT JOIN
     {{ ref('idvisitor_user_id') }} AS idvisitor_user_id
     ON link_visit_action.idvisitor = idvisitor_user_id.idvisitor
-ORDER BY user_id ASC

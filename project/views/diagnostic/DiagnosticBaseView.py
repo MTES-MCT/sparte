@@ -3,10 +3,9 @@ from django.views.generic import DetailView
 
 from project.models import Project
 from project.views.mixins import ReactMixin
-from utils.views_mixins import CacheMixin
 
 
-class DiagnosticBaseView(ReactMixin, CacheMixin, DetailView):
+class DiagnosticBaseView(ReactMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
 

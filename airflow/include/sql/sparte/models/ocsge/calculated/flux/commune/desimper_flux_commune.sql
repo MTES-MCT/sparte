@@ -11,13 +11,15 @@ SELECT
     commune_surface,
     year_old,
     year_new,
+    year_old_index,
+    year_new_index,
     sum(surface) as flux_desimper
 FROM
     {{ ref('commune_flux_couverture_et_usage')}}
 WHERE
     new_not_impermeable
 group by
-    commune_code, commune_surface,  year_old, year_new
+    commune_code, commune_surface,  year_old, year_new, year_old_index, year_new_index
 )
 SELECT
    without_percent.*,

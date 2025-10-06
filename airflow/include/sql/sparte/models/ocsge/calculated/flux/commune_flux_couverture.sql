@@ -12,9 +12,12 @@ with
             commune_surface,
             year_old,
             year_new,
+            year_old_index,
+            year_new_index,
             round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface,
             cs_old,
-            cs_new
+            cs_new,
+            departement
         from {{ ref("difference_commune") }}
         WHERE
             cs_old != cs_new
@@ -23,6 +26,9 @@ with
             commune_surface,
             year_new,
             year_old,
+            year_old_index,
+            year_new_index,
+            departement,
             cs_old,
             cs_new
     )

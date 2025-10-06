@@ -5,37 +5,23 @@
     )
 }}
 
-
 SELECT
     user_email as "EMAIL",
     user_lastname as "NOM",
     user_firstname as "PRENOM",
-    user_created_date as "DATE_CREATION_COMPTE",
-    CASE user_function
-        WHEN 'RESPONSABLE_URBANISME' THEN 'Chargé(e) urbanisme'
-        WHEN 'RESPONSABLE_PLANIFICATION' THEN 'Chargé(e) planification'
-        WHEN 'RESPONSABLE_AMENAGEMENT' THEN 'Chargé(e) aménagement'
-        WHEN 'SECRETAIRE_MAIRIE' THEN 'Secrétaire de mairie'
-        WHEN 'ELU' THEN 'Élu(e)'
-        WHEN 'AUTRE' THEN 'Autre'
-    END as "FONCTION",
-    CASE user_organism
-        WHEN 'COMMUNE' THEN 'Commune'
-        WHEN 'EPCI' THEN 'EPCI'
-        WHEN 'SCOT' THEN 'SCoT'
-        WHEN 'SERVICES_REGIONAUX' THEN 'DREAL/DRIEAT/DRIHL'
-        WHEN 'SERVICES_DEPARTEMENTAUX' THEN 'DDT/DDTM/DEAL'
-        WHEN 'EXPERTS_URBANISTES' THEN 'Bureaux d''études/Agence d''urbanisme'
-        WHEN 'ACTEURS_CITOYENS' THEN 'Association/Particulier'
-    END as "ORGANISME",
-    user_last_online_diagnostic_date as "LAST_DATE_DIAG_CREATED",
+    {{ format_date_brevo('user_created_date') }} as "DATE_CREATION_COMPTE",
+    user_function_display as "FONCTION",
+    user_organism_display as "ORGANISME",
+    user_service_display as "SERVICE",
+    {{ format_date_brevo('user_updated_date') }} as "DATE_MAJ_PROFIL",
+    {{ format_date_brevo('user_last_online_diagnostic_date') }} as "LAST_DATE_DIAG_CREATED",
     main_land_name as "NOM_TERRITOIRE",
     user_online_diagnostic_count as "NB_DIAG_CREES",
     user_download_diagnostic_count as "NB_DIAG_TELECHARGES",
     nps as "NPS",
     {{ boolean_as_oui_non('newsletter_fully_opted_in', true) }} as "EST_INSCRIT_NEWSLETTER",
-    newsletter_opt_in_date as "DATE_INSCRIPTION_NEWSLETTER",
-    newsletter_double_opt_in_date as "DATE_CONFIRMATION_INSCRIPTION_NEWSLETTER",
+    {{ format_date_brevo('newsletter_opt_in_date') }} as "DATE_INSCRIPTION_NEWSLETTER",
+    {{ format_date_brevo('newsletter_double_opt_in_date') }} as "DATE_CONFIRMATION_INSCRIPTION_NEWSLETTER",
     {{ boolean_as_oui_non('main_land_competence_planification', true) }} as "A_COMPETENCE_URBA",
     id as "EXT_ID",
     {{ boolean_as_oui_non('visited_page_trajectoires', true) }} as "ARRIVE_BAS_PAGE_TRAJ",

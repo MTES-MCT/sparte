@@ -1,0 +1,43 @@
+models:
+  - name: for_app_landimperfluxindex
+    columns:
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: land_type
+        data_type: text
+        data_tests:
+          - not_null
+      - name: years_old
+        data_type: array
+        data_tests:
+          - not_null
+      - name: years_new
+        data_type: array
+        data_tests:
+          - not_null
+      - name: departements
+        data_type: array
+        data_tests:
+          - not_null
+      - name: millesime_old_index
+        data_type: bigint
+        data_tests:
+          - not_null
+      - name: millesime_new_index
+        data_type: bigint
+        data_tests:
+          - not_null
+      - name: flux_imper
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: flux_desimper
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: flux_imper_net
+        data_type: numeric
+        data_tests:
+          - not_null
