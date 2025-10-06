@@ -86,7 +86,7 @@
         "is_global": true
     },
     {
-        "name": "URL vers la faq Crisp",
+        "name": "URL vers le centre d'aide Crisp",
         "slug": "FAQ_URL",
         "value_type": "STR",
         "value": "https://faq.mondiagartif.beta.gouv.fr/fr/",
