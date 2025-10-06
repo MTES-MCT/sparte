@@ -35,7 +35,6 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
             { id: "emprise-layer", type: "emprise", source: "emprise-source" },
             { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement, millesimes: availableMillesimes },
 		],
-        layerControls: { showControls: true },
     });
 
 	const handleMapLoad = async (map: any) => {
@@ -50,8 +49,6 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 			orchestrator={orchestrator.current}
 			bounds={landData.bounds}
 			maxBounds={landData.max_bounds}
-			showZoomIndicator
-            layerControls={config.layerControls}
 		/>
 	);
 };

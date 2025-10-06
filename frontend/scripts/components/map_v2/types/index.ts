@@ -11,11 +11,12 @@ export interface LayerControlsConfig {
 	showControls?: boolean;
 }
 
-import type { LayerType } from "../layers/baseLayer";
+import type { LayerType, BaseLayerOptions } from "./layer";
+import type { SourceType, BaseSourceOptions } from "./source";
 import type { LayerId, LayerCategory } from "./registry";
 
 export interface LayerState {
-	id: LayerId;
+	id: string;
 	type: LayerType;
 	kind?: LayerCategory;
 	visibility: boolean;
@@ -97,3 +98,7 @@ export interface FillMapLayer {
 		outlineColor?: string;
 	};
 }
+
+// Re-exports des types de base
+export type { LayerType, BaseLayerOptions } from "./layer";
+export type { SourceType, BaseSourceOptions } from "./source";

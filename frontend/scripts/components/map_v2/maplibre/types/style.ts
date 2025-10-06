@@ -1,4 +1,4 @@
-import type { LayerType } from "../../../components/map_v2/layers/baseLayer";
+import type { LayerType } from "../../types/layer";
 
 export type FillPaint = 'fill-color' | 'fill-opacity' | 'fill-outline-color';
 export type LinePaint = 'line-color' | 'line-width' | 'line-opacity';
