@@ -4,7 +4,7 @@ SELECt
     idlink_va,
     idsite,
     idvisitor_user_id.idvisitor,
-    idvisitor_user_id.user_id, -- DO NOT USE. Use custom_dimension_1 instead.
+    idvisitor_user_id.user_id,
     idvisit,
     idaction_url_ref,
     idaction_name_ref,

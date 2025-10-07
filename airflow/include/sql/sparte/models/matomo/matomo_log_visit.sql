@@ -16,7 +16,7 @@ SELECt
     config_id,
     location_ip,
     profilable::int::boolean,
-    user_id, -- DO NOT USE. Use custom_dimension_1 instead.
+    user_id,
     visit_first_action_time,
     visit_goal_buyer,
     visit_goal_converted,
