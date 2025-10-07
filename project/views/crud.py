@@ -110,6 +110,11 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     context_object_name = "project"
     form_class = KeywordForm
 
+    @property
+    def object(self):
+        # hotfix to make this view work
+        return super().get_object()
+
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
         kwargs = {"results": Land.search(form.cleaned_data["keyword"], search_for="*"), "form": form}
