@@ -1,17 +1,44 @@
 {% if MATOMO_ACTIVATE %}
-<!-- Matomo Tag Manager -->
 <meta name="matomo-enabled" content="true">
 <script nonce="[NONCE_PLACEHOLDER]">
-  var _mtm = window._mtm = window._mtm || [];
-  _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-  {% if REQUEST.user.is_authenticated %}
-  _mtm.push({'UserID': '{{ REQUEST.user.email }}' });
+    var _paq = window._paq = window._paq || [];
+    {% if REQUEST.user.is_authenticated %}
+      _paq.push(['setUserId', '{{ REQUEST.user.email }}']);
     {% endif %}
-  (function() {
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src='{{ MATOMO_CONTAINER_SRC }}'; s.parentNode.insertBefore(g,s);
-  })();
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+        var u="https://stats.beta.gouv.fr/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '17']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
 </script>
+
+<script nonce="[NONCE_PLACEHOLDER]">
+    var DEBUG = {{ DEBUG|lower }};
+
+    function trackEvent(category, action, name) {
+        if (typeof _paq !== 'undefined') {
+            _paq.push(['trackEvent', category, action, name]);
+
+            if (DEBUG) {
+                console.log('Matomo: Event sent:', {
+                    category: category,
+                    action: action,
+                    name: name
+                });
+            }
+        } else {
+            console.warn('_paq is not defined. Event not sent:', category, action, name);
+        }
+    }
+</script>
+
+<noscript>
+    <img referrerpolicy="no-referrer-when-downgrade" src="https://stats.beta.gouv.fr/matomo.php?idsite=17&amp;rec=1" style="border:0" alt="" />
+</noscript>
+{% else %}
+<!-- Matomo is not activated -->
 {% endif %}
-
-
