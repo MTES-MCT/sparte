@@ -1,5 +1,4 @@
 import { BaseLayer } from "./baseLayer";
-import type { LayerState } from "../types";
 
 export class EmpriseLayer extends BaseLayer {
     constructor() {
@@ -32,13 +31,4 @@ export class EmpriseLayer extends BaseLayer {
         };
     }
 
-    getDefaultState(): LayerState {
-        return {
-            id: this.options.id,
-            type: this.options.type,
-            visibility: this.options.visible ?? true,
-            opacity: this.options.opacity ?? 0.7,
-            params: {},
-        };
-    }
 }

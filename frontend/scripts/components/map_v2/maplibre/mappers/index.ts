@@ -1,18 +1,12 @@
 import maplibregl from "maplibre-gl";
 import { BaseLayer } from "../../layers/baseLayer";
 import { BaseSource } from "../../sources/baseSource";
-import { createVisibilityMapper } from "./visibility";
-import { createFiltersMapper } from "./filters";
 import { createEventsMapper } from "./events";
-import { createStyleMapper } from "./style";
 import { createSourcesMapper } from "./sources";
 
 export class MapLibreMapper {
     private map: maplibregl.Map | null = null;
-    private visibilityMapper = createVisibilityMapper();
-    private filtersMapper = createFiltersMapper();
     private eventsMapper = createEventsMapper();
-    private styleMapper = createStyleMapper();
     private sourcesMapper = createSourcesMapper();
 
     setMap(map: maplibregl.Map): void {
@@ -52,12 +46,6 @@ export class MapLibreMapper {
         }
     }
 
-    toggleVisibility(layerId: string, visible: boolean): void {
-        if (!this.map) return;
-
-        this.visibilityMapper.toggleVisibility(this.map, layerId, visible);
-    }
-
     addSource(source: BaseSource): void {
         if (!this.map || this.map.getSource(source.options.id)) return;
 
@@ -78,19 +66,6 @@ export class MapLibreMapper {
         if (!this.map) return;
 
         this.sourcesMapper.removeSource(this.map, sourceId);
-    }
-
-
-    updateLayerFilters(layerId: string, filters: any[]): void {
-        if (!this.map) return;
-
-        this.filtersMapper.updateFilters(this.map, layerId, filters);
-    }
-
-    updateLayerStyle(layerId: string, style: Record<string, any>): void {
-        if (!this.map) return;
-
-        this.styleMapper.updateStyle(this.map, layerId, style);
     }
 
     getMap(): maplibregl.Map | null {

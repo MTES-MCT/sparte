@@ -26,18 +26,6 @@ export class OcsgeSource extends BaseSource {
 		this.departement = millesime?.departement || departements[0];
 	}
 
-	getMillesimeIndex(): number {
-		return this.millesimeIndex;
-	}
-
-	getDepartement(): string {
-		return this.departement;
-	}
-
-	setMillesime(index: number): void {
-		this.millesimeIndex = index;
-	}
-
 	getOptions() {
 		const tilesUrl = OCSGE_TILES_URL
 			.replace("{millesime}", this.millesimeIndex.toString())

@@ -1,5 +1,4 @@
 import { NomenclatureType } from "../types/ocsge";
-import type { LayerState } from "../types";
 import { BaseOcsgeLayer } from "./baseOcsgeLayer";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 

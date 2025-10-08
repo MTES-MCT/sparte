@@ -1,5 +1,4 @@
 import { BaseLayer } from "./baseLayer";
-import type { LayerState, ControlDefinition, ControlAppliers } from "../types";
 
 export class OrthophotoLayer extends BaseLayer {
     constructor() {
@@ -22,16 +21,6 @@ export class OrthophotoLayer extends BaseLayer {
             paint: {
                 "raster-opacity": this.options.opacity ?? 1,
             },
-        };
-    }
-
-    getDefaultState(): LayerState {
-        return {
-            id: this.options.id,
-            type: this.options.type,
-            visibility: this.options.visible ?? true,
-            opacity: this.options.opacity ?? 1,
-            params: {},
         };
     }
 }

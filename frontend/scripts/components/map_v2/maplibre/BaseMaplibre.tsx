@@ -2,9 +2,7 @@ import React, { useRef, useEffect, useState, useMemo, useCallback } from "react"
 import styled from "styled-components";
 import { MapLibreMapper } from "./mappers";
 import { LayerOrchestrator } from "../LayerOrchestrator";
-import { LayerVisibility } from "../types";
 import { useMaplibre } from "./hooks/useMaplibre";
-import { Controls } from "../controls/Controls";
 import { initMapFromConfig } from "../factory/initMapFromConfig";
 
 const MapWrapper = styled.div`
@@ -48,7 +46,6 @@ const MapContainer = styled.div<{ $isLoaded: boolean }>`
     }
 `;
 
-
 interface BaseMaplibreProps {
     id?: string;
     children?: React.ReactNode;
@@ -78,8 +75,6 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
     
     orchestrator.setMapper(mapper);
     
-    const [, forceUpdate] = useState({});
-    const [layerVisibility, setLayerVisibility] = useState<LayerVisibility[]>([]);
     const memoizedConfig = useMemo(() => config, [config]);
 
     const {
@@ -90,26 +85,12 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
         updateSourcesAndLayers,
     } = useMaplibre(mapper, bounds, maxBounds);
 
-    const refreshLayerVisibility = () => {
-        const all = orchestrator.getAllLayers().map(l => orchestrator.getLayerUIState(l.options.id)).filter((s): s is LayerVisibility => !!s) as LayerVisibility[];
-        setLayerVisibility(all);
-    };
-
     const handleMapLoad = useCallback(async (map: any) => {
         if (memoizedConfig && !isInitialized.current) {
             await initMapFromConfig(memoizedConfig, orchestrator);
             isInitialized.current = true;
         }
     }, [memoizedConfig, orchestrator]);
-
-    useEffect(() => {
-        const cb = () => { forceUpdate({}); refreshLayerVisibility(); };
-        orchestrator.setOnChangeCallback(cb);
-        refreshLayerVisibility();
-        return () => {
-            orchestrator.setOnChangeCallback(() => {});
-        };
-    }, [orchestrator]);
 
     useEffect(() => {
         if (mapDiv.current && !mapRef.current) {
@@ -126,9 +107,7 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
         if (!isMapLoaded) return;
         updateControls();
         updateSourcesAndLayers();
-        refreshLayerVisibility();
     }, [isMapLoaded, updateControls, updateSourcesAndLayers]);
-
 
     return (
         <MapWrapper id={`${id}-wrapper`}>
@@ -138,11 +117,6 @@ export const BaseMaplibre: React.FC<BaseMaplibreProps> = ({
                 $isLoaded={isMapLoaded}
             />
             {children}
-            <Controls
-                layers={layerVisibility}
-                config={{ showControls: true }}
-                orchestrator={orchestrator}
-            />
         </MapWrapper>
     );
 };
