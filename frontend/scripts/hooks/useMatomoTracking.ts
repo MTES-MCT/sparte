@@ -13,13 +13,11 @@ const useMatomoTracking = (): void => {
 
     useEffect(() => {
         if (!isMatomoEnabled()) {
-            console.log('Matomo tracking is disabled.');
             return;
         }
         _paq.push(['setCustomUrl', location.pathname]);
         _paq.push(['setDocumentTitle', document.title]);
         _paq.push(['trackPageView']);
-        console.log(location.pathname, document.title)
     }, [location]);
 };
 
