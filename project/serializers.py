@@ -62,6 +62,10 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                         {
                             "label": "Artificialisation",
                             "url": reverse("project:report_artif", kwargs=kwargs),
+                        },
+                        {
+                            "label": "Imperméabilisation",
+                            "url": reverse("project:report_imper", kwargs=kwargs),
                             "new": True,
                         },
                         {"label": "Consommation d'espaces NAF", "url": reverse("project:report_conso", kwargs=kwargs)},
@@ -78,7 +82,6 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                         {
                             "label": "Friches",
                             "url": reverse("project:report_friches", kwargs=kwargs),
-                            "new": True,
                         },
                     ],
                 },

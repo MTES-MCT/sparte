@@ -10,6 +10,7 @@ interface CardProps {
     isHighlighted?: boolean;
     highlightBadge?: string;
     className?: string;
+    children?: React.ReactNode;
 }
 
 const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
@@ -19,12 +20,15 @@ const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
     height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 1rem;
     ${({ $isHighlighted }) => $isHighlighted && `
-        border: 3px solid var(--artwork-major-blue-france);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         position: relative;
         background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border-color: var(--artwork-major-blue-france);
+        border-width: 3px;
+        border-style: solid;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     `}
 `;
 
@@ -81,6 +85,10 @@ const CardLabel = styled.p`
     margin-bottom: 0;
 `;
 
+const CardFooter = styled.div`
+    align-self: flex-end;
+`;
+
 const Card: React.FC<CardProps> = ({
     icon,
     badgeClass,
@@ -89,7 +97,8 @@ const Card: React.FC<CardProps> = ({
     label,
     isHighlighted = false,
     highlightBadge,
-    className = ""
+    className = "",
+    children
 }) => {
     return (
         <CardContainer $isHighlighted={isHighlighted} className={className}>
@@ -108,6 +117,11 @@ const Card: React.FC<CardProps> = ({
                 <CardValue $isHighlighted={isHighlighted}>{value}</CardValue>
                 <CardLabel>{label}</CardLabel>
             </CardContent>
+            {children && (
+                <CardFooter>
+                    {children}
+                </CardFooter>
+            )}
         </CardContainer>
     );
 };

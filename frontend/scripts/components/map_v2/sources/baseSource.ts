@@ -1,0 +1,21 @@
+import type { SourceType, BaseSourceOptions } from "../types/source";
+import type { RebuildConfig } from "../types";
+
+export abstract class BaseSource {
+    readonly options: BaseSourceOptions;
+    loaded = false;
+
+    constructor(options: BaseSourceOptions) {
+        this.options = { ...options };
+    }
+
+    async load(): Promise<void> {
+        this.loaded = true;
+    }
+
+    abstract getOptions(): Record<string, any>;
+
+    getRebuildConfig(): RebuildConfig {
+        return { dependencies: [] };
+    }
+}
