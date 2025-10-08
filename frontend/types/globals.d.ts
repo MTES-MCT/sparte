@@ -1,9 +1,9 @@
-declare var _mtm: any;
+declare var _paq: any;
 
 interface Window {
     htmx?: any;
     bootstrap?: any;
-    _mtm?: any[];
+    _paq?: any[];
     dataLayer?: any[];
     gtag?: Function;
 }
