@@ -8,8 +8,8 @@ import { LandImperStockIndex } from "@services/types/landimperstockindex";
 interface ZonageData {
 	zonage_type: keyof typeof ZonageType;
 	zonage_surface: number;
-	impermeabilized_surface: number;
-	impermeabilized_percent: number;
+	impermeable_surface: number;
+	impermeable_percent: number;
 	zonage_count: number;
 	departements: string[];
 	years: number[];
@@ -51,33 +51,33 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 									</thead>
 									<tbody>
 										{imperZonageIndex
-											?.filter(a => a && typeof a.zonage_surface === 'number')
-											?.toSorted(
-												(a, b) => b.zonage_surface - a.zonage_surface
+											?.filter((a: ZonageData) => a && typeof a.zonage_surface === 'number')
+											?.sort(
+												(a: ZonageData, b: ZonageData) => b.zonage_surface - a.zonage_surface
 											)
-											.map((a) => (
+											.map((a: ZonageData) => (
 												<tr key={`${a.zonage_type}_${a.millesime_index}`}>
 													<td>
 														<b>
-															{ZonageType[a.zonage_type]} ({a.zonage_type})
+															{ZonageType[a.zonage_type as keyof typeof ZonageType]} ({a.zonage_type})
 														</b>
 													</td>
 													<td>
 														{formatNumber({ number: a.zonage_surface })}
 													</td>
 													<td>
-														{formatNumber({ number: a.impermeabilized_surface })}
+														{formatNumber({ number: a.impermeable_surface })}
 													</td>
 													<td>
 														<div className="progress-bar-container">
 															<div
 																className={`progress-bar-indicator w-${Math.round(
-																	a.impermeabilized_percent
+																	a.impermeable_percent
 																)}`}
 															/>
 															<div className="progress-bar-value">
 																{formatNumber({
-																	number: a.impermeabilized_percent,
+																	number: a.impermeable_percent,
 																})}
 																%
 															</div>
