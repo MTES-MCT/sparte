@@ -127,6 +127,12 @@ class ImperFluxByUsage(DiagnosticChart):
         }
 
     @property
+    def year_or_index_after(self):
+        if self.land.is_interdepartemental:
+            return f"millésime {self.params.get('millesime_new_index')}"
+        return f"{self.data[0].years_new[0]}"
+
+    @property
     def data_table(self):
         if self.params.get("departement"):
             territory_header = "Département"
@@ -137,6 +143,10 @@ class ImperFluxByUsage(DiagnosticChart):
 
         headers = [
             territory_header,
+            f"Type de {self.sol}",
+            f"Imperméabilisation (ha) - {self.year_or_index_after}",
+            f"Désimperméabilisation (ha) - {self.year_or_index_after}",
+            f"Imperméabilisation nette (ha) - {self.year_or_index_after}",
         ]
 
         return {
@@ -144,8 +154,15 @@ class ImperFluxByUsage(DiagnosticChart):
             "rows": [
                 {
                     "name": "",  # not used
-                    "data": [territory_name],
+                    "data": [
+                        territory_name,
+                        f"{item.label_short} ({getattr(item, self.sol)})",
+                        round(item.flux_imper, DEFAULT_VALUE_DECIMALS),
+                        round(item.flux_desimper, DEFAULT_VALUE_DECIMALS),
+                        round(item.flux_imper_net, DEFAULT_VALUE_DECIMALS),
+                    ],
                 }
+                for item in self.data
             ],
         }
 
