@@ -279,8 +279,6 @@ def ocsge():  # noqa: C901
         years = "_".join(map(str, get_from_config(config, "years")))
         dataset = get_from_config(config, "dataset")
 
-        print(departement, years, dataset)
-
         if len(years) == 1:
             years = str(years[0])
 
