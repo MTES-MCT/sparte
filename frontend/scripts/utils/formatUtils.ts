@@ -11,6 +11,9 @@ const formatNumber = ({
   useGrouping = true,
   addSymbol = false,
 }: FormatNumberOptions): string => {
+  if (number === undefined || number === null || Number.isNaN(number)) {
+    return '0';
+  }
 
   if (decimals === null) {
     const absNumber = Math.abs(number);

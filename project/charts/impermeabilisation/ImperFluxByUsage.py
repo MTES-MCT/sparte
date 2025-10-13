@@ -1,11 +1,19 @@
+from django.utils.functional import cached_property
+
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import (
+    ARTIFICIALISATION_COLOR,
+    ARTIFICIALISATION_NETTE_COLOR,
     DEFAULT_VALUE_DECIMALS,
+    DESARTIFICIALISATION_COLOR,
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
 from public_data.models import AdminRef
-from public_data.models.impermeabilisation import LandImperFluxUsageCompositionIndex
+from public_data.models.impermeabilisation import (
+    LandImperFluxUsageComposition,
+    LandImperFluxUsageCompositionIndex,
+)
 
 
 class ImperFluxByUsage(DiagnosticChart):
@@ -15,11 +23,20 @@ class ImperFluxByUsage(DiagnosticChart):
 
     @property
     def data(self):
-        return self.model.objects.filter(
-            land_type=self.land.land_type,
-            land_id=self.land.land_id,
-            millesime_new_index=self.params.get("millesime_new_index"),
-        )
+        if self.params.get("departement"):
+            model_class = getattr(self, "model_by_departement", LandImperFluxUsageComposition)
+            return model_class.objects.filter(
+                land_type=self.land.land_type,
+                land_id=self.land.land_id,
+                millesime_new_index=self.params.get("millesime_new_index"),
+                departement=self.params.get("departement"),
+            )
+        else:
+            return self.model.objects.filter(
+                land_type=self.land.land_type,
+                land_id=self.land.land_id,
+                millesime_new_index=self.params.get("millesime_new_index"),
+            )
 
     @property
     def series(self):
@@ -27,17 +44,17 @@ class ImperFluxByUsage(DiagnosticChart):
             {
                 "name": "Imperméabilisation",
                 "data": list(self.data.values_list("flux_imper", flat=True)),
-                "color": "#ff0000",
+                "color": ARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Désimperméabilisation",
                 "data": [item * -1 for item in self.data.values_list("flux_desimper", flat=True)],
-                "color": "#00ff00",
+                "color": DESARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Imperméabilisation nette",
                 "data": list(self.data.values_list("flux_imper_net", flat=True)),
-                "color": "#0000ff",
+                "color": ARTIFICIALISATION_NETTE_COLOR,
             },
         ]
 
@@ -50,23 +67,24 @@ class ImperFluxByUsage(DiagnosticChart):
             )
         return categories
 
+    @cached_property
+    def title_end(self):
+        if self.params.get("departement"):
+            return f" ({self.params.get('departement')})"
+
+        if self.land.is_interdepartemental:
+            return f" entre le millésime n°{int(self.params.get('millesime_new_index')) - 1} et n°{self.params.get('millesime_new_index')}"  # noqa: E501
+        else:
+            return f" entre {self.data[0].years_old[0]} et {self.data[0].years_new[0]}"
+
     @property
     def title(self):
-        if self.land.is_interdepartemental:
-            return (
-                f"Flux d'imperméabilisation par {self.sol} "
-                f"entre le millésime n°{int(self.params.get('millesime_new_index')) - 1} "
-                f"et n°{self.params.get('millesime_new_index')}"
-            )
-        return (
-            f"Flux d'imperméabilisation par {self.sol} entre {self.data[0].years_old[0]} "
-            f"et {self.data[0].years_new[0]}"
-        )
+        return f"Flux d'imperméabilisation par {self.sol}{self.title_end}"
 
     @property
     def param(self):
         return super().param | {
-            "chart": {"type": "bar", "height": "800px", "marginLeft": 300},
+            "chart": {"type": "bar", "height": "800px"},
             "title": {"text": self.title},
             "tooltip": {
                 "pointFormat": "{point.y}",
@@ -109,9 +127,26 @@ class ImperFluxByUsage(DiagnosticChart):
         }
 
     @property
+    def year_or_index_after(self):
+        if self.land.is_interdepartemental:
+            return f"millésime {self.params.get('millesime_new_index')}"
+        return f"{self.data[0].years_new[0]}"
+
+    @property
     def data_table(self):
+        if self.params.get("departement"):
+            territory_header = "Département"
+            territory_name = self.params.get("departement")
+        else:
+            territory_header = AdminRef.get_label(self.land.land_type)
+            territory_name = self.land.name
+
         headers = [
-            AdminRef.get_label(self.land.land_type),
+            territory_header,
+            f"Type de {self.sol}",
+            f"Imperméabilisation (ha) - {self.year_or_index_after}",
+            f"Désimperméabilisation (ha) - {self.year_or_index_after}",
+            f"Imperméabilisation nette (ha) - {self.year_or_index_after}",
         ]
 
         return {
@@ -119,8 +154,15 @@ class ImperFluxByUsage(DiagnosticChart):
             "rows": [
                 {
                     "name": "",  # not used
-                    "data": [],
+                    "data": [
+                        territory_name,
+                        f"{item.label_short} ({getattr(item, self.sol)})",
+                        round(item.flux_imper, DEFAULT_VALUE_DECIMALS),
+                        round(item.flux_desimper, DEFAULT_VALUE_DECIMALS),
+                        round(item.flux_imper_net, DEFAULT_VALUE_DECIMALS),
+                    ],
                 }
+                for item in self.data
             ],
         }
 
