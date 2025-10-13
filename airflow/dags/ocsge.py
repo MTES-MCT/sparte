@@ -134,7 +134,6 @@ vars_dataset = {
 
 def get_source_name_from_layer_name(layer_name: str) -> SourceName | None:
     layer_name = layer_name.lower()
-    print(layer_name)
     if "zan_evol" in layer_name:
         return SourceName.ARTIF_DIFFERENCE
     if "diff" in layer_name or "diif" in layer_name:
