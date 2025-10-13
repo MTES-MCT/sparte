@@ -131,11 +131,12 @@ const MillesimesTable: React.FC<{
 		</div>
 		<p className="fr-mt-2w fr-text--sm">
 			Ces données sont disponibles en téléchargement sur le site de l'IGN
-			:&nbsp;<a
+			:&nbsp;			<a
 				className="fr-link fr-text--sm"
 				href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
 				target="_blank"
 				rel="noopener noreferrer"
+				aria-label="Télécharger les données OCS GE sur le site de l'IGN (ouvre dans un nouvel onglet)"
 			>
 				https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
 			</a>
@@ -188,9 +189,9 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 
 	const { has_zonage } = landData;
 
-	if (isLoading) return <div>Chargement...</div>;
-	if (error) return <div>Erreur : {error}</div>;
-	if (!landData) return <div>Données non disponibles</div>;
+	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
+	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
+	if (!landData) return <div role="status" aria-live="polite">Données non disponibles</div>;
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
@@ -202,12 +203,12 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 							DrawerTitle="Cadre Réglementaire"
 							drawerChildren={
 								<>
-									<p className="fr-text--sm mb-3">Le <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959">Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols</a> précise que le rapport relatif à l'Imperméabilisation des sols prévu à l'article L. 2231-1 présente, pour les années civiles sur lesquelles il porte et au moins tous les trois ans, les indicateurs et données suivants:</p>
+									<p className="fr-text--sm mb-3">Le <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959" aria-label="Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols (ouvre dans un nouvel onglet)">Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols</a> précise que le rapport relatif à l'Imperméabilisation des sols prévu à l'article L. 2231-1 présente, pour les années civiles sur lesquelles il porte et au moins tous les trois ans, les indicateurs et données suivants:</p>
 									<ul className="fr-text--sm mb-3">
 										<li>« 1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert. Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une désimperméabilisation ;</li>
-										<li>« 2° Le solde entre les surfaces imperméabilisées et les surfaces désimperméabilisées, telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
-										<li>« 3° Les surfaces dont les sols ont été rendus imperméables, au sens des 1° et 2° de la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
-										<li>« 4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'imperméabilisation des sols fixés dans les documents de planification et d'urbanisme. Les documents de planification sont ceux énumérés au <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">III de l'article R. 101-1 du code de l'urbanisme</a>.</li>
+										<li>« 2° Le solde entre les surfaces imperméabilisées et les surfaces désimperméabilisées, telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid" aria-label="Article R. 101-1 du code de l'urbanisme (ouvre dans un nouvel onglet)">article R. 101-1 du code de l'urbanisme</a> ;</li>
+										<li>« 3° Les surfaces dont les sols ont été rendus imperméables, au sens des 1° et 2° de la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid" aria-label="Article R. 101-1 du code de l'urbanisme (ouvre dans un nouvel onglet)">article R. 101-1 du code de l'urbanisme</a> ;</li>
+										<li>« 4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'imperméabilisation des sols fixés dans les documents de planification et d'urbanisme. Les documents de planification sont ceux énumérés au <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid" aria-label="III de l'article R. 101-1 du code de l'urbanisme (ouvre dans un nouvel onglet)">III de l'article R. 101-1 du code de l'urbanisme</a>.</li>
 									</ul>
 									<p className="fr-text--sm mb-3">
 										L'imperméabilisation des sols est donc définie comme:
@@ -236,14 +237,14 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			</div>
 
 			<div className="fr-mb-7w">
-				<h2>
+				<h1>
 					Imperméabilisation des sols de {name}
 					{" "}
 					<MillesimeDisplay 
 						is_interdepartemental={is_interdepartemental}
 						landArtifStockIndex={landImperStockIndex}
 					/>
-				</h2>
+				</h1>
 				<ImperLastMillesimeSection 
 					landImperStockIndex={landImperStockIndex}
 					name={name}
@@ -540,20 +541,26 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					<div className="fr-grid-row fr-grid-row--gutters">
 						<div className="fr-col-12 fr-col-lg-8">
 							<div className="bg-white fr-p-2w h-100 rounded">
-								{child_land_types.length > 1 &&
-									child_land_types.map((child_land_type) => (
-										<button
-											className={`fr-btn  ${
-												childLandType === child_land_type
-													? "fr-btn--primary"
-													: "fr-btn--tertiary"
-											}`}
-											key={child_land_type}
-											onClick={() => setChildLandType(child_land_type)}
-										>
-											{child_land_type}
-										</button>
-									))}
+								{child_land_types.length > 1 && (
+									<div role="tablist" aria-label="Sélection du type de territoire">
+										{child_land_types.map((child_land_type) => (
+											<button
+												className={`fr-btn  ${
+													childLandType === child_land_type
+														? "fr-btn--primary"
+														: "fr-btn--tertiary"
+												}`}
+												key={child_land_type}
+												onClick={() => setChildLandType(child_land_type)}
+												role="tab"
+												aria-selected={childLandType === child_land_type}
+												aria-label={`Sélectionner ${child_land_type}`}
+											>
+												{child_land_type}
+											</button>
+										))}
+									</div>
+								)}
 								<OcsgeGraph
 									isMap
 									id="imper_map"
