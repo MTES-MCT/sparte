@@ -1,7 +1,12 @@
 from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import DEFAULT_VALUE_DECIMALS
+from project.charts.constants import (
+    ARTIFICIALISATION_COLOR,
+    ARTIFICIALISATION_NETTE_COLOR,
+    DEFAULT_VALUE_DECIMALS,
+    DESARTIFICIALISATION_COLOR,
+)
 from public_data.models import AdminRef
 from public_data.models.impermeabilisation import LandImperFlux, LandImperFluxIndex
 
@@ -33,17 +38,17 @@ class ImperNetFluxChart(DiagnosticChart):
                     {
                         "name": "Imperméabilisation",
                         "y": self.data.flux_imper,
-                        "color": "#ff0000",
+                        "color": ARTIFICIALISATION_COLOR,
                     },
                     {
                         "name": "Désimperméabilisation",
                         "y": self.data.flux_desimper * -1,
-                        "color": "#00ff00",
+                        "color": DESARTIFICIALISATION_COLOR,
                     },
                     {
                         "name": "Imperméabilisation nette",
                         "y": self.data.flux_imper_net,
-                        "color": "#0000ff",
+                        "color": ARTIFICIALISATION_NETTE_COLOR,
                     },
                 ],
             }

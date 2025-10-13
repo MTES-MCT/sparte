@@ -177,6 +177,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	});
 
 	// États séparés pour chaque section
+	const [byDepartementFlux, setByDepartementFlux] = useState(false);
 	const [byDepartementNetFlux, setByDepartementNetFlux] = useState(false);
 	const [byDepartementRepartition, setByDepartementRepartition] = useState(false);
 
@@ -416,9 +417,11 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					</div>
 				</div>
 			</div>
+			
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Évolution des sols imperméabilisés{" "}
+					Flux d'imperméabilisation par type de couverture et d'usage
+					{" "}
 					<MillesimeDisplay 
 						is_interdepartemental={is_interdepartemental}
 						landArtifStockIndex={landImperStockIndex}
@@ -426,9 +429,111 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					/>
 				</h2>
 				<div className="bg-white fr-px-4w fr-pt-4w rounded">
-					
+					{
+						is_interdepartemental && (
+							<DepartmentSelector
+								byDepartement={byDepartementFlux}
+								setByDepartement={setByDepartementFlux}
+							/>
+						)
+					}
+					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+						{byDepartementFlux ? (
+							millesimes
+								.filter((e) => e.index === Math.max(...millesimes.map(m => m.index)))
+								.map((m) => (
+									<div
+										key={`${m.index}_${m.departement}`}
+										className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
+									>
+										<OcsgeGraph
+											id="imper_flux_by_couverture"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+											containerProps={{
+												style: {
+													height: "800px",
+												},
+											}}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
+										<OcsgeGraph
+											id="imper_flux_by_usage"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+											containerProps={{
+												style: {
+													height: "800px",
+												},
+											}}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
+									</div>
+								))
+						) : (
+							<>
+								<div className="fr-col-12 fr-col-lg-6">
+									<OcsgeGraph
+										id="imper_flux_by_couverture"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+											millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+										containerProps={{
+											style: {
+												height: "800px",
+											},
+										}}
+									>
+										<DetaislCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+								<div className="fr-col-12 fr-col-lg-6">
+									<OcsgeGraph
+										id="imper_flux_by_usage"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+											millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+										containerProps={{
+											style: {
+												height: "800px",
+											},
+										}}
+									>
+										<DetaislCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+							</>
+						)}
+					</div>
 				</div>
 			</div>
+			
 			{child_land_types && (
 				<div className="fr-mb-7w">
 					<h2>Proportion des sols imperméabilisés</h2>

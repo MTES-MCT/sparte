@@ -1,5 +1,6 @@
 from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
 from public_data.models.impermeabilisation import (
+    LandImperFluxCouvertureComposition,
     LandImperFluxCouvertureCompositionIndex,
 )
 
@@ -10,6 +11,7 @@ class ImperFluxByCouverture(ImperFluxByUsage):
     name = "Evolution de l'artificialisation"
     sol = "couverture"
     model = LandImperFluxCouvertureCompositionIndex
+    model_by_departement = LandImperFluxCouvertureComposition
 
 
 class ImperFluxByCouvertureExport(ImperFluxByCouverture):
