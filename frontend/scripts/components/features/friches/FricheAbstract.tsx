@@ -21,7 +21,7 @@ interface FricheAbstractProps {
 const FricheAbstract: React.FC<FricheAbstractProps> = ({ friche_status, friche_status_details, name, className, link }) => {
     const potentielContent = (
         <>
-            D'après les données disponibles, il y a actuellement <strong>{friche_status_details.friche_sans_projet_count} {pluralize(friche_status_details.friche_sans_projet_count, 'friche')} sans projet</strong> sur le territoire de <strong>{name}</strong>, représentant une surface totale de <strong>{formatNumber({ number: friche_status_details.friche_sans_projet_surface })} ha</strong>.<br />
+            D'après les données disponibles, il y a actuellement <strong>{friche_status_details.friche_sans_projet_count} {pluralize(friche_status_details.friche_sans_projet_count, 'friche')} sans projet</strong> sur le territoire de <strong>{name}</strong>, représentant un total de surface artificialisée de <strong>{formatNumber({ number: friche_status_details.friche_sans_projet_surface_artif })} ha</strong>.<br />
             <strong>La réhabilitation de friches semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
         </>
     );
@@ -37,8 +37,9 @@ const FricheAbstract: React.FC<FricheAbstractProps> = ({ friche_status, friche_s
             <>
                 D'après les données disponibles, il n'y a actuellement <strong>aucune friche sans projet</strong> sur le territoire de <strong>{name}</strong>.
                 L'absence de friches sans projet est due à l'exploitation du potentiel des friches existantes.<br />
-                En effet <strong>{friche_status_details.friche_reconvertie_count} {pluralize(friche_status_details.friche_reconvertie_count, 'friche')} ont été {pluralize(friche_status_details.friche_reconvertie_count, 'reconvertie')}</strong>, représentant une surface totale de <strong>{formatNumber({ number: friche_status_details.friche_reconvertie_surface })} ha</strong>,
-                et <strong>{friche_status_details.friche_avec_projet_count} {pluralize(friche_status_details.friche_avec_projet_count, 'friche')} sont actuellement en projet</strong>, représentant une surface totale de <strong>{formatNumber({ number: friche_status_details.friche_avec_projet_surface })} ha.</strong><br />
+                En effet <strong>{friche_status_details.friche_reconvertie_count} {pluralize(friche_status_details.friche_reconvertie_count, 'friche')}
+                {" "}ont été {pluralize(friche_status_details.friche_reconvertie_count, 'reconvertie')}</strong>, représentant un total de surface artificialisé de <strong>{formatNumber({ number: friche_status_details.friche_reconvertie_surface_artif })} ha</strong>,
+                et <strong>{friche_status_details.friche_avec_projet_count} {pluralize(friche_status_details.friche_avec_projet_count, 'friche')} sont actuellement en projet</strong>, représentant un total de surface artificialisée de <strong>{formatNumber({ number: friche_status_details.friche_avec_projet_surface_artif })} ha.</strong><br />
                 <strong>La réhabilitation de friches ne semble plus être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
             </>
         ),

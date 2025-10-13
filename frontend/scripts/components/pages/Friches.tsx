@@ -11,7 +11,7 @@ import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
-import { FricheStatusEnum, LandDetailResultType } from "@services/types/land";
+import { FricheStatusEnum, LandDetailResultType, LandType } from "@services/types/land";
 import { FricheOverview, FricheAbstract } from "@components/features/friches";
 
 interface FrichesProps {
@@ -207,7 +207,44 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             key: 'friche_type_zone' as keyof LandFriche,
             label: 'Type de zone',
             sortable: true
-        }
+        },
+        {
+            key: 'percent_artif' as keyof LandFriche,
+            label: 'Part artificialisée (%)',
+            sortable: true,
+            render: (value: number) => `${formatNumber({ number: value })}%`
+        },
+        {
+            key: 'surface_artif' as keyof LandFriche,
+            label: 'Surface artificialisée (ha)',
+            sortable: true,
+            render: (value: number) => `${formatNumber({ number: value })} ha`
+        },
+        {
+            key: 'years_artif' as keyof LandFriche,
+            label: 'Année(s) d\'artificialisation',
+            sortable: false,
+            render: (value: number[]) => value.join(', ')
+        },
+        {
+            key: 'percent_imper' as keyof LandFriche,
+            label: 'Part imperméable (%)',
+            sortable: true,
+            render: (value: number) => `${formatNumber({ number: value })}%`
+        },
+        {
+            key: 'surface_imper' as keyof LandFriche,
+            label: 'Surface imperméable (ha)',
+            sortable: true,
+            render: (value: number) => `${formatNumber({ number: value })} ha`
+        },
+        {
+            key: 'years_imper' as keyof LandFriche,
+            label: 'Année(s) d\'imperméabilisation',
+            sortable: false,
+            render: (value: number[]) => value.join(', ')
+        },
+
     ];
 
 	return (
@@ -260,13 +297,19 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                             <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
                             </strong>
                         </p>
+                        <p className="fr-text--sm">
+                            Les données relatives à l'artificialisation et l'imperméabilisation des friches sont issues des données OCS GE.
+                        </p>
 					</div>
 				</div>
 			</div>
             {[
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
-            ].includes(friche_status) && (
+            ].includes(friche_status) && [
+                LandType.REGION,
+                LandType.DEPARTEMENT,
+            ].includes(land_type) && (
                 <>
                     <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
                     <div className="fr-callout fr-icon-information-line fr-mb-3w">

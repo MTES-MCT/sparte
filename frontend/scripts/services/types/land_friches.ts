@@ -12,6 +12,12 @@ export interface LandFriche {
     friche_type: string;
     friche_surface_percentile_rank: number;
     surface: number;
+    surface_artif: number;
+    percent_artif: number;
+    years_artif: number[];
+    surface_imper: number;
+    percent_imper: number;
+    years_imper: number[];
     point_on_surface: {
         type: "Point";
         coordinates: [number, number];
