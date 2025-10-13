@@ -30,6 +30,18 @@ def create_configs_from_sources(sources: dict) -> list:
                     "file_format": "gpkg" if "GPKG" in url else "shp",
                 }
             )
+        artif_difference = sources[departement].get("artif_difference", {})
+        for year in artif_difference:
+            url = artif_difference[year]
+            confs.append(
+                {
+                    "years": list(map(int, year.split("_"))),
+                    "departement": departement,
+                    "dataset": DatasetName.ARTIF_DIFFERENCE,
+                    "file_format": "gpkg" if "GPKG" in url else "shp",
+                }
+            )
+
         if "artif" not in sources[departement]:
             continue
         artif = sources[departement]["artif"]
