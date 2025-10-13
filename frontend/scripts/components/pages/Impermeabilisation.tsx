@@ -338,8 +338,8 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						{
 							is_interdepartemental && (
 								<DepartmentSelector
-									byDepartement={byDepartementNetFlux}
-									setByDepartement={setByDepartementNetFlux}
+									byDepartement={byDepartementRepartition}
+									setByDepartement={setByDepartementRepartition}
 								/>
 							)
 						}
