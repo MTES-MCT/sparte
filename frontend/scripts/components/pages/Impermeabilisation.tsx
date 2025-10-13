@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Guide from "@components/ui/Guide";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { ProjectDetailResultType } from "@services/types/project";
@@ -9,6 +9,7 @@ import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTabl
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ImpermeabilisationZonage } from "@components/features/ocsge/ImpermeabilisationZonage";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
+import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
@@ -166,8 +167,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 		selectedIndex,
 		setSelectedIndex,
 		defaultStockIndex,
-		byDepartement,
-		setByDepartement,
 		childLandType,
 		setChildLandType,
 		landImperStockIndex,
@@ -176,6 +175,10 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	} = useImpermeabilisation({
 		landData
 	});
+
+	// États séparés pour chaque section
+	const [byDepartementNetFlux, setByDepartementNetFlux] = useState(false);
+	const [byDepartementRepartition, setByDepartementRepartition] = useState(false);
 
 	const { imperZonageIndex } = useImpermeabilisationZonage({
 		landData,
@@ -230,42 +233,119 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					</div>
 				</div>
 			</div>
-			<h2>
-				Imperméabilisation des sols de {name}
-				{" "}
-				<MillesimeDisplay 
+
+			<div className="fr-mb-7w">
+				<h2>
+					Imperméabilisation des sols de {name}
+					{" "}
+					<MillesimeDisplay 
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landImperStockIndex}
+					/>
+				</h2>
+				<ImperLastMillesimeSection 
+					landImperStockIndex={landImperStockIndex}
+					name={name}
 					is_interdepartemental={is_interdepartemental}
-					landArtifStockIndex={landImperStockIndex}
+					surface={surface}
+					years_artif={years_artif}
 				/>
-			</h2>
-			<ImperLastMillesimeSection 
-				landImperStockIndex={landImperStockIndex}
-				name={name}
-				is_interdepartemental={is_interdepartemental}
-				surface={surface}
-				years_artif={years_artif}
-			/>
-			<MillesimesTable 
-				millesimes={millesimes}
-				projectData={projectData}
-				is_interdepartemental={is_interdepartemental}
-			/>
+				<MillesimesTable 
+					millesimes={millesimes}
+					projectData={projectData}
+					is_interdepartemental={is_interdepartemental}
+				/>
+			</div>
+
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Répartition des surfaces imperméabilisées par type de couverture et
+					Imperméabilisation nette des sols
+					{" "}
+					<MillesimeDisplay 
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landImperStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+					{
+						is_interdepartemental && (
+							<DepartmentSelector
+								byDepartement={byDepartementNetFlux}
+								setByDepartement={setByDepartementNetFlux}
+							/>
+						)
+					}
+					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+						{byDepartementNetFlux ? (
+							millesimes
+								.filter((e) => e.index === Math.max(...millesimes.map(m => m.index)))
+								.map((m) => (
+									<div
+										key={`${m.index}_${m.departement}`}
+										className="fr-col-12"
+									>
+										<OcsgeGraph
+											id="imper_net_flux"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
+									</div>
+								))
+						) : (
+							<div className="fr-col-12">
+								<OcsgeGraph
+									id="imper_net_flux"
+									land_id={land_id}
+									land_type={land_type}
+									params={{
+										millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+										millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+									}}
+									sources={['ocsge']}
+									showDataTable={true}
+								>
+									<DetaislCalculationOcsge />
+								</OcsgeGraph>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+
+			<div className="fr-mb-7w">
+				<h2 className="fr-mt-7w">
+					Répartition des sols imperméabilisés par type de couverture et
 					d'usage
 				</h2>
 				<div className="bg-white fr-px-4w fr-pt-4w rounded">
-					<OcsgeMillesimeSelector
-						millesimes_by_index={millesimes_by_index}
-						index={selectedIndex}
-						setIndex={setSelectedIndex}
-						byDepartement={byDepartement}
-						setByDepartement={setByDepartement}
-						shouldDisplayByDepartementBtn={is_interdepartemental}
-					/>
+					<div className="d-flex gap-4">
+						<OcsgeMillesimeSelector
+							millesimes_by_index={millesimes_by_index}
+							index={selectedIndex}
+							setIndex={setSelectedIndex}
+							isDepartemental={is_interdepartemental}
+						/>
+						{
+							is_interdepartemental && (
+								<DepartmentSelector
+									byDepartement={byDepartementNetFlux}
+									setByDepartement={setByDepartementNetFlux}
+								/>
+							)
+						}
+					</div>
 					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
-						{byDepartement ? (
+						{byDepartementRepartition ? (
 							millesimes
 								.filter((e) => e.index === selectedIndex)
 								.map((m) => (
@@ -336,6 +416,19 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					</div>
 				</div>
 			</div>
+			<div className="fr-mb-7w">
+				<h2 className="fr-mt-7w">
+					Évolution des sols imperméabilisés{" "}
+					<MillesimeDisplay 
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landImperStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+					
+				</div>
+			</div>
 			{child_land_types && (
 				<div className="fr-mb-7w">
 					<h2>Proportion des sols imperméabilisés</h2>
@@ -391,16 +484,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					</div>
 				</div>
 			)}
-			<div className="fr-mb-7w">
-				<h2>Carte des sols imperméabilisés</h2>
-				<div className="bg-white fr-p-4w rounded">
-					<p className="fr-text--sm">
-						Cette cartographie permet d'explorer les couvertures et les usages
-						des surfaces imperméabilisées du territoire, en fonction des
-						millésimes disponibles de la donnée OCS GE.
-					</p>	
-				</div>
-			</div>
 			{has_zonage && (
 				<ImpermeabilisationZonage 
 					imperZonageIndex={imperZonageIndex}
