@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: for_app_landartiffluxusagecomposition
+    columns:
+      - name: land_id
+        data_tests:
+          - not_null
+      - name: land_type
+        data_tests:
+          - not_null
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null
+      - name: usage
+        data_tests:
+          - not_null
+      - name: flux_artif
+        data_tests:
+          - not_null
+      - name: flux_desartif
+        data_tests:
+          - not_null
+      - name: flux_artif_net
+        data_tests:
+          - not_null
+      - name: departement
+        data_tests:
+          - not_null

@@ -21,6 +21,23 @@ class ImperFluxByUsage(DiagnosticChart):
     sol = "usage"
     model = LandImperFluxUsageCompositionIndex
 
+    def __init__(self, land, params):
+        """
+        Initialise le graphique de flux d'imperméabilisation par usage/couverture.
+
+        Args:
+            land: Instance de LandModel représentant le territoire
+            params: Dictionnaire de paramètres devant contenir 'millesime_new_index'
+                   et optionnellement 'departement'
+
+        Raises:
+            ValueError: Si 'millesime_new_index' n'est pas présent dans params
+        """
+        if "millesime_new_index" not in params:
+            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
+
+        super().__init__(land=land, params=params)
+
     @property
     def data(self):
         if self.params.get("departement"):
@@ -176,7 +193,7 @@ class ImperFluxByUsageExport(ImperFluxByUsage):
     def param(self):
         return super().param | {
             "credits": OCSGE_CREDITS,
-            "title": {"text": f"{self.title}{self.title_end}"},
+            "title": {"text": self.title},
             "legend": {
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,

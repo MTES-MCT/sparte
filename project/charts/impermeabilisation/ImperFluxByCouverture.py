@@ -23,7 +23,7 @@ class ImperFluxByCouvertureExport(ImperFluxByCouverture):
     def param(self):
         return super().param | {
             "credits": OCSGE_CREDITS,
-            "title": {"text": f"{self.title}{self.title_end}"},
+            "title": {"text": self.title},
             "legend": {
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,

@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: artif_net_flux_land_by_index
+    columns:
+      - name: land_id
+        data_tests:
+          - not_null
+      - name: land_type
+        data_tests:
+          - not_null
+      - name: year_old_index
+        data_tests:
+          - not_null
+      - name: year_new_index
+        data_tests:
+          - not_null
+      - name: flux_artif
+        data_tests:
+          - not_null
+      - name: flux_desartif
+        data_tests:
+          - not_null
+      - name: flux_artif_net
+        data_tests:
+          - not_null
+      - name: departements
+        data_tests:
+          - not_null

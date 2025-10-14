@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: artif_flux_scot
+    columns:
+      - name: code
+        data_tests:
+          - not_null
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null
+      - name: flux_artif
+        data_tests:
+          - not_null
+      - name: flux_desartif
+        data_tests:
+          - not_null
+      - name: flux_artif_net
+        data_tests:
+          - not_null
+      - name: departement
+        data_tests:
+          - not_null

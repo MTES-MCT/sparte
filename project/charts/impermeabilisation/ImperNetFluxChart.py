@@ -14,6 +14,31 @@ from public_data.models.impermeabilisation import LandImperFlux, LandImperFluxIn
 class ImperNetFluxChart(DiagnosticChart):
     name = "Evolution de l'artificialisation"
 
+    def __init__(self, land, params):
+        """
+        Initialise le graphique de flux net d'imperméabilisation.
+
+        Deux modes de paramètres sont possibles :
+        1. Mode standard : params doit contenir 'millesime_new_index' et 'millesime_old_index'
+        2. Mode département : params doit contenir 'millesime_new_index', 'millesime_old_index' ET 'departement'
+
+        Args:
+            land: Instance de LandModel représentant le territoire
+            params: Dictionnaire de paramètres avec les clés requises
+
+        Raises:
+            ValueError: Si les paramètres requis ne sont pas présents
+        """
+        # Vérification des paramètres obligatoires
+        if "millesime_new_index" not in params:
+            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
+
+        if "millesime_old_index" not in params:
+            raise ValueError("Le paramètre 'millesime_old_index' est obligatoire")
+
+        # Appel du constructeur parent
+        super().__init__(land=land, params=params)
+
     @property
     def data(self) -> LandImperFluxIndex | LandImperFlux | None:
         if self.params.get("departement"):

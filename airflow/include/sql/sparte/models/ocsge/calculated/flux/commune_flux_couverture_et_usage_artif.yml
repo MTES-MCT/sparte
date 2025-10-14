@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: commune_flux_couverture_et_usage_artif
+    columns:
+      - name: commune_code
+        data_tests:
+          - not_null
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null

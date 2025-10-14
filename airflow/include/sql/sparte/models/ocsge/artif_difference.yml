@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: artif_difference
+    columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null
+      - name: year_old_index
+        data_tests:
+          - not_null
+      - name: year_new_index
+        data_tests:
+          - not_null
+      - name: departement
+        data_tests:
+          - not_null
+      - name: surface
+        data_tests:
+          - not_null
+      - name: uuid
+        data_tests:
+          - not_null
+      - name: geom
+        data_tests:
+          - not_null
+      - name: new_is_artificial
+        data_tests:
+          - not_null
+      - name: new_not_artificial
+        data_tests:
+          - not_null
