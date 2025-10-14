@@ -69,6 +69,10 @@ const DetailsFricheByZonageType: React.FC = () => (
 	</div>
 )
 
+const renderPercent = (value: number) => `${formatNumber({ number: value })}%`;
+const renderSurface = (value: number) => `${formatNumber({ number: value })} ha`;
+const renderYears = (value: number[]) => value.join(', ');
+
 export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
     const mapSectionRef = useRef<HTMLDivElement>(null);
@@ -212,39 +216,36 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             key: 'percent_artif' as keyof LandFriche,
             label: 'Part artificialisée (%)',
             sortable: true,
-            render: (value: number) => `${formatNumber({ number: value })}%`
+            render: renderPercent
         },
         {
             key: 'surface_artif' as keyof LandFriche,
             label: 'Surface artificialisée (ha)',
             sortable: true,
-            render: (value: number) => `${formatNumber({ number: value })} ha`
+            render: renderSurface
         },
         {
             key: 'years_artif' as keyof LandFriche,
             label: 'Année(s) d\'artificialisation',
-            sortable: false,
-            render: (value: number[]) => value.join(', ')
+            render: renderYears
         },
         {
             key: 'percent_imper' as keyof LandFriche,
             label: 'Part imperméable (%)',
             sortable: true,
-            render: (value: number) => `${formatNumber({ number: value })}%`
+            render: renderPercent
         },
         {
             key: 'surface_imper' as keyof LandFriche,
             label: 'Surface imperméable (ha)',
             sortable: true,
-            render: (value: number) => `${formatNumber({ number: value })} ha`
+            render: renderSurface
         },
         {
             key: 'years_imper' as keyof LandFriche,
             label: 'Année(s) d\'imperméabilisation',
-            sortable: false,
-            render: (value: number[]) => value.join(', ')
+            render: renderYears
         },
-
     ];
 
 	return (
