@@ -1,24 +1,18 @@
 import maplibregl from "maplibre-gl";
 import { createSource } from "./sourceRegistry";
 import { createLayer } from "./layerRegistry";
+import type { MapConfig } from "../types/builder";
 
-export async function initMapFromConfig(config: any, map: maplibregl.Map) {
-    // Ajouter les sources
+export async function initMapFromConfig(config: MapConfig, map: maplibregl.Map): Promise<void> {
     for (const src of config.sources) {
         const source = createSource(src);
         await source.load();
-        if (source.loaded) {
-            map.addSource(source.options.id, source.getOptions() as any);
-        }
+        map.addSource(source.options.id, source.getOptions() as any);
     }
 
-    // Ajouter les layers
     for (const lyr of config.layers) {
         const layer = createLayer(lyr);
         await layer.load();
-        if (layer.loaded) {
-            const layerConfig = layer.getOptions();
-            map.addLayer(layerConfig as any);
-        }
+        map.addLayer(layer.getOptions() as any);
     }
 }

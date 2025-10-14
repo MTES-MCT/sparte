@@ -58,32 +58,11 @@ export const useMaplibre = (bounds?: [number, number, number, number], maxBounds
         }
     }, [addControl]);
 
-    const removeControls = useCallback(() => {
-        if (!mapRef.current) return;
-
-        Object.values(controlsRef.current).forEach(control => {
-            mapRef.current!.removeControl(control);
-        });
-        controlsRef.current = {};
-    }, []);
-
     const updateControls = useCallback(() => {
         addNavigationControl();
         addFullscreenControl();
     }, [addNavigationControl, addFullscreenControl]);
 
-    const fitBounds = useCallback((bounds: [number, number, number, number], options?: any) => {
-        if (mapRef.current) mapRef.current.fitBounds(bounds, options);
-    }, []);
-
-    const flyTo = useCallback((center: [number, number], zoom?: number, options?: any) => {
-        if (mapRef.current) mapRef.current.flyTo({ center, zoom, ...options });
-    }, []);
-
-    const updateSourcesAndLayers = useCallback(() => {
-        const map = mapRef.current;
-        if (!map) return;
-    }, []);
 
     // Nettoyage de la carte lors du démontage du composant
     useEffect(() => {
@@ -100,11 +79,5 @@ export const useMaplibre = (bounds?: [number, number, number, number], maxBounds
         isMapLoaded,
         initializeMap,
         updateControls,
-        updateSourcesAndLayers,
-        addNavigationControl,
-        addFullscreenControl,
-        removeControls,
-        fitBounds,
-        flyTo,
     };
 };

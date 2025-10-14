@@ -9,18 +9,16 @@ export class EmpriseSource extends BaseSource {
         private readonly land_type: string,
         private readonly land_id: string
     ) {
-        super({ id: "emprise-source", type: "geojson" });
+        super({
+            id: "emprise-source",
+            type: "geojson",
+        });
     }
 
     async load(): Promise<void> {
-        try {
-            const { simple_geom } = await fetchLandGeom(this.land_type, this.land_id);
-            this.data = simple_geom;
-        } catch {
-            this.data = { type: "FeatureCollection", features: [] };
-        } finally {
-            this.loaded = true;
-        }
+        const { simple_geom } = await fetchLandGeom(this.land_type, this.land_id);
+        this.data = simple_geom;
+        this.loaded = true;
     }
 
     getOptions() {

@@ -27,9 +27,7 @@ export class OcsgeSource extends BaseSource {
 	}
 
 	getOptions() {
-		const tilesUrl = OCSGE_TILES_URL
-			.replace("{millesime}", this.millesimeIndex.toString())
-			.replace("{departement}", this.departement);
+		const tilesUrl = `${OCSGE_TILES_URL}occupation_du_sol_${this.millesimeIndex}_${this.departement}.pmtiles`;
 
 		return {
 			type: this.options.type,

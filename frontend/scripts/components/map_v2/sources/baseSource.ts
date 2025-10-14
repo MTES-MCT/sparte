@@ -13,17 +13,4 @@ export abstract class BaseSource {
     }
 
     abstract getOptions(): Record<string, any>;
-
-    // Méthodes utilitaires pour la gestion des sources
-    getId(): string {
-        return this.options.id;
-    }
-
-    getType(): string {
-        return this.options.type;
-    }
-
-    isLoaded(): boolean {
-        return this.loaded;
-    }
 }

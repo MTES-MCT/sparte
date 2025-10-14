@@ -1,8 +1,7 @@
 export type SourceType =
     | "geojson"
     | "vector"
-    | "raster"
-    | "raster-dem";
+    | "raster";
 
 export interface BaseSourceOptions {
     id: string;

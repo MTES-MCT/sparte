@@ -1,9 +1,11 @@
-import React, { useRef, useEffect, useMemo, useCallback } from "react";
+import React, { useRef, useEffect, useMemo, useCallback, useState } from "react";
 import styled from "styled-components";
 import maplibregl from "maplibre-gl";
-import { Protocol } from "pmtiles";
-import { useMaplibre } from "./hooks/useMaplibre";
-import { initMapFromConfig } from "./factory/initMapFromConfig";
+import { useMaplibre } from "../hooks/useMaplibre";
+import { initMapFromConfig } from "../factory/initMapFromConfig";
+import { ControlsPanel } from "./controls/ControlsPanel";
+import { ControlsManager } from "../controls/ControlsManager";
+import type { MapConfig } from "../types/builder";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -51,7 +53,7 @@ interface BaseMapProps {
     children?: React.ReactNode;
     bounds?: [number, number, number, number];
     maxBounds?: [number, number, number, number];
-    config?: any;
+    config?: MapConfig;
 }
 
 export const BaseMap: React.FC<BaseMapProps> = ({
@@ -63,21 +65,32 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
+    const [controlsManager, setControlsManager] = useState<ControlsManager | null>(null);
     
-    const memoizedConfig = useMemo(() => config, [config]);
+    const memoizedConfig = useMemo(() => config, [JSON.stringify(config)]);
 
     const {
         mapRef,
         isMapLoaded,
         initializeMap,
         updateControls,
-        updateSourcesAndLayers,
     } = useMaplibre(bounds, maxBounds);
 
-    const handleMapLoad = useCallback(async (map: any) => {
+    const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
         if (memoizedConfig && !isInitialized.current) {
-            await initMapFromConfig(memoizedConfig, map);
-            isInitialized.current = true;
+            try {
+                await initMapFromConfig(memoizedConfig, map);
+                
+                // Initialiser le gestionnaire de contrôles si des groupes sont définis
+                if (memoizedConfig.controlGroups?.length > 0) {
+                    const manager = new ControlsManager(map, memoizedConfig.controlGroups);
+                    setControlsManager(manager);
+                }
+                
+                isInitialized.current = true;
+            } catch (error) {
+                console.error('Erreur lors de l\'initialisation de la carte:', error);
+            }
         }
     }, [memoizedConfig]);
 
@@ -95,8 +108,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     useEffect(() => {
         if (!isMapLoaded) return;
         updateControls();
-        updateSourcesAndLayers();
-    }, [isMapLoaded, updateControls, updateSourcesAndLayers]);
+    }, [isMapLoaded, updateControls]);
 
     return (
         <MapWrapper id={`${id}-wrapper`}>
@@ -106,6 +118,14 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 $isLoaded={isMapLoaded}
             />
             {children}
+            {controlsManager && memoizedConfig?.controlGroups && memoizedConfig.controlGroups.length > 0 && (
+                <ControlsPanel
+                    config={{
+                        groups: memoizedConfig.controlGroups
+                    }}
+                    manager={controlsManager}
+                />
+            )}
         </MapWrapper>
     );
 };

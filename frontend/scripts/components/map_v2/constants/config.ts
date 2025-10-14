@@ -9,7 +9,7 @@ export const APP_DEFAULTS = {
 
 export const ORTHOPHOTO_TILES_URL = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=HR.ORTHOIMAGERY.ORTHOPHOTOS&tilematrixset=PM&TileMatrix={z}&TileCol={x}&TileRow={y}&format=image%2Fjpeg&style=normal";
 
-export const OCSGE_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/occupation_du_sol_{millesime}_{departement}.pmtiles";
+export const OCSGE_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/";
 
 export const DEFAULT_MAP_STYLE = {
 	version: 8 as const,
