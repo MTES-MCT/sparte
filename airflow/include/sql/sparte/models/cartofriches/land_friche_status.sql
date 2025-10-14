@@ -29,9 +29,7 @@ SELECT
     COALESCE(sum(details.surface_imper) filter(where friche_statut = 'friche avec projet'), 0) as friche_avec_projet_surface_imper,
     COALESCE(sum(surface) filter(where friche_statut = 'friche sans projet'), 0) as friche_sans_projet_surface,
     COALESCE(sum(details.surface_artif) filter(where friche_statut = 'friche sans projet'), 0) as friche_sans_projet_surface_artif,
-    COALESCE(sum(details.surface_imper) filter(where friche_statut = 'friche sans projet'), 0) as friche_sans_projet_surface_imper,
-    details.years_imper,
-    details.years_artif
+    COALESCE(sum(details.surface_imper) filter(where friche_statut = 'friche sans projet'), 0) as friche_sans_projet_surface_imper
  FROM {{ ref('friche_land') }}
  LEFT JOIN LATERAL (
     SELECT
@@ -46,9 +44,7 @@ SELECT
 
  GROUP BY
     land_id,
-    land_type,
-    details.years_imper,
-    details.years_artif
+    land_type
 ), status as (
 SELECT
     land_id,
@@ -112,9 +108,7 @@ SELECT
     friche_count,
     friche_avec_projet_count,
     friche_sans_projet_count,
-    friche_reconvertie_count,
-    years_imper,
-    years_artif
+    friche_reconvertie_count
 
 
 FROM statut_counts
@@ -136,8 +130,6 @@ SELECT
     friche_count,
     friche_reconvertie_count,
     friche_avec_projet_count,
-    friche_sans_projet_count,
-    years_artif,
-    years_imper
+    friche_sans_projet_count
 FROM
     status

@@ -125,8 +125,6 @@ LEFT JOIN LATERAL (
         'friche_reconvertie_surface', friche_reconvertie_surface / 10000,
         'friche_reconvertie_surface_artif', friche_reconvertie_surface_artif / 10000,
         'friche_reconvertie_surface_imper', friche_reconvertie_surface_imper / 10000,
-        'years_artif', years_artif,
-        'years_imper', years_imper,
         'friche_count', friche_count,
         'friche_sans_projet_count', friche_sans_projet_count,
         'friche_avec_projet_count', friche_avec_projet_count,

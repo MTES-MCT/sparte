@@ -1,11 +1,15 @@
 SELECT
     site_id,
-    artif_friche.surface_artif AS surface_artif,
-    artif_friche.percent_artif AS percent_artif,
-    artif_friche.years AS years_artif,
-    imper_friche.surface_imper AS surface_imper,
-    imper_friche.percent_imper AS percent_imper,
-    imper_friche.years AS years_imper
+    /*
+        the coalesce on the years below might fail if the site has
+        no artif nor imper
+     */
+    COALESCE(artif_friche.surface_artif, 0) AS surface_artif,
+    COALESCE(artif_friche.percent_artif, 0) AS percent_artif,
+    COALESCE(artif_friche.years, imper_friche.years) AS years_artif,
+    COALESCE(imper_friche.surface_imper, 0) AS surface_imper,
+    COALESCE(imper_friche.percent_imper, 0) AS percent_imper,
+    COALESCE(imper_friche.years, artif_friche.years) AS years_imper
 FROM
     {{ ref('friche') }}
 LEFT JOIN LATERAL (

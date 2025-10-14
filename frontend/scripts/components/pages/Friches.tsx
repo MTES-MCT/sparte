@@ -69,10 +69,6 @@ const DetailsFricheByZonageType: React.FC = () => (
 	</div>
 )
 
-const renderPercent = (value: number) => `${formatNumber({ number: value })}%`;
-const renderSurface = (value: number) => `${formatNumber({ number: value })} ha`;
-const renderYears = (value: number[]) => value.join(', ');
-
 export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
     const mapSectionRef = useRef<HTMLDivElement>(null);
@@ -107,8 +103,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
         customSortFunction: (a, b, field, direction) => {
             // Tri personnalisé pour le champ friche_statut
             if (field === 'friche_statut') {
-                const aIndex = STATUT_ORDER.indexOf(a.friche_statut as any);
-                const bIndex = STATUT_ORDER.indexOf(b.friche_statut as any);
+                const aIndex = STATUT_ORDER.indexOf(a.friche_statut as any) * 500000 + a.surface_artif * -1;
+                const bIndex = STATUT_ORDER.indexOf(b.friche_statut as any) * 500000 + b.surface_artif * -1;
+
                 return direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
             }
             
@@ -213,38 +210,17 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             sortable: true
         },
         {
-            key: 'percent_artif' as keyof LandFriche,
-            label: 'Part artificialisée (%)',
-            sortable: true,
-            render: renderPercent
-        },
-        {
             key: 'surface_artif' as keyof LandFriche,
-            label: 'Surface artificialisée (ha)',
+            label: 'Surface artificialisée',
             sortable: true,
-            render: renderSurface
-        },
-        {
-            key: 'years_artif' as keyof LandFriche,
-            label: 'Année(s) d\'artificialisation',
-            render: renderYears
-        },
-        {
-            key: 'percent_imper' as keyof LandFriche,
-            label: 'Part imperméable (%)',
-            sortable: true,
-            render: renderPercent
+            render: (value: number, friche: LandFriche) => `${formatNumber({ number: value })} ha (${formatNumber({ number: friche.percent_artif })} %)`
+
         },
         {
             key: 'surface_imper' as keyof LandFriche,
-            label: 'Surface imperméable (ha)',
+            label: 'Surface imperméabilisée',
             sortable: true,
-            render: renderSurface
-        },
-        {
-            key: 'years_imper' as keyof LandFriche,
-            label: 'Année(s) d\'imperméabilisation',
-            render: renderYears
+            render: (value: number, friche: LandFriche) => `${formatNumber({ number: value })} ha (${formatNumber({ number: friche.percent_imper })} %)`
         },
     ];
 
