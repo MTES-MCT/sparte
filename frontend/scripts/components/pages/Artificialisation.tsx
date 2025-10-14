@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Guide from "@components/ui/Guide";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { ProjectDetailResultType } from "@services/types/project";
@@ -12,6 +12,7 @@ import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ArtificialisationZonage } from "@components/features/ocsge/ArtificialisationZonage";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
+import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { useArtificialisation } from "@hooks/useArtificialisation";
 import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
@@ -194,6 +195,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	} = useArtificialisation({
 		landData
 	});
+
+	// États séparés pour chaque section
+	const [byDepartementFlux, setByDepartementFlux] = useState(false);
+	const [byDepartementNetFlux, setByDepartementNetFlux] = useState(false);
 
 	const { artifZonageIndex } = useArtificialisationZonage({
 		landData,
@@ -537,22 +542,185 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				<h2>
 					Détail de l'évolution de l'artificialisation des sols du territoire
 				</h2>
-				<div className="fr-notice fr-notice--warning">
-					<div className="fr-px-2w">
-						<div className="fr-notice__body">
-							<p>
-								<span className="fr-notice__title fr-text--sm">
-									Certains indicateurs liés à l'évolution de l'artificialisation
-									d'un millésime à l'autre ne sont pas encore disponibles sur
-									Mon Diagnostic Artificialisation.{" "}
-								</span>
-								<span className="fr-notice__desc fr-text--sm">
-									En effet, ceux-ci reposent sur des données encore en cours de
-									production. Leur publication est prévue dans les prochaines
-									semaines.
-								</span>
-							</p>
-						</div>
+			</div>
+
+			<div className="fr-mb-7w">
+				<h2 className="fr-mt-7w">
+					Artificialisation nette des sols
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+					{
+						is_interdepartemental && (
+							<DepartmentSelector
+								byDepartement={byDepartementNetFlux}
+								setByDepartement={setByDepartementNetFlux}
+							/>
+						)
+					}
+					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+						{byDepartementNetFlux ? (
+							millesimes
+								.filter((e) => e.index === Math.max(...millesimes.map(m => m.index)))
+								.map((m) => (
+									<div
+										key={`${m.index}_${m.departement}`}
+										className="fr-col-12"
+									>
+										<OcsgeGraph
+											id="artif_net_flux"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
+									</div>
+								))
+						) : (
+							<div className="fr-col-12">
+								<OcsgeGraph
+									id="artif_net_flux"
+									land_id={land_id}
+									land_type={land_type}
+									params={{
+										millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+										millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+									}}
+									sources={['ocsge']}
+									showDataTable={true}
+								>
+									<DetaislCalculationOcsge />
+								</OcsgeGraph>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+
+			<div className="fr-mb-7w">
+				<h2 className="fr-mt-7w">
+					Flux d'artificialisation par type de couverture et d'usage
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+					{
+						is_interdepartemental && (
+							<DepartmentSelector
+								byDepartement={byDepartementFlux}
+								setByDepartement={setByDepartementFlux}
+							/>
+						)
+					}
+					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+						{byDepartementFlux ? (
+							millesimes
+								.filter((e) => e.index === Math.max(...millesimes.map(m => m.index)))
+								.map((m) => (
+									<div
+										key={`${m.index}_${m.departement}`}
+										className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
+									>
+										<OcsgeGraph
+											id="artif_flux_by_couverture"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+											containerProps={{
+												style: {
+													height: "800px",
+												},
+											}}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
+										<OcsgeGraph
+											id="artif_flux_by_usage"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+											containerProps={{
+												style: {
+													height: "800px",
+												},
+											}}
+										>
+											<DetaislCalculationOcsge />
+										</OcsgeGraph>
+									</div>
+								))
+						) : (
+							<>
+								<div className="fr-col-12 fr-col-lg-6">
+									<OcsgeGraph
+										id="artif_flux_by_couverture"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+											millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+										containerProps={{
+											style: {
+												height: "800px",
+											},
+										}}
+									>
+										<DetaislCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+								<div className="fr-col-12 fr-col-lg-6">
+									<OcsgeGraph
+										id="artif_flux_by_usage"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+											millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+										containerProps={{
+											style: {
+												height: "800px",
+											},
+										}}
+									>
+										<DetaislCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+							</>
+						)}
 					</div>
 				</div>
 			</div>

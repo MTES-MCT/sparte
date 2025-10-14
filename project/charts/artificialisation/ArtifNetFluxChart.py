@@ -7,7 +7,7 @@ from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
     DESARTIFICIALISATION_COLOR,
 )
-from public_data.models import AdminRef
+from public_data.models.administration import Departement
 from public_data.models.artificialisation import LandArtifFlux, LandArtifFluxIndex
 
 
@@ -82,7 +82,16 @@ class ArtifNetFluxChart(DiagnosticChart):
     @cached_property
     def title_end(self):
         if self.params.get("departement"):
-            return f" ({self.params.get('departement')})"
+            # Afficher les années avec le département
+            # Pour LandArtifFlux, on a year_old et year_new (singular)
+            departement_code = self.params.get("departement")
+            try:
+                departement = Departement.objects.get(source_id=departement_code)
+                departement_label = f"{departement_code} - {departement.name}"
+            except Departement.DoesNotExist:
+                departement_label = departement_code
+            years_info = f" entre {self.data.year_old} et {self.data.year_new}"
+            return f"{years_info} ({departement_label})"
 
         if self.land.is_interdepartemental:
             return f" entre le millésime {self.params.get('millesime_old_index')} et le millésime {self.params.get('millesime_new_index')}"  # noqa: E501
@@ -116,25 +125,23 @@ class ArtifNetFluxChart(DiagnosticChart):
         }
 
     @property
-    def year_or_index_after(self):
-        if self.land.is_interdepartemental:
-            return f"millésime {self.params.get('millesime_new_index')}"
-        return f"{self.data.years_new[-1]}"
+    def year_or_index_period(self):
+        """Retourne la période de flux (millésime ancien et nouveau)"""
+        if self.params.get("departement"):
+            # Pour LandArtifFlux, on a year_old et year_new
+            return f"{self.data.year_old}-{self.data.year_new}"
+        elif self.land.is_interdepartemental:
+            return f"millésime {self.params.get('millesime_old_index')}-{self.params.get('millesime_new_index')}"
+        else:
+            # Pour LandArtifFluxIndex, on a years_old et years_new
+            return f"{self.data.years_old[0]}-{self.data.years_new[-1]}"
 
     @property
     def data_table(self):
-        if self.params.get("departement"):
-            territory_header = "Département"
-            territory_name = self.params.get("departement")
-        else:
-            territory_header = AdminRef.get_label(self.land.land_type)
-            territory_name = self.land.name
-
         headers = [
-            territory_header,
-            f"Artificialisation (ha) - {self.year_or_index_after}",
-            f"Désartificialisation (ha) - {self.year_or_index_after}",
-            f"Artificialisation nette (ha) - {self.year_or_index_after}",
+            f"Artificialisation (ha) - {self.year_or_index_period}",
+            f"Désartificialisation (ha) - {self.year_or_index_period}",
+            f"Artificialisation nette (ha) - {self.year_or_index_period}",
         ]
 
         return {
@@ -143,7 +150,6 @@ class ArtifNetFluxChart(DiagnosticChart):
                 {
                     "name": "",  # not used
                     "data": [
-                        territory_name,
                         round(self.data.flux_artif, DEFAULT_VALUE_DECIMALS),
                         round(self.data.flux_desartif, DEFAULT_VALUE_DECIMALS),
                         round(self.data.flux_artif_net, DEFAULT_VALUE_DECIMALS),

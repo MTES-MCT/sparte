@@ -9,7 +9,7 @@ from project.charts.constants import (
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
-from public_data.models import AdminRef
+from public_data.models.administration import Departement
 from public_data.models.artificialisation import (
     LandArtifFluxUsageComposition,
     LandArtifFluxUsageCompositionIndex,
@@ -87,7 +87,16 @@ class ArtifFluxByUsage(DiagnosticChart):
     @cached_property
     def title_end(self):
         if self.params.get("departement"):
-            return f" ({self.params.get('departement')})"
+            # Afficher les années avec le département
+            # Pour LandArtifFluxUsageComposition, on a year_old et year_new (singular)
+            departement_code = self.params.get("departement")
+            try:
+                departement = Departement.objects.get(source_id=departement_code)
+                departement_label = f"{departement_code} - {departement.name}"
+            except Departement.DoesNotExist:
+                departement_label = departement_code
+            years_info = f" entre {self.data[0].year_old} et {self.data[0].year_new}"
+            return f"{years_info} ({departement_label})"
 
         if self.land.is_interdepartemental:
             return f" entre le millésime n°{int(self.params.get('millesime_new_index')) - 1} et n°{self.params.get('millesime_new_index')}"  # noqa: E501
@@ -144,26 +153,30 @@ class ArtifFluxByUsage(DiagnosticChart):
         }
 
     @property
-    def year_or_index_after(self):
-        if self.land.is_interdepartemental:
-            return f"millésime {self.params.get('millesime_new_index')}"
-        return f"{self.data[0].years_new[0]}"
+    def year_or_index_period(self):
+        """Retourne la période de flux (millésime ancien et nouveau)"""
+        if self.params.get("departement"):
+            # Pour LandArtifFluxUsageComposition, on a year_old et year_new
+            return f"{self.data[0].year_old}-{self.data[0].year_new}"
+        elif self.land.is_interdepartemental:
+            millesime_new = self.params.get("millesime_new_index")
+            millesime_old = int(millesime_new) - 1
+            return f"millésime {millesime_old}-{millesime_new}"
+        else:
+            # Pour LandArtifFluxUsageCompositionIndex, on a years_old et years_new
+            return f"{self.data[0].years_old[0]}-{self.data[0].years_new[0]}"
 
     @property
     def data_table(self):
-        if self.params.get("departement"):
-            territory_header = "Département"
-            territory_name = self.params.get("departement")
-        else:
-            territory_header = AdminRef.get_label(self.land.land_type)
-            territory_name = self.land.name
+        # Déterminer le libellé de la colonne en fonction du type (usage ou couverture)
+        sol_label = self.sol.capitalize()
 
         headers = [
-            territory_header,
-            f"Type de {self.sol}",
-            f"Artificialisation (ha) - {self.year_or_index_after}",
-            f"Désartificialisation (ha) - {self.year_or_index_after}",
-            f"Artificialisation nette (ha) - {self.year_or_index_after}",
+            "Code",
+            sol_label,
+            f"Artificialisation (ha) - {self.year_or_index_period}",
+            f"Désartificialisation (ha) - {self.year_or_index_period}",
+            f"Artificialisation nette (ha) - {self.year_or_index_period}",
         ]
 
         return {
@@ -172,8 +185,8 @@ class ArtifFluxByUsage(DiagnosticChart):
                 {
                     "name": "",  # not used
                     "data": [
-                        territory_name,
-                        f"{item.label_short} ({getattr(item, self.sol)})",
+                        getattr(item, self.sol),
+                        item.label_short,
                         round(item.flux_artif, DEFAULT_VALUE_DECIMALS),
                         round(item.flux_desartif, DEFAULT_VALUE_DECIMALS),
                         round(item.flux_artif_net, DEFAULT_VALUE_DECIMALS),
