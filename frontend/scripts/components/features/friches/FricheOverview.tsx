@@ -34,7 +34,7 @@ const FricheOverview: React.FC<FricheOverviewProps> = ({
                         badgeClass={STATUT_BADGE_CONFIG['friche sans projet']}
                         badgeLabel={'friche sans projet'}
                         value={friche_sans_projet_count}
-                        label={`${formatNumber({number: friche_sans_projet_surface})} ha, dont ${formatNumber({ number: friche_sans_projet_surface_artif })} ha artificialisé`}
+                        label={`${formatNumber({number: friche_sans_projet_surface})} ha, dont ${formatNumber({ number: friche_sans_projet_surface_artif })} ha artificialisés`}
                         isHighlighted={true}
                         highlightBadge="Actionnable"
                     />
@@ -45,7 +45,7 @@ const FricheOverview: React.FC<FricheOverviewProps> = ({
                         badgeClass={STATUT_BADGE_CONFIG['friche avec projet']}
                         badgeLabel={'friche avec projet'}
                         value={friche_avec_projet_count}
-                        label={`${formatNumber({ number: friche_avec_projet_surface })} ha, dont ${formatNumber({ number: friche_avec_projet_surface_artif })} ha artificialisé`}
+                        label={`${formatNumber({ number: friche_avec_projet_surface })} ha, dont ${formatNumber({ number: friche_avec_projet_surface_artif })} ha artificialisés`}
                         isHighlighted={false}
                     />
                 </div>
@@ -55,7 +55,7 @@ const FricheOverview: React.FC<FricheOverviewProps> = ({
                         badgeClass={STATUT_BADGE_CONFIG['friche reconvertie']}
                         badgeLabel={'friche reconvertie'}
                         value={friche_reconvertie_count}
-                        label={`${formatNumber({ number: friche_reconvertie_surface })} ha, dont ${formatNumber({ number: friche_reconvertie_surface_artif })} ha artificialisé`}
+                        label={`${formatNumber({ number: friche_reconvertie_surface })} ha, dont ${formatNumber({ number: friche_reconvertie_surface_artif })} ha artificialisés`}
                         isHighlighted={false}
                     />
                 </div>
