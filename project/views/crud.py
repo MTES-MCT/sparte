@@ -104,16 +104,13 @@ class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
         return breadcrumbs
 
 
-class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
+from utils.htmx import StandAloneMixin
+
+class ProjectAddLookALike(StandAloneMixin, GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     model = Project
     template_name = "project/components/forms/add_territoire_de_comparaison.html"
     context_object_name = "project"
     form_class = KeywordForm
-
-    @property
-    def object(self):
-        # hotfix to make this view work
-        return super().get_object()
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
