@@ -6,27 +6,56 @@ models:
       - name: land_id
         data_tests:
           - not_null
+        data_type: character varying
       - name: land_type
         data_tests:
           - not_null
+        data_type: text
       - name: millesime_old_index
         data_tests:
           - not_null
+        data_type: bigint
       - name: millesime_new_index
         data_tests:
           - not_null
+        data_type: bigint
       - name: couverture
         data_tests:
           - not_null
+        data_type: character varying
       - name: flux_artif
         data_tests:
           - not_null
+        data_type: numeric
       - name: flux_desartif
         data_tests:
           - not_null
+        data_type: numeric
       - name: flux_artif_net
         data_tests:
           - not_null
+        data_type: numeric
       - name: departements
         data_tests:
+          - not_null
+        data_type: array
+      - name: years_old
+        data_type: array
+        tests:
+          - not_null
+      - name: years_new
+        data_type: array
+        tests:
+          - not_null
+      - name: color
+        data_type: text
+        tests:
+          - not_null
+      - name: label_short
+        data_type: text
+        tests:
+          - not_null
+      - name: label
+        data_type: text
+        tests:
           - not_null
