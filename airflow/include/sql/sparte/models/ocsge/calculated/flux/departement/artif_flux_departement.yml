@@ -6,18 +6,32 @@ models:
       - name: code
         data_tests:
           - not_null
+        data_type: character varying
       - name: year_old
         data_tests:
           - not_null
+        data_type: integer
       - name: year_new
         data_tests:
           - not_null
+        data_type: integer
       - name: flux_artif
         data_tests:
           - not_null
+        data_type: numeric
       - name: flux_desartif
         data_tests:
           - not_null
+        data_type: numeric
       - name: flux_artif_net
         data_tests:
           - not_null
+        data_type: numeric
+      - name: departement
+        data_type: character varying
+      - name: surface
+        data_type: double precision
+      - name: year_old_index
+        data_type: bigint
+      - name: year_new_index
+        data_type: bigint
