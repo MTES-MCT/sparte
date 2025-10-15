@@ -5,8 +5,9 @@
         indexes=[
             {"columns": ["land_id"], "type": "btree"},
             {"columns": ["land_type"], "type": "btree"},
-            {"columns": ["index"], "type": "btree"},
-        ],
+            {"columns": ["land_id", "land_type"], "type": "btree"},
+            {"columns": ["index"], "type": "btree"}
+        ]
     )
 }}
 

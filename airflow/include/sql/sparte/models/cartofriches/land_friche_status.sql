@@ -6,7 +6,7 @@
             {'columns': ['land_id'], 'type': 'btree'},
             {'columns': ['land_type'], 'type': 'btree'},
             {'columns': ['land_id', 'land_type'], 'type': 'btree'},
-            {'columns': ['status'], 'type': 'btree'},
+            {'columns': ['status'], 'type': 'btree'}
         ]
     )
 }}
