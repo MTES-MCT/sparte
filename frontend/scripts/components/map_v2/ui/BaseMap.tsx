@@ -78,19 +78,21 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 
     const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
         if (memoizedConfig && !isInitialized.current) {
-            try {
-                await initMapFromConfig(memoizedConfig, map);
-                
-                // Initialiser le gestionnaire de contrôles si des groupes sont définis
-                if (memoizedConfig.controlGroups?.length > 0) {
-                    const manager = new ControlsManager(map, memoizedConfig.controlGroups);
-                    setControlsManager(manager);
-                }
-                
-                isInitialized.current = true;
-            } catch (error) {
-                console.error('Erreur lors de l\'initialisation de la carte:', error);
+            // Initialiser la carte et récupérer les instances de sources/layers
+            const { sources, layers } = await initMapFromConfig(memoizedConfig, map);
+            
+            // Initialiser le gestionnaire de contrôles si des groupes sont définis
+            if (memoizedConfig.controlGroups?.length > 0) {
+                const manager = new ControlsManager(
+                    map, 
+                    memoizedConfig.controlGroups,
+                    sources,
+                    layers
+                );
+                setControlsManager(manager);
             }
+            
+            isInitialized.current = true;
         }
     }, [memoizedConfig]);
 

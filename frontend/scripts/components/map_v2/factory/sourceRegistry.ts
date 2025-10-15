@@ -8,7 +8,7 @@ type SourceFactory = (config: any) => BaseSource;
 const sourceRegistry: Record<string, SourceFactory> = {
     emprise: (cfg) => new EmpriseSource(cfg.land_type, cfg.land_id),
     orthophoto: () => new OrthophotoSource(),
-    ocsge: (cfg) => new OcsgeSource(cfg.millesimes, cfg.departements),
+    ocsge: (cfg) => new OcsgeSource(cfg.millesimes, cfg.departements, cfg.millesimeIndex),
 };
 
 export function createSource(cfg: any): BaseSource {

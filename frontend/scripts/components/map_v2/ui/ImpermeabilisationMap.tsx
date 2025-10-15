@@ -21,18 +21,18 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
             id: "orthophoto-group",
             label: "Fond de carte",
             description: "Image aérienne du territoire",
-            targetLayers: ["orthophoto-layer"],
             controls: [
                 {
                     id: "orthophoto-visibility",
                     type: "visibility",
+                    targetLayers: ["orthophoto-layer"],
                     defaultValue: true
                 },
                 {
                     id: "orthophoto-opacity",
                     type: "opacity",
+                    targetLayers: ["orthophoto-layer"],
                     defaultValue: 1,
-                    disabledWhenHidden: true
                 }
             ]
         },
@@ -40,18 +40,18 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
             id: "emprise-group",
             label: "Emprise du territoire",
             description: "Contour géographique du territoire",
-            targetLayers: ["emprise-layer"],
             controls: [
                 {
                     id: "emprise-visibility",
                     type: "visibility",
+                    targetLayers: ["emprise-layer"],
                     defaultValue: true
                 },
                 {
                     id: "emprise-opacity",
                     type: "opacity",
+                    targetLayers: ["emprise-layer"],
                     defaultValue: 1,
-                    disabledWhenHidden: true
                 }
             ]
         },
@@ -59,18 +59,29 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
             id: "impermeabilisation-group",
             label: "Imperméabilisation",
             description: "Surfaces imperméabilisées basée sur l'occupation du sol (OCS GE). Seules les zones imperméables sont affichées.",
-            targetLayers: ["impermeabilisation-layer"],
             controls: [
                 {
                     id: "impermeabilisation-visibility",
                     type: "visibility",
+                    targetLayers: ["impermeabilisation-layer"],
                     defaultValue: true
                 },
                 {
                     id: "impermeabilisation-opacity",
                     type: "opacity",
+                    targetLayers: ["impermeabilisation-layer"],
                     defaultValue: 0.7,
-                    disabledWhenHidden: true
+                },
+                {
+                    id: "impermeabilisation-millesime",
+                    type: "millesime",
+                    targetLayers: ["impermeabilisation-layer"],
+                    sourceId: "ocsge-source",
+                    defaultValue: lastMillesimeIndex,
+                    options: availableMillesimes.map(m => ({
+                        value: m.index,
+                        label: m.year ? `${m.year}` : `Index ${m.index}`
+                    })),
                 }
             ]
         }
@@ -80,7 +91,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		sources: [
 			{ id: "orthophoto-source", type: "orthophoto" },
 			{ id: "emprise-source", type: "emprise", land_type:landData.land_type, land_id: landData.land_id },
-			{ id: "ocsge-source", type: "ocsge", millesimes: landData.millesimes, departements: landData.departements },
+			{ id: "ocsge-source", type: "ocsge", millesimes: landData.millesimes, departements: landData.departements, millesimeIndex: lastMillesimeIndex },
 		],
 		layers: [
             { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },

@@ -1,5 +1,7 @@
 import maplibregl from "maplibre-gl";
 import { createControl } from "../factory/controlRegistry";
+import type { BaseSource } from "../sources/baseSource";
+import type { BaseLayer } from "../layers/baseLayer";
 import type {
     ControlGroup,
     LayerVisibility,
@@ -9,13 +11,23 @@ import type {
 export class ControlsManager implements IControlsManager {
     private map: maplibregl.Map;
     private groups: ControlGroup[];
+    private sources: Map<string, BaseSource>;
+    private layers: Map<string, BaseLayer>;
     private layerVisibility: Map<string, LayerVisibility> = new Map();
     private updateCallbacks: Set<() => void> = new Set();
     private controlInstances: Map<string, any> = new Map();
+    private controlValues: Map<string, any> = new Map();
 
-    constructor(map: maplibregl.Map, groups: ControlGroup[]) {
+    constructor(
+        map: maplibregl.Map,
+        groups: ControlGroup[],
+        sources: Map<string, BaseSource>,
+        layers: Map<string, BaseLayer>
+    ) {
         this.map = map;
         this.groups = groups;
+        this.sources = sources;
+        this.layers = layers;
         this.initializeControlInstances();
         this.initializeLayerVisibility();
     }
@@ -31,15 +43,24 @@ export class ControlsManager implements IControlsManager {
 
     private initializeLayerVisibility(): void {
         this.groups.forEach(group => {
-            group.targetLayers.forEach(layerId => {
-                if (!this.layerVisibility.has(layerId)) {
-                    this.layerVisibility.set(layerId, {
-                        id: layerId,
-                        label: layerId, // TODO: récupérer le vrai label
-                        visible: true,
-                        opacity: 1
-                    });
-                }
+            const groupTargetLayers = group.targetLayers || [];
+
+            group.controls.forEach(control => {
+                const targetLayers = control.targetLayers || groupTargetLayers;
+
+                targetLayers.forEach(layerId => {
+                    if (!this.layerVisibility.has(layerId)) {
+                        this.layerVisibility.set(layerId, {
+                            id: layerId,
+                            label: layerId,
+                            visible: true,
+                            opacity: 1
+                        });
+                    }
+                });
+
+                // Initialiser la valeur par défaut du contrôle
+                this.controlValues.set(control.id, control.defaultValue);
             });
         });
     }
@@ -67,42 +88,104 @@ export class ControlsManager implements IControlsManager {
         return Array.from(this.layerVisibility.values());
     }
 
-    applyControl(layerId: string, controlId: string, value: any): void {
+    // Dispatcher générique pour les sources
+    async applyToSource(sourceId: string, method: string, value: any): Promise<void> {
+        const source = this.sources.get(sourceId);
+        if (!source) {
+            console.warn(`Source ${sourceId} non trouvée`);
+            return;
+        }
+
+        const methodFn = (source as any)[method];
+        if (typeof methodFn === 'function') {
+            await methodFn.call(source, value);
+        } else {
+            console.warn(`Méthode ${method} non trouvée sur la source ${sourceId}`);
+        }
+    }
+
+    // Dispatcher générique pour les layers
+    async applyToLayer(layerId: string, method: string, value: any): Promise<void> {
+        const layer = this.layers.get(layerId);
+        if (!layer) {
+            console.warn(`Layer ${layerId} non trouvée`);
+            return;
+        }
+
+        const methodFn = (layer as any)[method];
+        if (typeof methodFn === 'function') {
+            await methodFn.call(layer, value);
+        } else {
+            console.warn(`Méthode ${method} non trouvée sur la layer ${layerId}`);
+        }
+    }
+
+    async applyControl(layerId: string, controlId: string, value: any): Promise<void> {
+        // Trouver le contrôle dans les groupes
+        const control = this.findControl(controlId);
+        if (!control) return;
+
         const controlInstance = this.controlInstances.get(controlId);
         if (!controlInstance) return;
 
-        // Appliquer le contrôle sur la carte
-        controlInstance.apply(this.map, layerId, value);
+        // Récupérer les targetLayers (du contrôle ou du groupe)
+        const group = this.findGroupByControlId(controlId);
+        const targetLayers = control.targetLayers || group?.targetLayers || [];
+
+        // Le contrôle délègue au manager via applyToSource/applyToLayer
+        await controlInstance.apply(targetLayers, value, {
+            manager: this,
+            sources: this.sources,
+            layers: this.layers,
+            controlId: controlId,
+            controlConfig: control
+        });
 
         // Mettre à jour l'état interne
-        this.updateLayerState(layerId, controlId, value);
+        this.updateLayerState(targetLayers, controlInstance.constructor.name, value);
+        this.controlValues.set(controlId, value);
 
         // Notifier les subscribers
         this.notifyUpdate();
     }
 
-    private updateLayerState(layerId: string, controlId: string, value: any): void {
-        const layerVisibility = this.layerVisibility.get(layerId);
-        if (!layerVisibility) return;
+    private updateLayerState(targetLayers: string[], controlClassName: string, value: any): void {
+        targetLayers.forEach(layerId => {
+            const layerVisibility = this.layerVisibility.get(layerId);
+            if (!layerVisibility) return;
 
-        // Trouver le contrôle pour déterminer le type
-        const control = this.groups
-            .flatMap(g => g.controls)
-            .find(c => c.id === controlId);
+            switch (controlClassName) {
+                case 'VisibilityControl':
+                    layerVisibility.visible = value as boolean;
+                    break;
+                case 'OpacityControl':
+                    layerVisibility.opacity = value as number;
+                    break;
+                // MillesimeControl ne modifie pas le layerVisibility
+            }
+        });
+    }
 
-        if (!control) return;
-
-        switch (control.type) {
-            case 'visibility':
-                layerVisibility.visible = value as boolean;
-                break;
-            case 'opacity':
-                layerVisibility.opacity = value as number;
-                break;
+    private findControl(controlId: string): any {
+        for (const group of this.groups) {
+            const control = group.controls.find(c => c.id === controlId);
+            if (control) return control;
         }
+        return null;
+    }
+
+    private findGroupByControlId(controlId: string): ControlGroup | undefined {
+        return this.groups.find(group =>
+            group.controls.some(c => c.id === controlId)
+        );
     }
 
     getControlValue(layerId: string, controlId: string): any {
+        const storedValue = this.controlValues.get(controlId);
+        if (storedValue !== undefined) {
+            return storedValue;
+        }
+
         const controlInstance = this.controlInstances.get(controlId);
         if (!controlInstance) return null;
 
@@ -126,9 +209,32 @@ export class ControlsManager implements IControlsManager {
         const group = this.groups.find(g => g.id === groupId);
         if (!group) return false;
 
-        return group.targetLayers.some(layerId => {
+        const groupTargetLayers = group.targetLayers || [];
+
+        const allTargetLayers = new Set<string>();
+
+        groupTargetLayers.forEach(layer => allTargetLayers.add(layer));
+        group.controls.forEach(control => {
+            (control.targetLayers || []).forEach(layer => allTargetLayers.add(layer));
+        });
+
+        return Array.from(allTargetLayers).some(layerId => {
             const layerVisibility = this.layerVisibility.get(layerId);
             return layerVisibility?.visible;
         });
+    }
+
+    // Méthodes helper pour les contrôles
+    getSourceByLayerId(layerId: string): BaseSource | undefined {
+        const layer = this.layers.get(layerId);
+        if (!layer) return undefined;
+
+        const sourceId = layer.getSource();
+        return this.sources.get(sourceId);
+    }
+
+    getSourceIdByLayerId(layerId: string): string | undefined {
+        const layer = this.layers.get(layerId);
+        return layer?.getSource();
     }
 }

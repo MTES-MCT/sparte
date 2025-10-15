@@ -2,21 +2,19 @@ import maplibregl from "maplibre-gl";
 import React from "react";
 
 // Types de base pour les contrôles
-export type ControlType = 'visibility' | 'opacity';
+export type ControlType = 'visibility' | 'opacity' | 'millesime';
 
 export interface ControlGroup {
     id: string;
     label: string;
     description?: string;
-    targetLayers: string[];
     controls: Control[];
-    expanded?: boolean;
 }
 
 export interface BaseControl {
     id: string;
     type: ControlType;
-    disabledWhenHidden?: boolean;
+    targetLayers: string[];
 }
 
 export interface VisibilityControl extends BaseControl {
@@ -31,7 +29,24 @@ export interface OpacityControl extends BaseControl {
     disabled?: boolean;
 }
 
-export type Control = VisibilityControl | OpacityControl;
+export interface MillesimeControl extends BaseControl {
+    type: 'millesime';
+    defaultValue: number;
+    options: Array<{ value: number; label: string }>;
+    sourceId: string;
+    disabled?: boolean;
+}
+
+export type Control = VisibilityControl | OpacityControl | MillesimeControl;
+
+// Contexte passé aux contrôles pour accéder au manager et aux objets
+export interface ControlContext {
+    manager: any; // ControlsManager (any pour éviter circular dependency)
+    sources: Map<string, any>; // BaseSource instances
+    layers: Map<string, any>; // BaseLayer instances
+    controlId: string; // ID du contrôle en cours
+    controlConfig: any; // Config du contrôle en cours
+}
 
 // Interface pour les contrôles spécialisés
 export interface ControlUIProps {
@@ -44,11 +59,13 @@ export interface ControlUIProps {
 
 // Interface pour les contrôles de base
 export interface BaseControlInterface {
-    readonly type: ControlType;
-    apply(map: maplibregl.Map, layerId: string, value: any): void;
+    apply(
+        targetLayers: string[],
+        value: any,
+        context: ControlContext
+    ): Promise<void>;
     getValue(map: maplibregl.Map, layerId: string): any;
     createUI(props: ControlUIProps): React.ReactElement;
-    isDisabled(layerVisibility: LayerVisibility): boolean;
 }
 
 // État de visibilité des couches

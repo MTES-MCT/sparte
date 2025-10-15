@@ -1,15 +1,18 @@
 import React from "react";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { BaseControl } from "./BaseControl";
-import type { ControlUIProps, LayerVisibility } from "../types/controls";
+import type { ControlUIProps, LayerVisibility, ControlContext } from "../types/controls";
 
 export class VisibilityControl extends BaseControl {
-    readonly type = 'visibility' as const;
 
-    apply(map: maplibregl.Map, layerId: string, value: boolean): void {
-        if (!this.layerExists(map, layerId)) return;
-
-        map.setLayoutProperty(layerId, 'visibility', value ? 'visible' : 'none');
+    async apply(
+        targetLayers: string[],
+        value: boolean,
+        context: ControlContext
+    ): Promise<void> {
+        for (const layerId of targetLayers) {
+            await context.manager.applyToLayer(layerId, 'setVisibility', value);
+        }
     }
 
     getValue(map: maplibregl.Map, layerId: string): boolean {
@@ -31,7 +34,4 @@ export class VisibilityControl extends BaseControl {
         });
     }
 
-    isDisabled(_layerVisibility: LayerVisibility): boolean {
-        return false; // Le contrôle de visibilité n'est jamais désactivé
-    }
 }

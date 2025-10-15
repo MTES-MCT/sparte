@@ -1,20 +1,17 @@
 import React from "react";
 import { Range } from "@codegouvfr/react-dsfr/Range";
 import { BaseControl } from "./BaseControl";
-import type { ControlUIProps, LayerVisibility } from "../types/controls";
+import type { ControlUIProps, LayerVisibility, ControlContext } from "../types/controls";
 
 export class OpacityControl extends BaseControl {
-    readonly type = 'opacity' as const;
 
-    apply(map: maplibregl.Map, layerId: string, value: number): void {
-        if (!this.layerExists(map, layerId)) return;
-
-        const layer = map.getLayer(layerId);
-        if (!layer || !layer.type) return;
-
-        const opacityProperty = this.getOpacityPropertyForLayerType(layer.type);
-        if (opacityProperty) {
-            map.setPaintProperty(layerId, opacityProperty, value);
+    async apply(
+        targetLayers: string[],
+        value: number,
+        context: ControlContext
+    ): Promise<void> {
+        for (const layerId of targetLayers) {
+            await context.manager.applyToLayer(layerId, 'setOpacity', value);
         }
     }
 
@@ -36,7 +33,7 @@ export class OpacityControl extends BaseControl {
             small: true,
             min: 0,
             max: 1,
-            step: 0.01,
+            step: 0.1,
             label: "Opacité",
             classes: { label: "fr-text--sm fr-mb-0" },
             disabled: props.disabled,
@@ -48,8 +45,4 @@ export class OpacityControl extends BaseControl {
         });
     }
 
-    isDisabled(layerVisibility: LayerVisibility): boolean {
-        // L'opacité est désactivée quand la couche est masquée
-        return !layerVisibility.visible;
-    }
 }

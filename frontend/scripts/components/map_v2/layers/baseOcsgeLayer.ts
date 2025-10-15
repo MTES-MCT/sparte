@@ -76,4 +76,28 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
     }
 
     abstract getOptions(): Record<string, any>;
+
+    // Méthodes pour gérer le changement de millésime
+    setMillesimeIndex(newIndex: number): void {
+        if (this.millesimeIndex !== newIndex) {
+            this.millesimeIndex = newIndex;
+            this.needsRebuild = true;
+        }
+    }
+
+    getMillesimeIndex(): number {
+        return this.millesimeIndex;
+    }
+
+    getAvailableMillesimes(): Array<{ index: number; year?: number }> {
+        return this.availableMillesimes;
+    }
+
+    needsSourceRebuild(): boolean {
+        return this.needsRebuild || false;
+    }
+
+    markAsRebuilt(): void {
+        this.needsRebuild = false;
+    }
 }

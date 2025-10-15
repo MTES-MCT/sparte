@@ -34,10 +34,15 @@ export const ControlsGroup: React.FC<ControlsGroupProps> = ({
                     const controlInstance = manager.getControlInstance(control.id);
                     if (!controlInstance) return null;
 
+                    const targetLayers = control.targetLayers;
+                    const firstLayerId = targetLayers[0];
+
                     // Récupérer la valeur actuelle depuis la carte
-                    const firstLayerId = group.targetLayers[0];
                     const value = manager.getControlValue(firstLayerId, control.id);
-                    const disabled = control.disabled ?? false;
+                    
+                    const isGroupVisible = manager.isGroupActive(group.id);
+                    const disabled = control.disabled ?? 
+                        (controlInstance.shouldDisableWhenGroupHidden() && !isGroupVisible);
 
                     return (
                         <div key={control.id}>
@@ -46,11 +51,9 @@ export const ControlsGroup: React.FC<ControlsGroupProps> = ({
                                 value,
                                 disabled,
                                 onChange: (newValue: any) => {
-                                    group.targetLayers.forEach(layerId => {
-                                        manager.applyControl(layerId, control.id, newValue);
-                                    });
+                                    manager.applyControl(firstLayerId, control.id, newValue);
                                 },
-                                layerId: group.targetLayers[0]
+                                layerId: firstLayerId
                             })}
                         </div>
                     );
