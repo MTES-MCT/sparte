@@ -35,14 +35,16 @@ const SearchContainer = styled.div`
     margin-left: auto;
 `;
 
-const FRICHES_CHARTS = [
-    { id: 'friche_pollution' },
-    { id: 'friche_surface' },
-    { id: 'friche_type' },
-    { id: 'friche_zonage_environnemental' },
-    { id: 'friche_zonage_type' },
-    { id: 'friche_zone_activite' }
-] as const;
+const FRICHES_CHARTS: Array<{ id: string; sources: string[] }> = [
+    { id: 'friche_artif_composition', sources: ['cartofriches', 'ocsge'] },
+    { id: 'friche_imper_composition', sources: ['cartofriches', 'ocsge'] },
+    { id: 'friche_pollution', sources: ['cartofriches'] },
+    { id: 'friche_surface', sources: ['cartofriches'] },
+    { id: 'friche_type', sources: ['cartofriches'] },
+    { id: 'friche_zonage_environnemental', sources: ['cartofriches'] },
+    { id: 'friche_zonage_type', sources: ['cartofriches'] },
+    { id: 'friche_zone_activite', sources: ['cartofriches'] }
+];
 
 const DetailsFricheZonageEnvironnemental: React.FC = () => (
 	<div>
@@ -286,6 +288,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             ].includes(friche_status) && [
                 LandType.REGION,
                 LandType.DEPARTEMENT,
+                LandType.EPCI,
             ].includes(land_type) && (
                 <>
                     <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
@@ -304,7 +307,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                                         id={chart.id}
                                         land_id={land_id}
                                         land_type={land_type}
-                                        sources={['cartofriches']}
+                                        sources={chart.sources}
                                         showDataTable={true}
                                     >
                                         {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}

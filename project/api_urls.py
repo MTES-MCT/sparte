@@ -27,6 +27,10 @@ from project.charts.impermeabilisation import (
     ImperSyntheseChart,
 )
 from project.charts.urbanisme import (
+    FricheArtifCompositionChart,
+    FricheArtifCompositionChartExport,
+    FricheImperCompositionChart,
+    FricheImperCompositionChartExport,
     FrichePollutionChart,
     FricheSurfaceChart,
     FricheTypeChart,
@@ -82,6 +86,10 @@ def get_chart_klass_or_404(chart_id):
         "pie_imper_by_usage": ImperByUsagePieChart,
         "artif_map": ArtifMap,
         "imper_map": ImperMap,
+        "friche_artif_composition": FricheArtifCompositionChart,
+        "friche_artif_composition_export": FricheArtifCompositionChartExport,
+        "friche_imper_composition": FricheImperCompositionChart,
+        "friche_imper_composition_export": FricheImperCompositionChartExport,
         "friche_pollution": FrichePollutionChart,
         "friche_surface": FricheSurfaceChart,
         "friche_type": FricheTypeChart,
