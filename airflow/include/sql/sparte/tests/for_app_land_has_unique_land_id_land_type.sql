@@ -10,4 +10,4 @@ GROUP BY
 HAVING
     count(*) > 1
 ORDER BY
-    count_duplicates DESC;
+    count_duplicates DESC
