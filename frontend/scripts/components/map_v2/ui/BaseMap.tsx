@@ -84,11 +84,11 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             // Initialiser le gestionnaire de contrôles si des groupes sont définis
             if (memoizedConfig.controlGroups?.length > 0) {
                 const manager = new ControlsManager(
-                    map, 
                     memoizedConfig.controlGroups,
                     sources,
                     layers
                 );
+                
                 setControlsManager(manager);
             }
             

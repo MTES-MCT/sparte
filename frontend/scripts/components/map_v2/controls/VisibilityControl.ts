@@ -1,7 +1,8 @@
 import React from "react";
 import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { BaseControl } from "./BaseControl";
-import type { ControlUIProps, LayerVisibility, ControlContext } from "../types/controls";
+import type { ControlUIProps, ControlContext } from "../types/controls";
+import type { LayerInterface } from "../types/layerInterface";
 
 export class VisibilityControl extends BaseControl {
 
@@ -11,15 +12,16 @@ export class VisibilityControl extends BaseControl {
         context: ControlContext
     ): Promise<void> {
         for (const layerId of targetLayers) {
-            await context.manager.applyToLayer(layerId, 'setVisibility', value);
+            const layer = context.layers.get(layerId) as LayerInterface;
+            if (layer?.setVisibility) {
+                layer.setVisibility(value);
+            }
         }
     }
 
-    getValue(map: maplibregl.Map, layerId: string): boolean {
-        if (!this.layerExists(map, layerId)) return true;
-
-        const visibility = map.getLayoutProperty(layerId, 'visibility');
-        return visibility === 'visible';
+    getValue(layerId: string, context?: ControlContext): boolean {
+        const layer = context?.layers.get(layerId) as LayerInterface;
+        return layer?.getVisibility?.() ?? true;
     }
 
     createUI(props: ControlUIProps): React.ReactElement {

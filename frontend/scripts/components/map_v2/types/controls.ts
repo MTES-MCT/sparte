@@ -2,7 +2,7 @@ import maplibregl from "maplibre-gl";
 import React from "react";
 
 // Types de base pour les contrôles
-export type ControlType = 'visibility' | 'opacity' | 'millesime';
+export type ControlType = 'visibility' | 'opacity' | 'ocsge-millesime' | 'ocsge-nomenclature' | 'ocsge-nomenclature-filter';
 
 export interface ControlGroup {
     id: string;
@@ -29,15 +29,27 @@ export interface OpacityControl extends BaseControl {
     disabled?: boolean;
 }
 
-export interface MillesimeControl extends BaseControl {
-    type: 'millesime';
-    defaultValue: number;
-    options: Array<{ value: number; label: string }>;
+export interface OcsgeMillesimeControl extends BaseControl {
+    type: 'ocsge-millesime';
     sourceId: string;
+    defaultValue: number;
     disabled?: boolean;
 }
 
-export type Control = VisibilityControl | OpacityControl | MillesimeControl;
+export interface OcsgeNomenclatureControl extends BaseControl {
+    type: 'ocsge-nomenclature';
+    defaultValue: 'couverture' | 'usage';
+    linkedFilterId?: string;
+    disabled?: boolean;
+}
+
+export interface OcsgeNomenclatureFilterControl extends BaseControl {
+    type: 'ocsge-nomenclature-filter';
+    defaultValue: string[];  // Codes sélectionnés par défaut
+    disabled?: boolean;
+}
+
+export type Control = VisibilityControl | OpacityControl | OcsgeMillesimeControl | OcsgeNomenclatureControl | OcsgeNomenclatureFilterControl;
 
 // Contexte passé aux contrôles pour accéder au manager et aux objets
 export interface ControlContext {
@@ -55,6 +67,7 @@ export interface ControlUIProps {
     disabled?: boolean;
     onChange: (value: any) => void;
     layerId: string;
+    context?: ControlContext;
 }
 
 // Interface pour les contrôles de base
@@ -64,16 +77,8 @@ export interface BaseControlInterface {
         value: any,
         context: ControlContext
     ): Promise<void>;
-    getValue(map: maplibregl.Map, layerId: string): any;
+    getValue(layerId: string, context?: ControlContext): any;
     createUI(props: ControlUIProps): React.ReactElement;
-}
-
-// État de visibilité des couches
-export interface LayerVisibility {
-    id: string;
-    label: string;
-    visible: boolean;
-    opacity?: number;
 }
 
 // Configuration des contrôles
@@ -84,8 +89,11 @@ export interface ControlsConfig {
 // Interface pour le gestionnaire de contrôles
 export interface ControlsManager {
     getGroups(): ControlGroup[];
-    getLayerVisibility(layerId: string): LayerVisibility | undefined;
-    getAllLayerVisibility(): LayerVisibility[];
-    applyControl(layerId: string, controlId: string, value: any): void;
+    applyControl(controlId: string, value: any): void;
+    getControlValue(controlId: string): any;
+    isGroupVisible(groupId: string): boolean;
     subscribe(callback: () => void): () => void;
+    getControlInstance(controlId: string): BaseControlInterface | undefined;
+    getControlContext(controlId: string): ControlContext;
+    updateControlValue(controlId: string, value: any): void;
 }

@@ -27,6 +27,8 @@ export const ControlsGroup: React.FC<ControlsGroupProps> = ({
     group,
     manager,
 }) => {
+    const isGroupVisible = manager.isGroupVisible(group.id);
+
     return (
         <GroupContainer>
             <ControlsList>
@@ -37,12 +39,10 @@ export const ControlsGroup: React.FC<ControlsGroupProps> = ({
                     const targetLayers = control.targetLayers;
                     const firstLayerId = targetLayers[0];
 
-                    // Récupérer la valeur actuelle depuis la carte
-                    const value = manager.getControlValue(firstLayerId, control.id);
+                    const value = manager.getControlValue(control.id);
                     
-                    const isGroupVisible = manager.isGroupActive(group.id);
                     const disabled = control.disabled ?? 
-                        (controlInstance.shouldDisableWhenGroupHidden() && !isGroupVisible);
+                        (control.type !== 'visibility' && !isGroupVisible);
 
                     return (
                         <div key={control.id}>
@@ -50,10 +50,11 @@ export const ControlsGroup: React.FC<ControlsGroupProps> = ({
                                 control,
                                 value,
                                 disabled,
-                                onChange: (newValue: any) => {
-                                    manager.applyControl(firstLayerId, control.id, newValue);
-                                },
-                                layerId: firstLayerId
+                                        onChange: (newValue: any) => {
+                                            manager.applyControl(control.id, newValue);
+                                        },
+                                layerId: firstLayerId,
+                                context: manager.getControlContext(control.id)
                             })}
                         </div>
                     );

@@ -1,6 +1,8 @@
 import { VisibilityControl } from "../controls/VisibilityControl";
 import { OpacityControl } from "../controls/OpacityControl";
-import { MillesimeControl } from "../controls/MillesimeControl";
+import { OcsgeMillesimeControl } from "../controls/OcsgeMillesimeControl";
+import { OcsgeNomenclatureControl } from "../controls/OcsgeNomenclatureControl";
+import { OcsgeNomenclatureFilterControl } from "../controls/OcsgeNomenclatureFilterControl";
 import type { BaseControlInterface, ControlType } from "../types/controls";
 
 type ControlFactory = () => BaseControlInterface;
@@ -8,7 +10,9 @@ type ControlFactory = () => BaseControlInterface;
 const controlRegistry: Record<ControlType, ControlFactory> = {
     visibility: () => new VisibilityControl(),
     opacity: () => new OpacityControl(),
-    millesime: () => new MillesimeControl(),
+    'ocsge-millesime': () => new OcsgeMillesimeControl(),
+    'ocsge-nomenclature': () => new OcsgeNomenclatureControl(),
+    'ocsge-nomenclature-filter': () => new OcsgeNomenclatureFilterControl(),
 };
 
 export function createControl(type: ControlType): BaseControlInterface {

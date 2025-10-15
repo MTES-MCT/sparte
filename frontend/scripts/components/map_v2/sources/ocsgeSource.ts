@@ -1,6 +1,7 @@
 import { BaseSource } from "./baseSource";
 import { OCSGE_TILES_URL } from "../constants/config";
 import { Millesime } from "@services/types/land";
+import type { SourceInterface } from "../types/sourceInterface";
 
 const getLastMillesimeIndex = (millesimes: Millesime[]): number => {
 	if (!millesimes || millesimes.length === 0) {
@@ -10,7 +11,7 @@ const getLastMillesimeIndex = (millesimes: Millesime[]): number => {
 	return Math.max(...millesimes.map(m => m.index));
 };
 
-export class OcsgeSource extends BaseSource {
+export class OcsgeSource extends BaseSource implements SourceInterface {
 	private millesimeIndex: number;
 	private departement: string;
 	private millesimes: Millesime[];
@@ -102,11 +103,11 @@ export class OcsgeSource extends BaseSource {
 		});
 	}
 
-	getMillesimeIndex(): number {
-		return this.millesimeIndex;
+	getAvailableMillesimes(): Array<{ value: number; label: string }> {
+		return this.millesimes.map(m => ({
+			value: m.index,
+			label: m.year ? `${m.year}` : `Index ${m.index}`
+		}));
 	}
 
-	getDepartement(): string {
-		return this.departement;
-	}
 }

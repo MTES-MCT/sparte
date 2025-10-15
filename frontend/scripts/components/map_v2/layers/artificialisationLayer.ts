@@ -15,7 +15,7 @@ export class ArtificialisationLayer extends BaseOcsgeLayer {
 		}, millesimeIndex, departement, nomenclature, millesimes);
 	}
 
-	protected getLayerNomenclature() {
+	getLayerNomenclature() {
 		return OCSGE_LAYER_NOMENCLATURES.artificialisation;
 	}
 

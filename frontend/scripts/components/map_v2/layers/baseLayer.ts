@@ -1,4 +1,4 @@
-import type { LayerType, BaseLayerOptions } from "../types/layer";
+import type { BaseLayerOptions } from "../types/layer";
 import type maplibregl from "maplibre-gl";
 
 export abstract class BaseLayer {
@@ -44,6 +44,14 @@ export abstract class BaseLayer {
 			this.map.setPaintProperty(layerId, opacityProperty, opacity);
 			this.options.opacity = opacity;
 		}
+	}
+
+	getVisibility(): boolean {
+		return this.options.visible ?? true;
+	}
+
+	getOpacity(): number {
+		return this.options.opacity ?? 1;
 	}
 
 	protected getOpacityPropertyForLayerType(layerType: string): string | null {

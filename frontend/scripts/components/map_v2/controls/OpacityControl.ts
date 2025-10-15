@@ -1,7 +1,8 @@
 import React from "react";
 import { Range } from "@codegouvfr/react-dsfr/Range";
 import { BaseControl } from "./BaseControl";
-import type { ControlUIProps, LayerVisibility, ControlContext } from "../types/controls";
+import type { ControlUIProps, ControlContext } from "../types/controls";
+import type { LayerInterface } from "../types/layerInterface";
 
 export class OpacityControl extends BaseControl {
 
@@ -11,20 +12,16 @@ export class OpacityControl extends BaseControl {
         context: ControlContext
     ): Promise<void> {
         for (const layerId of targetLayers) {
-            await context.manager.applyToLayer(layerId, 'setOpacity', value);
+            const layer = context.layers.get(layerId) as LayerInterface;
+            if (layer?.setOpacity) {
+                layer.setOpacity(value);
+            }
         }
     }
 
-    getValue(map: maplibregl.Map, layerId: string): number {
-        if (!this.layerExists(map, layerId)) return 1;
-
-        const layer = map.getLayer(layerId);
-        if (!layer || !layer.type) return 1;
-
-        const opacityProperty = this.getOpacityPropertyForLayerType(layer.type);
-        if (!opacityProperty) return 1;
-
-        return (map.getPaintProperty(layerId, opacityProperty) as number) ?? 1;
+    getValue(layerId: string, context?: ControlContext): number {
+        const layer = context?.layers.get(layerId) as LayerInterface;
+        return layer?.getOpacity?.() ?? 1;
     }
 
     createUI(props: ControlUIProps): React.ReactElement {

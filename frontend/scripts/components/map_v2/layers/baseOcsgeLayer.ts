@@ -9,7 +9,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
     protected nomenclature: NomenclatureType;
     protected allowedCodes: { couverture: Couverture[]; usage: Usage[] };
     protected availableMillesimes: Array<{ index: number; year?: number }>;
-    protected needsRebuild?: boolean;
+    protected currentFilter: string[] = [];
 
     constructor(options: BaseLayerOptions, millesimeIndex: number, departement: string, nomenclature: NomenclatureType = "couverture", availableMillesimes: Array<{ index: number; year?: number }> = []) {
         super(options);
@@ -19,8 +19,12 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         this.availableMillesimes = availableMillesimes && availableMillesimes.length > 0 ? availableMillesimes : [{ index: millesimeIndex }];
 
         this.allowedCodes = this.getLayerNomenclature();
+
+        // Initialiser le filtre avec tous les codes autorisés pour la nomenclature actuelle
+        this.currentFilter = this.nomenclature === "couverture"
+            ? this.allowedCodes.couverture
+            : this.allowedCodes.usage;
     }
-    protected abstract getLayerNomenclature(): { couverture: Couverture[]; usage: Usage[] };
 
     protected abstract getBaseFilter(): any[];
 
@@ -77,27 +81,73 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
 
     abstract getOptions(): Record<string, any>;
 
-    // Méthodes pour gérer le changement de millésime
-    setMillesimeIndex(newIndex: number): void {
-        if (this.millesimeIndex !== newIndex) {
-            this.millesimeIndex = newIndex;
-            this.needsRebuild = true;
-        }
+    setNomenclature(newNomenclature: NomenclatureType): void {
+        if (!this.map) return;
+
+        const layerId = this.getId();
+        if (!this.map.getLayer(layerId)) return;
+
+        this.nomenclature = newNomenclature;
+
+        this.map.setPaintProperty(layerId, 'fill-color', this.getColorExpression());
+
+        const newAllowedCodes = newNomenclature === "couverture"
+            ? this.allowedCodes.couverture
+            : this.allowedCodes.usage;
+        this.setFilter(newAllowedCodes);
     }
 
-    getMillesimeIndex(): number {
+
+    getCurrentMillesime(): number {
         return this.millesimeIndex;
     }
 
-    getAvailableMillesimes(): Array<{ index: number; year?: number }> {
-        return this.availableMillesimes;
+    getAvailableMillesimes(): Array<{ value: number; label: string }> {
+        return this.availableMillesimes.map(m => ({
+            value: m.index,
+            label: m.year ? `${m.year}` : `Index ${m.index}`
+        }));
     }
 
-    needsSourceRebuild(): boolean {
-        return this.needsRebuild || false;
+    getCurrentNomenclature(): NomenclatureType {
+        return this.nomenclature;
     }
 
-    markAsRebuilt(): void {
-        this.needsRebuild = false;
+    getLayerNomenclature(): { couverture: Couverture[]; usage: Usage[] } {
+        return this.allowedCodes;
     }
+
+    setFilter(selectedCodes: string[]): void {
+        if (!this.map) return;
+
+        const layerId = this.getId();
+        if (!this.map.getLayer(layerId)) return;
+
+        this.currentFilter = selectedCodes;
+
+        const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
+        const filter = this.buildFilterExpression(selectedCodes, field);
+
+        this.map.setFilter(layerId, filter as any);
+    }
+
+    getCurrentFilter(): string[] {
+        return this.currentFilter;
+    }
+
+    private buildFilterExpression(selectedCodes: string[], field: string): any[] {
+        if (selectedCodes.length === 0) {
+            // Aucun code sélectionné = masquer tout
+            return ["==", ["get", field], ""];
+        }
+
+        if (selectedCodes.length === 1) {
+            // Un seul code sélectionné
+            return ["==", ["get", field], selectedCodes[0]];
+        }
+
+        // Plusieurs codes sélectionnés
+        return ["in", ["get", field], ["literal", selectedCodes]];
+    }
+
 }

@@ -157,7 +157,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 						
 						<SectionContent>
 							{groups.map((group) => {
-								const isGroupActive = manager.isGroupActive(group.id);
+								const isGroupActive = manager.isGroupVisible(group.id);
 
 								return (
 									<GroupItem

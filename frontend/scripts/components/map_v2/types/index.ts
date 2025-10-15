@@ -6,10 +6,11 @@ export type {
 	Control,
 	ControlType,
 	ControlGroup,
-	LayerVisibility,
 	ControlsConfig,
 	ControlsManager
 } from "./controls";
+export type { LayerInterface } from "./layerInterface";
+export type { SourceInterface } from "./sourceInterface";
 
 // La définition des configs carte est dans builder
 export type {

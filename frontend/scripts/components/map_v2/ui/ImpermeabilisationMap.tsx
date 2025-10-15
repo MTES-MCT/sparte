@@ -3,7 +3,7 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import type { ControlGroup } from "../types/controls";
-
+import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 interface ImpermeabilisationMapProps {
 	landData: LandDetailResultType;
 }
@@ -32,7 +32,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
                     id: "orthophoto-opacity",
                     type: "opacity",
                     targetLayers: ["orthophoto-layer"],
-                    defaultValue: 1,
+                    defaultValue: 1
                 }
             ]
         },
@@ -51,7 +51,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
                     id: "emprise-opacity",
                     type: "opacity",
                     targetLayers: ["emprise-layer"],
-                    defaultValue: 1,
+                    defaultValue: 1
                 }
             ]
         },
@@ -70,18 +70,27 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
                     id: "impermeabilisation-opacity",
                     type: "opacity",
                     targetLayers: ["impermeabilisation-layer"],
-                    defaultValue: 0.7,
+                    defaultValue: 0.7
                 },
                 {
                     id: "impermeabilisation-millesime",
-                    type: "millesime",
+                    type: "ocsge-millesime",
                     targetLayers: ["impermeabilisation-layer"],
                     sourceId: "ocsge-source",
-                    defaultValue: lastMillesimeIndex,
-                    options: availableMillesimes.map(m => ({
-                        value: m.index,
-                        label: m.year ? `${m.year}` : `Index ${m.index}`
-                    })),
+                    defaultValue: lastMillesimeIndex
+                },
+                {
+                    id: "impermeabilisation-nomenclature",
+                    type: "ocsge-nomenclature",
+                    targetLayers: ["impermeabilisation-layer"],
+                    linkedFilterId: "impermeabilisation-filter",
+                    defaultValue: "couverture"
+                },
+                {
+                    id: "impermeabilisation-filter",
+                    type: "ocsge-nomenclature-filter",
+                    targetLayers: ["impermeabilisation-layer"],
+                    defaultValue: OCSGE_LAYER_NOMENCLATURES.impermeabilisation.couverture
                 }
             ]
         }
