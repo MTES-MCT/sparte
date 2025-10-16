@@ -1,8 +1,8 @@
 import React from "react";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import { BaseControl } from "./BaseControl";
 import type { ControlUIProps, ControlContext, OcsgeNomenclatureControl as OcsgeNomenclatureControlType } from "../types/controls";
 import type { LayerInterface } from "../types/layerInterface";
+import { OcsgeNomenclatureControl as OcsgeNomenclatureControlComponent } from "../ui/controls/OcsgeNomenclatureControl";
 
 export class OcsgeNomenclatureControl extends BaseControl {
     async apply(
@@ -38,28 +38,6 @@ export class OcsgeNomenclatureControl extends BaseControl {
     }
 
     createUI(props: ControlUIProps): React.ReactElement {
-        const options = [
-            { value: "couverture", label: "Couverture du sol" },
-            { value: "usage", label: "Usage du sol" }
-        ];
-
-        return React.createElement(Select, {
-            label: "Nomenclature",
-            nativeSelectProps: {
-                value: props.value as 'couverture' | 'usage',
-                onChange: (e: React.ChangeEvent<HTMLSelectElement>) => {
-                    const value = e.target.value as 'couverture' | 'usage';
-                    props.onChange(value);
-                }
-            },
-            children: options.map(option =>
-                React.createElement('option', {
-                    key: option.value,
-                    value: option.value
-                }, option.label)
-            ),
-            disabled: props.disabled
-        });
+        return React.createElement(OcsgeNomenclatureControlComponent, props);
     }
-
 }

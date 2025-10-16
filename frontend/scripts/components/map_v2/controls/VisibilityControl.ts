@@ -1,8 +1,8 @@
 import React from "react";
-import { ToggleSwitch } from "@codegouvfr/react-dsfr/ToggleSwitch";
 import { BaseControl } from "./BaseControl";
 import type { ControlUIProps, ControlContext } from "../types/controls";
 import type { LayerInterface } from "../types/layerInterface";
+import { VisibilityControl as VisibilityControlComponent } from "../ui/controls/VisibilityControl";
 
 export class VisibilityControl extends BaseControl {
 
@@ -25,15 +25,6 @@ export class VisibilityControl extends BaseControl {
     }
 
     createUI(props: ControlUIProps): React.ReactElement {
-        return React.createElement(ToggleSwitch, {
-            inputTitle: "Visibilité",
-            label: "Visibilité",
-            labelPosition: "left",
-            checked: props.value as boolean,
-            onChange: props.onChange,
-            classes: { label: "fr-text--sm fr-mb-0" },
-            disabled: props.disabled
-        });
+        return React.createElement(VisibilityControlComponent, props);
     }
-
 }

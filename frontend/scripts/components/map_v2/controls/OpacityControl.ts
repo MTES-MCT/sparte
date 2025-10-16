@@ -1,8 +1,8 @@
 import React from "react";
-import { Range } from "@codegouvfr/react-dsfr/Range";
 import { BaseControl } from "./BaseControl";
 import type { ControlUIProps, ControlContext } from "../types/controls";
 import type { LayerInterface } from "../types/layerInterface";
+import { OpacityControl as OpacityControlComponent } from "../ui/controls/OpacityControl";
 
 export class OpacityControl extends BaseControl {
 
@@ -25,21 +25,6 @@ export class OpacityControl extends BaseControl {
     }
 
     createUI(props: ControlUIProps): React.ReactElement {
-        return React.createElement(Range, {
-            hideMinMax: true,
-            small: true,
-            min: 0,
-            max: 1,
-            step: 0.1,
-            label: "Opacité",
-            classes: { label: "fr-text--sm fr-mb-0" },
-            disabled: props.disabled,
-            nativeInputProps: {
-                value: props.value as number,
-                onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                    props.onChange(parseFloat(e.target.value))
-            }
-        });
+        return React.createElement(OpacityControlComponent, props);
     }
-
 }
