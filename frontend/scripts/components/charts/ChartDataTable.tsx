@@ -6,6 +6,9 @@ interface ChartData {
         name: string;
         data: any[];
     }>;
+    boldFirstColumn?: boolean;
+    boldLastColumn?: boolean;
+    boldLastRow?: boolean;
 }
 
 interface ChartDataTableProps {
@@ -16,7 +19,7 @@ interface ChartDataTableProps {
 const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
     if (!data?.headers || !data?.rows) return null;
 
-    const { headers, rows } = data;
+    const { headers, rows, boldFirstColumn = false, boldLastColumn = false, boldLastRow = false } = data;
     return (
         <div className="fr-table--sm fr-table fr-table--bordered fr-table--no-caption fr-mb-0 fr-mt-0">
             <div className="fr-table__wrapper">
@@ -34,20 +37,35 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {rows.map((row, rowIndex: number) => (
-                                    <tr key={`${row.name}-${rowIndex}`} data-row-key={rowIndex}>
-                                        {row.data.map((cell: any, cellIndex: number) => {
-                                            const isNumeric = typeof cell === 'number' || !isNaN(Number(cell));
-                                            return (
-                                                <td key={`${row.name}-${rowIndex}-${cellIndex}`} className={isNumeric ? 'fr-cell--right' : ''}>
-                                                    {isNumeric ? formatNumber({
-                                                        number: Number(cell),
-                                                    }) : cell}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-                                ))}
+                                {rows.map((row, rowIndex: number) => {
+                                    const isLastRow = rowIndex === rows.length - 1;
+                                    return (
+                                        <tr key={`${row.name}-${rowIndex}`} data-row-key={rowIndex}>
+                                            {row.data.map((cell: any, cellIndex: number) => {
+                                                const isNumeric = typeof cell === 'number' || !isNaN(Number(cell));
+                                                const isFirstColumn = cellIndex === 0;
+                                                const isLastColumn = cellIndex === row.data.length - 1;
+                                                const shouldBold =
+                                                    (boldFirstColumn && isFirstColumn) ||
+                                                    (boldLastColumn && isLastColumn) ||
+                                                    (boldLastRow && isLastRow);
+                                                return (
+                                                    <td key={`${row.name}-${rowIndex}-${cellIndex}`} className={isNumeric ? 'fr-cell--right' : ''}>
+                                                        {shouldBold ? (
+                                                            <strong>{isNumeric ? formatNumber({
+                                                                number: Number(cell),
+                                                            }) : cell}</strong>
+                                                        ) : (
+                                                            isNumeric ? formatNumber({
+                                                                number: Number(cell),
+                                                            }) : cell
+                                                        )}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

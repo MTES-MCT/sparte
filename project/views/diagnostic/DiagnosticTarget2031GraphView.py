@@ -12,7 +12,9 @@ class DiagnosticTarget2031GraphView(DiagnosticBaseView):
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = self.get_object()
-        target_2031_chart = charts.ObjectiveChart(diagnostic)
+        target_2031_chart = charts.ObjectiveChart(
+            land=diagnostic.land_model, params={"target_2031": diagnostic.target_2031}
+        )
         kwargs.update(
             {
                 "diagnostic": diagnostic,
