@@ -97,25 +97,37 @@ const GenericChart = ({
     const oneToOne = true
     const animation = !isMap
 
+    // Si le chart a un height défini (y compris null), on l'utilise
+    // Sinon on applique le height par défaut de 400px
+    const chartHeight = mutableChartOptions.chart?.height;
+    const shouldUseDefaultHeight = chartHeight === undefined;
+
     const defaultContainerProps = {
-        style: { height: "400px", width: "100%", marginBottom: "2rem" }
+        style: {
+            height: shouldUseDefaultHeight ? "400px" : (chartHeight === null ? "auto" : `${chartHeight}px`),
+            width: "100%",
+            marginBottom: "2rem"
+        }
     };
 
     const dataTable = showDataTable ? {
         headers: chartOptions.data_table?.headers,
-        rows: chartOptions.data_table?.rows
+        rows: chartOptions.data_table?.rows,
+        boldFirstColumn: chartOptions.data_table?.boldFirstColumn,
+        boldLastColumn: chartOptions.data_table?.boldLastColumn,
+        boldLastRow: chartOptions.data_table?.boldLastRow
     } : undefined;
 
     return (
         <div>
             {showToolbar && (
                 <div className="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <button 
+                    <button
                         className="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm fr-mr-2w"
                         onClick={handleDownloadPNG}
                         title="Télécharger en PNG"
                     />
-                    <button 
+                    <button
                         className="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm"
                         onClick={handleFullscreen}
                         title="Plein écran"

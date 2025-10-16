@@ -1,4 +1,4 @@
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import (
     CEREMA_CREDITS,
     HIGHLIGHT_COLOR,
@@ -7,43 +7,47 @@ from project.charts.constants import (
 from public_data.domain.containers import PublicDataContainer
 
 
-class AnnualConsoComparisonChart(ProjectChart):
+class AnnualConsoComparisonChart(DiagnosticChart):
     """
     Graphique de consommation annuelle d'espaces des territoires similaires.
     """
 
     name = "conso comparison"
 
-    def _get_series(self):
+    @property
+    def data(self):
+        """Get consumption progression data for multiple lands (self and comparison)."""
+        comparison_lands = self.params.get("comparison_lands", [])
+        consommation_progression = PublicDataContainer.consommation_progression_service().get_by_lands(
+            lands=comparison_lands,
+            start_date=int(self.params["start_date"]),
+            end_date=int(self.params["end_date"]),
+        )
+        return consommation_progression
+
+    @property
+    def series(self):
         """
         Génère les séries principales et les séries de drilldown.
         """
-
-        consommation_progression = PublicDataContainer.consommation_progression_service().get_by_lands(
-            lands=self.project.comparison_lands_and_self_land(),
-            start_date=int(self.project.analyse_start_date),
-            end_date=int(self.project.analyse_end_date),
-        )
-
         main_series = []
         drilldown_series = []
+        highlighted_land_id = self.land.land_id
 
-        for land_conso in consommation_progression:
+        for land_conso in self.data:
             total_conso = sum(annual_conso.total for annual_conso in land_conso.consommation)
 
             main_series.append(
                 {
                     "name": "Tous les territoires",
-                    "data": [
-                        {"name": land_conso.land.name, "y": total_conso, "drilldown": land_conso.land.official_id}
-                    ],
-                    "color": HIGHLIGHT_COLOR if land_conso.land.official_id == self.project.land.official_id else None,
+                    "data": [{"name": land_conso.land.name, "y": total_conso, "drilldown": land_conso.land.land_id}],
+                    "color": HIGHLIGHT_COLOR if land_conso.land.land_id == highlighted_land_id else None,
                     "grouping": False,
                     "tooltip": {
                         "headerFormat": "<b>{point.key}</b><br/>",
                         "pointFormat": (
                             "Consommation d'espaces NAF entre "
-                            f"{self.project.analyse_start_date} et {self.project.analyse_end_date} : "
+                            f"{self.params['start_date']} et {self.params['end_date']} : "
                             "<b>{point.y:.2f} ha</b>"
                         ),
                     },
@@ -52,7 +56,7 @@ class AnnualConsoComparisonChart(ProjectChart):
 
             drilldown_series.append(
                 {
-                    "id": land_conso.land.official_id,
+                    "id": land_conso.land.land_id,
                     "name": land_conso.land.name,
                     "data": [
                         {
@@ -72,7 +76,7 @@ class AnnualConsoComparisonChart(ProjectChart):
 
     @property
     def param(self):
-        main_series, drilldown_series = self._get_series()
+        main_series, drilldown_series = self.series
 
         return super().param | {
             "chart": {"type": "column", "height": 500},
@@ -100,9 +104,12 @@ class AnnualConsoComparisonChart(ProjectChart):
             },
         }
 
-    # To remove after refactoring
-    def add_series(self):
-        pass
+    @property
+    def data_table(self):
+        return {
+            "headers": [],
+            "rows": [],
+        }
 
 
 class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
@@ -116,9 +123,9 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
             },
             "title": {
                 "text": (
-                    f"Comparaison de la consommation d'espaces NAF entre {self.project.territory_name} "
+                    f"Comparaison de la consommation d'espaces NAF entre {self.land.name} "
                     "et les territoires similaires "
-                    f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
+                    f"entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
                 )
             },
             "subtitle": {"text": ""},

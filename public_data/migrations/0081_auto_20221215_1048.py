@@ -86,7 +86,6 @@ class Migration(migrations.Migration):
             ],
             bases=(
                 public_data.models.administration.LandMixin,
-                public_data.models.administration.GetDataFromCeremaMixin,
                 models.Model,
             ),
         ),

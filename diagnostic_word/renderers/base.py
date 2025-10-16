@@ -106,7 +106,13 @@ class BaseRenderer:
         has_zonage = land_model.has_zonage
 
         # Charts
-        annual_total_conso_chart = charts.AnnualTotalConsoChartExport(diagnostic)
+        annual_total_conso_chart = charts.AnnualTotalConsoChartExport(
+            land=land_model,
+            params={
+                "start_date": diagnostic.analyse_start_date,
+                "end_date": diagnostic.analyse_end_date,
+            },
+        )
 
         if diagnostic.land_type == AdminRef.COMMUNE:
             annual_total_conso_data_table = add_total_line_column(annual_total_conso_chart.get_series(), line=False)
@@ -132,9 +138,21 @@ class BaseRenderer:
 
             annual_total_conso_data_table = add_total_line_column(annual_total_conso_data_table, line=False)
 
-        det_chart = charts.AnnualConsoByDeterminantChartExport(diagnostic)
-        pie_det_chart = charts.ConsoByDeterminantPieChartExport(diagnostic)
-        objective_chart = charts.ObjectiveChartExport(diagnostic)
+        det_chart = charts.AnnualConsoByDeterminantChartExport(
+            land=land_model,
+            params={
+                "start_date": diagnostic.analyse_start_date,
+                "end_date": diagnostic.analyse_end_date,
+            },
+        )
+        pie_det_chart = charts.ConsoByDeterminantPieChartExport(
+            land=land_model,
+            params={
+                "start_date": diagnostic.analyse_start_date,
+                "end_date": diagnostic.analyse_end_date,
+            },
+        )
+        objective_chart = charts.ObjectiveChartExport(land=land_model, params={"target_2031": diagnostic.target_2031})
 
         context = {
             "diagnostic": diagnostic,
@@ -235,8 +253,23 @@ class BaseRenderer:
         # Comparison territories
         if has_neighbors:
             # Charts
-            comparison_chart = charts.AnnualConsoComparisonChartExport(diagnostic)
-            comparison_relative_chart = charts.AnnualConsoProportionalComparisonChartExport(diagnostic)
+            comparison_lands = diagnostic.comparison_land_models_and_self()
+            comparison_chart = charts.AnnualConsoComparisonChartExport(
+                land=land_model,
+                params={
+                    "start_date": diagnostic.analyse_start_date,
+                    "end_date": diagnostic.analyse_end_date,
+                    "comparison_lands": comparison_lands,
+                },
+            )
+            comparison_relative_chart = charts.AnnualConsoProportionalComparisonChartExport(
+                land=land_model,
+                params={
+                    "start_date": diagnostic.analyse_start_date,
+                    "end_date": diagnostic.analyse_end_date,
+                    "comparison_lands": comparison_lands,
+                },
+            )
             context |= {
                 # Charts
                 "comparison_chart": self.prep_image(comparison_chart.get_temp_image(), width=170),

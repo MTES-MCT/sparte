@@ -13,7 +13,7 @@ import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
 import TopBar from '@components/layout/TopBar';
 import Synthese from '@components/pages/Synthese';
-import Consommation from '@components/pages/Consommation';
+import { Consommation } from '@components/pages/Consommation';
 import LogementVacant from '@components/pages/LogementVacant';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
@@ -115,7 +115,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Consommation endpoint={urls.consommation} />
+                                                <Consommation landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -145,9 +145,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <OcsgeStatus status={ocsge_status} />
                                                 }
                                             >
-                                                    <Artificialisation
-                                                        landData={landData}
-                                                    />
+                                                    <Artificialisation landData={landData} />
                                                 </RouteWrapper>
                                         }
                                     />

@@ -74,11 +74,10 @@ urlpatterns = [
         name="report_local",
     ),
     # REPORT PARTIALS
-    # MAP
     path(
-        "<int:pk>/carte/consommation-villes-du-territoire",
-        views.CitySpaceConsoMapView.as_view(),
-        name="theme-city-conso",
+        "<int:pk>/target-2031-graphic",
+        views.diagnostic.DiagnosticTarget2031GraphView.as_view(),
+        name="target-2031-graphic",
     ),
     # DOWNLOAD
     path(

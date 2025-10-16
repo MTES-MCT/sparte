@@ -1,0 +1,14 @@
+{% load static %}
+{% load sri %}
+
+<div
+    id="react-trajectoires-page"
+    data-page-data='{
+        "landData": {
+            "land_id": "{{ project.land_id }}",
+            "land_type": "{{ project.land_type }}",
+            "name": "{{ project.territory_name }}"
+        },
+        "defaultTarget2031": {{ project.target_2031|default:50 }}
+    }'>
+</div>

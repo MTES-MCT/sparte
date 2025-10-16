@@ -55,9 +55,6 @@ class Land:
         except ObjectDoesNotExist as e:
             raise LandException(f"Public key '{self.id}' unknown") from e
 
-    def get_conso_per_year(self, start="2010", end="2020", coef=1):
-        return self.land.get_conso_per_year(start, end, coef)
-
     def get_cities(self) -> QuerySet[Commune]:
         return self.land.get_cities()
 

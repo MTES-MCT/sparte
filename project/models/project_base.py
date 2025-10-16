@@ -366,7 +366,7 @@ class Project(BaseProject):
         from public_data.domain.containers import PublicDataContainer
 
         conso = PublicDataContainer.consommation_stats_service().get_by_land(
-            land=self.land_proxy, start_date=2011, end_date=2020
+            land=self.land_model, start_date=2011, end_date=2020
         )
         return conso.total
 
@@ -374,7 +374,7 @@ class Project(BaseProject):
         from public_data.domain.containers import PublicDataContainer
 
         conso = PublicDataContainer.consommation_progression_service().get_by_land(
-            land=self.land_proxy, start_date=2011, end_date=2020
+            land=self.land_model, start_date=2011, end_date=2020
         )
         return {f"{c.year}": c.total for c in conso.consommation}
 
@@ -383,7 +383,7 @@ class Project(BaseProject):
         from public_data.domain.containers import PublicDataContainer
 
         conso = PublicDataContainer.consommation_stats_service().get_by_land(
-            land=self.land_proxy, start_date=self.analyse_start_date, end_date=self.analyse_end_date
+            land=self.land_model, start_date=self.analyse_start_date, end_date=self.analyse_end_date
         )
         return conso.total
 
@@ -391,10 +391,9 @@ class Project(BaseProject):
 
     def get_conso_per_year(self, coef=1):
         from public_data.domain.containers import PublicDataContainer
-        from public_data.models import Land
 
         conso = PublicDataContainer.consommation_progression_service().get_by_land(
-            land=Land(public_key=f"{self.land_type}_{self.land_id}"),
+            land=self.land_model,
             start_date=int(self.analyse_start_date),
             end_date=int(self.analyse_end_date),
         )
@@ -498,6 +497,28 @@ class Project(BaseProject):
     def comparison_lands_and_self_land(self) -> list[Land]:
         look_a_likes = self.get_look_a_like()
         return [self.land_proxy] + look_a_likes
+
+    def comparison_land_models_and_self(self) -> list[LandModel]:
+        """Return comparison lands and self land as LandModel objects"""
+        land_models = [self.land_model]
+
+        # Get look_a_like public keys
+        try:
+            public_keys = {_ for _ in self.look_a_like.split(";") if _}
+        except AttributeError:
+            public_keys = set()
+
+        # Convert each public_key to LandModel
+        for public_key in public_keys:
+            try:
+                land_type, land_id = public_key.strip().split("_")
+                land_model = LandModel.objects.get(land_type=land_type, land_id=land_id)
+                land_models.append(land_model)
+            except (ValueError, LandModel.DoesNotExist, LandException):
+                # Skip invalid or not found land models
+                continue
+
+        return sorted(land_models, key=lambda x: x.name)
 
 
 class Emprise(DataColorationMixin, gis_models.Model):

@@ -2,6 +2,15 @@ from django.http import FileResponse, Http404, JsonResponse
 from django.urls import path
 
 from project.api_views import UpdateProjectTarget2031APIView
+from project.charts import (
+    AnnualConsoByDeterminantChart,
+    AnnualConsoByDeterminantChartExport,
+    AnnualTotalConsoChart,
+    AnnualTotalConsoChartExport,
+    ConsoByDeterminantPieChart,
+    ConsoByDeterminantPieChartExport,
+    ObjectiveChart,
+)
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByCouverturePieChartExport,
@@ -15,6 +24,21 @@ from project.charts.artificialisation import (
     ArtifSyntheseChart,
 )
 from project.charts.consommation import ConsoAnnualChart
+from project.charts.consommation.AnnualConsoComparisonChart import (
+    AnnualConsoComparisonChart,
+    AnnualConsoComparisonChartExport,
+)
+from project.charts.consommation.AnnualConsoProportionalComparisonChart import (
+    AnnualConsoProportionalComparisonChart,
+    AnnualConsoProportionalComparisonChartExport,
+)
+from project.charts.demography.PopulationConsoComparisonChart import (
+    PopulationConsoComparisonChart,
+)
+from project.charts.demography.PopulationConsoProgressionChart import (
+    PopulationConsoProgressionChart,
+)
+from project.charts.demography.PopulationDensityChart import PopulationDensityChart
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
     ImperByCouverturePieChartExport,
@@ -55,6 +79,7 @@ from public_data.models import (
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
+    LandConsoStatsViewset,
     LandFricheCentroidViewset,
     LandFricheGeojsonViewset,
     LandFrichePollutionViewset,
@@ -113,6 +138,23 @@ def get_chart_klass_or_404(chart_id):
         "imper_flux_by_couverture_export": ImperFluxByCouvertureExport,
         "imper_flux_by_usage": ImperFluxByUsage,
         "imper_flux_by_usage_export": ImperFluxByUsageExport,
+        # Consommation charts
+        "annual_total_conso_chart": AnnualTotalConsoChart,
+        "annual_total_conso_chart_export": AnnualTotalConsoChartExport,
+        "chart_determinant": AnnualConsoByDeterminantChart,
+        "chart_determinant_export": AnnualConsoByDeterminantChartExport,
+        "pie_determinant": ConsoByDeterminantPieChart,
+        "pie_determinant_export": ConsoByDeterminantPieChartExport,
+        "comparison_chart": AnnualConsoComparisonChart,
+        "comparison_chart_export": AnnualConsoComparisonChartExport,
+        "surface_proportional_chart": AnnualConsoProportionalComparisonChart,
+        "surface_proportional_chart_export": AnnualConsoProportionalComparisonChartExport,
+        "population_density_chart": PopulationDensityChart,
+        "population_conso_progression_chart": PopulationConsoProgressionChart,
+        "population_conso_comparison_chart": PopulationConsoComparisonChart,
+        # Objective chart
+        "objective_chart": ObjectiveChart,
+        "objective_chart_export": ObjectiveChartExport,
     }
 
     if chart_id not in charts:
@@ -138,7 +180,7 @@ def chart_view_file_response(chart, id, land_type, land_id):
     )
 
 
-def chart_view(request, id, land_type, land_id, *args, **kwargs):
+def chart_view(request, id, land_type, land_id):
     land = LandModel.objects.get(land_type=land_type, land_id=land_id)
     chart_klass = get_chart_klass_or_404(id)
     chart_params = request.GET.dict()
@@ -156,6 +198,7 @@ urlpatterns = [
     path("landimperstock/", LandImperStockViewset.as_view(), name="imperstock"),
     path("landartifstockindex/", LandArtifStockIndexViewset.as_view(), name="artifstockindex"),
     path("landimperstockindex/", LandImperStockIndexViewset.as_view(), name="imperstockindex"),
+    path("landconsostats/", LandConsoStatsViewset.as_view(), name="consostats"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),

@@ -325,7 +325,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                 isLoading={isUpdating}
             />
         </div>
-    );
+  );
 };
 
 export default Trajectoires;
