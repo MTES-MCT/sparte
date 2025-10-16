@@ -57,6 +57,10 @@ class ArtifNetFluxChart(DiagnosticChart):
 
     @property
     def series(self):
+        # Si toutes les valeurs sont à 0, retourner None pour déclencher noData
+        if self.data.flux_artif == 0 and self.data.flux_desartif == 0 and self.data.flux_artif_net == 0:
+            return None
+
         return [
             {
                 "data": [
@@ -102,7 +106,7 @@ class ArtifNetFluxChart(DiagnosticChart):
     def param(self):
         return super().param | {
             "chart": {"type": "column"},
-            "title": {"text": f"Evolution de l'artificialisation nette{self.title_end}"},
+            "title": {"text": f"Artificialisation nette{self.title_end}"},
             "yAxis": {
                 "title": {"text": "Surface (en ha)"},
             },
@@ -122,6 +126,8 @@ class ArtifNetFluxChart(DiagnosticChart):
                 }
             },
             "series": self.series,
+            "lang": {"noData": "Aucun changement du sol n'est à l'origine d'artificialisation sur cette période."},
+            "noData": {"style": {"fontWeight": "bold", "fontSize": "15px", "color": "#303030", "textAlign": "center"}},
         }
 
     @property

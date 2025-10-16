@@ -8,6 +8,7 @@ import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
 import Exporting from 'highcharts/modules/exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
+import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 
 import Loader from '@components/ui/Loader';
 import ChartDetails from './ChartDetails';
@@ -17,6 +18,7 @@ HighchartsHeatmap(Highcharts);
 HighchartsTilemap(Highcharts);
 Exporting(Highcharts);
 Fullscreen(Highcharts);
+NoDataToDisplay(Highcharts);
 
 type GenericChartProps = {
     chartOptions: {

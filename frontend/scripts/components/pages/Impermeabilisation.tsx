@@ -32,7 +32,7 @@ interface Millesime {
 	departement: string;
 }
 
-const DetaislCalculationOcsge: React.FC = () => (
+const DetailsCalculationOcsge: React.FC = () => (
 	<div>
 		<h6 className="fr-mb-0">Calcul</h6>
 		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la nomenclature OCS GE.</p>
@@ -215,7 +215,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 									</p>
 									<ul className="fr-text--sm mb-3">
 										<li>1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations).</li>
-										<li>2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (Impericiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+										<li>2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
 									</ul>
 									<p className="fr-text--sm mb-3">
 										Au niveau national, l'imperméabilisation est mesurée par l'occupation des sols à grande échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble du territoire national d'ici mi 2025.
@@ -229,7 +229,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 							L'imperméabilisation des sols est définie comme: 
 							<ul>
 								<li>1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations).</li>
-								<li>2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (Impericiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+								<li>2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
 							</ul>
 						</Guide>
 					</div>
@@ -299,7 +299,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 									</div>
 								))
@@ -316,7 +316,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 									sources={['ocsge']}
 									showDataTable={true}
 								>
-									<DetaislCalculationOcsge />
+									<DetailsCalculationOcsge />
 								</OcsgeGraph>
 							</div>
 						)}
@@ -366,7 +366,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 										<OcsgeGraph
 											id="pie_imper_by_usage"
@@ -379,7 +379,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 									</div>
 								))
@@ -396,7 +396,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 										sources={['ocsge']}
 										showDataTable={true}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 								<div className="fr-col-12 fr-col-lg-6">
@@ -410,7 +410,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 										sources={['ocsge']}
 										showDataTable={true}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 							</>
@@ -445,7 +445,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 								.map((m) => (
 									<div
 										key={`${m.index}_${m.departement}`}
-										className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
+										className="fr-col-12 gap-4 d-flex flex-column"
 									>
 										<OcsgeGraph
 											id="imper_flux_by_couverture"
@@ -458,13 +458,8 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 											}}
 											sources={['ocsge']}
 											showDataTable={true}
-											containerProps={{
-												style: {
-													height: "800px",
-												},
-											}}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 										<OcsgeGraph
 											id="imper_flux_by_usage"
@@ -477,19 +472,14 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 											}}
 											sources={['ocsge']}
 											showDataTable={true}
-											containerProps={{
-												style: {
-													height: "800px",
-												},
-											}}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 									</div>
 								))
 						) : (
 							<>
-								<div className="fr-col-12 fr-col-lg-6">
+								<div className="fr-col-12">
 									<OcsgeGraph
 										id="imper_flux_by_couverture"
 										land_id={land_id}
@@ -500,16 +490,11 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 										}}
 										sources={['ocsge']}
 										showDataTable={true}
-										containerProps={{
-											style: {
-												height: "800px",
-											},
-										}}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
-								<div className="fr-col-12 fr-col-lg-6">
+								<div className="fr-col-12">
 									<OcsgeGraph
 										id="imper_flux_by_usage"
 										land_id={land_id}
@@ -520,13 +505,8 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 										}}
 										sources={['ocsge']}
 										showDataTable={true}
-										containerProps={{
-											style: {
-												height: "800px",
-											},
-										}}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 							</>
@@ -538,61 +518,53 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			{child_land_types && (
 				<div className="fr-mb-7w">
 					<h2>Proportion des sols imperméabilisés</h2>
-					<div className="fr-grid-row fr-grid-row--gutters">
-						<div className="fr-col-12 fr-col-lg-8">
-							<div className="bg-white fr-p-2w h-100 rounded">
-								{child_land_types.length > 1 && (
-									<div role="tablist" aria-label="Sélection du type de territoire">
-										{child_land_types.map((child_land_type) => (
-											<button
-												className={`fr-btn  ${
-													childLandType === child_land_type
-														? "fr-btn--primary"
-														: "fr-btn--tertiary"
-												}`}
-												key={child_land_type}
-												onClick={() => setChildLandType(child_land_type)}
-												role="tab"
-												aria-selected={childLandType === child_land_type}
-												aria-label={`Sélectionner ${child_land_type}`}
-											>
-												{child_land_type}
-											</button>
-										))}
-									</div>
-								)}
-								<OcsgeGraph
-									isMap
-									id="imper_map"
-									land_id={land_id}
-									land_type={land_type}
-									containerProps={{
-										style: {
-											height: "500px",
-											width: "100%",
-										}
-									}}
-									params={{
-										index: defaultStockIndex,
-										previous_index: defaultStockIndex - 1,
-										child_land_type: childLandType,
-									}}
-									sources={['ocsge']}
-									showDataTable={true}
-								>
-									<DetaislCalculationOcsge />
-								</OcsgeGraph>
+					<div className="bg-white fr-p-2w rounded">
+						{child_land_types.length > 1 && (
+							<div role="tablist" aria-label="Sélection du type de territoire">
+								{child_land_types.map((child_land_type) => (
+									<button
+										className={`fr-btn  ${
+											childLandType === child_land_type
+												? "fr-btn--primary"
+												: "fr-btn--tertiary"
+										}`}
+										key={child_land_type}
+										onClick={() => setChildLandType(child_land_type)}
+										role="tab"
+										aria-selected={childLandType === child_land_type}
+										aria-label={`Sélectionner ${child_land_type}`}
+									>
+										{child_land_type}
+									</button>
+								))}
 							</div>
-						</div>
-						<div className="fr-col-12 fr-col-lg-4">
-							<Guide
-								title="Comprendre les données"
-								column
-							>
+						)}
+						<OcsgeGraph
+							isMap
+							id="imper_map"
+							land_id={land_id}
+							land_type={land_type}
+							containerProps={{
+								style: {
+									height: "500px",
+									width: "100%",
+								}
+							}}
+							params={{
+								index: defaultStockIndex,
+								previous_index: defaultStockIndex - 1,
+								child_land_type: childLandType,
+							}}
+							sources={['ocsge']}
+							showDataTable={true}
+						>
+							<div>
+								<h6>Comprendre les données</h6>
 								<p>Cette carte permet de visualiser la proportion de sols imperméabilisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols imperméabilisés est élevée.</p>
 								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'imperméabilisation. La couleur des cercles indique le sens de ce flux : vert pour une désimperméabilisation nette, rouge pour une imperméabilisation nette.</p>
-							</Guide>
-						</div>
+							</div>
+							<DetailsCalculationOcsge />
+						</OcsgeGraph>
 					</div>
 				</div>
 			)}

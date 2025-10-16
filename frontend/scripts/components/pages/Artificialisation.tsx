@@ -36,7 +36,7 @@ interface Millesime {
 	departement: string;
 }
 
-const DetaislCalculationOcsge: React.FC = () => (
+const DetailsCalculationOcsge: React.FC = () => (
 	<div>
 		<h6 className="fr-mb-0">Calcul</h6>
 		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la matrice de passage.</p>
@@ -294,7 +294,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 										<OcsgeGraph
 											id="pie_artif_by_usage"
@@ -307,7 +307,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 									</div>
 								))
@@ -324,7 +324,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										sources={['ocsge']}
 										showDataTable={true}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 								<div className="fr-col-12 fr-col-lg-6">
@@ -338,7 +338,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										sources={['ocsge']}
 										showDataTable={true}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 							</>
@@ -349,55 +349,47 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			{child_land_types && (
 				<div className="fr-mb-7w">
 					<h2>Proportion des sols artificialisés</h2>
-					<div className="fr-grid-row fr-grid-row--gutters">
-						<div className="fr-col-12 fr-col-lg-8">
-							<div className="bg-white fr-p-2w h-100 rounded">
-								{child_land_types.length > 1 &&
-									child_land_types.map((child_land_type) => (
-										<button
-											className={`fr-btn  ${
-												childLandType === child_land_type
-													? "fr-btn--primary"
-													: "fr-btn--tertiary"
-											}`}
-											key={child_land_type}
-											onClick={() => setChildLandType(child_land_type)}
-										>
-											{child_land_type}
-										</button>
-									))}
-								<OcsgeGraph
-									isMap
-									id="artif_map"
-									land_id={land_id}
-									land_type={land_type}
-									containerProps={{
-										style: {
-											height: "500px",
-											width: "100%",
-										}
-									}}
-									params={{
-										index: defaultStockIndex,
-										previous_index: defaultStockIndex - 1,
-										child_land_type: childLandType,
-									}}
-									sources={['ocsge']}
-									showDataTable={true}
+					<div className="bg-white fr-p-2w rounded">
+						{child_land_types.length > 1 &&
+							child_land_types.map((child_land_type) => (
+								<button
+									className={`fr-btn  ${
+										childLandType === child_land_type
+											? "fr-btn--primary"
+											: "fr-btn--tertiary"
+									}`}
+									key={child_land_type}
+									onClick={() => setChildLandType(child_land_type)}
 								>
-									<DetaislCalculationOcsge />
-								</OcsgeGraph>
-							</div>
-						</div>
-						<div className="fr-col-12 fr-col-lg-4">
-							<Guide
-								title="Comprendre les données"
-								column
-							>
+									{child_land_type}
+								</button>
+							))}
+						<OcsgeGraph
+							isMap
+							id="artif_map"
+							land_id={land_id}
+							land_type={land_type}
+							containerProps={{
+								style: {
+									height: "500px",
+									width: "100%",
+								}
+							}}
+							params={{
+								index: defaultStockIndex,
+								previous_index: defaultStockIndex - 1,
+								child_land_type: childLandType,
+							}}
+							sources={['ocsge']}
+							showDataTable={true}
+						>
+							<div>
+								<h6>Comprendre les données</h6>
 								<p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
 								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
-							</Guide>
-						</div>
+							</div>
+							<DetailsCalculationOcsge />
+						</OcsgeGraph>
 					</div>
 				</div>
 			)}
@@ -584,7 +576,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 									</div>
 								))
@@ -601,7 +593,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 									sources={['ocsge']}
 									showDataTable={true}
 								>
-									<DetaislCalculationOcsge />
+									<DetailsCalculationOcsge />
 								</OcsgeGraph>
 							</div>
 						)}
@@ -635,7 +627,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 								.map((m) => (
 									<div
 										key={`${m.index}_${m.departement}`}
-										className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
+										className="fr-col-12 gap-4 d-flex flex-column"
 									>
 										<OcsgeGraph
 											id="artif_flux_by_couverture"
@@ -648,13 +640,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											}}
 											sources={['ocsge']}
 											showDataTable={true}
-											containerProps={{
-												style: {
-													height: "800px",
-												},
-											}}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 										<OcsgeGraph
 											id="artif_flux_by_usage"
@@ -667,19 +654,14 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											}}
 											sources={['ocsge']}
 											showDataTable={true}
-											containerProps={{
-												style: {
-													height: "800px",
-												},
-											}}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 									</div>
 								))
 						) : (
 							<>
-								<div className="fr-col-12 fr-col-lg-6">
+								<div className="fr-col-12">
 									<OcsgeGraph
 										id="artif_flux_by_couverture"
 										land_id={land_id}
@@ -690,16 +672,11 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										}}
 										sources={['ocsge']}
 										showDataTable={true}
-										containerProps={{
-											style: {
-												height: "800px",
-											},
-										}}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
-								<div className="fr-col-12 fr-col-lg-6">
+								<div className="fr-col-12">
 									<OcsgeGraph
 										id="artif_flux_by_usage"
 										land_id={land_id}
@@ -710,13 +687,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										}}
 										sources={['ocsge']}
 										showDataTable={true}
-										containerProps={{
-											style: {
-												height: "800px",
-											},
-										}}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 							</>

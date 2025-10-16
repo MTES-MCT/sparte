@@ -57,6 +57,10 @@ class ArtifFluxByUsage(DiagnosticChart):
 
     @property
     def series(self):
+        # Si pas de données, retourner None pour déclencher noData
+        if not self.data.exists():
+            return None
+
         return [
             {
                 "name": "Artificialisation",
@@ -86,6 +90,12 @@ class ArtifFluxByUsage(DiagnosticChart):
 
     @cached_property
     def title_end(self):
+        # Si pas de données, retourner un titre par défaut
+        if not self.data.exists():
+            millesime_new = self.params.get("millesime_new_index")
+            millesime_old = int(millesime_new) - 1
+            return f" entre le millésime n°{millesime_old} et n°{millesime_new}"
+
         if self.params.get("departement"):
             # Afficher les années avec le département
             # Pour LandArtifFluxUsageComposition, on a year_old et year_new (singular)
@@ -110,7 +120,7 @@ class ArtifFluxByUsage(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "chart": {"type": "bar", "height": "800px"},
+            "chart": {"type": "column"},
             "title": {"text": self.title},
             "tooltip": {
                 "pointFormat": "{point.y}",
@@ -143,18 +153,26 @@ class ArtifFluxByUsage(DiagnosticChart):
                 "layout": "horizontal",
             },
             "plotOptions": {
-                "bar": {
+                "column": {
                     "dataLabels": {"enabled": True, "format": "{point.y:,.2f}", "allowOverlap": True},
                     "groupPadding": 0.2,
                     "borderWidth": 0,
                 }
             },
             "series": self.series,
+            "lang": {"noData": "Aucun changement du sol n'est à l'origine d'artificialisation sur cette période."},
+            "noData": {"style": {"fontWeight": "bold", "fontSize": "15px", "color": "#303030", "textAlign": "center"}},
         }
 
     @property
     def year_or_index_period(self):
         """Retourne la période de flux (millésime ancien et nouveau)"""
+        # Si pas de données, retourner un titre par défaut
+        if not self.data.exists():
+            millesime_new = self.params.get("millesime_new_index")
+            millesime_old = int(millesime_new) - 1
+            return f"millésime {millesime_old}-{millesime_new}"
+
         if self.params.get("departement"):
             # Pour LandArtifFluxUsageComposition, on a year_old et year_new
             return f"{self.data[0].year_old}-{self.data[0].year_new}"
