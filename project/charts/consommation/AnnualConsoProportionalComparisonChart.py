@@ -1,4 +1,4 @@
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import CEREMA_CREDITS, LEGEND_NAVIGATION_EXPORT
 from public_data.domain.containers import PublicDataContainer
 from public_data.infra.consommation.progression.highchart.ConsoProportionalComparisonMapper import (
@@ -6,23 +6,31 @@ from public_data.infra.consommation.progression.highchart.ConsoProportionalCompa
 )
 
 
-class AnnualConsoProportionalComparisonChart(ProjectChart):
+class AnnualConsoProportionalComparisonChart(DiagnosticChart):
     """
     Graphique tree map de consommation d'espaces proportionnelle à la surface des territoires.
     """
 
     name = "conso comparison"
 
-    def _get_series(self):
+    @property
+    def data(self):
+        """Get consumption stats for multiple lands (self and comparison)."""
+        comparison_lands = self.params.get("comparison_lands", [])
+        consommation_stats = PublicDataContainer.consommation_stats_service().get_by_lands(
+            lands=comparison_lands,
+            start_date=int(self.params["start_date"]),
+            end_date=int(self.params["end_date"]),
+        )
+        return consommation_stats
+
+    @property
+    def series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
         """
         return ConsoProportionalComparisonMapper.map(
-            consommation_stats=PublicDataContainer.consommation_stats_service().get_by_lands(
-                lands=self.project.comparison_lands_and_self_land(),
-                start_date=int(self.project.analyse_start_date),
-                end_date=int(self.project.analyse_end_date),
-            ),
+            consommation_stats=self.data,
         )
 
     @property
@@ -50,12 +58,15 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
             "chart": {
                 "height": "500",
             },
-            "series": self._get_series(),
+            "series": self.series,
         }
 
-    # To remove after refactoring
-    def add_series(self):
-        pass
+    @property
+    def data_table(self):
+        return {
+            "headers": [],
+            "rows": [],
+        }
 
 
 class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalComparisonChart):
@@ -69,9 +80,9 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
             },
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF relative à la surface de {self.project.territory_name} "
+                    f"Consommation d'espaces NAF relative à la surface de {self.land.name} "
                     "et des territoires similaires "
-                    f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en %)"
+                    f"entre {self.params['start_date']} et {self.params['end_date']} (en %)"
                 )
             },
         }

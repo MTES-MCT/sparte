@@ -21,8 +21,8 @@ class ConsoComparisonMapper:
                     }
                     for annual_conso in land_conso.consommation
                 ],
-                "legendIndex": land_conso.land.official_id != land_id_to_highlight,
-                **(highlight_style if land_conso.land.official_id == land_id_to_highlight else default_style),
+                "legendIndex": land_conso.land.land_id != land_id_to_highlight,
+                **(highlight_style if land_conso.land.land_id == land_id_to_highlight else default_style),
             }
             for land_conso in consommation_progression
         ]

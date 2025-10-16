@@ -18,6 +18,16 @@ export const djangoApi = createApi({
 				method: "GET",
 			}),
 		}),
+		getLandConsoStats: builder.query({
+			query: ({land_type, land_id, from_year, to_year}) => {
+				return `/api/landconsostats/?${new URLSearchParams({
+					land_type,
+					land_id,
+					from_year: from_year.toString(),
+					to_year: to_year.toString()
+				})}`
+			},
+		}),
 		getChartConfig: builder.query({
 			query: ({id, land_type, land_id, ...params}) => {
 				const queryParams = new URLSearchParams(params)
@@ -134,6 +144,7 @@ const {
 	useGetChartConfigQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandConsoStatsQuery,
 } = djangoApi;
 
 export {
@@ -147,6 +158,7 @@ export {
 	useGetImperZonageIndexQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandConsoStatsQuery,
 	useDownloadDiagnosticMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,

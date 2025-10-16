@@ -87,7 +87,7 @@ const TopBar: React.FC = () => {
     const shouldDisplayLevel = pathsToShowLevel.some(path => location.pathname.includes(path));
     const { isMobile } = useWindowSize(980);
     const isOpen = useSelector(selectIsNavbarOpen);
-    
+
     return (
         <Container ref={htmxRef}>
             <div className="d-flex align-items-center">
@@ -97,25 +97,12 @@ const TopBar: React.FC = () => {
                     <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
                 </div>
             </div>
-            { !isMobile && (
+            { !isMobile && shouldDisplayLevel && (
                 <ItemContainer>
-                    { shouldDisplayPeriod && (
-                        <>
-                            <Item>
-                                <ItemTitle><i className="bi bi-calendar4-range"></i> Période d'analyse</ItemTitle>
-                                <ItemContent>
-                                    De { memoizedProjectData?.analyse_start_date } à { memoizedProjectData?.analyse_end_date }
-                                </ItemContent>
-                            </Item>
-                            <Divider color="#e3e4e9" size="30px" />
-                        </>
-                    )}
-                    { shouldDisplayLevel && (
-                        <Item>
-                            <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
-                            <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
-                        </Item>
-                    )}
+                    <Item>
+                        <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
+                        <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
+                    </Item>
                 </ItemContainer>
             )}
         </Container>

@@ -6,7 +6,6 @@ from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
 from .AdminRef import AdminRef
-from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
@@ -15,7 +14,7 @@ class EpciManager(IntersectManager):
         return self.get(source_id=source_id)
 
 
-class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
+class Epci(LandMixin, models.Model):
     class Meta:
         verbose_name = "EPCI"
         managed = False
