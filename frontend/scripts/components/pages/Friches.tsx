@@ -288,7 +288,6 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             ].includes(friche_status) && [
                 LandType.REGION,
                 LandType.DEPARTEMENT,
-                LandType.EPCI,
             ].includes(land_type) && (
                 <>
                     <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
