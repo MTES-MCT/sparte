@@ -4,6 +4,7 @@ import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import type { ControlGroup } from "../types/controls";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
+import { ImpermeabilisationPopup } from "./popup/ImpermeabilisationPopup";
 
 interface ImpermeabilisationMapProps {
 	landData: LandDetailResultType;
@@ -108,7 +109,15 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
             { id: "emprise-layer", type: "emprise", source: "emprise-source" },
             { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement, millesimes: availableMillesimes, stats: true },
 		],
-		controlGroups
+		controlGroups,
+		popups: [
+			{
+				layerId: "impermeabilisation-layer",
+				trigger: "hover",
+				title: "Imperméabilisation",
+				renderContent: (feature) => <ImpermeabilisationPopup feature={feature} />,
+			}
+		]
     });
 
 	return (
