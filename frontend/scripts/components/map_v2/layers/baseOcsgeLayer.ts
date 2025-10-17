@@ -3,6 +3,7 @@ import type { BaseLayerOptions, StatCategory } from "../types/layer";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
 import { area } from '@turf/turf';
+import type { FilterSpecification } from 'maplibre-gl';
 
 export abstract class BaseOcsgeLayer extends BaseLayer {
     protected millesimeIndex: number;
@@ -21,13 +22,12 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
 
         this.allowedCodes = this.getLayerNomenclature();
 
-        // Initialiser le filtre avec tous les codes autorisés pour la nomenclature actuelle
         this.currentFilter = this.nomenclature === "couverture"
             ? this.allowedCodes.couverture
             : this.allowedCodes.usage;
     }
 
-    protected abstract getBaseFilter(): any[];
+    protected abstract getBaseFilter(): FilterSpecification;
 
     getColorExpression() {
         const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
@@ -56,19 +56,13 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return `occupation_du_sol_${this.millesimeIndex}_${this.departement}`;
     }
 
-    protected buildFillOptions(filter: any[]) {
-        const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
-        const allowed = this.nomenclature === "couverture" ? this.allowedCodes.couverture : this.allowedCodes.usage;
-        const nomenclatureExpr = allowed.length > 0
-            ? ["in", ["get", field], ["literal", allowed]]
-            : null;
-        const finalFilter = nomenclatureExpr ? ["all", filter, nomenclatureExpr] : filter;
+    protected buildFillOptions(baseFilter: FilterSpecification) {
         return {
             id: this.options.id,
             type: this.options.type,
             source: this.options.source,
             "source-layer": this.getSourceLayerName(),
-            filter: finalFilter,
+            filter: this.buildCompleteFilter(baseFilter),
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
             },
@@ -78,6 +72,14 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                 "fill-outline-color": "rgba(0, 0, 0, 0.3)",
             },
         };
+    }
+
+    private buildCompleteFilter(baseFilter: FilterSpecification, selectedCodes?: string[]): FilterSpecification {
+        const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
+        const codes = selectedCodes || this.currentFilter;
+
+        const codesExpr = this.buildCodesFilterExpression(codes, field);
+        return ["all", baseFilter, codesExpr] as FilterSpecification;
     }
 
     abstract getOptions(): Record<string, any>;
@@ -107,19 +109,48 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return this.currentFilter;
     }
 
-    private buildFilterExpression(selectedCodes: string[], field: string): any[] {
-        if (selectedCodes.length === 0) {
-            // Aucun code sélectionné = masquer tout
-            return ["==", ["get", field], ""];
+    private buildCodesFilterExpression(codes: string[], field: string): FilterSpecification {
+        if (codes.length === 0) {
+            return ["==", ["get", field], ""] as FilterSpecification;
         }
 
-        if (selectedCodes.length === 1) {
-            // Un seul code sélectionné
-            return ["==", ["get", field], selectedCodes[0]];
+        if (codes.length === 1) {
+            return ["==", ["get", field], codes[0]] as FilterSpecification;
         }
 
-        // Plusieurs codes sélectionnés
-        return ["in", ["get", field], ["literal", selectedCodes]];
+        return ["in", ["get", field], ["literal", codes]] as FilterSpecification;
+    }
+
+    setNomenclature(newNomenclature: NomenclatureType): void {
+        if (!this.map) return;
+
+        const layerId = this.getId();
+        if (!this.map.getLayer(layerId)) return;
+
+        this.nomenclature = newNomenclature;
+
+        this.map.setPaintProperty(layerId, 'fill-color', this.getColorExpression());
+
+        const allowedCodes = newNomenclature === "couverture"
+            ? this.allowedCodes.couverture
+            : this.allowedCodes.usage;
+
+        this.currentFilter = allowedCodes;
+
+        const filter = this.buildCompleteFilter(this.getBaseFilter());
+        this.map.setFilter(layerId, filter);
+    }
+
+    setFilter(selectedCodes: string[]): void {
+        if (!this.map) return;
+
+        const layerId = this.getId();
+        if (!this.map.getLayer(layerId)) return;
+
+        this.currentFilter = selectedCodes;
+
+        const filter = this.buildCompleteFilter(this.getBaseFilter());
+        this.map.setFilter(layerId, filter);
     }
 
     extractStats(features: maplibregl.MapGeoJSONFeature[], filterProperty: string): StatCategory[] {
@@ -174,35 +205,4 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
 
         return categories;
     }
-
-    setNomenclature(newNomenclature: NomenclatureType): void {
-        if (!this.map) return;
-
-        const layerId = this.getId();
-        if (!this.map.getLayer(layerId)) return;
-
-        this.nomenclature = newNomenclature;
-
-        this.map.setPaintProperty(layerId, 'fill-color', this.getColorExpression());
-
-        const newAllowedCodes = newNomenclature === "couverture"
-            ? this.allowedCodes.couverture
-            : this.allowedCodes.usage;
-        this.setFilter(newAllowedCodes);
-    }
-
-    setFilter(selectedCodes: string[]): void {
-        if (!this.map) return;
-
-        const layerId = this.getId();
-        if (!this.map.getLayer(layerId)) return;
-
-        this.currentFilter = selectedCodes;
-
-        const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
-        const filter = this.buildFilterExpression(selectedCodes, field);
-
-        this.map.setFilter(layerId, filter as any);
-    }
-
 }
