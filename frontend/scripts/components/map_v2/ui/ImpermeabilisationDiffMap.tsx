@@ -87,7 +87,7 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 		layers: [
             { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
             { id: "emprise-layer", type: "emprise", source: "emprise-source" },
-            { id: "impermeabilisation-diff-layer", type: "impermeabilisation-diff", source: "ocsge-diff-source", startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex, departement: firstDepartement },
+            { id: "impermeabilisation-diff-layer", type: "impermeabilisation-diff", source: "ocsge-diff-source", startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex, departement: firstDepartement, stats: true },
 		],
 		controlGroups,
 		popups: [

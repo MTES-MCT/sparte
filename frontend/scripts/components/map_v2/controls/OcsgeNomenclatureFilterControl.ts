@@ -65,11 +65,11 @@ export class OcsgeNomenclatureFilterControl extends BaseControl {
         return this.getAvailableCodesForNomenclature(nomenclature, layerId, context);
     }
 
-    private getColorForCode(code: string, nomenclature: NomenclatureType): [number, number, number] {
+    private getColorForCode(code: string, nomenclature: NomenclatureType): string {
         if (nomenclature === 'couverture') {
-            return COUVERTURE_COLORS[code as Couverture] || [200, 200, 200];
+            return COUVERTURE_COLORS[code as Couverture] || "rgb(200, 200, 200)";
         } else {
-            return USAGE_COLORS[code as Usage] || [200, 200, 200];
+            return USAGE_COLORS[code as Usage] || "rgb(200, 200, 200)";
         }
     }
 }

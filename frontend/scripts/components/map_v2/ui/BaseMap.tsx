@@ -7,8 +7,11 @@ import { ControlsPanel } from "./controls/ControlsPanel";
 import { ControlsManager } from "../controls/ControlsManager";
 import { PopupManager } from "../popup/PopupManager";
 import { PopupPanel } from "./popup/PopupPanel";
+import { StatsBar } from "./stats/StatsBar";
+import { StatsManager } from "../stats/StatsManager";
 import type { MapConfig } from "../types/builder";
 import type { PopupState } from "../types/popup";
+import type { StatsState } from "../stats/StatsStateManager";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -70,12 +73,18 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     const isInitialized = useRef(false);
     const [controlsManager, setControlsManager] = useState<ControlsManager | null>(null);
     const [popupManager, setPopupManager] = useState<PopupManager | null>(null);
+    const [statsManager, setStatsManager] = useState<StatsManager | null>(null);
     const [popupState, setPopupState] = useState<PopupState>({
         isVisible: false,
         feature: null,
         event: null,
         position: { x: 0, y: 0 },
         layerId: null
+    });
+    const [statsState, setStatsState] = useState<StatsState>({
+        layerId: null,
+        categories: [],
+        isVisible: false
     });
     
     const memoizedConfig = useMemo(() => config, [JSON.stringify(config)]);
@@ -115,6 +124,28 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 
                 setPopupManager(popupMgr);
             }
+
+            // Initialiser le gestionnaire de stats si des layers en ont besoin
+            if (memoizedConfig.layers && memoizedConfig.layers.some(l => l.stats)) {
+                const statsMgr = new StatsManager(map);
+                
+                memoizedConfig.layers.forEach(layerConfig => {
+                    if (layerConfig.stats) {
+                        const layer = layers.get(layerConfig.id);
+                        if (layer && 'extractStats' in layer) {
+                            statsMgr.registerStats(
+                                layerConfig.id,
+                                (features) => (layer as any).extractStats(features)
+                            );
+                            statsMgr.enableStats(layerConfig.id);
+                        }
+                    }
+                });
+
+                statsMgr.subscribe(setStatsState);
+                
+                setStatsManager(statsMgr);
+            }
             
             isInitialized.current = true;
         }
@@ -141,8 +172,11 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             if (popupManager) {
                 popupManager.destroy();
             }
+            if (statsManager) {
+                statsManager.destroy();
+            }
         };
-    }, [popupManager]);
+    }, [popupManager, statsManager]);
 
     const handleClosePopup = useCallback(() => {
         if (popupManager) {
@@ -177,6 +211,11 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                     popupConfig={currentPopupConfig}
                     onClose={handleClosePopup}
                     mapContainer={mapDiv.current}
+                />
+            )}
+            {statsState.isVisible && statsState.categories.length > 0 && (
+                <StatsBar 
+                    categories={statsState.categories}
                 />
             )}
         </MapWrapper>

@@ -43,6 +43,7 @@ interface BaseLayerConfig {
     id: LayerId;
     type: LayerCategory;
     source: string;
+    stats?: boolean;
 }
 
 export interface OrthophotoLayerConfig extends BaseLayerConfig {
@@ -92,10 +93,6 @@ export interface MapConfig {
     popups?: LayerPopupConfig[];
 }
 
-/**
- * Aide à définir une configuration de carte fortement typée tout en
- * conservant l'inférence littérale sur les objets passés (via const generic).
- */
 export function defineMapConfig<const T extends MapConfig>(cfg: T): T {
     return cfg;
 }

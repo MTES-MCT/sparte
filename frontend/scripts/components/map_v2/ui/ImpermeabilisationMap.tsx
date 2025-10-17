@@ -106,7 +106,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		layers: [
             { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
             { id: "emprise-layer", type: "emprise", source: "emprise-source" },
-            { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement, millesimes: availableMillesimes },
+            { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement, millesimes: availableMillesimes, stats: true },
 		],
 		controlGroups
     });

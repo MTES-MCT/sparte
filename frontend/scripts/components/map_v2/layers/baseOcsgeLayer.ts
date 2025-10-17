@@ -1,7 +1,8 @@
 import { BaseLayer } from "./baseLayer";
-import type { BaseLayerOptions } from "../types/layer";
+import type { BaseLayerOptions, StatCategory } from "../types/layer";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
-import { COUVERTURE_COLORS, USAGE_COLORS } from "../constants/ocsge_nomenclatures";
+import { COUVERTURE_COLORS, USAGE_COLORS, COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
+import { area } from '@turf/turf';
 
 export abstract class BaseOcsgeLayer extends BaseLayer {
     protected millesimeIndex: number;
@@ -40,8 +41,8 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         const cases = Object.entries(colors).map(([key]) => [
             "==", ["get", field], key
         ]);
-        const colorValues = Object.values(colors).map((color: [number, number, number]) =>
-            `rgba(${color.join(", ")}, 0.7)`
+        const colorValues = Object.values(colors).map((color: string) =>
+            color.replace('rgb(', 'rgba(').replace(')', ', 0.7)')
         );
 
         return [
@@ -81,22 +82,6 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
 
     abstract getOptions(): Record<string, any>;
 
-    setNomenclature(newNomenclature: NomenclatureType): void {
-        if (!this.map) return;
-
-        const layerId = this.getId();
-        if (!this.map.getLayer(layerId)) return;
-
-        this.nomenclature = newNomenclature;
-
-        this.map.setPaintProperty(layerId, 'fill-color', this.getColorExpression());
-
-        const newAllowedCodes = newNomenclature === "couverture"
-            ? this.allowedCodes.couverture
-            : this.allowedCodes.usage;
-        this.setFilter(newAllowedCodes);
-    }
-
 
     getCurrentMillesime(): number {
         return this.millesimeIndex;
@@ -117,19 +102,6 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return this.allowedCodes;
     }
 
-    setFilter(selectedCodes: string[]): void {
-        if (!this.map) return;
-
-        const layerId = this.getId();
-        if (!this.map.getLayer(layerId)) return;
-
-        this.currentFilter = selectedCodes;
-
-        const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
-        const filter = this.buildFilterExpression(selectedCodes, field);
-
-        this.map.setFilter(layerId, filter as any);
-    }
 
     getCurrentFilter(): string[] {
         return this.currentFilter;
@@ -148,6 +120,89 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
 
         // Plusieurs codes sélectionnés
         return ["in", ["get", field], ["literal", selectedCodes]];
+    }
+
+    extractStats(features: maplibregl.MapGeoJSONFeature[], filterProperty: string): StatCategory[] {
+        if (features.length === 0) {
+            return [];
+        }
+
+        const field = this.nomenclature === 'couverture' ? 'code_cs' : 'code_us';
+        const colors = this.nomenclature === 'couverture' ? COUVERTURE_COLORS : USAGE_COLORS;
+        const labels = this.nomenclature === 'couverture' ? COUVERTURE_LABELS : USAGE_LABELS;
+
+        // Aggréger les surfaces par code
+        const surfaces: Record<string, number> = {};
+
+        features.forEach(feature => {
+            const properties = feature.properties as Record<string, any>;
+            const code = properties[field] as string;
+
+            if (code && properties[filterProperty] === true) {
+                const featureArea = area(feature.geometry);
+                surfaces[code] = (surfaces[code] || 0) + featureArea;
+            }
+        });
+
+        // Calculer le total
+        const totalSurface = Object.values(surfaces).reduce((acc, val) => acc + val, 0);
+
+        if (totalSurface === 0) {
+            return [];
+        }
+
+        // Créer les catégories de stats
+        const categories: StatCategory[] = Object.entries(surfaces)
+            .map(([code, surface]) => {
+                const label = this.nomenclature === 'couverture'
+                    ? (labels as Record<Couverture, string>)[code as Couverture]
+                    : (labels as Record<Usage, string>)[code as Usage];
+                const color = this.nomenclature === 'couverture'
+                    ? (colors as Record<Couverture, string>)[code as Couverture]
+                    : (colors as Record<Usage, string>)[code as Usage];
+
+                return {
+                    code,
+                    label: label || code,
+                    color: color || "rgb(200, 200, 200)",
+                    value: surface,
+                    percent: (surface / totalSurface) * 100
+                };
+            })
+            .filter(cat => cat.percent > 0)
+            .sort((a, b) => b.percent - a.percent);
+
+        return categories;
+    }
+
+    setNomenclature(newNomenclature: NomenclatureType): void {
+        if (!this.map) return;
+
+        const layerId = this.getId();
+        if (!this.map.getLayer(layerId)) return;
+
+        this.nomenclature = newNomenclature;
+
+        this.map.setPaintProperty(layerId, 'fill-color', this.getColorExpression());
+
+        const newAllowedCodes = newNomenclature === "couverture"
+            ? this.allowedCodes.couverture
+            : this.allowedCodes.usage;
+        this.setFilter(newAllowedCodes);
+    }
+
+    setFilter(selectedCodes: string[]): void {
+        if (!this.map) return;
+
+        const layerId = this.getId();
+        if (!this.map.getLayer(layerId)) return;
+
+        this.currentFilter = selectedCodes;
+
+        const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
+        const filter = this.buildFilterExpression(selectedCodes, field);
+
+        this.map.setFilter(layerId, filter as any);
     }
 
 }

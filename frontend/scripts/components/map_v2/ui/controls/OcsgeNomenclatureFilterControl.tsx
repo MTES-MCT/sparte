@@ -21,7 +21,7 @@ interface OcsgeNomenclatureFilterControlProps {
     disabled?: boolean;
     availableCodes: string[];
     currentNomenclature: 'couverture' | 'usage';
-    getColorForCode: (code: string, nomenclature: 'couverture' | 'usage') => [number, number, number];
+    getColorForCode: (code: string, nomenclature: 'couverture' | 'usage') => string;
 }
 
 export const OcsgeNomenclatureFilterControl: React.FC<OcsgeNomenclatureFilterControlProps> = (props) => {
@@ -40,7 +40,7 @@ export const OcsgeNomenclatureFilterControl: React.FC<OcsgeNomenclatureFilterCon
                     label: (
                         <CheckboxContainer>
                             <span>{code}</span>
-                            <ColorIndicator $backgroundColor={`rgb(${color.join(', ')})`} />
+                            <ColorIndicator $backgroundColor={color} />
                         </CheckboxContainer>
                     ),
                     nativeInputProps: {

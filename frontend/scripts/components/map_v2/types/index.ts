@@ -12,7 +12,6 @@ export type {
 export type { LayerInterface } from "./layerInterface";
 export type { SourceInterface } from "./sourceInterface";
 
-// La définition des configs carte est dans builder
 export type {
 	MapConfig,
 	SourceConfig,

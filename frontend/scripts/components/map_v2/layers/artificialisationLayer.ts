@@ -1,6 +1,7 @@
 import { NomenclatureType } from "../types/ocsge";
 import { BaseOcsgeLayer } from "./baseOcsgeLayer";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
+import type { StatCategory } from "../types/layer";
 
 export class ArtificialisationLayer extends BaseOcsgeLayer {
 	constructor(millesimeIndex: number, departement: string, nomenclature: NomenclatureType = "couverture", millesimes: Array<{ index: number; year?: number }> = []) {
@@ -25,5 +26,9 @@ export class ArtificialisationLayer extends BaseOcsgeLayer {
 
 	protected getBaseFilter() {
 		return ["==", ["get", "is_artificial"], true];
+	}
+
+	extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {
+		return super.extractStats(features, 'is_artificial');
 	}
 }

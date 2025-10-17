@@ -9,6 +9,14 @@ export type LayerType =
     | "hillshade"
     | "background";
 
+export interface StatCategory {
+    code: string;
+    label: string;
+    color: string;
+    value: number;
+    percent: number;
+}
+
 export interface BaseLayerOptions {
     id: string;
     type: LayerType;
@@ -24,4 +32,5 @@ export interface BaseLayerOptions {
     };
     label?: string;
     description?: string;
+    stats?: boolean;
 }

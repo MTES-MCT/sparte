@@ -1,5 +1,7 @@
 import { BaseLayer } from "./baseLayer";
 import { IMPERMEABILISATION_COLOR, DESIMPERMEABILISATION_COLOR } from "../constants/config";
+import type { StatCategory } from "../types/layer";
+import { area } from '@turf/turf';
 
 const IMPERMEABILISATION_FIELD = "new_is_impermeable";
 const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
@@ -78,5 +80,53 @@ export class ImpermeabilisationDiffLayer extends BaseLayer {
 
     getDepartement(): string {
         return this.departement;
+    }
+
+    extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {
+        if (features.length === 0) {
+            return [];
+        }
+
+        // Calculer les surfaces pour chaque catégorie
+        let impermeabilisationSurface = 0;
+        let desimpermeabilisationSurface = 0;
+
+        features.forEach(feature => {
+            const properties = feature.properties as Record<string, any>;
+            const featureArea = area(feature.geometry);
+
+            if (properties[IMPERMEABILISATION_FIELD] === true) {
+                impermeabilisationSurface += featureArea;
+            } else if (properties[DESIMPERMEABILISATION_FIELD] === true) {
+                desimpermeabilisationSurface += featureArea;
+            }
+        });
+
+        const totalSurface = impermeabilisationSurface + desimpermeabilisationSurface;
+
+        if (totalSurface === 0) {
+            return [];
+        }
+
+        // Calculer les pourcentages
+        const impermeabilisationPercent = (impermeabilisationSurface / totalSurface) * 100;
+        const desimpermeabilisationPercent = (desimpermeabilisationSurface / totalSurface) * 100;
+
+        return [
+            {
+                code: 'impermeabilisation',
+                label: 'Imperméabilisation',
+                color: IMPERMEABILISATION_COLOR,
+                value: impermeabilisationSurface,
+                percent: impermeabilisationPercent
+            },
+            {
+                code: 'desimpermeabilisation',
+                label: 'Désimperméabilisation',
+                color: DESIMPERMEABILISATION_COLOR,
+                value: desimpermeabilisationSurface,
+                percent: desimpermeabilisationPercent
+            }
+        ].filter(cat => cat.percent > 0);
     }
 }
