@@ -1,7 +1,7 @@
 import type { LayerId, LayerCategory } from './registry';
 import type { ControlGroup } from './controls';
+import type { LayerPopupConfig } from './popup';
 
-// Sources: unions discriminés (clairs et compatibles avec les factories)
 type MillesimeRaw = { index: number;[k: string]: unknown };
 
 export interface OrthophotoSourceConfig {
@@ -24,12 +24,21 @@ export interface OcsgeSourceConfig {
     millesimeIndex?: number;
 }
 
+export interface OcsgeDiffSourceConfig {
+    id: string;
+    type: 'ocsge-diff';
+    millesimes: MillesimeRaw[];
+    departements: string[];
+    startMillesimeIndex?: number;
+    endMillesimeIndex?: number;
+}
+
 export type SourceConfig =
     | OrthophotoSourceConfig
     | EmpriseSourceConfig
-    | OcsgeSourceConfig;
+    | OcsgeSourceConfig
+    | OcsgeDiffSourceConfig;
 
-// Layers: base + spécialisation par type
 interface BaseLayerConfig {
     id: LayerId;
     type: LayerCategory;
@@ -62,16 +71,25 @@ export interface ArtificialisationLayerConfig extends BaseLayerConfig {
     nomenclature?: NomenclatureType;
 }
 
+export interface ImpermeabilisationDiffLayerConfig extends BaseLayerConfig {
+    type: 'impermeabilisation-diff';
+    startMillesimeIndex: number;
+    endMillesimeIndex: number;
+    departement: string;
+}
+
 export type LayerConfig =
     | OrthophotoLayerConfig
     | EmpriseLayerConfig
     | ImpermeabilisationLayerConfig
-    | ArtificialisationLayerConfig;
+    | ArtificialisationLayerConfig
+    | ImpermeabilisationDiffLayerConfig;
 
 export interface MapConfig {
     sources: SourceConfig[];
     layers: LayerConfig[];
     controlGroups?: ControlGroup[];
+    popups?: LayerPopupConfig[];
 }
 
 /**

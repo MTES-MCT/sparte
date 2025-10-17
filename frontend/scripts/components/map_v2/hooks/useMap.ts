@@ -5,7 +5,7 @@ import { DEFAULT_MAP_STYLE, FRENCH_LOCALE } from "../constants/config";
 
 let PMTILES_PROTOCOL_REGISTERED = false;
 
-export const useMaplibre = (bounds?: [number, number, number, number], maxBounds?: [number, number, number, number]) => {
+export const useMap = (bounds?: [number, number, number, number], maxBounds?: [number, number, number, number]) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const controlsRef = useRef<{ [key: string]: any }>({});

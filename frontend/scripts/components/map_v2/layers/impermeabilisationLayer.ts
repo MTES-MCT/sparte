@@ -15,7 +15,7 @@ export class ImpermeabilisationLayer extends BaseOcsgeLayer {
 		}, millesimeIndex, departement, nomenclature, millesimes);
 	}
 
-	protected getLayerNomenclature() {
+	public getLayerNomenclature() {
 		return OCSGE_LAYER_NOMENCLATURES.impermeabilisation;
 	}
 

@@ -1,11 +1,14 @@
 import React, { useRef, useEffect, useMemo, useCallback, useState } from "react";
 import styled from "styled-components";
 import maplibregl from "maplibre-gl";
-import { useMaplibre } from "../hooks/useMaplibre";
+import { useMap } from "../hooks/useMap";
 import { initMapFromConfig } from "../factory/initMapFromConfig";
 import { ControlsPanel } from "./controls/ControlsPanel";
 import { ControlsManager } from "../controls/ControlsManager";
+import { PopupManager } from "../popup/PopupManager";
+import { PopupPanel } from "./popup/PopupPanel";
 import type { MapConfig } from "../types/builder";
+import type { PopupState } from "../types/popup";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -66,6 +69,14 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
     const [controlsManager, setControlsManager] = useState<ControlsManager | null>(null);
+    const [popupManager, setPopupManager] = useState<PopupManager | null>(null);
+    const [popupState, setPopupState] = useState<PopupState>({
+        isVisible: false,
+        feature: null,
+        event: null,
+        position: { x: 0, y: 0 },
+        layerId: null
+    });
     
     const memoizedConfig = useMemo(() => config, [JSON.stringify(config)]);
 
@@ -74,7 +85,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         isMapLoaded,
         initializeMap,
         updateControls,
-    } = useMaplibre(bounds, maxBounds);
+    } = useMap(bounds, maxBounds);
 
     const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
         if (memoizedConfig && !isInitialized.current) {
@@ -90,6 +101,19 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 );
                 
                 setControlsManager(manager);
+            }
+
+            // Initialiser le gestionnaire de popups si des popups sont définis
+            if (memoizedConfig.popups?.length > 0) {
+                const popupMgr = new PopupManager(map);
+                
+                memoizedConfig.popups.forEach(popupConfig => {
+                    popupMgr.registerPopup(popupConfig);
+                });
+
+                popupMgr.subscribe(setPopupState);
+                
+                setPopupManager(popupMgr);
             }
             
             isInitialized.current = true;
@@ -112,6 +136,25 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         updateControls();
     }, [isMapLoaded, updateControls]);
 
+    useEffect(() => {
+        return () => {
+            if (popupManager) {
+                popupManager.destroy();
+            }
+        };
+    }, [popupManager]);
+
+    const handleClosePopup = useCallback(() => {
+        if (popupManager) {
+            popupManager.hidePopup();
+        }
+    }, [popupManager]);
+
+    const currentPopupConfig = useMemo(() => {
+        if (!popupState.layerId || !memoizedConfig?.popups) return null;
+        return memoizedConfig.popups.find(p => p.layerId === popupState.layerId) || null;
+    }, [popupState.layerId, memoizedConfig?.popups]);
+
     return (
         <MapWrapper id={`${id}-wrapper`}>
             <MapContainer
@@ -126,6 +169,14 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                         groups: memoizedConfig.controlGroups
                     }}
                     manager={controlsManager}
+                />
+            )}
+            {popupState.isVisible && currentPopupConfig && (
+                <PopupPanel
+                    popupState={popupState}
+                    popupConfig={currentPopupConfig}
+                    onClose={handleClosePopup}
+                    mapContainer={mapDiv.current}
                 />
             )}
         </MapWrapper>

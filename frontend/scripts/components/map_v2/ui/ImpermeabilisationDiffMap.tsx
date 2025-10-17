@@ -3,17 +3,18 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import type { ControlGroup } from "../types/controls";
-import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
+import { ImpermeabilisationDiffPopup } from "./popup/ImpermeabilisationDiffPopup";
 
 interface ImpermeabilisationMapProps {
 	landData: LandDetailResultType;
 }
 
-export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
+export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = ({
   	landData,
 }) => {
 	// Calculer les paramètres OCSGE
 	const lastMillesimeIndex = landData.millesimes ? Math.max(...landData.millesimes.map(m => m.index)) : 1;
+	const startMillesimeIndex = lastMillesimeIndex > 1 ? lastMillesimeIndex - 1 : lastMillesimeIndex;
 	const firstDepartement = landData.departements ? landData.departements[0] : "";
     const availableMillesimes = (landData.millesimes || []).map(m => ({ index: m.index, year: m.year }));
 
@@ -57,41 +58,21 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
             ]
         },
         {
-            id: "impermeabilisation-group",
-            label: "Imperméabilisation",
+            id: "impermeabilisation-diff-group",
+            label: "Différence d'imperméabilisation",
             description: "Surfaces imperméabilisées basée sur l'occupation du sol (OCS GE). Seules les zones imperméables sont affichées.",
             controls: [
                 {
-                    id: "impermeabilisation-visibility",
+                    id: "impermeabilisation-diff-visibility",
                     type: "visibility",
-                    targetLayers: ["impermeabilisation-layer"],
+                    targetLayers: ["impermeabilisation-diff-layer"],
                     defaultValue: true
                 },
                 {
-                    id: "impermeabilisation-opacity",
+                    id: "impermeabilisation-diff-opacity",
                     type: "opacity",
-                    targetLayers: ["impermeabilisation-layer"],
+                    targetLayers: ["impermeabilisation-diff-layer"],
                     defaultValue: 0.7
-                },
-                {
-                    id: "impermeabilisation-millesime",
-                    type: "ocsge-millesime",
-                    targetLayers: ["impermeabilisation-layer"],
-                    sourceId: "ocsge-source",
-                    defaultValue: lastMillesimeIndex
-                },
-                {
-                    id: "impermeabilisation-nomenclature",
-                    type: "ocsge-nomenclature",
-                    targetLayers: ["impermeabilisation-layer"],
-                    linkedFilterId: "impermeabilisation-filter",
-                    defaultValue: "couverture"
-                },
-                {
-                    id: "impermeabilisation-filter",
-                    type: "ocsge-nomenclature-filter",
-                    targetLayers: ["impermeabilisation-layer"],
-                    defaultValue: OCSGE_LAYER_NOMENCLATURES.impermeabilisation.couverture
                 }
             ]
         }
@@ -101,19 +82,27 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		sources: [
 			{ id: "orthophoto-source", type: "orthophoto" },
 			{ id: "emprise-source", type: "emprise", land_type:landData.land_type, land_id: landData.land_id },
-			{ id: "ocsge-source", type: "ocsge", millesimes: landData.millesimes, departements: landData.departements, millesimeIndex: lastMillesimeIndex },
+			{ id: "ocsge-diff-source", type: "ocsge-diff", millesimes: landData.millesimes, departements: landData.departements, startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex },
 		],
 		layers: [
             { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
             { id: "emprise-layer", type: "emprise", source: "emprise-source" },
-            { id: "impermeabilisation-layer", type: "impermeabilisation", source: "ocsge-source", millesimeIndex: lastMillesimeIndex, departement: firstDepartement, millesimes: availableMillesimes },
+            { id: "impermeabilisation-diff-layer", type: "impermeabilisation-diff", source: "ocsge-diff-source", startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex, departement: firstDepartement },
 		],
-		controlGroups
+		controlGroups,
+		popups: [
+			{
+				layerId: "impermeabilisation-diff-layer",
+				trigger: "hover",
+				title: "Différence d'imperméabilisation",
+				renderContent: (feature) => <ImpermeabilisationDiffPopup feature={feature} />,
+			}
+		]
     });
 
 	return (
 		<BaseMap
-			id="impermeabilisation-map"
+			id="impermeabilisation-diff-map"
 			config={config}
 			bounds={landData.bounds}
 			maxBounds={landData.max_bounds}

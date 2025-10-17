@@ -11,6 +11,11 @@ export const ORTHOPHOTO_TILES_URL = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQ
 
 export const OCSGE_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/";
 
+export const ARTIFICIALISATION_COLOR = "#FA4B42"
+export const DESARTIFICIALISATION_COLOR = "#00E272"
+export const IMPERMEABILISATION_COLOR = "#FA4B42"
+export const DESIMPERMEABILISATION_COLOR = "#00E272"
+
 export const DEFAULT_MAP_STYLE = {
 	version: 8 as const,
 	name: "Empty",

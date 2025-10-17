@@ -9,7 +9,7 @@ export { VisibilityControl, OpacityControl } from './controls';
 export { ControlsManager } from './controls/ControlsManager';
 
 // Hooks
-export { useMaplibre } from './hooks/useMaplibre';
+export { useMap } from './hooks/useMap';
 
 // Types
 export type { MapConfig, SourceConfig, LayerConfig } from './types/builder';
@@ -17,7 +17,6 @@ export type {
     Control,
     ControlType,
     ControlGroup,
-    LayerVisibility,
     ControlsConfig,
     ControlsManager as IControlsManager
 } from './types/controls';
