@@ -9,6 +9,28 @@ from public_data.models import AdminRef, LandArtifStockIndex, LandModel
 
 
 class ArtifMap(DiagnosticChart):
+    def __init__(self, land, params):
+        """
+        Initialise la carte d'artificialisation.
+
+        Args:
+            land: Instance de LandModel représentant le territoire
+            params: Dictionnaire de paramètres devant contenir 'child_land_type', 'index', et 'previous_index'
+
+        Raises:
+            ValueError: Si les paramètres requis ne sont pas présents
+        """
+        if "child_land_type" not in params:
+            raise ValueError("Le paramètre 'child_land_type' est obligatoire")
+
+        if "index" not in params:
+            raise ValueError("Le paramètre 'index' est obligatoire")
+
+        if "previous_index" not in params:
+            raise ValueError("Le paramètre 'previous_index' est obligatoire")
+
+        super().__init__(land=land, params=params)
+
     @property
     def lands(self):
         return LandModel.objects.filter(

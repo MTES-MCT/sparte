@@ -5,6 +5,15 @@
     )
 }}
 
+WITH land_with_transformed_geoms AS (
+    SELECT
+        land.*,
+        ST_Transform(geom, 4326) as geom_4326,
+        ST_Transform(simple_geom, 4326) as simple_geom_4326,
+        ST_Transform(ST_buffer(geom, 500), 4326) as geom_buffered_4326
+    FROM {{ ref('land_details') }} as land
+)
+
 SELECT
     land_id,
     land_type,
@@ -12,19 +21,19 @@ SELECT
     {{ m2_to_ha('land.surface') }} as surface,
     'ha' as surface_unit,
     ARRAY[
-        ST_XMin(ST_Transform(geom, 4326)),
-        ST_YMin(ST_Transform(geom, 4326)),
-        ST_XMax(ST_Transform(geom, 4326)),
-        ST_YMax(ST_Transform(geom, 4326))
+        ST_XMin(geom_4326),
+        ST_YMin(geom_4326),
+        ST_XMax(geom_4326),
+        ST_YMax(geom_4326)
     ] as bounds,
     ARRAY[
-        ST_XMin(ST_Transform(ST_buffer(geom, 0.5), 4326)),
-        ST_YMin(ST_Transform(ST_buffer(geom, 0.5), 4326)),
-        ST_XMax(ST_Transform(ST_buffer(geom, 0.5), 4326)),
-        ST_YMax(ST_Transform(ST_buffer(geom, 0.5), 4326))
+        ST_XMin(geom_buffered_4326),
+        ST_YMin(geom_buffered_4326),
+        ST_XMax(geom_buffered_4326),
+        ST_YMax(geom_buffered_4326)
     ] as max_bounds,
-    ST_Transform(geom, 4326) as geom,
-    ST_Transform(simple_geom, 4326) as simple_geom,
+    geom_4326 as geom,
+    simple_geom_4326 as simple_geom,
 
     {{ m2_to_ha('land.surface_artif') }} as surface_artif,
     land.percent_artif as percent_artif,
@@ -63,7 +72,7 @@ SELECT
     ) as conso_details,
     land.consommation_correction_status
 FROM
-    {{ ref('land_details') }} as land
+    land_with_transformed_geoms as land
 LEFT JOIN LATERAL (
     SELECt array_agg(jsonb_build_object(
         'departement', land_millesimes.departement,
@@ -117,8 +126,14 @@ LEFT JOIN LATERAL (
     jsonb_build_object(
         'friche_surface', friche_surface / 10000,
         'friche_sans_projet_surface', friche_sans_projet_surface / 10000,
+        'friche_sans_projet_surface_artif', friche_sans_projet_surface_artif / 10000,
+        'friche_sans_projet_surface_imper', friche_sans_projet_surface_imper / 10000,
         'friche_avec_projet_surface', friche_avec_projet_surface / 10000,
+        'friche_avec_projet_surface_artif', friche_avec_projet_surface_artif / 10000,
+        'friche_avec_projet_surface_imper', friche_avec_projet_surface_imper / 10000,
         'friche_reconvertie_surface', friche_reconvertie_surface / 10000,
+        'friche_reconvertie_surface_artif', friche_reconvertie_surface_artif / 10000,
+        'friche_reconvertie_surface_imper', friche_reconvertie_surface_imper / 10000,
         'friche_count', friche_count,
         'friche_sans_projet_count', friche_sans_projet_count,
         'friche_avec_projet_count', friche_avec_projet_count,

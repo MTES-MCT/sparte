@@ -17,6 +17,23 @@ class ArtifByCouverturePieChart(DiagnosticChart):
     by_departement_klass = LandArtifStockCouvertureComposition
     by_index_klass = LandArtifStockCouvertureCompositionIndex
 
+    def __init__(self, land, params):
+        """
+        Initialise le graphique camembert d'artificialisation par couverture.
+
+        Args:
+            land: Instance de LandModel représentant le territoire
+            params: Dictionnaire de paramètres devant contenir 'index'
+                   et optionnellement 'departement'
+
+        Raises:
+            ValueError: Si 'index' n'est pas présent dans params
+        """
+        if "index" not in params:
+            raise ValueError("Le paramètre 'index' est obligatoire")
+
+        super().__init__(land=land, params=params)
+
     @cached_property
     def data(self):
         if self.params.get("departement"):

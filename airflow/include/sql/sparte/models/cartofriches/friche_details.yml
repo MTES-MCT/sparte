@@ -1,0 +1,35 @@
+models:
+  - name: friche_details
+    columns:
+      - name: site_id
+        data_type: character varying
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              field: site_id
+              to: ref('friche')
+      - name: surface_artif
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: percent_artif
+        data_type: double precision
+        data_tests:
+          - not_null
+      - name: years_artif
+        data_type: array
+        data_tests:
+          - not_null
+      - name: surface_imper
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: percent_imper
+        data_type: double precision
+        data_tests:
+          - not_null
+      - name: years_imper
+        data_type: array
+        data_tests:
+          - not_null

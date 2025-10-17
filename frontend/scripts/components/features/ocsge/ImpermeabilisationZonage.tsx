@@ -31,10 +31,6 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 		<div className="fr-mb-7w">
 			<h2>Imperméabilisation des zonages d'urbanisme <MillesimeDisplay is_interdepartemental={is_interdepartemental} landArtifStockIndex={landImperStockIndex} /></h2>
 			<div className="bg-white fr-p-4w rounded">
-				<p className="fr-text--sm">
-					Ce tableau résume le détail de l'imperméabilisation des zonages
-					d'urbanisme présent sur le territoire.
-				</p>
 				<div className="fr-table fr-mb-0">
 					<div className="fr-table__wrapper">
 						<div className="fr-table__container">

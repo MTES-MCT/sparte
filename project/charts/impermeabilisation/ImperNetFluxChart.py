@@ -7,12 +7,36 @@ from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
     DESARTIFICIALISATION_COLOR,
 )
-from public_data.models import AdminRef
 from public_data.models.impermeabilisation import LandImperFlux, LandImperFluxIndex
 
 
 class ImperNetFluxChart(DiagnosticChart):
     name = "Evolution de l'artificialisation"
+
+    def __init__(self, land, params):
+        """
+        Initialise le graphique de flux net d'imperméabilisation.
+
+        Deux modes de paramètres sont possibles :
+        1. Mode standard : params doit contenir 'millesime_new_index' et 'millesime_old_index'
+        2. Mode département : params doit contenir 'millesime_new_index', 'millesime_old_index' ET 'departement'
+
+        Args:
+            land: Instance de LandModel représentant le territoire
+            params: Dictionnaire de paramètres avec les clés requises
+
+        Raises:
+            ValueError: Si les paramètres requis ne sont pas présents
+        """
+        # Vérification des paramètres obligatoires
+        if "millesime_new_index" not in params:
+            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
+
+        if "millesime_old_index" not in params:
+            raise ValueError("Le paramètre 'millesime_old_index' est obligatoire")
+
+        # Appel du constructeur parent
+        super().__init__(land=land, params=params)
 
     @property
     def data(self) -> LandImperFluxIndex | LandImperFlux | None:
@@ -32,6 +56,10 @@ class ImperNetFluxChart(DiagnosticChart):
 
     @property
     def series(self):
+        # Si toutes les valeurs sont à 0, retourner None pour déclencher noData
+        if self.data.flux_imper == 0 and self.data.flux_desimper == 0 and self.data.flux_imper_net == 0:
+            return None
+
         return [
             {
                 "data": [
@@ -68,7 +96,7 @@ class ImperNetFluxChart(DiagnosticChart):
     def param(self):
         return super().param | {
             "chart": {"type": "column"},
-            "title": {"text": f"Evolution de l'imperméabilisation nette{self.title_end}"},
+            "title": {"text": f"Imperméabilisation nette{self.title_end}"},
             "yAxis": {
                 "title": {"text": "Surface (en ha)"},
             },
@@ -88,28 +116,28 @@ class ImperNetFluxChart(DiagnosticChart):
                 }
             },
             "series": self.series,
+            "lang": {"noData": "Aucun changement du sol n'est à l'origine d'imperméabilisation sur cette période."},
+            "noData": {"style": {"fontWeight": "bold", "fontSize": "15px", "color": "#303030", "textAlign": "center"}},
         }
 
     @property
-    def year_or_index_after(self):
-        if self.land.is_interdepartemental:
-            return f"millésime {self.params.get('millesime_new_index')}"
-        return f"{self.data.years_new[-1]}"
+    def year_or_index_period(self):
+        """Retourne la période de flux (millésime ancien et nouveau)"""
+        if self.params.get("departement"):
+            # Pour LandImperFlux, on a year_old et year_new
+            return f"{self.data.year_old}-{self.data.year_new}"
+        elif self.land.is_interdepartemental:
+            return f"millésime {self.params.get('millesime_old_index')}-{self.params.get('millesime_new_index')}"
+        else:
+            # Pour LandImperFluxIndex, on a years_old et years_new
+            return f"{self.data.years_old[0]}-{self.data.years_new[-1]}"
 
     @property
     def data_table(self):
-        if self.params.get("departement"):
-            territory_header = "Département"
-            territory_name = self.params.get("departement")
-        else:
-            territory_header = AdminRef.get_label(self.land.land_type)
-            territory_name = self.land.name
-
         headers = [
-            territory_header,
-            f"Imperméabilisation (ha) - {self.year_or_index_after}",
-            f"Désimperméabilisation (ha) - {self.year_or_index_after}",
-            f"Imperméabilisation nette (ha) - {self.year_or_index_after}",
+            f"Imperméabilisation (ha) - {self.year_or_index_period}",
+            f"Désimperméabilisation (ha) - {self.year_or_index_period}",
+            f"Imperméabilisation nette (ha) - {self.year_or_index_period}",
         ]
 
         return {
@@ -118,7 +146,6 @@ class ImperNetFluxChart(DiagnosticChart):
                 {
                     "name": "",  # not used
                     "data": [
-                        territory_name,
                         round(self.data.flux_imper, DEFAULT_VALUE_DECIMALS),
                         round(self.data.flux_desimper, DEFAULT_VALUE_DECIMALS),
                         round(self.data.flux_imper_net, DEFAULT_VALUE_DECIMALS),

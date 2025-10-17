@@ -33,8 +33,16 @@ export enum LogementVacantStatusEnum {
 export type FricheStatusDetails = {
     friche_surface: number;
     friche_sans_projet_surface: number;
+    friche_sans_projet_surface_artif: number;
+    friche_sans_projet_surface_imper: number;
     friche_avec_projet_surface: number;
+    friche_avec_projet_surface_artif: number;
+    friche_avec_projet_surface_imper: number;
     friche_reconvertie_surface: number;
+    friche_reconvertie_surface_artif: number;
+    friche_reconvertie_surface_imper: number;
+    years_artif: number[];
+    years_imper: number[];
     friche_count: number;
     friche_sans_projet_count: number;
     friche_avec_projet_count: number;
@@ -69,11 +77,20 @@ export type ConsoDetails = {
     trajectoire_conso_is_territorialise: boolean;
 }
 
+export enum LandType {
+    REGION = "REGION",
+    DEPARTEMENT = "DEPART",
+    SCOT = "SCOT",
+    EPCI = "EPCI",
+    COMMUNE = "COMM",
+    NATION = "NATION",
+}
+
 
 
 export type LandDetailResultType = {
     land_id: string;
-    land_type: string;
+    land_type: LandType;
     name: string;
     surface: number;
     surface_unit: string;

@@ -10,6 +10,7 @@ with
         select
             commune_code,
             commune_surface,
+            departement,
             year_old,
             year_new,
             year_old_index,
@@ -17,20 +18,25 @@ with
             round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface,
             cs_old,
             cs_new,
-            departement
-        from {{ ref("difference_commune") }}
-        WHERE
-            cs_old != cs_new
+            us_old,
+            us_new,
+            new_is_artificial,
+            new_not_artificial
+        from {{ ref("difference_commune_artif") }}
         group by
             commune_code,
             commune_surface,
+            departement,
             year_new,
             year_old,
             year_old_index,
             year_new_index,
-            departement,
             cs_old,
-            cs_new
+            cs_new,
+            us_old,
+            us_new,
+            new_is_artificial,
+            new_not_artificial
     )
 select
     without_percent.*,
