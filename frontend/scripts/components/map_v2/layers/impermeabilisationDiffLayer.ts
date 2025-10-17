@@ -1,4 +1,4 @@
-import { BaseLayer } from "./baseLayer";
+import { BaseOcsgeDiffLayer } from "./baseOcsgeDiffLayer";
 import { IMPERMEABILISATION_COLOR, DESIMPERMEABILISATION_COLOR } from "../constants/config";
 import type { StatCategory } from "../types/layer";
 import { area } from '@turf/turf';
@@ -6,10 +6,7 @@ import { area } from '@turf/turf';
 const IMPERMEABILISATION_FIELD = "new_is_impermeable";
 const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
 
-export class ImpermeabilisationDiffLayer extends BaseLayer {
-    private startMillesimeIndex: number;
-    private endMillesimeIndex: number;
-    private departement: string;
+export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
 
     constructor(startMillesimeIndex: number, endMillesimeIndex: number, departement: string) {
         super({
@@ -20,11 +17,7 @@ export class ImpermeabilisationDiffLayer extends BaseLayer {
             opacity: 0.7,
             label: "Différence d'imperméabilisation",
             description: "Différence d'imperméabilisation entre deux millésimes consécutifs. Vert = désimperméabilisation, Rouge = imperméabilisation.",
-        });
-
-        this.startMillesimeIndex = startMillesimeIndex;
-        this.endMillesimeIndex = endMillesimeIndex;
-        this.departement = departement;
+        }, startMillesimeIndex, endMillesimeIndex, departement);
     }
 
     getOptions() {
@@ -53,33 +46,6 @@ export class ImpermeabilisationDiffLayer extends BaseLayer {
                 "fill-opacity": this.options.opacity ?? 0.7,
             },
         };
-    }
-
-    private getSourceLayerName(): string {
-        return `occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}`;
-    }
-
-    async setMillesimes(newStartIndex: number, newEndIndex: number): Promise<void> {
-        if (!this.map || !this.map.getLayer(this.options.id)) {
-            return;
-        }
-
-        this.startMillesimeIndex = newStartIndex;
-        this.endMillesimeIndex = newEndIndex;
-
-        this.map.setLayoutProperty(this.options.id, "source-layer", this.getSourceLayerName());
-    }
-
-    getStartMillesimeIndex(): number {
-        return this.startMillesimeIndex;
-    }
-
-    getEndMillesimeIndex(): number {
-        return this.endMillesimeIndex;
-    }
-
-    getDepartement(): string {
-        return this.departement;
     }
 
     extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {
