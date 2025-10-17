@@ -20,6 +20,7 @@ class ArtifFluxByUsage(DiagnosticChart):
     name = "Evolution de l'artificialisation"
     sol = "usage"
     model = LandArtifFluxUsageCompositionIndex
+    model_by_departement = LandArtifFluxUsageComposition
 
     def __init__(self, land, params):
         """
@@ -41,8 +42,7 @@ class ArtifFluxByUsage(DiagnosticChart):
     @property
     def data(self):
         if self.params.get("departement"):
-            model_class = getattr(self, "model_by_departement", LandArtifFluxUsageComposition)
-            return model_class.objects.filter(
+            return self.model_by_departement.objects.filter(
                 land_type=self.land.land_type,
                 land_id=self.land.land_id,
                 millesime_new_index=self.params.get("millesime_new_index"),
