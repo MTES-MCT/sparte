@@ -72,8 +72,8 @@ def create_ocsge_diff_centroid_vector_tiles():
 
         return (
             Container()
-            .sql_to_geojsonseq_on_s3_handler()
-            .export_sql_result_to_geojsonseq_on_s3(
+            .sql_to_geojson_on_s3_handler()
+            .export_sql_result_to_geojson_on_s3(
                 sql=multiline_string_to_single_line(sql),  # noqa: E501
                 s3_key=f"{vector_tiles_dir}/{filename}",
                 s3_bucket=bucket_name,
@@ -95,7 +95,6 @@ def create_ocsge_diff_centroid_vector_tiles():
             "-o",
             local_output,
             local_input,
-            "--read-parallel",
             "--force",
             "--no-simplification-of-shared-nodes",
             "--no-tiny-polygon-reduction",
