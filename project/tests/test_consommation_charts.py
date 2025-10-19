@@ -168,10 +168,12 @@ class AnnualConsoProportionalComparisonChartTest(BaseChartTestCase):
         super().setUp()
         self.params["comparison_lands"] = []
 
+    @patch("public_data.domain.containers.PublicDataContainer.consommation_stats_service")
     @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
-    def test_chart_initialization(self, mock_service):
+    def test_chart_initialization(self, mock_progression_service, mock_stats_service):
         """Test that proportional chart initializes."""
-        mock_service.return_value.get_by_lands.return_value = []
+        mock_progression_service.return_value.get_by_lands.return_value = []
+        mock_stats_service.return_value.get_by_lands.return_value = []
 
         chart = AnnualConsoProportionalComparisonChart(land=self.mock_land, params=self.params)
 
