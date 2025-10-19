@@ -16,8 +16,7 @@ from .Scot import Scot
 
 
 class Land:
-    """It's a generic class to work with Epci, Departement, Region or Commune.
-    Like a proxy."""
+    """DEPRECEATED: use LandModel instead."""
 
     class Meta:
         subclasses = {
