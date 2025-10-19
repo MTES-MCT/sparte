@@ -25,7 +25,7 @@ class SimilarTerritories(models.Model):
 
     class Meta:
         managed = False
-        db_table = "for_app_similar_territories"
+        db_table = "public_data_similarterritories"
         ordering = ["land_id", "land_type", "similarity_rank"]
 
 

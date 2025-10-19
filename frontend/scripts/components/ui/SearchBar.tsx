@@ -7,6 +7,8 @@ import getCsrfToken from '@utils/csrf';
 
 interface SearchBarProps {
     onTerritorySelect?: (territory: Territory) => void;
+    excludeTerritoryId?: string;
+    excludeLandType?: string;
 }
 
 export interface Territory {
@@ -139,7 +141,7 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
-const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerritoryId, excludeLandType }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -155,9 +157,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect }) => {
         if (shouldQueryBeSkipped || isFetching) {
             setData(undefined);
         } else {
-            setData(queryData);
+            // Filter out the excluded territory
+            let filteredData = queryData;
+            if (queryData && excludeTerritoryId && excludeLandType) {
+                filteredData = queryData.filter(
+                    (territory: Territory) =>
+                        !(territory.source_id === excludeTerritoryId && territory.land_type === excludeLandType)
+                );
+            }
+            setData(filteredData);
         }
-    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped]);
+    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped, excludeTerritoryId, excludeLandType]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
