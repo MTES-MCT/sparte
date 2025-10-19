@@ -4,7 +4,7 @@ import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
 import { LandDetailResultType } from "@services/types/land";
 import { formatNumber } from "@utils/formatUtils";
 import Card from "@components/ui/Card";
-import { useGetLandConsoStatsQuery } from "@services/api";
+import { useGetLandConsoStatsQuery, useGetLandPopStatsQuery } from "@services/api";
 
 interface ConsommationProps {
 	landData: LandDetailResultType;
@@ -38,11 +38,24 @@ export const Consommation: React.FC<ConsommationProps> = ({
 		to_year: endYear,
 	});
 
+	// Récupérer les statistiques de population
+	const { data: popStats, isLoading: isLoadingPopStats, isFetching: isFetchingPopStats } = useGetLandPopStatsQuery({
+		land_id,
+		land_type,
+		from_year: startYear,
+		to_year: endYear,
+	});
+
 	// Convertir m² en ha (diviser par 10000)
 	const totalConsoHa = consoStats?.[0]?.total ? consoStats[0].total / 10000 : null;
 
+	// Récupérer l'évolution de la population
+	const populationEvolution = popStats?.[0]?.evolution || null;
+	const populationEvolutionPercent = popStats?.[0]?.evolution_percent || null;
+
 	// Afficher "..." pendant le chargement initial ou le refetch
 	const isLoadingConso = isLoadingConsoStats || isFetchingConsoStats;
+	const isLoadingPop = isLoadingPopStats || isFetchingPopStats;
 
 	// Générer les options d'années (2009 à 2023 par exemple)
 	const minYear = 2009;
@@ -188,6 +201,36 @@ export const Consommation: React.FC<ConsommationProps> = ({
 			{/* Consommation et démographie */}
 			<div className="fr-mt-7w">
 				<h3 id="conso-demographie">Consommation d'espaces NAF et démographie</h3>
+
+				{/* Cards statistiques démographie et consommation */}
+				<div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
+					<div className="fr-col-12 fr-col-md-6">
+						<Card
+							icon="bi-people"
+							badgeClass="fr-badge--success"
+							badgeLabel="Évolution de la population"
+							value={
+								isLoadingPop || populationEvolution === null
+									? '...'
+									: `${populationEvolution > 0 ? '+' : ''}${formatNumber({ number: populationEvolution })} hab${
+										populationEvolutionPercent !== null
+											? ` (${populationEvolutionPercent > 0 ? '+' : ''}${formatNumber({ number: populationEvolutionPercent, decimals: 1 })}%)`
+											: ''
+									}`
+							}
+							label={`Période d'analyse ${startYear} - ${endYear}`}
+						/>
+					</div>
+					<div className="fr-col-12 fr-col-md-6">
+						<Card
+							icon="bi-graph-up"
+							badgeClass="fr-badge--warning"
+							badgeLabel="Consommation totale"
+							value={isLoadingConso || totalConsoHa === null ? '...' : `${formatNumber({ number: totalConsoHa })} ha`}
+							label={`Période d'analyse ${startYear} - ${endYear}`}
+						/>
+					</div>
+				</div>
 
 				<div className="fr-grid-row fr-grid-row--gutters">
 					<div className="fr-col-12 fr-col-lg-8">

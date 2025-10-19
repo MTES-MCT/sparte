@@ -97,6 +97,8 @@ from public_data.models import (
     LandModel,
     LandModelGeomViewset,
     LandModelViewset,
+    LandPopStatsViewset,
+    SimilarTerritoriesViewset,
 )
 
 app_name = "api"
@@ -195,6 +197,8 @@ urlpatterns = [
     path("landartifstockindex/", LandArtifStockIndexViewset.as_view(), name="artifstockindex"),
     path("landimperstockindex/", LandImperStockIndexViewset.as_view(), name="imperstockindex"),
     path("landconsostats/", LandConsoStatsViewset.as_view(), name="consostats"),
+    path("landpopstats/", LandPopStatsViewset.as_view(), name="popstats"),
+    path("similarterritories/", SimilarTerritoriesViewset.as_view(), name="similarterritories"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
