@@ -14,6 +14,7 @@ from project.charts import (
     PopulationDensityChart,
 )
 from public_data.models import LandModel
+from utils.schema import init_unmanaged_schema_for_tests
 
 
 class BaseChartTestCase(TestCase):
@@ -21,6 +22,9 @@ class BaseChartTestCase(TestCase):
 
     def setUp(self):
         """Set up mock land and params for tests."""
+        super().setUp()
+        init_unmanaged_schema_for_tests()
+
         self.mock_land = Mock(spec=LandModel)
         self.mock_land.land_id = "12345"
         self.mock_land.land_type = "COMM"
