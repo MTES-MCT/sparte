@@ -2,76 +2,34 @@ from functools import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import HIGHLIGHT_COLOR
+from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
 from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef
-from public_data.models.administration import LandModel
-from public_data.models.demography import SimilarTerritories
 
 
-class PopulationConsoComparisonChart(DiagnosticChart):
+class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     @property
     def name(self):
         return f"population conso comparison {self.params['start_date']}-{self.params['end_date']}"
-
-    @cached_property
-    def _similar_territories_data(self):
-        """
-        Cache for similar territories data to avoid N+1 queries.
-        Fetches all SimilarTerritories objects in a single query.
-        Returns a dict mapping similar_land_id -> SimilarTerritories object.
-        """
-        similar_territories = SimilarTerritories.objects.filter(
-            land_id=self.land.land_id, land_type=self.land.land_type
-        ).order_by("similarity_rank")[:8]
-
-        return {st.similar_land_id: st for st in similar_territories}
 
     @cached_property
     def data(self):
         """
         Get comparison data for current land and similar territories.
 
+        Uses ComparisonChartMixin to get comparison lands (either custom or similar territories).
+
         Returns comparison data for:
         1. The current territory (highlighted in the chart)
         2. Custom territories if comparison_lands param is provided
         3. Otherwise, up to 8 similar territories from for_app_similar_territories table
-
-        Similar territories are automatically selected based on population similarity
-        and geographic proximity.
 
         Uses @cached_property to avoid re-executing queries on multiple accesses.
         """
         start_date = int(self.params["start_date"])
         end_date = int(self.params["end_date"])
 
-        comparison_lands = [self.land]
-
-        # Check if custom comparison lands are provided
-        if "comparison_lands" in self.params and self.params["comparison_lands"]:
-            # Parse comparison_lands param: "COMM_69123,EPCI_200046977"
-            land_keys = self.params["comparison_lands"].split(",")
-            for land_key in land_keys:
-                try:
-                    land_type, land_id = land_key.strip().split("_")
-                    land = LandModel.objects.get(land_id=land_id, land_type=land_type)
-                    comparison_lands.append(land)
-                except (ValueError, LandModel.DoesNotExist):
-                    # Skip invalid land keys
-                    continue
-        else:
-            # Use similar territories from the table
-            similar_land_ids = list(self._similar_territories_data.keys())
-
-            # Récupérer tous les territoires similaires en une seule requête (optimisé)
-            similar_lands = LandModel.objects.filter(land_id__in=similar_land_ids, land_type=self.land.land_type)
-
-            # Créer la liste ordonnée : territoire actuel d'abord, puis territoires similaires
-            # On utilise un dict pour maintenir l'ordre de similarity_rank
-            similar_lands_dict = {land.land_id: land for land in similar_lands}
-
-            for land_id in similar_land_ids:
-                if land_id in similar_lands_dict:
-                    comparison_lands.append(similar_lands_dict[land_id])
+        comparison_lands = self._get_comparison_lands()
 
         # Get comparison stats for median calculation
         comparison = PublicDataContainer.consommation_comparison_service().get_by_land(
