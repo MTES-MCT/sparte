@@ -28,6 +28,16 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getLandPopStats: builder.query({
+			query: ({land_type, land_id, from_year, to_year}) => {
+				return `/api/landpopstats/?${new URLSearchParams({
+					land_type,
+					land_id,
+					from_year: from_year.toString(),
+					to_year: to_year.toString()
+				})}`
+			},
+		}),
 		getChartConfig: builder.query({
 			query: ({id, land_type, land_id, ...params}) => {
 				const queryParams = new URLSearchParams(params)
@@ -145,6 +155,7 @@ const {
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
 	useGetLandConsoStatsQuery,
+	useGetLandPopStatsQuery,
 } = djangoApi;
 
 export {
@@ -159,6 +170,7 @@ export {
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
 	useGetLandConsoStatsQuery,
+	useGetLandPopStatsQuery,
 	useDownloadDiagnosticMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
