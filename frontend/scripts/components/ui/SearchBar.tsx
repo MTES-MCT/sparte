@@ -9,6 +9,7 @@ interface SearchBarProps {
     onTerritorySelect?: (territory: Territory) => void;
     excludeTerritoryId?: string;
     excludeLandType?: string;
+    excludeTerritories?: Territory[];
 }
 
 export interface Territory {
@@ -141,7 +142,7 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
-const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerritoryId, excludeLandType }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerritoryId, excludeLandType, excludeTerritories = [] }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -157,17 +158,33 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerrito
         if (shouldQueryBeSkipped || isFetching) {
             setData(undefined);
         } else {
-            // Filter out the excluded territory
+            // Filter out excluded territories
             let filteredData = queryData;
-            if (queryData && excludeTerritoryId && excludeLandType) {
-                filteredData = queryData.filter(
-                    (territory: Territory) =>
-                        !(territory.source_id === excludeTerritoryId && territory.land_type === excludeLandType)
-                );
+            if (queryData) {
+                filteredData = queryData.filter((territory: Territory) => {
+                    // Exclude current territory
+                    if (excludeTerritoryId && excludeLandType &&
+                        territory.source_id === excludeTerritoryId &&
+                        territory.land_type === excludeLandType) {
+                        return false;
+                    }
+                    // Exclude territories in excludeTerritories array
+                    if (excludeTerritories.length > 0) {
+                        const isExcluded = excludeTerritories.some(
+                            (excludedTerritory: Territory) =>
+                                territory.source_id === excludedTerritory.source_id &&
+                                territory.land_type === excludedTerritory.land_type
+                        );
+                        if (isExcluded) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
             }
             setData(filteredData);
         }
-    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped, excludeTerritoryId, excludeLandType]);
+    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped, excludeTerritoryId, excludeLandType, excludeTerritories]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
