@@ -11,7 +11,6 @@ import useMatomoTracking from '@hooks/useMatomoTracking';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
-import TopBar from '@components/layout/TopBar';
 import Synthese from '@components/pages/Synthese';
 import { Consommation } from '@components/pages/Consommation';
 import LogementVacant from '@components/pages/LogementVacant';
@@ -87,7 +86,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                         <TrackingWrapper />
                         <Navbar projectData={projectData} landData={landData} />
                         <Main $isOpen={isOpen} $isMobile={isMobile}>
-                            <TopBar />
                             <Content>
                                 <Routes>
                                     <Route
