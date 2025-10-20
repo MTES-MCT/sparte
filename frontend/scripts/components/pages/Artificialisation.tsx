@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
 import { OcsgeMapContainer } from "@components/map/ocsge/OcsgeMapContainer";
 import styled from "styled-components";
@@ -24,7 +23,6 @@ export const BigNumber = styled.div`
 `;
 
 interface ArtificialisationProps {
-	projectData: ProjectDetailResultType;
 	landData: LandDetailResultType;
 }
 
@@ -45,8 +43,8 @@ const ArtifLastMillesimeSection: React.FC<{
 	landArtifStockIndex: LandArtifStockIndex;
 	is_interdepartemental: boolean;
 	millesimes: Millesime[];
-	projectData: ProjectDetailResultType;
-}> = ({ landArtifStockIndex, is_interdepartemental, millesimes, projectData }) => (
+	territory_name: string;
+}> = ({ landArtifStockIndex, is_interdepartemental, millesimes, territory_name }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<DataCards
@@ -111,7 +109,7 @@ const ArtifLastMillesimeSection: React.FC<{
 					</p>
 					<LandMillesimeTable
 						millesimes={millesimes}
-						territory_name={projectData?.territory_name}
+						territory_name={territory_name}
 						is_interdepartemental={is_interdepartemental}
 					/>
 				</div>
@@ -121,15 +119,13 @@ const ArtifLastMillesimeSection: React.FC<{
 );
 
 export const Artificialisation: React.FC<ArtificialisationProps> = ({
-	projectData,
 	landData,
 }) => {
-	const { land_id, land_type } = projectData;
 	const {
-		surface,
+		land_id,
+		land_type,
 		millesimes_by_index,
 		millesimes,
-		years_artif,
 		child_land_types,
 		name,
 		is_interdepartemental,
@@ -170,7 +166,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				landArtifStockIndex={landArtifStockIndex}
 				is_interdepartemental={is_interdepartemental}
 				millesimes={millesimes}
-				projectData={projectData}
+				territory_name={name}
 			/>
 
 			<div className="fr-mb-7w">
@@ -495,7 +491,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						des surfaces artificialisées du territoire, en fonction des
 						millésimes disponibles de la donnée OCS GE.
 					</p>
-					{projectData && (
+					{landData && (
 						<OcsgeMapContainer
 							landData={landData}
 							globalFilter={["==", ["get", "is_artificial"], true]}

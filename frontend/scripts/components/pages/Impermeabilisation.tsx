@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
@@ -21,7 +20,6 @@ export const BigNumber = styled.div`
 `;
 
 interface ImpermeabilisationProps {
-	projectData: ProjectDetailResultType;
 	landData: LandDetailResultType;
 }
 
@@ -42,8 +40,8 @@ const ImperLastMillesimeSection: React.FC<{
 	landImperStockIndex: LandImperStockIndex;
 	is_interdepartemental: boolean;
 	millesimes: Millesime[];
-	projectData: ProjectDetailResultType;
-}> = ({ landImperStockIndex, is_interdepartemental, millesimes, projectData }) => (
+	territory_name: string;
+}> = ({ landImperStockIndex, is_interdepartemental, millesimes, territory_name }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<DataCards
@@ -111,7 +109,7 @@ const ImperLastMillesimeSection: React.FC<{
 					</p>
 					<LandMillesimeTable
 						millesimes={millesimes}
-						territory_name={projectData?.territory_name}
+						territory_name={territory_name}
 						is_interdepartemental={is_interdepartemental}
 					/>
 				</div>
@@ -121,15 +119,13 @@ const ImperLastMillesimeSection: React.FC<{
 );
 
 export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
-	projectData,
 	landData,
 }) => {
-	const { land_id, land_type } = projectData;
 	const {
-		surface,
+		land_id,
+		land_type,
 		millesimes_by_index,
 		millesimes,
-		years_artif,
 		child_land_types,
 		name,
 		is_interdepartemental,
@@ -170,7 +166,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 				landImperStockIndex={landImperStockIndex}
 				is_interdepartemental={is_interdepartemental}
 				millesimes={millesimes}
-				projectData={projectData}
+				territory_name={name}
 			/>
 
 			<div className="fr-mb-7w">
