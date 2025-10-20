@@ -24,57 +24,52 @@ class LogementVacantAutorisationStatsViewset(APIView):
     API endpoint that returns combined stats for logement vacant and autorisation logement.
 
     Query params:
-    - start_date: Start year
-    - end_date: End year
+    - end_date: Year for which to retrieve data
 
-    Returns the last year's data with all necessary statistics.
+    Returns the specified year's data with all necessary statistics.
     """
 
-    def get(self, request, land_type, land_id):
+    def get(self, request, land_type, land_id):  # noqa: C901
         try:
             land = LandModel.objects.get(land_type=land_type, land_id=land_id)
         except LandModel.DoesNotExist:
             return Response({"error": f"Land not found: {land_type}/{land_id}"}, status=status.HTTP_404_NOT_FOUND)
 
-        start_date = request.GET.get("start_date")
         end_date = request.GET.get("end_date")
 
-        if not start_date or not end_date:
+        if not end_date:
             return Response(
-                {"error": "Missing required parameters: start_date and end_date"},
+                {"error": "Missing required parameter: end_date"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
-            start_date = int(start_date)
             end_date = int(end_date)
         except ValueError:
             return Response(
-                {"error": "start_date and end_date must be integers"},
+                {"error": "end_date must be an integer"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         # Get last year autorisation logement data
-        last_year_autorisation = (
-            AutorisationLogement.objects.filter(
+        try:
+            last_year_autorisation = AutorisationLogement.objects.get(
                 land_id=land.land_id,
                 land_type=land.land_type,
                 year=end_date,
             )
-            .order_by("-year")
-            .first()
-        )
+        except AutorisationLogement.DoesNotExist:
+            last_year_autorisation = None
 
         # Get last year logement vacant data
-        last_year_vacant = (
-            LogementVacant.objects.filter(
+        try:
+            last_year_vacant = LogementVacant.objects.get(
                 land_id=land.land_id,
                 land_type=land.land_type,
                 year=end_date,
             )
-            .order_by("-year")
-            .first()
-        )
+        except LogementVacant.DoesNotExist:
+            last_year_vacant = None
 
         if last_year_autorisation is None or last_year_vacant is None:
             return Response(

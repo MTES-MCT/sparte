@@ -16,7 +16,7 @@ from .Scot import Scot
 
 
 class Land:
-    """DEPRECEATED: use LandModel instead."""
+    """DEPRECATED: use LandModel instead."""
 
     class Meta:
         subclasses = {

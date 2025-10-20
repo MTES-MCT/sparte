@@ -138,9 +138,8 @@ export const djangoApi = createApi({
 			},
 		}),
 		getLogementVacantAutorisationStats: builder.query({
-			query: ({land_type, land_id, start_date, end_date}) => {
+			query: ({land_type, land_id, end_date}) => {
 				const queryParams = new URLSearchParams({
-					start_date: start_date.toString(),
 					end_date: end_date.toString()
 				})
 				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`

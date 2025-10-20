@@ -8,6 +8,7 @@ class ConsoByDeterminantPieChart(DiagnosticChart):
     Graphique en secteurs de consommation totale par destination (habitat, activité, mixte etc.)
     """
 
+    required_params = ["start_date", "end_date"]
     name = "determinant overview"
 
     @property

@@ -15,6 +15,8 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     Graphique de consommation annuelle d'espaces des territoires similaires.
     """
 
+    required_params = ["start_date", "end_date"]
+
     @property
     def name(self):
         return f"conso comparison {self.params['start_date']}-{self.params['end_date']}"

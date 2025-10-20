@@ -14,6 +14,8 @@ class AnnualConsoProportionalComparisonChart(ComparisonChartMixin, DiagnosticCha
     Graphique tree map de consommation d'espaces proportionnelle à la surface des territoires.
     """
 
+    required_params = ["start_date", "end_date"]
+
     @property
     def name(self):
         return f"conso proportional comparison {self.params['start_date']}-{self.params['end_date']}"

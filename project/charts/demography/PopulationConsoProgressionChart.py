@@ -3,6 +3,7 @@ from public_data.domain.containers import PublicDataContainer
 
 
 class PopulationConsoProgressionChart(DiagnosticChart):
+    required_params = ["start_date", "end_date"]
     name = "population conso progression"
 
     @property

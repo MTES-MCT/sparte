@@ -12,6 +12,7 @@ from public_data.models.consommation import LandConso
 
 
 class AnnualTotalConsoChart(DiagnosticChart):
+    required_params = ["start_date", "end_date"]
     name = "conso communes"
 
     @property

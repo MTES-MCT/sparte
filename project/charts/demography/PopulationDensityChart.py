@@ -5,6 +5,7 @@ from public_data.domain.containers import PublicDataContainer
 
 
 class PopulationDensityChart(DiagnosticChart):
+    required_params = ["start_date", "end_date"]
     name = "population density"
 
     @property
