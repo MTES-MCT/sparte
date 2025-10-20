@@ -23,8 +23,7 @@ class PopulationDensityChart(DiagnosticChart):
         """Calculate density metrics."""
         # On récupére la dernière année de données sur la période
         last_year_data = self.data[-1]
-        # Support both Land (.area property) and LandModel (.surface attribute)
-        land_area = getattr(self.land, "area", getattr(self.land, "surface", 0))
+        land_area = self.land.surface
         density_ha = math.ceil(last_year_data.population / land_area) if land_area else 0
         density_km2 = density_ha * 100
         return {"density_ha": density_ha, "density_km2": density_km2}
