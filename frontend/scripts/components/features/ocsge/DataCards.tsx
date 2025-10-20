@@ -6,10 +6,12 @@ interface DataCardsProps {
 	icon: string;
 	fluxBadgeLabel: string;
 	stockBadgeLabel: string;
-	fluxValue: number;
+	fluxValue: number | React.ReactNode;
 	fluxLabel: React.ReactNode;
 	stockValue: React.ReactNode;
 	stockLabel: React.ReactNode;
+	fluxBadgeClass?: string;
+	stockBadgeClass?: string;
 }
 
 export const DataCards: React.FC<DataCardsProps> = ({
@@ -20,15 +22,21 @@ export const DataCards: React.FC<DataCardsProps> = ({
 	fluxLabel,
 	stockValue,
 	stockLabel,
+	fluxBadgeClass = "fr-badge--error",
+	stockBadgeClass = "fr-badge--info",
 }) => {
+	const formattedFluxValue = typeof fluxValue === 'number'
+		? `${formatNumber({ number: fluxValue, addSymbol: true })} ha`
+		: fluxValue;
+
 	return (
 		<>
 			<div className="fr-col-12 fr-col-md-3">
 				<Card
 					icon={icon}
-					badgeClass="fr-badge--error"
+					badgeClass={fluxBadgeClass}
 					badgeLabel={fluxBadgeLabel}
-					value={`${formatNumber({ number: fluxValue, addSymbol: true })} ha`}
+					value={formattedFluxValue}
 					label={fluxLabel}
 					isHighlighted={true}
 					highlightBadge="Donnée clé"
@@ -37,7 +45,7 @@ export const DataCards: React.FC<DataCardsProps> = ({
 			<div className="fr-col-12 fr-col-md-3">
 				<Card
 					icon={icon}
-					badgeClass="fr-badge--info"
+					badgeClass={stockBadgeClass}
 					badgeLabel={stockBadgeLabel}
 					value={stockValue}
 					label={stockLabel}

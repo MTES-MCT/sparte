@@ -35,7 +35,7 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
   const [endYear, setEndYear] = React.useState(DEFAULT_END_YEAR);
 
   // Fetch consumption and population data
-  const { totalConsoHa, populationEvolution, populationEvolutionPercent, isLoadingConso, isLoadingPop } =
+  const { totalConsoHa, populationEvolution, populationEvolutionPercent, populationDensity, isLoadingConso, isLoadingPop } =
     useConsoData(land_id, land_type, startYear, endYear);
 
   // Fetch similar territories
@@ -73,32 +73,36 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
 
       <div className="fr-container--fluid fr-p-3w">
         {/* Main statistics cards */}
-      <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-        <div className="fr-col-12 fr-col-md-6">
-          <Card
-            icon="bi-geo-alt"
-            badgeClass="fr-badge--info"
-            badgeLabel="Surface du territoire"
-            value={`${formatNumber({ number: surface })} ha`}
-            label={name}
-          />
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
+          <div className="fr-col-12 fr-col-md-3">
+            <Card
+              icon="bi-graph-up"
+              badgeClass="fr-badge--error"
+              badgeLabel="Consommation d'espaces"
+              value={
+                isLoadingConso || totalConsoHa === null ? "..." : `${formatNumber({ number: totalConsoHa, addSymbol: true })} ha`
+              }
+              label={`Entre ${startYear} et ${endYear}`}
+              isHighlighted={true}
+              highlightBadge="Donnée clé"
+            />
+          </div>
+          <div className="fr-col-12 fr-col-md-9">
+            <div className="bg-white fr-p-4w rounded h-100">
+              <h6>Qu'est-ce que la consommation d'espaces ?</h6>
+              <p className="fr-text--sm">
+                La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme <strong>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</strong> (article 194 de la loi Climat et résilience).
+              </p>
+              <p className="fr-text--sm">
+                Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait. Un espace urbanisé n'est plus un espace d'usage NAF (Naturel, Agricole et Forestier). Si l'artificialisation des sols traduit globalement un changement de couverture physique, la consommation traduit un changement d'usage. A titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="fr-col-12 fr-col-md-6">
-          <Card
-            icon="bi-graph-up"
-            badgeClass="fr-badge--warning"
-            badgeLabel="Consommation d'espaces NAF"
-            value={
-              isLoadingConso || totalConsoHa === null ? "..." : `${formatNumber({ number: totalConsoHa })} ha`
-            }
-            label={`Période d'analyse ${startYear} - ${endYear}`}
-          />
-        </div>
-      </div>
 
       {/* Annual consumption section */}
       <div>
-        <h3 id="conso-annuelle">Consommation annuelle d'espaces NAF</h3>
+        <h3 id="conso-annuelle">Évolution de la consommation d'espaces</h3>
 
         <div className="fr-mb-5w">
           <div className="bg-white fr-p-2w rounded">
@@ -119,7 +123,7 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         </div>
 
         <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12 fr-col-lg-4">
+          <div className="fr-col-12 fr-col-lg-6">
             <div className="bg-white fr-p-2w rounded h-100">
               <ConsoGraph
                 id="pie_determinant"
@@ -147,7 +151,7 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
               </ConsoGraph>
             </div>
           </div>
-          <div className="fr-col-12 fr-col-lg-8">
+          <div className="fr-col-12 fr-col-lg-6">
             <div className="bg-white fr-p-2w rounded h-100">
               <ConsoGraph
                 id="chart_determinant"
@@ -187,10 +191,12 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         totalConsoHa={totalConsoHa}
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
+        populationDensity={populationDensity}
         isLoadingConso={isLoadingConso}
         isLoadingPop={isLoadingPop}
         defaultStartYear={DEFAULT_START_YEAR}
         defaultEndYear={DEFAULT_END_YEAR}
+        surface={surface}
       />
 
         {/* Comparison section */}

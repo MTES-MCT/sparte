@@ -11,10 +11,12 @@ interface ConsoDemographyProps {
   totalConsoHa: number | null;
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
+  populationDensity: number | null;
   isLoadingConso: boolean;
   isLoadingPop: boolean;
   defaultStartYear: number;
   defaultEndYear: number;
+  surface: number;
 }
 
 /**
@@ -28,10 +30,12 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   totalConsoHa,
   populationEvolution,
   populationEvolutionPercent,
+  populationDensity,
   isLoadingConso,
   isLoadingPop,
   defaultStartYear,
   defaultEndYear,
+  surface,
 }) => {
   return (
     <div className="fr-mt-7w">
@@ -42,10 +46,12 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
         totalConsoHa={totalConsoHa}
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
+        populationDensity={populationDensity}
         isLoadingConso={isLoadingConso}
         isLoadingPop={isLoadingPop}
         startYear={startYear}
         endYear={endYear}
+        surface={surface}
       />
 
       {/* Population density chart */}
