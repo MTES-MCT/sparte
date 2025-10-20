@@ -69,8 +69,9 @@ class AnnualTotalConsoChart(DiagnosticChart):
     @property
     def data_table(self):  # noqa: C901
         # Déterminer le type de child (ex: COMM pour EPCI, EPCI pour SCOT, etc.)
+        # Peut être configuré via le paramètre 'child_type' ou prend le premier par défaut
         child_types = getattr(self.land, "child_land_types", [])
-        child_type = child_types[0] if child_types else None
+        child_type = self.params.get("child_type") or (child_types[0] if child_types else None)
 
         if child_type:
             # Récupérer les children qui appartiennent au territoire
