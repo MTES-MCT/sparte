@@ -2,6 +2,7 @@ import { BaseOcsgeDiffLayer } from "./baseOcsgeDiffLayer";
 import { IMPERMEABILISATION_COLOR, DESIMPERMEABILISATION_COLOR } from "../constants/config";
 import type { StatCategory } from "../types/layer";
 import { area } from '@turf/turf';
+import type { LayerSpecification, FilterSpecification } from 'maplibre-gl';
 
 const IMPERMEABILISATION_FIELD = "new_is_impermeable";
 const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
@@ -20,17 +21,17 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
         }, startMillesimeIndex, endMillesimeIndex, departement);
     }
 
-    getOptions() {
+    getOptions(): LayerSpecification {
         return {
             id: this.options.id,
-            type: this.options.type,
+            type: this.options.type as 'fill',
             source: this.options.source,
             "source-layer": this.getSourceLayerName(),
             filter: [
                 "any",
                 ["==", ["get", IMPERMEABILISATION_FIELD], true],
                 ["==", ["get", DESIMPERMEABILISATION_FIELD], true]
-            ],
+            ] as FilterSpecification,
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
             },
@@ -46,7 +47,7 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
                 "fill-opacity": this.options.opacity ?? 0.7,
                 "fill-outline-color": "#000",
             },
-        };
+        } as LayerSpecification;
     }
 
     extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {
@@ -59,12 +60,12 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
         let desimpermeabilisationSurface = 0;
 
         features.forEach(feature => {
-            const properties = feature.properties as Record<string, any>;
+            const properties = feature.properties;
             const featureArea = area(feature.geometry);
 
-            if (properties[IMPERMEABILISATION_FIELD] === true) {
+            if (properties && properties[IMPERMEABILISATION_FIELD] === true) {
                 impermeabilisationSurface += featureArea;
-            } else if (properties[DESIMPERMEABILISATION_FIELD] === true) {
+            } else if (properties && properties[DESIMPERMEABILISATION_FIELD] === true) {
                 desimpermeabilisationSurface += featureArea;
             }
         });

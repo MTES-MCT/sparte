@@ -8,7 +8,7 @@ let PMTILES_PROTOCOL_REGISTERED = false;
 export const useMap = (bounds?: [number, number, number, number], maxBounds?: [number, number, number, number]) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
-    const controlsRef = useRef<{ [key: string]: any }>({});
+    const controlsRef = useRef<{ [key: string]: maplibregl.IControl }>({});
 
     const initializeMap = useCallback((container: HTMLElement) => {
         if (!PMTILES_PROTOCOL_REGISTERED) {
@@ -36,7 +36,7 @@ export const useMap = (bounds?: [number, number, number, number], maxBounds?: [n
         return mapRef.current;
     }, [bounds, maxBounds]);
 
-    const addControl = useCallback((control: any, id: string) => {
+    const addControl = useCallback((control: maplibregl.IControl, id: string) => {
         if (!mapRef.current || controlsRef.current[id]) return;
 
         controlsRef.current[id] = control;

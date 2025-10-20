@@ -42,7 +42,7 @@ export class PopupManager {
         }
     }
 
-    private handleClick(event: any, config: LayerPopupConfig): void {
+    private handleClick(event: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] }, config: LayerPopupConfig): void {
         const feature = event.features?.[0];
         if (!feature) return;
 
@@ -55,14 +55,14 @@ export class PopupManager {
         this.showPopup(feature, event, config);
     }
 
-    private handleHover(event: any, config: LayerPopupConfig): void {
+    private handleHover(event: maplibregl.MapMouseEvent & { features?: maplibregl.MapGeoJSONFeature[] }, config: LayerPopupConfig): void {
         const feature = event.features?.[0];
         if (!feature) return;
 
         this.showPopup(feature, event, config);
     }
 
-    private showPopup(feature: any, event: any, config: LayerPopupConfig): void {
+    private showPopup(feature: maplibregl.MapGeoJSONFeature, event: maplibregl.MapMouseEvent, config: LayerPopupConfig): void {
         const { lngLat } = event;
         const point = this.map.project(lngLat);
 

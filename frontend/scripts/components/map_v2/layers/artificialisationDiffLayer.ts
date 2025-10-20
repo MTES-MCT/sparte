@@ -2,6 +2,7 @@ import { BaseOcsgeDiffLayer } from "./baseOcsgeDiffLayer";
 import { ARTIFICIALISATION_COLOR, DESARTIFICIALISATION_COLOR } from "../constants/config";
 import type { StatCategory } from "../types/layer";
 import { area } from '@turf/turf';
+import type { LayerSpecification, FilterSpecification } from 'maplibre-gl';
 
 const ARTIFICIALISATION_FIELD = "new_is_artificial";
 const DESARTIFICIALISATION_FIELD = "new_not_artificial";
@@ -19,17 +20,17 @@ export class ArtificialisationDiffLayer extends BaseOcsgeDiffLayer {
         }, startMillesimeIndex, endMillesimeIndex, departement);
     }
 
-    getOptions() {
+    getOptions(): LayerSpecification {
         return {
             id: this.options.id,
-            type: this.options.type,
+            type: this.options.type as 'fill',
             source: this.options.source,
             "source-layer": this.getSourceLayerName(),
             filter: [
                 "any",
                 ["==", ["get", ARTIFICIALISATION_FIELD], true],
                 ["==", ["get", DESARTIFICIALISATION_FIELD], true]
-            ],
+            ] as FilterSpecification,
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
             },
@@ -44,7 +45,7 @@ export class ArtificialisationDiffLayer extends BaseOcsgeDiffLayer {
                 ],
                 "fill-opacity": this.options.opacity ?? 0.7,
             },
-        };
+        } as LayerSpecification;
     }
 
     extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {
@@ -57,12 +58,12 @@ export class ArtificialisationDiffLayer extends BaseOcsgeDiffLayer {
         let desartificialisationSurface = 0;
 
         features.forEach(feature => {
-            const properties = feature.properties as Record<string, any>;
+            const properties = feature.properties;
             const featureArea = area(feature.geometry);
 
-            if (properties[ARTIFICIALISATION_FIELD] === true) {
+            if (properties && properties[ARTIFICIALISATION_FIELD] === true) {
                 artificialisationSurface += featureArea;
-            } else if (properties[DESARTIFICIALISATION_FIELD] === true) {
+            } else if (properties && properties[DESARTIFICIALISATION_FIELD] === true) {
                 desartificialisationSurface += featureArea;
             }
         });

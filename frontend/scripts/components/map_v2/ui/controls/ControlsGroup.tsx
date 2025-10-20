@@ -48,7 +48,7 @@ export const ControlsGroup: React.FC<ControlsGroupProps> = ({
                             control,
                             value,
                             disabled,
-                                    onChange: (newValue: any) => {
+                                    onChange: (newValue) => {
                                         manager.applyControl(control.id, newValue);
                                     },
                             layerId: firstLayerId,

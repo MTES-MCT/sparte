@@ -132,10 +132,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 memoizedConfig.layers.forEach(layerConfig => {
                     if (layerConfig.stats) {
                         const layer = layers.get(layerConfig.id);
-                        if (layer && 'extractStats' in layer) {
+                        if (layer && 'extractStats' in layer && typeof layer.extractStats === 'function') {
                             statsMgr.registerStats(
                                 layerConfig.id,
-                                (features) => (layer as any).extractStats(features)
+                                (features: maplibregl.MapGeoJSONFeature[]) => layer.extractStats(features)
                             );
                             statsMgr.enableStats(layerConfig.id);
                         }

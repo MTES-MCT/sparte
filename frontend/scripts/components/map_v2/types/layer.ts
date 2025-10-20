@@ -1,3 +1,6 @@
+import type maplibregl from "maplibre-gl";
+import type { FilterSpecification } from 'maplibre-gl';
+
 export type LayerType =
     | "fill"
     | "line"
@@ -23,9 +26,9 @@ export interface BaseLayerOptions {
     source: string;
     visible?: boolean;
     opacity?: number;
-    filters?: any[];
-    options?: Record<string, any>;
-    onClick?: (event: any) => void;
+    filters?: FilterSpecification[];
+    options?: Record<string, unknown>;
+    onClick?: (event: maplibregl.MapMouseEvent) => void;
     legend?: {
         title: string;
         items: Array<{ color: string; label: string }>;

@@ -3,7 +3,7 @@ import type { BaseLayerOptions, StatCategory } from "../types/layer";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
 import { area } from '@turf/turf';
-import type { FilterSpecification } from 'maplibre-gl';
+import type { FilterSpecification, LayerSpecification } from 'maplibre-gl';
 
 export abstract class BaseOcsgeLayer extends BaseLayer {
     protected millesimeIndex: number;
@@ -56,10 +56,10 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return `occupation_du_sol_${this.millesimeIndex}_${this.departement}`;
     }
 
-    protected buildFillOptions(baseFilter: FilterSpecification) {
+    protected buildFillOptions(baseFilter: FilterSpecification): LayerSpecification {
         return {
             id: this.options.id,
-            type: this.options.type,
+            type: this.options.type as 'fill',
             source: this.options.source,
             "source-layer": this.getSourceLayerName(),
             filter: this.buildCompleteFilter(baseFilter),
@@ -71,7 +71,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
                 "fill-opacity": this.options.opacity ?? 0.7,
                 "fill-outline-color": "rgba(0, 0, 0, 0.3)",
             },
-        };
+        } as LayerSpecification;
     }
 
     private buildCompleteFilter(baseFilter: FilterSpecification, selectedCodes?: string[]): FilterSpecification {
@@ -82,7 +82,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return ["all", baseFilter, codesExpr] as FilterSpecification;
     }
 
-    abstract getOptions(): Record<string, any>;
+    abstract getOptions(): LayerSpecification;
 
 
     getCurrentMillesime(): number {
@@ -166,7 +166,9 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         const surfaces: Record<string, number> = {};
 
         features.forEach(feature => {
-            const properties = feature.properties as Record<string, any>;
+            const properties = feature.properties;
+            if (!properties) return;
+
             const code = properties[field] as string;
 
             if (code && properties[filterProperty] === true) {

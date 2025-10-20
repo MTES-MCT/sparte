@@ -1,5 +1,6 @@
 import type { BaseLayerOptions } from "../types/layer";
 import type maplibregl from "maplibre-gl";
+import type { LayerSpecification } from "maplibre-gl";
 
 export abstract class BaseLayer {
 	readonly options: BaseLayerOptions;
@@ -19,7 +20,7 @@ export abstract class BaseLayer {
 		this.loaded = true;
 	}
 
-	abstract getOptions(): Record<string, any>;
+	abstract getOptions(): LayerSpecification;
 
 	setVisibility(visible: boolean): void {
 		if (!this.map) return;

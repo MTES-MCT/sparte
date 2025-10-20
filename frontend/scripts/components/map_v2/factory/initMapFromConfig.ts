@@ -21,7 +21,7 @@ export async function initMapFromConfig(config: MapConfig, map: maplibregl.Map):
         // Injection des dépendances: map, sourceId
         source.attach(map, src.id);
 
-        map.addSource(src.id, source.getOptions() as any);
+        map.addSource(src.id, source.getOptions());
         sources.set(src.id, source);
     }
 
@@ -32,7 +32,7 @@ export async function initMapFromConfig(config: MapConfig, map: maplibregl.Map):
         // Injection des dépendances: map
         layer.attach(map);
 
-        map.addLayer(layer.getOptions() as any);
+        map.addLayer(layer.getOptions());
         layers.set(lyr.id, layer);
     }
 

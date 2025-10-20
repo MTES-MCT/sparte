@@ -1,4 +1,5 @@
 import { BaseLayer } from "./baseLayer";
+import type { LayerSpecification, FilterSpecification } from "maplibre-gl";
 
 export class OcsgeDiffCentroidClusterLayer extends BaseLayer {
     constructor() {
@@ -13,12 +14,12 @@ export class OcsgeDiffCentroidClusterLayer extends BaseLayer {
         });
     }
 
-    getOptions() {
+    getOptions(): LayerSpecification {
         return {
             id: this.options.id,
-            type: this.options.type,
+            type: this.options.type as 'circle',
             source: this.options.source,
-            filter: ["has", "point_count"],
+            filter: ["has", "point_count"] as FilterSpecification,
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
             },
@@ -27,7 +28,7 @@ export class OcsgeDiffCentroidClusterLayer extends BaseLayer {
                 "circle-radius": 20,
                 "circle-opacity": this.options.opacity ?? 0.8,
             },
-        };
+        } as LayerSpecification;
     }
 }
 

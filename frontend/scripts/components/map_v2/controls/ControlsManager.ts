@@ -6,11 +6,12 @@ import type {
     Control,
     ControlContext,
     BaseControlInterface,
-    ControlsManager as IControlsManager,
+    ControlsManagerInterface,
+    ControlValue,
 } from "../types/controls";
 import { ControlStateManager } from "./ControlStateManager";
 
-export class ControlsManager implements IControlsManager {
+export class ControlsManager implements ControlsManagerInterface {
     private stateManager: ControlStateManager;
     private controlInstances: Map<string, BaseControlInterface> = new Map();
     private groups: ControlGroup[];
@@ -45,13 +46,33 @@ export class ControlsManager implements IControlsManager {
     private initializeControlValuesFromConfig(): void {
         this.groups.forEach(group => {
             group.controls.forEach(control => {
-                const defaultValue = (control as any).defaultValue;
+                // Extraire la valeur par défaut selon le type de contrôle
+                let defaultValue: ControlValue;
+                switch (control.type) {
+                    case 'visibility':
+                        defaultValue = control.defaultValue;
+                        break;
+                    case 'opacity':
+                        defaultValue = control.defaultValue;
+                        break;
+                    case 'ocsge-millesime':
+                        defaultValue = control.defaultValue;
+                        break;
+                    case 'ocsge-nomenclature':
+                        defaultValue = control.defaultValue;
+                        break;
+                    case 'ocsge-nomenclature-filter':
+                        defaultValue = control.defaultValue;
+                        break;
+                    default:
+                        defaultValue = false;
+                }
                 this.stateManager.initializeControlValue(control.id, defaultValue);
             });
         });
     }
 
-    async applyControl(controlId: string, value: any): Promise<void> {
+    async applyControl(controlId: string, value: ControlValue): Promise<void> {
         const control = this.findControl(controlId);
         const controlInstance = this.controlInstances.get(controlId);
 
@@ -64,7 +85,7 @@ export class ControlsManager implements IControlsManager {
         this.stateManager.setControlValue(controlId, value);
     }
 
-    getControlValue(controlId: string): any {
+    getControlValue(controlId: string): ControlValue {
         return this.stateManager.getControlValue(controlId);
     }
 
@@ -95,12 +116,15 @@ export class ControlsManager implements IControlsManager {
         return this.buildContext(controlId);
     }
 
-    updateControlValue(controlId: string, value: any): void {
+    updateControlValue(controlId: string, value: ControlValue): void {
         this.stateManager.setControlValue(controlId, value);
     }
 
     private buildContext(controlId: string): ControlContext {
         const control = this.findControl(controlId);
+        if (!control) {
+            throw new Error(`Control with id ${controlId} not found`);
+        }
         return {
             manager: this,
             sources: this.sources,

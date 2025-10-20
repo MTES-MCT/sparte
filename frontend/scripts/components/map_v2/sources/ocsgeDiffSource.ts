@@ -2,6 +2,7 @@ import { BaseSource } from "./baseSource";
 import { OCSGE_TILES_URL } from "../constants/config";
 import { Millesime } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
+import type { SourceSpecification, LayerSpecification } from "maplibre-gl";
 
 const getLastMillesimeIndex = (millesimes: Millesime[]): number => {
     if (!millesimes || millesimes.length === 0) {
@@ -41,13 +42,13 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
         this.departement = millesime?.departement || departements[0];
     }
 
-    getOptions() {
+    getOptions(): SourceSpecification {
         const tilesUrl = `${OCSGE_TILES_URL}occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.pmtiles`;
 
         return {
-            type: this.options.type,
+            type: this.options.type as 'vector',
             url: `pmtiles://${tilesUrl}`,
-        };
+        } as SourceSpecification;
     }
 
     async setMillesimes(newStartIndex: number, newEndIndex: number): Promise<void> {
@@ -72,14 +73,21 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
         // Trouver toutes les layers qui utilisent cette source et sauvegarder leurs specs
         const style = this.map.getStyle();
         const layerSpecs = style.layers
-            .filter((l: any) => l.source === this.sourceId)
-            .map((l: any) => {
+            .filter((l): l is LayerSpecification => {
+                if (!('source' in l)) return false;
+                const layerSource = (l as { source?: string }).source;
+                return layerSource === this.sourceId;
+            })
+            .map((l): LayerSpecification => {
                 // Créer une copie propre du spec de la layer (sans les propriétés internes)
-                const { id, type, source, 'source-layer': sourceLayer, minzoom, maxzoom, filter, layout, paint } = l;
+                const { id, type, minzoom, maxzoom, layout, paint } = l;
+                const source = (l as { source?: string }).source;
+                const filter = (l as { filter?: unknown }).filter;
+                const sourceLayer = 'source-layer' in l ? l['source-layer'] : undefined;
 
                 // Mettre à jour le source-layer avec les nouveaux millésimes si c'est un layer OCSGE diff
                 let updatedSourceLayer = sourceLayer;
-                if (sourceLayer && sourceLayer.startsWith('occupation_du_sol_diff_')) {
+                if (sourceLayer && typeof sourceLayer === 'string' && sourceLayer.startsWith('occupation_du_sol_diff_')) {
                     // Remplacer les anciens index de millésime par les nouveaux dans le nom du source-layer
                     updatedSourceLayer = `occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}`;
                 }
@@ -94,7 +102,7 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
                     ...(filter && { filter }),
                     ...(layout && { layout }),
                     ...(paint && { paint })
-                };
+                } as LayerSpecification;
             });
 
         // 1. Supprimer les layers
@@ -111,11 +119,11 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
 
         // 3. Recréer la source avec la nouvelle URL
         const newOptions = this.getOptions();
-        this.map.addSource(this.sourceId, newOptions as any);
+        this.map.addSource(this.sourceId, newOptions);
 
         // 4. Recréer les layers avec leurs specs propres
         layerSpecs.forEach((layerSpec) => {
-            this.map!.addLayer(layerSpec as any);
+            this.map!.addLayer(layerSpec);
         });
     }
 
@@ -153,5 +161,9 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
 
     getDepartement(): string {
         return this.departement;
+    }
+
+    getId(): string {
+        return this.options.id;
     }
 }

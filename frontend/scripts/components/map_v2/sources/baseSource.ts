@@ -1,5 +1,6 @@
 import type { BaseSourceOptions } from "../types/source";
 import type maplibregl from "maplibre-gl";
+import type { SourceSpecification } from "maplibre-gl";
 
 export abstract class BaseSource {
     readonly options: BaseSourceOptions;
@@ -21,5 +22,5 @@ export abstract class BaseSource {
         this.loaded = true;
     }
 
-    abstract getOptions(): Record<string, any>;
+    abstract getOptions(): SourceSpecification;
 }

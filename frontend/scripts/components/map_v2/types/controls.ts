@@ -1,7 +1,11 @@
 import maplibregl from "maplibre-gl";
 import React from "react";
+import type { BaseSource } from "../sources/baseSource";
+import type { BaseLayer } from "../layers/baseLayer";
 
 export type ControlType = 'visibility' | 'opacity' | 'ocsge-millesime' | 'ocsge-nomenclature' | 'ocsge-nomenclature-filter';
+
+export type ControlValue = boolean | number | string | string[] | 'couverture' | 'usage';
 
 export interface ControlGroup {
     id: string;
@@ -51,18 +55,18 @@ export interface OcsgeNomenclatureFilterControl extends BaseControl {
 export type Control = VisibilityControl | OpacityControl | OcsgeMillesimeControl | OcsgeNomenclatureControl | OcsgeNomenclatureFilterControl;
 
 export interface ControlContext {
-    manager: any;
-    sources: Map<string, any>;
-    layers: Map<string, any>;
+    manager: ControlsManagerInterface;
+    sources: Map<string, BaseSource>;
+    layers: Map<string, BaseLayer>;
     controlId: string;
-    controlConfig: any;
+    controlConfig: Control;
 }
 
 export interface ControlUIProps {
     control: Control;
-    value: any;
+    value: ControlValue;
     disabled?: boolean;
-    onChange: (value: any) => void;
+    onChange: (value: ControlValue) => void;
     layerId: string;
     context?: ControlContext;
 }
@@ -70,10 +74,10 @@ export interface ControlUIProps {
 export interface BaseControlInterface {
     apply(
         targetLayers: string[],
-        value: any,
+        value: ControlValue,
         context: ControlContext
     ): Promise<void>;
-    getValue(layerId: string, context?: ControlContext): any;
+    getValue(layerId: string, context?: ControlContext): ControlValue;
     createUI(props: ControlUIProps): React.ReactElement;
 }
 
@@ -81,13 +85,13 @@ export interface ControlsConfig {
     groups: ControlGroup[];
 }
 
-export interface ControlsManager {
+export interface ControlsManagerInterface {
     getGroups(): ControlGroup[];
-    applyControl(controlId: string, value: any): void;
-    getControlValue(controlId: string): any;
+    applyControl(controlId: string, value: ControlValue): void;
+    getControlValue(controlId: string): ControlValue;
     isGroupVisible(groupId: string): boolean;
     subscribe(callback: () => void): () => void;
     getControlInstance(controlId: string): BaseControlInterface | undefined;
     getControlContext(controlId: string): ControlContext;
-    updateControlValue(controlId: string, value: any): void;
+    updateControlValue(controlId: string, value: ControlValue): void;
 }

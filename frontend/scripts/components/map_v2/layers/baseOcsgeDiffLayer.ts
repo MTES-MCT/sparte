@@ -1,5 +1,5 @@
 import { BaseLayer } from "./baseLayer";
-import type { StatCategory } from "../types/layer";
+import type { StatCategory, LayerType } from "../types/layer";
 
 export abstract class BaseOcsgeDiffLayer extends BaseLayer {
     protected startMillesimeIndex: number;
@@ -9,7 +9,7 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
     constructor(
         options: {
             id: string;
-            type: string;
+            type: LayerType;
             source: string;
             visible?: boolean;
             opacity?: number;

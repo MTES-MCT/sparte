@@ -1,4 +1,5 @@
 import { BaseLayer } from "./baseLayer";
+import type { LayerSpecification, FilterSpecification } from "maplibre-gl";
 
 export class OcsgeDiffCentroidClusterCountLayer extends BaseLayer {
     constructor() {
@@ -13,12 +14,12 @@ export class OcsgeDiffCentroidClusterCountLayer extends BaseLayer {
         });
     }
 
-    getOptions() {
+    getOptions(): LayerSpecification {
         return {
             id: this.options.id,
-            type: this.options.type,
+            type: this.options.type as 'symbol',
             source: this.options.source,
-            filter: ["has", "point_count"],
+            filter: ["has", "point_count"] as FilterSpecification,
             layout: {
                 "text-field": "{point_count}",
                 "text-font": ["Marianne Regular"],
@@ -32,7 +33,7 @@ export class OcsgeDiffCentroidClusterCountLayer extends BaseLayer {
                 "text-halo-color": "#FFFFFF",
                 "text-halo-width": 0.2,
             },
-        };
+        } as LayerSpecification;
     }
 }
 

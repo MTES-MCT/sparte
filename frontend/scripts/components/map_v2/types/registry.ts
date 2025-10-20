@@ -1,3 +1,6 @@
+import type { Millesime } from "@services/types/land";
+import type { NomenclatureType } from "./ocsge";
+
 export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'ocsge-diff-centroid-cluster', 'ocsge-diff-centroid-cluster-count'] as const;
 export type LayerCategory = typeof layerCategories[number];
 
@@ -22,5 +25,70 @@ export const layerCategoryToFactory = {
     'ocsge-diff-centroid-cluster': 'ocsge-diff-centroid-cluster',
     'ocsge-diff-centroid-cluster-count': 'ocsge-diff-centroid-cluster-count',
 } as const;
+
+// Types de configuration pour les layers
+export interface BaseLayerConfig {
+    type: LayerCategory;
+}
+
+export interface OcsgeLayerConfig extends BaseLayerConfig {
+    type: 'impermeabilisation' | 'artificialisation';
+    millesimeIndex: number;
+    departement: string;
+    nomenclature?: NomenclatureType;
+    millesimes?: Array<{ index: number; year?: number }>;
+}
+
+export interface OcsgeDiffLayerConfig extends BaseLayerConfig {
+    type: 'impermeabilisation-diff';
+    startMillesimeIndex: number;
+    endMillesimeIndex: number;
+    departement: string;
+}
+
+export interface EmptyLayerConfig extends BaseLayerConfig {
+    type: 'orthophoto' | 'emprise' | 'ocsge-diff-centroid-cluster' | 'ocsge-diff-centroid-cluster-count';
+}
+
+export type LayerConfig = OcsgeLayerConfig | OcsgeDiffLayerConfig | EmptyLayerConfig;
+
+// Types de configuration pour les sources
+export interface BaseSourceConfig {
+    type: string;
+}
+
+export interface EmpriseSourceConfig extends BaseSourceConfig {
+    type: 'emprise';
+    land_type: string;
+    land_id: number;
+}
+
+export interface OcsgeSourceConfig extends BaseSourceConfig {
+    type: 'ocsge';
+    millesimes: Millesime[];
+    departements: string[];
+    millesimeIndex?: number;
+}
+
+export interface OcsgeDiffSourceConfig extends BaseSourceConfig {
+    type: 'ocsge-diff';
+    millesimes: Millesime[];
+    departements: string[];
+    startMillesimeIndex?: number;
+    endMillesimeIndex?: number;
+}
+
+export interface OcsgeDiffCentroidSourceConfig extends BaseSourceConfig {
+    type: 'ocsge-diff-centroid';
+    startMillesimeIndex: number;
+    endMillesimeIndex: number;
+    departement: string;
+}
+
+export interface EmptySourceConfig extends BaseSourceConfig {
+    type: 'orthophoto';
+}
+
+export type SourceConfig = EmpriseSourceConfig | OcsgeSourceConfig | OcsgeDiffSourceConfig | OcsgeDiffCentroidSourceConfig | EmptySourceConfig;
 
 
