@@ -8,6 +8,8 @@ from public_data.models import AdminRef
 
 
 class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
+    required_params = ["start_date", "end_date"]
+
     @property
     def name(self):
         return f"population conso comparison {self.params['start_date']}-{self.params['end_date']}"

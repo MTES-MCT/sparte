@@ -13,6 +13,7 @@ class AnnualConsoByDeterminantChart(DiagnosticChart):
     Graphique en barre de consommation annuelle par destination (habitat, activité, mixte etc.)
     """
 
+    required_params = ["start_date", "end_date"]
     name = "determinant per year"
 
     @property
