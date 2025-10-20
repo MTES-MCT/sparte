@@ -33,11 +33,20 @@ export interface OcsgeDiffSourceConfig {
     endMillesimeIndex?: number;
 }
 
+export interface OcsgeDiffCentroidSourceConfig {
+    id: string;
+    type: 'ocsge-diff-centroid';
+    startMillesimeIndex: number;
+    endMillesimeIndex: number;
+    departement: string;
+}
+
 export type SourceConfig =
     | OrthophotoSourceConfig
     | EmpriseSourceConfig
     | OcsgeSourceConfig
-    | OcsgeDiffSourceConfig;
+    | OcsgeDiffSourceConfig
+    | OcsgeDiffCentroidSourceConfig;
 
 interface BaseLayerConfig {
     id: LayerId;
@@ -79,12 +88,22 @@ export interface ImpermeabilisationDiffLayerConfig extends BaseLayerConfig {
     departement: string;
 }
 
+export interface OcsgeDiffCentroidClusterLayerConfig extends BaseLayerConfig {
+    type: 'ocsge-diff-centroid-cluster';
+}
+
+export interface OcsgeDiffCentroidClusterCountLayerConfig extends BaseLayerConfig {
+    type: 'ocsge-diff-centroid-cluster-count';
+}
+
 export type LayerConfig =
     | OrthophotoLayerConfig
     | EmpriseLayerConfig
     | ImpermeabilisationLayerConfig
     | ArtificialisationLayerConfig
-    | ImpermeabilisationDiffLayerConfig;
+    | ImpermeabilisationDiffLayerConfig
+    | OcsgeDiffCentroidClusterLayerConfig
+    | OcsgeDiffCentroidClusterCountLayerConfig;
 
 export interface MapConfig {
     sources: SourceConfig[];

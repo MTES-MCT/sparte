@@ -65,13 +65,13 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
                 {
                     id: "impermeabilisation-diff-visibility",
                     type: "visibility",
-                    targetLayers: ["impermeabilisation-diff-layer"],
+                    targetLayers: ["impermeabilisation-diff-layer", "ocsge-diff-centroid-cluster", "ocsge-diff-centroid-cluster-count"],
                     defaultValue: true
                 },
                 {
                     id: "impermeabilisation-diff-opacity",
                     type: "opacity",
-                    targetLayers: ["impermeabilisation-diff-layer"],
+                    targetLayers: ["impermeabilisation-diff-layer", "ocsge-diff-centroid-cluster"],
                     defaultValue: 0.7
                 }
             ]
@@ -83,11 +83,14 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 			{ id: "orthophoto-source", type: "orthophoto" },
 			{ id: "emprise-source", type: "emprise", land_type:landData.land_type, land_id: landData.land_id },
 			{ id: "ocsge-diff-source", type: "ocsge-diff", millesimes: landData.millesimes, departements: landData.departements, startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex },
+			{ id: "ocsge-diff-centroid-source", type: "ocsge-diff-centroid", startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex, departement: firstDepartement },
 		],
 		layers: [
             { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
             { id: "emprise-layer", type: "emprise", source: "emprise-source" },
             { id: "impermeabilisation-diff-layer", type: "impermeabilisation-diff", source: "ocsge-diff-source", startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex, departement: firstDepartement, stats: true },
+            { id: "ocsge-diff-centroid-cluster", type: "ocsge-diff-centroid-cluster", source: "ocsge-diff-centroid-source" },
+            { id: "ocsge-diff-centroid-cluster-count", type: "ocsge-diff-centroid-cluster-count", source: "ocsge-diff-centroid-source" },
 		],
 		controlGroups,
 		popups: [

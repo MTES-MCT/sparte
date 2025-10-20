@@ -10,6 +10,7 @@ export const APP_DEFAULTS = {
 export const ORTHOPHOTO_TILES_URL = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=HR.ORTHOIMAGERY.ORTHOPHOTOS&tilematrixset=PM&TileMatrix={z}&TileCol={x}&TileRow={y}&format=image%2Fjpeg&style=normal";
 
 export const OCSGE_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/";
+export const OCSGE_DIFF_CENTROID_URL = "https://airflow-dev-alexis.s3.fr-par.scw.cloud/vector_tiles/occupation_du_sol_diff_centroid";
 
 export const ARTIFICIALISATION_COLOR = "#FA4B42"
 export const DESARTIFICIALISATION_COLOR = "#00E272"

@@ -3,6 +3,7 @@ import { EmpriseSource } from "../sources/empriseSource";
 import { OrthophotoSource } from "../sources/orthophotoSource";
 import { OcsgeSource } from "../sources/ocsgeSource";
 import { OcsgeDiffSource } from "../sources/ocsgeDiffSource";
+import { OcsgeDiffCentroidSource } from "../sources/ocsgeDiffCentroidSource";
 
 type SourceFactory = (config: any) => BaseSource;
 
@@ -11,6 +12,7 @@ const sourceRegistry: Record<string, SourceFactory> = {
     orthophoto: () => new OrthophotoSource(),
     ocsge: (cfg) => new OcsgeSource(cfg.millesimes, cfg.departements, cfg.millesimeIndex),
     "ocsge-diff": (cfg) => new OcsgeDiffSource(cfg.millesimes, cfg.departements, cfg.startMillesimeIndex, cfg.endMillesimeIndex),
+    "ocsge-diff-centroid": (cfg) => new OcsgeDiffCentroidSource(cfg.startMillesimeIndex, cfg.endMillesimeIndex, cfg.departement),
 };
 
 export function createSource(cfg: any): BaseSource {

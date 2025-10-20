@@ -44,6 +44,7 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
                     "#fff"
                 ],
                 "fill-opacity": this.options.opacity ?? 0.7,
+                "fill-outline-color": "#000",
             },
         };
     }
