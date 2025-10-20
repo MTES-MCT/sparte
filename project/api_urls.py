@@ -63,6 +63,12 @@ from project.charts.urbanisme import (
     FricheZonageEnvironnementalChart,
     FricheZonageTypeChart,
     FricheZoneActiviteChart,
+    LogementVacantAutorisationLogementComparisonChart,
+    LogementVacantAutorisationLogementRatioGaugeChart,
+    LogementVacantAutorisationLogementRatioProgressionChart,
+    LogementVacantConsoProgressionChart,
+    LogementVacantProgressionChart,
+    LogementVacantRatioProgressionChart,
 )
 from public_data.models import (
     ArtifZonageIndexViewset,
@@ -101,6 +107,7 @@ from public_data.models import (
     LandPopStatsViewset,
     SimilarTerritoriesViewset,
 )
+from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
 
 app_name = "api"
 
@@ -157,6 +164,13 @@ def get_chart_klass_or_404(chart_id):
         # Objective chart
         "objective_chart": ObjectiveChart,
         "objective_chart_export": ObjectiveChartExport,
+        # Logement vacant charts
+        "logement_vacant_progression_chart": LogementVacantProgressionChart,
+        "logement_vacant_ratio_progression_chart": LogementVacantRatioProgressionChart,
+        "logement_vacant_conso_progression_chart": LogementVacantConsoProgressionChart,
+        "logement_vacant_autorisation_comparison_chart": LogementVacantAutorisationLogementComparisonChart,
+        "logement_vacant_autorisation_ratio_gauge_chart": LogementVacantAutorisationLogementRatioGaugeChart,
+        "logement_vacant_autorisation_ratio_progression_chart": LogementVacantAutorisationLogementRatioProgressionChart,  # noqa E501
     }
 
     if chart_id not in charts:
@@ -169,7 +183,7 @@ def chart_view_json_response(chart):
     return JsonResponse(
         data={
             "highcharts_options": chart.chart,
-            "data_table": chart.data_table,
+            "data_table": getattr(chart, "data_table", None),
         }
     )
 
@@ -184,6 +198,7 @@ def chart_view_file_response(chart, id, land_type, land_id):
 
 def chart_view(request, id, land_type, land_id):
     land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+
     chart_klass = get_chart_klass_or_404(id)
     chart_params = request.GET.dict()
     chart = chart_klass(land=land, params=chart_params)
@@ -196,6 +211,11 @@ def chart_view(request, id, land_type, land_id):
 urlpatterns = [
     path("project/<int:pk>/target-2031/", UpdateProjectTarget2031APIView.as_view(), name="update-target-2031"),
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
+    path(
+        "logementvacantautorisationstats/<str:land_type>/<str:land_id>",
+        LogementVacantAutorisationStatsViewset.as_view(),
+        name="logementvacantautorisationstats",
+    ),
     path("landartifstock/", LandArtifStockViewset.as_view(), name="artifstock"),
     path("landimperstock/", LandImperStockViewset.as_view(), name="imperstock"),
     path("landartifstockindex/", LandArtifStockIndexViewset.as_view(), name="artifstockindex"),
