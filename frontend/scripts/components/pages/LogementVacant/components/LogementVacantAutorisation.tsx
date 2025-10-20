@@ -8,14 +8,12 @@ import { formatNumber } from "@utils/formatUtils";
 const GaugeExplanationText: React.FC<{
   landId: string;
   landType: string;
-  startYear: number;
   endYear: number;
   territoryName: string;
-}> = ({ landId, landType, startYear, endYear, territoryName }) => {
+}> = ({ landId, landType, endYear, territoryName }) => {
   const { data: stats } = useGetLogementVacantAutorisationStatsQuery({
     land_id: landId,
     land_type: landType,
-    start_date: startYear,
     end_date: endYear,
   });
 
@@ -141,7 +139,6 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
               <GaugeExplanationText
                 landId={landId}
                 landType={landType}
-                startYear={startYear}
                 endYear={endYear}
                 territoryName={territoryName}
               />
