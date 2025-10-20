@@ -60,7 +60,7 @@ class PopulationDensityChart(DiagnosticChart):
                 "marginLeft": 50,
                 "marginRight": 50,
             },
-            "title": {"text": f"Densité de population ({self.params['end_date']})"},
+            "title": {"text": f"Densité de population à {self.land.name} ({self.params['end_date']})"},
             "subtitle": {"text": f"{density['density_ha']} hab/ha (soit {density['density_km2']} hab/km²)"},
             "xAxis": {"lineColor": "transparent", "labels": {"enabled": False}, "tickLength": 0},
             "yAxis": {

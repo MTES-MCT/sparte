@@ -6,10 +6,12 @@ interface ConsoStatsProps {
   totalConsoHa: number | null;
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
+  populationDensity: number | null;
   isLoadingConso: boolean;
   isLoadingPop: boolean;
   startYear: number;
   endYear: number;
+  surface: number;
 }
 
 /**
@@ -19,10 +21,12 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
   totalConsoHa,
   populationEvolution,
   populationEvolutionPercent,
+  populationDensity,
   isLoadingConso,
   isLoadingPop,
   startYear,
   endYear,
+  surface,
 }) => {
   const formatPopulationValue = () => {
     if (isLoadingPop || populationEvolution === null) {
@@ -30,36 +34,54 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
     }
 
     const sign = populationEvolution > 0 ? "+" : "";
-    const evolutionText = `${sign}${formatNumber({ number: populationEvolution })} hab`;
+    return `${sign}${formatNumber({ number: populationEvolution })} hab`;
+  };
 
-    if (populationEvolutionPercent !== null) {
-      const percentSign = populationEvolutionPercent > 0 ? "+" : "";
-      return `${evolutionText} (${percentSign}${formatNumber({ number: populationEvolutionPercent, decimals: 1 })}%)`;
+  const formatPopulationLabel = () => {
+    if (isLoadingPop || populationEvolutionPercent === null) {
+      return `Entre ${startYear} et ${endYear}`;
     }
 
-    return evolutionText;
+    const percentSign = populationEvolutionPercent > 0 ? "+" : "";
+    return (
+      <>
+        Entre {startYear} et {endYear} ({percentSign}
+        {formatNumber({ number: populationEvolutionPercent, decimals: 1 })}%)
+      </>
+    );
+  };
+
+  const calculateConsoPerNewHabitant = () => {
+    if (isLoadingConso || isLoadingPop || totalConsoHa === null || populationEvolution === null || populationEvolution <= 0) {
+      return "...";
+    }
+
+    // Convert ha to m² (1 ha = 10,000 m²)
+    const consoPerHabitantM2 = (totalConsoHa * 10000) / populationEvolution;
+    return `${formatNumber({ number: consoPerHabitantM2, decimals: 0 })} m²`;
   };
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-      <div className="fr-col-12 fr-col-md-6">
+      <div className="fr-col-12 fr-col-md-4">
+        <Card
+          icon="bi-house"
+          badgeClass="fr-badge--info"
+          badgeLabel="Consommation par nouvel habitant"
+          value={calculateConsoPerNewHabitant()}
+          label={`Entre ${startYear} et ${endYear}`}
+          isHighlighted={true}
+          highlightBadge="Donnée clé"
+        />
+      </div>
+      <div className="fr-col-12 fr-col-md-4">
         <Card
           icon="bi-people"
           badgeClass="fr-badge--success"
           badgeLabel="Évolution de la population"
           value={formatPopulationValue()}
-          label={`Période d'analyse ${startYear} - ${endYear}`}
-        />
-      </div>
-      <div className="fr-col-12 fr-col-md-6">
-        <Card
-          icon="bi-graph-up"
-          badgeClass="fr-badge--warning"
-          badgeLabel="Consommation totale"
-          value={
-            isLoadingConso || totalConsoHa === null ? "..." : `${formatNumber({ number: totalConsoHa })} ha`
-          }
-          label={`Période d'analyse ${startYear} - ${endYear}`}
+          label={formatPopulationLabel()}
+          isHighlighted={false}
         />
       </div>
     </div>

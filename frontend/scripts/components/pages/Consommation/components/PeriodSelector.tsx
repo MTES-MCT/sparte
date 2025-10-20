@@ -41,101 +41,90 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
         top: "88px",
         zIndex: 100,
         backgroundColor: "#f8f9ff",
-        paddingTop: "1rem",
-        paddingBottom: "1rem",
-        marginBottom: "1.5rem",
-        marginTop: "-1.5rem",
+        paddingTop: "0.5rem",
+        paddingBottom: "0.5rem",
+        marginBottom: "1rem",
+        marginTop: "-1rem",
       }}
     >
       <div className="fr-container--fluid" style={{ paddingLeft: "1.5rem", paddingRight: "1.5rem" }}>
         <div className="fr-card fr-card--no-border fr-card--shadow">
-          <div className="fr-card__body">
-            <div className="fr-card__content">
-              <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+          <div className="fr-card__body" style={{ padding: "0.75rem 1rem" }}>
+            <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
               {/* Title section */}
-              <div className="fr-col-12 fr-col-md-auto">
+              <div className="fr-col-auto">
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
                   <div className="fr-col-auto">
                     <div
                       className="fr-icon-calendar-line"
                       style={{
-                        fontSize: "2rem",
+                        fontSize: "1.25rem",
                         color: "var(--text-label-blue-france)",
                       }}
                       aria-hidden="true"
                     />
                   </div>
-                  <div className="fr-col">
-                    <h6 className="fr-mb-0">Période d'analyse</h6>
-                    <p className="fr-text--xs fr-mb-0 fr-text--regular">
-                      Sélectionnez la période pour analyser la consommation
-                    </p>
+                  <div className="fr-col-auto">
+                    <span className="fr-text--sm fr-mb-0" style={{ fontWeight: 600 }}>
+                      Période d'analyse
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Year selectors */}
-              <div className="fr-col-12 fr-col-md">
-                <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--bottom">
+              <div className="fr-col">
+                <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
                   <div className="fr-col-auto">
-                    <div className="fr-select-group">
-                      <label className="fr-label" htmlFor="start-year">
-                        Année de début
-                      </label>
-                      <select
-                        className="fr-select"
-                        id="start-year"
-                        value={startYear}
-                        onChange={(e) => onStartYearChange(Number(e.target.value))}
-                      >
-                        {yearOptions.map((year) => (
-                          <option key={year} value={year} disabled={year >= endYear}>
-                            {year}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <span className="fr-text--sm">De</span>
                   </div>
-
-                  <div className="fr-col-auto" style={{ paddingBottom: "0.75rem" }}>
-                    <span className="fr-text--lg" aria-hidden="true">
-                      →
-                    </span>
+                  <div className="fr-col-auto">
+                    <select
+                      className="fr-select fr-select--sm"
+                      id="start-year"
+                      value={startYear}
+                      onChange={(e) => onStartYearChange(Number(e.target.value))}
+                      aria-label="Année de début"
+                    >
+                      {yearOptions.map((year) => (
+                        <option key={year} value={year} disabled={year >= endYear}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="fr-col-auto">
-                    <div className="fr-select-group">
-                      <label className="fr-label" htmlFor="end-year">
-                        Année de fin
-                      </label>
-                      <select
-                        className="fr-select"
-                        id="end-year"
-                        value={endYear}
-                        onChange={(e) => onEndYearChange(Number(e.target.value))}
-                      >
-                        {yearOptions.map((year) => (
-                          <option key={year} value={year} disabled={year <= startYear}>
-                            {year}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <span className="fr-text--sm">à</span>
+                  </div>
+
+                  <div className="fr-col-auto">
+                    <select
+                      className="fr-select fr-select--sm"
+                      id="end-year"
+                      value={endYear}
+                      onChange={(e) => onEndYearChange(Number(e.target.value))}
+                      aria-label="Année de fin"
+                    >
+                      {yearOptions.map((year) => (
+                        <option key={year} value={year} disabled={year <= startYear}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   {hasChangedFromDefault && (
                     <div className="fr-col-auto">
                       <button
                         onClick={handleReset}
-                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-refresh-line fr-btn--icon-left"
+                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-refresh-line"
                         title={`Réinitialiser à la période ${defaultStartYear}-${defaultEndYear}`}
                       >
-                        Réinitialiser
                       </button>
                     </div>
                   )}
                 </div>
-              </div>
               </div>
             </div>
           </div>

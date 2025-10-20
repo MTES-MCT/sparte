@@ -98,9 +98,9 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
 
         return super().param | {
             "chart": {"type": "column", "height": 500},
-            "title": {"text": "Consommation d'espaces NAF du territoire et des territoires similaires (ha)"},
-            "subtitle": {"text": "Cliquez sur un territoire pour voir le détail de sa consommation d'espaces NAF."},
-            "yAxis": {"title": {"text": "Consommation d'espaces NAF (ha)"}},
+            "title": {"text": "Consommation d'espaces du territoire et des territoires similaires (ha)"},
+            "subtitle": {"text": "Cliquez sur un territoire pour voir le détail de sa consommation d'espaces."},
+            "yAxis": {"title": {"text": "Consommation d'espaces (ha)"}},
             "xAxis": {
                 "type": "category",
                 "labels": {

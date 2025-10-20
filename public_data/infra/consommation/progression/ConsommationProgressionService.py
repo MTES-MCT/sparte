@@ -30,9 +30,6 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
             to_year=end_date,
         )
 
-        # Support both Land (has .area property) and LandModel (has .surface attribute)
-        land_area = getattr(land, "area", getattr(land, "surface", 0))
-
         return ConsommationCollection(
             start_date=start_date,
             end_date=end_date,
@@ -48,7 +45,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
                     ferre=c.ferroviaire / 10000,
                     non_renseigne=c.inconnu / 10000,
                     total=c.total / 10000,
-                    total_percent_of_area=c.total / 10000 / land_area * 100 if land_area else 0,
+                    total_percent_of_area=c.total / 10000 / land.surface * 100 if land.surface else 0,
                 )
                 for c in conso
             ],

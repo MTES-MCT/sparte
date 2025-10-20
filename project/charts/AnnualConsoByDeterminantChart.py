@@ -66,9 +66,11 @@ class AnnualConsoByDeterminantChart(DiagnosticChart):
     def param(self):
         return super().param | {
             "chart": {"type": "column"},
-            "title": {"text": "Par an"},
+            "title": {
+                "text": f"Évolution annuelle de la consommation d'espaces par destination à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+            },
             "yAxis": {
-                "title": {"text": "Consommation d'espaces NAF (en ha)"},
+                "title": {"text": "Consommation d'espaces (en ha)"},
                 "stackLabels": {"enabled": True, "format": "{total:,.2f}"},
             },
             "tooltip": {

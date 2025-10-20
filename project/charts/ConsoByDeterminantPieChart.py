@@ -49,7 +49,7 @@ class ConsoByDeterminantPieChart(DiagnosticChart):
         return super().param | {
             "chart": {"type": "pie"},
             "title": {
-                "text": "Sur la période",
+                "text": f"Consommation d'espaces par destination à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})",  # noqa: E501
             },
             "tooltip": {"enabled": False},
             "plotOptions": {

@@ -1,4 +1,4 @@
-import { useGetLandConsoStatsQuery, useGetLandPopStatsQuery } from "@services/api";
+import { useGetLandConsoStatsQuery, useGetLandPopStatsQuery, useGetChartConfigQuery } from "@services/api";
 
 /**
  * Hook to fetch consumption and population statistics
@@ -31,6 +31,20 @@ export const useConsoData = (
     to_year: endYear,
   });
 
+  // Fetch density from the population density chart
+  const {
+    data: densityChartData,
+    isLoading: isLoadingDensity,
+  } = useGetChartConfigQuery({
+    chart_id: "population_density_chart",
+    land_id: landId,
+    land_type: landType,
+    params: {
+      start_date: String(startYear),
+      end_date: String(endYear),
+    },
+  });
+
   // Convert m² to ha (divide by 10000)
   const totalConsoHa = consoStats?.[0]?.total ? consoStats[0].total / 10000 : null;
 
@@ -38,11 +52,15 @@ export const useConsoData = (
   const populationEvolution = popStats?.[0]?.evolution || null;
   const populationEvolutionPercent = popStats?.[0]?.evolution_percent || null;
 
+  // Extract density from chart data
+  const populationDensity = densityChartData?.highcharts_options?.series?.[0]?.data?.[0] || null;
+
   return {
     totalConsoHa,
     populationEvolution,
     populationEvolutionPercent,
+    populationDensity,
     isLoadingConso: isLoadingConso || isFetchingConso,
-    isLoadingPop: isLoadingPop || isFetchingPop,
+    isLoadingPop: isLoadingPop || isFetchingPop || isLoadingDensity,
   };
 };
