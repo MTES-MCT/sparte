@@ -81,13 +81,12 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     def bubble_series(self):
         """Calculate and return bubble series."""
         lands = self.data["lands"]
-        # Support both Land (.id) and LandModel (.land_id)
-        highlighted_land_id = getattr(self.land, "land_id", self.land.id)
+        highlighted_land_id = self.land.land_id
 
-        consommation_total = {c.land.id: round(c.total, 2) for c in self.data["consommation_stats"]}
-        population_evolution_total = {p.land.id: p.evolution for p in self.data["population_stats"]}
+        consommation_total = {c.land.land_id: round(c.total, 2) for c in self.data["consommation_stats"]}
+        population_evolution_total = {p.land.land_id: p.evolution for p in self.data["population_stats"]}
         last_year_populations = {
-            p.land.id: p.last_year_population.population for p in self.data["population_progression"]
+            p.land.land_id: p.last_year_population.population for p in self.data["population_progression"]
         }
 
         return [
@@ -95,14 +94,14 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                 "name": land.name,
                 "data": [
                     {
-                        "x": population_evolution_total.get(land.id, 0),
-                        "y": consommation_total.get(land.id, 0),
-                        "z": last_year_populations.get(land.id, 0),
+                        "x": population_evolution_total[land.land_id],
+                        "y": consommation_total[land.land_id],
+                        "z": last_year_populations[land.land_id],
                     }
                 ],
-                "color": HIGHLIGHT_COLOR if land.id == highlighted_land_id else None,
+                "color": HIGHLIGHT_COLOR if land.land_id == highlighted_land_id else None,
                 "marker": {
-                    "lineWidth": 3 if land.id == highlighted_land_id else 1,
+                    "lineWidth": 3 if land.land_id == highlighted_land_id else 1,
                 },
                 # La couleur du territoire diagnostiqué est précisée, les autres sont aléatoires (valeur None)
             }
@@ -172,10 +171,10 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
 
         lands = self.data["lands"]
 
-        consommation_total = {c.land.id: c.total for c in self.data["consommation_stats"]}
-        population_evolution_total = {p.land.id: p.evolution for p in self.data["population_stats"]}
+        consommation_total = {c.land.land_id: c.total for c in self.data["consommation_stats"]}
+        population_evolution_total = {p.land.land_id: p.evolution for p in self.data["population_stats"]}
         last_year_populations = {
-            p.land.id: p.last_year_population.population for p in self.data["population_progression"]
+            p.land.land_id: p.last_year_population.population for p in self.data["population_progression"]
         }
 
         for land in lands:
@@ -184,9 +183,9 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                     "name": land.name,
                     "data": [
                         land.name,
-                        consommation_total.get(land.id, 0),
-                        population_evolution_total.get(land.id, 0),
-                        last_year_populations.get(land.id, 0),
+                        consommation_total[land.land_id],
+                        population_evolution_total[land.land_id],
+                        last_year_populations[land.land_id],
                     ],
                 }
             )
