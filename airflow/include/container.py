@@ -20,6 +20,7 @@ from .file_handling import (
     S3Handler,
     S3ToDataGouvHandler,
     SQLToCSVOnS3Handler,
+    SQLToGeoJsonOnS3Handler,
     SQLToGeojsonSeqOnS3Handler,
     SQLToGeopackageOnS3Handler,
     TmpPathGenerator,
@@ -232,6 +233,14 @@ class DomainContainer(containers.DeclarativeContainer):
 
     sql_to_geojsonseq_on_s3_handler = providers.Factory(
         provides=SQLToGeojsonSeqOnS3Handler,
+        http_file_handler=htto_file_handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+    )
+
+    sql_to_geojson_on_s3_handler = providers.Factory(
+        provides=SQLToGeoJsonOnS3Handler,
         http_file_handler=htto_file_handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
