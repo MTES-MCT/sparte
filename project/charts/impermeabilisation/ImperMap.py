@@ -69,8 +69,8 @@ class ImperMap(DiagnosticChart):
             AdminRef.get_label(self.params.get("child_land_type")),
             f"Part imperméabilisée (%) - {self.year_or_index_after}",
             f"Surface imperméabilisée (ha) - {self.year_or_index_after}",
-            f"Flux d'imperméabilisation (ha) - {self.year_or_index_before} -> {self.year_or_index_after}",
-            f"Flux d'imperméabilisation (%) - {self.year_or_index_before} -> {self.year_or_index_after}",
+            f"Imperméabilisation (ha) - {self.year_or_index_before} -> {self.year_or_index_after}",
+            f"Imperméabilisation (%) - {self.year_or_index_before} -> {self.year_or_index_after}",
         ]
 
         return {
@@ -153,7 +153,7 @@ class ImperMap(DiagnosticChart):
             },
             "series": [
                 {
-                    "name": "Sols imperméables",
+                    "name": "Surfaces imperméables",
                     "data": self.data,
                     "joinBy": ["land_id"],
                     "colorKey": "percent",
@@ -172,7 +172,7 @@ class ImperMap(DiagnosticChart):
                     },
                 },
                 {
-                    "name": "Flux d'imperméabilisation",
+                    "name": "Imperméabilisation",
                     "type": "mapbubble",
                     "joinBy": ["land_id"],
                     "showInLegend": True,

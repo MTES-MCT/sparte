@@ -146,7 +146,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 }
                                             >
                                                     <Artificialisation
-                                                        projectData={projectData}
                                                         landData={landData}
                                                     />
                                                 </RouteWrapper>
@@ -164,7 +163,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 }
                                             >
                                                     <Impermeabilisation
-                                                        projectData={projectData}
                                                         landData={landData}
                                                     />
                                                 </RouteWrapper>
