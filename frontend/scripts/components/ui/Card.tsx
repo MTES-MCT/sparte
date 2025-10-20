@@ -74,11 +74,13 @@ const CardContent = styled.div`
     gap: 0.5rem;
 `;
 
-const CardValue = styled.div<{ $isHighlighted?: boolean }>`
-	font-size: 3rem;
+const CardValue = styled.div<{ $isHighlighted?: boolean; $isLongValue?: boolean }>`
+	font-size: ${({ $isLongValue }) => $isLongValue ? '2.25rem' : '3rem'};
 	font-weight: bold;
-	line-height: 3rem;
+	line-height: ${({ $isLongValue }) => $isLongValue ? '2.25rem' : '3rem'};
 	height: 3rem;
+	display: flex;
+	align-items: center;
 	${({ $isHighlighted }) => $isHighlighted
 	    ? `color: var(--artwork-major-blue-france);`
 	    : `color: var(--text-default-grey);`
@@ -113,6 +115,11 @@ const Card: React.FC<CardProps> = ({
     children,
     empty = false
 }) => {
+    // Detect if value has more than 4 digits (excluding spaces, commas, and unit)
+    const valueStr = typeof value === 'string' ? value : String(value);
+    const digitsOnly = valueStr.replace(/[^\d]/g, '');
+    const isLongValue = digitsOnly.length > 4;
+
     return (
         <CardContainer $isHighlighted={isHighlighted} className={className}>
             {highlightBadge && (

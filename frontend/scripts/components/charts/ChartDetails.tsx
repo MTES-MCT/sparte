@@ -36,6 +36,7 @@ type ChartDetailsProps = {
         rows: any[];
     };
     chartTitle?: string;
+    dataTableHeader?: React.ReactNode;
 }
 
 const ChartDetails: React.FC<ChartDetailsProps> = ({
@@ -44,7 +45,8 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
     children,
     chartId,
     dataTable,
-    chartTitle
+    chartTitle,
+    dataTableHeader
 }) => {
     const [isVisible, setIsVisible] = useState(false);
 
@@ -88,7 +90,10 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
                     )}
                     {children}
                     {showDataTable && dataTable && (
-                        <ChartDataTable data={dataTable} title={chartTitle} />
+                        <>
+                            {dataTableHeader}
+                            <ChartDataTable data={dataTable} title={chartTitle} />
+                        </>
                     )}
                 </DataContainer>
             )}

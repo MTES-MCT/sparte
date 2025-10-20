@@ -43,6 +43,7 @@ type GenericChartProps = {
     sources?: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel', 'cartofriches']
     children?: React.ReactNode;
     showDataTable?: boolean;
+    dataTableHeader?: React.ReactNode;
 }
 
 const LoaderContainer = styled.div`
@@ -53,16 +54,17 @@ const LoaderContainer = styled.div`
     justify-content: center;
 `;
 
-const GenericChart = ({ 
-    chartOptions, 
-    containerProps, 
+const GenericChart = ({
+    chartOptions,
+    containerProps,
     isMap = false,
     isLoading = false,
     error = null,
     showToolbar = true,
     sources = [],
     children,
-    showDataTable = false
+    showDataTable = false,
+    dataTableHeader
 } : GenericChartProps) => {
     const chartRef = useRef<any>(null);
 
@@ -158,6 +160,7 @@ const GenericChart = ({
                 chartId={chartId}
                 dataTable={dataTable}
                 chartTitle={mutableChartOptions.title?.text}
+                dataTableHeader={dataTableHeader}
             >
                 {children}
             </ChartDetails>

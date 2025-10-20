@@ -12,6 +12,7 @@ interface ConsoStatsProps {
   startYear: number;
   endYear: number;
   surface: number;
+  perHabitantCardRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
@@ -27,6 +28,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
   startYear,
   endYear,
   surface,
+  perHabitantCardRef,
 }) => {
   const formatPopulationValue = () => {
     if (isLoadingPop || populationEvolution === null) {
@@ -63,7 +65,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-      <div className="fr-col-12 fr-col-md-4">
+      <div className="fr-col-12 fr-col-md-4" ref={perHabitantCardRef}>
         <Card
           icon="bi-house"
           badgeClass="fr-badge--info"

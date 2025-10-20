@@ -1,4 +1,5 @@
 import React from "react";
+import { formatNumber } from "@utils/formatUtils";
 
 interface PeriodSelectorProps {
   startYear: number;
@@ -9,6 +10,13 @@ interface PeriodSelectorProps {
   maxYear?: number;
   defaultStartYear?: number;
   defaultEndYear?: number;
+  // Sticky key cards data
+  showStickyConsoCard?: boolean;
+  showStickyPerHabitantCard?: boolean;
+  totalConsoHa?: number | null;
+  consoPerNewHabitant?: string;
+  isLoadingConso?: boolean;
+  isLoadingPop?: boolean;
 }
 
 /**
@@ -24,6 +32,12 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   maxYear = 2023,
   defaultStartYear = 2011,
   defaultEndYear = 2023,
+  showStickyConsoCard = false,
+  showStickyPerHabitantCard = false,
+  totalConsoHa = null,
+  consoPerNewHabitant = "...",
+  isLoadingConso = false,
+  isLoadingPop = false,
 }) => {
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
@@ -50,7 +64,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
       <div className="fr-container--fluid" style={{ paddingLeft: "1.5rem", paddingRight: "1.5rem" }}>
         <div className="fr-card fr-card--no-border fr-card--shadow">
           <div className="fr-card__body" style={{ padding: "0.75rem 1rem" }}>
-            <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+            <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle" style={{ minHeight: "6rem" }}>
               {/* Title section */}
               <div className="fr-col-auto">
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
@@ -73,7 +87,7 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
               </div>
 
               {/* Year selectors */}
-              <div className="fr-col">
+              <div className={showStickyConsoCard || showStickyPerHabitantCard ? "fr-col-auto" : "fr-col"}>
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
                   <div className="fr-col-auto">
                     <span className="fr-text--sm">De</span>
@@ -126,6 +140,69 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                   )}
                 </div>
               </div>
+
+              {/* Sticky key data cards */}
+              {(showStickyConsoCard || showStickyPerHabitantCard) && (
+                <div className="fr-col">
+                  <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle" style={{ justifyContent: "flex-end" }}>
+                    {/* Consommation d'espaces */}
+                    {showStickyConsoCard && (
+                      <div className="fr-col-auto">
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            padding: "0.5rem 1rem",
+                            backgroundColor: "white",
+                            borderRadius: "4px",
+                            border: "2px solid var(--artwork-major-blue-france)",
+                          }}
+                        >
+                          <i className="bi-graph-up" style={{ fontSize: "1.5rem", color: "var(--artwork-major-blue-france)" }}></i>
+                          <div>
+                            <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-mention-grey)" }}>
+                              Consommation d'espaces
+                            </div>
+                            <div style={{ fontSize: "1.25rem", fontWeight: "bold", color: "var(--artwork-major-blue-france)" }}>
+                              {isLoadingConso || totalConsoHa === null
+                                ? "..."
+                                : `${formatNumber({ number: totalConsoHa, addSymbol: true })} ha`}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Consommation par nouvel habitant */}
+                    {showStickyPerHabitantCard && (
+                      <div className="fr-col-auto">
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            padding: "0.5rem 1rem",
+                            backgroundColor: "white",
+                            borderRadius: "4px",
+                            border: "2px solid var(--artwork-major-blue-france)",
+                          }}
+                        >
+                          <i className="bi-house" style={{ fontSize: "1.5rem", color: "var(--artwork-major-blue-france)" }}></i>
+                          <div>
+                            <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-mention-grey)" }}>
+                              Consommation par nouvel habitant
+                            </div>
+                            <div style={{ fontSize: "1.25rem", fontWeight: "bold", color: "var(--artwork-major-blue-france)" }}>
+                              {consoPerNewHabitant}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

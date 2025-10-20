@@ -17,6 +17,7 @@ interface ConsoDemographyProps {
   defaultStartYear: number;
   defaultEndYear: number;
   surface: number;
+  perHabitantCardRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
@@ -36,6 +37,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   defaultStartYear,
   defaultEndYear,
   surface,
+  perHabitantCardRef,
 }) => {
   return (
     <div className="fr-mt-7w">
@@ -52,6 +54,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
         startYear={startYear}
         endYear={endYear}
         surface={surface}
+        perHabitantCardRef={perHabitantCardRef}
       />
 
       {/* Population density chart */}
