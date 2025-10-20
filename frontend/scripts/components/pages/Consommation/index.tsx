@@ -60,7 +60,7 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
   }
 
   return (
-    <div className="fr-container--fluid fr-p-3w">
+    <>
       {/* Period selector (sticky) */}
       <PeriodSelector
         startYear={startYear}
@@ -71,7 +71,8 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         defaultEndYear={DEFAULT_END_YEAR}
       />
 
-      {/* Main statistics cards */}
+      <div className="fr-container--fluid fr-p-3w">
+        {/* Main statistics cards */}
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
         <div className="fr-col-12 fr-col-md-6">
           <Card
@@ -192,21 +193,22 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         defaultEndYear={DEFAULT_END_YEAR}
       />
 
-      {/* Comparison section */}
-      <ConsoComparison
-        landId={land_id}
-        landType={land_type}
-        landName={name}
-        startYear={startYear}
-        endYear={endYear}
-        suggestedTerritories={suggestedTerritories}
-        additionalTerritories={additionalTerritories}
-        comparisonLandIds={comparisonLandIds}
-        isDefaultSelection={isDefaultSelection}
-        onTerritoryAdd={handleAddTerritory}
-        onTerritoryRemove={handleRemoveTerritory}
-        onReset={handleResetTerritories}
-      />
-    </div>
+        {/* Comparison section */}
+        <ConsoComparison
+          landId={land_id}
+          landType={land_type}
+          landName={name}
+          startYear={startYear}
+          endYear={endYear}
+          suggestedTerritories={suggestedTerritories}
+          additionalTerritories={additionalTerritories}
+          comparisonLandIds={comparisonLandIds}
+          isDefaultSelection={isDefaultSelection}
+          onTerritoryAdd={handleAddTerritory}
+          onTerritoryRemove={handleRemoveTerritory}
+          onReset={handleResetTerritories}
+        />
+      </div>
+    </>
   );
 };

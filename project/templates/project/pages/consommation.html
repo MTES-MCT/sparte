@@ -2,12 +2,3 @@
 {% load render_bundle from webpack_loader %}
 
 {% block pagetitle %}Consommation d'espaces NAF | Mon Diagnostic Artificialisation{% endblock pagetitle %}
-
-{% block content %}
-    {% include "project/components/dashboard/consommation.html" %}
-{% endblock content %}
-
-{% block extra_js %}
-    {{ block.super }}
-    {% render_bundle 'main' %}
-{% endblock extra_js %}

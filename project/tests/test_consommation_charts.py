@@ -254,6 +254,7 @@ class PopulationConsoComparisonChartTest(BaseChartTestCase):
         # Create mock land for comparison
         mock_land_item = Mock()
         mock_land_item.id = "12345"
+        mock_land_item.land_id = "12345"
         mock_land_item.name = "Test Land"
 
         # Create mock stats with proper structure for bubble series
@@ -337,6 +338,7 @@ class ChartIntegrationTest(BaseChartTestCase):
         # Comparison service mock with proper structure
         mock_land_item = Mock()
         mock_land_item.id = "12345"
+        mock_land_item.land_id = "12345"
         mock_land_item.name = "Test Land"
 
         mock_comparison_land = Mock()
