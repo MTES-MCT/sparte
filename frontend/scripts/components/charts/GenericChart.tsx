@@ -10,6 +10,7 @@ import HCSoldGauge from 'highcharts/modules/solid-gauge';
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
 import HighchartsTreemap from 'highcharts/modules/treemap';
+import Drilldown from 'highcharts/modules/drilldown';
 import Exporting from 'highcharts/modules/exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
@@ -23,6 +24,7 @@ HighchartsMore(Highcharts); // Required for gauge charts
 HighchartsHeatmap(Highcharts);
 HighchartsTilemap(Highcharts);
 HighchartsTreemap(Highcharts);
+Drilldown(Highcharts); // Required for drilldown functionality
 Exporting(Highcharts);
 Fullscreen(Highcharts);
 NoDataToDisplay(Highcharts);

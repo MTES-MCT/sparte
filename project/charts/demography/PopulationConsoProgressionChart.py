@@ -1,5 +1,8 @@
 from project.charts.base_project_chart import DiagnosticChart
 from public_data.domain.containers import PublicDataContainer
+from public_data.infra.demography.population.progression.table import (
+    PopulationConsoProgressionTableMapper,
+)
 
 
 class PopulationConsoProgressionChart(DiagnosticChart):
@@ -95,7 +98,9 @@ class PopulationConsoProgressionChart(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Évolutions de la consommation d'espaces NAF et de la population du territoire"},
+            "title": {
+                "text": f"Évolutions de la consommation d'espaces et de la population à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+            },
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
             "xAxis": [
@@ -122,7 +127,7 @@ class PopulationConsoProgressionChart(DiagnosticChart):
 
     @property
     def data_table(self):
-        return {
-            "headers": [],
-            "rows": [],
-        }
+        return PopulationConsoProgressionTableMapper.map(
+            consommation_progression=self.data["consommation"],
+            population_progression=self.data["population"],
+        )
