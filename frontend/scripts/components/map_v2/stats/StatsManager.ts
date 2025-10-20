@@ -109,6 +109,25 @@ export class StatsManager {
         });
     }
 
+    hideStats(layerId?: LayerId): void {
+        const currentState = this.stateManager.getState();
+        if (layerId && currentState.layerId !== layerId) {
+            return;
+        }
+        this.stateManager.updateState({
+            isVisible: false
+        });
+    }
+
+    showStats(layerId: LayerId): void {
+        const currentState = this.stateManager.getState();
+        if (currentState.layerId === layerId) {
+            this.stateManager.updateState({
+                isVisible: true
+            });
+        }
+    }
+
     getStatsState(): StatsState {
         return this.stateManager.getState();
     }

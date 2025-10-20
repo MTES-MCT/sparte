@@ -16,6 +16,14 @@ export class VisibilityControl extends BaseControl {
             if (layer?.setVisibility) {
                 layer.setVisibility(value);
             }
+
+            if (context.statsManager) {
+                if (value) {
+                    context.statsManager.showStats(layerId);
+                } else {
+                    context.statsManager.hideStats(layerId);
+                }
+            }
         }
     }
 

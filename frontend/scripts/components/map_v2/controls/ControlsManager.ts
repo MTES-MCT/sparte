@@ -9,6 +9,7 @@ import type {
     ControlsManagerInterface,
     ControlValue,
 } from "../types/controls";
+import type { StatsManager } from "../stats/StatsManager";
 import { ControlStateManager } from "./ControlStateManager";
 
 export class ControlsManager implements ControlsManagerInterface {
@@ -17,15 +18,18 @@ export class ControlsManager implements ControlsManagerInterface {
     private groups: ControlGroup[];
     private sources: Map<string, BaseSource>;
     private layers: Map<string, BaseLayer>;
+    private statsManager?: StatsManager;
 
     constructor(
         groups: ControlGroup[],
         sources: Map<string, BaseSource>,
-        layers: Map<string, BaseLayer>
+        layers: Map<string, BaseLayer>,
+        statsManager?: StatsManager
     ) {
         this.groups = groups;
         this.sources = sources;
         this.layers = layers;
+        this.statsManager = statsManager;
 
         this.initializeControlInstances();
 
@@ -130,7 +134,8 @@ export class ControlsManager implements ControlsManagerInterface {
             sources: this.sources,
             layers: this.layers,
             controlId,
-            controlConfig: control
+            controlConfig: control,
+            statsManager: this.statsManager
         };
     }
 

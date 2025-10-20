@@ -2,6 +2,7 @@ import maplibregl from "maplibre-gl";
 import React from "react";
 import type { BaseSource } from "../sources/baseSource";
 import type { BaseLayer } from "../layers/baseLayer";
+import type { StatsManager } from "../stats/StatsManager";
 
 export type ControlType = 'visibility' | 'opacity' | 'ocsge-millesime' | 'ocsge-nomenclature' | 'ocsge-nomenclature-filter';
 
@@ -60,6 +61,7 @@ export interface ControlContext {
     layers: Map<string, BaseLayer>;
     controlId: string;
     controlConfig: Control;
+    statsManager?: StatsManager;
 }
 
 export interface ControlUIProps {

@@ -104,33 +104,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             // Initialiser la carte et récupérer les instances de sources/layers
             const { sources, layers } = await initMapFromConfig(memoizedConfig, map, landData);
             
-            // Initialiser le gestionnaire de contrôles si des groupes sont définis
-            if (memoizedConfig.controlGroups?.length > 0) {
-                const manager = new ControlsManager(
-                    memoizedConfig.controlGroups,
-                    sources,
-                    layers
-                );
-                
-                setControlsManager(manager);
-            }
-
-            // Initialiser le gestionnaire de popups si des popups sont définis
-            if (memoizedConfig.popups?.length > 0) {
-                const popupMgr = new PopupManager(map);
-                
-                memoizedConfig.popups.forEach(popupConfig => {
-                    popupMgr.registerPopup(popupConfig);
-                });
-
-                popupMgr.subscribe(setPopupState);
-                
-                setPopupManager(popupMgr);
-            }
-
             // Initialiser le gestionnaire de stats si des layers en ont besoin
+            let statsMgr: StatsManager | undefined;
             if (memoizedConfig.layers && memoizedConfig.layers.some(l => l.stats)) {
-                const statsMgr = new StatsManager(map);
+                statsMgr = new StatsManager(map);
                 
                 memoizedConfig.layers.forEach(layerConfig => {
                     if (layerConfig.stats) {
@@ -149,6 +126,31 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 statsMgr.subscribe(setStatsState);
                 
                 setStatsManager(statsMgr);
+            }
+
+            // Initialiser le gestionnaire de contrôles si des groupes sont définis
+            if (memoizedConfig.controlGroups?.length > 0) {
+                const manager = new ControlsManager(
+                    memoizedConfig.controlGroups,
+                    sources,
+                    layers,
+                    statsMgr
+                );
+                
+                setControlsManager(manager);
+            }
+
+            // Initialiser le gestionnaire de popups si des popups sont définis
+            if (memoizedConfig.popups?.length > 0) {
+                const popupMgr = new PopupManager(map);
+                
+                memoizedConfig.popups.forEach(popupConfig => {
+                    popupMgr.registerPopup(popupConfig);
+                });
+
+                popupMgr.subscribe(setPopupState);
+                
+                setPopupManager(popupMgr);
             }
             
             isInitialized.current = true;
