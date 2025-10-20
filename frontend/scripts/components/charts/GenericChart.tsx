@@ -5,22 +5,28 @@ import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
 
 import HighchartsMore from 'highcharts/highcharts-more';
+import HCSoldGauge from 'highcharts/modules/solid-gauge';
+
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
+import HighchartsTreemap from 'highcharts/modules/treemap';
 import Exporting from 'highcharts/modules/exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 
 import Loader from '@components/ui/Loader';
 import ChartDetails from './ChartDetails';
+import '../../highcharts/lineargauge.js';
 
 // Initialize the modules
 HighchartsMore(Highcharts); // Required for gauge charts
 HighchartsHeatmap(Highcharts);
 HighchartsTilemap(Highcharts);
+HighchartsTreemap(Highcharts);
 Exporting(Highcharts);
 Fullscreen(Highcharts);
 NoDataToDisplay(Highcharts);
+HCSoldGauge(Highcharts); // Required for solid gauge charts
 
 type GenericChartProps = {
     chartOptions: {
