@@ -10,6 +10,16 @@ export { ControlsManager } from './controls/ControlsManager';
 export { StatsBar } from './ui/stats';
 
 export { useMap } from './hooks/useMap';
+export {
+    getLastMillesimeIndex,
+    getStartMillesimeIndex,
+    getFirstDepartement,
+    getAvailableMillesimes,
+    getCouvertureLabel,
+    getUsageLabel,
+    getOcsgeLabel
+} from './utils/ocsge';
+export { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from './constants/presets';
 
 export type { MapConfig, SourceConfig, LayerConfig } from './types/builder';
 export type {

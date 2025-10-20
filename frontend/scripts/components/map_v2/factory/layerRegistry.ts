@@ -6,45 +6,55 @@ import { ArtificialisationLayer } from "../layers/artificialisationLayer";
 import { ImpermeabilisationDiffLayer } from "../layers/impermeabilisationDiffLayer";
 import { OcsgeDiffCentroidClusterLayer } from "../layers/ocsgeDiffCentroidClusterLayer";
 import { OcsgeDiffCentroidClusterCountLayer } from "../layers/ocsgeDiffCentroidClusterCountLayer";
-import type { LayerConfig, OcsgeLayerConfig, OcsgeDiffLayerConfig } from "../types/registry";
+import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
+import type { LandDetailResultType } from "@services/types/land";
+import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getAvailableMillesimes } from "../utils/ocsge";
 
-type LayerFactory = (config: LayerConfig) => BaseLayer;
+type LayerFactory = (config: LayerConfig, landData: LandDetailResultType) => BaseLayer;
 
 const layerRegistry: Record<string, LayerFactory> = {
     emprise: () => new EmpriseLayer(),
     orthophoto: () => new OrthophotoLayer(),
-    impermeabilisation: (cfg) => {
-        const ocsgeConfig = cfg as OcsgeLayerConfig;
+    impermeabilisation: (cfg, landData) => {
+        const config = cfg as ImpermeabilisationLayerConfig;
+        const millesimeIndex = getLastMillesimeIndex(landData.millesimes);
+        const departement = getFirstDepartement(landData.departements);
+        const millesimes = getAvailableMillesimes(landData.millesimes);
         return new ImpermeabilisationLayer(
-            ocsgeConfig.millesimeIndex,
-            ocsgeConfig.departement,
-            ocsgeConfig.nomenclature ?? "couverture",
-            ocsgeConfig.millesimes ?? []
+            millesimeIndex,
+            departement,
+            config.nomenclature ?? "couverture",
+            millesimes
         );
     },
-    artificialisation: (cfg) => {
-        const ocsgeConfig = cfg as OcsgeLayerConfig;
+    artificialisation: (cfg, landData) => {
+        const config = cfg as ArtificialisationLayerConfig;
+        const millesimeIndex = getLastMillesimeIndex(landData.millesimes);
+        const departement = getFirstDepartement(landData.departements);
+        const millesimes = getAvailableMillesimes(landData.millesimes);
         return new ArtificialisationLayer(
-            ocsgeConfig.millesimeIndex,
-            ocsgeConfig.departement,
-            ocsgeConfig.nomenclature ?? "couverture",
-            ocsgeConfig.millesimes ?? []
+            millesimeIndex,
+            departement,
+            config.nomenclature ?? "couverture",
+            millesimes
         );
     },
-    "impermeabilisation-diff": (cfg) => {
-        const diffConfig = cfg as OcsgeDiffLayerConfig;
+    "impermeabilisation-diff": (cfg, landData) => {
+        const startMillesimeIndex = getStartMillesimeIndex(landData.millesimes);
+        const endMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
+        const departement = getFirstDepartement(landData.departements);
         return new ImpermeabilisationDiffLayer(
-            diffConfig.startMillesimeIndex,
-            diffConfig.endMillesimeIndex,
-            diffConfig.departement
+            startMillesimeIndex,
+            endMillesimeIndex,
+            departement
         );
     },
     "ocsge-diff-centroid-cluster": () => new OcsgeDiffCentroidClusterLayer(),
     "ocsge-diff-centroid-cluster-count": () => new OcsgeDiffCentroidClusterCountLayer(),
 };
 
-export function createLayer(cfg: LayerConfig): BaseLayer {
+export function createLayer(cfg: LayerConfig, landData: LandDetailResultType): BaseLayer {
     const factory = layerRegistry[cfg.type];
     if (!factory) throw new Error(`Unknown layer type: ${cfg.type}`);
-    return factory(cfg);
+    return factory(cfg, landData);
 }

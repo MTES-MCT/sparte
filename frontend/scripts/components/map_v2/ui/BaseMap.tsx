@@ -12,6 +12,7 @@ import { StatsManager } from "../stats/StatsManager";
 import type { MapConfig } from "../types/builder";
 import type { PopupState } from "../types/popup";
 import type { StatsState } from "../stats/StatsStateManager";
+import type { LandDetailResultType } from "@services/types/land";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -60,6 +61,7 @@ interface BaseMapProps {
     bounds?: [number, number, number, number];
     maxBounds?: [number, number, number, number];
     config?: MapConfig;
+    landData: LandDetailResultType;
 }
 
 export const BaseMap: React.FC<BaseMapProps> = ({
@@ -68,6 +70,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     bounds,
     maxBounds,
     config,
+    landData,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
@@ -99,7 +102,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
         if (memoizedConfig && !isInitialized.current) {
             // Initialiser la carte et récupérer les instances de sources/layers
-            const { sources, layers } = await initMapFromConfig(memoizedConfig, map);
+            const { sources, layers } = await initMapFromConfig(memoizedConfig, map, landData);
             
             // Initialiser le gestionnaire de contrôles si des groupes sont définis
             if (memoizedConfig.controlGroups?.length > 0) {
@@ -131,13 +134,14 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 
                 memoizedConfig.layers.forEach(layerConfig => {
                     if (layerConfig.stats) {
-                        const layer = layers.get(layerConfig.id);
+                        const layerId = `${layerConfig.type}-layer`;
+                        const layer = layers.get(layerId);
                         if (layer && 'extractStats' in layer && typeof layer.extractStats === 'function') {
                             statsMgr.registerStats(
-                                layerConfig.id,
+                                layerId,
                                 (features: maplibregl.MapGeoJSONFeature[]) => layer.extractStats(features)
                             );
-                            statsMgr.enableStats(layerConfig.id);
+                            statsMgr.enableStats(layerId);
                         }
                     }
                 });

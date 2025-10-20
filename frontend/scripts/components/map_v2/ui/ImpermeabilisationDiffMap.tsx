@@ -2,8 +2,8 @@ import React from "react";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import type { ControlGroup } from "../types/controls";
 import { ImpermeabilisationDiffPopup } from "./popup/ImpermeabilisationDiffPopup";
+import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 
 interface ImpermeabilisationMapProps {
 	landData: LandDetailResultType;
@@ -12,87 +12,40 @@ interface ImpermeabilisationMapProps {
 export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = ({
   	landData,
 }) => {
-	// Calculer les paramètres OCSGE
-	const lastMillesimeIndex = landData.millesimes ? Math.max(...landData.millesimes.map(m => m.index)) : 1;
-	const startMillesimeIndex = lastMillesimeIndex > 1 ? lastMillesimeIndex - 1 : lastMillesimeIndex;
-	const firstDepartement = landData.departements ? landData.departements[0] : "";
-    const availableMillesimes = (landData.millesimes || []).map(m => ({ index: m.index, year: m.year }));
-
-    const controlGroups: ControlGroup[] = [
-        {
-            id: "orthophoto-group",
-            label: "Fond de carte",
-            description: "Image aérienne du territoire",
-            controls: [
-                {
-                    id: "orthophoto-visibility",
-                    type: "visibility",
-                    targetLayers: ["orthophoto-layer"],
-                    defaultValue: true
-                },
-                {
-                    id: "orthophoto-opacity",
-                    type: "opacity",
-                    targetLayers: ["orthophoto-layer"],
-                    defaultValue: 1
-                }
-            ]
-        },
-        {
-            id: "emprise-group",
-            label: "Emprise du territoire",
-            description: "Contour géographique du territoire",
-            controls: [
-                {
-                    id: "emprise-visibility",
-                    type: "visibility",
-                    targetLayers: ["emprise-layer"],
-                    defaultValue: true
-                },
-                {
-                    id: "emprise-opacity",
-                    type: "opacity",
-                    targetLayers: ["emprise-layer"],
-                    defaultValue: 1
-                }
-            ]
-        },
-        {
-            id: "impermeabilisation-diff-group",
-            label: "Différence d'imperméabilisation",
-            description: "Surfaces imperméabilisées basée sur l'occupation du sol (OCS GE). Seules les zones imperméables sont affichées.",
-            controls: [
-                {
-                    id: "impermeabilisation-diff-visibility",
-                    type: "visibility",
-                    targetLayers: ["impermeabilisation-diff-layer", "ocsge-diff-centroid-cluster", "ocsge-diff-centroid-cluster-count"],
-                    defaultValue: true
-                },
-                {
-                    id: "impermeabilisation-diff-opacity",
-                    type: "opacity",
-                    targetLayers: ["impermeabilisation-diff-layer", "ocsge-diff-centroid-cluster"],
-                    defaultValue: 0.7
-                }
-            ]
-        }
-    ];
-
     const config = defineMapConfig({
 		sources: [
-			{ id: "orthophoto-source", type: "orthophoto" },
-			{ id: "emprise-source", type: "emprise", land_type:landData.land_type, land_id: landData.land_id },
-			{ id: "ocsge-diff-source", type: "ocsge-diff", millesimes: landData.millesimes, departements: landData.departements, startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex },
-			{ id: "ocsge-diff-centroid-source", type: "ocsge-diff-centroid", startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex, departement: firstDepartement },
+			...BASE_SOURCES,
+			{ type: "ocsge-diff" },
+			{ type: "ocsge-diff-centroid" },
 		],
 		layers: [
-            { id: "orthophoto-layer", type: "orthophoto", source: "orthophoto-source" },
-            { id: "emprise-layer", type: "emprise", source: "emprise-source" },
-            { id: "impermeabilisation-diff-layer", type: "impermeabilisation-diff", source: "ocsge-diff-source", startMillesimeIndex: startMillesimeIndex, endMillesimeIndex: lastMillesimeIndex, departement: firstDepartement, stats: true },
-            { id: "ocsge-diff-centroid-cluster", type: "ocsge-diff-centroid-cluster", source: "ocsge-diff-centroid-source" },
-            { id: "ocsge-diff-centroid-cluster-count", type: "ocsge-diff-centroid-cluster-count", source: "ocsge-diff-centroid-source" },
+			...BASE_LAYERS,
+            { type: "impermeabilisation-diff", stats: true },
+            { type: "ocsge-diff-centroid-cluster" },
+            { type: "ocsge-diff-centroid-cluster-count" },
 		],
-		controlGroups,
+		controlGroups: [
+			...BASE_CONTROLS,
+			{
+				id: "impermeabilisation-diff-group",
+				label: "Différence d'imperméabilisation",
+				description: "Surfaces imperméabilisées basée sur l'occupation du sol (OCS GE). Seules les zones imperméables sont affichées.",
+				controls: [
+					{
+						id: "impermeabilisation-diff-visibility",
+						type: "visibility",
+						targetLayers: ["impermeabilisation-diff-layer", "ocsge-diff-centroid-cluster-layer", "ocsge-diff-centroid-cluster-count-layer"],
+						defaultValue: true
+					},
+					{
+						id: "impermeabilisation-diff-opacity",
+						type: "opacity",
+						targetLayers: ["impermeabilisation-diff-layer", "ocsge-diff-centroid-cluster-layer"],
+						defaultValue: 0.7
+					}
+				]
+			}
+		],
 		popups: [
 			{
 				layerId: "impermeabilisation-diff-layer",
@@ -107,6 +60,7 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 		<BaseMap
 			id="impermeabilisation-diff-map"
 			config={config}
+			landData={landData}
 			bounds={landData.bounds}
 			maxBounds={landData.max_bounds}
 		/>

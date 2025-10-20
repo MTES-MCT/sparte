@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
-import { getOcsgeLabel } from "../../utils/ocsgeLabels";
+import { getOcsgeLabel } from "../../utils/ocsge";
 
 const CheckboxContainer = styled.div`
     display: flex;

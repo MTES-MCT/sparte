@@ -1,16 +1,9 @@
 import { BaseSource } from "./baseSource";
 import { OCSGE_TILES_URL } from "../constants/config";
-import { Millesime } from "@services/types/land";
+import { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
 import type { SourceSpecification, LayerSpecification } from "maplibre-gl";
-
-const getLastMillesimeIndex = (millesimes: Millesime[]): number => {
-    if (!millesimes || millesimes.length === 0) {
-        return 1;
-    }
-
-    return Math.max(...millesimes.map(m => m.index));
-};
+import { getLastMillesimeIndex, getStartMillesimeIndex } from "../utils/ocsge";
 
 export class OcsgeDiffSource extends BaseSource implements SourceInterface {
     private startMillesimeIndex: number;
@@ -19,27 +12,24 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
     private millesimes: Millesime[];
     private departements: string[];
 
-    constructor(millesimes: Millesime[], departements: string[], startMillesimeIndex?: number, endMillesimeIndex?: number) {
+    constructor(landData: LandDetailResultType) {
         super({
             id: "ocsge-diff-source",
             type: "vector",
         });
 
-        this.millesimes = millesimes;
-        this.departements = departements;
+        this.millesimes = landData.millesimes || [];
+        this.departements = landData.departements || [];
 
-        // Par défaut, utiliser les deux derniers millésimes consécutifs
-        const lastIndex = getLastMillesimeIndex(millesimes);
-        this.endMillesimeIndex = endMillesimeIndex ?? lastIndex;
-        this.startMillesimeIndex = startMillesimeIndex ?? (lastIndex > 1 ? lastIndex - 1 : lastIndex);
+        this.endMillesimeIndex = getLastMillesimeIndex(this.millesimes);
+        this.startMillesimeIndex = getStartMillesimeIndex(this.millesimes);
 
-        // Vérifier que les millésimes sont consécutifs
         if (this.endMillesimeIndex - this.startMillesimeIndex !== 1) {
             throw new Error("Les millésimes doivent être consécutifs pour la source de différence OCSGE");
         }
 
-        const millesime = millesimes.find((m: Millesime) => m.index === this.endMillesimeIndex);
-        this.departement = millesime?.departement || departements[0];
+        const millesime = this.millesimes.find((m: Millesime) => m.index === this.endMillesimeIndex);
+        this.departement = millesime?.departement || this.departements[0];
     }
 
     getOptions(): SourceSpecification {

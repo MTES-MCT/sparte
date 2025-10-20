@@ -1,16 +1,9 @@
 import { BaseSource } from "./baseSource";
 import { OCSGE_TILES_URL } from "../constants/config";
-import { Millesime } from "@services/types/land";
+import { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
 import type { SourceSpecification, LayerSpecification } from "maplibre-gl";
-
-const getLastMillesimeIndex = (millesimes: Millesime[]): number => {
-	if (!millesimes || millesimes.length === 0) {
-		return 1;
-	}
-
-	return Math.max(...millesimes.map(m => m.index));
-};
+import { getLastMillesimeIndex } from "../utils/ocsge";
 
 export class OcsgeSource extends BaseSource implements SourceInterface {
 	private millesimeIndex: number;
@@ -18,18 +11,18 @@ export class OcsgeSource extends BaseSource implements SourceInterface {
 	private millesimes: Millesime[];
 	private departements: string[];
 
-	constructor(millesimes: Millesime[], departements: string[], millesimeIndex?: number) {
+	constructor(landData: LandDetailResultType) {
 		super({
 			id: "ocsge-source",
 			type: "vector",
 		});
 
-		this.millesimes = millesimes;
-		this.departements = departements;
-		this.millesimeIndex = millesimeIndex ?? getLastMillesimeIndex(millesimes);
+		this.millesimes = landData.millesimes || [];
+		this.departements = landData.departements || [];
+		this.millesimeIndex = getLastMillesimeIndex(this.millesimes);
 
-		const millesime = millesimes.find((m: Millesime) => m.index === this.millesimeIndex);
-		this.departement = millesime?.departement || departements[0];
+		const millesime = this.millesimes.find((m: Millesime) => m.index === this.millesimeIndex);
+		this.departement = millesime?.departement || this.departements[0];
 	}
 
 	getId(): string {

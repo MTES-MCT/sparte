@@ -4,38 +4,21 @@ import { OrthophotoSource } from "../sources/orthophotoSource";
 import { OcsgeSource } from "../sources/ocsgeSource";
 import { OcsgeDiffSource } from "../sources/ocsgeDiffSource";
 import { OcsgeDiffCentroidSource } from "../sources/ocsgeDiffCentroidSource";
-import type {
-    SourceConfig,
-    EmpriseSourceConfig,
-    OcsgeSourceConfig,
-    OcsgeDiffSourceConfig,
-    OcsgeDiffCentroidSourceConfig
-} from "../types/registry";
+import type { SourceConfig } from "../types/builder";
+import type { LandDetailResultType } from "@services/types/land";
 
-type SourceFactory = (config: SourceConfig) => BaseSource;
+type SourceFactory = (landData: LandDetailResultType) => BaseSource;
 
 const sourceRegistry: Record<string, SourceFactory> = {
-    emprise: (cfg) => {
-        const empriseConfig = cfg as EmpriseSourceConfig;
-        return new EmpriseSource(empriseConfig.land_type, empriseConfig.land_id);
-    },
+    emprise: (landData) => new EmpriseSource(landData),
     orthophoto: () => new OrthophotoSource(),
-    ocsge: (cfg) => {
-        const ocsgeConfig = cfg as OcsgeSourceConfig;
-        return new OcsgeSource(ocsgeConfig.millesimes, ocsgeConfig.departements, ocsgeConfig.millesimeIndex);
-    },
-    "ocsge-diff": (cfg) => {
-        const diffConfig = cfg as OcsgeDiffSourceConfig;
-        return new OcsgeDiffSource(diffConfig.millesimes, diffConfig.departements, diffConfig.startMillesimeIndex, diffConfig.endMillesimeIndex);
-    },
-    "ocsge-diff-centroid": (cfg) => {
-        const centroidConfig = cfg as OcsgeDiffCentroidSourceConfig;
-        return new OcsgeDiffCentroidSource(centroidConfig.startMillesimeIndex, centroidConfig.endMillesimeIndex, centroidConfig.departement);
-    },
+    ocsge: (landData) => new OcsgeSource(landData),
+    "ocsge-diff": (landData) => new OcsgeDiffSource(landData),
+    "ocsge-diff-centroid": (landData) => new OcsgeDiffCentroidSource(landData),
 };
 
-export function createSource(cfg: SourceConfig): BaseSource {
+export function createSource(cfg: SourceConfig, landData: LandDetailResultType): BaseSource {
     const factory = sourceRegistry[cfg.type];
     if (!factory) throw new Error(`Unknown source type: ${cfg.type}`);
-    return factory(cfg);
+    return factory(landData);
 }

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { formatNumber } from "@utils/formatUtils";
 import { PopupContentProps } from "../../types/popup";
-import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsgeLabels";
+import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";
 
 const PopupContent = styled.div`
     display: flex;
