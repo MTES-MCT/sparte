@@ -37,101 +37,109 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   return (
     <div
       style={{
-        position: "fixed",
-        bottom: "24px",
-        right: "24px",
-        zIndex: 1000,
-        maxWidth: "320px",
+        position: "sticky",
+        top: "88px",
+        zIndex: 100,
+        backgroundColor: "#f8f9ff",
+        paddingTop: "1rem",
+        paddingBottom: "1rem",
+        marginBottom: "1.5rem",
+        marginTop: "-1.5rem",
       }}
     >
-      <div
-        className="bg-white rounded"
-        style={{
-          boxShadow: "0 8px 16px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)",
-          border: "1px solid #e5e5e5",
-          padding: "1.25rem",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
-          <span
-            className="fr-icon-calendar-line"
-            style={{ color: "#6a6af4", fontSize: "1.25rem" }}
-            aria-hidden="true"
-          ></span>
-          <h6 className="fr-mb-0" style={{ fontSize: "0.9375rem", fontWeight: 600, color: "#161616" }}>
-            Période d'analyse
-          </h6>
-        </div>
+      <div className="fr-container--fluid" style={{ paddingLeft: "1.5rem", paddingRight: "1.5rem" }}>
+        <div className="fr-card fr-card--no-border fr-card--shadow">
+          <div className="fr-card__body">
+            <div className="fr-card__content">
+              <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+              {/* Title section */}
+              <div className="fr-col-12 fr-col-md-auto">
+                <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+                  <div className="fr-col-auto">
+                    <div
+                      className="fr-icon-calendar-line"
+                      style={{
+                        fontSize: "2rem",
+                        color: "var(--text-label-blue-france)",
+                      }}
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="fr-col">
+                    <h6 className="fr-mb-0">Période d'analyse</h6>
+                    <p className="fr-text--xs fr-mb-0 fr-text--regular">
+                      Sélectionnez la période pour analyser la consommation
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-        <div className="fr-grid-row fr-grid-row--gutters" style={{ marginBottom: "0.75rem" }}>
-          <div className="fr-col-6">
-            <label
-              className="fr-label"
-              htmlFor="start-year"
-              style={{ fontSize: "0.75rem", marginBottom: "0.375rem", fontWeight: 500 }}
-            >
-              Début
-            </label>
-            <select
-              className="fr-select"
-              id="start-year"
-              value={startYear}
-              onChange={(e) => onStartYearChange(Number(e.target.value))}
-              style={{
-                fontSize: "0.875rem",
-                padding: "0.375rem 0.5rem",
-                borderColor: "#6a6af4",
-              }}
-            >
-              {yearOptions.map((year) => (
-                <option key={year} value={year} disabled={year >= endYear}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="fr-col-6">
-            <label
-              className="fr-label"
-              htmlFor="end-year"
-              style={{ fontSize: "0.75rem", marginBottom: "0.375rem", fontWeight: 500 }}
-            >
-              Fin
-            </label>
-            <select
-              className="fr-select"
-              id="end-year"
-              value={endYear}
-              onChange={(e) => onEndYearChange(Number(e.target.value))}
-              style={{
-                fontSize: "0.875rem",
-                padding: "0.375rem 0.5rem",
-                borderColor: "#6a6af4",
-              }}
-            >
-              {yearOptions.map((year) => (
-                <option key={year} value={year} disabled={year <= startYear}>
-                  {year}
-                </option>
-              ))}
-            </select>
+              {/* Year selectors */}
+              <div className="fr-col-12 fr-col-md">
+                <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--bottom">
+                  <div className="fr-col-auto">
+                    <div className="fr-select-group">
+                      <label className="fr-label" htmlFor="start-year">
+                        Année de début
+                      </label>
+                      <select
+                        className="fr-select"
+                        id="start-year"
+                        value={startYear}
+                        onChange={(e) => onStartYearChange(Number(e.target.value))}
+                      >
+                        {yearOptions.map((year) => (
+                          <option key={year} value={year} disabled={year >= endYear}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="fr-col-auto" style={{ paddingBottom: "0.75rem" }}>
+                    <span className="fr-text--lg" aria-hidden="true">
+                      →
+                    </span>
+                  </div>
+
+                  <div className="fr-col-auto">
+                    <div className="fr-select-group">
+                      <label className="fr-label" htmlFor="end-year">
+                        Année de fin
+                      </label>
+                      <select
+                        className="fr-select"
+                        id="end-year"
+                        value={endYear}
+                        onChange={(e) => onEndYearChange(Number(e.target.value))}
+                      >
+                        {yearOptions.map((year) => (
+                          <option key={year} value={year} disabled={year <= startYear}>
+                            {year}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {hasChangedFromDefault && (
+                    <div className="fr-col-auto">
+                      <button
+                        onClick={handleReset}
+                        className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-refresh-line fr-btn--icon-left"
+                        title={`Réinitialiser à la période ${defaultStartYear}-${defaultEndYear}`}
+                      >
+                        Réinitialiser
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {hasChangedFromDefault && (
-          <button
-            onClick={handleReset}
-            className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline"
-            style={{
-              width: "100%",
-              fontSize: "0.75rem",
-              padding: "0.375rem",
-            }}
-          >
-            <span className="fr-icon-refresh-line" aria-hidden="true" style={{ marginRight: "0.25rem" }}></span>
-            Réinitialiser ({defaultStartYear}-{defaultEndYear})
-          </button>
-        )}
       </div>
     </div>
   );
