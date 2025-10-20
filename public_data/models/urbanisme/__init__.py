@@ -21,11 +21,13 @@ from .LandFricheZoneActivite import (
     LandFricheZoneActiviteViewset,
 )
 from .LogementVacant import LogementVacant
+from .LogementVacantAutorisationStats import LogementVacantAutorisationStatsViewset
 
 __all__ = [
     "AutorisationLogement",
     "BaseLandFriche",
     "LogementVacant",
+    "LogementVacantAutorisationStatsViewset",
     "LandFrichePollution",
     "LandFrichePollutionViewset",
     "LandFriche",

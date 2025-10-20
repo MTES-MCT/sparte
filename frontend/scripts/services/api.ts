@@ -136,6 +136,15 @@ export const djangoApi = createApi({
 				};
 			},
 		}),
+		getLogementVacantAutorisationStats: builder.query({
+			query: ({land_type, land_id, start_date, end_date}) => {
+				const queryParams = new URLSearchParams({
+					start_date: start_date.toString(),
+					end_date: end_date.toString()
+				})
+				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`
+			},
+		}),
 		downloadDiagnostic: builder.mutation<{ message: string }, { projectId: number; documentType: string }>({
 			query: ({ projectId, documentType }) => ({
 				url: `/project/${projectId}/telechargement/${documentType}`,
@@ -165,6 +174,7 @@ const {
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
 	useGetSimilarTerritoriesQuery,
+	useGetLogementVacantAutorisationStatsQuery,
 } = djangoApi;
 
 export {
@@ -186,4 +196,5 @@ export {
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,
 	useGetLandGeomQuery,
+	useGetLogementVacantAutorisationStatsQuery,
 };

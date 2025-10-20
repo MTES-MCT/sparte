@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
 
+import HighchartsMore from 'highcharts/highcharts-more';
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
 import Exporting from 'highcharts/modules/exporting';
@@ -14,6 +15,7 @@ import Loader from '@components/ui/Loader';
 import ChartDetails from './ChartDetails';
 
 // Initialize the modules
+HighchartsMore(Highcharts); // Required for gauge charts
 HighchartsHeatmap(Highcharts);
 HighchartsTilemap(Highcharts);
 Exporting(Highcharts);
