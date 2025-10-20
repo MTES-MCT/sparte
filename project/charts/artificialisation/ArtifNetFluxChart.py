@@ -12,7 +12,7 @@ from public_data.models.artificialisation import LandArtifFlux, LandArtifFluxInd
 
 
 class ArtifNetFluxChart(DiagnosticChart):
-    name = "Evolution de l'artificialisation"
+    name = "Artificialisation"
 
     def __init__(self, land, params):
         """

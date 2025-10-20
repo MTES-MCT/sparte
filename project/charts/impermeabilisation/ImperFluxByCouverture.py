@@ -8,7 +8,7 @@ from .ImperFluxByUsage import ImperFluxByUsage
 
 
 class ImperFluxByCouverture(ImperFluxByUsage):
-    name = "Evolution de l'artificialisation"
+    name = "Imperméabilisation"
     sol = "couverture"
     model = LandImperFluxCouvertureCompositionIndex
     model_by_departement = LandImperFluxCouvertureComposition

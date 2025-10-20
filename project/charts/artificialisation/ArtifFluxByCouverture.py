@@ -8,7 +8,7 @@ from .ArtifFluxByUsage import ArtifFluxByUsage
 
 
 class ArtifFluxByCouverture(ArtifFluxByUsage):
-    name = "Evolution de l'artificialisation"
+    name = "Artificialisation"
     sol = "couverture"
     model = LandArtifFluxCouvertureCompositionIndex
     model_by_departement = LandArtifFluxCouvertureComposition

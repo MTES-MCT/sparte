@@ -57,7 +57,7 @@ class ArtifByCouverturePieChart(DiagnosticChart):
             "Code",
             "Couverture",
             "Surface (ha)",
-            "Pourcentage du sol artificiel (%)",
+            "Pourcentage de la surface artificielle (%)",
             "Pourcentage du territoire (%)",
         ]
 
@@ -96,7 +96,7 @@ class ArtifByCouverturePieChart(DiagnosticChart):
     def series(self):
         return [
             {
-                "name": "Sol artificiel",
+                "name": "Surface artificielle",
                 "data": [
                     {
                         "name": item.label_short,
