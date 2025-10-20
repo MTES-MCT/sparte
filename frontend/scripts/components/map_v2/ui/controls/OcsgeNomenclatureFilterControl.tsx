@@ -1,12 +1,23 @@
 import React from "react";
 import styled from "styled-components";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
+import { getOcsgeLabel } from "../../utils/ocsgeLabels";
 
 const CheckboxContainer = styled.div`
     display: flex;
-    align-items: center;
+    align-items: top;
     justify-content: space-between;
     width: 100%;
+`;
+
+const CodeName = styled.div`
+    font-size: 0.8rem;
+    font-weight: bold;
+`;
+
+const CodeLabel = styled.div`
+    font-size: 0.8rem;
+    color: #666;
 `;
 
 const ColorIndicator = styled.div<{ $backgroundColor: string }>`
@@ -31,7 +42,7 @@ export const OcsgeNomenclatureFilterControl: React.FC<OcsgeNomenclatureFilterCon
     return (
         <Checkbox
             legend="Filtrer par codes"
-            classes={{ legend: "fr-text--sm fr-mb-0"}}
+            classes={{ legend: "fr-text--sm fr-mb-0" }}
             options={availableCodes.map((code: string) => {
                 const isChecked = selectedCodes.includes(code);
                 const color = getColorForCode(code, currentNomenclature);
@@ -39,7 +50,12 @@ export const OcsgeNomenclatureFilterControl: React.FC<OcsgeNomenclatureFilterCon
                 return {
                     label: (
                         <CheckboxContainer>
-                            <span>{code}</span>
+                            <div>
+                                <CodeName>{code}</CodeName>
+                                <CodeLabel>
+                                    {getOcsgeLabel(code, currentNomenclature)}
+                                </CodeLabel>
+                            </div>
                             <ColorIndicator $backgroundColor={color} />
                         </CheckboxContainer>
                     ),

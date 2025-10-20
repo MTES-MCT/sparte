@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { PopupContentProps } from "../../types/popup";
-import { COUVERTURE_LABELS, USAGE_LABELS } from "../../constants/ocsge_nomenclatures";
+import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsgeLabels";
 
 const PopupContent = styled.div`
     display: flex;
@@ -60,14 +60,6 @@ export const ImpermeabilisationPopup: React.FC<PopupContentProps> = ({
             return `${formatNumber({ number: surfaceHa })} ha (${formatNumber({ number: surface })} m²)`;
         }
         return 'Non renseigné';
-    };
-
-    const getCouvertureLabel = (code: string) => {
-        return COUVERTURE_LABELS[code as keyof typeof COUVERTURE_LABELS] || code;
-    };
-
-    const getUsageLabel = (code: string) => {
-        return USAGE_LABELS[code as keyof typeof USAGE_LABELS] || code;
     };
 
     const popupData = [
