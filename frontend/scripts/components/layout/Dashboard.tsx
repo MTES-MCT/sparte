@@ -169,7 +169,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     <Route
                                         path={urls.logementVacant}
                                         element={
-                                            <RouteWrapper 
+                                            <RouteWrapper
                                                 title="Vacance des logements"
                                                 showPage={logements_vacants_available}
                                                 showStatus={!logements_vacants_available}
@@ -177,11 +177,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <LogementVacantStatus />
                                                 }
                                             >
-                                                <LogementVacant 
-                                                    endpoint={urls.logementVacant} 
-                                                    landData={landData}
-                                                    projectData={projectData}
-                                                />
+                                                <LogementVacant landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />

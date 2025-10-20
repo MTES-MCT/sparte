@@ -5,18 +5,18 @@ from public_data.domain.urbanisme.logement_vacant.entity import (
 from public_data.domain.urbanisme.logement_vacant.progression import (
     BaseLogementVacantProgressionService,
 )
-from public_data.models import Land, LogementVacant
+from public_data.models import LandModel, LogementVacant
 
 
 class LogementVacantProgressionService(BaseLogementVacantProgressionService):
     def get_by_land(
         self,
-        land: Land,
+        land: LandModel,
         start_date: int,
         end_date: int,
     ) -> LogementVacantCollection:
         data = LogementVacant.objects.filter(
-            land_id=land.id,
+            land_id=land.land_id,
             land_type=land.land_type,
             year__gte=start_date,
             year__lte=end_date,
@@ -49,7 +49,7 @@ class LogementVacantProgressionService(BaseLogementVacantProgressionService):
 
     def get_by_lands(
         self,
-        lands: list[Land],
+        lands: list[LandModel],
         start_date: int,
         end_date: int,
     ) -> list[LogementVacantCollection]:
