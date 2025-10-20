@@ -133,8 +133,8 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "credits": {"enabled": False},
             "title": {
                 "text": (
-                    "Consommation d'espaces NAF au regard de l'évolution de la population "
-                    "du territoire et des territoires similaires"
+                    f"Consommation d'espaces au regard de l'évolution de la population à {self.land.name} "
+                    f"et territoires similaires ({self.params['start_date']} - {self.params['end_date']})"
                 )
             },
             "xAxis": {
@@ -143,7 +143,7 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                 "plotLines": [{"color": "#000", "width": 1, "value": 0, "zIndex": 3}],
             },
             "yAxis": {
-                "title": {"text": "Consommation d'espaces NAF (ha)"},
+                "title": {"text": "Consommation d'espaces (ha)"},
                 "maxPadding": 0.2,
                 "min": 0,
             },
