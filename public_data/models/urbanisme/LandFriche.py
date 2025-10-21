@@ -1,4 +1,5 @@
 from django.contrib.gis.db.models import PointField
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from public_data.models.administration import AdminRef
@@ -37,6 +38,14 @@ class LandFriche(models.Model):
 
     surface = models.FloatField()
     point_on_surface = PointField(srid=4326)
+
+    surface_artif = models.FloatField()
+    percent_artif = models.FloatField()
+    years_artif = ArrayField(base_field=models.IntegerField())
+
+    surface_imper = models.FloatField()
+    percent_imper = models.FloatField()
+    years_imper = ArrayField(base_field=models.IntegerField())
 
     class Meta:
         managed = False

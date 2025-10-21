@@ -40,7 +40,7 @@ class ImperByCouverturePieChart(DiagnosticChart):
             "Code",
             "Couverture",
             "Surface (ha)",
-            "Pourcentage du sol imperméable (%)",
+            "Pourcentage de la surface imperméable (%)",
             "Pourcentage du territoire (%)",
         ]
 
@@ -79,7 +79,7 @@ class ImperByCouverturePieChart(DiagnosticChart):
     def series(self):
         return [
             {
-                "name": "Sol imperméable",
+                "name": "Surface imperméable",
                 "data": [
                     {
                         "name": item.label_short,

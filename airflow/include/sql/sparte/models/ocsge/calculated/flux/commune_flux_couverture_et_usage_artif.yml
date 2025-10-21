@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: commune_flux_couverture_et_usage_artif
+    columns:
+      - name: commune_code
+        data_tests:
+          - not_null
+        data_type: character varying
+      - name: year_old
+        data_tests:
+          - not_null
+        data_type: integer
+      - name: year_new
+        data_tests:
+          - not_null
+        data_type: integer
+      - name: commune_surface
+        data_type: double precision
+        tests:
+          - not_null
+      - name: departement
+        data_type: character varying
+        tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')
+      - name: year_old_index
+        data_type: bigint
+        tests:
+          - not_null
+      - name: year_new_index
+        data_type: bigint
+        tests:
+          - not_null
+      - name: surface
+        data_type: numeric
+        tests:
+          - not_null
+      - name: cs_old
+        data_type: character varying
+        tests:
+          - not_null
+      - name: cs_new
+        data_type: character varying
+        tests:
+          - not_null
+      - name: us_old
+        data_type: character varying
+        tests:
+          - not_null
+      - name: us_new
+        data_type: character varying
+        tests:
+          - not_null
+      - name: new_is_artificial
+        data_type: boolean
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: new_not_artificial
+        data_type: boolean
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: percent
+        data_type: double precision
+        tests:
+          - not_null

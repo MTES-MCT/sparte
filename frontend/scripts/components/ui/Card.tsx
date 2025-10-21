@@ -5,11 +5,12 @@ interface CardProps {
     icon: string;
     badgeClass: string;
     badgeLabel: string;
-    value: string | number;
-    label: string;
+    value: React.ReactNode;
+    label: React.ReactNode;
     isHighlighted?: boolean;
     highlightBadge?: string;
     className?: string;
+    children?: React.ReactNode;
 }
 
 const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
@@ -19,12 +20,15 @@ const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
     height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 1rem;
     ${({ $isHighlighted }) => $isHighlighted && `
-        border: 3px solid var(--artwork-major-blue-france);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         position: relative;
         background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+        border-color: var(--artwork-major-blue-france);
+        border-width: 3px;
+        border-style: solid;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     `}
 `;
 
@@ -50,9 +54,10 @@ const CardHeader = styled.div`
 
 const CardIcon = styled.i<{ $isHighlighted?: boolean }>`
     font-size: 2.5rem;
-    ${({ $isHighlighted }) => $isHighlighted && `
-        color: var(--artwork-major-blue-france);
-    `}
+    ${({ $isHighlighted }) => $isHighlighted
+        ? `color: var(--artwork-major-blue-france);`
+        : `color: var(--text-default-grey);`
+    }
 `;
 
 const CardBadge = styled.span`
@@ -70,15 +75,21 @@ const CardValue = styled.div<{ $isHighlighted?: boolean }>`
 	font-size: 3rem;
 	font-weight: bold;
 	line-height: 3rem;
-	${({ $isHighlighted }) => $isHighlighted && `
-	    color: var(--artwork-major-blue-france);
-	`}
+	height: 3rem;
+	${({ $isHighlighted }) => $isHighlighted
+	    ? `color: var(--artwork-major-blue-france);`
+	    : `color: var(--text-default-grey);`
+	}
 `;
 
-const CardLabel = styled.p`
-    font-size: 1rem;
+const CardLabel = styled.div`
+    font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 0;
+`;
+
+const CardFooter = styled.div`
+    margin-top: 0.5rem;
 `;
 
 const Card: React.FC<CardProps> = ({
@@ -89,7 +100,8 @@ const Card: React.FC<CardProps> = ({
     label,
     isHighlighted = false,
     highlightBadge,
-    className = ""
+    className = "",
+    children
 }) => {
     return (
         <CardContainer $isHighlighted={isHighlighted} className={className}>
@@ -108,6 +120,11 @@ const Card: React.FC<CardProps> = ({
                 <CardValue $isHighlighted={isHighlighted}>{value}</CardValue>
                 <CardLabel>{label}</CardLabel>
             </CardContent>
+            {children && (
+                <CardFooter>
+                    {children}
+                </CardFooter>
+            )}
         </CardContainer>
     );
 };

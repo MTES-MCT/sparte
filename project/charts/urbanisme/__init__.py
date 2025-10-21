@@ -1,3 +1,11 @@
+from .FricheArtifCompositionChart import (
+    FricheArtifCompositionChart,
+    FricheArtifCompositionChartExport,
+)
+from .FricheImperCompositionChart import (
+    FricheImperCompositionChart,
+    FricheImperCompositionChartExport,
+)
 from .FrichePollutionChart import FrichePollutionChart
 from .FricheSurfaceChart import FricheSurfaceChart
 from .FricheTypeChart import FricheTypeChart
@@ -18,6 +26,10 @@ from .LogementVacantProgressionChart import LogementVacantProgressionChart
 from .LogementVacantRatioProgressionChart import LogementVacantRatioProgressionChart
 
 __all__ = [
+    "FricheArtifCompositionChart",
+    "FricheArtifCompositionChartExport",
+    "FricheImperCompositionChart",
+    "FricheImperCompositionChartExport",
     "FrichePollutionChart",
     "FricheSurfaceChart",
     "FricheTypeChart",

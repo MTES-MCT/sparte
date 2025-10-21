@@ -18,6 +18,7 @@ import LogementVacant from '@components/pages/LogementVacant';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
+import { Impermeabilisation } from '@components/pages/Impermeabilisation';
 import Update from '@components/pages/Update';
 import Downloads from '@components/pages/Downloads';
 import { Friches } from '@components/pages/Friches';
@@ -145,7 +146,23 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 }
                                             >
                                                     <Artificialisation
-                                                        projectData={projectData}
+                                                        landData={landData}
+                                                    />
+                                                </RouteWrapper>
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.impermeabilisation}
+                                        element={
+                                            <RouteWrapper
+                                                title="Imperméabilisation des sols"
+                                                showPage={has_ocsge}
+                                                showStatus={ocsge_status !== OcsgeStatusEnum.COMPLETE_UNIFORM}
+                                                status={
+                                                    <OcsgeStatus status={ocsge_status} />
+                                                }
+                                            >
+                                                    <Impermeabilisation
                                                         landData={landData}
                                                     />
                                                 </RouteWrapper>

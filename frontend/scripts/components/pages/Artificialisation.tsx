@@ -1,22 +1,20 @@
-import React from "react";
-import Guide from "@components/ui/Guide";
+import React, { useState } from "react";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
 import { OcsgeMapContainer } from "@components/map/ocsge/OcsgeMapContainer";
 import styled from "styled-components";
-import { ArtifPercentRate } from "@components/charts/artificialisation/ArtifPercentRate";
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ArtificialisationZonage } from "@components/features/ocsge/ArtificialisationZonage";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
+import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { useArtificialisation } from "@hooks/useArtificialisation";
 import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
 import OcsgeMatricePNG from '@images/ocsge_matrice_passage.png';
-import ChartDetails from "@components/charts/ChartDetails";
+import { DataCards } from "@components/features/ocsge/DataCards";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -25,7 +23,6 @@ export const BigNumber = styled.div`
 `;
 
 interface ArtificialisationProps {
-	projectData: ProjectDetailResultType;
 	landData: LandDetailResultType;
 }
 
@@ -35,146 +32,101 @@ interface Millesime {
 	departement: string;
 }
 
-const DetaislCalculationOcsge: React.FC = () => (
+const DetailsCalculationOcsge: React.FC = () => (
 	<div>
-		<h6 className="fr-mb-0">Calcul</h6>
+		<h3 className="fr-mb-0">Calcul</h3>
 		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la matrice de passage.</p>
 	</div>
 )
 
 const ArtifLastMillesimeSection: React.FC<{
 	landArtifStockIndex: LandArtifStockIndex;
-	name: string;
 	is_interdepartemental: boolean;
-	surface: number;
-	years_artif: number[];
-}> = ({ landArtifStockIndex, name, is_interdepartemental, surface, years_artif }) => (
+	millesimes: Millesime[];
+	territory_name: string;
+}> = ({ landArtifStockIndex, is_interdepartemental, millesimes, territory_name }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-lg-8">
-				<div className="bg-white fr-p-2w h-100 rounded">
-					<div className="fr-grid-row fr-grid-row--gutters">
-						<div className="fr-col-12 fr-col-md-7">
-							<ArtifPercentRate
-								percentageArtificialized={landArtifStockIndex.percent}
-							/>
-						</div>
-						<div className="fr-col-12 fr-col-md-5">
-							<BigNumber className="fr-mt-3w">
-								{formatNumber({ number: landArtifStockIndex.surface })} ha
-							</BigNumber>
-							<span
-								style={{textTransform: 'lowercase'}}
-								className={`fr-badge ${
-									landArtifStockIndex.flux_surface >= 0
-										? "fr-badge--error"
-										: "fr-badge--success"
-								} fr-badge--error fr-badge--sm fr-badge--no-icon`}
-							>
-								{formatNumber({
-									number: landArtifStockIndex.flux_surface,
-									addSymbol: true,
-								})}{" "}
-								ha
-								{landArtifStockIndex.flux_surface >= 0 ? (
-									<i className="bi bi-arrow-up-right fr-ml-1w" />
-								) : (
-									<i className="bi bi-arrow-down-right fr-ml-1w" />
-								)}
-							</span>
-							<MillesimeDisplay 
-								is_interdepartemental={is_interdepartemental}
-								landArtifStockIndex={landArtifStockIndex}
-								between={true}
-								className="fr-text--sm fr-ml-1w"
-							/>
-							<BigNumber className="fr-mt-3w">
-								{formatNumber({ number: landArtifStockIndex.percent })}%
-							</BigNumber>
-							<p>du territoire est artificialisé</p>
-						</div>
-					</div>
-					<ChartDetails
-						sources={['ocsge']}
-						chartId="artif_last_millesime"
-					/>
+			<div className="fr-col-12 fr-col-md-6">
+				<div className="bg-white fr-p-4w rounded h-100">
+					<h2>Qu'est-ce que l'artificialisation des sols ?</h2>
+					<p className="fr-text--sm">
+						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
+						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
+						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
+					</p>
 				</div>
 			</div>
-			<div className="fr-col-12 fr-col-lg-4">
-				<Guide
-					title="Comprendre les données"
-					column
-				>
-					<p>En {years_artif.join(", ")}, sur le territoire de {name}, <strong>{formatNumber(
-						{ number: landArtifStockIndex.surface }
-					)} ha</strong> étaient artificialisés, ce qui correspond à <strong>{formatNumber(
-						{ number: landArtifStockIndex.percent }
-					)}%</strong> de la surface totale ({formatNumber({
-						number: surface,
-					})} ha) du territoire.</p>
-					<p>La surface artificialisée a {
-						landArtifStockIndex.flux_surface >= 0
-							? "augmenté"
-							: "diminué"
-					} de <strong>{formatNumber({
-						number: landArtifStockIndex.flux_surface,
-					})} ha <MillesimeDisplay 
+			<DataCards
+				icon="bi-building"
+				fluxBadgeLabel="Artificialisation nette"
+				stockBadgeLabel="Surface artificialisée"
+				fluxValue={landArtifStockIndex.flux_surface}
+				fluxLabel={
+					<MillesimeDisplay
 						is_interdepartemental={is_interdepartemental}
 						landArtifStockIndex={landArtifStockIndex}
 						between={true}
-					/></strong>.</p>
-				</Guide>
+					/>
+				}
+				stockValue={`${formatNumber({ number: landArtifStockIndex.surface })} ha`}
+				stockLabel={
+					<>
+						{formatNumber({ number: landArtifStockIndex.percent })}% du territoire{' - '}
+						<MillesimeDisplay
+							is_interdepartemental={is_interdepartemental}
+							landArtifStockIndex={landArtifStockIndex}
+							between={false}
+						/>
+					</>
+				}
+			/>
+
+		</div>
+		<div className="fr-grid-row fr-mt-3w">
+			<div className="fr-col-12">
+				<div className="bg-white fr-p-4w rounded">
+					<h2>D'où proviennent ces données&nbsp;?</h2>
+					<div className="fr-highlight fr-highlight--no-margin">
+						<p className="fr-text--sm">
+							La mesure de l'artificialisation d'un territoire repose sur la
+							donnée{" "}
+							<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
+							actuellement en cours de production par l'IGN. Cette donnée est
+							produite tous les 3 ans par département. Chaque production est
+							appelée un <strong>millésime</strong>.
+						</p>
+					</div>
+					<p className="fr-mt-2w fr-text--sm">
+						Ces données sont disponibles en téléchargement sur le site de l'IGN
+						:&nbsp;<a
+							className="fr-link fr-text--sm"
+							href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
+						</a>
+					</p>
+					<LandMillesimeTable
+						millesimes={millesimes}
+						territory_name={territory_name}
+						is_interdepartemental={is_interdepartemental}
+					/>
+				</div>
 			</div>
 		</div>
-	</div>
-);
-
-const MillesimesTable: React.FC<{
-	millesimes: Millesime[];
-	projectData: ProjectDetailResultType;
-	is_interdepartemental: boolean;
-}> = ({ millesimes, projectData, is_interdepartemental }) => (
-	<div className="bg-white fr-p-4w rounded fr-mt-5w">
-		<h6>D'où proviennent ces données&nbsp;?</h6>
-		<div className="fr-highlight fr-highlight--no-margin">
-			<p className="fr-text--sm">
-				La mesure de l'artificialisation d'un territoire repose sur la
-				donnée{" "}
-				<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
-				actuellement en cours de production par l'IGN. Cette donnée est
-				produite tous les 3 ans par département. Chaque production est
-				appelée un <strong>millésime</strong>.
-			</p>
-		</div>
-		<p className="fr-mt-2w fr-text--sm">
-			Ces données sont disponibles en téléchargement sur le site de l'IGN
-			:&nbsp;<a
-				className="fr-link fr-text--sm"
-				href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
-				target="_blank"
-				rel="noopener noreferrer"
-			>
-				https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
-			</a>
-		</p>
-		<LandMillesimeTable 
-			millesimes={millesimes} 
-			territory_name={projectData?.territory_name}
-			is_interdepartemental={is_interdepartemental}
-		/>
 	</div>
 );
 
 export const Artificialisation: React.FC<ArtificialisationProps> = ({
-	projectData,
 	landData,
 }) => {
-	const { land_id, land_type } = projectData;
 	const {
-		surface,
+		land_id,
+		land_type,
 		millesimes_by_index,
 		millesimes,
-		years_artif,
 		child_land_types,
 		name,
 		is_interdepartemental,
@@ -195,6 +147,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 		landData
 	});
 
+	// États séparés pour chaque section
+	const [byDepartementFlux, setByDepartementFlux] = useState(false);
+	const [byDepartementNetFlux, setByDepartementNetFlux] = useState(false);
+
 	const { artifZonageIndex } = useArtificialisationZonage({
 		landData,
 		defaultStockIndex
@@ -207,24 +163,28 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
+			<ArtifLastMillesimeSection
+				landArtifStockIndex={landArtifStockIndex}
+				is_interdepartemental={is_interdepartemental}
+				millesimes={millesimes}
+				territory_name={name}
+			/>
+
 			<div className="fr-mb-7w">
-				<div className="fr-grid-row fr-grid-row--gutters">
-					<div className="fr-col-12">
-						<Guide
-							title="Qu'est-ce que l'artificialisation des sols ?"
-						>
-							L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank'>
-							article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
-							<br />
-							Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
-						</Guide>
-					</div>
-				</div>
-				<div className="bg-white fr-p-4w rounded">
-					<h6>
+				<h2 className="fr-mt-7w">
+					Artificialisation nette des sols
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-p-4w rounded fr-mt-3w">
+					<h3>
 						Quels sont les objectifs nationaux de réduction de
 						l'artificialisation ?
-					</h6>
+					</h3>
 					<div className="fr-highlight fr-highlight--no-margin">
 						<p className="fr-text--sm">
 							Afin de préserver les sols naturels, agricoles et forestiers, la
@@ -235,26 +195,159 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					</div>
 				</div>
 			</div>
-			<h2>
-				Artificialisation des sols de {name}
-				{" "}
-				<MillesimeDisplay 
-					is_interdepartemental={is_interdepartemental}
-					landArtifStockIndex={landArtifStockIndex}
-				/>
-			</h2>
-			<ArtifLastMillesimeSection 
-				landArtifStockIndex={landArtifStockIndex}
-				name={name}
-				is_interdepartemental={is_interdepartemental}
-				surface={surface}
-				years_artif={years_artif}
-			/>
-			<MillesimesTable 
-				millesimes={millesimes}
-				projectData={projectData}
-				is_interdepartemental={is_interdepartemental}
-			/>
+
+			<div className="fr-mb-7w">
+				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+					{
+						is_interdepartemental && (
+							<DepartmentSelector
+								byDepartement={byDepartementNetFlux}
+								setByDepartement={setByDepartementNetFlux}
+							/>
+						)
+					}
+					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+						{byDepartementNetFlux ? (
+							millesimes
+								.filter((e) => e.index === Math.max(...millesimes.map(m => m.index)))
+								.map((m) => (
+									<div
+										key={`${m.index}_${m.departement}`}
+										className="fr-col-12"
+									>
+										<OcsgeGraph
+											id="artif_net_flux"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+										>
+											<DetailsCalculationOcsge />
+										</OcsgeGraph>
+									</div>
+								))
+						) : (
+							<div className="fr-col-12">
+								<OcsgeGraph
+									id="artif_net_flux"
+									land_id={land_id}
+									land_type={land_type}
+									params={{
+										millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+										millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+									}}
+									sources={['ocsge']}
+									showDataTable={true}
+								>
+									<DetailsCalculationOcsge />
+								</OcsgeGraph>
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+
+			<div className="fr-mb-7w">
+				<h2 className="fr-mt-7w">
+					Artificialisation par type de couverture et d'usage
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+					{
+						is_interdepartemental && (
+							<DepartmentSelector
+								byDepartement={byDepartementFlux}
+								setByDepartement={setByDepartementFlux}
+							/>
+						)
+					}
+					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+						{byDepartementFlux ? (
+							millesimes
+								.filter((e) => e.index === Math.max(...millesimes.map(m => m.index)))
+								.map((m) => (
+									<div
+										key={`${m.index}_${m.departement}`}
+										className="fr-col-12 gap-4 d-flex flex-column"
+									>
+										<OcsgeGraph
+											id="artif_flux_by_couverture"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+										>
+											<DetailsCalculationOcsge />
+										</OcsgeGraph>
+										<OcsgeGraph
+											id="artif_flux_by_usage"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+												millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+										>
+											<DetailsCalculationOcsge />
+										</OcsgeGraph>
+									</div>
+								))
+						) : (
+							<>
+								<div className="fr-col-12">
+									<OcsgeGraph
+										id="artif_flux_by_couverture"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+											millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+									>
+										<DetailsCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+								<div className="fr-col-12">
+									<OcsgeGraph
+										id="artif_flux_by_usage"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											millesime_new_index: Math.max(...millesimes.map(m => m.index)),
+											millesime_old_index: Math.max(...millesimes.map(m => m.index)) - 1,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+									>
+										<DetailsCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+							</>
+						)}
+					</div>
+				</div>
+			</div>
+
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
 					Répartition des surfaces artificialisées par type de couverture et
@@ -289,7 +382,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 										<OcsgeGraph
 											id="pie_artif_by_usage"
@@ -302,7 +395,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 											sources={['ocsge']}
 											showDataTable={true}
 										>
-											<DetaislCalculationOcsge />
+											<DetailsCalculationOcsge />
 										</OcsgeGraph>
 									</div>
 								))
@@ -319,7 +412,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										sources={['ocsge']}
 										showDataTable={true}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 								<div className="fr-col-12 fr-col-lg-6">
@@ -333,7 +426,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										sources={['ocsge']}
 										showDataTable={true}
 									>
-										<DetaislCalculationOcsge />
+										<DetailsCalculationOcsge />
 									</OcsgeGraph>
 								</div>
 							</>
@@ -343,68 +436,60 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			</div>
 			{child_land_types && (
 				<div className="fr-mb-7w">
-					<h2>Proportion des sols artificialisés</h2>
-					<div className="fr-grid-row fr-grid-row--gutters">
-						<div className="fr-col-12 fr-col-lg-8">
-							<div className="bg-white fr-p-2w h-100 rounded">
-								{child_land_types.length > 1 &&
-									child_land_types.map((child_land_type) => (
-										<button
-											className={`fr-btn  ${
-												childLandType === child_land_type
-													? "fr-btn--primary"
-													: "fr-btn--tertiary"
-											}`}
-											key={child_land_type}
-											onClick={() => setChildLandType(child_land_type)}
-										>
-											{child_land_type}
-										</button>
-									))}
-								<OcsgeGraph
-									isMap
-									id="artif_map"
-									land_id={land_id}
-									land_type={land_type}
-									containerProps={{
-										style: {
-											height: "500px",
-											width: "100%",
-										}
-									}}
-									params={{
-										index: defaultStockIndex,
-										previous_index: defaultStockIndex - 1,
-										child_land_type: childLandType,
-									}}
-									sources={['ocsge']}
-									showDataTable={true}
+					<h2>Proportion des surfaces artificialisées</h2>
+					<div className="bg-white fr-p-2w rounded">
+						{child_land_types.length > 1 &&
+							child_land_types.map((child_land_type) => (
+								<button
+									className={`fr-btn  ${
+										childLandType === child_land_type
+											? "fr-btn--primary"
+											: "fr-btn--tertiary"
+									}`}
+									key={child_land_type}
+									onClick={() => setChildLandType(child_land_type)}
 								>
-									<DetaislCalculationOcsge />
-								</OcsgeGraph>
-							</div>
-						</div>
-						<div className="fr-col-12 fr-col-lg-4">
-							<Guide
-								title="Comprendre les données"
-								column
-							>
-								<p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
+									{child_land_type}
+								</button>
+							))}
+						<OcsgeGraph
+							isMap
+							id="artif_map"
+							land_id={land_id}
+							land_type={land_type}
+							containerProps={{
+								style: {
+									height: "500px",
+									width: "100%",
+								}
+							}}
+							params={{
+								index: defaultStockIndex,
+								previous_index: defaultStockIndex - 1,
+								child_land_type: childLandType,
+							}}
+							sources={['ocsge']}
+							showDataTable={true}
+						>
+							<div>
+								<h3>Comprendre les données</h3>
+								<p>Cette carte permet de visualiser la proportion de surfaces artificialisées sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de surfaces artificialisées est élevée.</p>
 								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
-							</Guide>
-						</div>
+							</div>
+							<DetailsCalculationOcsge />
+						</OcsgeGraph>
 					</div>
 				</div>
 			)}
 			<div className="fr-mb-7w">
-				<h2>Carte des sols artificialisés</h2>
+				<h2>Carte des surfaces artificialisées</h2>
 				<div className="bg-white fr-p-4w rounded">
 					<p className="fr-text--sm">
 						Cette cartographie permet d'explorer les couvertures et les usages
 						des surfaces artificialisées du territoire, en fonction des
 						millésimes disponibles de la donnée OCS GE.
 					</p>
-					{projectData && (
+					{landData && (
 						<OcsgeMapContainer
 							landData={landData}
 							globalFilter={["==", ["get", "is_artificial"], true]}
@@ -448,7 +533,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						/>
 					</div>
 				</section>
-				<h6 className="fr-mt-5w">Les seuils d'interprétation</h6>
+				<h3 className="fr-mt-5w">Les seuils d'interprétation</h3>
 				<p className="fr-text--sm">
 					Une fois les espaces qualifiés en artificiels ou non-artificiels à
 					partir du tableau de croisement,{" "}
@@ -488,7 +573,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols
 					</a>
 				</p>
-				<h6 className="fr-mt-5w">Les exemptions facultatives</h6>
+				<h3 className="fr-mt-5w">Les exemptions facultatives</h3>
 				<p className="fr-text--sm">
 					Le décret du 27 novembre 2023 introduit deux cas d'exemption facultative du calcul de l'artificialisation des sols. Les collectivités peuvent ainsi, si elles le souhaitent, exclure du décompte des surfaces artificialisées :
 				</p>
@@ -528,29 +613,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 									Inscrivez-vous à notre lettre d'infos pour être prévenu(e) de la
 									disponibilité de ces données
 								</a>
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div className="fr-mb-7w">
-				<h2>
-					Détail de l'évolution de l'artificialisation des sols du territoire
-				</h2>
-				<div className="fr-notice fr-notice--warning">
-					<div className="fr-px-2w">
-						<div className="fr-notice__body">
-							<p>
-								<span className="fr-notice__title fr-text--sm">
-									Certains indicateurs liés à l'évolution de l'artificialisation
-									d'un millésime à l'autre ne sont pas encore disponibles sur
-									Mon Diagnostic Artificialisation.{" "}
-								</span>
-								<span className="fr-notice__desc fr-text--sm">
-									En effet, ceux-ci reposent sur des données encore en cours de
-									production. Leur publication est prévue dans les prochaines
-									semaines.
-								</span>
 							</p>
 						</div>
 					</div>

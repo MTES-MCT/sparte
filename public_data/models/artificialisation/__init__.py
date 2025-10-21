@@ -2,6 +2,12 @@ from .ArtifZonage import *  # noqa
 from .ArtifZonageIndex import *  # noqa
 from .BaseLandArtifStockComposition import *  # noqa
 from .BaseLandArtifStockCompositionIndex import *  # noqa
+from .flux.LandArtifFlux import *  # noqa
+from .flux.LandArtifFluxCouvertureComposition import *  # noqa
+from .flux.LandArtifFluxCouvertureCompositionIndex import *  # noqa
+from .flux.LandArtifFluxIndex import *  # noqa
+from .flux.LandArtifFluxUsageComposition import *  # noqa
+from .flux.LandArtifFluxUsageCompositionIndex import *  # noqa
 from .LandArtifStock import *  # noqa
 from .LandArtifStockCouvertureComposition import *  # noqa
 from .LandArtifStockCouvertureCompositionIndex import *  # noqa

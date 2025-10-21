@@ -5,8 +5,9 @@
             {"columns": ["site_id"], "type": "btree"},
             {"columns": ["land_id"], "type": "btree"},
             {"columns": ["land_type"], "type": "btree"},
-            {"columns": ["geom"], "type": "gist"},
-        ],
+            {"columns": ["land_id", "land_type"], "type": "btree"},
+            {"columns": ["geom"], "type": "gist"}
+        ]
     )
 }}
 

@@ -61,7 +61,16 @@ export const FrichesPopup: React.FC<FrichesPopupProps> = ({ feature }) => {
         {
             label: "Type de zone",
             value: properties.friche_type_zone ?? 'Non renseigné'
+        },
+        {
+            label: "Surface artificialisée",
+            value: `${formatNumber({ number: properties.surface_artif })} ha (${formatNumber({ number: properties.percent_artif })} %)`,
+        },
+        {
+            label: "Surface imperméabilisée",
+            value: `${formatNumber({ number: properties.surface_imper })} ha (${formatNumber({ number: properties.percent_imper })} %)`,
         }
+        
     ];
 
     return (

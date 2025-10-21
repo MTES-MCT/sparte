@@ -3,13 +3,20 @@ from django.urls import path
 
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
+    ArtifByCouverturePieChartExport,
     ArtifByUsagePieChart,
+    ArtifFluxByCouverture,
+    ArtifFluxByCouvertureExport,
+    ArtifFluxByUsage,
+    ArtifFluxByUsageExport,
     ArtifMap,
+    ArtifNetFluxChart,
     ArtifSyntheseChart,
 )
 from project.charts.consommation import ConsoAnnualChart
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
+    ImperByCouverturePieChartExport,
     ImperByUsagePieChart,
     ImperFluxByCouverture,
     ImperFluxByCouvertureExport,
@@ -20,6 +27,10 @@ from project.charts.impermeabilisation import (
     ImperSyntheseChart,
 )
 from project.charts.urbanisme import (
+    FricheArtifCompositionChart,
+    FricheArtifCompositionChartExport,
+    FricheImperCompositionChart,
+    FricheImperCompositionChartExport,
     FrichePollutionChart,
     FricheSurfaceChart,
     FricheTypeChart,
@@ -32,6 +43,12 @@ from public_data.models import (
     ArtifZonageViewset,
     ImperZonageIndexViewset,
     ImperZonageViewset,
+    LandArtifFluxCouvertureCompositionIndexViewset,
+    LandArtifFluxCouvertureCompositionViewset,
+    LandArtifFluxIndexViewset,
+    LandArtifFluxUsageCompositionIndexViewset,
+    LandArtifFluxUsageCompositionViewset,
+    LandArtifFluxViewset,
     LandArtifStockCouvertureCompositionViewset,
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
@@ -62,11 +79,17 @@ app_name = "api"
 def get_chart_klass_or_404(chart_id):
     charts = {
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
+        "pie_artif_by_couverture_export": ArtifByCouverturePieChartExport,
         "pie_imper_by_couverture": ImperByCouverturePieChart,
+        "pie_imper_by_couverture_export": ImperByCouverturePieChartExport,
         "pie_artif_by_usage": ArtifByUsagePieChart,
         "pie_imper_by_usage": ImperByUsagePieChart,
         "artif_map": ArtifMap,
         "imper_map": ImperMap,
+        "friche_artif_composition": FricheArtifCompositionChart,
+        "friche_artif_composition_export": FricheArtifCompositionChartExport,
+        "friche_imper_composition": FricheImperCompositionChart,
+        "friche_imper_composition_export": FricheImperCompositionChartExport,
         "friche_pollution": FrichePollutionChart,
         "friche_surface": FricheSurfaceChart,
         "friche_type": FricheTypeChart,
@@ -76,6 +99,11 @@ def get_chart_klass_or_404(chart_id):
         "conso_annual": ConsoAnnualChart,
         "artif_synthese": ArtifSyntheseChart,
         "imper_synthese": ImperSyntheseChart,
+        "artif_net_flux": ArtifNetFluxChart,
+        "artif_flux_by_couverture": ArtifFluxByCouverture,
+        "artif_flux_by_couverture_export": ArtifFluxByCouvertureExport,
+        "artif_flux_by_usage": ArtifFluxByUsage,
+        "artif_flux_by_usage_export": ArtifFluxByUsageExport,
         "imper_net_flux": ImperNetFluxChart,
         "imper_flux_by_couverture": ImperFluxByCouverture,
         "imper_flux_by_couverture_export": ImperFluxByCouvertureExport,
@@ -128,6 +156,28 @@ urlpatterns = [
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
     path("imperzonage/", ImperZonageViewset.as_view(), name="imperzonageindex"),
     path("landimperflux/", LandImperFluxViewset.as_view(), name="imperflux"),
+    path("landartifflux/", LandArtifFluxViewset.as_view(), name="artifflux"),
+    path("landartiffluxindex/", LandArtifFluxIndexViewset.as_view(), name="artiffluxindex"),
+    path(
+        "landartiffluxcouverturecomposition/",
+        LandArtifFluxCouvertureCompositionViewset.as_view(),
+        name="artiffluxcouverturecomposition",
+    ),
+    path(
+        "landartiffluxcouverturecompositionindex/",
+        LandArtifFluxCouvertureCompositionIndexViewset.as_view(),
+        name="artiffluxcouverturecompositionindex",
+    ),
+    path(
+        "landartiffluxusagecomposition/",
+        LandArtifFluxUsageCompositionViewset.as_view(),
+        name="artiffluxusagecomposition",
+    ),
+    path(
+        "landartiffluxusagecompositionindex/",
+        LandArtifFluxUsageCompositionIndexViewset.as_view(),
+        name="artiffluxusagecompositionindex",
+    ),
     path(
         "landartifstockcouverturecomposition/",
         LandArtifStockCouvertureCompositionViewset.as_view(),

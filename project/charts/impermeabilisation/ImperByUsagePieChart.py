@@ -20,7 +20,7 @@ class ImperByUsagePieChart(ImperByCouverturePieChart):
     def series(self):
         return [
             {
-                "name": "Sol imperméable",
+                "name": "Surface imperméable",
                 "data": [
                     {
                         "name": item.label_short,
@@ -41,7 +41,7 @@ class ImperByUsagePieChart(ImperByCouverturePieChart):
             "Code",
             "Usage",
             "Surface (ha)",
-            "Pourcentage du sol imperméable (%)",
+            "Pourcentage de la surface imperméable (%)",
             "Pourcentage du territoire (%)",
         ]
 

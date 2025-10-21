@@ -1,0 +1,72 @@
+version: 2
+
+models:
+  - name: artif_difference
+    columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+        data_type: timestamp with time zone
+      - name: year_old
+        data_tests:
+          - not_null
+        data_type: integer
+      - name: year_new
+        data_tests:
+          - not_null
+        data_type: integer
+      - name: year_old_index
+        data_tests:
+          - not_null
+        data_type: bigint
+      - name: year_new_index
+        data_tests:
+          - not_null
+        data_type: bigint
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')
+        data_type: character varying
+      - name: surface
+        data_tests:
+          - not_null
+        data_type: double precision
+      - name: uuid
+        data_tests:
+          - not_null
+        data_type: uuid
+      - name: geom
+        data_tests:
+          - not_null
+        data_type: user-defined
+      - name: new_is_artificial
+        data_tests:
+          - not_null
+        data_type: boolean
+      - name: new_not_artificial
+        data_tests:
+          - not_null
+        data_type: boolean
+      - name: cs_new
+        data_type: character varying
+        tests:
+          - not_null
+      - name: cs_old
+        data_type: character varying
+        tests:
+          - not_null
+      - name: us_new
+        data_type: character varying
+        tests:
+          - not_null
+      - name: us_old
+        data_type: character varying
+        tests:
+          - not_null
+      - name: srid_source
+        data_type: integer
+        tests:
+          - not_null

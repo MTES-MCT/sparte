@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: artif_flux_commune
+    columns:
+      - name: commune_code
+        data_tests:
+          - not_null
+        data_type: character varying
+      - name: year_old
+        data_tests:
+          - not_null
+        data_type: integer
+      - name: year_new
+        data_tests:
+          - not_null
+        data_type: integer
+      - name: flux_artif
+        data_tests:
+          - not_null
+        data_type: numeric
+      - name: flux_desartif
+        data_tests:
+          - not_null
+        data_type: numeric
+      - name: flux_artif_net
+        data_tests:
+          - not_null
+        data_type: numeric
+      - name: commune_surface
+        data_type: double precision
+        tests:
+          - not_null
+      - name: year_old_index
+        data_type: bigint
+        tests:
+          - not_null
+      - name: year_new_index
+        data_type: bigint
+        tests:
+          - not_null
+      - name: flux_artif_percent
+        data_type: double precision
+        tests:
+          - not_null
+      - name: flux_desartif_percent
+        data_type: double precision
+        tests:
+          - not_null
+      - name: flux_artif_net_percent
+        data_type: double precision
+        tests:
+          - not_null
+      - name: departement
+        data_type: character varying
+        tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')

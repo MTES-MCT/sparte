@@ -39,7 +39,6 @@ class SQLToGeojsonSeqOnS3Handler:
             '"GeoJSONSeq"',
             tmp_file,
             f'"{self.db_connection}"',
-            "public_ocsge.occupation_du_sol",
             f'-sql "{sql}"',
             "-lco RS=YES",
             # start records with the RS=0x1E character, so as to be compatible with the RFC 8142 standard

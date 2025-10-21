@@ -11,7 +11,7 @@ import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
-import { FricheStatusEnum, LandDetailResultType } from "@services/types/land";
+import { FricheStatusEnum, LandDetailResultType, LandType } from "@services/types/land";
 import { FricheOverview, FricheAbstract } from "@components/features/friches";
 
 interface FrichesProps {
@@ -35,14 +35,16 @@ const SearchContainer = styled.div`
     margin-left: auto;
 `;
 
-const FRICHES_CHARTS = [
-    { id: 'friche_pollution' },
-    { id: 'friche_surface' },
-    { id: 'friche_type' },
-    { id: 'friche_zonage_environnemental' },
-    { id: 'friche_zonage_type' },
-    { id: 'friche_zone_activite' }
-] as const;
+const FRICHES_CHARTS: Array<{ id: string; sources: string[] }> = [
+    { id: 'friche_artif_composition', sources: ['cartofriches', 'ocsge'] },
+    { id: 'friche_imper_composition', sources: ['cartofriches', 'ocsge'] },
+    { id: 'friche_pollution', sources: ['cartofriches'] },
+    { id: 'friche_surface', sources: ['cartofriches'] },
+    { id: 'friche_type', sources: ['cartofriches'] },
+    { id: 'friche_zonage_environnemental', sources: ['cartofriches'] },
+    { id: 'friche_zonage_type', sources: ['cartofriches'] },
+    { id: 'friche_zone_activite', sources: ['cartofriches'] }
+];
 
 const DetailsFricheZonageEnvironnemental: React.FC = () => (
 	<div>
@@ -103,8 +105,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
         customSortFunction: (a, b, field, direction) => {
             // Tri personnalisé pour le champ friche_statut
             if (field === 'friche_statut') {
-                const aIndex = STATUT_ORDER.indexOf(a.friche_statut as any);
-                const bIndex = STATUT_ORDER.indexOf(b.friche_statut as any);
+                const aIndex = STATUT_ORDER.indexOf(a.friche_statut as any) * 500000 + a.surface_artif * -1;
+                const bIndex = STATUT_ORDER.indexOf(b.friche_statut as any) * 500000 + b.surface_artif * -1;
+
                 return direction === 'asc' ? aIndex - bIndex : bIndex - aIndex;
             }
             
@@ -207,7 +210,20 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             key: 'friche_type_zone' as keyof LandFriche,
             label: 'Type de zone',
             sortable: true
-        }
+        },
+        {
+            key: 'surface_artif' as keyof LandFriche,
+            label: 'Surface artificialisée',
+            sortable: true,
+            render: (value: number, friche: LandFriche) => `${formatNumber({ number: value })} ha (${formatNumber({ number: friche.percent_artif })} %)`
+
+        },
+        {
+            key: 'surface_imper' as keyof LandFriche,
+            label: 'Surface imperméabilisée',
+            sortable: true,
+            render: (value: number, friche: LandFriche) => `${formatNumber({ number: value })} ha (${formatNumber({ number: friche.percent_imper })} %)`
+        },
     ];
 
 	return (
@@ -260,13 +276,19 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                             <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
                             </strong>
                         </p>
+                        <p className="fr-text--sm">
+                            Les données relatives à l'artificialisation et l'imperméabilisation des friches sont issues des données OCS GE.
+                        </p>
 					</div>
 				</div>
 			</div>
             {[
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
-            ].includes(friche_status) && (
+            ].includes(friche_status) && [
+                LandType.REGION,
+                LandType.DEPARTEMENT,
+            ].includes(land_type) && (
                 <>
                     <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
                     <div className="fr-callout fr-icon-information-line fr-mb-3w">
@@ -284,7 +306,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                                         id={chart.id}
                                         land_id={land_id}
                                         land_type={land_type}
-                                        sources={['cartofriches']}
+                                        sources={chart.sources}
                                         showDataTable={true}
                                     >
                                         {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}

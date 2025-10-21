@@ -17,6 +17,7 @@ import requests
 from include.container import DomainContainer, InfraContainer
 from include.data.ocsge.dag_configs import create_configs_from_sources
 from include.data.ocsge.delete_in_dw import (
+    delete_artif_diff_in_dw_sql,
     delete_artif_in_dw_sql,
     delete_difference_in_dw_sql,
     delete_occupation_du_sol_in_dw_sql,
@@ -24,6 +25,7 @@ from include.data.ocsge.delete_in_dw import (
 )
 from include.data.ocsge.enums import DatasetName, SourceName
 from include.data.ocsge.normalization import (
+    ocsge_artif_diff_normalization_sql,
     ocsge_artif_normalization_sql,
     ocsge_diff_normalization_sql,
     ocsge_occupation_du_sol_normalization_sql,
@@ -103,6 +105,14 @@ vars = {
         "normalization_sql": ocsge_artif_normalization_sql,
         "delete_on_dwt": delete_artif_in_dw_sql,
     },
+    SourceName.ARTIF_DIFFERENCE: {
+        "dbt_selector": "source:sparte.public.ocsge_artif_difference",
+        "dbt_selector_staging": "source:sparte.public.ocsge_artif_difference_staging",
+        "dw_staging": "ocsge_artif_difference_staging",
+        "dw_source": "ocsge_artif_difference",
+        "normalization_sql": ocsge_artif_diff_normalization_sql,
+        "delete_on_dwt": delete_artif_diff_in_dw_sql,
+    },
 }
 
 vars_dataset = {
@@ -116,11 +126,16 @@ vars_dataset = {
     DatasetName.ARTIF: [
         vars[SourceName.ARTIF],
     ],
+    DatasetName.ARTIF_DIFFERENCE: [
+        vars[SourceName.ARTIF_DIFFERENCE],
+    ],
 }
 
 
 def get_source_name_from_layer_name(layer_name: str) -> SourceName | None:
     layer_name = layer_name.lower()
+    if "zan_evol" in layer_name:
+        return SourceName.ARTIF_DIFFERENCE
     if "diff" in layer_name or "diif" in layer_name:
         # Certains shapefiles/geopackages ont un nom de fichier avec une faute de frappe (diif au lieu de diff)
         return SourceName.DIFFERENCE
