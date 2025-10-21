@@ -34,7 +34,7 @@ interface Millesime {
 
 const DetailsCalculationOcsge: React.FC = () => (
 	<div>
-		<h6 className="fr-mb-0">Calcul</h6>
+		<h3 className="fr-mb-0">Calcul</h3>
 		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la matrice de passage.</p>
 	</div>
 )
@@ -47,6 +47,16 @@ const ArtifLastMillesimeSection: React.FC<{
 }> = ({ landArtifStockIndex, is_interdepartemental, millesimes, territory_name }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
+			<div className="fr-col-12 fr-col-md-6">
+				<div className="bg-white fr-p-4w rounded h-100">
+					<h2>Qu'est-ce que l'artificialisation des sols ?</h2>
+					<p className="fr-text--sm">
+						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
+						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
+						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
+					</p>
+				</div>
+			</div>
 			<DataCards
 				icon="bi-building"
 				fluxBadgeLabel="Artificialisation nette"
@@ -71,21 +81,12 @@ const ArtifLastMillesimeSection: React.FC<{
 					</>
 				}
 			/>
-			<div className="fr-col-12 fr-col-md-6">
-				<div className="bg-white fr-p-4w rounded h-100">
-					<h6>Qu'est-ce que l'artificialisation des sols ?</h6>
-					<p className="fr-text--sm">
-						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
-						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
-						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
-					</p>
-				</div>
-			</div>
+
 		</div>
 		<div className="fr-grid-row fr-mt-3w">
 			<div className="fr-col-12">
 				<div className="bg-white fr-p-4w rounded">
-					<h6>D'où proviennent ces données&nbsp;?</h6>
+					<h2>D'où proviennent ces données&nbsp;?</h2>
 					<div className="fr-highlight fr-highlight--no-margin">
 						<p className="fr-text--sm">
 							La mesure de l'artificialisation d'un territoire repose sur la
@@ -170,14 +171,20 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			/>
 
 			<div className="fr-mb-7w">
-				<h2>
-					Détail de l'évolution de l'artificialisation des sols du territoire
+				<h2 className="fr-mt-7w">
+					Artificialisation nette des sols
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						between={true}
+					/>
 				</h2>
 				<div className="bg-white fr-p-4w rounded fr-mt-3w">
-					<h6>
+					<h3>
 						Quels sont les objectifs nationaux de réduction de
 						l'artificialisation ?
-					</h6>
+					</h3>
 					<div className="fr-highlight fr-highlight--no-margin">
 						<p className="fr-text--sm">
 							Afin de préserver les sols naturels, agricoles et forestiers, la
@@ -190,15 +197,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			</div>
 
 			<div className="fr-mb-7w">
-				<h2 className="fr-mt-7w">
-					Artificialisation nette des sols
-					{" "}
-					<MillesimeDisplay
-						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landArtifStockIndex}
-						between={true}
-					/>
-				</h2>
 				<div className="bg-white fr-px-4w fr-pt-4w rounded">
 					{
 						is_interdepartemental && (
@@ -474,7 +472,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 							showDataTable={true}
 						>
 							<div>
-								<h6>Comprendre les données</h6>
+								<h3>Comprendre les données</h3>
 								<p>Cette carte permet de visualiser la proportion de surfaces artificialisées sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de surfaces artificialisées est élevée.</p>
 								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
 							</div>
@@ -535,7 +533,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						/>
 					</div>
 				</section>
-				<h6 className="fr-mt-5w">Les seuils d'interprétation</h6>
+				<h3 className="fr-mt-5w">Les seuils d'interprétation</h3>
 				<p className="fr-text--sm">
 					Une fois les espaces qualifiés en artificiels ou non-artificiels à
 					partir du tableau de croisement,{" "}
@@ -575,7 +573,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols
 					</a>
 				</p>
-				<h6 className="fr-mt-5w">Les exemptions facultatives</h6>
+				<h3 className="fr-mt-5w">Les exemptions facultatives</h3>
 				<p className="fr-text--sm">
 					Le décret du 27 novembre 2023 introduit deux cas d'exemption facultative du calcul de l'artificialisation des sols. Les collectivités peuvent ainsi, si elles le souhaitent, exclure du décompte des surfaces artificialisées :
 				</p>

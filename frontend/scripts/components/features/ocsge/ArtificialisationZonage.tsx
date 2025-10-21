@@ -1,9 +1,16 @@
 import React from "react";
+import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { ZonageType } from "scripts/types/ZonageType";
 import ChartDetails from "@components/charts/ChartDetails";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
+
+const ProgressBarCell = styled.td`
+	.progress-bar-container {
+		max-width: 100%;
+	}
+`;
 
 interface ZonageData {
 	zonage_type: keyof typeof ZonageType;
@@ -29,7 +36,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 }) => {
 	return (
 		<div className="fr-mb-7w">
-			<h2>Artificialisation des zonages d'urbanisme <MillesimeDisplay is_interdepartemental={is_interdepartemental} landArtifStockIndex={landArtifStockIndex} /></h2>
+			<h2>Artificialisation des zonages d'urbanisme en <MillesimeDisplay is_interdepartemental={is_interdepartemental} landArtifStockIndex={landArtifStockIndex} /></h2>
 			<div className="bg-white fr-p-4w rounded">
 				<div className="fr-table fr-mb-0">
 					<div className="fr-table__wrapper">
@@ -47,7 +54,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 									</thead>
 									<tbody>
 										{artifZonageIndex
-											?.toSorted(
+											?.slice().sort(
 												(a, b) => b.zonage_surface - a.zonage_surface
 											)
 											.map((a) => (
@@ -63,7 +70,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 													<td>
 														{formatNumber({ number: a.artificial_surface })}
 													</td>
-													<td>
+													<ProgressBarCell>
 														<div className="progress-bar-container">
 															<div
 																className={`progress-bar-indicator w-${Math.round(
@@ -77,7 +84,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 																%
 															</div>
 														</div>
-													</td>
+													</ProgressBarCell>
 													<td>{a.zonage_count}</td>
 												</tr>
 											))}
@@ -89,7 +96,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 				</div>
 				<ChartDetails sources={['ocsge', 'gpu']} chartId="artificialisation-zonage-tableau">
 					<div>
-						<h6 className="fr-mb-0">Calcul</h6>
+						<h3 className="fr-mb-0">Calcul</h3>
 						<p className="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation. Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
 					</div>
 				</ChartDetails>
