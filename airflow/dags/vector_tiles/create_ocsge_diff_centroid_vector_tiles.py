@@ -92,7 +92,23 @@ def create_ocsge_diff_centroid_vector_tiles():
             )
         )
 
-    (check_if_geojson_not_exist() >> postgis_to_geojson() >> compress_geojson())
+    @task.python(trigger_rule="none_skipped")
+    def make_files_public(params: dict):
+        indexes = params.get("indexes")
+        departement = params.get("departement")
+        geojson_filename = get_geojson_filename(indexes, departement)
+        geojson_key = f"{vector_tiles_dir}/{geojson_filename}"
+        gzipped_key = f"{geojson_key}.gz"
+
+        s3_handler = Container().s3_handler()
+
+        # Make GeoJSON file public
+        s3_handler.set_key_publicly_visible(geojson_key, bucket_name)
+
+        # Make gzipped GeoJSON file public
+        s3_handler.set_key_publicly_visible(gzipped_key, bucket_name)
+
+    (check_if_geojson_not_exist() >> postgis_to_geojson() >> compress_geojson() >> make_files_public())
 
 
 create_ocsge_diff_centroid_vector_tiles()
