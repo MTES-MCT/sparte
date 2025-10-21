@@ -331,7 +331,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Flux d'imperméabilisation par type de couverture et d'usage
+					Imperméabilisation par type de couverture et d'usage
 					{" "}
 					<MillesimeDisplay 
 						is_interdepartemental={is_interdepartemental}
@@ -470,8 +470,8 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						>
 							<div>
 								<h6>Comprendre les données</h6>
-								<p>Cette carte permet de visualiser la proportion de surfaces imperméabilisées sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de surfaces imperméabilisées est élevée.</p>
-								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'imperméabilisation. La couleur des cercles indique le sens de ce flux : vert pour une désimperméabilisation nette, rouge pour une imperméabilisation nette.</p>
+								<p>Cette carte permet de visualiser la proportion de sols imperméabilisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols imperméabilisés est élevée.</p>
+								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle à l'imperméabilisation. La couleur des cercles indique le sens de ce flux : vert pour une désimperméabilisation nette, rouge pour une imperméabilisation nette.</p>
 							</div>
 							<DetailsCalculationOcsge />
 						</OcsgeGraph>
