@@ -1,5 +1,5 @@
 import { BaseSource } from "./baseSource";
-import { OCSGE_DIFF_CENTROID_URL } from "../constants/config";
+import { OCSGE_GEOJSON_CENTROIDS_URL } from "../constants/config";
 import { LandDetailResultType } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement } from "../utils/ocsge";
 
@@ -20,9 +20,7 @@ export class OcsgeDiffCentroidSource extends BaseSource {
     }
 
     getOptions() {
-        // const url = `${OCSGE_DIFF_CENTROID_URL}_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.geojson`;
-        const url = `/project/api/ocsge-diff-centroid/?start_millesime=${this.startMillesimeIndex}&end_millesime=${this.endMillesimeIndex}&departement=${this.departement}`;
-
+        const url = `${OCSGE_GEOJSON_CENTROIDS_URL}${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.geojson.gz`;
         return {
             type: this.options.type,
             data: url,
