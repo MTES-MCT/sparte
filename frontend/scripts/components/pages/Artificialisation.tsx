@@ -47,6 +47,16 @@ const ArtifLastMillesimeSection: React.FC<{
 }> = ({ landArtifStockIndex, is_interdepartemental, millesimes, territory_name }) => (
 	<div className="fr-mb-5w">
 		<div className="fr-grid-row fr-grid-row--gutters">
+			<div className="fr-col-12 fr-col-md-6">
+				<div className="bg-white fr-p-4w rounded h-100">
+					<h6>Qu'est-ce que l'artificialisation des sols ?</h6>
+					<p className="fr-text--sm">
+						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
+						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
+						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
+					</p>
+				</div>
+			</div>
 			<DataCards
 				icon="bi-building"
 				fluxBadgeLabel="Artificialisation nette"
@@ -71,16 +81,7 @@ const ArtifLastMillesimeSection: React.FC<{
 					</>
 				}
 			/>
-			<div className="fr-col-12 fr-col-md-6">
-				<div className="bg-white fr-p-4w rounded h-100">
-					<h6>Qu'est-ce que l'artificialisation des sols ?</h6>
-					<p className="fr-text--sm">
-						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
-						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
-						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
-					</p>
-				</div>
-			</div>
+
 		</div>
 		<div className="fr-grid-row fr-mt-3w">
 			<div className="fr-col-12">
@@ -170,8 +171,14 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			/>
 
 			<div className="fr-mb-7w">
-				<h2>
-					Détail de l'évolution de l'artificialisation des sols du territoire
+				<h2 className="fr-mt-7w">
+					Artificialisation nette des sols
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						between={true}
+					/>
 				</h2>
 				<div className="bg-white fr-p-4w rounded fr-mt-3w">
 					<h6>
@@ -190,15 +197,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			</div>
 
 			<div className="fr-mb-7w">
-				<h2 className="fr-mt-7w">
-					Artificialisation nette des sols
-					{" "}
-					<MillesimeDisplay
-						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landArtifStockIndex}
-						between={true}
-					/>
-				</h2>
 				<div className="bg-white fr-px-4w fr-pt-4w rounded">
 					{
 						is_interdepartemental && (
