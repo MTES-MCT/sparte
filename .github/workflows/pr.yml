@@ -57,6 +57,7 @@ jobs:
       - run: sudo apt-get update
       - run: sudo apt-get install -y gdal-bin libgdal-dev
       - run: npm install  # Installe les dépendances front
+      - run: npm test  # Exécute les tests frontend (Jest)
       - run: npm run build  # Exécute Webpack pour générer webpack-stats.json
       - run: pipenv run python -Wa manage.py test
         env:
