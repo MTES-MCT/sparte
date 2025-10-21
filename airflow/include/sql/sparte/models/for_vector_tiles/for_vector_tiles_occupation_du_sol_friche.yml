@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: for_vector_tiles_occupation_du_sol_friche
+    description: |
+      Table spécialisée pour la génération de tuiles vectorielles (PMTiles) de l'occupation du sol des friches.
+      Transforme les géométries en WGS84 (EPSG:4326) pour compatibilité avec les tuiles web.
+    columns:
+      - name: id
+        description: Identifiant unique de la géométrie (combinaison ocsge_uuid et site_id)
+      - name: friche_site_id
+        description: Identifiant du site de friche
+      - name: year
+        description: Année du millésime OCS GE
+      - name: departement
+        description: Code département
+      - name: year_index
+        description: Index du millésime (1, 2, etc.)
+      - name: code_cs
+        description: Code de couverture du sol
+      - name: code_us
+        description: Code d'usage du sol
+      - name: is_artificial
+        description: Indicateur d'artificialisation
+      - name: is_impermeable
+        description: Indicateur d'imperméabilisation
+      - name: surface
+        description: Surface en m²
+      - name: geom
+        description: Géométrie en WGS84 (EPSG:4326)
