@@ -8,16 +8,11 @@ interface ConsoDemographyProps {
   landType: string;
   startYear: number;
   endYear: number;
-  totalConsoHa: number | null;
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
-  populationDensity: number | null;
-  isLoadingConso: boolean;
   isLoadingPop: boolean;
   defaultStartYear: number;
   defaultEndYear: number;
-  surface: number;
-  perHabitantCardRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
@@ -28,16 +23,11 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   landType,
   startYear,
   endYear,
-  totalConsoHa,
   populationEvolution,
   populationEvolutionPercent,
-  populationDensity,
-  isLoadingConso,
   isLoadingPop,
   defaultStartYear,
   defaultEndYear,
-  surface,
-  perHabitantCardRef,
 }) => {
   return (
     <div className="fr-mt-7w">
@@ -45,16 +35,11 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
 
       {/* Stats cards */}
       <ConsoStats
-        totalConsoHa={totalConsoHa}
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
-        populationDensity={populationDensity}
-        isLoadingConso={isLoadingConso}
         isLoadingPop={isLoadingPop}
         startYear={startYear}
         endYear={endYear}
-        surface={surface}
-        perHabitantCardRef={perHabitantCardRef}
       />
 
       {/* Population density chart */}

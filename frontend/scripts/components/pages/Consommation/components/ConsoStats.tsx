@@ -3,32 +3,22 @@ import Card from "@components/ui/Card";
 import { formatNumber } from "@utils/formatUtils";
 
 interface ConsoStatsProps {
-  totalConsoHa: number | null;
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
-  populationDensity: number | null;
-  isLoadingConso: boolean;
   isLoadingPop: boolean;
   startYear: number;
   endYear: number;
-  surface: number;
-  perHabitantCardRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
  * Displays consumption and demographic statistics cards
  */
 export const ConsoStats: React.FC<ConsoStatsProps> = ({
-  totalConsoHa,
   populationEvolution,
   populationEvolutionPercent,
-  populationDensity,
-  isLoadingConso,
   isLoadingPop,
   startYear,
   endYear,
-  surface,
-  perHabitantCardRef,
 }) => {
   const formatPopulationValue = () => {
     if (isLoadingPop || populationEvolution === null) {
@@ -53,29 +43,8 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
     );
   };
 
-  const calculateConsoPerNewHabitant = () => {
-    if (isLoadingConso || isLoadingPop || totalConsoHa === null || populationEvolution === null || populationEvolution <= 0) {
-      return "...";
-    }
-
-    // Convert ha to m² (1 ha = 10,000 m²)
-    const consoPerHabitantM2 = (totalConsoHa * 10000) / populationEvolution;
-    return `${formatNumber({ number: consoPerHabitantM2, decimals: 0 })} m²`;
-  };
-
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-      <div className="fr-col-12 fr-col-md-4" ref={perHabitantCardRef}>
-        <Card
-          icon="bi-house"
-          badgeClass="fr-badge--info"
-          badgeLabel="Consommation par nouvel habitant"
-          value={calculateConsoPerNewHabitant()}
-          label={`Entre ${startYear} et ${endYear}`}
-          isHighlighted={true}
-          highlightBadge="Donnée clé"
-        />
-      </div>
       <div className="fr-col-12 fr-col-md-4">
         <Card
           icon="bi-people"
@@ -83,7 +52,8 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
           badgeLabel="Évolution de la population"
           value={formatPopulationValue()}
           label={formatPopulationLabel()}
-          isHighlighted={false}
+          isHighlighted={true}
+          highlightBadge="Donnée clé"
         />
       </div>
     </div>
