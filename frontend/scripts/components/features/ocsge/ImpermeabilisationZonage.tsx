@@ -29,7 +29,7 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 }) => {
 	return (
 		<div className="fr-mb-7w">
-			<h2>Imperméabilisation des zonages d'urbanisme <MillesimeDisplay is_interdepartemental={is_interdepartemental} landArtifStockIndex={landImperStockIndex} /></h2>
+			<h2>Imperméabilisation des zonages d'urbanisme en <MillesimeDisplay is_interdepartemental={is_interdepartemental} landArtifStockIndex={landImperStockIndex} /></h2>
 			<div className="bg-white fr-p-4w rounded">
 				<div className="fr-table fr-mb-0">
 					<div className="fr-table__wrapper">
