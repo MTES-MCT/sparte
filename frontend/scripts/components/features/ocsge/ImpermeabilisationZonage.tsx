@@ -1,9 +1,16 @@
 import React from "react";
+import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { ZonageType } from "scripts/types/ZonageType";
 import ChartDetails from "@components/charts/ChartDetails";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
+
+const ProgressBarCell = styled.td`
+	.progress-bar-container {
+		max-width: 100% !important;
+	}
+`;
 
 interface ZonageData {
 	zonage_type: keyof typeof ZonageType;
@@ -64,7 +71,7 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 													<td>
 														{formatNumber({ number: a.impermeable_surface })}
 													</td>
-													<td>
+													<ProgressBarCell>
 														<div className="progress-bar-container">
 															<div
 																className={`progress-bar-indicator w-${Math.round(
@@ -78,7 +85,7 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 																%
 															</div>
 														</div>
-													</td>
+													</ProgressBarCell>
 													<td>{a.zonage_count}</td>
 												</tr>
 											))}
@@ -90,7 +97,7 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 				</div>
 				<ChartDetails sources={['ocsge', 'gpu']} chartId="impermeabilisation-zonage-tableau">
 					<div>
-						<h6 className="fr-mb-0">Calcul</h6>
+						<h3 className="fr-mb-0">Calcul</h3>
 						<p className="fr-text--sm fr-mb-0">Qualifier l'imperméabilisation de chaque parcelle OCS GE via la nomenclature OCS GE. Puis comparer la surface totale des parcelles imperméabilisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
 					</div>
 				</ChartDetails>

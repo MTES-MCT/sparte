@@ -31,7 +31,7 @@ interface Millesime {
 
 const DetailsCalculationOcsge: React.FC = () => (
 	<div>
-		<h6 className="fr-mb-0">Calcul</h6>
+		<h3 className="fr-mb-0">Calcul</h3>
 		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la nomenclature OCS GE.</p>
 	</div>
 )
@@ -46,7 +46,7 @@ const ImperLastMillesimeSection: React.FC<{
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<div className="fr-col-12 fr-col-md-6">
 				<div className="bg-white fr-p-4w rounded h-100">
-					<h6>Qu'est-ce que l'imperméabilisation des sols ?</h6>
+					<h2>Qu'est-ce que l'imperméabilisation des sols ?</h2>
 					<p className="fr-text--sm">
 						L'imperméabilisation des sols est définie comme :
 					</p>
@@ -85,7 +85,7 @@ const ImperLastMillesimeSection: React.FC<{
 		<div className="fr-grid-row fr-mt-3w">
 			<div className="fr-col-12">
 				<div className="bg-white fr-p-4w rounded">
-					<h6>D'où proviennent ces données&nbsp;?</h6>
+					<h2>D'où proviennent ces données&nbsp;?</h2>
 					<div className="fr-highlight fr-highlight--no-margin">
 						<p className="fr-text--sm">
 							La mesure de l'imperméabilisation d'un territoire repose sur la
@@ -470,7 +470,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 							showDataTable={true}
 						>
 							<div>
-								<h6>Comprendre les données</h6>
+								<h3>Comprendre les données</h3>
 								<p>Cette carte permet de visualiser la proportion de sols imperméabilisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols imperméabilisés est élevée.</p>
 								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle à l'imperméabilisation. La couleur des cercles indique le sens de ce flux : vert pour une désimperméabilisation nette, rouge pour une imperméabilisation nette.</p>
 							</div>
