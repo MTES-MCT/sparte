@@ -48,14 +48,32 @@ class SQLToGeoJsonOnS3Handler:
             "-progress",
             "-f",
             '"GeoJSON"',
+            "-lco",
+            "COORDINATE_PRECISION=4",
             tmp_file,
             f'"{self.db_connection}"',
             f'-sql "{sql}"',
         ]
         try:
-            subprocess.run(" ".join(cmd), shell=True, stderr=subprocess.STDOUT, check=True)
+            result = subprocess.run(
+                " ".join(cmd),
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                text=True,
+            )
+            if result.stdout:
+                logger.info(f"ogr2ogr stdout: {result.stdout}")
+            if result.stderr:
+                logger.info(f"ogr2ogr stderr: {result.stderr}")
         except subprocess.CalledProcessError as e:
-            logger.error(f"Error while exporting SQL results: {e.output}")
+            logger.error(f"Error while exporting SQL results: {e}")
+            logger.error(f"Command: {' '.join(cmd)}")
+            if e.stdout:
+                logger.error(f"stdout: {e.stdout}")
+            if e.stderr:
+                logger.error(f"stderr: {e.stderr}")
             raise e
         logger.info(f"SQL result exported to {tmp_file}")
 

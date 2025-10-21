@@ -4,6 +4,7 @@ from .BaseS3Handler import BaseS3Handler
 from .BaseTmpPathGenerator import BaseTmpPathGenerator
 from .CSVFileIngestor import CSVFileIngestor
 from .DataGouvHandler import DataGouvHandler
+from .GeoJsonToGzippedGeoJsonOnS3Handler import GeoJsonToGzippedGeoJsonOnS3Handler
 from .HTTPFileHandler import HTTPFileHandler
 from .RemoteToS3FileHandler import RemoteToS3FileHandler
 from .S3CSVFileToDBTableHandler import S3CSVFileToDBTableHandler
@@ -25,6 +26,7 @@ __all__ = [
     "SQLToGeoJsonOnS3Handler",
     "SQLToGeojsonSeqOnS3Handler",
     "SQLToGeopackageOnS3Handler",
+    "GeoJsonToGzippedGeoJsonOnS3Handler",
     "DataGouvHandler",
     "S3ToDataGouvHandler",
     "SQLToCSVOnS3Handler",
