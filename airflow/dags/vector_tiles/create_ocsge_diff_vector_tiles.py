@@ -129,6 +129,18 @@ def create_ocsge_diff_vector_tiles():
         pmtiles_filename = get_pmtiles_filename(indexes, departement)
         return f"rm /tmp/{pmtiles_filename}"
 
+    @task.python(trigger_rule="none_skipped")
+    def make_pmtiles_public(params: dict):
+        indexes = params.get("indexes")
+        departement = params.get("departement")
+        pmtiles_filename = get_pmtiles_filename(indexes, departement)
+        pmtiles_key = f"{vector_tiles_dir}/{pmtiles_filename}"
+
+        s3_handler = Container().s3_handler()
+
+        # Make PMTiles file public
+        s3_handler.set_key_publicly_visible(pmtiles_key, bucket_name)
+
     (
         check_if_vector_tiles_not_exist()
         >> postgis_to_geojson()
@@ -136,6 +148,7 @@ def create_ocsge_diff_vector_tiles():
         >> upload()
         >> delete_geojson_file()
         >> delete_pmtiles_file()
+        >> make_pmtiles_public()
     )
 
 
