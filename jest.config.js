@@ -25,4 +25,6 @@ module.exports = {
     '!frontend/scripts/**/*.test.{ts,tsx}',
     '!frontend/scripts/**/*.spec.{ts,tsx}',
   ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'html'],
 };
