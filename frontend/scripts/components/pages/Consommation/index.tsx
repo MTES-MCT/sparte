@@ -308,16 +308,11 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         landType={land_type}
         startYear={startYear}
         endYear={endYear}
-        totalConsoHa={totalConsoHa}
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
-        populationDensity={populationDensity}
-        isLoadingConso={isLoadingConso}
         isLoadingPop={isLoadingPop}
         defaultStartYear={DEFAULT_START_YEAR}
         defaultEndYear={DEFAULT_END_YEAR}
-        surface={surface}
-        perHabitantCardRef={perHabitantCardRef}
       />
 
         {/* Comparison section */}
