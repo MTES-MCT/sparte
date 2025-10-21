@@ -5,8 +5,8 @@ interface CardProps {
     icon: string;
     badgeClass: string;
     badgeLabel: string;
-    value: string | number;
-    label: string;
+    value: React.ReactNode;
+    label: React.ReactNode;
     isHighlighted?: boolean;
     highlightBadge?: string;
     className?: string;
@@ -54,9 +54,10 @@ const CardHeader = styled.div`
 
 const CardIcon = styled.i<{ $isHighlighted?: boolean }>`
     font-size: 2.5rem;
-    ${({ $isHighlighted }) => $isHighlighted && `
-        color: var(--artwork-major-blue-france);
-    `}
+    ${({ $isHighlighted }) => $isHighlighted
+        ? `color: var(--artwork-major-blue-france);`
+        : `color: var(--text-default-grey);`
+    }
 `;
 
 const CardBadge = styled.span`
@@ -74,19 +75,21 @@ const CardValue = styled.div<{ $isHighlighted?: boolean }>`
 	font-size: 3rem;
 	font-weight: bold;
 	line-height: 3rem;
-	${({ $isHighlighted }) => $isHighlighted && `
-	    color: var(--artwork-major-blue-france);
-	`}
+	height: 3rem;
+	${({ $isHighlighted }) => $isHighlighted
+	    ? `color: var(--artwork-major-blue-france);`
+	    : `color: var(--text-default-grey);`
+	}
 `;
 
-const CardLabel = styled.p`
-    font-size: 1rem;
+const CardLabel = styled.div`
+    font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 0;
 `;
 
 const CardFooter = styled.div`
-    align-self: flex-end;
+    margin-top: 0.5rem;
 `;
 
 const Card: React.FC<CardProps> = ({

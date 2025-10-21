@@ -20,7 +20,7 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
     def series(self):
         return [
             {
-                "name": "Sol artificiel",
+                "name": "Surface artificielle",
                 "data": [
                     {
                         "name": item.label_short,
@@ -41,7 +41,7 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
             "Code",
             "Usage",
             "Surface (ha)",
-            "Pourcentage du sol artificiel (%)",
+            "Pourcentage de la surface artificielle (%)",
             "Pourcentage du territoire (%)",
         ]
 

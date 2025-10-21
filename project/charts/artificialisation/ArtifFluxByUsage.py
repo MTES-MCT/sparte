@@ -17,7 +17,7 @@ from public_data.models.artificialisation import (
 
 
 class ArtifFluxByUsage(DiagnosticChart):
-    name = "Evolution de l'artificialisation"
+    name = "Artificialisation"
     sol = "usage"
     model = LandArtifFluxUsageCompositionIndex
     model_by_departement = LandArtifFluxUsageComposition
@@ -115,7 +115,7 @@ class ArtifFluxByUsage(DiagnosticChart):
 
     @property
     def title(self):
-        return f"Flux d'artificialisation par {self.sol}{self.title_end}"
+        return f"Artificialisation par {self.sol}{self.title_end}"
 
     @property
     def param(self):

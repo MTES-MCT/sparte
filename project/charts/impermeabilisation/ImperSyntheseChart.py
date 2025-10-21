@@ -58,11 +58,11 @@ class ImperSyntheseChart(DiagnosticChart):
         if self.land.is_interdepartemental:
             first_index = self.data.first().millesime_index
             last_index = self.data.last().millesime_index
-            return f"Evolution du stock de sols imperméabilisés de {self.land.name} entre le millesime n°{first_index} et le millesime n°{last_index}"  # noqa: E501
+            return f"Evolution du stock de surfaces imperméabilisées de {self.land.name} entre le millesime n°{first_index} et le millesime n°{last_index}"  # noqa: E501
         else:
             first_year = self.data.first().years[0]
             last_year = self.data.last().years[-1]
-            return f"Evolution du stock de sols imperméabilisés de {self.land.name} entre {first_year} et {last_year}"
+            return f"Evolution du stock de surfaces imperméabilisées de {self.land.name} entre {first_year} et {last_year}"  # noqa: E501
 
     @property
     def param(self):

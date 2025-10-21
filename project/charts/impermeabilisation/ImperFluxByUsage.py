@@ -16,7 +16,7 @@ from public_data.models.impermeabilisation import (
 
 
 class ImperFluxByUsage(DiagnosticChart):
-    name = "Evolution de l'imperméabilisation"
+    name = "Imperméabilisation"
     sol = "usage"
     model = LandImperFluxUsageCompositionIndex
 

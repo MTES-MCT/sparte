@@ -31,8 +31,8 @@ export const MillesimeDisplay: React.FC<MillesimeDisplayProps> = ({
                 <>entre {landArtifStockIndex.flux_previous_years?.[0]} et {landArtifStockIndex.years?.[0]}</>
             );
         }
-        
-        return `en ${landArtifStockIndex.years?.[0]}`;
+
+        return `${landArtifStockIndex.years?.[0]}`;
     };
 
     return (

@@ -153,7 +153,7 @@ class ImperMap(DiagnosticChart):
             },
             "series": [
                 {
-                    "name": "Sols imperméables",
+                    "name": "Surfaces imperméables",
                     "data": self.data,
                     "joinBy": ["land_id"],
                     "colorKey": "percent",

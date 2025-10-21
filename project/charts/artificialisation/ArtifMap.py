@@ -91,8 +91,8 @@ class ArtifMap(DiagnosticChart):
             AdminRef.get_label(self.params.get("child_land_type")),
             f"Part artificialisée (%) - {self.year_or_index_after}",
             f"Surface artificialisée (ha) - {self.year_or_index_after}",
-            f"Flux d'artificialisation (ha) - {self.year_or_index_before} -> {self.year_or_index_after}",
-            f"Flux d'artificialisation (%) - {self.year_or_index_before} -> {self.year_or_index_after}",
+            f"Artificialisation (ha) - {self.year_or_index_before} -> {self.year_or_index_after}",
+            f"Artificialisation (%) - {self.year_or_index_before} -> {self.year_or_index_after}",
         ]
 
         return {
@@ -175,7 +175,7 @@ class ArtifMap(DiagnosticChart):
             },
             "series": [
                 {
-                    "name": "Sols artificiels",
+                    "name": "Surfaces artificielles",
                     "data": self.data,
                     "joinBy": ["land_id"],
                     "colorKey": "percent",
@@ -194,7 +194,7 @@ class ArtifMap(DiagnosticChart):
                     },
                 },
                 {
-                    "name": "Flux d'artificialisation",
+                    "name": "Artificialisation",
                     "type": "mapbubble",
                     "joinBy": ["land_id"],
                     "showInLegend": True,

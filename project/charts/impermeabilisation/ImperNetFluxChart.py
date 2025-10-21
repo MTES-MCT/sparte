@@ -11,7 +11,7 @@ from public_data.models.impermeabilisation import LandImperFlux, LandImperFluxIn
 
 
 class ImperNetFluxChart(DiagnosticChart):
-    name = "Evolution de l'artificialisation"
+    name = "Imperméabilisation"
 
     def __init__(self, land, params):
         """
