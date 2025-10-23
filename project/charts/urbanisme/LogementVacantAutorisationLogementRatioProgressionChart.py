@@ -1,26 +1,31 @@
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from public_data.domain.containers import PublicDataContainer
 
 
-class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
+class LogementVacantAutorisationLogementRatioProgressionChart(DiagnosticChart):
     """
     Graphique en barre d'évolution du rapport entre le nombre de logements vacants et le nombre
     d'autorisations de construction.
     """
 
-    def __init__(self, project, start_date, end_date):
-        super().__init__(project=project, start_date=start_date, end_date=end_date)
+    required_params = ["start_date", "end_date"]
+
+    @property
+    def name(self):
+        return f"logement vacant autorisation ratio progression {self.params['start_date']}-{self.params['end_date']}"
 
     def _get_series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
         """
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
 
         autorisation_logement_progression = (
             PublicDataContainer.autorisation_logement_progression_service().get_by_land(
-                land=self.project.land_proxy,
-                start_date=self.start_date,
-                end_date=self.end_date,
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
             )
         )
 
@@ -42,6 +47,9 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
 
     @property
     def param(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
         return super().param | {
             "chart": {"type": "column"},
             "title": {
@@ -50,7 +58,7 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
                     "et le nombre d'autorisations de construction de logements (%)"
                 )
             },
-            "xAxis": {"categories": [str(year) for year in range(self.start_date, self.end_date + 1)]},
+            "xAxis": {"categories": [str(year) for year in range(start_date, end_date + 1)]},
             "yAxis": {"title": {"text": ""}},
             "tooltip": {
                 "headerFormat": "<b>{point.key}</b><br/>",
@@ -64,7 +72,3 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
             },
             "series": self._get_series(),
         }
-
-    # To remove after refactoring
-    def add_series(self):
-        pass

@@ -18,6 +18,26 @@ export const djangoApi = createApi({
 				method: "GET",
 			}),
 		}),
+		getLandConsoStats: builder.query({
+			query: ({land_type, land_id, from_year, to_year}) => {
+				return `/api/landconsostats/?${new URLSearchParams({
+					land_type,
+					land_id,
+					from_year: from_year.toString(),
+					to_year: to_year.toString()
+				})}`
+			},
+		}),
+		getLandPopStats: builder.query({
+			query: ({land_type, land_id, from_year, to_year}) => {
+				return `/api/landpopstats/?${new URLSearchParams({
+					land_type,
+					land_id,
+					from_year: from_year.toString(),
+					to_year: to_year.toString()
+				})}`
+			},
+		}),
 		getChartConfig: builder.query({
 			query: ({id, land_type, land_id, ...params}) => {
 				const queryParams = new URLSearchParams(params)
@@ -82,6 +102,14 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getSimilarTerritories: builder.query({
+			query: ({land_type, land_id}) => {
+				return `/api/similarterritories/?${new URLSearchParams({
+					land_type,
+					land_id
+				})}`
+			},
+		}),
 		getEnvironment: builder.query({
 			query: () => "/env",
 		}),
@@ -106,6 +134,14 @@ export const djangoApi = createApi({
 				body: { needle },
 				headers: csrfToken ? { "X-CSRFToken": csrfToken } : {},
 				};
+			},
+		}),
+		getLogementVacantAutorisationStats: builder.query({
+			query: ({land_type, land_id, end_date}) => {
+				const queryParams = new URLSearchParams({
+					end_date: end_date.toString()
+				})
+				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`
 			},
 		}),
 		downloadDiagnostic: builder.mutation<{ message: string }, { projectId: number; documentType: string }>({
@@ -134,6 +170,10 @@ const {
 	useGetChartConfigQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandConsoStatsQuery,
+	useGetLandPopStatsQuery,
+	useGetSimilarTerritoriesQuery,
+	useGetLogementVacantAutorisationStatsQuery,
 } = djangoApi;
 
 export {
@@ -147,9 +187,13 @@ export {
 	useGetImperZonageIndexQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandConsoStatsQuery,
+	useGetLandPopStatsQuery,
+	useGetSimilarTerritoriesQuery,
 	useDownloadDiagnosticMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,
 	useGetLandGeomQuery,
+	useGetLogementVacantAutorisationStatsQuery,
 };

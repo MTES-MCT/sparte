@@ -1,13 +1,19 @@
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
 )
+from public_data.domain.containers import PublicDataContainer
 
 
-class ObjectiveChart(ProjectChart):
+class ObjectiveChart(DiagnosticChart):
     name = "suivi de l'objectif"
+
+    def __init__(self, land, params):
+        super().__init__(land, params)
+        self.add_series()
+
     param = {
         "chart": {"type": "column"},
         "title": {"text": ""},
@@ -91,10 +97,15 @@ class ObjectiveChart(ProjectChart):
         ]
         self.total_real = 0
         self.total_2020 = 0
-        for year, val in self.project.land.get_conso_per_year(
-            start="2011",
-            end="2023",
-        ).items():
+
+        conso = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=self.land,
+            start_date=2011,
+            end_date=2023,
+        )
+        conso_per_year = {str(c.year): float(c.total) for c in conso.consommation}
+
+        for year, val in conso_per_year.items():
             if int(year) <= 2020:
                 self.total_2020 += val
             self.total_real += val
@@ -108,7 +119,9 @@ class ObjectiveChart(ProjectChart):
             self.series[0]["data"].append({"name": year, "y": val})
 
         self.annual_2020 = self.total_2020 / 10.0
-        self.annual_objective_2031 = self.annual_2020 - (self.annual_2020 / 100.0 * float(self.project.target_2031))
+        # Get target_2031 from params, default to 50% if not provided
+        target_2031 = float(self.params.get("target_2031", 50))
+        self.annual_objective_2031 = self.annual_2020 - (self.annual_2020 / 100.0 * target_2031)
         self.annual_real = self.total_real / 10.0
         self.total_2031 = self.total_2020
         self.conso_2031 = self.annual_objective_2031 * 10.0
@@ -128,21 +141,45 @@ class ObjectiveChart(ProjectChart):
 
         self.chart["series"] = self.series
 
-    def get_data_table(self):
+    @property
+    def data_table(self):
+        """Retourne les données sous forme de tableau pour l'affichage."""
         real = {_["name"]: _["y"] for _ in self.series[0]["data"]}
         added_real = {_["name"]: _["y"] for _ in self.series[1]["data"]}
         objective = {_["name"]: _["y"] for _ in self.series[2]["data"]}
         added_objective = {_["name"]: _["y"] for _ in self.series[3]["data"]}
         years = set(real.keys()) | set(objective.keys()) | set(added_real.keys())
         years |= set(added_objective.keys())
+
+        headers = [
+            "Millésime",
+            "Réelle (Ha)",
+            "Réelle cumulée (Ha)",
+            "Projection annualisée de l'objectif 2031 (Ha)",
+            "Cumulé de la projection (Ha)",
+        ]
+        rows = []
+
         for year in sorted(years):
-            yield {
-                "year": year,
-                "real": real.get(year, "-"),
-                "added_real": added_real.get(year, "-"),
-                "objective": objective.get(year, "-"),
-                "added_objective": added_objective.get(year, "-"),
-            }
+            rows.append(
+                {
+                    "name": year,
+                    "data": [
+                        year,
+                        real.get(year, "-"),
+                        added_real.get(year, "-"),
+                        objective.get(year, "-"),
+                        added_objective.get(year, "-"),
+                    ],
+                }
+            )
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+            "boldLastColumn": True,
+        }
 
 
 class ObjectiveChartExport(ObjectiveChart):

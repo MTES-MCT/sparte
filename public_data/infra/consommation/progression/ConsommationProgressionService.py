@@ -5,25 +5,26 @@ from public_data.domain.consommation.entity import (
 from public_data.domain.consommation.progression import (
     BaseConsommationProgressionService,
 )
-from public_data.models import Land, LandConso, LandConsoStats
+from public_data.models import LandConso, LandConsoStats
+from public_data.models.administration import LandModel
 
 
 class ConsommationProgressionService(BaseConsommationProgressionService):
     def get_by_land(
         self,
-        land: Land,
+        land: LandModel,
         start_date: int,
         end_date: int,
     ) -> ConsommationCollection:
         conso = LandConso.objects.filter(
-            land_id=land.id,
+            land_id=land.land_id,
             land_type=land.land_type,
             year__gte=start_date,
             year__lte=end_date,
         ).order_by("year")
 
         conso_stats = LandConsoStats.objects.get(
-            land_id=land.id,
+            land_id=land.land_id,
             land_type=land.land_type,
             from_year=start_date,
             to_year=end_date,
@@ -44,7 +45,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
                     ferre=c.ferroviaire / 10000,
                     non_renseigne=c.inconnu / 10000,
                     total=c.total / 10000,
-                    total_percent_of_area=c.total / 10000 / land.area * 100,
+                    total_percent_of_area=c.total / 10000 / land.surface * 100 if land.surface else 0,
                 )
                 for c in conso
             ],
@@ -52,7 +53,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
 
     def get_by_lands(
         self,
-        lands: list[Land],
+        lands: list[LandModel],
         start_date: int,
         end_date: int,
     ) -> list[ConsommationCollection]:

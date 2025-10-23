@@ -92,12 +92,6 @@ urlpatterns = [
         views.diagnostic.DiagnosticTarget2031GraphView.as_view(),
         name="target-2031-graphic",
     ),
-    # MAP
-    path(
-        "<int:pk>/carte/consommation-villes-du-territoire",
-        views.CitySpaceConsoMapView.as_view(),
-        name="theme-city-conso",
-    ),
     # DOWNLOAD
     path(
         "<int:pk>/tableau-de-bord/telechargements",

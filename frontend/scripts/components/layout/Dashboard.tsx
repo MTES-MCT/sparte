@@ -11,9 +11,8 @@ import useMatomoTracking from '@hooks/useMatomoTracking';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
-import TopBar from '@components/layout/TopBar';
 import Synthese from '@components/pages/Synthese';
-import Consommation from '@components/pages/Consommation';
+import { Consommation } from '@components/pages/Consommation';
 import LogementVacant from '@components/pages/LogementVacant';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
@@ -87,7 +86,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                         <TrackingWrapper />
                         <Navbar projectData={projectData} landData={landData} />
                         <Main $isOpen={isOpen} $isMobile={isMobile}>
-                            <TopBar />
                             <Content>
                                 <Routes>
                                     <Route
@@ -115,7 +113,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Consommation endpoint={urls.consommation} />
+                                                <Consommation landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -130,7 +128,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Trajectoires endpoint={urls.trajectoires} />
+                                                <Trajectoires landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -145,9 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <OcsgeStatus status={ocsge_status} />
                                                 }
                                             >
-                                                    <Artificialisation
-                                                        landData={landData}
-                                                    />
+                                                    <Artificialisation landData={landData} />
                                                 </RouteWrapper>
                                         }
                                     />
@@ -171,7 +167,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     <Route
                                         path={urls.logementVacant}
                                         element={
-                                            <RouteWrapper 
+                                            <RouteWrapper
                                                 title="Vacance des logements"
                                                 showPage={logements_vacants_available}
                                                 showStatus={!logements_vacants_available}
@@ -179,11 +175,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <LogementVacantStatus />
                                                 }
                                             >
-                                                <LogementVacant 
-                                                    endpoint={urls.logementVacant} 
-                                                    landData={landData}
-                                                    projectData={projectData}
-                                                />
+                                                <LogementVacant landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
