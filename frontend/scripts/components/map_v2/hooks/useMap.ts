@@ -51,7 +51,7 @@ export const useMap = (bounds?: [number, number, number, number], maxBounds?: [n
         const mapContainer = mapRef.current?.getContainer();
         const mapWrapper = mapContainer?.parentElement;
 
-        if (mapWrapper && mapWrapper.id) {
+        if (mapWrapper?.id) {
             addControl(new maplibregl.FullscreenControl({ container: mapWrapper }), 'fullscreenControl');
         } else {
             addControl(new maplibregl.FullscreenControl(), 'fullscreenControl');

@@ -8,8 +8,8 @@ import { getLastMillesimeIndex } from "../utils/ocsge";
 export class OcsgeSource extends BaseSource implements SourceInterface {
 	private millesimeIndex: number;
 	private departement: string;
-	private millesimes: Millesime[];
-	private departements: string[];
+	private readonly millesimes: Millesime[];
+	private readonly departements: string[];
 
 	constructor(landData: LandDetailResultType) {
 		super({

@@ -8,7 +8,7 @@ export class PopupStateManager {
         position: { x: 0, y: 0 },
         layerId: null
     };
-    private updateCallbacks: Set<(state: PopupState) => void> = new Set();
+    private readonly updateCallbacks: Set<(state: PopupState) => void> = new Set();
 
     updateState(newState: Partial<PopupState>): void {
         this.popupState = { ...this.popupState, ...newState };

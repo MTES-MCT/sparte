@@ -9,12 +9,12 @@ interface LayerStatsConfig {
 }
 
 export class StatsManager {
-    private map: maplibregl.Map;
-    private statsConfigs: Map<LayerId, LayerStatsConfig> = new Map();
-    private stateManager: StatsStateManager;
-    private enabledLayers: Set<LayerId> = new Set();
-    private updateTimeouts: Map<LayerId, NodeJS.Timeout> = new Map();
-    private boundUpdateStats: Map<LayerId, () => void> = new Map();
+    private readonly map: maplibregl.Map;
+    private readonly statsConfigs: Map<LayerId, LayerStatsConfig> = new Map();
+    private readonly stateManager: StatsStateManager;
+    private readonly enabledLayers: Set<LayerId> = new Set();
+    private readonly updateTimeouts: Map<LayerId, NodeJS.Timeout> = new Map();
+    private readonly boundUpdateStats: Map<LayerId, () => void> = new Map();
 
     constructor(map: maplibregl.Map) {
         this.map = map;

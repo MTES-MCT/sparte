@@ -88,7 +88,7 @@ export interface ControlsConfig {
 
 export interface ControlsManagerInterface {
     getGroups(): ControlGroup[];
-    applyControl(controlId: string, value: ControlValue): void;
+    applyControl(controlId: string, value: ControlValue): Promise<void>;
     getControlValue(controlId: string): ControlValue;
     isGroupVisible(groupId: string): boolean;
     subscribe(callback: () => void): () => void;

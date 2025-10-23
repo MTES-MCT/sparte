@@ -13,12 +13,12 @@ import type { StatsManager } from "../stats/StatsManager";
 import { ControlStateManager } from "./ControlStateManager";
 
 export class ControlsManager implements ControlsManagerInterface {
-    private stateManager: ControlStateManager;
-    private controlInstances: Map<string, BaseControlInterface> = new Map();
-    private groups: ControlGroup[];
-    private sources: Map<string, BaseSource>;
-    private layers: Map<string, BaseLayer>;
-    private statsManager?: StatsManager;
+    private readonly stateManager: ControlStateManager;
+    private readonly controlInstances: Map<string, BaseControlInterface> = new Map();
+    private readonly groups: ControlGroup[];
+    private readonly sources: Map<string, BaseSource>;
+    private readonly layers: Map<string, BaseLayer>;
+    private readonly statsManager?: StatsManager;
 
     constructor(
         groups: ControlGroup[],
@@ -39,23 +39,23 @@ export class ControlsManager implements ControlsManagerInterface {
     }
 
     private initializeControlInstances(): void {
-        this.groups.forEach(group => {
-            group.controls.forEach(control => {
+        for (const group of this.groups) {
+            for (const control of group.controls) {
                 const instance = createControl(control.type);
                 this.controlInstances.set(control.id, instance);
-            });
-        });
+            }
+        }
     }
 
     /**
      * Initialise les valeurs par défaut des contrôles dans le state manager.
      */
     private initializeControlValuesFromConfig(): void {
-        this.groups.forEach(group => {
-            group.controls.forEach(control => {
+        for (const group of this.groups) {
+            for (const control of group.controls) {
                 this.stateManager.initializeControlValue(control.id, control.defaultValue);
-            });
-        });
+            }
+        }
     }
 
     /**

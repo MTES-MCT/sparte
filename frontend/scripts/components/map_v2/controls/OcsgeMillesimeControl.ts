@@ -18,7 +18,7 @@ export class OcsgeMillesimeControl extends BaseControl {
         if (source?.setMillesime) {
             // Parser la valeur "index_departement" pour extraire index et département
             const [indexStr, departement] = value.split('_');
-            const index = parseInt(indexStr, 10);
+            const index = Number.parseInt(indexStr, 10);
             await source.setMillesime(index, departement);
         }
     }

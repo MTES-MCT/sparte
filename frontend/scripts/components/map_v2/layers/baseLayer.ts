@@ -88,6 +88,5 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 	/**
 	 * Nettoie les ressources du layer (listeners, markers, etc.)
 	 */
-	destroy(): void {
-	}
+	abstract destroy(): void;
 }

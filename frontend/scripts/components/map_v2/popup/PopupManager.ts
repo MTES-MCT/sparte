@@ -3,9 +3,9 @@ import { LayerPopupConfig, PopupState } from "../types/popup";
 import { PopupStateManager } from "./PopupStateManager";
 
 export class PopupManager {
-    private map: maplibregl.Map;
-    private popupConfigs: Map<string, LayerPopupConfig> = new Map();
-    private stateManager: PopupStateManager;
+    private readonly map: maplibregl.Map;
+    private readonly popupConfigs: Map<string, LayerPopupConfig> = new Map();
+    private readonly stateManager: PopupStateManager;
 
     constructor(map: maplibregl.Map) {
         this.map = map;

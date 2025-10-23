@@ -45,19 +45,17 @@ const ImperLastMillesimeSection: React.FC<{
 	territory_name: string;
 }> = ({ landImperStockIndex, is_interdepartemental, millesimes, territory_name }) => (
 	<div className="fr-mb-5w">
+		<div className="bg-white fr-p-4w rounded fr-mb-3w">
+			<h2>Qu'est-ce que l'imperméabilisation des sols ?</h2>
+			<p className="fr-text--sm">
+				L'imperméabilisation des sols est définie comme :
+			</p>
+			<ul className="fr-text--sm">
+				<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
+				<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+			</ul>
+		</div>
 		<div className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-md-6">
-				<div className="bg-white fr-p-4w rounded h-100">
-					<h2>Qu'est-ce que l'imperméabilisation des sols ?</h2>
-					<p className="fr-text--sm">
-						L'imperméabilisation des sols est définie comme :
-					</p>
-					<ul className="fr-text--sm">
-						<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
-						<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
-					</ul>
-				</div>
-			</div>
 			<DataCards
 				icon="bi-droplet"
 				fluxBadgeLabel="Imperméabilisation"
@@ -82,7 +80,6 @@ const ImperLastMillesimeSection: React.FC<{
 					</>
 				}
 			/>
-
 		</div>
 		<div className="fr-grid-row fr-mt-3w">
 			<div className="fr-col-12">

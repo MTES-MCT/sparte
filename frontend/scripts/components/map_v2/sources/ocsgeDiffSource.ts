@@ -9,8 +9,8 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
     private startMillesimeIndex: number;
     private endMillesimeIndex: number;
     private departement: string;
-    private millesimes: Millesime[];
-    private departements: string[];
+    private readonly millesimes: Millesime[];
+    private readonly departements: string[];
 
     constructor(landData: LandDetailResultType) {
         super({

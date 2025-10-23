@@ -6,8 +6,8 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
     private markers: Record<string, maplibregl.Marker> = {};
     private markersOnScreen: Record<string, maplibregl.Marker> = {};
 
-    private updateMarkersBound: () => void;
-    private handleDataBound: (e: maplibregl.MapSourceDataEvent) => void;
+    private readonly updateMarkersBound: () => void;
+    private readonly handleDataBound: (e: maplibregl.MapSourceDataEvent) => void;
 
     constructor(
         id: string,
@@ -53,54 +53,67 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
     private updateMarkers(): void {
         if (!this.map) return;
 
+        const newMarkers = this.createMarkersFromFeatures();
+        this.updateMarkersVisibility(newMarkers);
+        this.removeInvisibleMarkers(newMarkers);
+        this.updateMarkersOnScreen(newMarkers);
+    }
+
+    private createMarkersFromFeatures(): Record<string, maplibregl.Marker> {
         const newMarkers: Record<string, maplibregl.Marker> = {};
-        const features = this.map.querySourceFeatures(this.getSourceId());
+        const features = this.map!.querySourceFeatures(this.getSourceId());
 
-        // Créer/actualiser les markers pour chaque cluster visible
         for (let i = 0; i < features.length; i++) {
-            const coords = features[i].geometry;
-            const props = features[i].properties;
-
-            if (!props || !props.cluster || coords.type !== 'Point') continue;
-
-            const id = props.cluster_id;
-            const coordinates = coords.coordinates as [number, number];
-
-            let marker = this.markers[id];
-            if (!marker) {
-                const el = this.createDonutElement(props);
-
-                marker = this.markers[id] = new maplibregl.Marker({
-                    element: el
-                }).setLngLat(coordinates);
-            }
-            newMarkers[id] = marker;
-        }
-
-        // Gestion de l'affichage selon la visibilité de la couche
-        if (this.options.visible) {
-            // Ajouter les nouveaux markers à la carte
-            for (const id in newMarkers) {
-                if (!this.markersOnScreen[id]) {
-                    newMarkers[id].addTo(this.map);
-                }
+            const marker = this.createMarkerFromFeature(features[i]);
+            if (marker) {
+                newMarkers[marker.id] = marker.marker;
             }
         }
 
-        // Retirer les markers qui ne sont plus visibles
+        return newMarkers;
+    }
+
+    private createMarkerFromFeature(feature: any): { id: string; marker: maplibregl.Marker } | null {
+        const coords = feature.geometry;
+        const props = feature.properties;
+
+        if (!props || !props.cluster || coords.type !== 'Point') return null;
+
+        const id = props.cluster_id;
+        const coordinates = coords.coordinates as [number, number];
+
+        let marker = this.markers[id];
+        if (!marker) {
+            const el = this.createDonutElement(props);
+            marker = this.markers[id] = new maplibregl.Marker({
+                element: el
+            }).setLngLat(coordinates);
+        }
+
+        return { id, marker };
+    }
+
+    private updateMarkersVisibility(newMarkers: Record<string, maplibregl.Marker>): void {
+        if (!this.options.visible) return;
+
+        for (const id in newMarkers) {
+            if (!this.markersOnScreen[id]) {
+                newMarkers[id].addTo(this.map!);
+            }
+        }
+    }
+
+    private removeInvisibleMarkers(newMarkers: Record<string, maplibregl.Marker>): void {
         for (const id in this.markersOnScreen) {
             if (!newMarkers[id]) {
                 this.markersOnScreen[id].remove();
                 delete this.markersOnScreen[id];
             }
         }
+    }
 
-        // Mettre à jour la liste des markers affichés
-        if (this.options.visible) {
-            this.markersOnScreen = newMarkers;
-        } else {
-            this.markersOnScreen = {};
-        }
+    private updateMarkersOnScreen(newMarkers: Record<string, maplibregl.Marker>): void {
+        this.markersOnScreen = this.options.visible ? newMarkers : {};
     }
 
     // Layer technique nécessaire pour que querySourceFeatures() fonctionne
@@ -142,8 +155,7 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
         }
     }
 
-    setOpacity(_opacity: number): void {
-    }
+    abstract setOpacity(_opacity: number): void;
 
     destroy(): void {
         // Nettoyer tous les listeners

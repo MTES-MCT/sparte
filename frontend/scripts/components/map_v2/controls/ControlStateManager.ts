@@ -1,8 +1,8 @@
 import type { ControlValue } from "../types/controls";
 
 export class ControlStateManager {
-    private controlValues: Map<string, ControlValue> = new Map();
-    private updateCallbacks: Set<() => void> = new Set();
+    private readonly controlValues: Map<string, ControlValue> = new Map();
+    private readonly updateCallbacks: Set<() => void> = new Set();
 
     getControlValue(controlId: string): ControlValue {
         return this.controlValues.get(controlId);
@@ -25,7 +25,9 @@ export class ControlStateManager {
     }
 
     private notifyUpdate(): void {
-        this.updateCallbacks.forEach(callback => callback());
+        for (const callback of Array.from(this.updateCallbacks)) {
+            callback();
+        }
     }
 }
 

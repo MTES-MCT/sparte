@@ -13,7 +13,7 @@ export class StatsStateManager {
         categories: [],
         isVisible: false
     };
-    private listeners: Set<(state: StatsState) => void> = new Set();
+    private readonly listeners: Set<(state: StatsState) => void> = new Set();
 
     getState(): StatsState {
         return { ...this.state };
