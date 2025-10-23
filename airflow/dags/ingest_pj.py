@@ -72,7 +72,7 @@ def print_ingestion_report(successes: list[dict[str, Any]], errors: list[dict[st
 
 def build_report(successes: list[dict[str, Any]], errors: list[dict[str, Any]]) -> dict[str, Any]:
     """
-    Construit le rapport d'ingestion et lève une exception si tous les fichiers ont échoué.
+    Construit le rapport d'ingestion.
 
     Args:
         successes: Liste des fichiers ingérés avec succès
@@ -80,9 +80,6 @@ def build_report(successes: list[dict[str, Any]], errors: list[dict[str, Any]]) 
 
     Returns:
         Dictionnaire contenant le rapport complet
-
-    Raises:
-        RuntimeError: Si tous les fichiers ont échoué
     """
     report = {
         "total": len(successes) + len(errors),
@@ -92,10 +89,6 @@ def build_report(successes: list[dict[str, Any]], errors: list[dict[str, Any]]) 
         if (len(successes) + len(errors)) > 0
         else 0,
     }
-
-    # Lever une exception si TOUT a échoué
-    if len(successes) == 0 and len(errors) > 0:
-        raise RuntimeError(f"Tous les fichiers ont échoué ({len(errors)} erreurs)")
 
     return report
 
@@ -108,7 +101,7 @@ def build_report(successes: list[dict[str, Any]], errors: list[dict[str, Any]]) 
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["PJ", "Ingest"],
 )
-def ingest_pj():
+def ingest_pj():  # noqa : C901
     """Ingère les fichiers PJ depuis le fichier de configuration JSON."""
 
     bucket_name = InfraContainer().bucket_name()
@@ -231,6 +224,41 @@ def ingest_pj():
         print_ingestion_report(successes, errors)
         return build_report(successes, errors)
 
+    @task.python
+    def check_report(report: dict[str, Any]) -> None:
+        """
+        Vérifie le rapport et fait échouer le DAG s'il y a des erreurs.
+
+        Args:
+            report: Rapport d'ingestion contenant succès et erreurs
+
+        Raises:
+            RuntimeError: Si au moins un fichier a échoué
+        """
+        error_count = len(report["errors"])
+
+        if error_count > 0:
+            separator = "=" * 80
+            print(f"\n{separator}")
+            print("❌ ÉCHEC DU DAG : Des erreurs ont été détectées")
+            print(f"{separator}")
+            print(f"\nNombre d'erreurs : {error_count}")
+            print(f"Taux de succès : {report['success_rate']:.1f}%")
+            print("\nFichiers en erreur :")
+
+            for error in report["errors"]:
+                print(f"  • {error['file']} (dept {error['departement']}, année {error['annee']})")
+                print(f"    └─ {error['error']}")
+
+            print(f"\n{separator}\n")
+
+            raise RuntimeError(
+                f"{error_count} fichier(s) ont échoué lors de l'ingestion. "
+                f"Consultez les logs ci-dessus pour plus de détails."
+            )
+
+        print("\n✅ DAG terminé avec succès : Aucune erreur détectée\n")
+
     # Définir le flux de tâches avec parallélisation
     tasks = load_config()
 
@@ -240,7 +268,10 @@ def ingest_pj():
     # Générer le rapport agrégé
     report = generate_report(ingestion_results)
 
-    tasks >> ingestion_results >> report
+    # Vérifier le rapport et faire échouer si nécessaire
+    validation = check_report(report)
+
+    tasks >> ingestion_results >> report >> validation
 
 
 ingest_pj()

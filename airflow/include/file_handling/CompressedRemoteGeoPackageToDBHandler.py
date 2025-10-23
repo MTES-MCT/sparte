@@ -12,8 +12,11 @@ Ce handler orchestre un workflow complet :
 
 import logging
 import tempfile
+import time
 from pathlib import Path
 from typing import Optional
+
+import requests
 
 from .BaseS3Handler import BaseS3Handler
 from .CompressedFileHandler import CompressedFileHandler
@@ -52,6 +55,54 @@ class CompressedRemoteGeoPackageToDBHandler:
         self.compression_handler = compression_handler
         self.db_handler = db_handler
 
+    def _download_with_retry(self, url: str, local_path: Path, max_retries: int = 100) -> None:
+        """
+        Télécharge un fichier depuis une URL avec retry en cas d'erreur 429.
+
+        Args:
+            url: URL du fichier à télécharger
+            local_path: Chemin local de destination
+            max_retries: Nombre maximum de tentatives (défaut: 100)
+
+        Raises:
+            requests.HTTPError: Si le téléchargement échoue après tous les retries
+        """
+        for attempt in range(1, max_retries + 1):
+            try:
+                logger.info(f"Tentative {attempt}/{max_retries} : Téléchargement de {url}...")
+                response = requests.get(url, allow_redirects=True, timeout=300)
+                response.raise_for_status()
+
+                with open(local_path, "wb") as f:
+                    f.write(response.content)
+
+                file_size_mb = local_path.stat().st_size / (1024 * 1024)
+                logger.info(f"✓ Fichier téléchargé: {file_size_mb:.2f} MB")
+                return
+
+            except requests.HTTPError as e:
+                if e.response.status_code == 429:
+                    # Too Many Requests : attendre avec backoff exponentiel plafonné à 60s
+                    if attempt < max_retries:
+                        wait_time = min(2**attempt, 60)  # Plafonné à 60 secondes
+                        logger.warning(
+                            f"Erreur 429 (Too Many Requests). " f"Attente de {wait_time} secondes avant retry..."
+                        )
+                        time.sleep(wait_time)
+                        continue
+                    else:
+                        logger.error(f"Échec après {max_retries} tentatives (erreur 429)")
+                        raise
+                else:
+                    # Autre erreur HTTP : ne pas retry
+                    logger.error(f"Erreur HTTP {e.response.status_code}: {e}")
+                    raise
+
+            except requests.RequestException as e:
+                # Erreur réseau : ne pas retry
+                logger.error(f"Erreur réseau: {e}")
+                raise
+
     def download_extract_and_ingest(
         self,
         url: str,
@@ -80,26 +131,21 @@ class CompressedRemoteGeoPackageToDBHandler:
         extract_dir = None
 
         try:
-            # 1. Télécharger le fichier .7z depuis l'URL HTTP et l'archiver sur S3
-            logger.info(f"Téléchargement de {url}...")
-            self.remote_to_s3_handler.download_http_file_and_upload_to_s3(
-                url=url,
-                s3_key=s3_key_compressed,
-                s3_bucket=s3_bucket,
-            )
-
-            # 2. Récupérer le .7z depuis S3 dans un répertoire temporaire local
+            # 1. Créer le répertoire temporaire et télécharger avec retry en cas de 429
             extract_dir = tempfile.mkdtemp()
             local_compressed_path = Path(extract_dir) / Path(s3_key_compressed).name
 
-            logger.info("Téléchargement depuis S3 vers le système local...")
-            self.s3_handler.download_file(
-                s3_key=s3_key_compressed,
+            self._download_with_retry(url, local_compressed_path)
+
+            # 2. Archiver le .7z téléchargé sur S3
+            logger.info(f"Archivage du .7z sur S3: s3://{s3_bucket}/{s3_key_compressed}")
+            self.s3_handler.upload_file(
                 local_file_path=str(local_compressed_path),
+                s3_key=s3_key_compressed,
                 s3_bucket=s3_bucket,
             )
 
-            # 3. Extraire le fichier .gpkg du fichier .7z
+            # 3. Extraire le fichier .gpkg du fichier .7z local
             logger.info("Extraction du GeoPackage...")
             gpkg_path = self.compression_handler.extract_and_find(
                 archive_path=str(local_compressed_path),

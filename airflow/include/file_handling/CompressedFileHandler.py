@@ -82,7 +82,7 @@ class CompressedFileHandler:
         if not files:
             all_files = [f.name for f in Path(directory).rglob("*") if f.is_file()]
             raise FileNotFoundError(
-                f"Aucun fichier {extension} trouvé dans {directory}. " f"Fichiers présents: {all_files}"
+                f"Aucun fichier {extension} trouvé dans {directory}. Fichiers présents: {all_files}"
             )
 
         logger.info(f"✓ Trouvé {len(files)} fichier(s) {extension}")
