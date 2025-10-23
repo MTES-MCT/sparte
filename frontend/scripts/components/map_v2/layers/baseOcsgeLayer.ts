@@ -1,11 +1,12 @@
 import { BaseLayer } from "./baseLayer";
 import type { BaseLayerOptions, StatCategory } from "../types/layer";
+import type { LayerInterface } from "../types/layerInterface";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
 import { area } from '@turf/turf';
 import type { FilterSpecification, LayerSpecification } from 'maplibre-gl';
 
-export abstract class BaseOcsgeLayer extends BaseLayer {
+export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface {
     protected millesimeIndex: number;
     protected departement: string;
     protected nomenclature: NomenclatureType;
@@ -93,9 +94,9 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return this.departement;
     }
 
-    getAvailableMillesimes(): Array<{ value: number; label: string }> {
+    getAvailableMillesimes(): Array<{ value: string; label: string }> {
         return this.availableMillesimes.map(m => ({
-            value: m.index,
+            value: `${m.index}_${m.departement}`,
             label: m.year ? `${m.year}` : `Index ${m.index}`
         }));
     }
@@ -125,7 +126,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return ["in", ["get", field], ["literal", codes]] as FilterSpecification;
     }
 
-    setNomenclature(newNomenclature: NomenclatureType): void {
+    async setNomenclature(newNomenclature: NomenclatureType): Promise<void> {
         if (!this.map) return;
 
         const layerId = this.getId();
@@ -145,7 +146,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         this.map.setFilter(layerId, filter);
     }
 
-    setFilter(selectedCodes: string[]): void {
+    async setFilter(selectedCodes: string[]): Promise<void> {
         if (!this.map) return;
 
         const layerId = this.getId();

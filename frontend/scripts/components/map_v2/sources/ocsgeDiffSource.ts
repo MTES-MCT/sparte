@@ -60,61 +60,28 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
         const millesime = this.millesimes.find((m: Millesime) => m.index === this.endMillesimeIndex);
         this.departement = millesime?.departement || this.departements[0];
 
-        // Trouver toutes les layers qui utilisent cette source et sauvegarder leurs specs
-        const style = this.map.getStyle();
-        const layerSpecs = style.layers
-            .filter((l): l is LayerSpecification => {
-                if (!('source' in l)) return false;
-                const layerSource = (l as { source?: string }).source;
-                return layerSource === this.sourceId;
-            })
-            .map((l): LayerSpecification => {
-                // Créer une copie propre du spec de la layer (sans les propriétés internes)
-                const { id, type, minzoom, maxzoom, layout, paint } = l;
-                const source = (l as { source?: string }).source;
-                const filter = (l as { filter?: unknown }).filter;
-                const sourceLayer = 'source-layer' in l ? l['source-layer'] : undefined;
+        // Utiliser la méthode mutualisée pour recharger la source
+        await this.reloadSource();
+    }
 
-                // Mettre à jour le source-layer avec les nouveaux millésimes si c'est un layer OCSGE diff
-                let updatedSourceLayer = sourceLayer;
-                if (sourceLayer && typeof sourceLayer === 'string' && sourceLayer.startsWith('occupation_du_sol_diff_')) {
-                    // Remplacer les anciens index de millésime par les nouveaux dans le nom du source-layer
-                    updatedSourceLayer = `occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}`;
-                }
+    async setMillesime(newIndex: number, newDepartement: string): Promise<void> {
+        // Pour une source de différence, on utilise le millésime comme startIndex
+        // et on cherche le millésime suivant
+        const nextIndex = newIndex + 1;
+        const nextMillesime = this.millesimes.find((m: Millesime) => m.index === nextIndex);
 
-                return {
-                    id,
-                    type,
-                    source,
-                    ...(updatedSourceLayer && { 'source-layer': updatedSourceLayer }),
-                    ...(minzoom !== undefined && { minzoom }),
-                    ...(maxzoom !== undefined && { maxzoom }),
-                    ...(filter && { filter }),
-                    ...(layout && { layout }),
-                    ...(paint && { paint })
-                } as LayerSpecification;
-            });
-
-        // 1. Supprimer les layers
-        layerSpecs.forEach(({ id }) => {
-            if (this.map!.getLayer(id)) {
-                this.map!.removeLayer(id);
-            }
-        });
-
-        // 2. Supprimer la source
-        if (this.map.getSource(this.sourceId)) {
-            this.map.removeSource(this.sourceId);
+        if (!nextMillesime) {
+            throw new Error(`Aucun millésime suivant trouvé pour l'index ${newIndex}`);
         }
 
-        // 3. Recréer la source avec la nouvelle URL
-        const newOptions = this.getOptions();
-        this.map.addSource(this.sourceId, newOptions);
+        await this.setMillesimes(newIndex, nextIndex);
+    }
 
-        // 4. Recréer les layers avec leurs specs propres
-        layerSpecs.forEach((layerSpec) => {
-            this.map!.addLayer(layerSpec);
-        });
+    protected updateSourceLayer(sourceLayer: string): string {
+        if (sourceLayer.startsWith('occupation_du_sol_diff_')) {
+            return `occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}`;
+        }
+        return sourceLayer;
     }
 
     getAvailableMillesimePairs(): Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number }> {

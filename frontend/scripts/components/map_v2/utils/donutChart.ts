@@ -5,6 +5,8 @@ import {
     DESARTIFICIALISATION_COLOR
 } from "../constants/config";
 
+export type DiffType = 'impermeabilisation' | 'artificialisation';
+
 export interface DonutChartData {
     impermeabilisation_count: number;
     desimpermeabilisation_count: number;
@@ -13,6 +15,11 @@ export interface DonutChartData {
 export interface ArtificialisationDonutChartData {
     artificialisation_count: number;
     desartificialisation_count: number;
+}
+
+export interface GenericDonutChartData {
+    positiveCount: number;
+    negativeCount: number;
 }
 
 export interface DonutChartOptions {
@@ -38,80 +45,70 @@ const DEFAULT_OPTIONS: Required<DonutChartOptions> = {
     minRadius: 18,
     maxRadius: 50,
     fontSize: {
-        small: 16,
-        medium: 18,
-        large: 20,
-        xlarge: 22,
+        small: 12,
+        medium: 14,
+        large: 16,
+        xlarge: 18,
     },
 };
 
-const ARTIFICIALISATION_DEFAULT_OPTIONS: Required<DonutChartOptions> = {
-    colors: {
-        impermeabilisation: ARTIFICIALISATION_COLOR,
-        desimpermeabilisation: DESARTIFICIALISATION_COLOR,
-    },
-    minRadius: 18,
-    maxRadius: 50,
-    fontSize: {
-        small: 16,
-        medium: 18,
-        large: 20,
-        xlarge: 22,
-    },
-};
+export function createDiffDonutChart(
+    data: GenericDonutChartData,
+    type: DiffType,
+    options: DonutChartOptions = {}
+): HTMLElement | null {
+    const colorConfig = type === 'impermeabilisation'
+        ? { positive: IMPERMEABILISATION_COLOR, negative: DESIMPERMEABILISATION_COLOR }
+        : { positive: ARTIFICIALISATION_COLOR, negative: DESARTIFICIALISATION_COLOR };
 
-/**
- * Crée un donut chart SVG pour afficher les données d'imperméabilisation/désimperméabilisation
- */
+    const opts = {
+        ...DEFAULT_OPTIONS,
+        colors: {
+            impermeabilisation: colorConfig.positive,
+            desimpermeabilisation: colorConfig.negative,
+        },
+        ...options
+    };
+
+    const counts = [data.positiveCount, data.negativeCount];
+    const colors = [colorConfig.positive, colorConfig.negative];
+
+    return createDonutChart(counts, colors, opts);
+}
+
 export function createImpermeabilisationDonutChart(
     data: DonutChartData,
     options: DonutChartOptions = {}
-): HTMLElement {
-    const opts = { ...DEFAULT_OPTIONS, ...options };
-
-    const counts = [
-        data.impermeabilisation_count,
-        data.desimpermeabilisation_count,
-    ];
-
-    const colors = [
-        opts.colors.impermeabilisation,
-        opts.colors.desimpermeabilisation,
-    ];
-
-    return createDonutChart(counts, colors, opts);
+): HTMLElement | null {
+    return createDiffDonutChart(
+        {
+            positiveCount: data.impermeabilisation_count,
+            negativeCount: data.desimpermeabilisation_count
+        },
+        'impermeabilisation',
+        options
+    );
 }
 
-/**
- * Crée un donut chart SVG pour afficher les données d'artificialisation/désartificialisation
- */
 export function createArtificialisationDonutChart(
     data: ArtificialisationDonutChartData,
     options: DonutChartOptions = {}
-): HTMLElement {
-    const opts = { ...ARTIFICIALISATION_DEFAULT_OPTIONS, ...options };
-
-    const counts = [
-        data.artificialisation_count,
-        data.desartificialisation_count,
-    ];
-
-    const colors = [
-        opts.colors.impermeabilisation, // Réutilise la structure mais avec les couleurs d'artificialisation
-        opts.colors.desimpermeabilisation,
-    ];
-
-    return createDonutChart(counts, colors, opts);
+): HTMLElement | null {
+    return createDiffDonutChart(
+        {
+            positiveCount: data.artificialisation_count,
+            negativeCount: data.desartificialisation_count
+        },
+        'artificialisation',
+        options
+    );
 }
 
-/**
- * Crée un donut chart SVG générique
- */
 export function createDonutChart(
     counts: number[],
     colors: string[],
     options: Required<DonutChartOptions>
-): HTMLElement {
+): HTMLElement | null {
     const offsets: number[] = [];
     let total = 0;
 
@@ -121,9 +118,8 @@ export function createDonutChart(
         total += counts[i];
     }
 
-    // Si aucun point, créer un cercle vide
     if (total === 0) {
-        return createEmptyDonut(options);
+        return null;
     }
 
     // Déterminer la taille du donut basée sur le total
@@ -143,9 +139,11 @@ export function createDonutChart(
         }
     }
 
-    // Cercle central blanc avec le total
+    // Cercle central blanc avec le total (affiché en hectares si c'est une surface)
     html += `<circle cx="${radius}" cy="${radius}" r="${innerRadius}" fill="white" />`;
-    html += `<text dominant-baseline="central" transform="translate(${radius}, ${radius})">${total.toLocaleString()}</text>`;
+    // Convertir et formater la valeur
+    const { value, unit } = formatDisplayValue(total);
+    html += `<text dominant-baseline="central" transform="translate(${radius}, ${radius})">${value}${unit}</text>`;
     html += '</svg></div>';
 
     const element = document.createElement('div');
@@ -153,48 +151,47 @@ export function createDonutChart(
     return element;
 }
 
-/**
- * Crée un donut vide quand il n'y a pas de données
- */
-function createEmptyDonut(options: Required<DonutChartOptions>): HTMLElement {
-    const radius = options.minRadius;
-    const width = radius * 2;
-
-    const html = `<div><svg width="${width}" height="${width}" viewBox="0 0 ${width} ${width}" text-anchor="middle" style="font: ${options.fontSize.small}px sans-serif; display: block">
-        <circle cx="${radius}" cy="${radius}" r="${radius}" fill="#e0e0e0" stroke="#ccc" stroke-width="2" />
-        <text dominant-baseline="central" transform="translate(${radius}, ${radius})" fill="#666">0</text>
-    </svg></div>`;
-
-    const element = document.createElement('div');
-    element.innerHTML = html;
-    return element;
+function convertToHectares(squareMeters: number): number {
+    return squareMeters / 10000;
 }
 
-/**
- * Détermine la taille de police basée sur le total
- */
+function formatDisplayValue(total: number): { value: string; unit: string } {
+    if (total > 1000) {
+        const hectares = convertToHectares(total);
+        const decimals = hectares < 1 ? 2 : 1;
+        return {
+            value: hectares.toFixed(decimals),
+            unit: 'ha'
+        };
+    } else {
+        const decimals = total < 1 ? 2 : 1;
+        return {
+            value: total.toFixed(decimals),
+            unit: ''
+        };
+    }
+}
+
 function getFontSize(total: number, fontSize: DonutChartOptions['fontSize']): number {
     if (!fontSize) return 16;
 
-    if (total >= 1000) return fontSize.xlarge;
-    if (total >= 100) return fontSize.large;
-    if (total >= 10) return fontSize.medium;
+    const valueInHa = total > 1000 ? convertToHectares(total) : total;
+
+    if (valueInHa >= 100) return fontSize.xlarge;
+    if (valueInHa >= 10) return fontSize.large;
+    if (valueInHa >= 1) return fontSize.medium;
     return fontSize.small;
 }
 
-/**
- * Détermine le rayon basé sur le total
- */
 function getRadius(total: number, minRadius: number, maxRadius: number): number {
-    if (total >= 1000) return maxRadius;
-    if (total >= 100) return Math.round(maxRadius * 0.64); // 32 pour maxRadius=50
-    if (total >= 10) return Math.round(maxRadius * 0.48);  // 24 pour maxRadius=50
+    const valueInHa = total > 1000 ? convertToHectares(total) : total;
+
+    if (valueInHa >= 100) return maxRadius;
+    if (valueInHa >= 10) return Math.round(maxRadius * 0.64); // 32 pour maxRadius=50
+    if (valueInHa >= 1) return Math.round(maxRadius * 0.48);  // 24 pour maxRadius=50
     return minRadius;
 }
 
-/**
- * Crée un segment de donut
- */
 function donutSegment(
     start: number,
     end: number,

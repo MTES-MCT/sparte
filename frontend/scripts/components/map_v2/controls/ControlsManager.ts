@@ -47,47 +47,13 @@ export class ControlsManager implements ControlsManagerInterface {
         });
     }
 
+    /**
+     * Initialise les valeurs par défaut des contrôles dans le state manager.
+     */
     private initializeControlValuesFromConfig(): void {
         this.groups.forEach(group => {
             group.controls.forEach(control => {
-                // Extraire la valeur par défaut selon le type de contrôle
-                let defaultValue: ControlValue;
-                switch (control.type) {
-                    case 'visibility':
-                        defaultValue = control.defaultValue ?? true;
-                        break;
-                    case 'opacity':
-                        defaultValue = control.defaultValue ?? 1;
-                        break;
-                    case 'ocsge-millesime':
-                        // Si pas de defaultValue, récupérer la valeur du layer
-                        if (control.defaultValue !== undefined) {
-                            defaultValue = control.defaultValue;
-                        } else {
-                            const targetLayer = control.targetLayers?.[0];
-                            const layer = targetLayer ? this.layers.get(targetLayer) : undefined;
-                            const millesimeIndex = (layer as any)?.getCurrentMillesime?.() ?? 0;
-                            const departement = (layer as any)?.getCurrentDepartement?.() ?? '';
-                            defaultValue = `${millesimeIndex}_${departement}`;
-                        }
-                        break;
-                    case 'ocsge-nomenclature':
-                        // Si pas de defaultValue, récupérer la valeur du layer
-                        if (control.defaultValue !== undefined) {
-                            defaultValue = control.defaultValue;
-                        } else {
-                            const targetLayer = control.targetLayers?.[0];
-                            const layer = targetLayer ? this.layers.get(targetLayer) : undefined;
-                            defaultValue = (layer as any)?.getCurrentNomenclature?.() ?? 'couverture';
-                        }
-                        break;
-                    case 'ocsge-nomenclature-filter':
-                        defaultValue = control.defaultValue;
-                        break;
-                    default:
-                        defaultValue = false;
-                }
-                this.stateManager.initializeControlValue(control.id, defaultValue);
+                this.stateManager.initializeControlValue(control.id, control.defaultValue);
             });
         });
     }
@@ -108,7 +74,6 @@ export class ControlsManager implements ControlsManagerInterface {
                 const context = this.buildContext(control.id);
                 const targetLayers = control.targetLayers || [];
 
-                // Appliquer la valeur par défaut aux layers
                 await controlInstance.apply(targetLayers, defaultValue, context);
             }
         }
@@ -143,7 +108,7 @@ export class ControlsManager implements ControlsManagerInterface {
         if (!visibilityControl) return true;
 
         const isVisible = this.stateManager.getControlValue(visibilityControl.id);
-        return isVisible ?? true;
+        return (isVisible as boolean) ?? true;
     }
 
     subscribe(callback: () => void): () => void {

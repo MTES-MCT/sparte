@@ -1,10 +1,10 @@
 import type { Millesime } from "@services/types/land";
 import type { NomenclatureType } from "./ocsge";
 
-export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'impermeabilisation-diff-centroid-cluster'] as const;
+export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster'] as const;
 export type LayerCategory = typeof layerCategories[number];
 
-export const layerIds = ['orthophoto-layer', 'emprise-layer', 'impermeabilisation-layer', 'artificialisation-layer', 'impermeabilisation-diff-layer', 'impermeabilisation-diff-centroid-cluster'] as const;
+export const layerIds = ['orthophoto-layer', 'emprise-layer', 'impermeabilisation-layer', 'artificialisation-layer', 'impermeabilisation-diff-layer', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster'] as const;
 export type LayerId = typeof layerIds[number];
 
 export type LayerIdToCategory = {
@@ -14,6 +14,7 @@ export type LayerIdToCategory = {
     'artificialisation-layer': 'artificialisation';
     'impermeabilisation-diff-layer': 'impermeabilisation-diff';
     'impermeabilisation-diff-centroid-cluster': 'impermeabilisation-diff-centroid-cluster';
+    'artificialisation-diff-centroid-cluster': 'artificialisation-diff-centroid-cluster';
 };
 
 export const layerCategoryToFactory = {
@@ -22,9 +23,9 @@ export const layerCategoryToFactory = {
     impermeabilisation: 'impermeabilisation',
     'impermeabilisation-diff': 'impermeabilisation-diff',
     'impermeabilisation-diff-centroid-cluster': 'impermeabilisation-diff-centroid-cluster',
+    'artificialisation-diff-centroid-cluster': 'artificialisation-diff-centroid-cluster',
 } as const;
 
-// Types de configuration pour les layers
 export interface BaseLayerConfig {
     type: LayerCategory;
 }
@@ -50,7 +51,6 @@ export interface EmptyLayerConfig extends BaseLayerConfig {
 
 export type LayerConfig = OcsgeLayerConfig | OcsgeDiffLayerConfig | EmptyLayerConfig;
 
-// Types de configuration pour les sources
 export interface BaseSourceConfig {
     type: string;
 }
@@ -88,5 +88,3 @@ export interface EmptySourceConfig extends BaseSourceConfig {
 }
 
 export type SourceConfig = EmpriseSourceConfig | OcsgeSourceConfig | OcsgeDiffSourceConfig | OcsgeDiffCentroidSourceConfig | EmptySourceConfig;
-
-

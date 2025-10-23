@@ -1,4 +1,3 @@
-import maplibregl from "maplibre-gl";
 import React from "react";
 import type { BaseSource } from "../sources/baseSource";
 import type { BaseLayer } from "../layers/baseLayer";

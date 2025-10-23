@@ -7,7 +7,7 @@ export type LayerInterface = {
     getVisibility?(): boolean;
     setVisibility?(visible: boolean): void;
     getCurrentMillesime?(): number;
-    getAvailableMillesimes?(): Array<{ value: number; label: string }>;
+    getAvailableMillesimes?(): Array<{ value: string; label: string }>;
     getCurrentNomenclature?(): NomenclatureType;
     setNomenclature?(value: NomenclatureType): Promise<void>;
     getLayerNomenclature?(): { couverture: Couverture[]; usage: Usage[] };

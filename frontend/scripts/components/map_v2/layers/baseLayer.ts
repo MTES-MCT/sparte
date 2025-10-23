@@ -1,8 +1,9 @@
 import type { BaseLayerOptions } from "../types/layer";
+import type { LayerInterface } from "../types/layerInterface";
 import type maplibregl from "maplibre-gl";
 import type { LayerSpecification } from "maplibre-gl";
 
-export abstract class BaseLayer {
+export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSource' | 'getOpacity' | 'setOpacity' | 'getVisibility' | 'setVisibility'> {
 	readonly options: BaseLayerOptions;
 	loaded = false;
 	protected map?: maplibregl.Map;
@@ -82,5 +83,11 @@ export abstract class BaseLayer {
 
 	getOpacity(): number {
 		return this.options.opacity ?? 1;
+	}
+
+	/**
+	 * Nettoie les ressources du layer (listeners, markers, etc.)
+	 */
+	destroy(): void {
 	}
 }

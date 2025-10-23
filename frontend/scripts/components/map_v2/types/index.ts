@@ -7,7 +7,7 @@ export type {
 	ControlType,
 	ControlGroup,
 	ControlsConfig,
-	ControlsManager
+	ControlsManagerInterface
 } from "./controls";
 export type { LayerInterface } from "./layerInterface";
 export type { SourceInterface } from "./sourceInterface";
@@ -17,3 +17,5 @@ export type {
 	SourceConfig,
 	LayerConfig,
 } from "./builder";
+
+export { hasMillesime, hasNomenclature, hasFilter, hasStats } from "./layerTypeGuards";

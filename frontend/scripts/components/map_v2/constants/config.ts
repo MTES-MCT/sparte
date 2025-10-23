@@ -19,9 +19,31 @@ export const DESIMPERMEABILISATION_COLOR = "#00E272"
 
 export const IMPERMEABILISATION_FIELD = "new_is_impermeable";
 export const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
-
 export const ARTIFICIALISATION_FIELD = "new_is_artificial";
 export const DESARTIFICIALISATION_FIELD = "new_not_artificial";
+
+export const DIFF_FIELDS = {
+	impermeabilisation: {
+		positive: IMPERMEABILISATION_FIELD,
+		negative: DESIMPERMEABILISATION_FIELD,
+		positiveColor: IMPERMEABILISATION_COLOR,
+		negativeColor: DESIMPERMEABILISATION_COLOR,
+		positiveLabel: 'Imperméabilisation',
+		negativeLabel: 'Désimperméabilisation',
+		positiveCode: 'impermeabilisation',
+		negativeCode: 'desimpermeabilisation',
+	},
+	artificialisation: {
+		positive: ARTIFICIALISATION_FIELD,
+		negative: DESARTIFICIALISATION_FIELD,
+		positiveColor: ARTIFICIALISATION_COLOR,
+		negativeColor: DESARTIFICIALISATION_COLOR,
+		positiveLabel: 'Artificialisation',
+		negativeLabel: 'Désartificialisation',
+		positiveCode: 'artificialisation',
+		negativeCode: 'desartificialisation',
+	}
+} as const;
 
 export const DEFAULT_MAP_STYLE = {
 	version: 8 as const,
