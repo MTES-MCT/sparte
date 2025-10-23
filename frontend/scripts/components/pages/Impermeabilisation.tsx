@@ -12,6 +12,8 @@ import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
 import { DataCards } from "@components/features/ocsge/DataCards";
+import { ImpermeabilisationMap } from "@components/map_v2/ui/ImpermeabilisationMap";
+import { ImpermeabilisationDiffMap } from "@components/map_v2/ui/ImpermeabilisationDiffMap";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -240,7 +242,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					Répartition des surfaces imperméabilisées par type de couverture et
 					d'usage
 				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
 						<OcsgeMillesimeSelector
 							millesimes_by_index={millesimes_by_index}
@@ -328,6 +330,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						)}
 					</div>
 				</div>
+				<ImpermeabilisationMap landData={landData} />
 			</div>
 			
 			<div className="fr-mb-7w">
@@ -340,7 +343,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						between={true}
 					/>
 				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
 					{
 						is_interdepartemental && (
 							<DepartmentSelector
@@ -424,6 +427,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						)}
 					</div>
 				</div>
+				<ImpermeabilisationDiffMap landData={landData} />
 			</div>
 			
 			{child_land_types && (

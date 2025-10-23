@@ -1,11 +1,13 @@
 import { BaseOcsgeDiffLayer } from "./baseOcsgeDiffLayer";
-import { IMPERMEABILISATION_COLOR, DESIMPERMEABILISATION_COLOR } from "../constants/config";
+import {
+    IMPERMEABILISATION_COLOR,
+    DESIMPERMEABILISATION_COLOR,
+    IMPERMEABILISATION_FIELD,
+    DESIMPERMEABILISATION_FIELD
+} from "../constants/config";
 import type { StatCategory } from "../types/layer";
 import { area } from '@turf/turf';
 import type { LayerSpecification, FilterSpecification } from 'maplibre-gl';
-
-const IMPERMEABILISATION_FIELD = "new_is_impermeable";
-const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
 
 export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
 

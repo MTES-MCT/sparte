@@ -1,16 +1,16 @@
 import { BaseLayer } from "./baseLayer";
 import type { LayerSpecification, FilterSpecification } from "maplibre-gl";
 
-export class OcsgeDiffCentroidClusterCountLayer extends BaseLayer {
+export class ImpermeabilisationDiffCentroidClusterCountLayer extends BaseLayer {
     constructor() {
         super({
-            id: "ocsge-diff-centroid-cluster-count",
+            id: "impermeabilisation-diff-centroid-cluster-count",
             type: "symbol",
-            source: "ocsge-diff-centroid-source",
+            source: "impermeabilisation-diff-centroid-source",
             visible: true,
             opacity: 1,
-            label: "Nombre de centroïdes OCSGE diff par cluster",
-            description: "Affiche le nombre de centroïdes dans chaque cluster",
+            label: "Nombre de centroïdes imperméabilisation diff par cluster",
+            description: "Affiche le nombre de centroïdes dans chaque cluster d'imperméabilisation",
         });
     }
 

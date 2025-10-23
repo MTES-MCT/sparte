@@ -4,8 +4,9 @@ import { OrthophotoLayer } from "../layers/orthophotoLayer";
 import { ImpermeabilisationLayer } from "../layers/impermeabilisationLayer";
 import { ArtificialisationLayer } from "../layers/artificialisationLayer";
 import { ImpermeabilisationDiffLayer } from "../layers/impermeabilisationDiffLayer";
-import { OcsgeDiffCentroidClusterLayer } from "../layers/ocsgeDiffCentroidClusterLayer";
-import { OcsgeDiffCentroidClusterCountLayer } from "../layers/ocsgeDiffCentroidClusterCountLayer";
+import { ImpermeabilisationDiffCentroidClusterLayer } from "../layers/impermeabilisationDiffCentroidClusterLayer";
+import { ImpermeabilisationDiffCentroidClusterCountLayer } from "../layers/impermeabilisationDiffCentroidClusterCountLayer";
+import { ArtificialisationDiffCentroidClusterLayer } from "../layers/artificialisationDiffCentroidClusterLayer";
 import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getAvailableMillesimes } from "../utils/ocsge";
@@ -49,8 +50,9 @@ const layerRegistry: Record<string, LayerFactory> = {
             departement
         );
     },
-    "ocsge-diff-centroid-cluster": () => new OcsgeDiffCentroidClusterLayer(),
-    "ocsge-diff-centroid-cluster-count": () => new OcsgeDiffCentroidClusterCountLayer(),
+    "impermeabilisation-diff-centroid-cluster": () => new ImpermeabilisationDiffCentroidClusterLayer(),
+    "impermeabilisation-diff-centroid-cluster-count": () => new ImpermeabilisationDiffCentroidClusterCountLayer(),
+    "artificialisation-diff-centroid-cluster": () => new ArtificialisationDiffCentroidClusterLayer(),
 };
 
 export function createLayer(cfg: LayerConfig, landData: LandDetailResultType): BaseLayer {

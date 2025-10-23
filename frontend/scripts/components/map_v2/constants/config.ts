@@ -17,6 +17,12 @@ export const DESARTIFICIALISATION_COLOR = "#00E272"
 export const IMPERMEABILISATION_COLOR = "#FA4B42"
 export const DESIMPERMEABILISATION_COLOR = "#00E272"
 
+export const IMPERMEABILISATION_FIELD = "new_is_impermeable";
+export const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
+
+export const ARTIFICIALISATION_FIELD = "new_is_artificial";
+export const DESARTIFICIALISATION_FIELD = "new_not_artificial";
+
 export const DEFAULT_MAP_STYLE = {
 	version: 8 as const,
 	name: "Empty",

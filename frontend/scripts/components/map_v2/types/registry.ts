@@ -1,10 +1,10 @@
 import type { Millesime } from "@services/types/land";
 import type { NomenclatureType } from "./ocsge";
 
-export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'ocsge-diff-centroid-cluster', 'ocsge-diff-centroid-cluster-count'] as const;
+export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'impermeabilisation-diff-centroid-cluster', 'impermeabilisation-diff-centroid-cluster-count'] as const;
 export type LayerCategory = typeof layerCategories[number];
 
-export const layerIds = ['orthophoto-layer', 'emprise-layer', 'impermeabilisation-layer', 'artificialisation-layer', 'impermeabilisation-diff-layer', 'ocsge-diff-centroid-cluster', 'ocsge-diff-centroid-cluster-count'] as const;
+export const layerIds = ['orthophoto-layer', 'emprise-layer', 'impermeabilisation-layer', 'artificialisation-layer', 'impermeabilisation-diff-layer', 'impermeabilisation-diff-centroid-cluster', 'impermeabilisation-diff-centroid-cluster-count'] as const;
 export type LayerId = typeof layerIds[number];
 
 export type LayerIdToCategory = {
@@ -13,8 +13,8 @@ export type LayerIdToCategory = {
     'impermeabilisation-layer': 'impermeabilisation';
     'artificialisation-layer': 'artificialisation';
     'impermeabilisation-diff-layer': 'impermeabilisation-diff';
-    'ocsge-diff-centroid-cluster': 'ocsge-diff-centroid-cluster';
-    'ocsge-diff-centroid-cluster-count': 'ocsge-diff-centroid-cluster-count';
+    'impermeabilisation-diff-centroid-cluster': 'impermeabilisation-diff-centroid-cluster';
+    'impermeabilisation-diff-centroid-cluster-count': 'impermeabilisation-diff-centroid-cluster-count';
 };
 
 export const layerCategoryToFactory = {
@@ -22,8 +22,8 @@ export const layerCategoryToFactory = {
     emprise: 'emprise',
     impermeabilisation: 'impermeabilisation',
     'impermeabilisation-diff': 'impermeabilisation-diff',
-    'ocsge-diff-centroid-cluster': 'ocsge-diff-centroid-cluster',
-    'ocsge-diff-centroid-cluster-count': 'ocsge-diff-centroid-cluster-count',
+    'impermeabilisation-diff-centroid-cluster': 'impermeabilisation-diff-centroid-cluster',
+    'impermeabilisation-diff-centroid-cluster-count': 'impermeabilisation-diff-centroid-cluster-count',
 } as const;
 
 // Types de configuration pour les layers
@@ -47,7 +47,7 @@ export interface OcsgeDiffLayerConfig extends BaseLayerConfig {
 }
 
 export interface EmptyLayerConfig extends BaseLayerConfig {
-    type: 'orthophoto' | 'emprise' | 'ocsge-diff-centroid-cluster' | 'ocsge-diff-centroid-cluster-count';
+    type: 'orthophoto' | 'emprise' | 'impermeabilisation-diff-centroid-cluster' | 'impermeabilisation-diff-centroid-cluster-count';
 }
 
 export type LayerConfig = OcsgeLayerConfig | OcsgeDiffLayerConfig | EmptyLayerConfig;

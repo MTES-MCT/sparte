@@ -24,12 +24,22 @@ export interface OcsgeDiffCentroidSourceConfig {
     type: 'ocsge-diff-centroid';
 }
 
+export interface ImpermeabilisationDiffCentroidSourceConfig {
+    type: 'impermeabilisation-diff-centroid';
+}
+
+export interface ArtificialisationDiffCentroidSourceConfig {
+    type: 'artificialisation-diff-centroid';
+}
+
 export type SourceConfig =
     | OrthophotoSourceConfig
     | EmpriseSourceConfig
     | OcsgeSourceConfig
     | OcsgeDiffSourceConfig
-    | OcsgeDiffCentroidSourceConfig;
+    | OcsgeDiffCentroidSourceConfig
+    | ImpermeabilisationDiffCentroidSourceConfig
+    | ArtificialisationDiffCentroidSourceConfig;
 
 interface BaseLayerConfig {
     type: LayerCategory;
@@ -60,12 +70,16 @@ export interface ImpermeabilisationDiffLayerConfig extends BaseLayerConfig {
     type: 'impermeabilisation-diff';
 }
 
-export interface OcsgeDiffCentroidClusterLayerConfig extends BaseLayerConfig {
-    type: 'ocsge-diff-centroid-cluster';
+export interface ImpermeabilisationDiffCentroidClusterLayerConfig extends BaseLayerConfig {
+    type: 'impermeabilisation-diff-centroid-cluster';
 }
 
-export interface OcsgeDiffCentroidClusterCountLayerConfig extends BaseLayerConfig {
-    type: 'ocsge-diff-centroid-cluster-count';
+export interface ImpermeabilisationDiffCentroidClusterCountLayerConfig extends BaseLayerConfig {
+    type: 'impermeabilisation-diff-centroid-cluster-count';
+}
+
+export interface ArtificialisationDiffCentroidClusterLayerConfig extends BaseLayerConfig {
+    type: 'artificialisation-diff-centroid-cluster';
 }
 
 export type LayerConfig =
@@ -74,8 +88,9 @@ export type LayerConfig =
     | ImpermeabilisationLayerConfig
     | ArtificialisationLayerConfig
     | ImpermeabilisationDiffLayerConfig
-    | OcsgeDiffCentroidClusterLayerConfig
-    | OcsgeDiffCentroidClusterCountLayerConfig;
+    | ImpermeabilisationDiffCentroidClusterLayerConfig
+    | ImpermeabilisationDiffCentroidClusterCountLayerConfig
+    | ArtificialisationDiffCentroidClusterLayerConfig;
 
 export interface MapConfig {
     sources?: SourceConfig[];

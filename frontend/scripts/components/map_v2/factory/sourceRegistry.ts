@@ -4,6 +4,8 @@ import { OrthophotoSource } from "../sources/orthophotoSource";
 import { OcsgeSource } from "../sources/ocsgeSource";
 import { OcsgeDiffSource } from "../sources/ocsgeDiffSource";
 import { OcsgeDiffCentroidSource } from "../sources/ocsgeDiffCentroidSource";
+import { ImpermeabilisationDiffCentroidSource } from "../sources/impermeabilisationDiffCentroidSource";
+import { ArtificialisationDiffCentroidSource } from "../sources/artificialisationDiffCentroidSource";
 import type { SourceConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 
@@ -15,6 +17,8 @@ const sourceRegistry: Record<string, SourceFactory> = {
     ocsge: (landData) => new OcsgeSource(landData),
     "ocsge-diff": (landData) => new OcsgeDiffSource(landData),
     "ocsge-diff-centroid": (landData) => new OcsgeDiffCentroidSource(landData),
+    "impermeabilisation-diff-centroid": (landData) => new ImpermeabilisationDiffCentroidSource(landData),
+    "artificialisation-diff-centroid": (landData) => new ArtificialisationDiffCentroidSource(landData),
 };
 
 export function createSource(cfg: SourceConfig, landData: LandDetailResultType): BaseSource {
