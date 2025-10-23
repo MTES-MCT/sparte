@@ -14,8 +14,6 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
             source: string;
             visible?: boolean;
             opacity?: number;
-            label: string;
-            description: string;
         },
         startMillesimeIndex: number,
         endMillesimeIndex: number,

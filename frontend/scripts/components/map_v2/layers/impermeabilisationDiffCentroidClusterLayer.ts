@@ -5,9 +5,7 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseDiffCentroid
     constructor() {
         super(
             "impermeabilisation-diff-centroid-cluster",
-            "impermeabilisation-diff-centroid-source",
-            "Clusters d'imperméabilisation (donut charts)",
-            "Affiche les clusters sous forme de donut charts"
+            "impermeabilisation-diff-centroid-source"
         );
     }
 

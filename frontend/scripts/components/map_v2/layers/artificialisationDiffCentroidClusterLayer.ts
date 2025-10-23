@@ -5,9 +5,7 @@ export class ArtificialisationDiffCentroidClusterLayer extends BaseDiffCentroidC
     constructor() {
         super(
             "artificialisation-diff-centroid-cluster",
-            "artificialisation-diff-centroid-source",
-            "Clusters d'artificialisation (donut charts)",
-            "Affiche les clusters sous forme de donut charts"
+            "artificialisation-diff-centroid-source"
         );
     }
 

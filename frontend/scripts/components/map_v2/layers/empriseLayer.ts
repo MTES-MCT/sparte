@@ -1,4 +1,5 @@
 import { BaseLayer } from "./baseLayer";
+import type { LineLayerSpecification } from "maplibre-gl";
 
 export class EmpriseLayer extends BaseLayer {
     constructor() {
@@ -7,8 +8,6 @@ export class EmpriseLayer extends BaseLayer {
             type: "line",
             source: "emprise-source",
             visible: true,
-            label: "Emprise",
-            description: "Limites du territoire.",
         });
     }
 
@@ -16,10 +15,10 @@ export class EmpriseLayer extends BaseLayer {
         this.loaded = true;
     }
 
-    getOptions() {
+    getOptions(): LineLayerSpecification {
         return {
             id: this.options.id,
-            type: this.options.type,
+            type: "line",
             source: this.options.source,
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
@@ -30,7 +29,6 @@ export class EmpriseLayer extends BaseLayer {
                 "line-width": 1.7,
                 "line-opacity": this.options.opacity ?? 0.7,
             },
-        };
+        } as LineLayerSpecification;
     }
-
 }

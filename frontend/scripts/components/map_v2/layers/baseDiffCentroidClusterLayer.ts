@@ -11,16 +11,12 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
 
     constructor(
         id: string,
-        sourceId: string,
-        label: string,
-        description: string
+        sourceId: string
     ) {
         super({
             id,
             type: "circle",
             source: sourceId,
-            label,
-            description,
         });
 
         this.updateMarkersBound = this.updateMarkers.bind(this);
@@ -154,8 +150,6 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
             this.markersOnScreen = {};
         }
     }
-
-    abstract setOpacity(_opacity: number): void;
 
     destroy(): void {
         // Nettoyer tous les listeners

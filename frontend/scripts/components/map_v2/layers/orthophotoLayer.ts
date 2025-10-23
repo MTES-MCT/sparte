@@ -1,4 +1,5 @@
 import { BaseLayer } from "./baseLayer";
+import type { RasterLayerSpecification } from "maplibre-gl";
 
 export class OrthophotoLayer extends BaseLayer {
     constructor() {
@@ -7,15 +8,13 @@ export class OrthophotoLayer extends BaseLayer {
             type: "raster",
             source: "orthophoto-source",
             visible: true,
-            label: "Fond de carte",
-            description: "Image géographique du territoire national.",
         });
     }
 
-    getOptions() {
+    getOptions(): RasterLayerSpecification {
         return {
             id: this.options.id,
-            type: this.options.type,
+            type: "raster",
             source: this.options.source,
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
@@ -23,6 +22,6 @@ export class OrthophotoLayer extends BaseLayer {
             paint: {
                 "raster-opacity": this.options.opacity ?? 1,
             },
-        };
+        } as RasterLayerSpecification;
     }
 }

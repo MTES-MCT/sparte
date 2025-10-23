@@ -84,9 +84,4 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 	getOpacity(): number {
 		return this.options.opacity ?? 1;
 	}
-
-	/**
-	 * Nettoie les ressources du layer (listeners, markers, etc.)
-	 */
-	abstract destroy(): void;
 }

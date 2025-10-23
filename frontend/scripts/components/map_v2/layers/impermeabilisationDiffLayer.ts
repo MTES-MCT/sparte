@@ -17,8 +17,6 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
             source: "ocsge-diff-source",
             visible: true,
             opacity: 0.7,
-            label: "Différence d'imperméabilisation",
-            description: "Différence d'imperméabilisation entre deux millésimes consécutifs. Vert = désimperméabilisation, Rouge = imperméabilisation.",
         }, startMillesimeIndex, endMillesimeIndex, departement);
     }
 

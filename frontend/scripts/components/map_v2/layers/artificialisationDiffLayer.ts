@@ -16,8 +16,6 @@ export class ArtificialisationDiffLayer extends BaseOcsgeDiffLayer {
             source: "ocsge-diff-source",
             visible: true,
             opacity: 0.7,
-            label: "Différence d'artificialisation",
-            description: "Différence d'artificialisation entre deux millésimes consécutifs. Vert = désartificialisation, Rouge = artificialisation.",
         }, startMillesimeIndex, endMillesimeIndex, departement);
     }
 

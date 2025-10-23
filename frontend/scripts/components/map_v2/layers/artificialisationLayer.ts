@@ -12,8 +12,6 @@ export class ArtificialisationLayer extends BaseOcsgeLayer {
 			source: "ocsge-source",
 			visible: true,
 			opacity: 0.7,
-			label: "Artificialisation",
-			description: "Visualisation des zones artificialisées selon l'occupation du sol (OCS GE). Affiche toutes les surfaces considérées comme artificialisées.",
 		}, millesimeIndex, departement, nomenclature, millesimes);
 	}
 
