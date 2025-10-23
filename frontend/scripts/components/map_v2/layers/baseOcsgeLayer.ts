@@ -89,6 +89,10 @@ export abstract class BaseOcsgeLayer extends BaseLayer {
         return this.millesimeIndex;
     }
 
+    getCurrentDepartement(): string {
+        return this.departement;
+    }
+
     getAvailableMillesimes(): Array<{ value: number; label: string }> {
         return this.availableMillesimes.map(m => ({
             value: m.index,

@@ -133,7 +133,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 		name,
 		is_interdepartemental,
 	} = landData || {};
-	
+
 	const {
 		selectedIndex,
 		setSelectedIndex,

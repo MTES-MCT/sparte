@@ -38,18 +38,24 @@ export class OcsgeSource extends BaseSource implements SourceInterface {
 		} as SourceSpecification;
 	}
 
-	async setMillesime(newIndex: number): Promise<void> {
+	async setMillesime(newIndex: number, newDepartement?: string): Promise<void> {
 		if (!this.map || !this.sourceId) {
 			console.warn('OcsgeSource: map ou sourceId non attaché');
 			return;
 		}
 
-		if (this.millesimeIndex === newIndex) return;
+		// Si on a un département spécifique, l'utiliser, sinon chercher le premier millésime avec cet index
+		let targetDepartement = newDepartement;
+		if (!targetDepartement) {
+			const millesime = this.millesimes.find((m: Millesime) => m.index === newIndex);
+			targetDepartement = millesime?.departement || this.departements[0];
+		}
+
+		if (this.millesimeIndex === newIndex && this.departement === targetDepartement) return;
 
 		// Mettre à jour l'index et le département
 		this.millesimeIndex = newIndex;
-		const millesime = this.millesimes.find((m: Millesime) => m.index === this.millesimeIndex);
-		this.departement = millesime?.departement || this.departements[0];
+		this.departement = targetDepartement;
 
 		// Trouver toutes les layers qui utilisent cette source et sauvegarder leurs specs
 		const style = this.map.getStyle();
@@ -108,10 +114,10 @@ export class OcsgeSource extends BaseSource implements SourceInterface {
 		});
 	}
 
-	getAvailableMillesimes(): Array<{ value: number; label: string }> {
+	getAvailableMillesimes(): Array<{ value: string; label: string }> {
 		return this.millesimes.map(m => ({
-			value: m.index,
-			label: m.year ? `${m.year}` : `Index ${m.index}`
+			value: `${m.index}_${m.departement}`,
+			label: m.year ? `${m.year} - ${m.departement_name || m.departement}` : `Index ${m.index} - ${m.departement_name || m.departement}`
 		}));
 	}
 

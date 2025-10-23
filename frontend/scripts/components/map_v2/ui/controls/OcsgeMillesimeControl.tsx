@@ -6,7 +6,7 @@ import type { SourceInterface } from "../../types/sourceInterface";
 export const OcsgeMillesimeControl: React.FC<ControlUIProps> = (props) => {
     const control = props.control as OcsgeMillesimeControlType;
 
-    let options: Array<{ value: number; label: string }> = [];
+    let options: Array<{ value: string; label: string }> = [];
     if (props.context?.sources) {
         const source = props.context.sources.get(control.sourceId) as SourceInterface;
         if (source?.getAvailableMillesimes) {
@@ -19,13 +19,13 @@ export const OcsgeMillesimeControl: React.FC<ControlUIProps> = (props) => {
             label="Millésime"
             className={"fr-label--sm"}
             nativeSelectProps={{
-                value: props.value as number,
+                value: props.value as string,
                 onChange: (e: React.ChangeEvent<HTMLSelectElement>) =>
-                    props.onChange(parseInt(e.target.value, 10))
+                    props.onChange(e.target.value)
             }}
             disabled={props.disabled}
         >
-            {options.map((option: { value: number; label: string }) => (
+            {options.map((option: { value: string; label: string }) => (
                 <option key={option.value} value={option.value}>
                     {option.label}
                 </option>

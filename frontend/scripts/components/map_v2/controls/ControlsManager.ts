@@ -66,7 +66,9 @@ export class ControlsManager implements ControlsManagerInterface {
                         } else {
                             const targetLayer = control.targetLayers?.[0];
                             const layer = targetLayer ? this.layers.get(targetLayer) : undefined;
-                            defaultValue = (layer as any)?.getCurrentMillesime?.() ?? 0;
+                            const millesimeIndex = (layer as any)?.getCurrentMillesime?.() ?? 0;
+                            const departement = (layer as any)?.getCurrentDepartement?.() ?? '';
+                            defaultValue = `${millesimeIndex}_${departement}`;
                         }
                         break;
                     case 'ocsge-nomenclature':

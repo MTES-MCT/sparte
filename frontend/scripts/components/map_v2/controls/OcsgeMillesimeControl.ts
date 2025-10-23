@@ -9,20 +9,29 @@ export class OcsgeMillesimeControl extends BaseControl {
 
     async apply(
         _targetLayers: string[],
-        value: number,
+        value: string,
         context: ControlContext
     ): Promise<void> {
         const control = context.controlConfig as OcsgeMillesimeControlType;
         const source = context.sources.get(control.sourceId) as SourceInterface;
 
         if (source?.setMillesime) {
-            await source.setMillesime(value);
+            // Parser la valeur "index_departement" pour extraire index et département
+            const [indexStr, departement] = value.split('_');
+            const index = parseInt(indexStr, 10);
+            await source.setMillesime(index, departement);
         }
     }
 
-    getValue(layerId: string, context?: ControlContext): number | undefined {
+    getValue(layerId: string, context?: ControlContext): string | undefined {
         const layer = context?.layers.get(layerId) as LayerInterface;
-        return layer?.getCurrentMillesime?.();
+        const millesimeIndex = layer?.getCurrentMillesime?.();
+        const departement = layer?.getCurrentDepartement?.();
+
+        if (millesimeIndex !== undefined && departement) {
+            return `${millesimeIndex}_${departement}`;
+        }
+        return undefined;
     }
 
     createUI(props: ControlUIProps): React.ReactElement {

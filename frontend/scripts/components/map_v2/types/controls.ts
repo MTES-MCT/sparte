@@ -36,7 +36,7 @@ export interface OpacityControl extends BaseControl {
 export interface OcsgeMillesimeControl extends BaseControl {
     type: 'ocsge-millesime';
     sourceId: string;
-    defaultValue: number;
+    defaultValue: string;
     disabled?: boolean;
 }
 
