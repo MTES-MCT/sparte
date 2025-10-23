@@ -150,7 +150,7 @@ export function createDonutChart(
 
     const element = document.createElement('div');
     element.innerHTML = html;
-    return element.firstChild as HTMLElement;
+    return element;
 }
 
 /**
@@ -167,7 +167,7 @@ function createEmptyDonut(options: Required<DonutChartOptions>): HTMLElement {
 
     const element = document.createElement('div');
     element.innerHTML = html;
-    return element.firstChild as HTMLElement;
+    return element;
 }
 
 /**

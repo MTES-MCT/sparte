@@ -13,6 +13,7 @@ import type { MapConfig } from "../types/builder";
 import type { PopupState } from "../types/popup";
 import type { StatsState } from "../stats/StatsStateManager";
 import type { LandDetailResultType } from "@services/types/land";
+import type { LayerId } from "../types/registry";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -111,12 +112,12 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 
                 memoizedConfig.layers.forEach(layerConfig => {
                     if (layerConfig.stats) {
-                        const layerId = `${layerConfig.type}-layer`;
+                        const layerId = `${layerConfig.type}-layer` as LayerId;
                         const layer = layers.get(layerId);
                         if (layer && 'extractStats' in layer && typeof layer.extractStats === 'function') {
                             statsMgr.registerStats(
                                 layerId,
-                                (features: maplibregl.MapGeoJSONFeature[]) => layer.extractStats(features)
+                                (features: maplibregl.MapGeoJSONFeature[]) => (layer as any).extractStats(features)
                             );
                             statsMgr.enableStats(layerId);
                         }
@@ -136,6 +137,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                     layers,
                     statsMgr
                 );
+                
+                // Appliquer les valeurs par défaut aux layers
+                // C'est ici que la configuration "descend" vers les layers
+                await manager.applyDefaultValues();
                 
                 setControlsManager(manager);
             }

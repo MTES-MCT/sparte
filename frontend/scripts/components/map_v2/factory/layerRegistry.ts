@@ -5,7 +5,6 @@ import { ImpermeabilisationLayer } from "../layers/impermeabilisationLayer";
 import { ArtificialisationLayer } from "../layers/artificialisationLayer";
 import { ImpermeabilisationDiffLayer } from "../layers/impermeabilisationDiffLayer";
 import { ImpermeabilisationDiffCentroidClusterLayer } from "../layers/impermeabilisationDiffCentroidClusterLayer";
-import { ImpermeabilisationDiffCentroidClusterCountLayer } from "../layers/impermeabilisationDiffCentroidClusterCountLayer";
 import { ArtificialisationDiffCentroidClusterLayer } from "../layers/artificialisationDiffCentroidClusterLayer";
 import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
@@ -51,7 +50,6 @@ const layerRegistry: Record<string, LayerFactory> = {
         );
     },
     "impermeabilisation-diff-centroid-cluster": () => new ImpermeabilisationDiffCentroidClusterLayer(),
-    "impermeabilisation-diff-centroid-cluster-count": () => new ImpermeabilisationDiffCentroidClusterCountLayer(),
     "artificialisation-diff-centroid-cluster": () => new ArtificialisationDiffCentroidClusterLayer(),
 };
 

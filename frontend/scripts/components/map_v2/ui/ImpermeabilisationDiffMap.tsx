@@ -22,7 +22,6 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 			...BASE_LAYERS,
             { type: "impermeabilisation-diff", stats: true },
             { type: "impermeabilisation-diff-centroid-cluster" },
-            { type: "impermeabilisation-diff-centroid-cluster-count" },
 		],
 		controlGroups: [
 			...BASE_CONTROLS,
@@ -34,13 +33,13 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 					{
 						id: "impermeabilisation-diff-visibility",
 						type: "visibility",
-						targetLayers: ["impermeabilisation-diff-layer", "impermeabilisation-diff-centroid-cluster", "impermeabilisation-diff-centroid-cluster-count"],
+						targetLayers: ["impermeabilisation-diff-layer", "impermeabilisation-diff-centroid-cluster"],
 						defaultValue: true
 					},
 					{
 						id: "impermeabilisation-diff-opacity",
 						type: "opacity",
-						targetLayers: ["impermeabilisation-diff-layer", "impermeabilisation-diff-centroid-cluster"],
+						targetLayers: ["impermeabilisation-diff-layer"],
 						defaultValue: 0.7
 					}
 				]

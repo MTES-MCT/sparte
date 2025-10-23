@@ -8,7 +8,11 @@ export abstract class BaseLayer {
 	protected map?: maplibregl.Map;
 
 	constructor(options: BaseLayerOptions) {
-		this.options = { ...options };
+		this.options = {
+			visible: true, // surchargé par les contrôles
+			opacity: 1, // surchargé par les contrôles
+			...options
+		};
 	}
 
 	// Injection des dépendances: map
@@ -47,14 +51,6 @@ export abstract class BaseLayer {
 		}
 	}
 
-	getVisibility(): boolean {
-		return this.options.visible ?? true;
-	}
-
-	getOpacity(): number {
-		return this.options.opacity ?? 1;
-	}
-
 	protected getOpacityPropertyForLayerType(layerType: string): string | null {
 		switch (layerType) {
 			case 'fill':
@@ -80,11 +76,11 @@ export abstract class BaseLayer {
 		return this.options.source;
 	}
 
-	isVisible(): boolean {
+	getVisibility(): boolean {
 		return this.options.visible ?? true;
 	}
 
-	getOpacityValue(): number {
+	getOpacity(): number {
 		return this.options.opacity ?? 1;
 	}
 }

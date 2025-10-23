@@ -54,16 +54,30 @@ export class ControlsManager implements ControlsManagerInterface {
                 let defaultValue: ControlValue;
                 switch (control.type) {
                     case 'visibility':
-                        defaultValue = control.defaultValue;
+                        defaultValue = control.defaultValue ?? true;
                         break;
                     case 'opacity':
-                        defaultValue = control.defaultValue;
+                        defaultValue = control.defaultValue ?? 1;
                         break;
                     case 'ocsge-millesime':
-                        defaultValue = control.defaultValue;
+                        // Si pas de defaultValue, récupérer la valeur du layer
+                        if (control.defaultValue !== undefined) {
+                            defaultValue = control.defaultValue;
+                        } else {
+                            const targetLayer = control.targetLayers?.[0];
+                            const layer = targetLayer ? this.layers.get(targetLayer) : undefined;
+                            defaultValue = (layer as any)?.getCurrentMillesime?.() ?? 0;
+                        }
                         break;
                     case 'ocsge-nomenclature':
-                        defaultValue = control.defaultValue;
+                        // Si pas de defaultValue, récupérer la valeur du layer
+                        if (control.defaultValue !== undefined) {
+                            defaultValue = control.defaultValue;
+                        } else {
+                            const targetLayer = control.targetLayers?.[0];
+                            const layer = targetLayer ? this.layers.get(targetLayer) : undefined;
+                            defaultValue = (layer as any)?.getCurrentNomenclature?.() ?? 'couverture';
+                        }
                         break;
                     case 'ocsge-nomenclature-filter':
                         defaultValue = control.defaultValue;
@@ -74,6 +88,28 @@ export class ControlsManager implements ControlsManagerInterface {
                 this.stateManager.initializeControlValue(control.id, defaultValue);
             });
         });
+    }
+
+    /**
+     * Applique les valeurs par défaut des contrôles aux layers
+     * Cette méthode doit être appelée après la création du ControlsManager
+     * pour initialiser l'état visuel des layers selon la configuration
+     */
+    async applyDefaultValues(): Promise<void> {
+        for (const group of this.groups) {
+            for (const control of group.controls) {
+                const defaultValue = this.stateManager.getControlValue(control.id);
+                const controlInstance = this.controlInstances.get(control.id);
+
+                if (!controlInstance || defaultValue === undefined) continue;
+
+                const context = this.buildContext(control.id);
+                const targetLayers = control.targetLayers || [];
+
+                // Appliquer la valeur par défaut aux layers
+                await controlInstance.apply(targetLayers, defaultValue, context);
+            }
+        }
     }
 
     async applyControl(controlId: string, value: ControlValue): Promise<void> {

@@ -30,13 +30,14 @@ export async function initMapFromConfig(
     }
 
     for (const lyr of config.layers || []) {
-        const layerId = `${lyr.type}-layer`;
         const layer = createLayer(lyr, landData);
         await layer.load();
 
         layer.attach(map);
-        map.addLayer(layer.getOptions());
-        layers.set(layerId, layer);
+        const layerSpec = layer.getOptions();
+        map.addLayer(layerSpec);
+
+        layers.set(layerSpec.id, layer);
     }
 
     return { sources, layers };

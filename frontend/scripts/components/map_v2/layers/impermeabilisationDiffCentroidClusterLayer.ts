@@ -1,5 +1,5 @@
 import { BaseLayer } from "./baseLayer";
-import type { LayerSpecification, FilterSpecification } from "maplibre-gl";
+import type { LayerSpecification } from "maplibre-gl";
 import maplibregl from "maplibre-gl";
 import { createImpermeabilisationDonutChart } from "../utils/donutChart";
 
@@ -14,10 +14,8 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseLayer {
     constructor() {
         super({
             id: "impermeabilisation-diff-centroid-cluster",
-            type: "circle", // Type factice, pas vraiment utilisé
+            type: "circle",
             source: "impermeabilisation-diff-centroid-source",
-            visible: true,
-            opacity: 1,
             label: "Clusters d'imperméabilisation (donut charts)",
             description: "Affiche les clusters sous forme de donut charts",
         });
@@ -29,14 +27,16 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseLayer {
     attach(map: maplibregl.Map): void {
         super.attach(map);
 
-        // Configurer les listeners pour mettre à jour les markers
+        // Listener temporaire pour détecter quand la source de données est chargée
+        // Une fois chargée, on configurera les vrais listeners (move/moveend)
         map.on('data', this.handleDataBound);
     }
 
     private handleData(e: maplibregl.MapSourceDataEvent): void {
         if (!this.map || e.sourceId !== this.sourceId || !e.isSourceLoaded) return;
 
-        // Configurer les listeners une seule fois après le chargement de la source
+        // La source est maintenant chargée, on peut configurer les vrais listeners
+        // et supprimer le listener temporaire 'data'
         this.map.off('data', this.handleDataBound);
         this.map.on('move', this.updateMarkersBound);
         this.map.on('moveend', this.updateMarkersBound);
@@ -49,7 +49,7 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseLayer {
         const newMarkers: Record<string, maplibregl.Marker> = {};
         const features = this.map.querySourceFeatures(this.sourceId);
 
-        // Pour chaque cluster visible, créer un HTML marker
+        // Créer/actualiser les markers pour chaque cluster visible
         for (let i = 0; i < features.length; i++) {
             const coords = features[i].geometry;
             const props = features[i].properties;
@@ -71,31 +71,44 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseLayer {
                 }).setLngLat(coordinates);
             }
             newMarkers[id] = marker;
+        }
 
-            if (!this.markersOnScreen[id]) {
-                marker.addTo(this.map);
+        // Gestion de l'affichage selon la visibilité de la couche
+        if (this.options.visible) {
+            // Ajouter les nouveaux markers à la carte
+            for (const id in newMarkers) {
+                if (!this.markersOnScreen[id]) {
+                    newMarkers[id].addTo(this.map);
+                }
             }
         }
 
-        // Supprimer les markers qui ne sont plus visibles
+
         for (const id in this.markersOnScreen) {
             if (!newMarkers[id]) {
                 this.markersOnScreen[id].remove();
+                delete this.markersOnScreen[id];
             }
         }
 
-        this.markersOnScreen = newMarkers;
+        // Mettre à jour la liste des markers affichés
+        if (this.options.visible) {
+            this.markersOnScreen = newMarkers;
+        } else {
+            this.markersOnScreen = {};
+        }
     }
 
-    // Créer un layer invisible pour permettre querySourceFeatures
+    // Layer technique nécessaire pour que querySourceFeatures() fonctionne
+    // Les markers HTML (donut charts) sont gérés séparément via updateMarkers()
     getOptions(): LayerSpecification {
         return {
             id: this.options.id,
             type: 'circle',
             source: this.options.source,
-            filter: ['has', 'point_count'], // Filtrer seulement les clusters
+            filter: ['has', 'point_count'],
             layout: {
-                visibility: 'none' // Invisible mais présent pour querySourceFeatures
+                visibility: 'visible'
             },
             paint: {
                 'circle-radius': 0,
@@ -107,35 +120,41 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseLayer {
     setVisibility(visible: boolean): void {
         this.options.visible = visible;
 
-        // Montrer/cacher tous les markers
         if (visible) {
-            for (const id in this.markersOnScreen) {
-                if (this.map && !this.markersOnScreen[id].getElement().parentElement) {
-                    this.markersOnScreen[id].addTo(this.map);
+            // Réafficher tous les markers existants
+            for (const id in this.markers) {
+                const marker = this.markers[id];
+                if (this.map && !marker.getElement().parentElement) {
+                    marker.addTo(this.map);
+                    this.markersOnScreen[id] = marker;
                 }
             }
         } else {
+            // Cacher tous les markers actuellement affichés
             for (const id in this.markersOnScreen) {
                 this.markersOnScreen[id].remove();
             }
-            if (!visible) {
-                this.markersOnScreen = {};
-            }
+            this.markersOnScreen = {};
         }
     }
 
-    // Nettoyer les markers quand le layer est détruit
+    setOpacity(_opacity: number): void {
+    }
+
     destroy(): void {
+        // Nettoyer tous les listeners
         if (this.map) {
             this.map.off('move', this.updateMarkersBound);
             this.map.off('moveend', this.updateMarkersBound);
             this.map.off('data', this.handleDataBound);
         }
 
-        // Supprimer tous les markers
+        // Supprimer tous les markers de la carte
         for (const id in this.markersOnScreen) {
             this.markersOnScreen[id].remove();
         }
+
+        // Vider les collections
         this.markers = {};
         this.markersOnScreen = {};
     }

@@ -45,8 +45,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 						id: "impermeabilisation-millesime",
 						type: "ocsge-millesime",
 						targetLayers: ["impermeabilisation-layer"],
-						sourceId: "ocsge-source",
-						defaultValue: 0
+						sourceId: "ocsge-source"
 					},
 					{
 						id: "impermeabilisation-nomenclature",
