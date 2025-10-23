@@ -107,10 +107,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             
             // Initialiser le gestionnaire de stats si des layers en ont besoin
             let statsMgr: StatsManager | undefined;
-            if (memoizedConfig.layers && memoizedConfig.layers.some(l => l.stats)) {
+            if (memoizedConfig.layers?.some(l => l.stats)) {
                 statsMgr = new StatsManager(map);
                 
-                memoizedConfig.layers.forEach(layerConfig => {
+                for (const layerConfig of memoizedConfig.layers) {
                     if (layerConfig.stats) {
                         const layerId = `${layerConfig.type}-layer` as LayerId;
                         const layer = layers.get(layerId);
@@ -122,7 +122,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                             statsMgr.enableStats(layerId);
                         }
                     }
-                });
+                }
 
                 statsMgr.subscribe(setStatsState);
                 
@@ -149,9 +149,9 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             if (memoizedConfig.popups?.length > 0) {
                 const popupMgr = new PopupManager(map);
                 
-                memoizedConfig.popups.forEach(popupConfig => {
+                for (const popupConfig of memoizedConfig.popups) {
                     popupMgr.registerPopup(popupConfig);
-                });
+                }
 
                 popupMgr.subscribe(setPopupState);
                 

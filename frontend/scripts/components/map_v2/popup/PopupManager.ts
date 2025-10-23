@@ -81,7 +81,7 @@ export class PopupManager {
         const currentState = this.stateManager.getState();
         if (!currentState.isVisible) return;
 
-        const config = this.popupConfigs.get(currentState.layerId!);
+        const config = this.popupConfigs.get(currentState.layerId);
         config?.onClose?.();
 
         this.stateManager.reset();

@@ -2,7 +2,7 @@ import { BaseSource } from "./baseSource";
 import { OCSGE_TILES_URL } from "../constants/config";
 import { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
-import type { SourceSpecification, LayerSpecification } from "maplibre-gl";
+import type { SourceSpecification } from "maplibre-gl";
 import { getLastMillesimeIndex } from "../utils/ocsge";
 
 export class OcsgeSource extends BaseSource implements SourceInterface {

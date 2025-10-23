@@ -48,7 +48,7 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
     }
 
     async setMillesimes(newStartIndex: number, newEndIndex: number): Promise<void> {
-        if (!this.map || !this.map.getLayer(this.options.id)) {
+        if (!this.map?.getLayer(this.options.id)) {
             return;
         }
 
@@ -83,7 +83,7 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
         let positiveSurface = 0;
         let negativeSurface = 0;
 
-        features.forEach(feature => {
+        for (const feature of features) {
             const properties = feature.properties;
             const featureArea = area(feature.geometry);
 
@@ -92,7 +92,7 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
             } else if (properties && properties[this.getNegativeField()] === true) {
                 negativeSurface += featureArea;
             }
-        });
+        }
 
         const totalSurface = positiveSurface + negativeSurface;
 

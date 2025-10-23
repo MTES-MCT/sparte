@@ -1,4 +1,4 @@
-import type { LayerId, LayerCategory } from './registry';
+import type { LayerCategory } from './registry';
 import type { ControlGroup } from './controls';
 import type { LayerPopupConfig } from './popup';
 

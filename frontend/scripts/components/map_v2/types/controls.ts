@@ -5,7 +5,7 @@ import type { StatsManager } from "../stats/StatsManager";
 
 export type ControlType = 'visibility' | 'opacity' | 'ocsge-millesime' | 'ocsge-nomenclature' | 'ocsge-nomenclature-filter';
 
-export type ControlValue = boolean | number | string | string[] | 'couverture' | 'usage';
+export type ControlValue = boolean | number | string | string[];
 
 export interface ControlGroup {
     id: string;

@@ -63,8 +63,8 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
         const newMarkers: Record<string, maplibregl.Marker> = {};
         const features = this.map!.querySourceFeatures(this.getSourceId());
 
-        for (let i = 0; i < features.length; i++) {
-            const marker = this.createMarkerFromFeature(features[i]);
+        for (const feature of features) {
+            const marker = this.createMarkerFromFeature(feature);
             if (marker) {
                 newMarkers[marker.id] = marker.marker;
             }
@@ -77,7 +77,7 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
         const coords = feature.geometry;
         const props = feature.properties;
 
-        if (!props || !props.cluster || coords.type !== 'Point') return null;
+        if (!props?.cluster || coords.type !== 'Point') return null;
 
         const id = props.cluster_id;
         const coordinates = coords.coordinates as [number, number];
@@ -98,7 +98,7 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
 
         for (const id in newMarkers) {
             if (!this.markersOnScreen[id]) {
-                newMarkers[id].addTo(this.map!);
+                newMarkers[id].addTo(this.map);
             }
         }
     }

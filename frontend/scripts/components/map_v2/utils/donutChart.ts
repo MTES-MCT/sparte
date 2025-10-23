@@ -113,9 +113,9 @@ export function createDonutChart(
     let total = 0;
 
     // Calculer les offsets pour chaque segment
-    for (let i = 0; i < counts.length; i++) {
+    for (const count of counts) {
         offsets.push(total);
-        total += counts[i];
+        total += count;
     }
 
     if (total === 0) {

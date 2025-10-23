@@ -16,7 +16,7 @@ export const OpacityControl: React.FC<ControlUIProps> = (props) => {
             nativeInputProps={{
                 value: props.value as number,
                 onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                    props.onChange(parseFloat(e.target.value))
+                    props.onChange(Number.parseFloat(e.target.value))
             }}
         />
     );

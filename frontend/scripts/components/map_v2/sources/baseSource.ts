@@ -35,11 +35,11 @@ export abstract class BaseSource {
         const layerSpecs = this.collectLayerSpecs(style);
 
         // 2. Supprimer les layers
-        layerSpecs.forEach(({ id }) => {
+        for (const { id } of layerSpecs) {
             if (this.map!.getLayer(id)) {
                 this.map!.removeLayer(id);
             }
-        });
+        }
 
         // 3. Supprimer la source
         if (this.map.getSource(this.sourceId)) {
@@ -51,9 +51,9 @@ export abstract class BaseSource {
         this.map.addSource(this.sourceId, newOptions);
 
         // 5. Recréer les layers avec leurs specs mis à jour
-        layerSpecs.forEach((layerSpec) => {
+        for (const layerSpec of layerSpecs) {
             this.map!.addLayer(layerSpec);
-        });
+        }
     }
 
     private collectLayerSpecs(style: StyleSpecification): LayerSpecification[] {

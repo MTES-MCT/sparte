@@ -170,9 +170,9 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
         // Aggréger les surfaces par code
         const surfaces: Record<string, number> = {};
 
-        features.forEach(feature => {
+        for (const feature of features) {
             const properties = feature.properties;
-            if (!properties) return;
+            if (!properties) continue;
 
             const code = properties[field] as string;
 
@@ -180,7 +180,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
                 const featureArea = area(feature.geometry);
                 surfaces[code] = (surfaces[code] || 0) + featureArea;
             }
-        });
+        }
 
         // Calculer le total
         const totalSurface = Object.values(surfaces).reduce((acc, val) => acc + val, 0);

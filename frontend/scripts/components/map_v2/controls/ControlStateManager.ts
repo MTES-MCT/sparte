@@ -25,9 +25,7 @@ export class ControlStateManager {
     }
 
     private notifyUpdate(): void {
-        for (const callback of Array.from(this.updateCallbacks)) {
-            callback();
-        }
+        this.updateCallbacks.forEach(callback => callback());
     }
 }
 

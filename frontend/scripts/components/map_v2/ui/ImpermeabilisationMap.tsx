@@ -5,6 +5,7 @@ import { LandDetailResultType } from "@services/types/land";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 import { ImpermeabilisationPopup } from "./popup/ImpermeabilisationPopup";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
+import { getLastMillesimeIndex, getFirstDepartement } from "../utils/ocsge";
 
 interface ImpermeabilisationMapProps {
 	landData: LandDetailResultType;
@@ -13,6 +14,9 @@ interface ImpermeabilisationMapProps {
 export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
   	landData,
 }) => {
+    const lastMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
+    const firstDepartement = getFirstDepartement(landData.departements);
+
     const config = defineMapConfig({
 		sources: [
 			...BASE_SOURCES,
@@ -45,7 +49,8 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 						id: "impermeabilisation-millesime",
 						type: "ocsge-millesime",
 						targetLayers: ["impermeabilisation-layer"],
-						sourceId: "ocsge-source"
+						sourceId: "ocsge-source",
+						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`
 					},
 					{
 						id: "impermeabilisation-nomenclature",
