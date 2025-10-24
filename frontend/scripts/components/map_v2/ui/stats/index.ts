@@ -1,0 +1,2 @@
+export { StatsBar } from './StatsBar';
+

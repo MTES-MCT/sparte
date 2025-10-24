@@ -1,0 +1,152 @@
+import { createControl } from "../factory/controlRegistry";
+import type { BaseSource } from "../sources/baseSource";
+import type { BaseLayer } from "../layers/baseLayer";
+import type {
+    ControlGroup,
+    Control,
+    ControlContext,
+    BaseControlInterface,
+    ControlsManagerInterface,
+    ControlValue,
+} from "../types/controls";
+import type { StatsManager } from "../stats/StatsManager";
+import { ControlStateManager } from "./ControlStateManager";
+
+export class ControlsManager implements ControlsManagerInterface {
+    private readonly stateManager: ControlStateManager;
+    private readonly controlInstances: Map<string, BaseControlInterface> = new Map();
+    private readonly groups: ControlGroup[];
+    private readonly sources: Map<string, BaseSource>;
+    private readonly layers: Map<string, BaseLayer>;
+    private readonly statsManager?: StatsManager;
+
+    constructor(
+        groups: ControlGroup[],
+        sources: Map<string, BaseSource>,
+        layers: Map<string, BaseLayer>,
+        statsManager?: StatsManager
+    ) {
+        this.groups = groups;
+        this.sources = sources;
+        this.layers = layers;
+        this.statsManager = statsManager;
+
+        this.initializeControlInstances();
+
+        this.stateManager = new ControlStateManager();
+
+        this.initializeControlValuesFromConfig();
+    }
+
+    private initializeControlInstances(): void {
+        for (const group of this.groups) {
+            for (const control of group.controls) {
+                const instance = createControl(control.type);
+                this.controlInstances.set(control.id, instance);
+            }
+        }
+    }
+
+    /**
+     * Initialise les valeurs par défaut des contrôles dans le state manager.
+     */
+    private initializeControlValuesFromConfig(): void {
+        for (const group of this.groups) {
+            for (const control of group.controls) {
+                this.stateManager.initializeControlValue(control.id, control.defaultValue);
+            }
+        }
+    }
+
+    /**
+     * Applique les valeurs par défaut des contrôles aux layers
+     * Cette méthode doit être appelée après la création du ControlsManager
+     * pour initialiser l'état visuel des layers selon la configuration
+     */
+    async applyDefaultValues(): Promise<void> {
+        for (const group of this.groups) {
+            for (const control of group.controls) {
+                const defaultValue = this.stateManager.getControlValue(control.id);
+                const controlInstance = this.controlInstances.get(control.id);
+
+                if (!controlInstance || defaultValue === undefined) continue;
+
+                const context = this.buildContext(control.id);
+                const targetLayers = control.targetLayers || [];
+
+                await controlInstance.apply(targetLayers, defaultValue, context);
+            }
+        }
+    }
+
+    async applyControl(controlId: string, value: ControlValue): Promise<void> {
+        const control = this.findControl(controlId);
+        const controlInstance = this.controlInstances.get(controlId);
+
+        if (!control || !controlInstance) return;
+
+        const context = this.buildContext(controlId);
+        const targetLayers = control.targetLayers || [];
+        await controlInstance.apply(targetLayers, value, context);
+
+        this.stateManager.setControlValue(controlId, value);
+    }
+
+    getControlValue(controlId: string): ControlValue {
+        return this.stateManager.getControlValue(controlId);
+    }
+
+    getGroups(): ControlGroup[] {
+        return this.groups;
+    }
+
+    isGroupVisible(groupId: string): boolean {
+        const group = this.groups.find(g => g.id === groupId);
+        if (!group) return true;
+
+        const visibilityControl = group.controls.find(c => c.type === 'visibility');
+        if (!visibilityControl) return true;
+
+        const isVisible = this.stateManager.getControlValue(visibilityControl.id);
+        return (isVisible as boolean) ?? true;
+    }
+
+    subscribe(callback: () => void): () => void {
+        return this.stateManager.subscribe(callback);
+    }
+
+    getControlInstance(controlId: string): BaseControlInterface | undefined {
+        return this.controlInstances.get(controlId);
+    }
+
+    getControlContext(controlId: string): ControlContext {
+        return this.buildContext(controlId);
+    }
+
+    updateControlValue(controlId: string, value: ControlValue): void {
+        this.stateManager.setControlValue(controlId, value);
+    }
+
+    private buildContext(controlId: string): ControlContext {
+        const control = this.findControl(controlId);
+        if (!control) {
+            throw new Error(`Control with id ${controlId} not found`);
+        }
+        return {
+            manager: this,
+            sources: this.sources,
+            layers: this.layers,
+            controlId,
+            controlConfig: control,
+            statsManager: this.statsManager
+        };
+    }
+
+    private findControl(controlId: string): Control | undefined {
+        for (const group of this.groups) {
+            const control = group.controls.find(c => c.id === controlId);
+            if (control) return control;
+        }
+        return undefined;
+    }
+}

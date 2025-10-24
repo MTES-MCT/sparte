@@ -12,6 +12,8 @@ import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
 import { DataCards } from "@components/features/ocsge/DataCards";
+import { ImpermeabilisationMap } from "@components/map_v2/ui/ImpermeabilisationMap";
+import { ImpermeabilisationDiffMap } from "@components/map_v2/ui/ImpermeabilisationDiffMap";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -43,19 +45,17 @@ const ImperLastMillesimeSection: React.FC<{
 	territory_name: string;
 }> = ({ landImperStockIndex, is_interdepartemental, millesimes, territory_name }) => (
 	<div className="fr-mb-5w">
+		<div className="bg-white fr-p-4w rounded fr-mb-3w">
+			<h2>Qu'est-ce que l'imperméabilisation des sols ?</h2>
+			<p className="fr-text--sm">
+				L'imperméabilisation des sols est définie comme :
+			</p>
+			<ul className="fr-text--sm">
+				<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
+				<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+			</ul>
+		</div>
 		<div className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-md-6">
-				<div className="bg-white fr-p-4w rounded h-100">
-					<h2>Qu'est-ce que l'imperméabilisation des sols ?</h2>
-					<p className="fr-text--sm">
-						L'imperméabilisation des sols est définie comme :
-					</p>
-					<ul className="fr-text--sm">
-						<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
-						<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
-					</ul>
-				</div>
-			</div>
 			<DataCards
 				icon="bi-droplet"
 				fluxBadgeLabel="Imperméabilisation"
@@ -80,7 +80,6 @@ const ImperLastMillesimeSection: React.FC<{
 					</>
 				}
 			/>
-
 		</div>
 		<div className="fr-grid-row fr-mt-3w">
 			<div className="fr-col-12">
@@ -131,7 +130,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 		name,
 		is_interdepartemental,
 	} = landData || {};
-	
+
 	const {
 		selectedIndex,
 		setSelectedIndex,
@@ -240,7 +239,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					Répartition des surfaces imperméabilisées par type de couverture et
 					d'usage
 				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
 						<OcsgeMillesimeSelector
 							millesimes_by_index={millesimes_by_index}
@@ -328,6 +327,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						)}
 					</div>
 				</div>
+				<ImpermeabilisationMap landData={landData} />
 			</div>
 			
 			<div className="fr-mb-7w">
@@ -340,7 +340,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						between={true}
 					/>
 				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
 					{
 						is_interdepartemental && (
 							<DepartmentSelector
@@ -424,6 +424,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						)}
 					</div>
 				</div>
+				<ImpermeabilisationDiffMap landData={landData} />
 			</div>
 			
 			{child_land_types && (

@@ -7,6 +7,14 @@
 
 
 /*
+Small label
+*/
+.fr-label--sm .fr-label {
+    font-size: .875rem !important;
+    line-height: 1.5rem !important;
+}
+
+/*
 Header logo
 */
 .fr-header__operator img {
