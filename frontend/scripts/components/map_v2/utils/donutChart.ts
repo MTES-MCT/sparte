@@ -42,8 +42,8 @@ const DEFAULT_OPTIONS: Required<DonutChartOptions> = {
         impermeabilisation: IMPERMEABILISATION_COLOR,
         desimpermeabilisation: DESIMPERMEABILISATION_COLOR,
     },
-    minRadius: 18,
-    maxRadius: 50,
+    minRadius: 14,
+    maxRadius: 40,
     fontSize: {
         small: 12,
         medium: 14,
@@ -167,7 +167,7 @@ function formatDisplayValue(total: number): { value: string; unit: string } {
 function getFontSize(total: number, fontSize: DonutChartOptions['fontSize']): number {
     if (!fontSize) return 16;
 
-    const valueInHa = total > 1000 ? convertToHectares(total) : total;
+    const valueInHa = convertToHectares(total);
 
     if (valueInHa >= 100) return fontSize.xlarge;
     if (valueInHa >= 10) return fontSize.large;
@@ -176,12 +176,21 @@ function getFontSize(total: number, fontSize: DonutChartOptions['fontSize']): nu
 }
 
 function getRadius(total: number, minRadius: number, maxRadius: number): number {
-    const valueInHa = total > 1000 ? convertToHectares(total) : total;
+    const valueInHa = convertToHectares(total);
 
-    if (valueInHa >= 100) return maxRadius;
-    if (valueInHa >= 10) return Math.round(maxRadius * 0.64); // 32 pour maxRadius=50
-    if (valueInHa >= 1) return Math.round(maxRadius * 0.48);  // 24 pour maxRadius=50
-    return minRadius;
+    const minValue = 0.01; // 0.01 hectare
+    const maxValue = 100;   // 100 hectares
+
+    const clampedValue = Math.max(minValue, Math.min(maxValue, valueInHa));
+
+    const logMin = Math.log10(minValue);
+    const logMax = Math.log10(maxValue);
+    const logValue = Math.log10(clampedValue);
+
+    const ratio = (logValue - logMin) / (logMax - logMin);
+    const radius = minRadius + (maxRadius - minRadius) * ratio;
+
+    return Math.round(radius);
 }
 
 function donutSegment(
