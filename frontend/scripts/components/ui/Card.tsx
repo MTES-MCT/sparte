@@ -28,7 +28,6 @@ const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
         border-color: var(--artwork-major-blue-france);
         border-width: 3px;
         border-style: solid;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     `}
 `;
 

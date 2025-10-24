@@ -72,7 +72,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 			{
 				layerId: "impermeabilisation-layer",
 				trigger: "hover",
-				title: "Imperméabilisation",
+				title: "Surfaces imperméabilisées",
 				renderContent: (feature) => <ImpermeabilisationPopup feature={feature} />,
 			}
 		]

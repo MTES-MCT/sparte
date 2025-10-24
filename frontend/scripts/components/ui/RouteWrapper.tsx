@@ -12,7 +12,6 @@ interface RouteWrapperProps {
 
 const Title = styled.h1`
     margin: 1rem 0 0 0;
-    font-size: 1.8em;
 `;
 
 const RouteWrapper: React.FC<RouteWrapperProps> = ({

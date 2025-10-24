@@ -27,12 +27,13 @@ const Container = styled.div`
     justify-content: space-between;
 `;
 
-const Title = styled.h1`
+const Title = styled.div`
     color: ${activeColor};
     margin: 0;
     padding: 0;
     font-size: 2em;
     line-height: 1em;
+    font-weight: 600;
 `;
 
 const SubTitle = styled.div`
