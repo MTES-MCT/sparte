@@ -156,20 +156,12 @@ function convertToHectares(squareMeters: number): number {
 }
 
 function formatDisplayValue(total: number): { value: string; unit: string } {
-    if (total > 1000) {
-        const hectares = convertToHectares(total);
-        const decimals = hectares < 1 ? 2 : 1;
-        return {
-            value: hectares.toFixed(decimals),
-            unit: 'ha'
-        };
-    } else {
-        const decimals = total < 1 ? 2 : 1;
-        return {
-            value: total.toFixed(decimals),
-            unit: ''
-        };
-    }
+    const hectares = convertToHectares(total);
+    const decimals = hectares < 1 ? 2 : 1;
+    return {
+        value: hectares.toFixed(decimals),
+        unit: 'ha'
+    };
 }
 
 function getFontSize(total: number, fontSize: DonutChartOptions['fontSize']): number {
