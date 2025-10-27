@@ -1,14 +1,23 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { DEFAULT_MAP_STYLE, FRENCH_LOCALE } from "../constants/config";
+import { calculateMaxBoundsWithPadding } from "../utils/bounds";
+import type { LandDetailResultType } from "@services/types/land";
 
 let PMTILES_PROTOCOL_REGISTERED = false;
 
-export const useMap = (bounds?: [number, number, number, number], maxBounds?: [number, number, number, number]) => {
+const PADDING_KM = 15;
+
+export const useMap = (landData: LandDetailResultType) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const controlsRef = useRef<{ [key: string]: maplibregl.IControl }>({});
+
+    const bounds = landData.bounds;
+    const maxBounds = useMemo(() => {
+        return bounds ? calculateMaxBoundsWithPadding(bounds, PADDING_KM) : undefined;
+    }, [bounds]);
 
     const initializeMap = useCallback((container: HTMLElement) => {
         if (!PMTILES_PROTOCOL_REGISTERED) {
@@ -63,8 +72,6 @@ export const useMap = (bounds?: [number, number, number, number], maxBounds?: [n
         addFullscreenControl();
     }, [addNavigationControl, addFullscreenControl]);
 
-
-    // Nettoyage de la carte lors du démontage du composant
     useEffect(() => {
         return () => {
             if (mapRef.current) {

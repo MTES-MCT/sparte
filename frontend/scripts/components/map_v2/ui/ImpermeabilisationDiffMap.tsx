@@ -60,8 +60,6 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 			id="impermeabilisation-diff-map"
 			config={config}
 			landData={landData}
-			bounds={landData.bounds}
-			maxBounds={landData.max_bounds}
 		/>
 	);
 };
