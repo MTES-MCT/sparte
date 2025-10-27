@@ -1,13 +1,6 @@
 from django import forms
 
-from project.models import Project
-from project.models.enums import ProjectChangeReason
-from project.views.mixins import PeriodValidationMixin
-from public_data.models import AdminRef, Departement, Epci, Region
-
-
-class KeywordForm(forms.Form):
-    keyword = forms.CharField(label="Mot clé")
+from public_data.models import Departement, Epci, Region
 
 
 class SelectTerritoryForm(forms.Form):
@@ -43,28 +36,6 @@ class SelectTerritoryForm(forms.Form):
                 self.fields["epci"].queryset = epci_qs
             except Departement.DoesNotExist:
                 pass
-
-
-class UpdateProjectForm(PeriodValidationMixin, forms.ModelForm):
-    class Meta:
-        model = Project
-        fields = [
-            "name",
-            "territory_name",
-            "level",
-            "target_2031",
-            "is_public",
-        ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance and self.instance.land_type:
-            choices = AdminRef.get_available_analysis_level(self.instance.land_type)
-            self.fields["level"].choices = [(c, AdminRef.get_label(c)) for c in choices]
-
-    def save(self, *args, **kwargs):
-        self.instance._change_reason = ProjectChangeReason.USER_UPDATED_PROJECT_FROM_PARAMS
-        return super().save(*args, **kwargs)
 
 
 class FilterAUUTable(forms.Form):
