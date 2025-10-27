@@ -32,19 +32,6 @@ urlpatterns = [
     path("<int:pk>/", RedirectView.as_view(pattern_name="project:report_synthesis", permanent=True), name="home"),
     path("<int:pk>/detail", ProjectDetailView.as_view(), name="project-detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
-    path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
-    path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
-    path("<int:pk>/ajouter-voisin", views.ProjectAddLookALike.as_view(), name="lookalike"),
-    path(
-        "<int:pk>/retirer-voisin",
-        views.ProjectRemoveLookALike.as_view(),
-        name="rm-lookalike",
-    ),
-    path(
-        "<int:pk>/set_target_2031",
-        views.ProjectSetTarget2031View.as_view(),
-        name="set-target-2031",
-    ),
     # REPORT
     path(
         route="<int:pk>/tableau-de-bord/artificialisation",
