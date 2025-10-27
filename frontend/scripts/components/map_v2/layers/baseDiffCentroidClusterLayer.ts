@@ -134,16 +134,8 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
         this.options.visible = visible;
 
         if (visible) {
-            // Réafficher tous les markers existants
-            for (const id in this.markers) {
-                const marker = this.markers[id];
-                if (this.map && !marker.getElement().parentElement) {
-                    marker.addTo(this.map);
-                    this.markersOnScreen[id] = marker;
-                }
-            }
+            this.updateMarkers();
         } else {
-            // Cacher tous les markers actuellement affichés
             for (const id in this.markersOnScreen) {
                 this.markersOnScreen[id].remove();
             }
