@@ -7,16 +7,17 @@ import {
     DIFF_FIELDS
 } from "../constants/config";
 import type { LayerSpecification, FilterSpecification } from 'maplibre-gl';
+import type { LandDetailResultType } from "@services/types/land";
 
 export class ArtificialisationDiffLayer extends BaseOcsgeDiffLayer {
-    constructor(startMillesimeIndex: number, endMillesimeIndex: number, departement: string) {
+    constructor(startMillesimeIndex: number, endMillesimeIndex: number, departement: string, landData?: LandDetailResultType) {
         super({
             id: "artificialisation-diff-layer",
             type: "fill",
             source: "ocsge-diff-source",
             visible: true,
             opacity: 0.7,
-        }, startMillesimeIndex, endMillesimeIndex, departement);
+        }, startMillesimeIndex, endMillesimeIndex, departement, landData);
     }
 
     protected getPositiveField(): string {
@@ -52,16 +53,24 @@ export class ArtificialisationDiffLayer extends BaseOcsgeDiffLayer {
     }
 
     getOptions(): LayerSpecification {
+        const territoryFilter = this.getTerritoryFilter();
+
+        const dataFilter = [
+            "any",
+            ["==", ["get", ARTIFICIALISATION_FIELD], true],
+            ["==", ["get", DESARTIFICIALISATION_FIELD], true]
+        ] as FilterSpecification;
+
+        const finalFilter = territoryFilter
+            ? ["all", territoryFilter, dataFilter] as FilterSpecification
+            : dataFilter;
+
         return {
             id: this.options.id,
             type: this.options.type as 'fill',
             source: this.options.source,
             "source-layer": this.getSourceLayerName(),
-            filter: [
-                "any",
-                ["==", ["get", ARTIFICIALISATION_FIELD], true],
-                ["==", ["get", DESARTIFICIALISATION_FIELD], true]
-            ] as FilterSpecification,
+            filter: finalFilter,
             layout: {
                 visibility: this.options.visible ? "visible" : "none",
             },

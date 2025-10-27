@@ -1,11 +1,15 @@
 import { BaseLayer } from "./baseLayer";
 import type { StatCategory, LayerType } from "../types/layer";
 import { area } from '@turf/turf';
+import type { FilterSpecification } from 'maplibre-gl';
+import type { LandDetailResultType } from "@services/types/land";
+import { getTerritoryFilter } from "../utils/ocsge";
 
 export abstract class BaseOcsgeDiffLayer extends BaseLayer {
     protected startMillesimeIndex: number;
     protected endMillesimeIndex: number;
     protected departement: string;
+    protected landData?: LandDetailResultType;
 
     constructor(
         options: {
@@ -17,12 +21,14 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
         },
         startMillesimeIndex: number,
         endMillesimeIndex: number,
-        departement: string
+        departement: string,
+        landData?: LandDetailResultType
     ) {
         super(options);
         this.startMillesimeIndex = startMillesimeIndex;
         this.endMillesimeIndex = endMillesimeIndex;
         this.departement = departement;
+        this.landData = landData;
     }
 
     protected abstract getPositiveField(): string;
@@ -68,10 +74,6 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
         return this.departement;
     }
 
-    /**
-     * Extraction générique des stats pour les layers de différence
-     * Compte les surfaces positives et négatives
-     */
     extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {
         if (features.length === 0) {
             return [];
@@ -118,5 +120,9 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
                 percent: negativePercent
             }
         ].filter(cat => cat.percent > 0);
+    }
+
+    protected getTerritoryFilter(): FilterSpecification | null {
+        return getTerritoryFilter(this.landData);
     }
 }

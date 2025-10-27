@@ -73,7 +73,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			<div className="fr-mb-5w">
 				<Guide
                     title="Qu'est-ce que l'imperméabilisation des sols ?"
-					className="fr-mb-5w"
                 >
                     <p className="fr-text--sm">
 						L'imperméabilisation des sols est définie comme :
@@ -88,7 +87,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						<Card
 							icon="bi-droplet"
 							badgeClass="fr-badge--error"
-							badgeLabel="Imperméabilisation"
+							badgeLabel="Imperméabilisation nette"
 							value={`${formatNumber({ number: landImperStockIndex.flux_surface, addSymbol: true })} ha`}
 							label={
 								<MillesimeDisplay

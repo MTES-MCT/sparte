@@ -24,7 +24,8 @@ const layerRegistry: Record<string, LayerFactory> = {
             millesimeIndex,
             departement,
             config.nomenclature ?? "couverture",
-            millesimes
+            millesimes,
+            landData
         );
     },
     artificialisation: (cfg, landData) => {
@@ -36,7 +37,8 @@ const layerRegistry: Record<string, LayerFactory> = {
             millesimeIndex,
             departement,
             config.nomenclature ?? "couverture",
-            millesimes
+            millesimes,
+            landData
         );
     },
     "impermeabilisation-diff": (cfg, landData) => {
@@ -46,7 +48,8 @@ const layerRegistry: Record<string, LayerFactory> = {
         return new ImpermeabilisationDiffLayer(
             startMillesimeIndex,
             endMillesimeIndex,
-            departement
+            departement,
+            landData
         );
     },
     "impermeabilisation-diff-centroid-cluster": () => new ImpermeabilisationDiffCentroidClusterLayer(),

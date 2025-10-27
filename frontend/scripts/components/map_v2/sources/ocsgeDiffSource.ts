@@ -2,8 +2,8 @@ import { BaseSource } from "./baseSource";
 import { OCSGE_TILES_URL } from "../constants/config";
 import { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
-import type { SourceSpecification } from "maplibre-gl";
-import { getLastMillesimeIndex, getStartMillesimeIndex } from "../utils/ocsge";
+import type { SourceSpecification, FilterSpecification } from "maplibre-gl";
+import { getLastMillesimeIndex, getStartMillesimeIndex, getTerritoryFilter } from "../utils/ocsge";
 
 export class OcsgeDiffSource extends BaseSource implements SourceInterface {
     private startMillesimeIndex: number;
@@ -11,6 +11,7 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
     private departement: string;
     private readonly millesimes: Millesime[];
     private readonly departements: string[];
+    private readonly landData: LandDetailResultType;
 
     constructor(landData: LandDetailResultType) {
         super({
@@ -18,6 +19,7 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
             type: "vector",
         });
 
+        this.landData = landData;
         this.millesimes = landData.millesimes || [];
         this.departements = landData.departements || [];
 
@@ -60,12 +62,11 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
         const millesime = this.millesimes.find((m: Millesime) => m.index === this.endMillesimeIndex);
         this.departement = millesime?.departement || this.departements[0];
 
-        // Utiliser la méthode mutualisée pour recharger la source
         await this.reloadSource();
     }
 
     async setMillesime(newIndex: number, newDepartement: string): Promise<void> {
-        // Pour une source de différence, on utilise le millésime comme startIndex
+        // Pour une source de diff, on utilise le millésime comme startIndex
         // et on cherche le millésime suivant
         const nextIndex = newIndex + 1;
         const nextMillesime = this.millesimes.find((m: Millesime) => m.index === nextIndex);
@@ -122,5 +123,9 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
 
     getId(): string {
         return this.options.id;
+    }
+
+    getTerritoryFilter(): FilterSpecification | null {
+        return getTerritoryFilter(this.landData);
     }
 }
