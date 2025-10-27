@@ -20,7 +20,6 @@
                 <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="annual_objective-swapper">{{ annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
             </div>
             <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un objectif non-réglementaire de réduction de <span id="objective-swapper">{{ diagnostic.target_2031 }}</span>%</p>
-            <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" hx-get="{% url 'project:set-target-2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif de réduction</button></p>
         </div>
     </div>
 </div>
@@ -28,24 +27,3 @@
 <div id="graphic">
     {% include "project/components/charts/report_target_2031_graphic.html" %}
 </div>
-
-
-<!-- Modal pour personnaliser l'objectif -->
-<div class="modal fade" id="setTarget" tabindex="-1" aria-labelledby="setTargetLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 class="fr-modal__title" id="setTargetLabel">
-                    Personnaliser mon objectif de réduction à 2031
-                </h1>
-                <div id="setTargetForm">
-                    <div class="fr-custom-loader"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
