@@ -31,7 +31,6 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "consommation": reverse("project:report_conso", kwargs=kwargs),
             "logementVacant": reverse("project:report_logement_vacant", kwargs=kwargs),
             "friches": reverse("project:report_friches", kwargs=kwargs),
-            "update": reverse("project:update", kwargs=kwargs),
             "downloads": reverse("project:report_downloads", kwargs=kwargs),
         }
 
@@ -84,11 +83,6 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                             "url": reverse("project:report_friches", kwargs=kwargs),
                         },
                     ],
-                },
-                {
-                    "label": "Paramètres du diagnostic",
-                    "icon": "bi bi-gear-fill",
-                    "url": reverse("project:update", kwargs=kwargs),
                 },
             ]
         }
