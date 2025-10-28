@@ -6,7 +6,7 @@ import { formatNumber } from "@utils/formatUtils";
 import { PeriodSelector } from "./components/PeriodSelector";
 import { ConsoDemography } from "./components/ConsoDemography";
 import { ConsoComparison } from "./components/ConsoComparison";
-import { useConsoData, useSimilarTerritories, useSimilarTerritoriesByPopulation, useComparisonTerritories } from "./hooks";
+import { useConsoData, useNearestTerritories, useSimilarTerritoriesByPopulation, useComparisonTerritories } from "./hooks";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
@@ -121,7 +121,7 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
     useConsoData(land_id, land_type, startYear, endYear);
 
   // Fetch nearest territories (by distance)
-  const { territories: suggestedTerritories } = useSimilarTerritories(land_id, land_type);
+  const { territories: suggestedTerritories } = useNearestTerritories(land_id, land_type);
 
   // Fetch similar territories (by population)
   const { territories: suggestedTerritoriesByPopulation } = useSimilarTerritoriesByPopulation(land_id, land_type);
@@ -405,7 +405,6 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
           additionalTerritories={additionalTerritories}
           comparisonLandIds={comparisonLandIds}
           isDefaultSelection={isDefaultSelection}
-          childType={childType}
           onTerritoryAdd={handleAddTerritory}
           onTerritoryRemove={handleRemoveTerritory}
           onReset={handleResetTerritories}

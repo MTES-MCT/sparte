@@ -243,6 +243,11 @@ class ConsoMap(DiagnosticChart):
                             "total_conso_ha": d["total_conso_ha"],
                             "habitat_ha": d["habitat_ha"],
                             "activite_ha": d["activite_ha"],
+                            "mixte_ha": d["mixte_ha"],
+                            "route_ha": d["route_ha"],
+                            "ferroviaire_ha": d["ferroviaire_ha"],
+                            "inconnu_ha": d["inconnu_ha"],
+                            "conso_density_percent": d["conso_density_percent"],
                         }
                         for d in self.data
                         if d["total_conso_ha"] > 0
@@ -251,9 +256,13 @@ class ConsoMap(DiagnosticChart):
                         "valueDecimals": 1,
                         "pointFormat": (
                             "<b>{point.name}</b>:<br/>"
+                            "Densité: {point.conso_density_percent:,.2f} %<br/>"
                             "Total: {point.total_conso_ha:,.1f} ha<br/>"
                             "Habitat: {point.habitat_ha:,.1f} ha<br/>"
-                            "Activité: {point.activite_ha:,.1f} ha"
+                            "Activité: {point.activite_ha:,.1f} ha<br/>"
+                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
+                            "Route: {point.route_ha:,.1f} ha<br/>"
+                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
                         ),
                     },
                 },
