@@ -14,6 +14,7 @@ import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
 import OcsgeMatricePNG from '@images/ocsge_matrice_passage.png';
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import Guide from "@components/ui/Guide";
+import GuideContent from "@components/ui/GuideContent";
 import Card from "@components/ui/Card";
 import { ArtificialisationMap } from "@components/map_v2/ui/ArtificialisationMap";
 import { ArtificialisationDiffMap } from "@components/map_v2/ui/ArtificialisationDiffMap";
@@ -428,50 +429,65 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			{child_land_types && (
 				<div className="fr-mb-7w">
 					<h2>Proportion des surfaces artificialisées</h2>
-					<div className="bg-white fr-p-2w rounded">
-						{child_land_types.length > 1 &&
-							child_land_types.map((child_land_type) => (
-								<button
-									className={`fr-btn  ${
-										childLandType === child_land_type
-											? "fr-btn--primary"
-											: "fr-btn--tertiary"
-									}`}
-									key={child_land_type}
-									onClick={() => setChildLandType(child_land_type)}
+					<div className="fr-grid-row fr-grid-row--gutters">
+						<div className="fr-col-12 fr-col-lg-8">
+							<div className="bg-white fr-p-2w h-100 rounded">
+								{child_land_types.length > 1 && (
+									<div role="tablist" aria-label="Sélection du type de territoire">
+										{child_land_types.map((child_land_type) => (
+											<button
+												className={`fr-btn  ${
+													childLandType === child_land_type
+														? "fr-btn--primary"
+														: "fr-btn--tertiary"
+												}`}
+												key={child_land_type}
+												onClick={() => setChildLandType(child_land_type)}
+												role="tab"
+												aria-selected={childLandType === child_land_type}
+												aria-label={`Sélectionner ${child_land_type}`}
+											>
+												{child_land_type}
+											</button>
+										))}
+									</div>
+								)}
+								<OcsgeGraph
+									isMap
+									id="artif_map"
+									land_id={land_id}
+									land_type={land_type}
+									containerProps={{
+										style: {
+											height: "500px",
+											width: "100%",
+										}
+									}}
+									params={{
+										index: defaultStockIndex,
+										previous_index: defaultStockIndex - 1,
+										child_land_type: childLandType,
+									}}
+									sources={['ocsge']}
+									showDataTable={true}
 								>
-									{child_land_type}
-								</button>
-							))}
-						<OcsgeGraph
-							isMap
-							id="artif_map"
-							land_id={land_id}
-							land_type={land_type}
-							containerProps={{
-								style: {
-									height: "500px",
-									width: "100%",
-								}
-							}}
-							params={{
-								index: defaultStockIndex,
-								previous_index: defaultStockIndex - 1,
-								child_land_type: childLandType,
-							}}
-							sources={['ocsge']}
-							showDataTable={true}
-						>
-							<div>
-								<h3>Comprendre les données</h3>
-								<p>Cette carte permet de visualiser la proportion de surfaces artificialisées sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de surfaces artificialisées est élevée.</p>
-								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
+									<DetailsCalculationOcsge />
+								</OcsgeGraph>
 							</div>
-							<DetailsCalculationOcsge />
-						</OcsgeGraph>
+						</div>
+						<div className="fr-col-12 fr-col-lg-4">
+							<GuideContent
+								title="Comprendre les données"
+								column
+							>
+								<p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
+								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
+							</GuideContent>
+						</div>
 					</div>
 				</div>
 			)}
+			
 			{has_zonage && (
 				<ArtificialisationZonage 
 					artifZonageIndex={artifZonageIndex}
