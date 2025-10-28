@@ -23,14 +23,14 @@ class AnnualConsoProportionalComparisonChart(ComparisonChartMixin, DiagnosticCha
     @cached_property
     def data(self):
         """
-        Get consumption stats for current land and similar territories.
+        Get consumption stats for current land and nearest territories.
 
-        Uses ComparisonChartMixin to get comparison lands (either custom or similar territories).
+        Uses ComparisonChartMixin to get comparison lands (either custom or nearest territories).
 
         Returns consumption data for:
         1. The current territory (highlighted in the chart)
         2. Custom territories if comparison_lands param is provided
-        3. Otherwise, up to 8 similar territories from for_app_similar_territories table
+        3. Otherwise, up to 8 nearest territories from for_app_nearest_territories table
 
         Uses @cached_property to avoid re-executing queries on multiple accesses.
         """
@@ -119,7 +119,7 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
             "title": {
                 "text": (
                     f"Consommation d'espaces NAF relative à la surface de {self.land.name} "
-                    "et des territoires similaires "
+                    "et des territoires voisins "
                     f"entre {self.params['start_date']} et {self.params['end_date']} (en %)"
                 )
             },

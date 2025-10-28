@@ -13,6 +13,7 @@ type ConsoGraphProps = {
     children?: React.ReactNode;
     showDataTable?: boolean;
     dataTableHeader?: React.ReactNode;
+    isMap?: boolean;
 };
 
 export const ConsoGraph = ({
@@ -24,7 +25,8 @@ export const ConsoGraph = ({
     sources = [],
     children,
     showDataTable = false,
-    dataTableHeader
+    dataTableHeader,
+    isMap = false
 } : ConsoGraphProps) => {
     const { data, isLoading, isFetching, error } = useGetChartConfigQuery({ id, land_id, land_type, ...params })
 
@@ -40,6 +42,7 @@ export const ConsoGraph = ({
             sources={sources}
             showDataTable={showDataTable}
             dataTableHeader={dataTableHeader}
+            isMap={isMap}
         >
             {children}
         </GenericChart>

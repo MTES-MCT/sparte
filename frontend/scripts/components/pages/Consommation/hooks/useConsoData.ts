@@ -48,14 +48,16 @@ export const useConsoData = (
   const populationEvolution = popStats?.[0]?.evolution || null;
   const populationEvolutionPercent = popStats?.[0]?.evolution_percent || null;
 
-  // Extract density from API response (density_ha field)
+  // Extract density and population from API response
   const populationDensity = densityData?.[0]?.density_ha || null;
+  const populationStock = densityData?.[0]?.population || null;
 
   return {
     totalConsoHa,
     populationEvolution,
     populationEvolutionPercent,
     populationDensity,
+    populationStock,
     isLoadingConso: isLoadingConso || isFetchingConso,
     isLoadingPop: isLoadingPop || isFetchingPop || isLoadingDensity,
   };

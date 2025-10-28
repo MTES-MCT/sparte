@@ -2,22 +2,24 @@ import React from "react";
 import { Territory } from "@components/ui/SearchBar";
 
 interface SuggestedTerritoriesProps {
+  title: string;
   territories: Territory[];
   additionalTerritories: Territory[];
   onTerritoryAdd: (territory: Territory) => void;
-  onReset: () => void;
-  showResetButton: boolean;
+  onReset?: () => void;
+  showResetButton?: boolean;
 }
 
 /**
- * Displays suggested similar territories with add buttons
+ * Displays suggested territories with add buttons
  */
 export const SuggestedTerritories: React.FC<SuggestedTerritoriesProps> = ({
+  title,
   territories,
   additionalTerritories,
   onTerritoryAdd,
   onReset,
-  showResetButton,
+  showResetButton = false,
 }) => {
   if (territories.length === 0) {
     return null;
@@ -27,7 +29,7 @@ export const SuggestedTerritories: React.FC<SuggestedTerritoriesProps> = ({
     <div className="fr-mt-3w">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
         <p className="fr-text--sm fr-mb-0" style={{ fontWeight: 500, color: "#666" }}>
-          Territoires similaires suggérés :
+          {title}
         </p>
         {showResetButton && (
           <button

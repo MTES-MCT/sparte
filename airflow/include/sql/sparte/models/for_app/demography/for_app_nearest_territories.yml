@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: for_app_nearest_territories
+    description: |
+      Table contenant les 8 territoires voisins les plus proches pour chaque territoire.
+      Le calcul se base uniquement sur la distance géographique entre les centroïdes des territoires.
+      Cette table est utilisée pour la comparaison avec les territoires voisins dans l'application.
+    columns:
+      - name: land_id
+        description: Identifiant du territoire source
+        tests:
+          - not_null
+      - name: land_name
+        description: Nom du territoire source
+        tests:
+          - not_null
+      - name: land_type
+        description: Type du territoire (COMM, EPCI, DEPART, REGION, SCOT)
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['COMM', 'EPCI', 'DEPART', 'REGION', 'SCOT']
+      - name: nearest_land_id
+        description: Identifiant du territoire voisin le plus proche
+        tests:
+          - not_null
+      - name: nearest_land_name
+        description: Nom du territoire voisin le plus proche
+        tests:
+          - not_null
+      - name: distance_km
+        description: Distance en kilomètres entre les centroïdes des deux territoires
+        tests:
+          - not_null
+      - name: distance_rank
+        description: Rang du territoire par proximité (1 = le plus proche, 8 = le 8ème plus proche)
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8]

@@ -97,14 +97,6 @@ const TopBar: React.FC = () => {
                     <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
                 </div>
             </div>
-            { !isMobile && shouldDisplayLevel && (
-                <ItemContainer>
-                    <Item>
-                        <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
-                        <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
-                    </Item>
-                </ItemContainer>
-            )}
         </Container>
     );
 };

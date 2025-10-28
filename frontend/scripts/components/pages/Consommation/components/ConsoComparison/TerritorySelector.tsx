@@ -18,7 +18,7 @@ export const TerritorySelector: React.FC<TerritorySelectorProps> = ({
   onTerritorySelect,
 }) => {
   return (
-    <div className="bg-white fr-p-3w rounded fr-mb-3w">
+    <div className="bg-white rounded fr-mb-3w">
       <h5 className="fr-mb-2w">Ajouter des territoires à la comparaison</h5>
       <p className="fr-text--sm fr-mb-2w" style={{ color: "#666" }}>
         Recherchez et ajoutez d'autres territoires pour enrichir la comparaison

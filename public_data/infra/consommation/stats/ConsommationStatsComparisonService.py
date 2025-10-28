@@ -10,6 +10,12 @@ class ConsommationStatsComparisonService(BaseConsommationStatsComparisonService)
         start_date: int,
         end_date: int,
     ) -> ConsommationStatisticsComparison:
+        """
+        Get comparison statistics for a land.
+
+        Raises:
+            ObjectDoesNotExist: If any required data (stats, comparison, or comparison land) is not found
+        """
         conso_stats = LandConsoStats.objects.get(
             land_id=land.land_id,
             land_type=land.land_type,
@@ -23,12 +29,12 @@ class ConsommationStatsComparisonService(BaseConsommationStatsComparisonService)
             from_year=start_date,
             to_year=end_date,
         )
-        land = LandModel.objects.get(
+        comparison_land = LandModel.objects.get(
             land_id=conso_stats.comparison_id,
             land_type=conso_stats.comparison_level,
         )
         return ConsommationStatisticsComparison(
-            land=land,
+            land=comparison_land,
             start_date=start_date,
             end_date=end_date,
             relevance_level=conso_comparison.relevance_level,

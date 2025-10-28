@@ -23,7 +23,13 @@ from project.charts.artificialisation import (
     ArtifNetFluxChart,
     ArtifSyntheseChart,
 )
-from project.charts.consommation import ConsoAnnualChart
+from project.charts.consommation import (
+    ComparisonMap,
+    ComparisonMapExport,
+    ConsoAnnualChart,
+    ConsoMap,
+    ConsoMapExport,
+)
 from project.charts.consommation.AnnualConsoComparisonChart import (
     AnnualConsoComparisonChart,
     AnnualConsoComparisonChartExport,
@@ -106,6 +112,7 @@ from public_data.models import (
     LandModelViewset,
     LandPopStatsViewset,
     LandPopulationDensityViewset,
+    NearestTerritoriesViewset,
     SimilarTerritoriesViewset,
 )
 from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
@@ -123,6 +130,10 @@ def get_chart_klass_or_404(chart_id):
         "pie_imper_by_usage": ImperByUsagePieChart,
         "artif_map": ArtifMap,
         "imper_map": ImperMap,
+        "conso_map": ConsoMap,
+        "conso_map_export": ConsoMapExport,
+        "comparison_map": ComparisonMap,
+        "comparison_map_export": ComparisonMapExport,
         "friche_artif_composition": FricheArtifCompositionChart,
         "friche_artif_composition_export": FricheArtifCompositionChartExport,
         "friche_imper_composition": FricheImperCompositionChart,
@@ -224,6 +235,7 @@ urlpatterns = [
     path("landconsostats/", LandConsoStatsViewset.as_view(), name="consostats"),
     path("landpopstats/", LandPopStatsViewset.as_view(), name="popstats"),
     path("landpopulationdensity/", LandPopulationDensityViewset.as_view(), name="populationdensity"),
+    path("nearestterritories/", NearestTerritoriesViewset.as_view(), name="nearestterritories"),
     path("similarterritories/", SimilarTerritoriesViewset.as_view(), name="similarterritories"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
