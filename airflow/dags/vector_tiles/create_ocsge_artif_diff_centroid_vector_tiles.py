@@ -22,7 +22,7 @@ def get_geojson_filename(indexes: list[int], departement: str) -> str:
     schedule="@once",
     catchup=False,
     doc_md=__doc__,
-    max_active_runs=5,
+    max_active_runs=1,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["OCS GE", "Artificialisation"],
     max_active_tasks=10,

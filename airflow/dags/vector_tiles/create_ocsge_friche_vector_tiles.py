@@ -31,7 +31,7 @@ def get_pmtiles_filename(year_index: int) -> str:
     schedule="@once",
     catchup=False,
     doc_md=__doc__,
-    max_active_runs=5,
+    max_active_runs=1,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["OCS GE", "Friches"],
     params={

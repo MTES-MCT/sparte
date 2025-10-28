@@ -65,7 +65,7 @@ def create_all_vector_tiles_france():
                 "departement": dept,
                 "refresh_existing": refresh_existing,
             },
-            wait_for_completion=False,
+            wait_for_completion=True,
             poke_interval=30,
         )
         for dept in DEPARTEMENTS
@@ -82,7 +82,7 @@ def create_all_vector_tiles_france():
                 "indexes": [1, 2],
                 "refresh_existing": refresh_existing,
             },
-            wait_for_completion=False,
+            wait_for_completion=True,
             poke_interval=30,
         )
         for dept in DEPARTEMENTS
@@ -98,7 +98,7 @@ def create_all_vector_tiles_france():
                 "indexes": [1, 2],
                 "refresh_existing": refresh_existing,
             },
-            wait_for_completion=False,
+            wait_for_completion=True,
             poke_interval=30,
         )
         for dept in DEPARTEMENTS
@@ -114,7 +114,7 @@ def create_all_vector_tiles_france():
                 "indexes": [1, 2],
                 "refresh_existing": refresh_existing,
             },
-            wait_for_completion=False,
+            wait_for_completion=True,
             poke_interval=30,
         )
         for dept in DEPARTEMENTS
@@ -130,7 +130,7 @@ def create_all_vector_tiles_france():
                 "indexes": [1, 2],
                 "refresh_existing": refresh_existing,
             },
-            wait_for_completion=False,
+            wait_for_completion=True,
             poke_interval=30,
         )
         for dept in DEPARTEMENTS
@@ -145,20 +145,21 @@ def create_all_vector_tiles_france():
                 "year_index": millesime,
                 "refresh_existing": refresh_existing,
             },
-            wait_for_completion=False,
+            wait_for_completion=True,
             poke_interval=30,
         )
         for millesime in MILLESIMES
     ]
 
-    # Dépendance : toutes les tâches dépendent de la récupération du paramètre
-    refresh_existing >> (
-        occupation_du_sol_tasks
-        + artif_diff_tasks
-        + artif_diff_centroid_tasks
-        + diff_tasks
-        + diff_centroid_tasks
-        + friche_tasks
+    # Les tâches s'exécutent séquentiellement : chaque groupe attend la fin du précédent
+    (
+        refresh_existing
+        >> occupation_du_sol_tasks
+        >> artif_diff_tasks
+        >> artif_diff_centroid_tasks
+        >> diff_tasks
+        >> diff_centroid_tasks
+        >> friche_tasks
     )
 
 
