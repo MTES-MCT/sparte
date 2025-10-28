@@ -1,30 +1,58 @@
-version: 2
-
 models:
   - name: for_vector_tiles_occupation_du_sol_friche
-    description: |
-      Table spécialisée pour la génération de tuiles vectorielles (PMTiles) de l'occupation du sol des friches.
-      Transforme les géométries en WGS84 (EPSG:4326) pour compatibilité avec les tuiles web.
     columns:
       - name: id
-        description: Identifiant unique de la géométrie (combinaison ocsge_uuid et site_id)
+        data_type: text
+        data_tests:
+          - not_null
       - name: friche_site_id
-        description: Identifiant du site de friche
+        data_type: integer
+        data_tests:
+          - not_null
       - name: year
-        description: Année du millésime OCS GE
+        data_type: integer
+        data_tests:
+          - not_null
       - name: departement
-        description: Code département
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')
       - name: year_index
-        description: Index du millésime (1, 2, etc.)
+        data_type: bigint
+        data_tests:
+          - not_null
       - name: code_cs
-        description: Code de couverture du sol
+        data_type: character varying
+        data_tests:
+          - not_null
       - name: code_us
-        description: Code d'usage du sol
+        data_type: character varying
+        data_tests:
+          - not_null
       - name: is_artificial
-        description: Indicateur d'artificialisation
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
       - name: is_impermeable
-        description: Indicateur d'imperméabilisation
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
       - name: surface
-        description: Surface en m²
+        data_type: double precision
+        data_tests:
+          - not_null
       - name: geom
-        description: Géométrie en WGS84 (EPSG:4326)
+        data_type: user-defined
+        data_tests:
+          - not_null

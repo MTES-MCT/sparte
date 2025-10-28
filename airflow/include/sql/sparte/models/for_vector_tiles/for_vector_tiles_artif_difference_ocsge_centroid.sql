@@ -10,23 +10,23 @@ SELECT
     year_new,
     year_old_index,
     year_new_index,
-    difference_commune.departement,
-    new_is_impermeable,
-    new_not_impermeable,
-    difference_commune.srid_source,
-    st_transform(st_centroid(difference_commune.geom), 4326) as geom,
-    difference_commune.surface,
+    artif_difference_commune.departement,
+    new_is_artificial,
+    new_not_artificial,
+    artif_difference_commune.srid_source,
+    st_transform(st_centroid(artif_difference_commune.geom), 4326) as geom,
+    artif_difference_commune.surface,
     commune_code as "{{ var('COMMUNE')}}",
     commune.epci as "{{ var('EPCI')}}",
     commune.departement as "{{ var('DEPARTEMENT')}}",
     commune.region as "{{ var('REGION')}}",
     commune.scot as "{{ var('SCOT')}}"
 FROM
-    {{ ref("difference_commune")}}
+    {{ ref("artif_difference_commune")}}
  LEFT JOIN LATERAL (
     SELECT *
     FROM
         {{ ref('commune') }} as commune
     WHERE
-        commune.code = difference_commune.commune_code
+        commune.code = artif_difference_commune.commune_code
 ) commune ON TRUE

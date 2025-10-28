@@ -14,7 +14,7 @@ with open("include/data/ocsge/sources.json", "r") as f:
 
 
 def get_geojson_filename(indexes: list[int], departement: str) -> str:
-    return f"occupation_du_sol_diff_centroid_{'_'.join(map(str, indexes))}_{departement}.geojson"
+    return f"artif_diff_centroid_{'_'.join(map(str, indexes))}_{departement}.geojson"
 
 
 @dag(
@@ -24,7 +24,7 @@ def get_geojson_filename(indexes: list[int], departement: str) -> str:
     doc_md=__doc__,
     max_active_runs=5,
     default_args={"owner": "Alexis Athlani", "retries": 3},
-    tags=["OCS GE"],
+    tags=["OCS GE", "Artificialisation"],
     max_active_tasks=10,
     params={
         "departement": Param("75", type="string", enum=list(sources.keys())),
@@ -32,7 +32,7 @@ def get_geojson_filename(indexes: list[int], departement: str) -> str:
         "indexes": Param([1, 2], type="array", items={"type": "integer", "enum": [1, 2]}),
     },
 )
-def create_ocsge_diff_centroid_vector_tiles():
+def create_ocsge_artif_diff_centroid_vector_tiles():
     bucket_name = InfraContainer().bucket_name()
     vector_tiles_dir = "geojson"
 
@@ -59,7 +59,7 @@ def create_ocsge_diff_centroid_vector_tiles():
             SELECT
                 *
             FROM
-                public_for_vector_tiles.for_vector_tiles_difference_ocsge_centroid
+                public_for_vector_tiles.for_vector_tiles_artif_difference_ocsge_centroid
             WHERE
                 year_old_index = {year_old_index} AND
                 year_new_index = {year_new_index} AND
@@ -111,4 +111,4 @@ def create_ocsge_diff_centroid_vector_tiles():
     (check_if_geojson_not_exist() >> postgis_to_geojson() >> compress_geojson() >> make_files_public())
 
 
-create_ocsge_diff_centroid_vector_tiles()
+create_ocsge_artif_diff_centroid_vector_tiles()

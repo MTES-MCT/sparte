@@ -1,3 +1,10 @@
+{{
+    config(
+        materialized="table",
+        indexes=[{"columns": ["year_old_index", "year_new_index", "departement"], "type": "btree"}]
+    )
+}}
+
 SELECT
     year_old,
     year_new,
