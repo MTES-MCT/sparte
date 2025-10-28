@@ -16,7 +16,7 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 		sources: [
 			...BASE_SOURCES,
 			{ type: "ocsge-diff" },
-			{ type: "impermeabilisation-diff-centroid" },
+			{ type: "ocsge-diff-centroid" },
 		],
 		layers: [
 			...BASE_LAYERS,
@@ -27,8 +27,8 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 			...BASE_CONTROLS,
 			{
 				id: "impermeabilisation-diff-group",
-				label: "Différence d'imperméabilisation",
-				description: "Surfaces imperméabilisées basée sur l'occupation du sol (OCS GE). Seules les zones imperméables sont affichées.",
+				label: " Imperméabilisation",
+				description: "La mesure de l'imperméabilisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Cette carte permet de visualiser les surfaces imperméabilisées entre deux millésimes.",
 				controls: [
 					{
 						id: "impermeabilisation-diff-visibility",

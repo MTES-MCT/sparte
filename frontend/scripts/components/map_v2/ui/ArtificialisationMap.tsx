@@ -30,8 +30,8 @@ export const ArtificialisationMap: React.FC<ArtificialisationMapProps> = ({
 			...BASE_CONTROLS,
 			{
 				id: "artificialisation-group",
-				label: "Artificialisation",
-				description: "Surfaces artificialisées basée sur l'occupation du sol (OCS GE). Seules les zones artificialisées sont affichées.",
+				label: "Surfaces artificialisées",
+				description: "La mesure de l'artificialisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Cette carte permet de visualiser les surfaces artificialisées sur un territoire.",
 				controls: [
 					{
 						id: "artificialisation-visibility",

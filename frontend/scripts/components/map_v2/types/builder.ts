@@ -24,12 +24,12 @@ export interface OcsgeDiffCentroidSourceConfig {
     type: 'ocsge-diff-centroid';
 }
 
-export interface ImpermeabilisationDiffCentroidSourceConfig {
-    type: 'impermeabilisation-diff-centroid';
+export interface OcsgeArtifDiffSourceConfig {
+    type: 'ocsge-artif-diff';
 }
 
-export interface ArtificialisationDiffCentroidSourceConfig {
-    type: 'artificialisation-diff-centroid';
+export interface OcsgeArtifDiffCentroidSourceConfig {
+    type: 'ocsge-artif-diff-centroid';
 }
 
 export type SourceConfig =
@@ -38,8 +38,8 @@ export type SourceConfig =
     | OcsgeSourceConfig
     | OcsgeDiffSourceConfig
     | OcsgeDiffCentroidSourceConfig
-    | ImpermeabilisationDiffCentroidSourceConfig
-    | ArtificialisationDiffCentroidSourceConfig;
+    | OcsgeArtifDiffSourceConfig
+    | OcsgeArtifDiffCentroidSourceConfig;
 
 interface BaseLayerConfig {
     type: LayerCategory;

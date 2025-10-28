@@ -30,8 +30,8 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 			...BASE_CONTROLS,
 			{
 				id: "impermeabilisation-group",
-				label: "Imperméabilisation",
-				description: "Surfaces imperméabilisées basée sur l'occupation du sol (OCS GE). Seules les zones imperméables sont affichées.",
+				label: "Surfaces imperméabilisées",
+				description: "La mesure de l'imperméabilisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Cette carte permet de visualiser les surfaces imperméabilisées sur un territoire.",
 				controls: [
 					{
 						id: "impermeabilisation-visibility",

@@ -15,8 +15,8 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
     const config = defineMapConfig({
 		sources: [
 			...BASE_SOURCES,
-			{ type: "ocsge-diff" },
-			{ type: "artificialisation-diff-centroid" },
+			{ type: "ocsge-artif-diff" },
+			{ type: "ocsge-artif-diff-centroid" },
 		],
 		layers: [
 			...BASE_LAYERS,
@@ -27,8 +27,8 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 			...BASE_CONTROLS,
 			{
 				id: "artificialisation-diff-group",
-				label: "Différence d'artificialisation",
-				description: "Surfaces artificialisées basée sur l'occupation du sol (OCS GE). Seules les zones artificialisées sont affichées.",
+				label: "Artificialisation",
+				description: "La mesure de l'artificialisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Cette carte permet de visualiser les surfaces artificialisées entre deux millésimes.",
 				controls: [
 					{
 						id: "artificialisation-diff-visibility",
@@ -49,7 +49,7 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 			{
 				layerId: "artificialisation-diff-layer",
 				trigger: "hover",
-				title: "Différence d'artificialisation",
+				title: "Artificialisation",
 				renderContent: (feature) => <ArtificialisationDiffPopup feature={feature} />,
 			}
 		]

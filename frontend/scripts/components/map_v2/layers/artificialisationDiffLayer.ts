@@ -14,10 +14,14 @@ export class ArtificialisationDiffLayer extends BaseOcsgeDiffLayer {
         super({
             id: "artificialisation-diff-layer",
             type: "fill",
-            source: "ocsge-diff-source",
+            source: "ocsge-artif-diff-source",
             visible: true,
             opacity: 0.7,
         }, startMillesimeIndex, endMillesimeIndex, departement, landData);
+    }
+
+    protected getSourceLayerName(): string {
+        return `artif_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}`;
     }
 
     protected getPositiveField(): string {

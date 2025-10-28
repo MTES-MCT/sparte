@@ -6,12 +6,12 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseDiffCentroid
     constructor() {
         super(
             "impermeabilisation-diff-centroid-cluster",
-            "impermeabilisation-diff-centroid-source"
+            "ocsge-diff-centroid-source"
         );
     }
 
     protected getSourceId(): string {
-        return "impermeabilisation-diff-centroid-source";
+        return "ocsge-diff-centroid-source";
     }
 
     protected createDonutElement(properties: Record<string, any>): HTMLElement {
