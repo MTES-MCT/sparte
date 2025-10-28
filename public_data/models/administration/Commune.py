@@ -9,7 +9,6 @@ from utils.db import IntersectManager
 
 from .AdminRef import AdminRef
 from .enums.ConsommationCorrectionStatus import ConsommationCorrectionStatus
-from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
@@ -18,7 +17,7 @@ class CommuneManager(IntersectManager):
         return self.get(insee=insee)
 
 
-class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
+class Commune(DataColorationMixin, LandMixin, models.Model):
     class Meta:
         managed = False
 

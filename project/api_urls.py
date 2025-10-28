@@ -1,6 +1,16 @@
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import path
 
+from project.charts import (
+    AnnualConsoByDeterminantChart,
+    AnnualConsoByDeterminantChartExport,
+    AnnualTotalConsoChart,
+    AnnualTotalConsoChartExport,
+    ConsoByDeterminantPieChart,
+    ConsoByDeterminantPieChartExport,
+    ObjectiveChart,
+    ObjectiveChartExport,
+)
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByCouverturePieChartExport,
@@ -13,7 +23,28 @@ from project.charts.artificialisation import (
     ArtifNetFluxChart,
     ArtifSyntheseChart,
 )
-from project.charts.consommation import ConsoAnnualChart
+from project.charts.consommation import (
+    ComparisonMap,
+    ComparisonMapExport,
+    ConsoAnnualChart,
+    ConsoMap,
+    ConsoMapExport,
+)
+from project.charts.consommation.AnnualConsoComparisonChart import (
+    AnnualConsoComparisonChart,
+    AnnualConsoComparisonChartExport,
+)
+from project.charts.consommation.AnnualConsoProportionalComparisonChart import (
+    AnnualConsoProportionalComparisonChart,
+    AnnualConsoProportionalComparisonChartExport,
+)
+from project.charts.demography.PopulationConsoComparisonChart import (
+    PopulationConsoComparisonChart,
+)
+from project.charts.demography.PopulationConsoProgressionChart import (
+    PopulationConsoProgressionChart,
+)
+from project.charts.demography.PopulationDensityChart import PopulationDensityChart
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
     ImperByCouverturePieChartExport,
@@ -37,6 +68,12 @@ from project.charts.urbanisme import (
     FricheZonageEnvironnementalChart,
     FricheZonageTypeChart,
     FricheZoneActiviteChart,
+    LogementVacantAutorisationLogementComparisonChart,
+    LogementVacantAutorisationLogementRatioGaugeChart,
+    LogementVacantAutorisationLogementRatioProgressionChart,
+    LogementVacantConsoProgressionChart,
+    LogementVacantProgressionChart,
+    LogementVacantRatioProgressionChart,
 )
 from public_data.models import (
     ArtifZonageIndexViewset,
@@ -53,6 +90,7 @@ from public_data.models import (
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
+    LandConsoStatsViewset,
     LandFricheCentroidViewset,
     LandFricheGeojsonViewset,
     LandFrichePollutionViewset,
@@ -71,7 +109,12 @@ from public_data.models import (
     LandModel,
     LandModelGeomViewset,
     LandModelViewset,
+    LandPopStatsViewset,
+    LandPopulationDensityViewset,
+    NearestTerritoriesViewset,
+    SimilarTerritoriesViewset,
 )
+from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
 
 app_name = "api"
 
@@ -86,6 +129,10 @@ def get_chart_klass_or_404(chart_id):
         "pie_imper_by_usage": ImperByUsagePieChart,
         "artif_map": ArtifMap,
         "imper_map": ImperMap,
+        "conso_map": ConsoMap,
+        "conso_map_export": ConsoMapExport,
+        "comparison_map": ComparisonMap,
+        "comparison_map_export": ComparisonMapExport,
         "friche_artif_composition": FricheArtifCompositionChart,
         "friche_artif_composition_export": FricheArtifCompositionChartExport,
         "friche_imper_composition": FricheImperCompositionChart,
@@ -109,6 +156,30 @@ def get_chart_klass_or_404(chart_id):
         "imper_flux_by_couverture_export": ImperFluxByCouvertureExport,
         "imper_flux_by_usage": ImperFluxByUsage,
         "imper_flux_by_usage_export": ImperFluxByUsageExport,
+        # Consommation charts
+        "annual_total_conso_chart": AnnualTotalConsoChart,
+        "annual_total_conso_chart_export": AnnualTotalConsoChartExport,
+        "chart_determinant": AnnualConsoByDeterminantChart,
+        "chart_determinant_export": AnnualConsoByDeterminantChartExport,
+        "pie_determinant": ConsoByDeterminantPieChart,
+        "pie_determinant_export": ConsoByDeterminantPieChartExport,
+        "comparison_chart": AnnualConsoComparisonChart,
+        "comparison_chart_export": AnnualConsoComparisonChartExport,
+        "surface_proportional_chart": AnnualConsoProportionalComparisonChart,
+        "surface_proportional_chart_export": AnnualConsoProportionalComparisonChartExport,
+        "population_density_chart": PopulationDensityChart,
+        "population_conso_progression_chart": PopulationConsoProgressionChart,
+        "population_conso_comparison_chart": PopulationConsoComparisonChart,
+        # Objective chart
+        "objective_chart": ObjectiveChart,
+        "objective_chart_export": ObjectiveChartExport,
+        # Logement vacant charts
+        "logement_vacant_progression_chart": LogementVacantProgressionChart,
+        "logement_vacant_ratio_progression_chart": LogementVacantRatioProgressionChart,
+        "logement_vacant_conso_progression_chart": LogementVacantConsoProgressionChart,
+        "logement_vacant_autorisation_comparison_chart": LogementVacantAutorisationLogementComparisonChart,
+        "logement_vacant_autorisation_ratio_gauge_chart": LogementVacantAutorisationLogementRatioGaugeChart,
+        "logement_vacant_autorisation_ratio_progression_chart": LogementVacantAutorisationLogementRatioProgressionChart,  # noqa E501
     }
 
     if chart_id not in charts:
@@ -121,7 +192,7 @@ def chart_view_json_response(chart):
     return JsonResponse(
         data={
             "highcharts_options": chart.chart,
-            "data_table": chart.data_table,
+            "data_table": getattr(chart, "data_table", None),
         }
     )
 
@@ -134,8 +205,9 @@ def chart_view_file_response(chart, id, land_type, land_id):
     )
 
 
-def chart_view(request, id, land_type, land_id, *args, **kwargs):
+def chart_view(request, id, land_type, land_id):
     land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+
     chart_klass = get_chart_klass_or_404(id)
     chart_params = request.GET.dict()
     chart = chart_klass(land=land, params=chart_params)
@@ -147,10 +219,20 @@ def chart_view(request, id, land_type, land_id, *args, **kwargs):
 
 urlpatterns = [
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
+    path(
+        "logementvacantautorisationstats/<str:land_type>/<str:land_id>",
+        LogementVacantAutorisationStatsViewset.as_view(),
+        name="logementvacantautorisationstats",
+    ),
     path("landartifstock/", LandArtifStockViewset.as_view(), name="artifstock"),
     path("landimperstock/", LandImperStockViewset.as_view(), name="imperstock"),
     path("landartifstockindex/", LandArtifStockIndexViewset.as_view(), name="artifstockindex"),
     path("landimperstockindex/", LandImperStockIndexViewset.as_view(), name="imperstockindex"),
+    path("landconsostats/", LandConsoStatsViewset.as_view(), name="consostats"),
+    path("landpopstats/", LandPopStatsViewset.as_view(), name="popstats"),
+    path("landpopulationdensity/", LandPopulationDensityViewset.as_view(), name="populationdensity"),
+    path("nearestterritories/", NearestTerritoriesViewset.as_view(), name="nearestterritories"),
+    path("similarterritories/", SimilarTerritoriesViewset.as_view(), name="similarterritories"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),

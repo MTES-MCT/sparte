@@ -16,8 +16,7 @@ from .Scot import Scot
 
 
 class Land:
-    """It's a generic class to work with Epci, Departement, Region or Commune.
-    Like a proxy."""
+    """DEPRECATED: use LandModel instead."""
 
     class Meta:
         subclasses = {
@@ -54,9 +53,6 @@ class Land:
             self.land = klass.objects.get_by_natural_key(str(self.id))
         except ObjectDoesNotExist as e:
             raise LandException(f"Public key '{self.id}' unknown") from e
-
-    def get_conso_per_year(self, start="2010", end="2020", coef=1):
-        return self.land.get_conso_per_year(start, end, coef)
 
     def get_cities(self) -> QuerySet[Commune]:
         return self.land.get_cities()

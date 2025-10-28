@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: for_app_landpopulationdensity
+    description: |
+      Population density by land type and year.
+      Calculates density in habitants per hectare (ha) and per square kilometer (km²).
+    columns:
+      - name: land_id
+        description: Identifier of the territory
+        tests:
+          - not_null
+      - name: land_type
+        description: Type of territory (COMMUNE, EPCI, DEPARTEMENT, REGION, SCOT)
+        tests:
+          - not_null
+      - name: year
+        description: Year of the density measurement
+        tests:
+          - not_null
+      - name: population
+        description: Total population for the year
+      - name: surface
+        description: Surface area in hectares
+      - name: density_ha
+        description: Population density in habitants per hectare
+      - name: density_km2
+        description: Population density in habitants per square kilometer

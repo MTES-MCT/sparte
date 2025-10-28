@@ -2,7 +2,6 @@ from .AdminRef import AdminRef
 from .Commune import Commune
 from .Departement import Departement
 from .Epci import Epci
-from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .Land import Land
 from .LandMixin import LandMixin
 from .LandModel import LandModel, LandModelGeomViewset, LandModelViewset
@@ -15,7 +14,6 @@ __all__ = [
     "Commune",
     "Departement",
     "Epci",
-    "GetDataFromCeremaMixin",
     "Land",
     "LandMixin",
     "LandModel",
