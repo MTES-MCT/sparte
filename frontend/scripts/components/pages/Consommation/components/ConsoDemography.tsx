@@ -1,5 +1,4 @@
 import React from "react";
-import Guide from "@components/ui/Guide";
 import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
 import { ConsoStats } from "./ConsoStats";
 
@@ -10,9 +9,8 @@ interface ConsoDemographyProps {
   endYear: number;
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
+  populationDensity: number | null;
   isLoadingPop: boolean;
-  defaultStartYear: number;
-  defaultEndYear: number;
 }
 
 /**
@@ -25,9 +23,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   endYear,
   populationEvolution,
   populationEvolutionPercent,
+  populationDensity,
   isLoadingPop,
-  defaultStartYear,
-  defaultEndYear,
 }) => {
   return (
     <div className="fr-mt-7w">
@@ -37,47 +34,11 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
       <ConsoStats
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
+        populationDensity={populationDensity}
         isLoadingPop={isLoadingPop}
         startYear={startYear}
         endYear={endYear}
       />
-
-      {/* Population density chart */}
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-lg-8">
-          <div className="bg-white fr-p-2w rounded">
-            <ConsoGraph
-              id="population_density_chart"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                start_date: String(defaultStartYear),
-                end_date: String(defaultEndYear),
-              }}
-              sources={["majic", "insee"]}
-              showDataTable={true}
-            >
-              <div>
-                <h6 className="fr-mb-0">Calcul</h6>
-                <p className="fr-text--sm fr-mb-0">
-                  La densité de population est le rapport entre l'effectif de population du territoire et sa
-                  superficie.
-                </p>
-              </div>
-            </ConsoGraph>
-          </div>
-        </div>
-
-        <div className="fr-col-12 fr-col-lg-4">
-          <Guide title="Comprendre les données" column>
-            <p>
-              La densité de population est le rapport entre l'effectif de population du territoire et sa
-              superficie. Par souci de cohérence avec le reste des indicateurs, nous avons choisi de
-              l'exprimer en habitants par hectare.
-            </p>
-          </Guide>
-        </div>
-      </div>
 
       {/* Population and consumption progression chart */}
       <div className="fr-mt-5w">

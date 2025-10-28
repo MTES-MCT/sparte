@@ -1,4 +1,4 @@
-import { useGetLandConsoStatsQuery, useGetLandPopStatsQuery, useGetChartConfigQuery } from "@services/api";
+import { useGetLandConsoStatsQuery, useGetLandPopStatsQuery, useGetLandPopDensityQuery } from "@services/api";
 
 /**
  * Hook to fetch consumption and population statistics
@@ -31,18 +31,14 @@ export const useConsoData = (
     to_year: endYear,
   });
 
-  // Fetch density from the population density chart
+  // Fetch density from the population density endpoint
   const {
-    data: densityChartData,
+    data: densityData,
     isLoading: isLoadingDensity,
-  } = useGetChartConfigQuery({
-    chart_id: "population_density_chart",
+  } = useGetLandPopDensityQuery({
     land_id: landId,
     land_type: landType,
-    params: {
-      start_date: String(startYear),
-      end_date: String(endYear),
-    },
+    year: endYear,
   });
 
   // Convert m² to ha (divide by 10000)
@@ -52,8 +48,8 @@ export const useConsoData = (
   const populationEvolution = popStats?.[0]?.evolution || null;
   const populationEvolutionPercent = popStats?.[0]?.evolution_percent || null;
 
-  // Extract density from chart data
-  const populationDensity = densityChartData?.highcharts_options?.series?.[0]?.data?.[0] || null;
+  // Extract density from API response (density_ha field)
+  const populationDensity = densityData?.[0]?.density_ha || null;
 
   return {
     totalConsoHa,
