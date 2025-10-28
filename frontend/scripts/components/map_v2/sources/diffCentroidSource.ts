@@ -1,5 +1,5 @@
 import { BaseSource } from "./baseSource";
-import { OCSGE_GEOJSON_CENTROIDS_URL } from "../constants/config";
+import { OCSGE_GEOJSON_BASE_URL } from "../constants/config";
 import { LandDetailResultType } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getTerritoryFilter } from "../utils/ocsge";
 import type { SourceSpecification, FilterSpecification } from "maplibre-gl";
@@ -29,7 +29,7 @@ type DiffCentroidConfig = ImpermeabilisationConfig | ArtificialisationConfig;
 const DIFF_CENTROID_CONFIGS: Record<DiffCentroidPreset, DiffCentroidConfig> = {
     impermeabilisation: {
         type: 'impermeabilisation',
-        filename: '',
+        filename: 'occupation_du_sol_diff_centroid_',
         increaseField: 'new_is_impermeable',
         decreaseField: 'new_not_impermeable',
         increaseCountProperty: 'impermeabilisation_count',
@@ -37,7 +37,7 @@ const DIFF_CENTROID_CONFIGS: Record<DiffCentroidPreset, DiffCentroidConfig> = {
     },
     artificialisation: {
         type: 'artificialisation',
-        filename: 'artif_',
+        filename: 'artif_diff_centroid_',
         increaseField: 'new_is_artificial',
         decreaseField: 'new_not_artificial',
         increaseCountProperty: 'artificialisation_count',
@@ -70,7 +70,7 @@ export class DiffCentroidSource extends BaseSource {
     }
 
     getOptions(): SourceSpecification {
-        const url = `${OCSGE_GEOJSON_CENTROIDS_URL}${this.config.filename}${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.geojson.gz`;
+        const url = `${OCSGE_GEOJSON_BASE_URL}${this.config.filename}${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.geojson.gz`;
 
         const territoryFilter = getTerritoryFilter(this.landData);
         const { increaseFilter, decreaseFilter } = this.getDataFilters();

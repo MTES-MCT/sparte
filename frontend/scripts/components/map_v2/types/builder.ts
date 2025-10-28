@@ -70,10 +70,13 @@ export interface ImpermeabilisationDiffLayerConfig extends BaseLayerConfig {
     type: 'impermeabilisation-diff';
 }
 
+export interface ArtificialisationDiffLayerConfig extends BaseLayerConfig {
+    type: 'artificialisation-diff';
+}
+
 export interface ImpermeabilisationDiffCentroidClusterLayerConfig extends BaseLayerConfig {
     type: 'impermeabilisation-diff-centroid-cluster';
 }
-
 
 export interface ArtificialisationDiffCentroidClusterLayerConfig extends BaseLayerConfig {
     type: 'artificialisation-diff-centroid-cluster';
@@ -85,6 +88,7 @@ export type LayerConfig =
     | ImpermeabilisationLayerConfig
     | ArtificialisationLayerConfig
     | ImpermeabilisationDiffLayerConfig
+    | ArtificialisationDiffLayerConfig
     | ImpermeabilisationDiffCentroidClusterLayerConfig
     | ArtificialisationDiffCentroidClusterLayerConfig;
 

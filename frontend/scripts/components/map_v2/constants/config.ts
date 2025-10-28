@@ -11,6 +11,7 @@ export const ORTHOPHOTO_TILES_URL = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQ
 
 export const OCSGE_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/";
 export const OCSGE_GEOJSON_CENTROIDS_URL = "https://airflow-staging.s3.fr-par.scw.cloud/geojson/occupation_du_sol_diff_centroid_";
+export const OCSGE_GEOJSON_BASE_URL = "https://airflow-staging.s3.fr-par.scw.cloud/geojson/";
 
 export const ARTIFICIALISATION_COLOR = "#FA4B42"
 export const DESARTIFICIALISATION_COLOR = "#00E272"

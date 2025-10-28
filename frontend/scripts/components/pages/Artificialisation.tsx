@@ -12,9 +12,12 @@ import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesim
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { useArtificialisation } from "@hooks/useArtificialisation";
 import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
-import { LandArtifStockIndex } from "@services/types/landartifstockindex";
 import OcsgeMatricePNG from '@images/ocsge_matrice_passage.png';
-import { DataCards } from "@components/features/ocsge/DataCards";
+import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
+import Guide from "@components/ui/Guide";
+import Card from "@components/ui/Card";
+import { ArtificialisationMap } from "@components/map_v2/ui/ArtificialisationMap";
+import { ArtificialisationDiffMap } from "@components/map_v2/ui/ArtificialisationDiffMap";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -25,99 +28,6 @@ export const BigNumber = styled.div`
 interface ArtificialisationProps {
 	landData: LandDetailResultType;
 }
-
-interface Millesime {
-	year: number;
-	index: number;
-	departement: string;
-}
-
-const DetailsCalculationOcsge: React.FC = () => (
-	<div>
-		<h3 className="fr-mb-0">Calcul</h3>
-		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la matrice de passage.</p>
-	</div>
-)
-
-const ArtifLastMillesimeSection: React.FC<{
-	landArtifStockIndex: LandArtifStockIndex;
-	is_interdepartemental: boolean;
-	millesimes: Millesime[];
-	territory_name: string;
-}> = ({ landArtifStockIndex, is_interdepartemental, millesimes, territory_name }) => (
-	<div className="fr-mb-5w">
-		<div className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-md-6">
-				<div className="bg-white fr-p-4w rounded h-100">
-					<h2>Qu'est-ce que l'artificialisation des sols ?</h2>
-					<p className="fr-text--sm">
-						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
-						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
-						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
-					</p>
-				</div>
-			</div>
-			<DataCards
-				icon="bi-building"
-				fluxBadgeLabel="Artificialisation nette"
-				stockBadgeLabel="Surface artificialisée"
-				fluxValue={landArtifStockIndex.flux_surface}
-				fluxLabel={
-					<MillesimeDisplay
-						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landArtifStockIndex}
-						between={true}
-					/>
-				}
-				stockValue={`${formatNumber({ number: landArtifStockIndex.surface })} ha`}
-				stockLabel={
-					<>
-						{formatNumber({ number: landArtifStockIndex.percent })}% du territoire{' - '}
-						<MillesimeDisplay
-							is_interdepartemental={is_interdepartemental}
-							landArtifStockIndex={landArtifStockIndex}
-							between={false}
-						/>
-					</>
-				}
-			/>
-
-		</div>
-		<div className="fr-grid-row fr-mt-3w">
-			<div className="fr-col-12">
-				<div className="bg-white fr-p-4w rounded">
-					<h2>D'où proviennent ces données&nbsp;?</h2>
-					<div className="fr-highlight fr-highlight--no-margin">
-						<p className="fr-text--sm">
-							La mesure de l'artificialisation d'un territoire repose sur la
-							donnée{" "}
-							<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
-							actuellement en cours de production par l'IGN. Cette donnée est
-							produite tous les 3 ans par département. Chaque production est
-							appelée un <strong>millésime</strong>.
-						</p>
-					</div>
-					<p className="fr-mt-2w fr-text--sm">
-						Ces données sont disponibles en téléchargement sur le site de l'IGN
-						:&nbsp;<a
-							className="fr-link fr-text--sm"
-							href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
-						</a>
-					</p>
-					<LandMillesimeTable
-						millesimes={millesimes}
-						territory_name={territory_name}
-						is_interdepartemental={is_interdepartemental}
-					/>
-				</div>
-			</div>
-		</div>
-	</div>
-);
 
 export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	landData,
@@ -163,12 +73,87 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
-			<ArtifLastMillesimeSection
-				landArtifStockIndex={landArtifStockIndex}
-				is_interdepartemental={is_interdepartemental}
-				millesimes={millesimes}
-				territory_name={name}
-			/>
+			<div className="fr-mb-5w">
+				<Guide
+                    title="Qu'est-ce que l'artificialisation des sols ?"
+                >
+                    <p className="fr-text--sm">
+						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
+						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
+						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
+					</p>
+                </Guide>
+				<div className="fr-grid-row fr-grid-row--gutters">
+					<div className="fr-col-12 fr-col-md-6">
+						<Card
+							icon="bi-droplet"
+							badgeClass="fr-badge--error"
+							badgeLabel="Artificialisation nette"
+							value={`${formatNumber({ number: landArtifStockIndex.flux_surface, addSymbol: true })} ha`}
+							label={
+								<MillesimeDisplay
+									is_interdepartemental={is_interdepartemental}
+									landArtifStockIndex={landArtifStockIndex}
+									between={true}
+								/>
+							}
+							isHighlighted={true}
+							highlightBadge="Donnée clé"
+						/>
+					</div>
+					<div className="fr-col-12 fr-col-md-6">
+						<Card
+							icon="bi-droplet"
+							badgeClass="fr-badge--info"
+							badgeLabel="Surface artificialisée"
+							value={`${formatNumber({ number: landArtifStockIndex.surface })} ha`}
+							label={
+								<>
+									{formatNumber({ number: landArtifStockIndex.percent })}% du territoire{' - '}
+									<MillesimeDisplay
+										is_interdepartemental={is_interdepartemental}
+										landArtifStockIndex={landArtifStockIndex}
+										between={false}
+									/>
+								</>
+							}
+							isHighlighted={false}
+						/>
+					</div>
+				</div>
+				<div className="fr-grid-row fr-mt-4w">
+					<div className="fr-col-12">
+						<div className="bg-white fr-p-3w rounded">
+							<h2>D'où proviennent ces données&nbsp;?</h2>
+							<p className="fr-text--sm fr-mb-2w">
+								La mesure de l'artificialisation d'un territoire repose sur la
+								donnée{" "}
+								<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
+								actuellement en cours de production par l'IGN. Cette donnée est
+								produite tous les 3 ans par département. Chaque production est
+								appelée un <strong>millésime</strong>.
+							</p>
+							<LandMillesimeTable
+								millesimes={millesimes}
+								territory_name={name}
+								is_interdepartemental={is_interdepartemental}
+							/>
+							<p className="fr-text--xs fr-mt-1w fr-mb-0">
+								Ces données sont disponibles en téléchargement sur le site de l'IGN
+								:&nbsp;<a
+									className="fr-link fr-text--sm"
+									href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Télécharger les données OCS GE sur le site de l'IGN (ouvre dans un nouvel onglet)"
+								>
+									https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
@@ -180,7 +165,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						between={true}
 					/>
 				</h2>
-				<div className="bg-white fr-p-4w rounded fr-mt-3w">
+				<ArtificialisationDiffMap landData={landData} />
+				<div className="bg-white fr-p-4w rounded fr-mt-4w">
 					<h3>
 						Quels sont les objectifs nationaux de réduction de
 						l'artificialisation ?
@@ -262,7 +248,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						between={true}
 					/>
 				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+				<ArtificialisationMap landData={landData} />
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					{
 						is_interdepartemental && (
 							<DepartmentSelector
@@ -354,14 +341,22 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					d'usage
 				</h2>
 				<div className="bg-white fr-px-4w fr-pt-4w rounded">
-					<OcsgeMillesimeSelector
-						millesimes_by_index={millesimes_by_index}
-						index={selectedIndex}
-						setIndex={setSelectedIndex}
-						byDepartement={byDepartement}
-						setByDepartement={setByDepartement}
-						shouldDisplayByDepartementBtn={is_interdepartemental}
-					/>
+					<div className="d-flex gap-4">
+						<OcsgeMillesimeSelector
+							millesimes_by_index={millesimes_by_index}
+							index={selectedIndex}
+							setIndex={setSelectedIndex}
+							isDepartemental={is_interdepartemental}
+						/>
+						{
+							is_interdepartemental && (
+								<DepartmentSelector
+									byDepartement={byDepartement}
+									setByDepartement={setByDepartement}
+								/>
+							)
+						}
+					</div>
 					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
 						{byDepartement ? (
 							millesimes
