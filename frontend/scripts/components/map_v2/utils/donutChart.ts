@@ -103,7 +103,12 @@ export function createDonutChart(
     html += `<circle cx="${radius}" cy="${radius}" r="${innerRadius}" fill="#FFFFFF" />`;
 
     // Texte principal (total algébrique)
-    const totalPrefix = algebraicTotal > 0 ? '+' : algebraicTotal < 0 ? '-' : '';
+    let totalPrefix = '';
+    if (algebraicTotal > 0) {
+        totalPrefix = '+';
+    } else if (algebraicTotal < 0) {
+        totalPrefix = '-';
+    }
     const { value: totalValue, unit: totalUnit } = formatDisplayValue(absoluteTotal);
     html += `<text class="donut-main-text" dominant-baseline="central" transform="translate(${radius}, ${radius})" style="font-size: ${fontSize * 0.85}px; font-weight: bold; transition: opacity 0.2s;">${totalPrefix}${totalValue}${totalUnit}</text>`;
 
@@ -114,12 +119,13 @@ export function createDonutChart(
         const totalHeight = lineSpacing * (validSegments.length - 1);
         const startY = radius - totalHeight / 2;
 
-        validSegments.forEach((segment, i) => {
+        for (let i = 0; i < validSegments.length; i++) {
+            const segment = validSegments[i];
             const { value, unit } = formatDisplayValue(segment.value);
             const prefix = segment.isNegative ? '-' : '+';
             const y = startY + i * lineSpacing;
             html += `<text class="donut-detail-text" dominant-baseline="central" transform="translate(${radius}, ${y})" style="font-size: ${textSize}px; font-weight: bold; fill: ${segment.color}; opacity: 0; transition: opacity 0.2s;">${prefix}${value}${unit}</text>`;
-        });
+        }
     }
 
     html += '</svg></div>';
@@ -130,18 +136,22 @@ export function createDonutChart(
     // Ajouter les événements hover pour tous les donuts avec plusieurs segments
     if (validSegments.length > 1) {
         const svg = element.querySelector('svg');
-        const mainText = element.querySelector('.donut-main-text') as SVGElement;
+        const mainText = element.querySelector('.donut-main-text');
         const detailTexts = element.querySelectorAll('.donut-detail-text');
 
         if (svg && mainText && detailTexts.length > 0) {
             const handleMouseEnter = () => {
-                mainText.style.opacity = '0';
-                detailTexts.forEach(text => (text as SVGElement).style.opacity = '1');
+                (mainText as SVGElement).style.opacity = '0';
+                for (let i = 0; i < detailTexts.length; i++) {
+                    (detailTexts[i] as SVGElement).style.opacity = '1';
+                }
             };
 
             const handleMouseLeave = () => {
-                mainText.style.opacity = '1';
-                detailTexts.forEach(text => (text as SVGElement).style.opacity = '0');
+                (mainText as SVGElement).style.opacity = '1';
+                for (let i = 0; i < detailTexts.length; i++) {
+                    (detailTexts[i] as SVGElement).style.opacity = '0';
+                }
             };
 
             svg.addEventListener('mouseenter', handleMouseEnter);
