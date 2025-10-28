@@ -1,4 +1,9 @@
-{{ config(materialized="table") }}
+{{
+    config(
+        materialized="table",
+        indexes=[{"columns": ["year_index"], "type": "btree"}]
+    )
+}}
 
 SELECT
     ocsge_friche_id as id,
