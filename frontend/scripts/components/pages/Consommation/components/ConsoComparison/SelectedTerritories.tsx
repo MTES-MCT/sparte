@@ -17,7 +17,7 @@ export const SelectedTerritories: React.FC<SelectedTerritoriesProps> = ({ territ
   return (
     <div className="fr-mt-3w">
       <p className="fr-text--sm fr-mb-1w" style={{ fontWeight: 500 }}>
-        Territoires additionnels ({territories.length}) :
+        Territoires sélectionnés ({territories.length}) :
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
         {territories.map((territory) => (

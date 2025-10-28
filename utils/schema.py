@@ -46,6 +46,7 @@ from public_data.models import (
     LandPop,
     LandPopStats,
     LogementVacant,
+    NearestTerritories,
     Region,
     Scot,
     SimilarTerritories,
@@ -93,6 +94,7 @@ def init_unmanaged_schema_for_tests() -> None:
         # Demography
         drop_and_create_model(LandPop, schema_editor)
         drop_and_create_model(LandPopStats, schema_editor)
+        drop_and_create_model(NearestTerritories, schema_editor)
         drop_and_create_model(SimilarTerritories, schema_editor)
 
         # Artificialisation

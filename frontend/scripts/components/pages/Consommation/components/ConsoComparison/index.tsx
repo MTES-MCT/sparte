@@ -16,7 +16,6 @@ interface ConsoComparisonProps {
   additionalTerritories: Territory[];
   comparisonLandIds: string | null;
   isDefaultSelection: boolean;
-  childType?: string;
   onTerritoryAdd: (territory: Territory) => void;
   onTerritoryRemove: (territory: Territory) => void;
   onReset: () => void;
@@ -37,7 +36,6 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
   additionalTerritories,
   comparisonLandIds,
   isDefaultSelection,
-  childType,
   onTerritoryAdd,
   onTerritoryRemove,
   onReset,

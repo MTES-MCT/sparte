@@ -35,6 +35,12 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
         """
         Récupère le territoire principal + les territoires de comparaison.
         Utilise la méthode du mixin pour gérer la sélection des territoires.
+
+        Returns:
+            list[LandModel]: Liste de LandModel instances (pas un QuerySet).
+                            Retourne toujours une liste Python standard.
+                            Utiliser len(self.lands) pour compter les éléments.
+                            Utiliser un dict pour lookup par land_id.
         """
         return self._get_comparison_lands()
 
@@ -175,6 +181,17 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
             "mapNavigation": {"enabled": len(self.lands) > 20},
             "legend": {
                 "title": {"text": "Densité de consommation (%)"},
+                "backgroundColor": "#ffffff",
+                "bubbleLegend": {
+                    "enabled": True,
+                    "borderWidth": 1,
+                    "legendIndex": 100,
+                    "labels": {"format": "{value:.0f} ha"},
+                    "color": "transparent",
+                    "borderColor": "#000",
+                    "connectorDistance": 40,
+                    "connectorColor": "#000",
+                },
             },
             "colorAxis": {
                 "min": min([d["conso_density_percent"] for d in data_with_values]) if data_with_values else 0,
@@ -191,6 +208,12 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                             "land_id": d["land_id"],
                             "conso_density_percent": d["conso_density_percent"],
                             "value": d["conso_density_percent"],
+                            "total_conso_ha": d["total_conso_ha"],
+                            "habitat_ha": d["habitat_ha"],
+                            "activite_ha": d["activite_ha"],
+                            "mixte_ha": d["mixte_ha"],
+                            "route_ha": d["route_ha"],
+                            "ferroviaire_ha": d["ferroviaire_ha"],
                             "borderColor": "#0063CB" if d["is_main"] else "#666",
                             "borderWidth": 3 if d["is_main"] else 1,
                         }
@@ -207,10 +230,16 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                         "enabled": False,
                     },
                     "tooltip": {
-                        "headerFormat": "",
+                        "valueDecimals": 1,
                         "pointFormat": (
-                            "<b>{point.name}</b><br/>"
-                            "Densité de consommation : {{point.conso_density_percent:.2f}} %<br/>"
+                            "<b>{point.name}</b>:<br/>"
+                            "Densité: {point.conso_density_percent:,.2f} %<br/>"
+                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
+                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
+                            "Activité: {point.activite_ha:,.1f} ha<br/>"
+                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
+                            "Route: {point.route_ha:,.1f} ha<br/>"
+                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
                         ),
                     },
                 },
@@ -221,21 +250,37 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                         {
                             "land_id": d["land_id"],
                             "z": d["total_conso_ha"],
+                            "color": "#FC9292",
+                            "total_conso_ha": d["total_conso_ha"],
+                            "habitat_ha": d["habitat_ha"],
+                            "activite_ha": d["activite_ha"],
+                            "mixte_ha": d["mixte_ha"],
+                            "route_ha": d["route_ha"],
+                            "ferroviaire_ha": d["ferroviaire_ha"],
+                            "inconnu_ha": d["inconnu_ha"],
+                            "conso_density_percent": d["conso_density_percent"],
                         }
                         for d in data_with_values
                     ],
-                    "joinBy": "land_id",
-                    "minSize": "4%",
-                    "maxSize": "12%",
-                    "color": "#e1000f",
+                    "joinBy": ["land_id"],
+                    "showInLegend": True,
+                    "maxSize": 50,
                     "marker": {
-                        "fillOpacity": 0.6,
-                        "lineWidth": 1,
-                        "lineColor": "#FFF",
+                        "fillOpacity": 0.5,
                     },
+                    "color": "#ff5b5b",
                     "tooltip": {
-                        "headerFormat": "",
-                        "pointFormat": ("<b>{point.name}</b><br/>" "Consommation totale : {{point.z:.2f}} ha<br/>"),
+                        "valueDecimals": 1,
+                        "pointFormat": (
+                            "<b>{point.name}</b>:<br/>"
+                            "Densité: {point.conso_density_percent:,.2f} %<br/>"
+                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
+                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
+                            "Activité: {point.activite_ha:,.1f} ha<br/>"
+                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
+                            "Route: {point.route_ha:,.1f} ha<br/>"
+                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
+                        ),
                     },
                 },
             ],

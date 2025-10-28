@@ -1,4 +1,4 @@
 export { useConsoData } from "./useConsoData";
-export { useSimilarTerritories } from "./useSimilarTerritories";
+export { useNearestTerritories } from "./useNearestTerritories";
 export { useSimilarTerritoriesByPopulation } from "./useSimilarTerritoriesByPopulation";
 export { useComparisonTerritories } from "./useComparisonTerritories";

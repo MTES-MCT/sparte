@@ -1,6 +1,6 @@
 import React from "react";
 import { useGetSimilarTerritoriesByPopulationQuery } from "@services/api";
-import { Territory } from "@components/ui/SearchBar";
+import { transformToTerritories } from "../utils/territoryTransform";
 
 interface SimilarTerritoryByPopulation {
   land_id: string;
@@ -26,19 +26,7 @@ export const useSimilarTerritoriesByPopulation = (landId: string, landType: stri
   });
 
   const territories = React.useMemo(() => {
-    if (!rawData) return [];
-
-    return rawData
-      .filter((st: SimilarTerritoryByPopulation) => st.similar_land_id !== landId)
-      .map((st: SimilarTerritoryByPopulation): Territory => ({
-        id: 0,
-        source_id: st.similar_land_id,
-        land_type: landType,
-        name: st.similar_land_name,
-        public_key: "",
-        area: 0,
-        land_type_label: "",
-      }));
+    return transformToTerritories(rawData, landId, landType);
   }, [rawData, landId, landType]);
 
   const rawTerritories = React.useMemo(() => {
