@@ -27,6 +27,6 @@ export type {
     ControlType,
     ControlGroup,
     ControlsConfig,
-    ControlsManager as IControlsManager
+    ControlsManagerInterface as IControlsManager
 } from './types/controls';
 export type { StatCategory } from './types/layer';
