@@ -8,13 +8,10 @@ export interface SimilarTerritory {
   land_id: string;
   land_name: string;
   land_type: string;
-  similar_land_id: string;
-  similar_land_name: string;
-  population_source: number;
-  population_similar: number;
-  population_difference: number;
+  nearest_land_id: string;
+  nearest_land_name: string;
   distance_km: number;
-  similarity_rank: number;
+  distance_rank: number;
 }
 
 export interface ConsoStats {

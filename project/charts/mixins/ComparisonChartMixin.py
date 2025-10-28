@@ -2,13 +2,13 @@
 Mixin for charts that support territory comparison.
 
 This mixin provides common functionality for charts that compare
-the current territory with similar territories or custom territories.
+the current territory with nearest (neighboring) territories or custom territories.
 """
 
 from functools import cached_property
 
 from public_data.models.administration import LandModel
-from public_data.models.demography import SimilarTerritories
+from public_data.models.demography import NearestTerritories
 
 
 class ComparisonChartMixin:
@@ -16,38 +16,38 @@ class ComparisonChartMixin:
     Mixin for charts that support territory comparison.
 
     Provides:
-    - Cached similar territories data to avoid N+1 queries
+    - Cached nearest territories data to avoid N+1 queries
     - Parsing of comparison_lands parameter
-    - Fallback to similar territories from database
+    - Fallback to nearest territories from database
     """
 
     @cached_property
-    def _similar_territories_data(self):
+    def _nearest_territories_data(self):
         """
-        Cache for similar territories data to avoid N+1 queries.
+        Cache for nearest territories data to avoid N+1 queries.
 
-        Fetches all SimilarTerritories objects in a single query.
-        Returns a dict mapping similar_land_id -> SimilarTerritories object.
+        Fetches all NearestTerritories objects in a single query.
+        Returns a dict mapping nearest_land_id -> NearestTerritories object.
 
         Returns:
-            dict: Mapping of similar_land_id to SimilarTerritories instances
+            dict: Mapping of nearest_land_id to NearestTerritories instances
         """
-        similar_territories = SimilarTerritories.objects.filter(
+        nearest_territories = NearestTerritories.objects.filter(
             land_id=self.land.land_id, land_type=self.land.land_type
-        ).order_by("similarity_rank")[:8]
+        ).order_by("distance_rank")[:8]
 
-        return {st.similar_land_id: st for st in similar_territories}
+        return {nt.nearest_land_id: nt for nt in nearest_territories}
 
     def _get_comparison_lands(self):
         """
         Get list of lands to compare, including the current land.
 
         If comparison_lands parameter is provided, uses custom territories.
-        Otherwise, falls back to similar territories from the database.
+        Otherwise, falls back to nearest territories from the database.
 
         Returns:
             list[LandModel]: List of lands starting with current land,
-                           followed by comparison/similar lands
+                           followed by comparison/nearest lands
         """
         comparison_lands = [self.land]
 
@@ -56,8 +56,8 @@ class ComparisonChartMixin:
             custom_lands = self._parse_comparison_lands_param()
             comparison_lands.extend(custom_lands)
         else:
-            similar_lands = self._get_similar_territories_lands()
-            comparison_lands.extend(similar_lands)
+            nearest_lands = self._get_nearest_territories_lands()
+            comparison_lands.extend(nearest_lands)
 
         return comparison_lands
 
@@ -84,27 +84,27 @@ class ComparisonChartMixin:
 
         return custom_lands
 
-    def _get_similar_territories_lands(self):
+    def _get_nearest_territories_lands(self):
         """
-        Get LandModel instances for similar territories from database.
+        Get LandModel instances for nearest territories from database.
 
-        Uses cached similar territories data to maintain similarity_rank order.
+        Uses cached nearest territories data to maintain distance_rank order.
 
         Returns:
-            list[LandModel]: Ordered list of similar territory LandModel instances
+            list[LandModel]: Ordered list of nearest territory LandModel instances
         """
-        similar_land_ids = list(self._similar_territories_data.keys())
+        nearest_land_ids = list(self._nearest_territories_data.keys())
 
-        # Fetch all similar lands in a single optimized query
-        similar_lands = LandModel.objects.filter(land_id__in=similar_land_ids, land_type=self.land.land_type)
+        # Fetch all nearest lands in a single optimized query
+        nearest_lands = LandModel.objects.filter(land_id__in=nearest_land_ids, land_type=self.land.land_type)
 
-        # Create ordered list maintaining similarity_rank order
+        # Create ordered list maintaining distance_rank order
         # Use dict to map land_id to LandModel for efficient lookup
-        similar_lands_dict = {land.land_id: land for land in similar_lands}
+        nearest_lands_dict = {land.land_id: land for land in nearest_lands}
 
         ordered_lands = []
-        for land_id in similar_land_ids:
-            if land_id in similar_lands_dict:
-                ordered_lands.append(similar_lands_dict[land_id])
+        for land_id in nearest_land_ids:
+            if land_id in nearest_lands_dict:
+                ordered_lands.append(nearest_lands_dict[land_id])
 
         return ordered_lands

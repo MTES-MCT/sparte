@@ -10,7 +10,9 @@ interface ConsoDemographyProps {
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
   populationDensity: number | null;
+  populationStock: number | null;
   isLoadingPop: boolean;
+  populationCardRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
@@ -24,7 +26,9 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   populationEvolution,
   populationEvolutionPercent,
   populationDensity,
+  populationStock,
   isLoadingPop,
+  populationCardRef,
 }) => {
   return (
     <div className="fr-mt-7w">
@@ -35,9 +39,11 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
         populationDensity={populationDensity}
+        populationStock={populationStock}
         isLoadingPop={isLoadingPop}
         startYear={startYear}
         endYear={endYear}
+        populationCardRef={populationCardRef}
       />
 
       {/* Population and consumption progression chart */}

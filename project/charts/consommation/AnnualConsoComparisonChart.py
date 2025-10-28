@@ -12,7 +12,7 @@ from public_data.domain.containers import PublicDataContainer
 
 class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     """
-    Graphique de consommation annuelle d'espaces des territoires similaires.
+    Graphique de consommation annuelle d'espaces des territoires voisins.
     """
 
     required_params = ["start_date", "end_date"]
@@ -24,14 +24,14 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     @cached_property
     def data(self):
         """
-        Get consumption progression data for current land and similar territories.
+        Get consumption progression data for current land and nearest territories.
 
-        Uses ComparisonChartMixin to get comparison lands (either custom or similar territories).
+        Uses ComparisonChartMixin to get comparison lands (either custom or nearest territories).
 
         Returns consumption data for:
         1. The current territory (highlighted in the chart)
         2. Custom territories if comparison_lands param is provided
-        3. Otherwise, up to 8 similar territories from for_app_similar_territories table
+        3. Otherwise, up to 8 nearest territories from for_app_nearest_territories table
 
         Uses @cached_property to avoid re-executing queries on multiple accesses.
         """
@@ -98,7 +98,7 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
 
         return super().param | {
             "chart": {"type": "column", "height": 500},
-            "title": {"text": "Consommation d'espaces du territoire et des territoires similaires (ha)"},
+            "title": {"text": "Consommation d'espaces du territoire et des territoires voisins (ha)"},
             "subtitle": {"text": "Cliquez sur un territoire pour voir le détail de sa consommation d'espaces."},
             "yAxis": {"title": {"text": "Consommation d'espaces (ha)"}},
             "xAxis": {
@@ -159,7 +159,7 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
             "title": {
                 "text": (
                     f"Comparaison de la consommation d'espaces NAF entre {self.land.name} "
-                    "et les territoires similaires "
+                    "et les territoires voisins "
                     f"entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
                 )
             },

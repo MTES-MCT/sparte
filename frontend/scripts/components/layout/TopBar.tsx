@@ -79,12 +79,6 @@ const TopBar: React.FC = () => {
     const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
     const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
-    const location = useLocation();
-    const pathsToShowPeriod = ['consommation', 'trajectoires'];
-    const shouldDisplayPeriod = pathsToShowPeriod.some(path => location.pathname.includes(path));
-    const pathsToShowLevel = ['consommation'];
-    const shouldDisplayLevel = pathsToShowLevel.some(path => location.pathname.includes(path));
-    const { isMobile } = useWindowSize(980);
     const isOpen = useSelector(selectIsNavbarOpen);
 
     return (
@@ -96,14 +90,6 @@ const TopBar: React.FC = () => {
                     <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
                 </div>
             </div>
-            { !isMobile && shouldDisplayLevel && (
-                <ItemContainer>
-                    <Item>
-                        <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
-                        <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
-                    </Item>
-                </ItemContainer>
-            )}
         </Container>
     );
 };

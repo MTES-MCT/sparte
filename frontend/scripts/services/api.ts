@@ -113,6 +113,14 @@ export const djangoApi = createApi({
 		}),
 		getSimilarTerritories: builder.query({
 			query: ({land_type, land_id}) => {
+				return `/api/nearestterritories/?${new URLSearchParams({
+					land_type,
+					land_id
+				})}`
+			},
+		}),
+		getSimilarTerritoriesByPopulation: builder.query({
+			query: ({land_type, land_id}) => {
 				return `/api/similarterritories/?${new URLSearchParams({
 					land_type,
 					land_id
@@ -183,6 +191,7 @@ const {
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
+	useGetSimilarTerritoriesByPopulationQuery,
 	useGetLogementVacantAutorisationStatsQuery,
 } = djangoApi;
 
@@ -201,6 +210,7 @@ export {
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
+	useGetSimilarTerritoriesByPopulationQuery,
 	useDownloadDiagnosticMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,

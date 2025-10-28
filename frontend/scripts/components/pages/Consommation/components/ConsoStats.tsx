@@ -6,9 +6,11 @@ interface ConsoStatsProps {
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
   populationDensity: number | null;
+  populationStock: number | null;
   isLoadingPop: boolean;
   startYear: number;
   endYear: number;
+  populationCardRef?: React.RefObject<HTMLDivElement>;
 }
 
 /**
@@ -18,9 +20,11 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
   populationEvolution,
   populationEvolutionPercent,
   populationDensity,
+  populationStock,
   isLoadingPop,
   startYear,
   endYear,
+  populationCardRef,
 }) => {
   const formatPopulationValue = () => {
     if (isLoadingPop || populationEvolution === null) {
@@ -53,9 +57,17 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
     return `${formatNumber({ number: populationDensity, decimals: 1 })} hab/ha`;
   };
 
+  const formatPopulationStockValue = () => {
+    if (isLoadingPop || populationStock === null) {
+      return "...";
+    }
+
+    return `${formatNumber({ number: populationStock })} hab`;
+  };
+
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-      <div className="fr-col-12 fr-col-md-4">
+      <div className="fr-col-12 fr-col-md-4" ref={populationCardRef}>
         <Card
           icon="bi-people"
           badgeClass="fr-badge--success"
@@ -64,6 +76,16 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
           label={formatPopulationLabel()}
           isHighlighted={true}
           highlightBadge="Donnée clé"
+        />
+      </div>
+      <div className="fr-col-12 fr-col-md-4">
+        <Card
+          icon="bi-people-fill"
+          badgeClass="fr-badge--info"
+          badgeLabel="Population"
+          value={formatPopulationStockValue()}
+          label={`En ${endYear}`}
+          isHighlighted={false}
         />
       </div>
       <div className="fr-col-12 fr-col-md-4">

@@ -202,7 +202,7 @@ const SyntheseConso = ({
       </div>
       <CallToAction
         title={`Diagnostiquer et simuler la consommation d'espaces NAF de ${name}`}
-        text="Découvrez dans notre diagnostic de consommation d’espaces NAF : analyse détaillée de la consommation d’espaces NAF par destination, mise en relation avec l’évolution démographique, et comparaison avec une selection de territoires similaires."
+        text="Découvrez dans notre diagnostic de consommation d'espaces NAF : analyse détaillée de la consommation d'espaces NAF par destination, mise en relation avec l'évolution démographique, et comparaison avec une selection de territoires voisins."
       >
         <div className="d-flex align-items-center gap-3">
           <Link
@@ -306,7 +306,7 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
       </div>
       <CallToAction
         title="Diagnostiquer l'artificialisation des sols et explorer les données"
-        text="Découvrez dans notre diagnostic d'artificialisation : analyse détaillée de l'artificialisation des sols par destination, mise en relation avec l’évolution démographique, et comparaison avec une selection de territoires similaires."
+        text="Découvrez dans notre diagnostic d'artificialisation : analyse détaillée de l'artificialisation des sols par destination, mise en relation avec l'évolution démographique, et comparaison avec une selection de territoires voisins."
       >
         <div className="d-flex align-items-center gap-3">
           <Link

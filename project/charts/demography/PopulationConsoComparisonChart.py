@@ -1,5 +1,7 @@
 from functools import cached_property
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import HIGHLIGHT_COLOR
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
@@ -17,14 +19,14 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     @cached_property
     def data(self):
         """
-        Get comparison data for current land and similar territories.
+        Get comparison data for current land and nearest territories.
 
-        Uses ComparisonChartMixin to get comparison lands (either custom or similar territories).
+        Uses ComparisonChartMixin to get comparison lands (either custom or nearest territories).
 
         Returns comparison data for:
         1. The current territory (highlighted in the chart)
         2. Custom territories if comparison_lands param is provided
-        3. Otherwise, up to 8 similar territories from for_app_similar_territories table
+        3. Otherwise, up to 8 nearest territories from for_app_nearest_territories table
 
         Uses @cached_property to avoid re-executing queries on multiple accesses.
         """
@@ -34,9 +36,13 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         comparison_lands = self._get_comparison_lands()
 
         # Get comparison stats for median calculation
-        comparison = PublicDataContainer.consommation_comparison_service().get_by_land(
-            land=self.land, start_date=start_date, end_date=end_date
-        )
+        # May not exist for some land types (e.g., REGION) or when comparison land doesn't exist
+        try:
+            comparison = PublicDataContainer.consommation_comparison_service().get_by_land(
+                land=self.land, start_date=start_date, end_date=end_date
+            )
+        except ObjectDoesNotExist:
+            comparison = None
 
         # Get stats for all lands
         consommation_stats = PublicDataContainer.consommation_stats_service().get_by_lands(
@@ -61,6 +67,11 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     def median_series(self):
         """Calculate and return median series."""
         comparison = self.data["comparison"]
+
+        # No median line if comparison data doesn't exist
+        if comparison is None:
+            return []
+
         population_stats = self.data["population_stats"]
 
         max_pop_evo = max([p.evolution for p in population_stats])
@@ -134,7 +145,7 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "title": {
                 "text": (
                     f"Consommation d'espaces au regard de l'évolution de la population à {self.land.name} "
-                    f"et territoires similaires ({self.params['start_date']} - {self.params['end_date']})"
+                    f"et territoires voisins ({self.params['start_date']} - {self.params['end_date']})"
                 )
             },
             "xAxis": {
