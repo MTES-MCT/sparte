@@ -1,32 +1,17 @@
-import {
-    IMPERMEABILISATION_COLOR,
-    DESIMPERMEABILISATION_COLOR,
-    ARTIFICIALISATION_COLOR,
-    DESARTIFICIALISATION_COLOR
-} from "../constants/config";
-
-export type DiffType = 'impermeabilisation' | 'artificialisation';
-
-export interface DonutChartData {
-    impermeabilisation_count: number;
-    desimpermeabilisation_count: number;
+export interface DonutSegmentConfig {
+    positiveKey: string;
+    negativeKey: string;
+    positiveColor: string;
+    negativeColor: string;
 }
 
-export interface ArtificialisationDonutChartData {
-    artificialisation_count: number;
-    desartificialisation_count: number;
-}
-
-export interface GenericDonutChartData {
-    positiveCount: number;
-    negativeCount: number;
+export interface DonutSegment {
+    value: number;
+    isNegative: boolean;
+    color: string;
 }
 
 export interface DonutChartOptions {
-    colors?: {
-        impermeabilisation: string;
-        desimpermeabilisation: string;
-    };
     minRadius?: number;
     maxRadius?: number;
     fontSize?: {
@@ -38,12 +23,8 @@ export interface DonutChartOptions {
 }
 
 const DEFAULT_OPTIONS: Required<DonutChartOptions> = {
-    colors: {
-        impermeabilisation: IMPERMEABILISATION_COLOR,
-        desimpermeabilisation: DESIMPERMEABILISATION_COLOR,
-    },
-    minRadius: 14,
-    maxRadius: 40,
+    minRadius: 16,
+    maxRadius: 42,
     fontSize: {
         small: 12,
         medium: 14,
@@ -52,102 +33,138 @@ const DEFAULT_OPTIONS: Required<DonutChartOptions> = {
     },
 };
 
+export function createDonutChartFromSegments(
+    segments: DonutSegment[],
+    options: DonutChartOptions = {}
+): HTMLElement | null {
+    const opts = { ...DEFAULT_OPTIONS, ...options };
+    return createDonutChart(segments, opts);
+}
+
 export function createDiffDonutChart(
-    data: GenericDonutChartData,
-    type: DiffType,
+    data: Record<string, any>,
+    config: DonutSegmentConfig,
     options: DonutChartOptions = {}
 ): HTMLElement | null {
-    const colorConfig = type === 'impermeabilisation'
-        ? { positive: IMPERMEABILISATION_COLOR, negative: DESIMPERMEABILISATION_COLOR }
-        : { positive: ARTIFICIALISATION_COLOR, negative: DESARTIFICIALISATION_COLOR };
-
-    const opts = {
-        ...DEFAULT_OPTIONS,
-        colors: {
-            impermeabilisation: colorConfig.positive,
-            desimpermeabilisation: colorConfig.negative,
-        },
-        ...options
-    };
-
-    const counts = [data.positiveCount, data.negativeCount];
-    const colors = [colorConfig.positive, colorConfig.negative];
-
-    return createDonutChart(counts, colors, opts);
-}
-
-export function createImpermeabilisationDonutChart(
-    data: DonutChartData,
-    options: DonutChartOptions = {}
-): HTMLElement | null {
-    return createDiffDonutChart(
+    const segments: DonutSegment[] = [
         {
-            positiveCount: data.impermeabilisation_count,
-            negativeCount: data.desimpermeabilisation_count
+            value: data[config.positiveKey] || 0,
+            isNegative: false,
+            color: config.positiveColor
         },
-        'impermeabilisation',
-        options
-    );
-}
-
-export function createArtificialisationDonutChart(
-    data: ArtificialisationDonutChartData,
-    options: DonutChartOptions = {}
-): HTMLElement | null {
-    return createDiffDonutChart(
         {
-            positiveCount: data.artificialisation_count,
-            negativeCount: data.desartificialisation_count
-        },
-        'artificialisation',
-        options
-    );
+            value: data[config.negativeKey] || 0,
+            isNegative: true,
+            color: config.negativeColor
+        }
+    ];
+    return createDonutChartFromSegments(segments, options);
 }
 
 export function createDonutChart(
-    counts: number[],
-    colors: string[],
+    segments: DonutSegment[],
     options: Required<DonutChartOptions>
 ): HTMLElement | null {
-    const offsets: number[] = [];
-    let total = 0;
+    // Filtrer les segments avec valeur > 0
+    const validSegments = segments.filter(s => s.value > 0);
 
-    // Calculer les offsets pour chaque segment
-    for (const count of counts) {
-        offsets.push(total);
-        total += count;
-    }
-
-    if (total === 0) {
+    if (validSegments.length === 0) {
         return null;
     }
 
-    // Déterminer la taille du donut basée sur le total
-    const fontSize = getFontSize(total, options.fontSize);
-    const radius = getRadius(total, options.minRadius, options.maxRadius);
-    const innerRadius = Math.round(radius * 0.6);
+    // Calculer le total visuel (somme des valeurs absolues) et le total algébrique
+    let visualTotal = 0;
+    let algebraicTotal = 0;
+    const offsets: number[] = [];
+
+    for (const segment of validSegments) {
+        offsets.push(visualTotal);
+        visualTotal += segment.value;
+        algebraicTotal += segment.isNegative ? -segment.value : segment.value;
+    }
+
+    const absoluteTotal = Math.abs(algebraicTotal);
+
+    // Déterminer la taille du donut basée sur le total absolu
+    const fontSize = getFontSize(absoluteTotal, options.fontSize);
+    const radius = getRadius(absoluteTotal, options.minRadius, options.maxRadius);
+    const innerRadius = Math.round(radius * 0.75);
     const width = radius * 2;
 
-    let html = `<div><svg width="${width}" height="${width}" viewBox="0 0 ${width} ${width}" text-anchor="middle" style="font: ${fontSize}px sans-serif; display: block">`;
+    let html = `<div><svg width="${width}" height="${width}" viewBox="0 0 ${width} ${width}" text-anchor="middle" style="font: ${fontSize}px sans-serif; font-weight: bold; display: block">`;
 
-    // Créer chaque segment du donut
-    for (let i = 0; i < counts.length; i++) {
-        if (counts[i] > 0) {
-            const start = offsets[i] / total;
-            const end = (offsets[i] + counts[i]) / total;
-            html += donutSegment(start, end, radius, innerRadius, colors[i]);
+    // Créer les segments visuels
+    for (let i = 0; i < validSegments.length; i++) {
+        const start = offsets[i] / visualTotal;
+        const end = (offsets[i] + validSegments[i].value) / visualTotal;
+        html += donutSegment(start, end, radius, innerRadius, validSegments[i].color);
+    }
+
+    html += `<circle cx="${radius}" cy="${radius}" r="${innerRadius}" fill="#FFFFFF" />`;
+
+    // Texte principal (total algébrique)
+    let totalPrefix = '';
+    if (algebraicTotal > 0) {
+        totalPrefix = '+';
+    } else if (algebraicTotal < 0) {
+        totalPrefix = '-';
+    }
+    const { value: totalValue, unit: totalUnit } = formatDisplayValue(absoluteTotal);
+    html += `<text class="donut-main-text" dominant-baseline="central" transform="translate(${radius}, ${radius})" style="font-size: ${fontSize * 0.85}px; font-weight: bold; transition: opacity 0.2s;">${totalPrefix}${totalValue}${totalUnit}</text>`;
+
+    // Textes détaillés des segments
+    if (validSegments.length > 1) {
+        const textSize = fontSize * 0.75;
+        const lineSpacing = textSize * 1.3;
+        const totalHeight = lineSpacing * (validSegments.length - 1);
+        const startY = radius - totalHeight / 2;
+
+        for (let i = 0; i < validSegments.length; i++) {
+            const segment = validSegments[i];
+            const { value, unit } = formatDisplayValue(segment.value);
+            const prefix = segment.isNegative ? '-' : '+';
+            const y = startY + i * lineSpacing;
+            html += `<text class="donut-detail-text" dominant-baseline="central" transform="translate(${radius}, ${y})" style="font-size: ${textSize}px; font-weight: bold; fill: ${segment.color}; opacity: 0; transition: opacity 0.2s;">${prefix}${value}${unit}</text>`;
         }
     }
 
-    // Cercle central blanc avec le total (affiché en hectares si c'est une surface)
-    html += `<circle cx="${radius}" cy="${radius}" r="${innerRadius}" fill="white" />`;
-    // Convertir et formater la valeur
-    const { value, unit } = formatDisplayValue(total);
-    html += `<text dominant-baseline="central" transform="translate(${radius}, ${radius})">${value}${unit}</text>`;
     html += '</svg></div>';
 
     const element = document.createElement('div');
     element.innerHTML = html;
+
+    // Ajouter les événements hover pour tous les donuts avec plusieurs segments
+    if (validSegments.length > 1) {
+        const svg = element.querySelector('svg');
+        const mainText = element.querySelector('.donut-main-text');
+        const detailTexts = element.querySelectorAll('.donut-detail-text');
+
+        if (svg && mainText && detailTexts.length > 0) {
+            const handleMouseEnter = () => {
+                (mainText as SVGElement).style.opacity = '0';
+                for (let i = 0; i < detailTexts.length; i++) {
+                    (detailTexts[i] as SVGElement).style.opacity = '1';
+                }
+            };
+
+            const handleMouseLeave = () => {
+                (mainText as SVGElement).style.opacity = '1';
+                for (let i = 0; i < detailTexts.length; i++) {
+                    (detailTexts[i] as SVGElement).style.opacity = '0';
+                }
+            };
+
+            svg.addEventListener('mouseenter', handleMouseEnter);
+            svg.addEventListener('mouseleave', handleMouseLeave);
+
+            // Stocker les fonctions pour cleanup ultérieur
+            (element as any)._donutCleanup = () => {
+                svg.removeEventListener('mouseenter', handleMouseEnter);
+                svg.removeEventListener('mouseleave', handleMouseLeave);
+            };
+        }
+    }
+
     return element;
 }
 
@@ -158,6 +175,7 @@ function convertToHectares(squareMeters: number): number {
 function formatDisplayValue(total: number): { value: string; unit: string } {
     const hectares = convertToHectares(total);
     const decimals = hectares < 1 ? 2 : 1;
+
     return {
         value: hectares.toFixed(decimals),
         unit: 'ha'

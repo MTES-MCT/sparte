@@ -13,8 +13,15 @@ const FrCard = styled.div`
     background-color: var(--background-alt-grey);
 `;
 
-const FrCardTitle = styled.h3`
-    color: var(--text-action-high-blue-france);
+const FrCardTitle = styled.p`
+    font-weight: 600;
+    font-size: 1rem;
+`;
+
+const ListTitle = styled.p`
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
 `;
 
 type GroupedMillesimes = {
@@ -40,15 +47,14 @@ export const LandMillesimeTable = ({ millesimes, territory_name, is_interdeparte
 
     return (
         <div className="fr-alert fr-alert--info bg-white" id="millesimes-table" style={{ scrollMarginTop: scrollMarginTop }}>
-            <h6 className="fr-alert__title">
-                Millésimes OCS GE disponibles pour le territoire de{" "}
-                <strong>{territory_name}</strong>
-            </h6>
+            <ListTitle>
+                Millésimes OCS GE disponibles pour le territoire de {territory_name}
+            </ListTitle>
             {is_interdepartemental ? (
                 <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w fr-mb-1w">
                     {Object.entries(groupedMillesimes).map(([index, years]) => (
                         <div key={index} className="fr-col-12 fr-col-md-6">
-                            <FrCard className="fr-card">
+                            <FrCard className="fr-card fr-card--no-border fr-card--no-shadow">
                                 <div className="fr-card__body">
                                     <div className="fr-card__content">
                                         <FrCardTitle className="fr-card__title">
@@ -71,7 +77,7 @@ export const LandMillesimeTable = ({ millesimes, territory_name, is_interdeparte
                 <>
                     {millesimes
                         .map((m) => m.year)
-                        .toSorted((a, b) => a - b)
+                        .sort((a, b) => a - b)
                         .map((year) => (
                             <div key={year} className="fr-badge fr-mr-1w">{year}</div>
                         ))

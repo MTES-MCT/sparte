@@ -10,10 +10,11 @@ import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesim
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
-import { LandImperStockIndex } from "@services/types/landimperstockindex";
-import { DataCards } from "@components/features/ocsge/DataCards";
+import Card from "@components/ui/Card";
 import { ImpermeabilisationMap } from "@components/map_v2/ui/ImpermeabilisationMap";
 import { ImpermeabilisationDiffMap } from "@components/map_v2/ui/ImpermeabilisationDiffMap";
+import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
+import Guide from "@components/ui/Guide";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -24,99 +25,6 @@ export const BigNumber = styled.div`
 interface ImpermeabilisationProps {
 	landData: LandDetailResultType;
 }
-
-interface Millesime {
-	year: number;
-	index: number;
-	departement: string;
-}
-
-const DetailsCalculationOcsge: React.FC = () => (
-	<div>
-		<h3 className="fr-mb-0">Calcul</h3>
-		<p className="fr-text--sm fr-mb-0">OCS GE traduite grâce à la nomenclature OCS GE.</p>
-	</div>
-)
-
-const ImperLastMillesimeSection: React.FC<{
-	landImperStockIndex: LandImperStockIndex;
-	is_interdepartemental: boolean;
-	millesimes: Millesime[];
-	territory_name: string;
-}> = ({ landImperStockIndex, is_interdepartemental, millesimes, territory_name }) => (
-	<div className="fr-mb-5w">
-		<div className="bg-white fr-p-4w rounded fr-mb-3w">
-			<h2>Qu'est-ce que l'imperméabilisation des sols ?</h2>
-			<p className="fr-text--sm">
-				L'imperméabilisation des sols est définie comme :
-			</p>
-			<ul className="fr-text--sm">
-				<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
-				<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
-			</ul>
-		</div>
-		<div className="fr-grid-row fr-grid-row--gutters">
-			<DataCards
-				icon="bi-droplet"
-				fluxBadgeLabel="Imperméabilisation"
-				stockBadgeLabel="Surface imperméabilisée"
-				fluxValue={landImperStockIndex.flux_surface}
-				fluxLabel={
-					<MillesimeDisplay
-						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landImperStockIndex}
-						between={true}
-					/>
-				}
-				stockValue={`${formatNumber({ number: landImperStockIndex.surface })} ha`}
-				stockLabel={
-					<>
-						{formatNumber({ number: landImperStockIndex.percent })}% du territoire{' - '}
-						<MillesimeDisplay
-							is_interdepartemental={is_interdepartemental}
-							landArtifStockIndex={landImperStockIndex}
-							between={false}
-						/>
-					</>
-				}
-			/>
-		</div>
-		<div className="fr-grid-row fr-mt-3w">
-			<div className="fr-col-12">
-				<div className="bg-white fr-p-4w rounded">
-					<h2>D'où proviennent ces données&nbsp;?</h2>
-					<div className="fr-highlight fr-highlight--no-margin">
-						<p className="fr-text--sm">
-							La mesure de l'imperméabilisation d'un territoire repose sur la
-							donnée{" "}
-							<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
-							actuellement en cours de production par l'IGN. Cette donnée est
-							produite tous les 3 ans par département. Chaque production est
-							appelée un <strong>millésime</strong>.
-						</p>
-					</div>
-					<p className="fr-mt-2w fr-text--sm">
-						Ces données sont disponibles en téléchargement sur le site de l'IGN
-						:&nbsp;<a
-							className="fr-link fr-text--sm"
-							href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Télécharger les données OCS GE sur le site de l'IGN (ouvre dans un nouvel onglet)"
-						>
-							https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
-						</a>
-					</p>
-					<LandMillesimeTable
-						millesimes={millesimes}
-						territory_name={territory_name}
-						is_interdepartemental={is_interdepartemental}
-					/>
-				</div>
-			</div>
-		</div>
-	</div>
-);
 
 export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	landData,
@@ -162,12 +70,89 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
-			<ImperLastMillesimeSection
-				landImperStockIndex={landImperStockIndex}
-				is_interdepartemental={is_interdepartemental}
-				millesimes={millesimes}
-				territory_name={name}
-			/>
+			<div className="fr-mb-5w">
+				<Guide
+                    title="Qu'est-ce que l'imperméabilisation des sols ?"
+                >
+                    <p className="fr-text--sm">
+						L'imperméabilisation des sols est définie comme :
+					</p>
+					<ul className="fr-text--sm">
+						<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
+						<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+					</ul>
+                </Guide>
+				<div className="fr-grid-row fr-grid-row--gutters">
+					<div className="fr-col-12 fr-col-md-6">
+						<Card
+							icon="bi-droplet"
+							badgeClass="fr-badge--error"
+							badgeLabel="Imperméabilisation nette"
+							value={`${formatNumber({ number: landImperStockIndex.flux_surface, addSymbol: true })} ha`}
+							label={
+								<MillesimeDisplay
+									is_interdepartemental={is_interdepartemental}
+									landArtifStockIndex={landImperStockIndex}
+									between={true}
+								/>
+							}
+							isHighlighted={true}
+							highlightBadge="Donnée clé"
+						/>
+					</div>
+					<div className="fr-col-12 fr-col-md-6">
+						<Card
+							icon="bi-droplet"
+							badgeClass="fr-badge--info"
+							badgeLabel="Surface imperméabilisée"
+							value={`${formatNumber({ number: landImperStockIndex.surface })} ha`}
+							label={
+								<>
+									{formatNumber({ number: landImperStockIndex.percent })}% du territoire{' - '}
+									<MillesimeDisplay
+										is_interdepartemental={is_interdepartemental}
+										landArtifStockIndex={landImperStockIndex}
+										between={false}
+									/>
+								</>
+							}
+							isHighlighted={false}
+						/>
+					</div>
+				</div>
+				<div className="fr-grid-row fr-mt-4w">
+					<div className="fr-col-12">
+						<div className="bg-white fr-p-3w rounded">
+							<h2>D'où proviennent ces données&nbsp;?</h2>
+							<p className="fr-text--sm fr-mb-2w">
+								La mesure de l'imperméabilisation d'un territoire repose sur la
+								donnée{" "}
+								<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
+								actuellement en cours de production par l'IGN. Cette donnée est
+								produite tous les 3 ans par département. Chaque production est
+								appelée un <strong>millésime</strong>.
+							</p>
+							<LandMillesimeTable
+								millesimes={millesimes}
+								territory_name={name}
+								is_interdepartemental={is_interdepartemental}
+							/>
+							<p className="fr-text--xs fr-mt-1w fr-mb-0">
+								Ces données sont disponibles en téléchargement sur le site de l'IGN
+								:&nbsp;<a
+									className="fr-link fr-text--sm"
+									href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label="Télécharger les données OCS GE sur le site de l'IGN (ouvre dans un nouvel onglet)"
+								>
+									https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
+								</a>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
@@ -179,7 +164,8 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						between={true}
 					/>
 				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+				<ImpermeabilisationDiffMap landData={landData} />
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w rounded">
 					{
 						is_interdepartemental && (
 							<DepartmentSelector
@@ -236,10 +222,11 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Répartition des surfaces imperméabilisées par type de couverture et
+					Surfaces imperméabilisées par type de couverture et
 					d'usage
 				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
+				<ImpermeabilisationMap landData={landData} />
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
 						<OcsgeMillesimeSelector
 							millesimes_by_index={millesimes_by_index}
@@ -327,7 +314,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						)}
 					</div>
 				</div>
-				<ImpermeabilisationMap landData={landData} />
 			</div>
 			
 			<div className="fr-mb-7w">
@@ -424,7 +410,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						)}
 					</div>
 				</div>
-				<ImpermeabilisationDiffMap landData={landData} />
 			</div>
 			
 			{child_land_types && (

@@ -44,7 +44,7 @@ export const StatsBar: React.FC<StatsBarProps> = ({ categories }) => {
                         role="tooltip"
                         aria-hidden="true"
                     >
-                        {category.label} - {Math.round(category.percent * 100) / 100}%
+                        {category.label} - {Math.round(category.percent * 10) / 10}%
                     </span>
                 </StatSegment>
             ))}

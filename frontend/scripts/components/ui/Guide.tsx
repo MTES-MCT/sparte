@@ -1,33 +1,11 @@
 import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components';
 import Drawer from '@components/ui/Drawer';
-import InformationIcon from '@images/information.svg';
 
-const StyledInformationIcon = styled(InformationIcon)`
-    max-width: 75px;
-    height: auto;
-    fill: #48d5a7;
-`;
-
-const Container = styled.div<{ $column: boolean }>`
-    display: flex;
-    align-items: start;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    border-radius: 6px;
-    background: #C8F2E5;
-    margin-bottom: 2rem;
-
-    ${({ $column }) => $column && `
-        flex-direction: column;
-        align-items: center;
-        height: 100%;
-    `}
-
-    img {
-        width: 75px;
-        height: auto;
-    }
+const Container = styled.div`
+    padding: 1.2rem 1.5rem;
+    border-radius: 3px;
+    background: #D4EEE6;
 `;
 
 const Title = styled.div`
@@ -37,7 +15,6 @@ const Title = styled.div`
 `;
 
 const Content = styled.div`
-    margin-bottom: 1rem;
     font-size: 0.85rem;
     line-height: 1.5rem;
     margin-bottom: 0.5rem;
@@ -45,7 +22,16 @@ const Content = styled.div`
     & > p {
         font-size: 0.85rem;
         line-height: 1.5rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.2rem;
+    }
+    & > ul {
+        font-size: 0.85rem;
+        line-height: 1.5rem;
+        margin-bottom: 0.2rem;
+
+        & > li:last-child {
+            padding-bottom: 0;
+        }
     }
 `;
 
@@ -62,10 +48,9 @@ interface GuideProps {
     children: ReactNode;
     DrawerTitle?: string;
     drawerChildren?: ReactNode;
-    column?: boolean;
 }
 
-const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChildren, column = false }) => {
+const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChildren }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
@@ -73,8 +58,7 @@ const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChild
     };
 
     return (
-        <Container $column={column}>
-            <StyledInformationIcon />
+        <Container className="fr-mb-5w">
             <div>
                 <Title>{ title }</Title>
                 <Content>

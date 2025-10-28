@@ -93,7 +93,7 @@ const GroupVisibilityIcons = styled.div`
     color: #666;
 `;
 
-const GroupLabel = styled.h4`
+const GroupLabel = styled.div`
 	margin: 0 0 2px 0;
 	font-size: 14px;
 	font-weight: 500;

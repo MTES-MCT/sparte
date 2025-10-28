@@ -72,7 +72,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 			{
 				layerId: "impermeabilisation-layer",
 				trigger: "hover",
-				title: "Imperméabilisation",
+				title: "Surfaces imperméabilisées",
 				renderContent: (feature) => <ImpermeabilisationPopup feature={feature} />,
 			}
 		]
@@ -83,8 +83,6 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 			id="impermeabilisation-map"
 			config={config}
 			landData={landData}
-			bounds={landData.bounds}
-			maxBounds={landData.max_bounds}
 		/>
 	);
 };

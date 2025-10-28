@@ -59,8 +59,6 @@ const MapContainer = styled.div<{ $isLoaded: boolean }>`
 interface BaseMapProps {
     id?: string;
     children?: React.ReactNode;
-    bounds?: [number, number, number, number];
-    maxBounds?: [number, number, number, number];
     config?: MapConfig;
     landData: LandDetailResultType;
 }
@@ -68,8 +66,6 @@ interface BaseMapProps {
 export const BaseMap: React.FC<BaseMapProps> = ({
     id = "map",
     children,
-    bounds,
-    maxBounds,
     config,
     landData,
 }) => {
@@ -98,7 +94,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         isMapLoaded,
         initializeMap,
         updateControls,
-    } = useMap(bounds, maxBounds);
+    } = useMap(landData);
 
     const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
         if (memoizedConfig && !isInitialized.current) {

@@ -2,14 +2,15 @@ import { BaseSource } from "./baseSource";
 import { OCSGE_TILES_URL } from "../constants/config";
 import { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
-import type { SourceSpecification } from "maplibre-gl";
-import { getLastMillesimeIndex } from "../utils/ocsge";
+import type { SourceSpecification, FilterSpecification } from "maplibre-gl";
+import { getLastMillesimeIndex, getTerritoryFilter } from "../utils/ocsge";
 
 export class OcsgeSource extends BaseSource implements SourceInterface {
 	private millesimeIndex: number;
 	private departement: string;
 	private readonly millesimes: Millesime[];
 	private readonly departements: string[];
+	private readonly landData: LandDetailResultType;
 
 	constructor(landData: LandDetailResultType) {
 		super({
@@ -17,6 +18,7 @@ export class OcsgeSource extends BaseSource implements SourceInterface {
 			type: "vector",
 		});
 
+		this.landData = landData;
 		this.millesimes = landData.millesimes || [];
 		this.departements = landData.departements || [];
 		this.millesimeIndex = getLastMillesimeIndex(this.millesimes);
@@ -65,6 +67,10 @@ export class OcsgeSource extends BaseSource implements SourceInterface {
 			value: `${m.index}_${m.departement}`,
 			label: m.year ? `${m.year} - ${m.departement_name || m.departement}` : `Index ${m.index} - ${m.departement_name || m.departement}`
 		}));
+	}
+
+	getTerritoryFilter(): FilterSpecification | null {
+		return getTerritoryFilter(this.landData);
 	}
 
 }

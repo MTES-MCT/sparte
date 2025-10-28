@@ -41,7 +41,7 @@ const OcsgeStatus: React.FC<OcsgeStatusProps> = ({ status }) => {
     const message = statusMessages[status]
     const title = titleMessages[status]
     return (
-        <div className="fr-notice fr-notice--info fr-my-3w">
+        <div className="fr-notice fr-notice--info fr-mt-3w">
             <div className="fr-container--fluid fr-p-3w">
                 <NoticeBody className="fr-notice__body flex-column">
                     <p className="fr-notice__title">{ title }</p>

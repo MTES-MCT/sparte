@@ -5,6 +5,8 @@ import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
 import { area } from '@turf/turf';
 import type { FilterSpecification, LayerSpecification } from 'maplibre-gl';
+import type { LandDetailResultType } from "@services/types/land";
+import { getTerritoryFilter } from "../utils/ocsge";
 
 export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface {
     protected millesimeIndex: number;
@@ -13,13 +15,15 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
     protected allowedCodes: { couverture: Couverture[]; usage: Usage[] };
     protected availableMillesimes: Array<{ index: number; year?: number }>;
     protected currentFilter: string[] = [];
+    protected landData?: LandDetailResultType;
 
-    constructor(options: BaseLayerOptions, millesimeIndex: number, departement: string, nomenclature: NomenclatureType = "couverture", availableMillesimes: Array<{ index: number; year?: number }> = []) {
+    constructor(options: BaseLayerOptions, millesimeIndex: number, departement: string, nomenclature: NomenclatureType = "couverture", availableMillesimes: Array<{ index: number; year?: number }> = [], landData?: LandDetailResultType) {
         super(options);
         this.millesimeIndex = millesimeIndex;
         this.departement = departement;
         this.nomenclature = nomenclature;
         this.availableMillesimes = availableMillesimes && availableMillesimes.length > 0 ? availableMillesimes : [{ index: millesimeIndex }];
+        this.landData = landData;
 
         this.allowedCodes = this.getLayerNomenclature();
 
@@ -80,7 +84,16 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
         const codes = selectedCodes || this.currentFilter;
 
         const codesExpr = this.buildCodesFilterExpression(codes, field);
+        const territoryFilter = this.getTerritoryFilter();
+
+        if (territoryFilter) {
+            return ["all", territoryFilter, baseFilter, codesExpr] as FilterSpecification;
+        }
         return ["all", baseFilter, codesExpr] as FilterSpecification;
+    }
+
+    protected getTerritoryFilter(): FilterSpecification | null {
+        return getTerritoryFilter(this.landData);
     }
 
     abstract getOptions(): LayerSpecification;
@@ -96,7 +109,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
 
     getAvailableMillesimes(): Array<{ value: string; label: string }> {
         return this.availableMillesimes.map(m => ({
-            value: `${m.index}_${m.departement}`,
+            value: `${m.index}_${this.departement}`,
             label: m.year ? `${m.year}` : `Index ${m.index}`
         }));
     }
