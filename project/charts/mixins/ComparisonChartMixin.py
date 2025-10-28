@@ -5,10 +5,13 @@ This mixin provides common functionality for charts that compare
 the current territory with nearest (neighboring) territories or custom territories.
 """
 
+import logging
 from functools import cached_property
 
 from public_data.models.administration import LandModel
 from public_data.models.demography import NearestTerritories
+
+logger = logging.getLogger(__name__)
 
 
 class ComparisonChartMixin:
@@ -71,16 +74,39 @@ class ComparisonChartMixin:
             list[LandModel]: List of valid LandModel instances
         """
         custom_lands = []
-        land_keys = self.params["comparison_lands"].split(",")
+        land_keys_str = self.params["comparison_lands"]
 
+        # Validate parameter is not empty
+        if not land_keys_str or not land_keys_str.strip():
+            logger.warning("Empty comparison_lands parameter provided")
+            return custom_lands
+
+        land_keys = land_keys_str.split(",")
+
+        # Validate format and fetch lands
         for land_key in land_keys:
+            land_key = land_key.strip()
+
+            # Skip empty entries from trailing commas
+            if not land_key:
+                continue
+
             try:
-                land_type, land_id = land_key.strip().split("_")
+                parts = land_key.split("_")
+                if len(parts) != 2:
+                    logger.warning(f"Invalid comparison_lands format: '{land_key}'. Expected format: TYPE_ID")
+                    continue
+
+                land_type, land_id = parts
                 land = LandModel.objects.get(land_id=land_id, land_type=land_type)
                 custom_lands.append(land)
-            except (ValueError, LandModel.DoesNotExist):
-                # Skip invalid land keys (malformed or non-existent)
-                continue
+            except LandModel.DoesNotExist:
+                logger.warning(f"Territory not found: {land_type}_{land_id}")
+            except ValueError as e:
+                logger.warning(f"Failed to parse comparison_lands entry '{land_key}': {e}")
+
+        if not custom_lands:
+            logger.info("No valid territories found in comparison_lands parameter, will use nearest territories")
 
         return custom_lands
 

@@ -1,3 +1,4 @@
+import logging
 from functools import cached_property
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -7,6 +8,8 @@ from project.charts.constants import HIGHLIGHT_COLOR
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
 from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef
+
+logger = logging.getLogger(__name__)
 
 
 class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
@@ -41,7 +44,11 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             comparison = PublicDataContainer.consommation_comparison_service().get_by_land(
                 land=self.land, start_date=start_date, end_date=end_date
             )
-        except ObjectDoesNotExist:
+        except ObjectDoesNotExist as e:
+            logger.info(
+                f"No comparison data available for {self.land.land_type} {self.land.land_id} "
+                f"({start_date}-{end_date}). Median line will not be displayed. Error: {e}"
+            )
             comparison = None
 
         # Get stats for all lands
@@ -73,6 +80,14 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             return []
 
         population_stats = self.data["population_stats"]
+
+        # No median line if no population stats available
+        if not population_stats:
+            logger.warning(
+                f"No population stats available for {self.land.land_type} {self.land.land_id}. "
+                "Median line will not be displayed."
+            )
+            return []
 
         max_pop_evo = max([p.evolution for p in population_stats])
 
