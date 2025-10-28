@@ -4,7 +4,7 @@ import { Territory } from "@components/ui/SearchBar";
 import { SimilarTerritory } from "../types";
 
 /**
- * Hook to fetch and transform similar territories
+ * Hook to fetch and transform nearest territories
  * Filters out the current territory from suggestions
  */
 export const useSimilarTerritories = (landId: string, landType: string) => {
@@ -17,12 +17,12 @@ export const useSimilarTerritories = (landId: string, landType: string) => {
     if (!rawData) return [];
 
     return rawData
-      .filter((st: SimilarTerritory) => st.similar_land_id !== landId)
+      .filter((st: SimilarTerritory) => st.nearest_land_id !== landId)
       .map((st: SimilarTerritory): Territory => ({
         id: 0,
-        source_id: st.similar_land_id,
+        source_id: st.nearest_land_id,
         land_type: landType,
-        name: st.similar_land_name,
+        name: st.nearest_land_name,
         public_key: "",
         area: 0,
         land_type_label: "",
@@ -31,7 +31,7 @@ export const useSimilarTerritories = (landId: string, landType: string) => {
 
   const rawTerritories = React.useMemo(() => {
     if (!rawData) return [];
-    return rawData.filter((st: SimilarTerritory) => st.similar_land_id !== landId);
+    return rawData.filter((st: SimilarTerritory) => st.nearest_land_id !== landId);
   }, [rawData, landId]);
 
   return {

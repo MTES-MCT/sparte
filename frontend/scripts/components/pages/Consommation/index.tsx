@@ -6,7 +6,7 @@ import { formatNumber } from "@utils/formatUtils";
 import { PeriodSelector } from "./components/PeriodSelector";
 import { ConsoDemography } from "./components/ConsoDemography";
 import { ConsoComparison } from "./components/ConsoComparison";
-import { useConsoData, useSimilarTerritories, useComparisonTerritories } from "./hooks";
+import { useConsoData, useSimilarTerritories, useSimilarTerritoriesByPopulation, useComparisonTerritories } from "./hooks";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
@@ -75,8 +75,10 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
   // State for sticky key data cards
   const [showStickyConsoCard, setShowStickyConsoCard] = React.useState(false);
   const [showStickyPerHabitantCard, setShowStickyPerHabitantCard] = React.useState(false);
+  const [showStickyPopulationCard, setShowStickyPopulationCard] = React.useState(false);
   const consoCardRef = React.useRef<HTMLDivElement>(null);
   const perHabitantCardRef = React.useRef<HTMLDivElement>(null);
+  const populationCardRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -90,6 +92,12 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
       if (perHabitantCardRef.current) {
         const rect = perHabitantCardRef.current.getBoundingClientRect();
         setShowStickyPerHabitantCard(rect.bottom < 0);
+      }
+
+      // Check third card (Évolution de la population)
+      if (populationCardRef.current) {
+        const rect = populationCardRef.current.getBoundingClientRect();
+        setShowStickyPopulationCard(rect.bottom < 0);
       }
     };
 
@@ -109,11 +117,14 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
   };
 
   // Fetch consumption and population data
-  const { totalConsoHa, populationEvolution, populationEvolutionPercent, populationDensity, isLoadingConso, isLoadingPop } =
+  const { totalConsoHa, populationEvolution, populationEvolutionPercent, populationDensity, populationStock, isLoadingConso, isLoadingPop } =
     useConsoData(land_id, land_type, startYear, endYear);
 
-  // Fetch similar territories
+  // Fetch nearest territories (by distance)
   const { territories: suggestedTerritories } = useSimilarTerritories(land_id, land_type);
+
+  // Fetch similar territories (by population)
+  const { territories: suggestedTerritoriesByPopulation } = useSimilarTerritoriesByPopulation(land_id, land_type);
 
   // Manage comparison territories
   const {
@@ -123,7 +134,7 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
     handleAddTerritory,
     handleRemoveTerritory,
     handleResetTerritories,
-  } = useComparisonTerritories(land_id, land_type);
+  } = useComparisonTerritories(land_id, land_type, suggestedTerritories);
 
   if (!landData) {
     return (
@@ -145,10 +156,17 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         defaultEndYear={DEFAULT_END_YEAR}
         showStickyConsoCard={showStickyConsoCard}
         showStickyPerHabitantCard={showStickyPerHabitantCard}
+        showStickyPopulationCard={showStickyPopulationCard}
         totalConsoHa={totalConsoHa}
         consoPerNewHabitant={calculateConsoPerNewHabitant()}
+        populationEvolution={populationEvolution}
+        populationEvolutionPercent={populationEvolutionPercent}
         isLoadingConso={isLoadingConso}
         isLoadingPop={isLoadingPop}
+        childLandTypes={child_land_types}
+        childType={childType}
+        onChildTypeChange={setChildType}
+        landTypeLabels={LAND_TYPE_LABELS}
       />
 
       <div className="fr-container--fluid fr-p-3w">
@@ -302,6 +320,65 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         </div>
       </div>
 
+      {/* Consumption map section */}
+      {child_land_types && child_land_types.length > 0 && (
+        <div className="fr-mb-7w">
+          <h3 id="conso-map">Carte de consommation d'espaces</h3>
+          <div className="bg-white fr-p-2w rounded">
+            {child_land_types.length > 1 && (
+              <div className="fr-mb-3w">
+                {child_land_types.map((child_land_type) => (
+                  <button
+                    key={child_land_type}
+                    className={`fr-btn ${
+                      childType === child_land_type
+                        ? "fr-btn--primary"
+                        : "fr-btn--tertiary"
+                    } fr-btn--sm fr-mr-1w`}
+                    onClick={() => setChildType(child_land_type)}
+                  >
+                    {LAND_TYPE_LABELS[child_land_type] || child_land_type}
+                  </button>
+                ))}
+              </div>
+            )}
+            <ConsoGraph
+              isMap
+              id="conso_map"
+              land_id={land_id}
+              land_type={land_type}
+              containerProps={{
+                style: {
+                  height: "500px",
+                  width: "100%",
+                }
+              }}
+              params={{
+                start_date: String(startYear),
+                end_date: String(endYear),
+                child_land_type: childType,
+              }}
+              sources={["majic"]}
+              showDataTable={true}
+            >
+              <div>
+                <h6 className="fr-mb-0">Comprendre la carte</h6>
+                <p className="fr-text--sm fr-mb-0">
+                  Cette carte permet de visualiser la consommation d'espaces NAF par territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la consommation d'espaces est élevée.
+                </p>
+                <p className="fr-text--sm fr-mb-0 fr-mt-2w">
+                  La taille des cercles est proportionnelle à la consommation totale d'espaces sur la période sélectionnée.
+                </p>
+                <h6 className="fr-mb-0 fr-mt-2w">Source</h6>
+                <p className="fr-text--sm fr-mb-0">
+                  Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
+                </p>
+              </div>
+            </ConsoGraph>
+          </div>
+        </div>
+      )}
+
       {/* Demography section */}
       <ConsoDemography
         landId={land_id}
@@ -311,7 +388,9 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
         populationDensity={populationDensity}
+        populationStock={populationStock}
         isLoadingPop={isLoadingPop}
+        populationCardRef={populationCardRef}
       />
 
         {/* Comparison section */}
@@ -322,9 +401,11 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
           startYear={startYear}
           endYear={endYear}
           suggestedTerritories={suggestedTerritories}
+          suggestedTerritoriesByPopulation={suggestedTerritoriesByPopulation}
           additionalTerritories={additionalTerritories}
           comparisonLandIds={comparisonLandIds}
           isDefaultSelection={isDefaultSelection}
+          childType={childType}
           onTerritoryAdd={handleAddTerritory}
           onTerritoryRemove={handleRemoveTerritory}
           onReset={handleResetTerritories}

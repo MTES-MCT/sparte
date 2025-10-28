@@ -13,10 +13,18 @@ interface PeriodSelectorProps {
   // Sticky key cards data
   showStickyConsoCard?: boolean;
   showStickyPerHabitantCard?: boolean;
+  showStickyPopulationCard?: boolean;
   totalConsoHa?: number | null;
   consoPerNewHabitant?: string;
+  populationEvolution?: number | null;
+  populationEvolutionPercent?: number | null;
   isLoadingConso?: boolean;
   isLoadingPop?: boolean;
+  // Child land type selector
+  childLandTypes?: string[];
+  childType?: string;
+  onChildTypeChange?: (childType: string) => void;
+  landTypeLabels?: Record<string, string>;
 }
 
 /**
@@ -34,10 +42,17 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   defaultEndYear = 2023,
   showStickyConsoCard = false,
   showStickyPerHabitantCard = false,
+  showStickyPopulationCard = false,
   totalConsoHa = null,
   consoPerNewHabitant = "...",
+  populationEvolution = null,
+  populationEvolutionPercent = null,
   isLoadingConso = false,
   isLoadingPop = false,
+  childLandTypes,
+  childType,
+  onChildTypeChange,
+  landTypeLabels = {},
 }) => {
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
@@ -48,22 +63,29 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
     onEndYearChange(defaultEndYear);
   };
 
+  const formatPopulationEvolution = () => {
+    if (isLoadingPop || populationEvolution === null) {
+      return "...";
+    }
+
+    const sign = populationEvolution > 0 ? "+" : "";
+    return `${sign}${formatNumber({ number: populationEvolution })} hab`;
+  };
+
   return (
     <div
       style={{
         position: "sticky",
-        top: "88px",
+        top: "160px",
         zIndex: 100,
-        backgroundColor: "#f8f9ff",
         paddingTop: "0.5rem",
         paddingBottom: "0.5rem",
-        marginBottom: "1rem",
-        marginTop: "-1rem",
+        background: "rgba(255, 255, 255, 0.8)",
+        backdropFilter: "blur(8px)",
       }}
     >
-      <div className="fr-container--fluid" style={{ paddingLeft: "1.5rem", paddingRight: "1.5rem" }}>
-        <div className="fr-card fr-card--no-border fr-card--shadow">
-          <div className="fr-card__body" style={{ padding: "0.75rem 1rem" }}>
+      <div className="fr-card fr-card--no-border fr-card--shadow" style={{ background: "transparent" }}>
+        <div className="fr-card__body" style={{ padding: "0.75rem 1rem" }}>
             <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle" style={{ minHeight: "6rem" }}>
               {/* Title section */}
               <div className="fr-col-auto">
@@ -87,11 +109,8 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
               </div>
 
               {/* Year selectors */}
-              <div className={showStickyConsoCard || showStickyPerHabitantCard ? "fr-col-auto" : "fr-col"}>
+              <div className={showStickyConsoCard || showStickyPerHabitantCard || showStickyPopulationCard ? "fr-col-auto" : "fr-col"}>
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
-                  <div className="fr-col-auto">
-                    <span className="fr-text--sm">De</span>
-                  </div>
                   <div className="fr-col-auto">
                     <select
                       className="fr-select fr-select--sm"
@@ -108,8 +127,8 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                     </select>
                   </div>
 
-                  <div className="fr-col-auto">
-                    <span className="fr-text--sm">à</span>
+                  <div className="fr-col-auto" style={{ padding: "0" }}>
+                    <span className="fr-text--sm">-</span>
                   </div>
 
                   <div className="fr-col-auto">
@@ -141,8 +160,30 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                 </div>
               </div>
 
+              {/* Child land type selector */}
+              {childLandTypes && childLandTypes.length > 1 && onChildTypeChange && (
+                <div className="fr-col-auto">
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    {childLandTypes.map((type) => (
+                      <button
+                        key={type}
+                        className={`fr-btn ${
+                          childType === type
+                            ? "fr-btn--primary"
+                            : "fr-btn--tertiary"
+                        } fr-btn--sm`}
+                        style={{ padding: "0.25rem 0.75rem" }}
+                        onClick={() => onChildTypeChange(type)}
+                      >
+                        {landTypeLabels[type] || type}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Sticky key data cards */}
-              {(showStickyConsoCard || showStickyPerHabitantCard) && (
+              {(showStickyConsoCard || showStickyPerHabitantCard || showStickyPopulationCard) && (
                 <div className="fr-col">
                   <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle" style={{ justifyContent: "flex-end" }}>
                     {/* Consommation d'espaces */}
@@ -200,13 +241,39 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                         </div>
                       </div>
                     )}
+
+                    {/* Évolution de la population */}
+                    {showStickyPopulationCard && (
+                      <div className="fr-col-auto">
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                            padding: "0.5rem 1rem",
+                            backgroundColor: "white",
+                            borderRadius: "4px",
+                            border: "2px solid var(--artwork-major-blue-france)",
+                          }}
+                        >
+                          <i className="bi-people" style={{ fontSize: "1.5rem", color: "var(--artwork-major-blue-france)" }}></i>
+                          <div>
+                            <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-mention-grey)" }}>
+                              Évolution de la population
+                            </div>
+                            <div style={{ fontSize: "1.25rem", fontWeight: "bold", color: "var(--artwork-major-blue-france)" }}>
+                              {formatPopulationEvolution()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 };

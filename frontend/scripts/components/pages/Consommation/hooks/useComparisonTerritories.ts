@@ -4,7 +4,7 @@ import { Territory } from "@components/ui/SearchBar";
 /**
  * Hook to manage comparison territories state and actions
  */
-export const useComparisonTerritories = (landId: string, landType: string) => {
+export const useComparisonTerritories = (landId: string, landType: string, suggestedTerritories: Territory[] = []) => {
   const [additionalTerritories, setAdditionalTerritories] = React.useState<Territory[]>([]);
 
   const handleAddTerritory = React.useCallback(
@@ -38,13 +38,14 @@ export const useComparisonTerritories = (landId: string, landType: string) => {
   }, []);
 
   // Build comma-separated list of territory IDs for API
+  // When empty, backend will use default nearest territories
   const comparisonLandIds = React.useMemo(() => {
     return additionalTerritories.length > 0
       ? additionalTerritories.map((t) => `${t.land_type}_${t.source_id}`).join(",")
       : null;
   }, [additionalTerritories]);
 
-  // Check if we're using the default selection (no additional territories)
+  // When no territories selected, backend uses default nearest territories
   const isDefaultSelection = additionalTerritories.length === 0;
 
   return {
