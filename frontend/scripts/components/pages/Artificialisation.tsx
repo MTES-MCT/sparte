@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { LandDetailResultType } from "@services/types/land";
-import { OcsgeMapContainer } from "@components/map/ocsge/OcsgeMapContainer";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
@@ -46,8 +45,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 		selectedIndex,
 		setSelectedIndex,
 		defaultStockIndex,
-		byDepartement,
-		setByDepartement,
 		childLandType,
 		setChildLandType,
 		landArtifStockIndex,
@@ -60,6 +57,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	// États séparés pour chaque section
 	const [byDepartementFlux, setByDepartementFlux] = useState(false);
 	const [byDepartementNetFlux, setByDepartementNetFlux] = useState(false);
+	const [byDepartementRepartition, setByDepartementRepartition] = useState(false);
 
 	const { artifZonageIndex } = useArtificialisationZonage({
 		landData,
@@ -68,8 +66,9 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 	const { has_zonage } = landData;
 
-	if (isLoading) return <div>Chargement...</div>;
-	if (error) return <div>Erreur : {error}</div>;
+	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
+	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
+	if (!landData) return <div role="status" aria-live="polite">Données non disponibles</div>;
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
@@ -166,24 +165,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					/>
 				</h2>
 				<ArtificialisationDiffMap landData={landData} />
-				<div className="bg-white fr-p-4w rounded fr-mt-4w">
-					<h3>
-						Quels sont les objectifs nationaux de réduction de
-						l'artificialisation ?
-					</h3>
-					<div className="fr-highlight fr-highlight--no-margin">
-						<p className="fr-text--sm">
-							Afin de préserver les sols naturels, agricoles et forestiers, la
-							loi Climat et Résilience fixe à partir de 2031 un cap clair
-							:&nbsp;<strong>atteindre l'équilibre entre les surfaces artificialisées et désartificialisées</strong>, c'est-à-dire un objectif de <strong>« zéro artificialisation nette »</strong> des
-							sols, à horizon 2050.
-						</p>
-					</div>
-				</div>
-			</div>
-
-			<div className="fr-mb-7w">
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w rounded">
 					{
 						is_interdepartemental && (
 							<DepartmentSelector
@@ -236,20 +218,128 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						)}
 					</div>
 				</div>
+				<div className="bg-white fr-p-4w rounded fr-mt-5w">
+					<h3>
+						Quels sont les objectifs nationaux de réduction de
+						l'artificialisation ?
+					</h3>
+					<div className="fr-highlight fr-highlight--no-margin">
+						<p className="fr-text--sm">
+							Afin de préserver les sols naturels, agricoles et forestiers, la
+							loi Climat et Résilience fixe à partir de 2031 un cap clair
+							:&nbsp;<strong>atteindre l'équilibre entre les surfaces artificialisées et désartificialisées</strong>, c'est-à-dire un objectif de <strong>« zéro artificialisation nette »</strong> des
+							sols, à horizon 2050.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<div className="fr-mb-7w">
+				<h2 className="fr-mt-7w">
+					Surfaces artificialisées par type de couverture et d'usage
+				</h2>
+				<ArtificialisationMap landData={landData} />
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
+					<div className="d-flex gap-4">
+						<OcsgeMillesimeSelector
+							millesimes_by_index={millesimes_by_index}
+							index={selectedIndex}
+							setIndex={setSelectedIndex}
+							isDepartemental={is_interdepartemental}
+						/>
+						{
+							is_interdepartemental && (
+								<DepartmentSelector
+									byDepartement={byDepartementRepartition}
+									setByDepartement={setByDepartementRepartition}
+								/>
+							)
+						}
+					</div>
+					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+						{byDepartementRepartition ? (
+							millesimes
+								.filter((e) => e.index === selectedIndex)
+								.map((m) => (
+									<div
+										key={`${m.index}_${m.departement}`}
+										className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
+									>
+										<OcsgeGraph
+											id="pie_artif_by_couverture"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												index: m.index,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+										>
+											<DetailsCalculationOcsge />
+										</OcsgeGraph>
+										<OcsgeGraph
+											id="pie_artif_by_usage"
+											land_id={land_id}
+											land_type={land_type}
+											params={{
+												index: m.index,
+												departement: m.departement,
+											}}
+											sources={['ocsge']}
+											showDataTable={true}
+										>
+											<DetailsCalculationOcsge />
+										</OcsgeGraph>
+									</div>
+								))
+						) : (
+							<>
+								<div className="fr-col-12 fr-col-lg-6">
+									<OcsgeGraph
+										id="pie_artif_by_couverture"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											index: selectedIndex,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+									>
+										<DetailsCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+								<div className="fr-col-12 fr-col-lg-6">
+									<OcsgeGraph
+										id="pie_artif_by_usage"
+										land_id={land_id}
+										land_type={land_type}
+										params={{
+											index: selectedIndex,
+										}}
+										sources={['ocsge']}
+										showDataTable={true}
+									>
+										<DetailsCalculationOcsge />
+									</OcsgeGraph>
+								</div>
+							</>
+						)}
+					</div>
+				</div>
 			</div>
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
 					Artificialisation par type de couverture et d'usage
 					{" "}
-					<MillesimeDisplay
+					<MillesimeDisplay 
 						is_interdepartemental={is_interdepartemental}
 						landArtifStockIndex={landArtifStockIndex}
 						between={true}
 					/>
 				</h2>
-				<ArtificialisationMap landData={landData} />
-				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
 					{
 						is_interdepartemental && (
 							<DepartmentSelector
@@ -332,103 +422,9 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 							</>
 						)}
 					</div>
-				</div>
+				</div>				
 			</div>
 
-			<div className="fr-mb-7w">
-				<h2 className="fr-mt-7w">
-					Répartition des surfaces artificialisées par type de couverture et
-					d'usage
-				</h2>
-				<div className="bg-white fr-px-4w fr-pt-4w rounded">
-					<div className="d-flex gap-4">
-						<OcsgeMillesimeSelector
-							millesimes_by_index={millesimes_by_index}
-							index={selectedIndex}
-							setIndex={setSelectedIndex}
-							isDepartemental={is_interdepartemental}
-						/>
-						{
-							is_interdepartemental && (
-								<DepartmentSelector
-									byDepartement={byDepartement}
-									setByDepartement={setByDepartement}
-								/>
-							)
-						}
-					</div>
-					<div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
-						{byDepartement ? (
-							millesimes
-								.filter((e) => e.index === selectedIndex)
-								.map((m) => (
-									<div
-										key={`${m.index}_${m.departement}`}
-										className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
-									>
-										<OcsgeGraph
-											id="pie_artif_by_couverture"
-											land_id={land_id}
-											land_type={land_type}
-											params={{
-												index: m.index,
-												departement: m.departement,
-											}}
-											sources={['ocsge']}
-											showDataTable={true}
-										>
-											<DetailsCalculationOcsge />
-										</OcsgeGraph>
-										<OcsgeGraph
-											id="pie_artif_by_usage"
-											land_id={land_id}
-											land_type={land_type}
-											params={{
-												index: m.index,
-												departement: m.departement,
-											}}
-											sources={['ocsge']}
-											showDataTable={true}
-										>
-											<DetailsCalculationOcsge />
-										</OcsgeGraph>
-									</div>
-								))
-						) : (
-							<>
-								<div className="fr-col-12 fr-col-lg-6">
-									<OcsgeGraph
-										id="pie_artif_by_couverture"
-										land_id={land_id}
-										land_type={land_type}
-										params={{
-											index: selectedIndex,
-										}}
-										sources={['ocsge']}
-										showDataTable={true}
-									>
-										<DetailsCalculationOcsge />
-									</OcsgeGraph>
-								</div>
-								<div className="fr-col-12 fr-col-lg-6">
-									<OcsgeGraph
-										id="pie_artif_by_usage"
-										land_id={land_id}
-										land_type={land_type}
-										params={{
-											index: selectedIndex,
-										}}
-										sources={['ocsge']}
-										showDataTable={true}
-									>
-										<DetailsCalculationOcsge />
-									</OcsgeGraph>
-								</div>
-							</>
-						)}
-					</div>
-				</div>
-			</div>
 			{child_land_types && (
 				<div className="fr-mb-7w">
 					<h2>Proportion des surfaces artificialisées</h2>
@@ -476,139 +472,126 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					</div>
 				</div>
 			)}
-			<div className="fr-mb-7w">
-				<h2>Carte des surfaces artificialisées</h2>
-				<div className="bg-white fr-p-4w rounded">
-					<p className="fr-text--sm">
-						Cette cartographie permet d'explorer les couvertures et les usages
-						des surfaces artificialisées du territoire, en fonction des
-						millésimes disponibles de la donnée OCS GE.
-					</p>
-					{landData && (
-						<OcsgeMapContainer
-							landData={landData}
-							globalFilter={["==", ["get", "is_artificial"], true]}
-						/>
-					)}
-				</div>
-			</div>
 			{has_zonage && (
 				<ArtificialisationZonage 
 					artifZonageIndex={artifZonageIndex}
 					is_interdepartemental={is_interdepartemental}
 					landArtifStockIndex={landArtifStockIndex}
 				/>
-				)}
-			<h2>Calcul de l'artificialisation des sols</h2>
-			<div className="bg-white fr-p-4w fr-mb-7w rounded">
-				<p className="fr-text--sm">
-					La mesure de l'artificialisation est obtenue à partir de la donnée OCS
-					GE, en s'appuyant en particulier sur un tableau de croisement
-					couverture / usage. Par exemple, les couvertures de zones bâties à usage résidentiel
-					ou les couvertures de formations herbacées à usage tertaire sont considérées comme
-					des surfaces artificialisées. L'ensemble des croisements d'usage et de
-					couverture du sol définissant les espaces artificialisés est
-					consultable dans la matrice OCS GE ci-dessous.
-				</p>
-				<section className="fr-accordion fr-mb-3w">
-					<h3 className="fr-accordion__title">
-						<button
-							className="fr-accordion__btn"
-							aria-expanded="false"
-							aria-controls="accordion-106"
-						>
-							Croisements d'usage et de couverture correspondant à l'artificialisation
-						</button>
-					</h3>
-					<div className="fr-collapse" id="accordion-106">
-						<img
-							width="100%"
-							src={OcsgeMatricePNG}
-							alt="Matrice de croisements d'usage et de couverture d'après la nomenclature OCS GE qui détermine la composition de l'artificialisation"
-						/>
-					</div>
-				</section>
-				<h3 className="fr-mt-5w">Les seuils d'interprétation</h3>
-				<p className="fr-text--sm">
-					Une fois les espaces qualifiés en artificiels ou non-artificiels à
-					partir du tableau de croisement,{" "}
-					<strong>des seuils d'interprétation sont appliqués</strong>, comme
-					défini dans le{" "}
-					<a
-						target="_blank"
-						rel="noopener noreferrer"
-						href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959#:~:text=Enfin%2C%20sont%20int%C3%A9gr%C3%A9s,agronomique%20du%20sol."
-					>
-						décret du 27 novembre 2023
-					</a>
-					. Ces seuils indiquent que des surfaces de moins de 2500 m² ne peuvent
-					pas être comptabilisées comme artificialisées ou désartificialisées, à
-					l'exception des espaces bâtis.
-				</p>
-				<p className="fr-text--sm">
-					De fait, l'application de ces seuils{" "}
-					<strong>
-						permet de densifier en zone construite sans augmenter la mesure de
-						l'artificialisation du territoire
-					</strong>
-					.<br /><br />
-					Ci-dessous les trois cas de figure possibles&nbsp;:
-				</p>
-				<SeuilsSchemas />
-				<p className="fr-text--sm">
-					Le détail de la méthode de calcul de l'artificlisation avec les seuils
-					d'interprétation est disponible sur le portail de l'artificialisation
-					:&nbsp;{" "}
-					<a
-						className="fr-link fr-text--sm"
-						target="_blank"
-						rel="noopener noreferrer"
-						href="https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols"
-					>
-						https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols
-					</a>
-				</p>
-				<h3 className="fr-mt-5w">Les exemptions facultatives</h3>
-				<p className="fr-text--sm">
-					Le décret du 27 novembre 2023 introduit deux cas d'exemption facultative du calcul de l'artificialisation des sols. Les collectivités peuvent ainsi, si elles le souhaitent, exclure du décompte des surfaces artificialisées :
-				</p>
-				<ul>
-					<li className="fr-text--sm">
-						Les installations photovoltaïques au sol implantées sur des espaces agricoles ou naturels, à condition qu'elles n'affectent pas durablement les fonctions écologiques ou agronomiques du sol. En revanche, celles situées en forêt restent systématiquement comptabilisées.
+			)}
+			
+			<div className="fr-mb-7w">
+				<h2>Calcul de l'artificialisation des sols</h2>
+				<div className="bg-white fr-p-4w fr-mb-7w rounded">
+					<p className="fr-text--sm">
+						La mesure de l'artificialisation est obtenue à partir de la donnée OCS
+						GE, en s'appuyant en particulier sur un tableau de croisement
+						couverture / usage. Par exemple, les couvertures de zones bâties à usage résidentiel
+						ou les couvertures de formations herbacées à usage tertaire sont considérées comme
+						des surfaces artificialisées. L'ensemble des croisements d'usage et de
+						couverture du sol définissant les espaces artificialisés est
+						consultable dans la matrice OCS GE ci-dessous.
+					</p>
+					<section className="fr-accordion fr-mb-3w">
+						<h3 className="fr-accordion__title">
+							<button
+								className="fr-accordion__btn"
+								aria-expanded="false"
+								aria-controls="accordion-106"
+							>
+								Croisements d'usage et de couverture correspondant à l'artificialisation
+							</button>
+						</h3>
+						<div className="fr-collapse" id="accordion-106">
+							<img
+								width="100%"
+								src={OcsgeMatricePNG}
+								alt="Matrice de croisements d'usage et de couverture d'après la nomenclature OCS GE qui détermine la composition de l'artificialisation"
+							/>
+						</div>
+					</section>
+					<h3 className="fr-mt-5w">Les seuils d'interprétation</h3>
+					<p className="fr-text--sm">
+						Une fois les espaces qualifiés en artificiels ou non-artificiels à
+						partir du tableau de croisement,{" "}
+						<strong>des seuils d'interprétation sont appliqués</strong>, comme
+						défini dans le{" "}
 						<a
-							className="fr-link fr-text--sm fr-ml-1w"
 							target="_blank"
 							rel="noopener noreferrer"
-							href="https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/photovoltaique"
+							href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959#:~:text=Enfin%2C%20sont%20int%C3%A9gr%C3%A9s,agronomique%20du%20sol."
 						>
-							En savoir plus
+							décret du 27 novembre 2023
 						</a>
-					</li>
-					<li className="fr-text--sm">
-						Les surfaces végétalisées à usage de parc ou jardin public, qu'elles soient boisées ou herbacées, dès lors qu'elles couvrent une superficie supérieure à 2 500 m², valorisant ainsi ces espaces de nature en ville.
+						. Ces seuils indiquent que des surfaces de moins de 2500 m² ne peuvent
+						pas être comptabilisées comme artificialisées ou désartificialisées, à
+						l'exception des espaces bâtis.
+					</p>
+					<p className="fr-text--sm">
+						De fait, l'application de ces seuils{" "}
+						<strong>
+							permet de densifier en zone construite sans augmenter la mesure de
+							l'artificialisation du territoire
+						</strong>
+						.<br /><br />
+						Ci-dessous les trois cas de figure possibles&nbsp;:
+					</p>
+					<SeuilsSchemas />
+					<p className="fr-text--sm">
+						Le détail de la méthode de calcul de l'artificlisation avec les seuils
+						d'interprétation est disponible sur le portail de l'artificialisation
+						:&nbsp;{" "}
 						<a
-							className="fr-link fr-text--sm fr-ml-1w"
+							className="fr-link fr-text--sm"
 							target="_blank"
 							rel="noopener noreferrer"
-							href="https://artificialisation.developpement-durable.gouv.fr/exemption-des-parcs-et-jardins-publics"
+							href="https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols"
 						>
-							En savoir plus
+							https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols
 						</a>
-					</li>
-				</ul>
-				<div className="fr-notice fr-notice--info">
-					<div className="fr-px-2w">
-						<div className="fr-notice__body">
-							<p>
-								<span className="fr-notice__title fr-text--sm">
-									L'IGN est actuellement en cours de production d'une base de données nationale intégrant les exemptions prévues pour les installations photovoltaïques au sol et les parcs ou jardins publics. Les données affichées sur la plateforme ne prennent pas encore en compte ces exemptions.
-								</span>
-								<a className="fr-notice__desc fr-text--sm" target="_blank" href="/newsletter/inscription">
-									{" "}
-									Inscrivez-vous à notre lettre d'infos pour être prévenu(e) de la
-									disponibilité de ces données
-								</a>
-							</p>
+					</p>
+					<h3 className="fr-mt-5w">Les exemptions facultatives</h3>
+					<p className="fr-text--sm">
+						Le décret du 27 novembre 2023 introduit deux cas d'exemption facultative du calcul de l'artificialisation des sols. Les collectivités peuvent ainsi, si elles le souhaitent, exclure du décompte des surfaces artificialisées :
+					</p>
+					<ul>
+						<li className="fr-text--sm">
+							Les installations photovoltaïques au sol implantées sur des espaces agricoles ou naturels, à condition qu'elles n'affectent pas durablement les fonctions écologiques ou agronomiques du sol. En revanche, celles situées en forêt restent systématiquement comptabilisées.
+							<a
+								className="fr-link fr-text--sm fr-ml-1w"
+								target="_blank"
+								rel="noopener noreferrer"
+								href="https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/photovoltaique"
+							>
+								En savoir plus
+							</a>
+						</li>
+						<li className="fr-text--sm">
+							Les surfaces végétalisées à usage de parc ou jardin public, qu'elles soient boisées ou herbacées, dès lors qu'elles couvrent une superficie supérieure à 2 500 m², valorisant ainsi ces espaces de nature en ville.
+							<a
+								className="fr-link fr-text--sm fr-ml-1w"
+								target="_blank"
+								rel="noopener noreferrer"
+								href="https://artificialisation.developpement-durable.gouv.fr/exemption-des-parcs-et-jardins-publics"
+							>
+								En savoir plus
+							</a>
+						</li>
+					</ul>
+					<div className="fr-notice fr-notice--info">
+						<div className="fr-px-2w">
+							<div className="fr-notice__body">
+								<p>
+									<span className="fr-notice__title fr-text--sm">
+										L'IGN est actuellement en cours de production d'une base de données nationale intégrant les exemptions prévues pour les installations photovoltaïques au sol et les parcs ou jardins publics. Les données affichées sur la plateforme ne prennent pas encore en compte ces exemptions.
+									</span>
+									<a className="fr-notice__desc fr-text--sm" target="_blank" href="/newsletter/inscription">
+										{" "}
+										Inscrivez-vous à notre lettre d'infos pour être prévenu(e) de la
+										disponibilité de ces données
+									</a>
+								</p>
+							</div>
 						</div>
 					</div>
 				</div>
