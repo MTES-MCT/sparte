@@ -19,8 +19,7 @@ import json
 
 import pendulum
 
-from airflow.decorators import dag, task
-from airflow.models.param import Param
+from airflow.decorators import dag
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 with open("include/data/ocsge/sources.json", "r") as f:
@@ -36,24 +35,17 @@ MILLESIMES = [1, 2]
     catchup=False,
     doc_md=__doc__,
     max_active_runs=1,
+    max_active_tasks=1,
     default_args={"owner": "Alexis Athlani", "retries": 0},
     tags=["OCS GE", "Orchestration", "Vector Tiles"],
-    params={
-        "refresh_existing": Param(False, type="boolean"),
-    },
 )
 def create_all_vector_tiles_france():
     """
     DAG orchestrateur qui déclenche tous les DAGs de tuiles vectorielles
     pour tous les départements de France.
     """
-
-    @task.python()
-    def get_refresh_existing(params=None):
-        """Récupère la valeur du paramètre refresh_existing."""
-        return params.get("refresh_existing", False) if params else False
-
-    refresh_existing = get_refresh_existing()
+    # Valeur de refresh_existing pour tous les DAGs
+    refresh_existing_value = True
 
     # 1. Occupation du sol par département et millésime
     occupation_du_sol_tasks = [
@@ -63,7 +55,7 @@ def create_all_vector_tiles_france():
             conf={
                 "index": millesime,
                 "departement": dept,
-                "refresh_existing": refresh_existing,
+                "refresh_existing": refresh_existing_value,
             },
             wait_for_completion=True,
             poke_interval=30,
@@ -80,7 +72,7 @@ def create_all_vector_tiles_france():
             conf={
                 "departement": dept,
                 "indexes": [1, 2],
-                "refresh_existing": refresh_existing,
+                "refresh_existing": refresh_existing_value,
             },
             wait_for_completion=True,
             poke_interval=30,
@@ -96,7 +88,7 @@ def create_all_vector_tiles_france():
             conf={
                 "departement": dept,
                 "indexes": [1, 2],
-                "refresh_existing": refresh_existing,
+                "refresh_existing": refresh_existing_value,
             },
             wait_for_completion=True,
             poke_interval=30,
@@ -112,7 +104,7 @@ def create_all_vector_tiles_france():
             conf={
                 "departement": dept,
                 "indexes": [1, 2],
-                "refresh_existing": refresh_existing,
+                "refresh_existing": refresh_existing_value,
             },
             wait_for_completion=True,
             poke_interval=30,
@@ -128,7 +120,7 @@ def create_all_vector_tiles_france():
             conf={
                 "departement": dept,
                 "indexes": [1, 2],
-                "refresh_existing": refresh_existing,
+                "refresh_existing": refresh_existing_value,
             },
             wait_for_completion=True,
             poke_interval=30,
@@ -143,7 +135,7 @@ def create_all_vector_tiles_france():
             trigger_dag_id="create_ocsge_friche_vector_tiles",
             conf={
                 "year_index": millesime,
-                "refresh_existing": refresh_existing,
+                "refresh_existing": refresh_existing_value,
             },
             wait_for_completion=True,
             poke_interval=30,
@@ -151,16 +143,19 @@ def create_all_vector_tiles_france():
         for millesime in MILLESIMES
     ]
 
-    # Les tâches s'exécutent séquentiellement : chaque groupe attend la fin du précédent
-    (
-        refresh_existing
-        >> occupation_du_sol_tasks
-        >> artif_diff_tasks
-        >> artif_diff_centroid_tasks
-        >> diff_tasks
-        >> diff_centroid_tasks
-        >> friche_tasks
+    # Créer une liste unique de toutes les tâches dans l'ordre d'exécution souhaité
+    all_tasks = (
+        occupation_du_sol_tasks
+        + artif_diff_tasks
+        + artif_diff_centroid_tasks
+        + diff_tasks
+        + diff_centroid_tasks
+        + friche_tasks
     )
+
+    # Chaîner toutes les tâches séquentiellement
+    for i in range(len(all_tasks) - 1):
+        all_tasks[i] >> all_tasks[i + 1]
 
 
 create_all_vector_tiles_france()
