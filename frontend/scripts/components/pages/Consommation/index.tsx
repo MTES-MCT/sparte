@@ -310,9 +310,8 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData }) => {
         endYear={endYear}
         populationEvolution={populationEvolution}
         populationEvolutionPercent={populationEvolutionPercent}
+        populationDensity={populationDensity}
         isLoadingPop={isLoadingPop}
-        defaultStartYear={DEFAULT_START_YEAR}
-        defaultEndYear={DEFAULT_END_YEAR}
       />
 
         {/* Comparison section */}

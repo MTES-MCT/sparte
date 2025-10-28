@@ -38,6 +38,15 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getLandPopDensity: builder.query({
+			query: ({land_type, land_id, year}) => {
+				return `/api/landpopulationdensity/?${new URLSearchParams({
+					land_type,
+					land_id,
+					year: year.toString()
+				})}`
+			},
+		}),
 		getChartConfig: builder.query({
 			query: ({id, land_type, land_id, ...params}) => {
 				const queryParams = new URLSearchParams(params)
@@ -191,6 +200,7 @@ const {
 	useGetLandImperStockIndexQuery,
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
+	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
 	useGetLogementVacantAutorisationStatsQuery,
 } = djangoApi;
@@ -208,6 +218,7 @@ export {
 	useGetLandImperStockIndexQuery,
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
+	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
 	useDownloadDiagnosticMutation,
 	useUpdateProjectTarget2031Mutation,

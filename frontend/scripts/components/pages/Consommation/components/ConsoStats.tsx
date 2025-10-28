@@ -5,6 +5,7 @@ import { formatNumber } from "@utils/formatUtils";
 interface ConsoStatsProps {
   populationEvolution: number | null;
   populationEvolutionPercent: number | null;
+  populationDensity: number | null;
   isLoadingPop: boolean;
   startYear: number;
   endYear: number;
@@ -16,6 +17,7 @@ interface ConsoStatsProps {
 export const ConsoStats: React.FC<ConsoStatsProps> = ({
   populationEvolution,
   populationEvolutionPercent,
+  populationDensity,
   isLoadingPop,
   startYear,
   endYear,
@@ -43,6 +45,14 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
     );
   };
 
+  const formatDensityValue = () => {
+    if (isLoadingPop || populationDensity === null) {
+      return "...";
+    }
+
+    return `${formatNumber({ number: populationDensity, decimals: 1 })} hab/ha`;
+  };
+
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
       <div className="fr-col-12 fr-col-md-4">
@@ -54,6 +64,16 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
           label={formatPopulationLabel()}
           isHighlighted={true}
           highlightBadge="Donnée clé"
+        />
+      </div>
+      <div className="fr-col-12 fr-col-md-4">
+        <Card
+          icon="bi-bar-chart"
+          badgeClass="fr-badge--info"
+          badgeLabel="Densité de population"
+          value={formatDensityValue()}
+          label={`En ${endYear}`}
+          isHighlighted={false}
         />
       </div>
     </div>
