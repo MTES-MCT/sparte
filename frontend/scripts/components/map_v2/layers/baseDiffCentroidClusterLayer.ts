@@ -84,6 +84,27 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
             marker = this.markers[id] = new maplibregl.Marker({
                 element: el
             }).setLngLat(coordinates);
+        } else {
+            const oldElement = marker.getElement();
+            const isOnScreen = this.markersOnScreen[id] !== undefined;
+
+            if ((oldElement as any)._donutCleanup) {
+                (oldElement as any)._donutCleanup();
+                delete (oldElement as any)._donutCleanup;
+            }
+
+            if (isOnScreen) {
+                marker.remove();
+            }
+
+            const newElement = this.createDonutElement(props);
+            marker = this.markers[id] = new maplibregl.Marker({
+                element: newElement
+            }).setLngLat(coordinates);
+
+            if (isOnScreen && this.map) {
+                marker.addTo(this.map);
+            }
         }
 
         return { id, marker };
@@ -102,7 +123,14 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
     private removeInvisibleMarkers(newMarkers: Record<string, maplibregl.Marker>): void {
         for (const id in this.markersOnScreen) {
             if (!newMarkers[id]) {
-                this.markersOnScreen[id].remove();
+                const marker = this.markersOnScreen[id];
+                // Cleanup des événements donut avant de supprimer le marker
+                const element = marker.getElement();
+                if ((element as any)._donutCleanup) {
+                    (element as any)._donutCleanup();
+                    delete (element as any)._donutCleanup;
+                }
+                marker.remove();
                 delete this.markersOnScreen[id];
             }
         }
@@ -151,9 +179,27 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
             this.map.off('data', this.handleDataBound);
         }
 
-        // Supprimer tous les markers de la carte
+        // Supprimer tous les markers de la carte et leurs événements
         for (const id in this.markersOnScreen) {
-            this.markersOnScreen[id].remove();
+            const marker = this.markersOnScreen[id];
+            // Cleanup des événements donut
+            const element = marker.getElement();
+            if ((element as any)._donutCleanup) {
+                (element as any)._donutCleanup();
+                delete (element as any)._donutCleanup;
+            }
+            marker.remove();
+        }
+
+        // Cleanup également des markers non affichés
+        for (const id in this.markers) {
+            if (!this.markersOnScreen[id]) {
+                const element = this.markers[id].getElement();
+                if ((element as any)._donutCleanup) {
+                    (element as any)._donutCleanup();
+                    delete (element as any)._donutCleanup;
+                }
+            }
         }
 
         // Vider les collections

@@ -1,5 +1,6 @@
 import { BaseDiffCentroidClusterLayer } from "./baseDiffCentroidClusterLayer";
-import { createArtificialisationDonutChart } from "../utils/donutChart";
+import { createDiffDonutChart } from "../utils/donutChart";
+import { DONUT_CHART_CONFIGS } from "../constants/config";
 
 export class ArtificialisationDiffCentroidClusterLayer extends BaseDiffCentroidClusterLayer {
     constructor() {
@@ -14,9 +15,6 @@ export class ArtificialisationDiffCentroidClusterLayer extends BaseDiffCentroidC
     }
 
     protected createDonutElement(properties: Record<string, any>): HTMLElement {
-        return createArtificialisationDonutChart({
-            artificialisation_count: properties.artificialisation_count || 0,
-            desartificialisation_count: properties.desartificialisation_count || 0
-        });
+        return createDiffDonutChart(properties, DONUT_CHART_CONFIGS.artificialisation);
     }
 }

@@ -45,6 +45,21 @@ export const DIFF_FIELDS = {
 	}
 } as const;
 
+export const DONUT_CHART_CONFIGS = {
+	impermeabilisation: {
+		positiveKey: 'impermeabilisation_count',
+		negativeKey: 'desimpermeabilisation_count',
+		positiveColor: IMPERMEABILISATION_COLOR,
+		negativeColor: DESIMPERMEABILISATION_COLOR,
+	},
+	artificialisation: {
+		positiveKey: 'artificialisation_count',
+		negativeKey: 'desartificialisation_count',
+		positiveColor: ARTIFICIALISATION_COLOR,
+		negativeColor: DESARTIFICIALISATION_COLOR,
+	}
+} as const;
+
 export const DEFAULT_MAP_STYLE = {
 	version: 8 as const,
 	name: "Empty",

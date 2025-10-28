@@ -1,5 +1,6 @@
 import { BaseDiffCentroidClusterLayer } from "./baseDiffCentroidClusterLayer";
-import { createImpermeabilisationDonutChart } from "../utils/donutChart";
+import { createDiffDonutChart } from "../utils/donutChart";
+import { DONUT_CHART_CONFIGS } from "../constants/config";
 
 export class ImpermeabilisationDiffCentroidClusterLayer extends BaseDiffCentroidClusterLayer {
     constructor() {
@@ -14,10 +15,7 @@ export class ImpermeabilisationDiffCentroidClusterLayer extends BaseDiffCentroid
     }
 
     protected createDonutElement(properties: Record<string, any>): HTMLElement {
-        return createImpermeabilisationDonutChart({
-            impermeabilisation_count: properties.impermeabilisation_count || 0,
-            desimpermeabilisation_count: properties.desimpermeabilisation_count || 0
-        });
+        return createDiffDonutChart(properties, DONUT_CHART_CONFIGS.impermeabilisation);
     }
 }
 

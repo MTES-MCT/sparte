@@ -7,7 +7,7 @@ import type { LandDetailResultType } from "@services/types/land";
 
 let PMTILES_PROTOCOL_REGISTERED = false;
 
-const PADDING_KM = 15;
+const PADDING_KM = 30;
 
 export const useMap = (landData: LandDetailResultType) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
