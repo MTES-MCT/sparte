@@ -14,5 +14,8 @@ export type LayerInterface = {
     getLayerNomenclature?(): { couverture: Couverture[]; usage: Usage[] };
     getCurrentFilter?(): string[];
     setFilter?(codes: string[]): Promise<void>;
+    getStartMillesimeIndex?(): number;
+    getEndMillesimeIndex?(): number;
+    getDepartement?(): string;
 };
 

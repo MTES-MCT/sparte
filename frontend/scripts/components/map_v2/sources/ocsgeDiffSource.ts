@@ -3,7 +3,7 @@ import { OCSGE_TILES_URL } from "../constants/config";
 import { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
 import type { SourceSpecification, FilterSpecification } from "maplibre-gl";
-import { getLastMillesimeIndex, getStartMillesimeIndex, getTerritoryFilter } from "../utils/ocsge";
+import { getLastMillesimeIndex, getStartMillesimeIndex, getTerritoryFilter, getAvailableMillesimePairs } from "../utils/ocsge";
 
 export class OcsgeDiffSource extends BaseSource implements SourceInterface {
     private startMillesimeIndex: number;
@@ -43,7 +43,7 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
         } as SourceSpecification;
     }
 
-    async setMillesimes(newStartIndex: number, newEndIndex: number): Promise<void> {
+    async setMillesimes(newStartIndex: number, newEndIndex: number, newDepartement?: string): Promise<void> {
         if (!this.map || !this.sourceId) {
             console.warn('OcsgeDiffSource: map ou sourceId non attaché');
             return;
@@ -54,13 +54,18 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
             throw new Error("Les millésimes doivent être consécutifs pour la source de différence OCSGE");
         }
 
-        if (this.startMillesimeIndex === newStartIndex && this.endMillesimeIndex === newEndIndex) return;
+        const targetDepartement = newDepartement || this.departement;
+
+        if (this.startMillesimeIndex === newStartIndex &&
+            this.endMillesimeIndex === newEndIndex &&
+            this.departement === targetDepartement) {
+            return;
+        }
 
         // Mettre à jour les index et le département
         this.startMillesimeIndex = newStartIndex;
         this.endMillesimeIndex = newEndIndex;
-        const millesime = this.millesimes.find((m: Millesime) => m.index === this.endMillesimeIndex);
-        this.departement = millesime?.departement || this.departements[0];
+        this.departement = targetDepartement;
 
         await this.reloadSource();
     }
@@ -85,28 +90,8 @@ export class OcsgeDiffSource extends BaseSource implements SourceInterface {
         return sourceLayer;
     }
 
-    getAvailableMillesimePairs(): Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number }> {
-        const pairs: Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number }> = [];
-
-        // Trier les millésimes par index
-        const sortedMillesimes = [...this.millesimes].sort((a, b) => a.index - b.index);
-
-        // Créer des paires consécutives
-        for (let i = 0; i < sortedMillesimes.length - 1; i++) {
-            const current = sortedMillesimes[i];
-            const next = sortedMillesimes[i + 1];
-
-            if (next.index - current.index === 1) {
-                pairs.push({
-                    startIndex: current.index,
-                    endIndex: next.index,
-                    startYear: current.year,
-                    endYear: next.year
-                });
-            }
-        }
-
-        return pairs;
+    getAvailableMillesimePairs(): Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number; departement?: string; departementName?: string }> {
+        return getAvailableMillesimePairs(this.landData);
     }
 
     getStartMillesimeIndex(): number {

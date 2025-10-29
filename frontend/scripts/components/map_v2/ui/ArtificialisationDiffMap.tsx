@@ -4,6 +4,7 @@ import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { ArtificialisationDiffPopup } from "./popup/ArtificialisationDiffPopup";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
+import { getStartMillesimeIndex, getLastMillesimeIndex } from "../utils/ocsge";
 
 interface ArtificialisationDiffMapProps {
 	landData: LandDetailResultType;
@@ -12,6 +13,13 @@ interface ArtificialisationDiffMapProps {
 export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> = ({
   	landData,
 }) => {
+    const startMillesimeIndex = getStartMillesimeIndex(landData.millesimes);
+    const endMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
+    
+    // Trouver le département du millésime de fin
+    const endMillesime = landData.millesimes.find(m => m.index === endMillesimeIndex);
+    const defaultDepartement = endMillesime?.departement || landData.departements[0];
+
     const config = defineMapConfig({
 		sources: [
 			...BASE_SOURCES,
@@ -28,7 +36,7 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 			{
 				id: "artificialisation-diff-group",
 				label: "Artificialisation",
-				description: "La mesure de l'artificialisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Cette carte permet de visualiser les surfaces artificialisées entre deux millésimes.",
+				description: "La mesure de l'artificialisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Ce calque permet de visualiser les surfaces artificialisées entre deux millésimes.",
 				controls: [
 					{
 						id: "artificialisation-diff-visibility",
@@ -41,6 +49,13 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 						type: "opacity",
 						targetLayers: ["artificialisation-diff-layer"],
 						defaultValue: 0.7
+					},
+					{
+						id: "artificialisation-diff-millesime",
+						type: "ocsge-diff-millesime",
+						targetLayers: ["artificialisation-diff-layer", "artificialisation-diff-centroid-cluster"],
+						sourceId: "ocsge-artif-diff-source",
+						defaultValue: `${startMillesimeIndex}_${endMillesimeIndex}_${defaultDepartement}`
 					}
 				]
 			}

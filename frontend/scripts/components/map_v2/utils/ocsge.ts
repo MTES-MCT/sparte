@@ -43,3 +43,38 @@ export const getTerritoryFilter = (landData?: LandDetailResultType): FilterSpeci
     return ["==", ["get", landData.land_type], landData.land_id] as FilterSpecification;
 };
 
+export const getAvailableMillesimePairs = (landData: LandDetailResultType): Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number; departement?: string; departementName?: string }> => {
+    const pairs: Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number; departement?: string; departementName?: string }> = [];
+    const millesimes = landData.millesimes;
+
+    const millesimesByDept = new Map<string, Millesime[]>();
+    for (const m of millesimes) {
+        if (!millesimesByDept.has(m.departement)) {
+            millesimesByDept.set(m.departement, []);
+        }
+        millesimesByDept.get(m.departement)!.push(m);
+    }
+
+    for (const [dept, deptMillesimes] of Array.from(millesimesByDept.entries())) {
+        const sortedMillesimes = [...deptMillesimes].sort((a, b) => a.index - b.index);
+
+        for (let i = 0; i < sortedMillesimes.length - 1; i++) {
+            const current = sortedMillesimes[i];
+            const next = sortedMillesimes[i + 1];
+
+            if (next.index - current.index === 1) {
+                pairs.push({
+                    startIndex: current.index,
+                    endIndex: next.index,
+                    startYear: current.year,
+                    endYear: next.year,
+                    departement: dept,
+                    departementName: current.departement_name || dept
+                });
+            }
+        }
+    }
+
+    return pairs;
+};
+
