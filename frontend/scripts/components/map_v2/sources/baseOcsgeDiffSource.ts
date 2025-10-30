@@ -23,11 +23,6 @@ export abstract class BaseOcsgeDiffSource extends BaseOcsgeSource implements Sou
     }
 
     async setMillesimes(newStartIndex: number, newEndIndex: number, newDepartement?: string): Promise<void> {
-        if (!this.map || !this.sourceId) {
-            console.warn(`${this.getId()}: map ou sourceId non attaché`);
-            return;
-        }
-
         if (newEndIndex - newStartIndex !== 1) {
             throw new Error("Les millésimes doivent être consécutifs pour une source de différence OCSGE");
         }
