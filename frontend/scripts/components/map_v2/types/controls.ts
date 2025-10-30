@@ -3,7 +3,7 @@ import type { BaseSource } from "../sources/baseSource";
 import type { BaseLayer } from "../layers/baseLayer";
 import type { StatsManager } from "../stats/StatsManager";
 
-export type ControlType = 'visibility' | 'opacity' | 'ocsge-millesime' | 'ocsge-nomenclature' | 'ocsge-nomenclature-filter';
+export type ControlType = 'visibility' | 'opacity' | 'ocsge-millesime' | 'ocsge-diff-millesime' | 'ocsge-nomenclature' | 'ocsge-nomenclature-filter';
 
 export type ControlValue = boolean | number | string | string[];
 
@@ -39,6 +39,13 @@ export interface OcsgeMillesimeControl extends BaseControl {
     disabled?: boolean;
 }
 
+export interface OcsgeDiffMillesimeControl extends BaseControl {
+    type: 'ocsge-diff-millesime';
+    sourceId: string;
+    defaultValue: string;
+    disabled?: boolean;
+}
+
 export interface OcsgeNomenclatureControl extends BaseControl {
     type: 'ocsge-nomenclature';
     defaultValue: 'couverture' | 'usage';
@@ -52,7 +59,7 @@ export interface OcsgeNomenclatureFilterControl extends BaseControl {
     disabled?: boolean;
 }
 
-export type Control = VisibilityControl | OpacityControl | OcsgeMillesimeControl | OcsgeNomenclatureControl | OcsgeNomenclatureFilterControl;
+export type Control = VisibilityControl | OpacityControl | OcsgeMillesimeControl | OcsgeDiffMillesimeControl | OcsgeNomenclatureControl | OcsgeNomenclatureFilterControl;
 
 export interface ControlContext {
     manager: ControlsManagerInterface;

@@ -13,8 +13,6 @@ interface UseArtificialisationReturn {
     selectedIndex: number;
     setSelectedIndex: (index: number) => void;
     defaultStockIndex: number;
-    byDepartement: boolean;
-    setByDepartement: (value: boolean) => void;
     childLandType: string | undefined;
     setChildLandType: (value: string | undefined) => void;
     isLoading: boolean;
@@ -31,9 +29,6 @@ export const useArtificialisation = ({
     const { selectedIndex, setSelectedIndex, defaultStockIndex } = useMillesime({
         millesimes_by_index: landData?.millesimes_by_index || []
     });
-
-    // Permet d'afficher des données supplémentaires si le territoire est interdépartemental
-    const [byDepartement, setByDepartement] = useState(false);
 
     // Permet d'afficher des données supplémentaires si le territoire a des territoires enfants (pour les EPCI, Département, Région, etc.)
     const [childLandType, setChildLandType] = useState(
@@ -62,8 +57,6 @@ export const useArtificialisation = ({
         selectedIndex,
         setSelectedIndex,
         defaultStockIndex,
-        byDepartement,
-        setByDepartement,
         childLandType,
         setChildLandType,
         isLoading,

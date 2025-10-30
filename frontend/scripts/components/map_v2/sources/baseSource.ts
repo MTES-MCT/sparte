@@ -54,6 +54,38 @@ export abstract class BaseSource {
         for (const layerSpec of layerSpecs) {
             this.map!.addLayer(layerSpec);
         }
+
+        // 6. Attendre que la source soit chargée et forcer le rafraîchissement des clusters
+        await this.waitForSourceLoad();
+        
+        // Forcer la mise à jour des markers en déclenchant un événement moveend
+        // Cela force le recalcul des clusters et la mise à jour des markers
+        this.map.fire('moveend');
+    }
+
+    private async waitForSourceLoad(): Promise<void> {
+        if (!this.map || !this.sourceId) return;
+
+        return new Promise((resolve) => {
+            const source = this.map!.getSource(this.sourceId);
+            if (!source) {
+                resolve();
+                return;
+            }
+
+            const checkLoaded = () => {
+                if (this.map!.isSourceLoaded(this.sourceId!)) {
+                    this.map!.off('sourcedata', checkLoaded);
+                    resolve();
+                }
+            };
+
+            if (this.map.isSourceLoaded(this.sourceId)) {
+                resolve();
+            } else {
+                this.map.on('sourcedata', checkLoaded);
+            }
+        });
     }
 
     private collectLayerSpecs(style: StyleSpecification): LayerSpecification[] {

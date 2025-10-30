@@ -3,15 +3,15 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
-import { ImpermeabilisationPopup } from "./popup/ImpermeabilisationPopup";
+import { ArtificialisationPopup } from "./popup/ArtificialisationPopup";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 import { getLastMillesimeIndex, getFirstDepartement } from "../utils/ocsge";
 
-interface ImpermeabilisationMapProps {
+interface ArtificialisationMapProps {
 	landData: LandDetailResultType;
 }
 
-export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
+export const ArtificialisationMap: React.FC<ArtificialisationMapProps> = ({
   	landData,
 }) => {
     const lastMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
@@ -24,65 +24,66 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 		],
 		layers: [
 			...BASE_LAYERS,
-            { type: "impermeabilisation", stats: true },
+            { type: "artificialisation", stats: true },
 		],
 		controlGroups: [
 			...BASE_CONTROLS,
 			{
-				id: "impermeabilisation-group",
-				label: "Surfaces imperméabilisées",
-				description: "La mesure de l'imperméabilisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Ce calque permet de visualiser les surfaces imperméabilisées sur un territoire.",
+				id: "artificialisation-group",
+				label: "Surfaces artificialisées",
+				description: "La mesure de l'artificialisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Echelle). Ce calque permet de visualiser les surfaces artificialisées sur un territoire.",
 				controls: [
 					{
-						id: "impermeabilisation-visibility",
+						id: "artificialisation-visibility",
 						type: "visibility",
-						targetLayers: ["impermeabilisation-layer"],
+						targetLayers: ["artificialisation-layer"],
 						defaultValue: true
 					},
 					{
-						id: "impermeabilisation-opacity",
+						id: "artificialisation-opacity",
 						type: "opacity",
-						targetLayers: ["impermeabilisation-layer"],
+						targetLayers: ["artificialisation-layer"],
 						defaultValue: 0.7
 					},
 					{
-						id: "impermeabilisation-millesime",
+						id: "artificialisation-millesime",
 						type: "ocsge-millesime",
-						targetLayers: ["impermeabilisation-layer"],
+						targetLayers: ["artificialisation-layer"],
 						sourceId: "ocsge-source",
 						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`
 					},
 					{
-						id: "impermeabilisation-nomenclature",
+						id: "artificialisation-nomenclature",
 						type: "ocsge-nomenclature",
-						targetLayers: ["impermeabilisation-layer"],
-						linkedFilterId: "impermeabilisation-filter",
+						targetLayers: ["artificialisation-layer"],
+						linkedFilterId: "artificialisation-filter",
 						defaultValue: "couverture"
 					},
 					{
-						id: "impermeabilisation-filter",
+						id: "artificialisation-filter",
 						type: "ocsge-nomenclature-filter",
-						targetLayers: ["impermeabilisation-layer"],
-						defaultValue: OCSGE_LAYER_NOMENCLATURES.impermeabilisation.couverture
+						targetLayers: ["artificialisation-layer"],
+						defaultValue: OCSGE_LAYER_NOMENCLATURES.artificialisation.couverture
 					}
 				]
 			}
 		],
 		popups: [
 			{
-				layerId: "impermeabilisation-layer",
+				layerId: "artificialisation-layer",
 				trigger: "hover",
-				title: "Surfaces imperméabilisées",
-				renderContent: (feature) => <ImpermeabilisationPopup feature={feature} />,
+				title: "Surfaces artificialisées",
+				renderContent: (feature) => <ArtificialisationPopup feature={feature} />,
 			}
 		]
     });
 
 	return (
 		<BaseMap
-			id="impermeabilisation-map"
+			id="artificialisation-map"
 			config={config}
 			landData={landData}
 		/>
 	);
 };
+

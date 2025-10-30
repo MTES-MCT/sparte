@@ -1,6 +1,8 @@
 export { BaseMap } from './ui/BaseMap';
 export { ImpermeabilisationMap } from './ui/ImpermeabilisationMap';
 export { ImpermeabilisationDiffMap } from './ui/ImpermeabilisationDiffMap';
+export { ArtificialisationMap } from './ui/ArtificialisationMap';
+export { ArtificialisationDiffMap } from './ui/ArtificialisationDiffMap';
 
 export { ControlsPanel } from './ui/controls/ControlsPanel';
 export { ControlsGroup } from './ui/controls/ControlsGroup';

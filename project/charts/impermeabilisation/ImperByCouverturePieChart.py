@@ -13,7 +13,7 @@ from public_data.models import (
 
 
 class ImperByCouverturePieChart(DiagnosticChart):
-    name = "Impericialisation usage and couverture pie chart"
+    name = "Imperméabilisation usage and couverture pie chart"
     by_departement_klass = LandImperStockCouvertureComposition
     by_index_klass = LandImperStockCouvertureCompositionIndex
 

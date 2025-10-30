@@ -7,8 +7,6 @@ import type { LandDetailResultType } from "@services/types/land";
 
 let PMTILES_PROTOCOL_REGISTERED = false;
 
-const PADDING_KM = 30;
-
 export const useMap = (landData: LandDetailResultType) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -16,8 +14,8 @@ export const useMap = (landData: LandDetailResultType) => {
 
     const bounds = landData.bounds;
     const maxBounds = useMemo(() => {
-        return bounds ? calculateMaxBoundsWithPadding(bounds, PADDING_KM) : undefined;
-    }, [bounds]);
+        return bounds ? calculateMaxBoundsWithPadding(bounds, landData.land_type) : undefined;
+    }, [bounds, landData.land_type]);
 
     const initializeMap = useCallback((container: HTMLElement) => {
         if (!PMTILES_PROTOCOL_REGISTERED) {

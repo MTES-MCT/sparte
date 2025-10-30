@@ -4,6 +4,7 @@ import { OrthophotoLayer } from "../layers/orthophotoLayer";
 import { ImpermeabilisationLayer } from "../layers/impermeabilisationLayer";
 import { ArtificialisationLayer } from "../layers/artificialisationLayer";
 import { ImpermeabilisationDiffLayer } from "../layers/impermeabilisationDiffLayer";
+import { ArtificialisationDiffLayer } from "../layers/artificialisationDiffLayer";
 import { ImpermeabilisationDiffCentroidClusterLayer } from "../layers/impermeabilisationDiffCentroidClusterLayer";
 import { ArtificialisationDiffCentroidClusterLayer } from "../layers/artificialisationDiffCentroidClusterLayer";
 import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
@@ -46,6 +47,17 @@ const layerRegistry: Record<string, LayerFactory> = {
         const endMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
         const departement = getFirstDepartement(landData.departements);
         return new ImpermeabilisationDiffLayer(
+            startMillesimeIndex,
+            endMillesimeIndex,
+            departement,
+            landData
+        );
+    },
+    "artificialisation-diff": (cfg, landData) => {
+        const startMillesimeIndex = getStartMillesimeIndex(landData.millesimes);
+        const endMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
+        const departement = getFirstDepartement(landData.departements);
+        return new ArtificialisationDiffLayer(
             startMillesimeIndex,
             endMillesimeIndex,
             departement,

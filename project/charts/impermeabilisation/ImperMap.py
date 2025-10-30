@@ -127,7 +127,7 @@ class ImperMap(DiagnosticChart):
                 "map": json.loads(geojson),
             },
             "title": {
-                "text": (f"Impericialisation des {self.formatted_child_land_type}s {self.title_end}")  # noqa: E501
+                "text": (f"Imperméabilisation des {self.formatted_child_land_type}s {self.title_end}")  # noqa: E501
             },
             "mapNavigation": {"enabled": self.lands.count() > 20},
             "legend": {
