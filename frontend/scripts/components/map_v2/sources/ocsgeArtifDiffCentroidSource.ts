@@ -1,28 +1,16 @@
-import { BaseSource } from "./baseSource";
+import { BaseOcsgeDiffSource } from "./baseOcsgeDiffSource";
 import { OCSGE_GEOJSON_BASE_URL } from "../constants/config";
-import { LandDetailResultType, Millesime } from "@services/types/land";
-import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getTerritoryFilter, getAvailableMillesimePairs } from "../utils/ocsge";
+import type { LandDetailResultType } from "@services/types/land";
+import { getTerritoryFilter } from "../utils/ocsge";
 import type { FilterSpecification } from "maplibre-gl";
-import type { SourceInterface } from "../types/sourceInterface";
 
-export class OcsgeArtifDiffCentroidSource extends BaseSource implements SourceInterface {
-    private startMillesimeIndex: number;
-    private endMillesimeIndex: number;
-    private departement: string;
-    private readonly landData: LandDetailResultType;
-    private readonly millesimes: Millesime[];
+export class OcsgeArtifDiffCentroidSource extends BaseOcsgeDiffSource {
 
     constructor(landData: LandDetailResultType) {
         super({
             id: "ocsge-artif-diff-centroid-source",
             type: "geojson",
-        });
-
-        this.landData = landData;
-        this.millesimes = landData.millesimes || [];
-        this.endMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
-        this.startMillesimeIndex = getStartMillesimeIndex(landData.millesimes);
-        this.departement = getFirstDepartement(landData.departements);
+        }, landData);
     }
 
     getOptions() {
@@ -50,37 +38,5 @@ export class OcsgeArtifDiffCentroidSource extends BaseSource implements SourceIn
         };
     }
 
-    async setMillesimes(newStartIndex: number, newEndIndex: number, newDepartement?: string): Promise<void> {
-        if (!this.map || !this.sourceId) {
-            console.warn('OcsgeArtifDiffCentroidSource: map ou sourceId non attaché');
-            return;
-        }
-
-        if (newEndIndex - newStartIndex !== 1) {
-            throw new Error("Les millésimes doivent être consécutifs pour la source de différence centroid artif");
-        }
-
-        const targetDepartement = newDepartement || this.departement;
-
-        if (this.startMillesimeIndex === newStartIndex &&
-            this.endMillesimeIndex === newEndIndex &&
-            this.departement === targetDepartement) {
-            return;
-        }
-
-        this.startMillesimeIndex = newStartIndex;
-        this.endMillesimeIndex = newEndIndex;
-        this.departement = targetDepartement;
-
-        await this.reloadSource();
-    }
-
-    getAvailableMillesimePairs(): Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number; departement?: string; departementName?: string }> {
-        return getAvailableMillesimePairs(this.landData);
-    }
-
-    getId(): string {
-        return this.options.id;
-    }
 }
 
