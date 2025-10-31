@@ -7,6 +7,8 @@ import { ImpermeabilisationDiffLayer } from "../layers/impermeabilisationDiffLay
 import { ArtificialisationDiffLayer } from "../layers/artificialisationDiffLayer";
 import { ImpermeabilisationDiffCentroidClusterLayer } from "../layers/impermeabilisationDiffCentroidClusterLayer";
 import { ArtificialisationDiffCentroidClusterLayer } from "../layers/artificialisationDiffCentroidClusterLayer";
+import { FrichesLayer } from "../layers/frichesLayer";
+import { FrichesCentroidClusterLayer } from "../layers/frichesCentroidClusterLayer";
 import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getAvailableMillesimes } from "../utils/ocsge";
@@ -66,6 +68,8 @@ const layerRegistry: Record<string, LayerFactory> = {
     },
     "impermeabilisation-diff-centroid-cluster": () => new ImpermeabilisationDiffCentroidClusterLayer(),
     "artificialisation-diff-centroid-cluster": () => new ArtificialisationDiffCentroidClusterLayer(),
+    "friches": () => new FrichesLayer(),
+    "friches-centroid-cluster": () => new FrichesCentroidClusterLayer(),
 };
 
 export function createLayer(cfg: LayerConfig, landData: LandDetailResultType): BaseLayer {

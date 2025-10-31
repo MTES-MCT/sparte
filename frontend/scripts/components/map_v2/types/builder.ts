@@ -32,6 +32,14 @@ export interface OcsgeArtifDiffCentroidSourceConfig {
     type: 'ocsge-artif-diff-centroid';
 }
 
+export interface FrichesSourceConfig {
+    type: 'friches';
+}
+
+export interface FrichesCentroidSourceConfig {
+    type: 'friches-centroid';
+}
+
 export type SourceConfig =
     | OrthophotoSourceConfig
     | EmpriseSourceConfig
@@ -39,7 +47,9 @@ export type SourceConfig =
     | OcsgeDiffSourceConfig
     | OcsgeDiffCentroidSourceConfig
     | OcsgeArtifDiffSourceConfig
-    | OcsgeArtifDiffCentroidSourceConfig;
+    | OcsgeArtifDiffCentroidSourceConfig
+    | FrichesSourceConfig
+    | FrichesCentroidSourceConfig;
 
 interface BaseLayerConfig {
     type: LayerCategory;
@@ -82,6 +92,14 @@ export interface ArtificialisationDiffCentroidClusterLayerConfig extends BaseLay
     type: 'artificialisation-diff-centroid-cluster';
 }
 
+export interface FrichesLayerConfig extends BaseLayerConfig {
+    type: 'friches';
+}
+
+export interface FrichesCentroidClusterLayerConfig extends BaseLayerConfig {
+    type: 'friches-centroid-cluster';
+}
+
 export type LayerConfig =
     | OrthophotoLayerConfig
     | EmpriseLayerConfig
@@ -90,7 +108,9 @@ export type LayerConfig =
     | ImpermeabilisationDiffLayerConfig
     | ArtificialisationDiffLayerConfig
     | ImpermeabilisationDiffCentroidClusterLayerConfig
-    | ArtificialisationDiffCentroidClusterLayerConfig;
+    | ArtificialisationDiffCentroidClusterLayerConfig
+    | FrichesLayerConfig
+    | FrichesCentroidClusterLayerConfig;
 
 export interface MapConfig {
     sources?: SourceConfig[];

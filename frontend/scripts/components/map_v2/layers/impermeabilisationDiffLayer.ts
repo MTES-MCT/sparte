@@ -54,7 +54,7 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
         return DIFF_FIELDS.impermeabilisation.negativeCode;
     }
 
-    getOptions(): LayerSpecification {
+    getOptions(): LayerSpecification[] {
         const territoryFilter = this.getTerritoryFilter();
 
         const dataFilter = [
@@ -67,7 +67,7 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
             ? ["all", territoryFilter, dataFilter] as FilterSpecification
             : dataFilter;
 
-        return {
+        return [{
             id: this.options.id,
             type: this.options.type as 'fill',
             source: this.options.source,
@@ -88,6 +88,6 @@ export class ImpermeabilisationDiffLayer extends BaseOcsgeDiffLayer {
                 "fill-opacity": this.options.opacity ?? 0.7,
                 "fill-outline-color": "#000",
             },
-        } as LayerSpecification;
+        } as LayerSpecification];
     }
 }

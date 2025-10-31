@@ -61,8 +61,8 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
         return `occupation_du_sol_${this.millesimeIndex}_${this.departement}`;
     }
 
-    protected buildFillOptions(baseFilter: FilterSpecification): LayerSpecification {
-        return {
+    protected buildFillOptions(baseFilter: FilterSpecification): LayerSpecification[] {
+        return [{
             id: this.options.id,
             type: this.options.type as 'fill',
             source: this.options.source,
@@ -76,7 +76,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
                 "fill-opacity": this.options.opacity ?? 0.7,
                 "fill-outline-color": "rgba(0, 0, 0, 0.3)",
             },
-        } as LayerSpecification;
+        } as LayerSpecification];
     }
 
     private buildCompleteFilter(baseFilter: FilterSpecification, selectedCodes?: string[]): FilterSpecification {
@@ -96,7 +96,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
         return getTerritoryFilter(this.landData);
     }
 
-    abstract getOptions(): LayerSpecification;
+    abstract getOptions(): LayerSpecification[];
 
 
     getCurrentMillesime(): number {

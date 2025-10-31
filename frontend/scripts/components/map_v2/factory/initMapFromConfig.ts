@@ -34,10 +34,13 @@ export async function initMapFromConfig(
         await layer.load();
 
         layer.attach(map);
-        const layerSpec = layer.getOptions();
-        map.addLayer(layerSpec);
+        const layerSpecs = layer.getOptions();
 
-        layers.set(layerSpec.id, layer);
+        for (const spec of layerSpecs) {
+            map.addLayer(spec);
+        }
+
+        layers.set(layer.getId(), layer);
     }
 
     return { sources, layers };

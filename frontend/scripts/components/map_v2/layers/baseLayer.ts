@@ -25,7 +25,7 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 		this.loaded = true;
 	}
 
-	abstract getOptions(): LayerSpecification;
+	abstract getOptions(): LayerSpecification[];
 
 	setVisibility(visible: boolean): void {
 		if (!this.map) return;

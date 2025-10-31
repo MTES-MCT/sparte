@@ -3,6 +3,7 @@ export { ImpermeabilisationMap } from './ui/ImpermeabilisationMap';
 export { ImpermeabilisationDiffMap } from './ui/ImpermeabilisationDiffMap';
 export { ArtificialisationMap } from './ui/ArtificialisationMap';
 export { ArtificialisationDiffMap } from './ui/ArtificialisationDiffMap';
+export { FrichesMap } from './ui/FrichesMap';
 
 export { ControlsPanel } from './ui/controls/ControlsPanel';
 export { ControlsGroup } from './ui/controls/ControlsGroup';

@@ -15,8 +15,8 @@ export class EmpriseLayer extends BaseLayer {
         this.loaded = true;
     }
 
-    getOptions(): LineLayerSpecification {
-        return {
+    getOptions(): LineLayerSpecification[] {
+        return [{
             id: this.options.id,
             type: "line",
             source: this.options.source,
@@ -29,6 +29,6 @@ export class EmpriseLayer extends BaseLayer {
                 "line-width": 1.7,
                 "line-opacity": this.options.opacity ?? 0.7,
             },
-        } as LineLayerSpecification;
+        } as LineLayerSpecification];
     }
 }

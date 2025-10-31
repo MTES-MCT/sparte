@@ -11,8 +11,8 @@ export class OrthophotoLayer extends BaseLayer {
         });
     }
 
-    getOptions(): RasterLayerSpecification {
-        return {
+    getOptions(): RasterLayerSpecification[] {
+        return [{
             id: this.options.id,
             type: "raster",
             source: this.options.source,
@@ -22,6 +22,6 @@ export class OrthophotoLayer extends BaseLayer {
             paint: {
                 "raster-opacity": this.options.opacity ?? 1,
             },
-        } as RasterLayerSpecification;
+        } as RasterLayerSpecification];
     }
 }

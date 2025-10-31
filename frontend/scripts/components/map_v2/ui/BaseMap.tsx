@@ -61,6 +61,7 @@ interface BaseMapProps {
     children?: React.ReactNode;
     config?: MapConfig;
     landData: LandDetailResultType;
+    center?: [number, number] | null;
 }
 
 export const BaseMap: React.FC<BaseMapProps> = ({
@@ -68,6 +69,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     children,
     config,
     landData,
+    center,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
@@ -156,7 +158,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             
             isInitialized.current = true;
         }
-    }, [memoizedConfig]);
+    }, [memoizedConfig, landData]);
 
     useEffect(() => {
         if (mapDiv.current && !mapRef.current) {
@@ -184,6 +186,16 @@ export const BaseMap: React.FC<BaseMapProps> = ({
             }
         };
     }, [popupManager, statsManager]);
+
+    useEffect(() => {
+        if (center && mapRef.current && isMapLoaded) {
+            mapRef.current.flyTo({
+                center,
+                zoom: 15,
+                duration: 2000
+            });
+        }
+    }, [center, isMapLoaded]);
 
     const handleClosePopup = useCallback(() => {
         if (popupManager) {

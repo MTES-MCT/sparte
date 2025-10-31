@@ -142,8 +142,8 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
 
     // Layer technique nécessaire pour que querySourceFeatures() fonctionne
     // Les markers HTML (donut charts) sont gérés séparément via updateMarkers()
-    getOptions(): LayerSpecification {
-        return {
+    getOptions(): LayerSpecification[] {
+        return [{
             id: this.options.id,
             type: 'circle',
             source: this.options.source,
@@ -155,7 +155,7 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
                 'circle-radius': 0,
                 'circle-opacity': 0
             }
-        } as LayerSpecification;
+        } as LayerSpecification];
     }
 
     setVisibility(visible: boolean): void {
