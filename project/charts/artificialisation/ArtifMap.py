@@ -175,7 +175,7 @@ class ArtifMap(DiagnosticChart):
             },
             "series": [
                 {
-                    "name": "Surfaces artificielles",
+                    "name": "Surfaces artificialisées",
                     "data": self.data,
                     "joinBy": ["land_id"],
                     "colorKey": "percent",
@@ -226,7 +226,7 @@ class ArtifMap(DiagnosticChart):
                     },
                 },
                 {
-                    "name": "Flux de désartificialisation",
+                    "name": "Désartificialisation",
                     "type": "mapbubble",
                     "joinBy": ["land_id"],
                     "showInLegend": True,

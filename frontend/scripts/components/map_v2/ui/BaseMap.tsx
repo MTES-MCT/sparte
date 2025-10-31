@@ -38,7 +38,7 @@ const MapWrapper = styled.div`
 `;
 
 const MapContainer = styled.div<{ $isLoaded: boolean }>`
-	height: 75vh;
+	height: 55vh;
 	width: 100%;
 	opacity: ${({ $isLoaded }) => ($isLoaded ? 1 : 0)};
 	transition: opacity 0.3s ease-in-out;

@@ -14,9 +14,9 @@ export const OCSGE_GEOJSON_CENTROIDS_URL = "https://airflow-staging.s3.fr-par.sc
 export const OCSGE_GEOJSON_BASE_URL = "https://airflow-staging.s3.fr-par.scw.cloud/geojson/";
 
 export const ARTIFICIALISATION_COLOR = "#FA4B42"
-export const DESARTIFICIALISATION_COLOR = "#00E272"
+export const DESARTIFICIALISATION_COLOR = "#00ce67"
 export const IMPERMEABILISATION_COLOR = "#FA4B42"
-export const DESIMPERMEABILISATION_COLOR = "#00E272"
+export const DESIMPERMEABILISATION_COLOR = "#00ce67"
 
 export const IMPERMEABILISATION_FIELD = "new_is_impermeable";
 export const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
