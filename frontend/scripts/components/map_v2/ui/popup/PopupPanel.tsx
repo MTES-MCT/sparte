@@ -6,8 +6,6 @@ const PopupContainer = styled.div<{
   	$isVisible: boolean; 
 }>`
 	position: absolute;
-	max-width: 400px;
-	min-width: 50%;
 	background: white;
 	border-radius: 3px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
-import { LandDetailResultType } from "@services/types/land";
+import { LandDetailResultType, LandType } from "@services/types/land";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
@@ -165,7 +165,9 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						between={true}
 					/>
 				</h2>
-				<ImpermeabilisationDiffMap landData={landData} />
+				{land_type !== LandType.REGION && (
+					<ImpermeabilisationDiffMap landData={landData} />
+				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w rounded">
 					{
 						is_interdepartemental && (
@@ -226,7 +228,9 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					Surfaces imperméabilisées par type de couverture et
 					d'usage
 				</h2>
-				<ImpermeabilisationMap landData={landData} />
+				{land_type !== LandType.REGION && (
+					<ImpermeabilisationMap landData={landData} />
+				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
 						<OcsgeMillesimeSelector

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
-import { LandDetailResultType } from "@services/types/land";
+import { LandDetailResultType, LandType } from "@services/types/land";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
@@ -165,7 +165,9 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						between={true}
 					/>
 				</h2>
-				<ArtificialisationDiffMap landData={landData} />
+				{land_type !== LandType.REGION && (
+					<ArtificialisationDiffMap landData={landData} />
+				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w rounded">
 					{
 						is_interdepartemental && (
@@ -239,7 +241,9 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				<h2 className="fr-mt-7w">
 					Surfaces artificialisées par type de couverture et d'usage
 				</h2>
-				<ArtificialisationMap landData={landData} />
+				{land_type !== LandType.REGION && (
+					<ArtificialisationMap landData={landData} />
+				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
 						<OcsgeMillesimeSelector
