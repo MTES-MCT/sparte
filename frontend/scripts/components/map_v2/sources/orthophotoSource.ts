@@ -11,7 +11,7 @@ export class OrthophotoSource extends BaseSource {
 
     getOptions() {
         return {
-            type: this.options.type,
+            type: "raster" as const,
             tiles: [ORTHOPHOTO_TILES_URL],
             tileSize: 256,
         };

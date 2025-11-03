@@ -360,6 +360,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 <div className="fr-col-12">
                     <FrichesMap
                         landData={landData}
+                        frichesData={frichesData}
                         center={selectedFriche}
                     />
                 </div>
