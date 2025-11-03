@@ -6,6 +6,7 @@ import Guide from "@components/ui/Guide";
 import { TerritoryBadge } from "./TerritoryBadge";
 import { ChartSection } from "./ChartSection";
 import { CHART_DESCRIPTIONS, GUIDE_TEXTS } from "./constants";
+import GuideContent from "@components/ui/GuideContent";
 
 interface ConsoComparisonProps {
   landId: string;
@@ -179,9 +180,9 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
         </div>
 
         <div className="fr-col-12 fr-col-lg-4">
-          <Guide title={GUIDE_TEXTS.treemap.title} column>
+          <GuideContent title={GUIDE_TEXTS.treemap.title} column>
             {GUIDE_TEXTS.treemap.content}
-          </Guide>
+          </GuideContent>
         </div>
       </div>
 
@@ -207,9 +208,9 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
           </div>
 
           <div className="fr-col-12 fr-col-lg-4">
-            <Guide title={GUIDE_TEXTS.populationBubble.title} column>
+            <GuideContent title={GUIDE_TEXTS.populationBubble.title} column>
               {GUIDE_TEXTS.populationBubble.content}
-            </Guide>
+            </GuideContent>
           </div>
         </div>
       </div>
