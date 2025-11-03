@@ -80,6 +80,61 @@ class LogementVacantConsoProgressionChart(DiagnosticChart):
         ]
 
     @property
+    def data_table(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
+        # Récupérer les données sur la vacance des logements
+        logement_vacant_progression = (
+            PublicDataContainer.logement_vacant_progression_service()
+            .get_by_land(
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            .logement_vacant
+        )
+
+        consommation_progression = (
+            PublicDataContainer.consommation_progression_service()
+            .get_by_land(
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            .consommation
+        )
+
+        years = list(range(start_date, end_date + 1))
+        headers = ["Année"] + [str(year) for year in years]
+
+        rows = []
+
+        # Ligne pour les logements vacants
+        logement_vacant_data = [round(item.logements_vacants_parc_general, 2) for item in logement_vacant_progression]
+        rows.append(
+            {
+                "name": "",
+                "data": ["Nombre de logements en vacance structurelle (privé + bailleurs sociaux)"]
+                + logement_vacant_data,
+            }
+        )
+
+        # Ligne pour la consommation totale
+        consommation_total_data = [round(item.total, 2) for item in consommation_progression]
+        rows.append({"name": "", "data": ["Consommation totale (ha)"] + consommation_total_data})
+
+        # Ligne pour la consommation habitat
+        consommation_habitat_data = [round(item.habitat, 2) for item in consommation_progression]
+        rows.append({"name": "", "data": ["Consommation à destination de l'habitat (ha)"] + consommation_habitat_data})
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+        }
+
+    @property
     def param(self):
         start_date = int(self.params["start_date"])
         end_date = int(self.params["end_date"])

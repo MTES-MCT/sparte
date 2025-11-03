@@ -1,8 +1,5 @@
 from project.charts.base_project_chart import DiagnosticChart
 from public_data.domain.containers import PublicDataContainer
-from public_data.infra.demography.population.progression.table import (
-    PopulationConsoProgressionTableMapper,
-)
 
 
 class PopulationConsoProgressionChart(DiagnosticChart):
@@ -99,7 +96,7 @@ class PopulationConsoProgressionChart(DiagnosticChart):
     def param(self):
         return super().param | {
             "title": {
-                "text": f"Évolutions de la consommation d'espaces et de la population à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+                "text": f"Évolution de la consommation d'espaces NAF et de la population à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
             },
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
@@ -125,9 +122,61 @@ class PopulationConsoProgressionChart(DiagnosticChart):
             "series": self.series,
         }
 
+    def _format_population(self, value):
+        """Format population value."""
+        return f"{value:,.0f}" if value is not None else "-"
+
+    def _format_consumption(self, value):
+        """Format consumption value."""
+        return f"{value:.2f}" if value is not None else "-"
+
+    def _get_population_value(self, population_list, index):
+        """Get population value at index or None."""
+        return population_list[index] if index < len(population_list) else None
+
     @property
     def data_table(self):
-        return PopulationConsoProgressionTableMapper.map(
-            consommation_progression=self.data["consommation"],
-            population_progression=self.data["population"],
-        )
+        """Generate data table for population and consumption progression."""
+        years = list(range(int(self.params["start_date"]), int(self.params["end_date"]) + 1))
+        progression_consommation = self.progression_consommation_dict
+
+        # Match the exact logic from the series
+        population_insee_data = self.stock_population_from_insee
+        # The graph uses [None] + stock_population_calculted, so we replicate that
+        population_calculated_data = [None] + self.stock_population_calculted
+
+        # Headers
+        headers = [
+            "Année",
+            "Population totale (hab)",
+            "Population estimée (hab)",
+            "Consommation totale (ha)",
+            "Consommation habitat (ha)",
+        ]
+
+        # Data rows
+        rows = []
+        for i, year in enumerate(years):
+            pop_insee = self._get_population_value(population_insee_data, i)
+            pop_calc = self._get_population_value(population_calculated_data, i)
+            conso_total = self._get_population_value(progression_consommation["total"], i)
+            conso_habitat = self._get_population_value(progression_consommation["habitat"], i)
+
+            rows.append(
+                {
+                    "name": "",
+                    "data": [
+                        str(year),
+                        self._format_population(pop_insee),
+                        self._format_population(pop_calc),
+                        self._format_consumption(conso_total),
+                        self._format_consumption(conso_habitat),
+                    ],
+                }
+            )
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+        }

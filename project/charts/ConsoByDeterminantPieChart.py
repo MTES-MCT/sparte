@@ -1,5 +1,5 @@
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import CEREMA_CREDITS, DEFAULT_VALUE_DECIMALS
+from project.charts.constants import CEREMA_CREDITS
 from public_data.domain.containers import PublicDataContainer
 
 
@@ -87,7 +87,7 @@ class ConsoByDeterminantPieChart(DiagnosticChart):
                 "name": "",
                 "data": [
                     category,
-                    round(getattr(self.data, attr), DEFAULT_VALUE_DECIMALS),
+                    f"{getattr(self.data, attr):.2f}",
                 ],
             }
             for category, attr in category_to_attr.items()
@@ -98,7 +98,7 @@ class ConsoByDeterminantPieChart(DiagnosticChart):
         rows.append(
             {
                 "name": "",
-                "data": ["Total", round(total, DEFAULT_VALUE_DECIMALS)],
+                "data": ["Total", f"{total:.2f}"],
             }
         )
 

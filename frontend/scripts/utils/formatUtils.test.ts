@@ -15,21 +15,21 @@ describe('formatUtils', () => {
             });
 
             it('should format numbers [10, 100) with 1 decimal', () => {
-                expect(formatNumber({ number: 10 })).toBe('10');
+                expect(formatNumber({ number: 10 })).toBe('10,0');
                 expect(formatNumber({ number: 50.567 })).toBe('50,6');
-                expect(formatNumber({ number: 99.99 })).toBe('100');
+                expect(formatNumber({ number: 99.99 })).toBe('100,0');
             });
 
             it('should format numbers [1, 10) with 2 decimals', () => {
-                expect(formatNumber({ number: 1 })).toBe('1');
+                expect(formatNumber({ number: 1 })).toBe('1,00');
                 expect(formatNumber({ number: 5.678 })).toBe('5,68');
-                expect(formatNumber({ number: 9.999 })).toBe('10');
+                expect(formatNumber({ number: 9.999 })).toBe('10,00');
             });
 
             it('should format numbers (0, 1) with 3 decimals', () => {
-                expect(formatNumber({ number: 0.1 })).toBe('0,1');
+                expect(formatNumber({ number: 0.1 })).toBe('0,100');
                 expect(formatNumber({ number: 0.5678 })).toBe('0,568');
-                expect(formatNumber({ number: 0.9999 })).toBe('1');
+                expect(formatNumber({ number: 0.9999 })).toBe('1,000');
             });
 
             it('should handle negative numbers with automatic decimals', () => {
@@ -52,6 +52,7 @@ describe('formatUtils', () => {
 
             it('should respect explicit decimals = 2', () => {
                 expect(formatNumber({ number: 1234.567, decimals: 2 })).toBe('1\u202F234,57');
+                expect(formatNumber({ number: 0, decimals: 2 })).toBe('0,00');
             });
 
             it('should respect explicit decimals = 3', () => {
@@ -122,7 +123,7 @@ describe('formatUtils', () => {
             });
 
             it('should handle very small numbers', () => {
-                expect(formatNumber({ number: 0.000001 })).toBe('0');
+                expect(formatNumber({ number: 0.000001 })).toBe('0,000');
             });
         });
 

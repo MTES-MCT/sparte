@@ -94,6 +94,108 @@ class LogementVacantAutorisationLogementComparisonChart(DiagnosticChart):
         ]
 
     @property
+    def data_table(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
+        autorisation_logement_progression = (
+            PublicDataContainer.autorisation_logement_progression_service().get_by_land(
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
+            )
+        )
+
+        last_year_autorisation_logement_progression = (
+            autorisation_logement_progression.get_last_year_autorisation_logement()
+        )
+
+        logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
+            land=self.land,
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+        last_year_logement_vacant_progression = logement_vacant_progression.get_last_year_logement_vacant()
+
+        if last_year_autorisation_logement_progression is None or last_year_logement_vacant_progression is None:
+            return {
+                "headers": ["Type", "Nombre", "% du parc total"],
+                "rows": [],
+            }
+
+        headers = ["Type", "Nombre", "% du parc total"]
+
+        rows = []
+
+        # Ligne pour les autorisations
+        rows.append(
+            {
+                "name": "",
+                "data": [
+                    f"Autorisations de construction de logements ({end_date})",
+                    last_year_autorisation_logement_progression.logements_autorises,
+                    round(last_year_autorisation_logement_progression.percent_autorises_on_parc_general, 2),
+                ],
+            }
+        )
+
+        # Ligne pour les logements vacants parc privé
+        rows.append(
+            {
+                "name": "",
+                "data": [
+                    f"Logements vacants depuis plus de 2 ans dans le parc privé ({end_date})",
+                    last_year_logement_vacant_progression.logements_vacants_parc_prive,
+                    round(
+                        last_year_logement_vacant_progression.logements_vacants_parc_prive_on_parc_general_percent, 2
+                    ),
+                ],
+            }
+        )
+
+        # Ligne pour les logements vacants parc social
+        rows.append(
+            {
+                "name": "",
+                "data": [
+                    f"Logements vacants depuis plus de 3 mois dans le parc des bailleurs sociaux ({end_date})",
+                    last_year_logement_vacant_progression.logements_vacants_parc_social,
+                    round(
+                        last_year_logement_vacant_progression.logements_vacants_parc_social_on_parc_general_percent, 2
+                    ),
+                ],
+            }
+        )
+
+        # Ligne total logements vacants
+        total_vacants = (
+            last_year_logement_vacant_progression.logements_vacants_parc_prive
+            + last_year_logement_vacant_progression.logements_vacants_parc_social
+        )
+        total_percent = (
+            last_year_logement_vacant_progression.logements_vacants_parc_prive_on_parc_general_percent
+            + last_year_logement_vacant_progression.logements_vacants_parc_social_on_parc_general_percent
+        )
+        rows.append(
+            {
+                "name": "",
+                "data": [
+                    f"Total logements en vacance structurelle ({end_date})",
+                    total_vacants,
+                    round(total_percent, 2),
+                ],
+            }
+        )
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+            "boldLastRow": True,
+        }
+
+    @property
     def param(self):
         end_date = int(self.params["end_date"])
 

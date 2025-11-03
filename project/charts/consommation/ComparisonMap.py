@@ -79,7 +79,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
         """
         Transforme les données de consommation en format utilisable par la carte.
         Les surfaces sont déjà en m² dans LandConsoStats, on les convertit en ha.
-        Calcule aussi la densité de consommation (ha consommés / ha de surface totale).
+        Calcule aussi la consommation relative à la surface (ha consommés / ha de surface totale).
         """
         # Create a dict for quick land lookup (lands is a list from mixin)
         lands_dict = {land.land_id: land for land in self.lands}
@@ -125,7 +125,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
         headers = [
             "Territoire",
             "Type",
-            f"Densité de consommation (%) - {self.start_year} à {self.end_year}",
+            f"Consommation relative à la surface (%) - {self.start_year} à {self.end_year}",
             f"Consommation totale (ha) - {self.start_year} à {self.end_year}",
             "Habitat (ha)",
             "Activité (ha)",
@@ -180,7 +180,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
             "title": {"text": f"Carte de comparaison - {self.start_year} à {self.end_year}"},
             "mapNavigation": {"enabled": len(self.lands) > 20},
             "legend": {
-                "title": {"text": "Densité de consommation (%)"},
+                "title": {"text": "Consommation relative à la surface (%)"},
                 "backgroundColor": "#ffffff",
                 "bubbleLegend": {
                     "enabled": True,
@@ -201,7 +201,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
             },
             "series": [
                 {
-                    "name": "Densité de consommation",
+                    "name": "Consommation relative à la surface",
                     "colorKey": "conso_density_percent",
                     "data": [
                         {
@@ -233,7 +233,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                         "valueDecimals": 1,
                         "pointFormat": (
                             "<b>{point.name}</b>:<br/>"
-                            "Densité: {point.conso_density_percent:,.2f} %<br/>"
+                            "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
                             "Total: {point.total_conso_ha:,.1f} ha<br/>"
                             "Habitat: {point.habitat_ha:,.1f} ha<br/>"
                             "Activité: {point.activite_ha:,.1f} ha<br/>"
@@ -273,7 +273,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                         "valueDecimals": 1,
                         "pointFormat": (
                             "<b>{point.name}</b>:<br/>"
-                            "Densité: {point.conso_density_percent:,.2f} %<br/>"
+                            "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
                             "Total: {point.total_conso_ha:,.1f} ha<br/>"
                             "Habitat: {point.habitat_ha:,.1f} ha<br/>"
                             "Activité: {point.activite_ha:,.1f} ha<br/>"

@@ -30,17 +30,27 @@ Fullscreen(Highcharts);
 NoDataToDisplay(Highcharts);
 HCSoldGauge(Highcharts); // Required for solid gauge charts
 
+export type DataSource =
+  | 'insee'
+  | 'majic'
+  | 'gpu'
+  | 'lovac'
+  | 'ocsge'
+  | 'rpls'
+  | 'sitadel'
+  | 'cartofriches';
+
 type GenericChartProps = {
     chartOptions: {
         highcharts_options: Highcharts.Options;
         data_table?: any;
     };
     containerProps?: React.HTMLAttributes<HTMLDivElement>;
-    isMap?: boolean; // optional. When true, the chart is displayed in a map
+    isMap?: boolean;
     isLoading?: boolean;
     error?: any;
     showToolbar?: boolean;
-    sources?: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel', 'cartofriches']
+    sources?: DataSource[];
     children?: React.ReactNode;
     showDataTable?: boolean;
     dataTableHeader?: React.ReactNode;
@@ -146,14 +156,14 @@ const GenericChart = ({
                     />
                 </div>
             )}
-            <HighchartsReact
-                ref={chartRef}
-                highcharts={Highcharts}
-                options={mutableChartOptions}
-                updateArgs={[shouldRedraw, oneToOne, animation]}
-                containerProps={{ ...defaultContainerProps, ...containerProps }}
-                constructorType={isMap ? 'mapChart' : 'chart'}
-            />
+                <HighchartsReact
+                    ref={chartRef}
+                    highcharts={Highcharts}
+                    options={mutableChartOptions}
+                    updateArgs={[shouldRedraw, oneToOne, animation]}
+                    containerProps={{ ...defaultContainerProps, ...containerProps }}
+                    constructorType={isMap ? 'mapChart' : 'chart'}
+                />
             <ChartDetails
                 sources={sources}
                 showDataTable={showDataTable}

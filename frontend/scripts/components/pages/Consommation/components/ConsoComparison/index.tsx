@@ -1,9 +1,11 @@
 import React from "react";
-import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
+import styled from "styled-components";
 import { Territory } from "@components/ui/SearchBar";
-import { TerritorySelector } from "./TerritorySelector";
-import { SuggestedTerritories } from "./SuggestedTerritories";
-import { SelectedTerritories } from "./SelectedTerritories";
+import SearchBar from "@components/ui/SearchBar";
+import Guide from "@components/ui/Guide";
+import { TerritoryBadge } from "./TerritoryBadge";
+import { ChartSection } from "./ChartSection";
+import { CHART_DESCRIPTIONS, GUIDE_TEXTS } from "./constants";
 
 interface ConsoComparisonProps {
   landId: string;
@@ -11,194 +13,204 @@ interface ConsoComparisonProps {
   landName: string;
   startYear: number;
   endYear: number;
-  suggestedTerritories: Territory[];
-  suggestedTerritoriesByPopulation: Territory[];
-  additionalTerritories: Territory[];
+  territories: Territory[];
   comparisonLandIds: string | null;
   isDefaultSelection: boolean;
-  onTerritoryAdd: (territory: Territory) => void;
-  onTerritoryRemove: (territory: Territory) => void;
+  onAddTerritory: (territory: Territory) => void;
+  onRemoveTerritory: (territory: Territory) => void;
   onReset: () => void;
 }
 
-/**
- * Comparison section with neighboring territories
- * Allows users to compare consumption with other territories
- */
+const InfoBody = styled.div`
+  text-align: left;
+`;
+
+const TerritoryList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const EmptyText = styled.p`
+  color: #666;
+`;
+
 export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
   landId,
   landType,
   landName,
   startYear,
   endYear,
-  suggestedTerritories,
-  suggestedTerritoriesByPopulation,
-  additionalTerritories,
+  territories,
   comparisonLandIds,
   isDefaultSelection,
-  onTerritoryAdd,
-  onTerritoryRemove,
+  onAddTerritory,
+  onRemoveTerritory,
   onReset,
 }) => {
+  const mainTerritory: Territory = {
+    id: 0,
+    name: landName,
+    source_id: landId,
+    land_type: landType,
+    land_type_label: '',
+    area: 0,
+    public_key: '',
+  };
+
+  const excludedTerritories = [mainTerritory, ...territories];
+
   return (
     <div className="fr-mt-7w">
       <h3 id="conso-comparaison">Comparaison avec les territoires voisins</h3>
 
       <div className="fr-notice fr-notice--info fr-mb-3w">
         <div className="fr-container">
-          <div className="fr-notice__body">
+          <InfoBody className="fr-notice__body">
             <p className="fr-notice__title">À propos des territoires voisins</p>
             <p className="fr-text--sm fr-mb-0">
-              Les territoires présentés ci-dessous ont été automatiquement sélectionnés en fonction de leur
+              Les territoires voisins ont été automatiquement sélectionnés en fonction de leur
               proximité avec {landName}. La sélection se base sur la distance géographique entre les
               centroïdes des territoires.
             </p>
-          </div>
+          </InfoBody>
         </div>
       </div>
 
-      {/* Territory selector and map side by side */}
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        {/* Left: Territory selector */}
         <div className="fr-col-12 fr-col-lg-6">
           <div className="bg-white fr-p-3w rounded h-100">
-            <TerritorySelector
-              landId={landId}
-              landType={landType}
-              additionalTerritories={additionalTerritories}
-              onTerritorySelect={onTerritoryAdd}
-            />
+            <h5 className="fr-mb-3w">Territoires voisins ({territories.length})</h5>
 
-            {/* Suggested territories by distance */}
-            <SuggestedTerritories
-              title="Territoires voisins suggérés :"
-              territories={suggestedTerritories}
-              additionalTerritories={additionalTerritories}
-              onTerritoryAdd={onTerritoryAdd}
-              onReset={onReset}
-              showResetButton={!isDefaultSelection}
-            />
+            {!isDefaultSelection && (
+              <button
+                onClick={onReset}
+                className="fr-btn fr-btn--sm fr-btn--secondary fr-mb-3w"
+              >
+                Remettre la sélection par défaut
+              </button>
+            )}
 
-            {/* Suggested territories by population */}
-            <SuggestedTerritories
-              title="Territoires à la population similaire suggérés :"
-              territories={suggestedTerritoriesByPopulation}
-              additionalTerritories={additionalTerritories}
-              onTerritoryAdd={onTerritoryAdd}
-            />
+            <TerritoryList>
+              {territories.length === 0 ? (
+                <EmptyText className="fr-text--sm">
+                  Aucun territoire sélectionné
+                </EmptyText>
+              ) : (
+                territories.map((territory) => (
+                  <TerritoryBadge
+                    key={`${territory.land_type}_${territory.source_id}`}
+                    territory={territory}
+                    onRemove={onRemoveTerritory}
+                  />
+                ))
+              )}
+            </TerritoryList>
 
-            {/* Selected territories */}
-            <SelectedTerritories territories={additionalTerritories} onRemove={onTerritoryRemove} />
+            <div>
+              <hr className="fr-my-3w" />
+              <h6 className="fr-mb-2w">Ajouter d'autres territoires</h6>
+              <SearchBar
+                onTerritorySelect={onAddTerritory}
+                excludeTerritories={excludedTerritories}
+                disableOverlay={true}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Right: Comparison map */}
         <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <ConsoGraph
-              isMap
-              id="comparison_map"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                start_date: String(startYear),
-                end_date: String(endYear),
-                ...(comparisonLandIds && { comparison_lands: comparisonLandIds }),
-              }}
-              sources={["majic"]}
-              showDataTable={true}
-            >
-              <div>
-                <h6 className="fr-mb-0">À propos</h6>
-                <p className="fr-text--sm fr-mb-0">
-                  Cette carte affiche votre territoire (surligné en bleu) et les territoires sélectionnés pour la comparaison.
-                  La couleur indique la densité de consommation, et la taille des bulles représente la consommation totale.
-                </p>
-              </div>
-            </ConsoGraph>
-          </div>
+          <ChartSection
+            id="comparison_map"
+            landId={landId}
+            landType={landType}
+            startYear={startYear}
+            endYear={endYear}
+            comparisonLandIds={comparisonLandIds}
+            sources={["majic"]}
+            isMap={true}
+          >
+            <div>
+              <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.comparisonMap.title}</h6>
+              <p className="fr-text--sm fr-mb-0">
+                {CHART_DESCRIPTIONS.comparisonMap.content}
+              </p>
+            </div>
+          </ChartSection>
         </div>
       </div>
 
-      {/* Comparison charts */}
+      <div className="fr-mb-3w">
+        <ChartSection
+          id="comparison_chart"
+          landId={landId}
+          landType={landType}
+          startYear={startYear}
+          endYear={endYear}
+          comparisonLandIds={comparisonLandIds}
+          sources={["majic"]}
+        >
+          <div>
+            <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.comparisonChart.title}</h6>
+            {CHART_DESCRIPTIONS.comparisonChart.content}
+          </div>
+        </ChartSection>
+      </div>
+
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <ConsoGraph
-              id="comparison_chart"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                start_date: String(startYear),
-                end_date: String(endYear),
-                ...(comparisonLandIds && { comparison_lands: comparisonLandIds }),
-              }}
-              sources={["majic"]}
-              showDataTable={true}
-            >
-              <div>
-                <h6 className="fr-mb-0">À propos</h6>
-                <p className="fr-text--sm fr-mb-0">
-                  Ce graphique compare la consommation d'espaces NAF de votre territoire avec celle de
-                  territoires voisins, sélectionnés en fonction de leur proximité géographique.
-                </p>
-                <p className="fr-text--sm fr-mb-0">
-                  Cliquez sur un territoire pour voir le détail année par année de sa consommation.
-                </p>
-              </div>
-            </ConsoGraph>
-          </div>
+        <div className="fr-col-12 fr-col-lg-8">
+          <ChartSection
+            id="surface_proportional_chart"
+            landId={landId}
+            landType={landType}
+            startYear={startYear}
+            endYear={endYear}
+            comparisonLandIds={comparisonLandIds}
+            sources={["majic"]}
+          >
+            <div>
+              <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.surfaceProportional.title}</h6>
+              <p className="fr-text--sm fr-mb-0">
+                {CHART_DESCRIPTIONS.surfaceProportional.content}
+              </p>
+            </div>
+          </ChartSection>
         </div>
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <ConsoGraph
-              id="surface_proportional_chart"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                start_date: String(startYear),
-                end_date: String(endYear),
-                ...(comparisonLandIds && { comparison_lands: comparisonLandIds }),
-              }}
-              sources={["majic"]}
-              showDataTable={true}
-            >
-              <div>
-                <h6 className="fr-mb-0">À propos</h6>
-                <p className="fr-text--sm fr-mb-0">
-                  Ce graphique compare la consommation d'espaces NAF proportionnelle à la surface totale du
-                  territoire. Les territoires sont représentés sous forme de treemap où la taille reflète la
-                  surface du territoire.
-                </p>
-              </div>
-            </ConsoGraph>
-          </div>
+
+        <div className="fr-col-12 fr-col-lg-4">
+          <Guide title={GUIDE_TEXTS.treemap.title} column>
+            {GUIDE_TEXTS.treemap.content}
+          </Guide>
         </div>
       </div>
 
       <div className="fr-mt-5w">
-        <div className="bg-white fr-p-2w rounded">
-          <ConsoGraph
-            id="population_conso_comparison_chart"
-            land_id={landId}
-            land_type={landType}
-            params={{
-              start_date: String(startYear),
-              end_date: String(endYear),
-              ...(comparisonLandIds && { comparison_lands: comparisonLandIds }),
-            }}
-            sources={["majic", "insee"]}
-            showDataTable={true}
-          >
-            <div>
-              <h6 className="fr-mb-0">À propos</h6>
-              <p className="fr-text--sm fr-mb-0">
-                Ce graphique compare la consommation d'espaces NAF au regard de l'évolution démographique. La
-                taille des bulles représente la population totale de chaque territoire. La ligne médiane
-                indique le ratio médian entre évolution démographique et consommation d'espaces.
-              </p>
-            </div>
-          </ConsoGraph>
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-lg-8">
+            <ChartSection
+              id="population_conso_comparison_chart"
+              landId={landId}
+              landType={landType}
+              startYear={startYear}
+              endYear={endYear}
+              comparisonLandIds={comparisonLandIds}
+              sources={["majic", "insee"]}
+            >
+              <div>
+                <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.populationConso.title}</h6>
+                <p className="fr-text--sm fr-mb-0">
+                  {CHART_DESCRIPTIONS.populationConso.content}
+                </p>
+              </div>
+            </ChartSection>
+          </div>
+
+          <div className="fr-col-12 fr-col-lg-4">
+            <Guide title={GUIDE_TEXTS.populationBubble.title} column>
+              {GUIDE_TEXTS.populationBubble.content}
+            </Guide>
+          </div>
         </div>
       </div>
     </div>

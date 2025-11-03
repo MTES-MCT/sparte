@@ -17,17 +17,27 @@ export const TerritorySelector: React.FC<TerritorySelectorProps> = ({
   additionalTerritories,
   onTerritorySelect,
 }) => {
+  const mainTerritory: Territory = {
+    id: 0,
+    name: "",
+    source_id: landId,
+    land_type: landType,
+    land_type_label: "",
+    area: 0,
+    public_key: "",
+  };
+
+  const excludedTerritories = [mainTerritory, ...additionalTerritories];
+
   return (
-    <div className="bg-white rounded fr-mb-3w">
-      <h5 className="fr-mb-2w">Ajouter des territoires à la comparaison</h5>
+    <div className="fr-mb-3w">
+      <h5 className="fr-mb-2w">Rechercher d'autres territoires</h5>
       <p className="fr-text--sm fr-mb-2w" style={{ color: "#666" }}>
-        Recherchez et ajoutez d'autres territoires pour enrichir la comparaison
+        Recherchez et ajoutez d'autres territoires pour personnaliser la comparaison
       </p>
       <SearchBar
         onTerritorySelect={onTerritorySelect}
-        excludeTerritoryId={landId}
-        excludeLandType={landType}
-        excludeTerritories={additionalTerritories}
+        excludeTerritories={excludedTerritories}
       />
     </div>
   );

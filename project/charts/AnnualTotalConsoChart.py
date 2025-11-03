@@ -49,7 +49,7 @@ class AnnualTotalConsoChart(DiagnosticChart):
         return super().param | {
             "chart": {"type": "column"},
             "title": {
-                "text": f"Consommation annuelle d'espaces NAF à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+                "text": f"Consommation annuelle d'espaces NAF - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
             },
             "yAxis": {"title": {"text": "Consommation d'espaces NAF (ha)"}},
             "xAxis": {"type": "category"},

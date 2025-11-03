@@ -1,4 +1,4 @@
-export { PeriodSelector } from "./PeriodSelector";
+export { ConsommationControls } from "./ConsommationControls";
 export { ConsoStats } from "./ConsoStats";
 export { ConsoDemography } from "./ConsoDemography";
 export { ConsoComparison } from "./ConsoComparison";

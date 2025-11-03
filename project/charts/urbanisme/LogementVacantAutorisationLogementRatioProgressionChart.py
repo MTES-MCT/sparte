@@ -46,6 +46,35 @@ class LogementVacantAutorisationLogementRatioProgressionChart(DiagnosticChart):
         ]
 
     @property
+    def data_table(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
+        autorisation_logement_progression = (
+            PublicDataContainer.autorisation_logement_progression_service().get_by_land(
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
+            )
+        )
+
+        years = list(range(start_date, end_date + 1))
+        headers = ["Année"] + [str(year) for year in years]
+
+        data = [
+            round(d.percent_autorises_on_vacants_parc_general, 2)
+            for d in autorisation_logement_progression.autorisation_logement
+        ]
+
+        rows = [{"name": "", "data": ["Rapport logements vacants / autorisations de construction (%)"] + data}]
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+        }
+
+    @property
     def param(self):
         start_date = int(self.params["start_date"])
         end_date = int(self.params["end_date"])

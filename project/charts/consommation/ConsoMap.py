@@ -1,7 +1,6 @@
 import json
 
 from django.core.serializers import serialize
-from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import LEGEND_NAVIGATION_EXPORT
@@ -46,7 +45,7 @@ class ConsoMap(DiagnosticChart):
     def end_year(self):
         return int(self.params.get("end_date"))
 
-    @cached_property
+    @property
     def conso_data(self):
         """
         Récupère les données de consommation par territoire pour la période donnée.
@@ -70,7 +69,7 @@ class ConsoMap(DiagnosticChart):
 
         return stats_dict
 
-    @cached_property
+    @property
     def data(self):
         """
         Transforme les données de consommation en format utilisable par la carte.
@@ -82,17 +81,14 @@ class ConsoMap(DiagnosticChart):
             # Get the land object to access its surface
             land = self.lands.get(land_id=land_id)
 
-            # Convert m² to ha (divide by 10000)
-            total_conso_ha = (stats.total or 0) / 10000
-
             # Calculate density: consumption (ha) / territory surface (ha)
             # Multiply by 100 to get percentage
-            conso_density_percent = (total_conso_ha / land.surface * 100) if land.surface > 0 else 0
+            conso_density_percent = (stats.total / land.surface * 100) if land.surface > 0 else 0
 
             data.append(
                 {
                     "land_id": land_id,
-                    "total_conso_ha": total_conso_ha,
+                    "total_conso_ha": stats.total / 10000,
                     "conso_density_percent": conso_density_percent,
                     "activite_ha": (stats.activite or 0) / 10000,
                     "habitat_ha": (stats.habitat or 0) / 10000,
@@ -109,7 +105,7 @@ class ConsoMap(DiagnosticChart):
     def data_table(self):
         headers = [
             AdminRef.get_label(self.params.get("child_land_type")),
-            f"Densité de consommation (%) - {self.start_year} à {self.end_year}",
+            f"Consommation relative à la surface (%) - {self.start_year} à {self.end_year}",
             f"Consommation totale (ha) - {self.start_year} à {self.end_year}",
             "Habitat (ha)",
             "Activité (ha)",
@@ -164,7 +160,7 @@ class ConsoMap(DiagnosticChart):
         )
 
         # Filter out territories with no data
-        data_with_values = [d for d in self.data if d["total_conso_ha"] > 0]
+        data_with_values = self.data
 
         return super().param | {
             "chart": {
@@ -178,7 +174,7 @@ class ConsoMap(DiagnosticChart):
             },
             "mapNavigation": {"enabled": self.lands.count() > 20},
             "legend": {
-                "title": {"text": "Densité de consommation (%)"},
+                "title": {"text": "Consommation relative à la surface (%)"},
                 "backgroundColor": "#ffffff",
                 "bubbleLegend": {
                     "enabled": True,
@@ -200,7 +196,7 @@ class ConsoMap(DiagnosticChart):
             },
             "series": [
                 {
-                    "name": "Densité de consommation",
+                    "name": "Consommation relative à la surface",
                     "data": self.data,
                     "joinBy": ["land_id"],
                     "colorKey": "conso_density_percent",
@@ -215,7 +211,7 @@ class ConsoMap(DiagnosticChart):
                         "valueDecimals": 1,
                         "pointFormat": (
                             "<b>{point.name}</b>:<br/>"
-                            "Densité: {point.conso_density_percent:,.2f} %<br/>"
+                            "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
                             "Total: {point.total_conso_ha:,.1f} ha<br/>"
                             "Habitat: {point.habitat_ha:,.1f} ha<br/>"
                             "Activité: {point.activite_ha:,.1f} ha<br/>"
@@ -256,7 +252,7 @@ class ConsoMap(DiagnosticChart):
                         "valueDecimals": 1,
                         "pointFormat": (
                             "<b>{point.name}</b>:<br/>"
-                            "Densité: {point.conso_density_percent:,.2f} %<br/>"
+                            "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
                             "Total: {point.total_conso_ha:,.1f} ha<br/>"
                             "Habitat: {point.habitat_ha:,.1f} ha<br/>"
                             "Activité: {point.activite_ha:,.1f} ha<br/>"
@@ -291,3 +287,220 @@ class ConsoMapExport(ConsoMap):
             },
             "subtitle": {"text": ""},
         }
+
+
+class ConsoMapRelative(ConsoMap):
+    """Carte de consommation relative à la surface (sans bulles)"""
+
+    @property
+    def param(self):
+        geojson = serialize(
+            "geojson",
+            self.lands,
+            geometry_field="simple_geom",
+            fields=(
+                "land_id",
+                "name",
+            ),
+            srid=3857,
+        )
+
+        # Filter out territories with no data
+        data_with_values = [d for d in self.data if d["total_conso_ha"] > 0]
+
+        base_param = {
+            "chart": {
+                "map": json.loads(geojson),
+            },
+            "title": {
+                "text": (
+                    f"Consommation relative à la surface des {self.formatted_child_land_type}s "
+                    f"entre {self.start_year} et {self.end_year}"
+                )
+            },
+            "mapNavigation": {"enabled": self.lands.count() > 20},
+            "legend": {
+                "title": {"text": "Consommation relative à la surface (%)"},
+                "backgroundColor": "#ffffff",
+                "align": "right",
+                "verticalAlign": "middle",
+                "layout": "vertical",
+            },
+            "colorAxis": {
+                "min": min([d["conso_density_percent"] for d in data_with_values]) if data_with_values else 0,
+                "max": max([d["conso_density_percent"] for d in data_with_values]) if data_with_values else 1,
+                "minColor": "#FFFFFF",
+                "maxColor": "#e1000f",
+                "dataClassColor": "category",
+            },
+            "series": [
+                {
+                    "name": "Consommation relative à la surface",
+                    "data": self.data,
+                    "joinBy": ["land_id"],
+                    "colorKey": "conso_density_percent",
+                    "opacity": 1,
+                    "showInLegend": False,
+                    "borderColor": "#999999",
+                    "borderWidth": 1,
+                    "dataLabels": {
+                        "enabled": True,
+                        "format": "{point.name}",
+                        "y": 10,
+                    },
+                    "tooltip": {
+                        "valueDecimals": 1,
+                        "pointFormat": (
+                            "<b>{point.name}</b>:<br/>"
+                            "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
+                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
+                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
+                            "Activité: {point.activite_ha:,.1f} ha<br/>"
+                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
+                            "Route: {point.route_ha:,.1f} ha<br/>"
+                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
+                        ),
+                    },
+                },
+            ],
+        }
+
+        return DiagnosticChart.param.fget(self) | base_param
+
+
+class ConsoMapBubble(ConsoMap):
+    """Carte de flux de consommation (bulles uniquement)"""
+
+    @property
+    def data_table(self):
+        headers = [
+            AdminRef.get_label(self.params.get("child_land_type")),
+            f"Consommation totale (ha) - {self.start_year} à {self.end_year}",
+            "Habitat (ha)",
+            "Activité (ha)",
+            "Mixte (ha)",
+            "Route (ha)",
+            "Ferroviaire (ha)",
+            "Inconnu (ha)",
+        ]
+
+        return {
+            "headers": headers,
+            "rows": [
+                {
+                    "name": "",  # not used
+                    "data": [
+                        self.lands.get(land_id=d["land_id"]).name,
+                        round(d["total_conso_ha"], 2),
+                        round(d["habitat_ha"], 2),
+                        round(d["activite_ha"], 2),
+                        round(d["mixte_ha"], 2),
+                        round(d["route_ha"], 2),
+                        round(d["ferroviaire_ha"], 2),
+                        round(d["inconnu_ha"], 2),
+                    ],
+                }
+                for d in self.data
+            ],
+        }
+
+    @property
+    def param(self):
+        geojson = serialize(
+            "geojson",
+            self.lands,
+            geometry_field="simple_geom",
+            fields=(
+                "land_id",
+                "name",
+            ),
+            srid=3857,
+        )
+
+        base_param = {
+            "chart": {
+                "map": json.loads(geojson),
+            },
+            "title": {
+                "text": (
+                    f"Flux de consommation d'espaces NAF des {self.formatted_child_land_type}s "
+                    f"entre {self.start_year} et {self.end_year}"
+                )
+            },
+            "mapNavigation": {"enabled": self.lands.count() > 20},
+            "legend": {
+                "title": {"text": "Consommation totale (ha)"},
+                "backgroundColor": "#ffffff",
+                "align": "right",
+                "verticalAlign": "middle",
+                "layout": "vertical",
+                "bubbleLegend": {
+                    "enabled": True,
+                    "borderWidth": 1,
+                    "legendIndex": 100,
+                    "labels": {"format": "{value:.0f} ha"},
+                    "color": "transparent",
+                    "borderColor": "#000",
+                    "connectorDistance": 40,
+                    "connectorColor": "#000",
+                },
+            },
+            "series": [
+                {
+                    "name": "Territoires",
+                    "data": self.data,
+                    "joinBy": ["land_id"],
+                    "borderColor": "#999999",
+                    "borderWidth": 1,
+                    "color": "#ffffff",
+                    "nullColor": "#ffffff",
+                    "showInLegend": False,
+                    "dataLabels": {
+                        "enabled": False,
+                    },
+                    "tooltip": {
+                        "enabled": False,
+                    },
+                    "enableMouseTracking": False,
+                },
+                {
+                    "name": "Consommation totale",
+                    "type": "mapbubble",
+                    "joinBy": ["land_id"],
+                    "showInLegend": True,
+                    "marker": {
+                        "fillOpacity": 0.5,
+                    },
+                    "color": "#ff5b5b",
+                    "data": [
+                        {
+                            "land_id": d["land_id"],
+                            "z": d["total_conso_ha"],
+                            "color": "#FC9292",
+                            "total_conso_ha": d["total_conso_ha"],
+                            "habitat_ha": d["habitat_ha"],
+                            "activite_ha": d["activite_ha"],
+                            "mixte_ha": d["mixte_ha"],
+                            "route_ha": d["route_ha"],
+                            "ferroviaire_ha": d["ferroviaire_ha"],
+                            "inconnu_ha": d["inconnu_ha"],
+                        }
+                        for d in self.data
+                    ],
+                    "tooltip": {
+                        "valueDecimals": 1,
+                        "pointFormat": (
+                            "<b>{point.name}</b>:<br/>"
+                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
+                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
+                            "Activité: {point.activite_ha:,.1f} ha<br/>"
+                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
+                            "Route: {point.route_ha:,.1f} ha<br/>"
+                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
+                        ),
+                    },
+                },
+            ],
+        }
+
+        return DiagnosticChart.param.fget(self) | base_param
