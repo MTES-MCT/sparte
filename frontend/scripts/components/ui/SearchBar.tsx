@@ -7,9 +7,8 @@ import getCsrfToken from '@utils/csrf';
 
 interface SearchBarProps {
     onTerritorySelect?: (territory: Territory) => void;
-    excludeTerritoryId?: string;
-    excludeLandType?: string;
     excludeTerritories?: Territory[];
+    disableOverlay?: boolean;
 }
 
 export interface Territory {
@@ -43,7 +42,7 @@ const primaryColor = '#313178';
 const activeColor = '#4318FF';
 const secondaryColor = '#a1a1f8';
 
-const SearchContainer = styled.div`
+const SearchContainer = styled.div<{ $useHighZIndex: boolean }>`
     display: flex;
     align-items: center;
     width: 100%;
@@ -52,7 +51,7 @@ const SearchContainer = styled.div`
     padding: 0.5rem;
     background: #fff;
     position: relative;
-    z-index: 1001;
+    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1001' : 'auto')};
 `;
 
 const Icon = styled.i`
@@ -71,7 +70,7 @@ const Input = styled.input`
     }
 `;
 
-const ResultsContainer = styled.div`
+const ResultsContainer = styled.div<{ $useHighZIndex: boolean }>`
     position: absolute;
     top: 120%;
     left: 0;
@@ -81,7 +80,7 @@ const ResultsContainer = styled.div`
     border-radius: 6px;
     max-height: 30vh;
     overflow-y: auto;
-    z-index: 1002;
+    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1002' : 'auto')};
 `;
 
 const Overlay = styled.div<{ $visible: boolean }>`
@@ -142,7 +141,11 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
-const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerritoryId, excludeLandType, excludeTerritories = [] }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+    onTerritorySelect,
+    excludeTerritories = [],
+    disableOverlay = false,
+}) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -154,6 +157,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerrito
         skip: shouldQueryBeSkipped,
     });
 
+    const shouldExcludeTerritoryFromResults = (territory: Territory): boolean => {
+        if (excludeTerritories.length === 0) {
+            return false;
+        }
+        return excludeTerritories.some(
+            (excludedTerritory: Territory) =>
+                territory.source_id === excludedTerritory.source_id &&
+                territory.land_type === excludedTerritory.land_type
+        );
+    };
+
     useEffect(() => {
         if (shouldQueryBeSkipped || isFetching) {
             setData(undefined);
@@ -161,30 +175,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerrito
             // Filter out excluded territories
             let filteredData = queryData;
             if (queryData) {
-                filteredData = queryData.filter((territory: Territory) => {
-                    // Exclude current territory
-                    if (excludeTerritoryId && excludeLandType &&
-                        territory.source_id === excludeTerritoryId &&
-                        territory.land_type === excludeLandType) {
-                        return false;
-                    }
-                    // Exclude territories in excludeTerritories array
-                    if (excludeTerritories.length > 0) {
-                        const isExcluded = excludeTerritories.some(
-                            (excludedTerritory: Territory) =>
-                                territory.source_id === excludedTerritory.source_id &&
-                                territory.land_type === excludedTerritory.land_type
-                        );
-                        if (isExcluded) {
-                            return false;
-                        }
-                    }
-                    return true;
-                });
+                filteredData = queryData.filter((territory: Territory) => !shouldExcludeTerritoryFromResults(territory));
             }
             setData(filteredData);
         }
-    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped, excludeTerritoryId, excludeLandType, excludeTerritories]);
+    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped, excludeTerritories]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -222,8 +217,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerrito
 
     return (
         <>
-            <Overlay $visible={isFocused} />
-            <SearchContainer ref={searchContainerRef}>
+            {!disableOverlay && <Overlay $visible={isFocused} />}
+            <SearchContainer ref={searchContainerRef} $useHighZIndex={!disableOverlay}>
                 <Icon className="bi bi-search" />
                 <Input
                     id="search-bar-territory"
@@ -237,7 +232,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect, excludeTerrito
                 />
                 {isFetching && <Loader size={25} wrap={false} />}
                 {data && (
-                    <ResultsContainer>
+                    <ResultsContainer $useHighZIndex={!disableOverlay}>
                         {data.length > 0 ? (
                             data.map((territory: Territory) => {
                                 const isDisabled = territory.area === 0;

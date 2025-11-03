@@ -28,7 +28,9 @@ from project.charts.consommation import (
     ComparisonMapExport,
     ConsoAnnualChart,
     ConsoMap,
+    ConsoMapBubble,
     ConsoMapExport,
+    ConsoMapRelative,
 )
 from project.charts.consommation.AnnualConsoComparisonChart import (
     AnnualConsoComparisonChart,
@@ -132,6 +134,8 @@ def get_chart_klass_or_404(chart_id):
         "imper_map": ImperMap,
         "conso_map": ConsoMap,
         "conso_map_export": ConsoMapExport,
+        "conso_map_relative": ConsoMapRelative,
+        "conso_map_bubble": ConsoMapBubble,
         "comparison_map": ComparisonMap,
         "comparison_map_export": ComparisonMapExport,
         "friche_artif_composition": FricheArtifCompositionChart,

@@ -75,9 +75,9 @@ const CardContent = styled.div`
 `;
 
 const CardValue = styled.div<{ $isHighlighted?: boolean; $isLongValue?: boolean }>`
-	font-size: ${({ $isLongValue }) => $isLongValue ? '2.25rem' : '3rem'};
+	font-size: 2.5rem;
 	font-weight: bold;
-	line-height: ${({ $isLongValue }) => $isLongValue ? '2.25rem' : '3rem'};
+	line-height: 2.5rem;
 	height: 3rem;
 	display: flex;
 	align-items: center;

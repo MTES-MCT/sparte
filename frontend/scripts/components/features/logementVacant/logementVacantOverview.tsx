@@ -38,7 +38,7 @@ const LogementVacantOverview: React.FC<LogementVacantOverviewProps> = ({
                     <Card
                         icon={LOGEMENT_VACANT_ICON_CONFIG['bailleurs sociaux']?.icon}
                         badgeClass={LOGEMENT_VACANT_BADGE_CONFIG['bailleurs sociaux']}
-                        badgeLabel={'logements vacants dans le parc bailleurs sociaux'}
+                        badgeLabel={'logements vacants dans le parc des bailleurs sociaux'}
                         value={logements_vacants_parc_social}
                         label={`Soit ${formatNumber({ number: logements_vacants_parc_social_percent })} % du parc bailleurs sociaux total`}
                         isHighlighted={true}

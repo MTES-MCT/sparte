@@ -48,6 +48,46 @@ class LogementVacantProgressionChart(DiagnosticChart):
         ]
 
     @property
+    def data_table(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
+        logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
+            land=self.land,
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+        years = list(range(start_date, end_date + 1))
+        headers = ["Année"] + [str(year) for year in years]
+
+        rows = []
+
+        # Ligne pour le parc privé
+        data_parc_prive = [d.logements_vacants_parc_prive for d in logement_vacant_progression.logement_vacant]
+        rows.append({"name": "", "data": ["Logements vacants de plus de 2 ans dans le parc privé"] + data_parc_prive})
+
+        # Ligne pour le parc social
+        data_parc_social = [d.logements_vacants_parc_social for d in logement_vacant_progression.logement_vacant]
+        rows.append(
+            {
+                "name": "",
+                "data": ["Logements vacants de plus de 3 mois dans le parc des bailleurs sociaux"] + data_parc_social,
+            }
+        )
+
+        # Ligne Total
+        total_data = [prive + social for prive, social in zip(data_parc_prive, data_parc_social)]
+        rows.append({"name": "", "data": ["Total"] + total_data})
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+            "boldLastRow": True,
+        }
+
+    @property
     def param(self):
         start_date = int(self.params["start_date"])
         end_date = int(self.params["end_date"])

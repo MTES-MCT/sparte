@@ -98,9 +98,7 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
   territoryName,
 }) => {
   return (
-    <div className="fr-mb-5w">
-      <h2 className="fr-h4 fr-mb-3w">Logements vacants et autorisations de construction de logements</h2>
-
+    <>
       {hasAutorisationLogement ? (
         <>
           {/* Chart 1: Comparison */}
@@ -146,7 +144,7 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
           </div>
 
           {/* Chart 3: Ratio Progression */}
-          <div className="fr-mb-3w bg-white fr-p-2w rounded">
+          <div className="bg-white fr-p-2w rounded">
             <ConsoGraph
               id="logement_vacant_autorisation_ratio_progression_chart"
               land_id={landId}
@@ -169,6 +167,6 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
           />
         </div>
       )}
-    </div>
+    </>
   );
 };

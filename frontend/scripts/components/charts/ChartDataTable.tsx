@@ -9,6 +9,7 @@ interface ChartData {
     boldFirstColumn?: boolean;
     boldLastColumn?: boolean;
     boldLastRow?: boolean;
+    formatFirstColumn?: boolean;
 }
 
 interface ChartDataTableProps {
@@ -30,7 +31,7 @@ interface ChartDataTableProps {
 export const formatCellContent = (cell: any): any => {
     const isNumeric = typeof cell === 'number' || (typeof cell === 'string' && !Number.isNaN(Number(cell)));
     if (isNumeric) {
-        return formatNumber({ number: Number(cell) });
+        return formatNumber({ number: Number(cell), decimals: 2 });
     }
     return cell;
 };
@@ -38,7 +39,7 @@ export const formatCellContent = (cell: any): any => {
 const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
     if (!data?.headers || !data?.rows) return null;
 
-    const { headers, rows, boldFirstColumn = false, boldLastColumn = false, boldLastRow = false } = data;
+    const { headers, rows, boldFirstColumn = false, boldLastColumn = false, boldLastRow = false, formatFirstColumn = false } = data;
 
     return (
         <div className="fr-table--sm fr-table fr-table--bordered fr-table--no-caption fr-mb-0 fr-mt-0">
@@ -62,7 +63,6 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
                                     return (
                                         <tr key={`${row.name}-${rowIndex}`} data-row-key={rowIndex}>
                                             {row.data.map((cell: any, cellIndex: number) => {
-                                                const isNumeric = typeof cell === 'number' || (typeof cell === 'string' && !Number.isNaN(Number(cell)));
                                                 const isFirstColumn = cellIndex === 0;
                                                 const isLastColumn = cellIndex === row.data.length - 1;
                                                 const shouldBold =
@@ -70,10 +70,14 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
                                                     (boldLastColumn && isLastColumn) ||
                                                     (boldLastRow && isLastRow);
 
-                                                const cellContent = formatCellContent(cell);
+                                                // Format first column only if explicitly requested via formatFirstColumn option
+                                                const shouldFormatAsNumber = isFirstColumn ? formatFirstColumn : true;
+                                                const cellContent = shouldFormatAsNumber ? formatCellContent(cell) : cell;
+
+                                                const isNumeric = typeof cell === 'number' || (typeof cell === 'string' && !Number.isNaN(Number(cell)));
 
                                                 return (
-                                                    <td key={`${row.name}-${rowIndex}-${cellIndex}`} className={isNumeric ? 'fr-cell--right' : ''}>
+                                                    <td key={`${row.name}-${rowIndex}-${cellIndex}`} className={isNumeric && shouldFormatAsNumber ? 'fr-cell--right' : ''}>
                                                         {shouldBold ? <strong>{cellContent}</strong> : cellContent}
                                                     </td>
                                                 );

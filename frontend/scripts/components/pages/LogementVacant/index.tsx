@@ -11,8 +11,6 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
   const { land_id, land_type, name, logements_vacants_status, logements_vacants_status_details } = landData;
   const startYear = 2019;
   const endYear = 2023;
-
-  // Always try to load autorisation data - the component will handle gracefully if not available
   const hasAutorisationLogement = true;
 
   return (
@@ -28,26 +26,30 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
             plus de deux ans dans le parc privé et ceux inoccupés depuis plus de 3 mois dans le parc des bailleurs
             sociaux.
           </Guide>
+        </div>
 
-          <div className="fr-mt-7w">
-            <LogementVacantOverview logements_vacants_status_details={logements_vacants_status_details} className="fr-mb-3w" />
-            <LogementVacantAbstract
-              logements_vacants_status={logements_vacants_status}
-              logements_vacants_status_details={logements_vacants_status_details}
-              name={name}
-              className="fr-mt-2w"
-            />
-          </div>
+        <div className="fr-col-12 fr-mb-7w">
+          <LogementVacantOverview logements_vacants_status_details={logements_vacants_status_details} className="fr-mb-3w" />
+          <LogementVacantAbstract
+            logements_vacants_status={logements_vacants_status}
+            logements_vacants_status_details={logements_vacants_status_details}
+            name={name}
+          />
+        </div>
 
-          {/* Section 1: Évolution de la vacance des logements */}
+        <div className="fr-col-12 fr-mb-7w">
+          <h2 className="fr-h4 fr-mb-3w">Évolution de la vacance des logements</h2>
           <LogementVacantProgression landId={land_id} landType={land_type} startYear={startYear} endYear={endYear} />
-
           <LogementVacantRatio landId={land_id} landType={land_type} startYear={startYear} endYear={endYear} />
+        </div>
 
-          {/* Section 2: Logements vacants et consommation d'espaces NAF */}
+        <div className="fr-col-12 fr-mb-7w">
+          <h2 className="fr-h4 fr-mb-3w">Logements vacants et consommation d'espaces NAF</h2>
           <LogementVacantConso landId={land_id} landType={land_type} startYear={startYear} endYear={endYear} />
+        </div>
 
-          {/* Section 3: Logements vacants et autorisations de construction (conditionnel) */}
+        <div className="fr-col-12 fr-mb-7w">
+          <h2 className="fr-h4 fr-mb-3w">Logements vacants et autorisations de construction de logements</h2>
           <LogementVacantAutorisation
             landId={land_id}
             landType={land_type}
@@ -56,8 +58,10 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
             hasAutorisationLogement={hasAutorisationLogement}
             territoryName={name}
           />
+        </div>
 
-          <div className="fr-callout fr-icon-information-line fr-mt-7w">
+        <div className="fr-col-12">
+          <div className="fr-callout fr-icon-information-line">
             <h3 className="fr-callout__title fr-text--md">
               Réduisez votre consommation d'espaces NAF en mobilisant le parc de logements vacants
             </h3>
@@ -73,7 +77,7 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
               href="https://zerologementvacant.beta.gouv.fr/zero-logement-vacant/la-plateforme/?src=mda"
               className="fr-notice__link fr-link fr-text--sm"
             >
-              Accèder à Zéro Logement Vacant
+              Accéder à Zéro Logement Vacant
             </a>
           </div>
         </div>

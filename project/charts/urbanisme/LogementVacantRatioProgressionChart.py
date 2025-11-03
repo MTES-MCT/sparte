@@ -50,6 +50,53 @@ class LogementVacantRatioProgressionChart(DiagnosticChart):
         ]
 
     @property
+    def data_table(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
+        logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
+            land=self.land,
+            start_date=start_date,
+            end_date=end_date,
+        )
+
+        years = list(range(start_date, end_date + 1))
+        headers = ["Année"] + [str(year) for year in years]
+
+        rows = []
+
+        # Ligne pour le taux parc privé
+        data_parc_prive = [
+            round(d.logements_vacants_parc_prive_percent, 2) for d in logement_vacant_progression.logement_vacant
+        ]
+        rows.append(
+            {"name": "", "data": ["Taux de vacance de plus de 2 ans dans le parc privé (%)"] + data_parc_prive}
+        )
+
+        # Ligne pour le taux parc social
+        data_parc_social = [
+            round(d.logements_vacants_parc_social_percent, 2) for d in logement_vacant_progression.logement_vacant
+        ]
+        rows.append(
+            {
+                "name": "",
+                "data": ["Taux de vacance de plus de 3 mois dans le parc des bailleurs sociaux (%)"]
+                + data_parc_social,
+            }
+        )
+
+        # Ligne Total - somme des deux taux
+        total_data = [round(prive + social, 2) for prive, social in zip(data_parc_prive, data_parc_social)]
+        rows.append({"name": "", "data": ["Taux de vacance total (%)"] + total_data})
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+            "boldLastRow": True,
+        }
+
+    @property
     def param(self):
         start_date = int(self.params["start_date"])
         end_date = int(self.params["end_date"])
