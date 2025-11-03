@@ -1,17 +1,23 @@
 from public_data.domain.consommation.entity import ConsommationStatisticsComparison
 from public_data.domain.consommation.stats import BaseConsommationStatsComparisonService
-from public_data.models import Land, LandConsoComparison, LandConsoStats
+from public_data.models import LandConsoComparison, LandConsoStats, LandModel
 
 
 class ConsommationStatsComparisonService(BaseConsommationStatsComparisonService):
     def get_by_land(
         self,
-        land: Land,
+        land: LandModel,
         start_date: int,
         end_date: int,
     ) -> ConsommationStatisticsComparison:
+        """
+        Get comparison statistics for a land.
+
+        Raises:
+            ObjectDoesNotExist: If any required data (stats, comparison, or comparison land) is not found
+        """
         conso_stats = LandConsoStats.objects.get(
-            land_id=land.id,
+            land_id=land.land_id,
             land_type=land.land_type,
             from_year=start_date,
             to_year=end_date,
@@ -23,8 +29,12 @@ class ConsommationStatsComparisonService(BaseConsommationStatsComparisonService)
             from_year=start_date,
             to_year=end_date,
         )
+        comparison_land = LandModel.objects.get(
+            land_id=conso_stats.comparison_id,
+            land_type=conso_stats.comparison_level,
+        )
         return ConsommationStatisticsComparison(
-            land=Land(f"{conso_stats.comparison_level}_{conso_stats.comparison_id}"),
+            land=comparison_land,
             start_date=start_date,
             end_date=end_date,
             relevance_level=conso_comparison.relevance_level,
@@ -33,7 +43,7 @@ class ConsommationStatsComparisonService(BaseConsommationStatsComparisonService)
 
     def get_by_lands(
         self,
-        lands: list[Land],
+        lands: list[LandModel],
         start_date: int,
         end_date: int,
     ) -> list[ConsommationStatisticsComparison]:

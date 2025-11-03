@@ -1,14 +1,56 @@
 import math
 
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from public_data.domain.containers import PublicDataContainer
 
 
-class PopulationDensityChart(ProjectChart):
+class PopulationDensityChart(DiagnosticChart):
+    required_params = ["start_date", "end_date"]
     name = "population density"
 
     @property
+    def data(self):
+        """Get population progression data for the land."""
+        progression_population = PublicDataContainer.population_progression_service().get_by_land(
+            land=self.land,
+            start_date=int(self.params["start_date"]),
+            end_date=int(self.params["end_date"]),
+        )
+        return progression_population.population
+
+    @property
+    def density_data(self):
+        """Calculate density metrics."""
+        # On récupére la dernière année de données sur la période
+        last_year_data = self.data[-1]
+        land_area = self.land.surface
+        density_ha = math.ceil(last_year_data.population / land_area) if land_area else 0
+        density_km2 = density_ha * 100
+        return {"density_ha": density_ha, "density_km2": density_km2}
+
+    @property
+    def series(self):
+        """Generate series data from density calculations."""
+        density = self.density_data
+        return [
+            {
+                "data": [density["density_ha"]],
+                "color": "#000000",
+                "dataLabels": {
+                    "enabled": True,
+                    "align": "center",
+                    "color": "#000000",
+                    "format": "{point.y} hab/ha",
+                    "crop": False,
+                    "overflow": "allow",
+                    "y": -20,
+                },
+            }
+        ]
+
+    @property
     def param(self):
+        density = self.density_data
         return super().param | {
             "chart": {
                 "type": "lineargauge",
@@ -18,7 +60,8 @@ class PopulationDensityChart(ProjectChart):
                 "marginLeft": 50,
                 "marginRight": 50,
             },
-            "title": {"text": f"Densité de population ({self.project.analyse_end_date})"},
+            "title": {"text": f"Densité de population à {self.land.name} ({self.params['end_date']})"},
+            "subtitle": {"text": f"{density['density_ha']} hab/ha (soit {density['density_km2']} hab/km²)"},
             "xAxis": {"lineColor": "transparent", "labels": {"enabled": False}, "tickLength": 0},
             "yAxis": {
                 "tickPositions": [0, 50, 100, 150, 200, 250, 300],
@@ -38,35 +81,12 @@ class PopulationDensityChart(ProjectChart):
             },
             "legend": {"enabled": False},
             "tooltip": {"enabled": False},
-            "series": [],
+            "series": self.series,
         }
 
-    def add_series(self):
-        progression_population = PublicDataContainer.population_progression_service().get_by_land(
-            land=self.project.land_proxy,
-            start_date=int(self.project.analyse_start_date),
-            end_date=int(self.project.analyse_end_date),
-        )
-
-        # On récupére la dernière année de données sur la période
-        last_year_data = progression_population.population[-1]
-        density_ha = math.ceil(last_year_data.population / self.project.land_proxy.area)
-        density_km2 = density_ha * 100
-
-        self.chart["subtitle"] = {"text": f"{density_ha} hab/ha (soit {density_km2} hab/km²)"}
-
-        self.chart["series"] = [
-            {
-                "data": [density_ha],
-                "color": "#000000",
-                "dataLabels": {
-                    "enabled": True,
-                    "align": "center",
-                    "color": "#000000",
-                    "format": "{point.y} hab/ha",
-                    "crop": False,
-                    "overflow": "allow",
-                    "y": -20,
-                },
-            }
-        ]
+    @property
+    def data_table(self):
+        return {
+            "headers": [],
+            "rows": [],
+        }

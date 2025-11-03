@@ -1,4 +1,4 @@
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import (
     CONSOMMATION_HABITAT_COLOR,
     CONSOMMATION_TOTALE_COLOR,
@@ -7,26 +7,31 @@ from project.charts.constants import (
 from public_data.domain.containers import PublicDataContainer
 
 
-class LogementVacantConsoProgressionChart(ProjectChart):
+class LogementVacantConsoProgressionChart(DiagnosticChart):
     """
     Graphique en colonne et ligne d'évolution de la consommation d'espaces NAF et de la vacance des logements.
     """
 
-    def __init__(self, project, start_date, end_date):
-        super().__init__(project=project, start_date=start_date, end_date=end_date)
+    required_params = ["start_date", "end_date"]
+
+    @property
+    def name(self):
+        return f"logement vacant conso progression {self.params['start_date']}-{self.params['end_date']}"
 
     def _get_series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
         """
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
 
         # Récupérer les données sur la vacance des logements
         logement_vacant_progression = (
             PublicDataContainer.logement_vacant_progression_service()
             .get_by_land(
-                land=self.project.land_proxy,
-                start_date=self.start_date,
-                end_date=self.end_date,
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
             )
             .logement_vacant
         )
@@ -37,9 +42,9 @@ class LogementVacantConsoProgressionChart(ProjectChart):
         consommation_progression = (
             PublicDataContainer.consommation_progression_service()
             .get_by_land(
-                land=self.project.land_proxy,
-                start_date=self.start_date,
-                end_date=self.end_date,
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
             )
             .consommation
         )
@@ -75,12 +80,70 @@ class LogementVacantConsoProgressionChart(ProjectChart):
         ]
 
     @property
+    def data_table(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
+        # Récupérer les données sur la vacance des logements
+        logement_vacant_progression = (
+            PublicDataContainer.logement_vacant_progression_service()
+            .get_by_land(
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            .logement_vacant
+        )
+
+        consommation_progression = (
+            PublicDataContainer.consommation_progression_service()
+            .get_by_land(
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            .consommation
+        )
+
+        years = list(range(start_date, end_date + 1))
+        headers = ["Année"] + [str(year) for year in years]
+
+        rows = []
+
+        # Ligne pour les logements vacants
+        logement_vacant_data = [round(item.logements_vacants_parc_general, 2) for item in logement_vacant_progression]
+        rows.append(
+            {
+                "name": "",
+                "data": ["Nombre de logements en vacance structurelle (privé + bailleurs sociaux)"]
+                + logement_vacant_data,
+            }
+        )
+
+        # Ligne pour la consommation totale
+        consommation_total_data = [round(item.total, 2) for item in consommation_progression]
+        rows.append({"name": "", "data": ["Consommation totale (ha)"] + consommation_total_data})
+
+        # Ligne pour la consommation habitat
+        consommation_habitat_data = [round(item.habitat, 2) for item in consommation_progression]
+        rows.append({"name": "", "data": ["Consommation à destination de l'habitat (ha)"] + consommation_habitat_data})
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+        }
+
+    @property
     def param(self):
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
+
         return super().param | {
             "title": {"text": "Évolution de la consommation d'espaces NAF et de la vacance des logements"},
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
-            "xAxis": {"categories": [str(year) for year in range(self.start_date, self.end_date + 1)]},
+            "xAxis": {"categories": [str(year) for year in range(start_date, end_date + 1)]},
             "yAxis": [
                 {
                     "title": {
@@ -98,7 +161,3 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             "tooltip": {"headerFormat": "<b>{point.key}</b><br/>", "shared": True},
             "series": self._get_series(),
         }
-
-    # To remove after refactoring
-    def add_series(self):
-        pass
