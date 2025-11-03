@@ -97,7 +97,7 @@ class ImperByCouverturePieChart(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": f"Surfaces imperméabilisées par couverture {self.title_end}"},
+            "title": {"text": f"Surfaces imperméables par couverture {self.title_end}"},
             "series": self.series,
             "chart": {"type": "pie"},
             "tooltip": {

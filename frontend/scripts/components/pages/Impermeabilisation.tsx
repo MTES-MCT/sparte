@@ -3,6 +3,7 @@ import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { LandDetailResultType, LandType } from "@services/types/land";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
+import { getLandTypeLabel } from "@utils/landUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ImpermeabilisationZonage } from "@components/features/ocsge/ImpermeabilisationZonage";
@@ -80,7 +81,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 					</p>
 					<ul className="fr-text--sm">
 						<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
-						<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (Imperméable, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+						<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (artificiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
 					</ul>
                 </Guide>
 				<div className="fr-grid-row fr-grid-row--gutters">
@@ -105,7 +106,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						<Card
 							icon="bi-droplet"
 							badgeClass="fr-badge--info"
-							badgeLabel="Surface imperméabilisée"
+							badgeLabel="Surfaces imperméables"
 							value={`${formatNumber({ number: landImperStockIndex.surface })} ha`}
 							label={
 								<>
@@ -225,7 +226,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Surfaces imperméabilisées par type de couverture et
+					Surfaces imperméables par type de couverture et
 					d'usage
 				</h2>
 				{land_type !== LandType.REGION && (
@@ -419,7 +420,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			
 			{child_land_types && (
 				<div className="fr-mb-7w">
-					<h2>Proportion des surfaces imperméabilisées</h2>
+					<h2>Imperméabilisation des {getLandTypeLabel(childLandType, true)} du territoire</h2>
 					<div className="fr-grid-row fr-grid-row--gutters">
 						<div className="fr-col-12 fr-col-lg-8">
 							<div className="bg-white fr-p-2w h-100 rounded">
@@ -436,9 +437,9 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 												onClick={() => setChildLandType(child_land_type)}
 												role="tab"
 												aria-selected={childLandType === child_land_type}
-												aria-label={`Sélectionner ${child_land_type}`}
+												aria-label={`Sélectionner ${getLandTypeLabel(child_land_type)}`}
 											>
-												{child_land_type}
+												{getLandTypeLabel(child_land_type)}
 											</button>
 										))}
 									</div>
@@ -471,7 +472,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 								title="Comprendre les données"
 								column
 							>
-								<p>Cette carte permet de visualiser la proportion de surfaces imperméabilisées sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de surfaces imperméabilisées est élevée.</p>
+								<p>Cette carte permet de visualiser la proportion de surfaces imperméables sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de surfaces imperméables est élevée.</p>
 								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle à l'imperméabilisation. La couleur des cercles indique le sens de ce flux : vert pour une désimperméabilisation nette, rouge pour une imperméabilisation nette.</p>
 							</GuideContent>
 						</div>
