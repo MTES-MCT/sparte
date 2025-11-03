@@ -1,0 +1,88 @@
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
+import maplibregl from "maplibre-gl";
+import { Protocol } from "pmtiles";
+import { DEFAULT_MAP_STYLE, FRENCH_LOCALE } from "../constants/config";
+import { calculateMaxBoundsWithPadding } from "../utils/bounds";
+import type { LandDetailResultType } from "@services/types/land";
+
+let PMTILES_PROTOCOL_REGISTERED = false;
+
+export const useMap = (landData: LandDetailResultType) => {
+    const mapRef = useRef<maplibregl.Map | null>(null);
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const controlsRef = useRef<{ [key: string]: maplibregl.IControl }>({});
+
+    const bounds = landData.bounds;
+    const maxBounds = useMemo(() => {
+        return bounds ? calculateMaxBoundsWithPadding(bounds, landData.land_type) : undefined;
+    }, [bounds, landData.land_type]);
+
+    const initializeMap = useCallback((container: HTMLElement) => {
+        if (!PMTILES_PROTOCOL_REGISTERED) {
+            const protocol = new Protocol();
+            maplibregl.addProtocol("pmtiles", protocol.tile);
+            PMTILES_PROTOCOL_REGISTERED = true;
+        }
+
+        mapRef.current = new maplibregl.Map({
+            container,
+            style: DEFAULT_MAP_STYLE,
+            bounds: bounds,
+            maxBounds: maxBounds,
+            maplibreLogo: false,
+            attributionControl: false,
+            fadeDuration: 0,
+            cooperativeGestures: true,
+            locale: FRENCH_LOCALE,
+        });
+
+        mapRef.current.on("load", () => {
+            setIsMapLoaded(true);
+        });
+
+        return mapRef.current;
+    }, [bounds, maxBounds]);
+
+    const addControl = useCallback((control: maplibregl.IControl, id: string) => {
+        if (!mapRef.current || controlsRef.current[id]) return;
+
+        controlsRef.current[id] = control;
+        mapRef.current.addControl(control, "top-right");
+    }, []);
+
+    const addNavigationControl = useCallback(() => {
+        addControl(new maplibregl.NavigationControl(), 'navigationControl');
+    }, [addControl]);
+
+    const addFullscreenControl = useCallback(() => {
+        const mapContainer = mapRef.current?.getContainer();
+        const mapWrapper = mapContainer?.parentElement;
+
+        if (mapWrapper?.id) {
+            addControl(new maplibregl.FullscreenControl({ container: mapWrapper }), 'fullscreenControl');
+        } else {
+            addControl(new maplibregl.FullscreenControl(), 'fullscreenControl');
+        }
+    }, [addControl]);
+
+    const updateControls = useCallback(() => {
+        addNavigationControl();
+        addFullscreenControl();
+    }, [addNavigationControl, addFullscreenControl]);
+
+    useEffect(() => {
+        return () => {
+            if (mapRef.current) {
+                mapRef.current.remove();
+                mapRef.current = null;
+            }
+        };
+    }, []);
+
+    return {
+        mapRef,
+        isMapLoaded,
+        initializeMap,
+        updateControls,
+    };
+};

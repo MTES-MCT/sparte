@@ -5,6 +5,36 @@
 @import './map.css';
 @import 'maplibre-gl/dist/maplibre-gl.css';
 
+/*
+Override dsfr titles sizes
+*/
+h1 {
+    font-size: 1.8rem !important;
+}
+
+h2 {
+    font-size: 1.4rem !important;
+}
+
+h3 {
+    font-size: 1.2rem !important;
+}
+
+h4 {
+    font-size: 1rem !important;
+}
+
+h5 {
+    font-size: 0.875rem !important;
+}
+
+/*
+Small label
+*/
+.fr-label--sm .fr-label {
+    font-size: .875rem !important;
+    line-height: 1.5rem !important;
+}
 
 /*
 Header logo

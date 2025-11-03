@@ -306,7 +306,7 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
       </div>
       <CallToAction
         title="Diagnostiquer l'artificialisation des sols et explorer les données"
-        text="Découvrez dans notre diagnostic d'artificialisation : analyse détaillée de l'artificialisation des sols par destination, mise en relation avec l’évolution démographique, et comparaison avec une selection de territoires similaires."
+        text="Découvrez une analyse détaillée de l'artificialisation et des surfaces artificialisées sur votre territoire"
       >
         <div className="d-flex align-items-center gap-3">
           <Link
@@ -385,7 +385,7 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
       ) : (
         <ConsoCorrectionStatus status={consommation_correction_status} />
       )}
-      <h3>Période 2021 - 2050 : mesure de l’artificialisation des sols</h3>
+      <h3>Période 2031 - 2050 : mesure de l’artificialisation des sols</h3>
       {has_ocsge ? (
         <SyntheseArtif landData={landData} projectData={projectData} />
       ) : (

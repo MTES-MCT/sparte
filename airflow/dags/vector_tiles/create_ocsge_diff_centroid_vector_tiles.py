@@ -17,10 +17,6 @@ def get_geojson_filename(indexes: list[int], departement: str) -> str:
     return f"occupation_du_sol_diff_centroid_{'_'.join(map(str, indexes))}_{departement}.geojson"
 
 
-def get_pmtiles_filename(indexes: list[int], departement: str) -> str:
-    return f"occupation_du_sol_diff_centroid_{'_'.join(map(str, indexes))}_{departement}.pmtiles"
-
-
 @dag(
     start_date=pendulum.datetime(2024, 1, 1),
     schedule="@once",
@@ -38,18 +34,18 @@ def get_pmtiles_filename(indexes: list[int], departement: str) -> str:
 )
 def create_ocsge_diff_centroid_vector_tiles():
     bucket_name = InfraContainer().bucket_name()
-    vector_tiles_dir = "vector_tiles"
+    vector_tiles_dir = "geojson"
 
     @task.python()
-    def check_if_vector_tiles_not_exist(params: dict):
+    def check_if_geojson_not_exist(params: dict):
         if params.get("refresh_existing"):
             return
         indexes = params.get("indexes")
         departement = params.get("departement")
-        filename = get_pmtiles_filename(indexes, departement)
+        filename = get_geojson_filename(indexes, departement)
         exists = InfraContainer().s3().exists(f"{bucket_name}/{vector_tiles_dir}/{filename}")
         if exists:
-            raise AirflowSkipException("Vector tiles already exist")
+            raise AirflowSkipException("GeoJSON already exists")
 
     @task.python(trigger_rule="none_skipped")
     def postgis_to_geojson(params: dict):
@@ -80,62 +76,39 @@ def create_ocsge_diff_centroid_vector_tiles():
             )
         )
 
-    @task.bash(skip_on_exit_code=110, trigger_rule="none_skipped")
-    def geojson_to_pmtiles(params: dict):
+    @task.python(trigger_rule="none_skipped")
+    def compress_geojson(params: dict):
         indexes = params.get("indexes")
         departement = params.get("departement")
         geojson_filename = get_geojson_filename(indexes, departement)
-        pmtiles_filename = get_pmtiles_filename(indexes, departement)
-        local_input = f"/tmp/{geojson_filename}"
-        local_output = f"/tmp/{pmtiles_filename}"
-        InfraContainer().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{geojson_filename}", local_input)
+        s3_key = f"{vector_tiles_dir}/{geojson_filename}"
 
-        cmd = [
-            "tippecanoe",
-            "-o",
-            local_output,
-            local_input,
-            "--force",
-            "--no-simplification-of-shared-nodes",
-            "--no-tiny-polygon-reduction",
-            "--coalesce-densest-as-needed",
-            "--no-tile-size-limit",
-            "-zg",
-        ]
-
-        return " ".join(cmd)
+        return (
+            Container()
+            .geojson_to_gzipped_geojson_on_s3_handler()
+            .compress_geojson_and_upload_to_s3(
+                s3_source_key=s3_key,
+                s3_bucket=bucket_name,
+            )
+        )
 
     @task.python(trigger_rule="none_skipped")
-    def upload(params: dict):
-        indexes = params.get("indexes")
-        departement = params.get("departement")
-        pmtiles_filename = get_pmtiles_filename(indexes, departement)
-        local_path = f"/tmp/{pmtiles_filename}"
-        path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{pmtiles_filename}"
-        InfraContainer().s3().put(local_path, path_on_s3)
-
-    @task.bash(trigger_rule="none_skipped")
-    def delete_geojson_file(params: dict):
+    def make_files_public(params: dict):
         indexes = params.get("indexes")
         departement = params.get("departement")
         geojson_filename = get_geojson_filename(indexes, departement)
-        return f"rm /tmp/{geojson_filename}"
+        geojson_key = f"{vector_tiles_dir}/{geojson_filename}"
+        gzipped_key = f"{geojson_key}.gz"
 
-    @task.bash(trigger_rule="none_skipped")
-    def delete_pmtiles_file(params: dict):
-        indexes = params.get("indexes")
-        departement = params.get("departement")
-        pmtiles_filename = get_pmtiles_filename(indexes, departement)
-        return f"rm /tmp/{pmtiles_filename}"
+        s3_handler = Container().s3_handler()
 
-    (
-        check_if_vector_tiles_not_exist()
-        >> postgis_to_geojson()
-        >> geojson_to_pmtiles()
-        >> upload()
-        >> delete_geojson_file()
-        >> delete_pmtiles_file()
-    )
+        # Make GeoJSON file public
+        s3_handler.set_key_publicly_visible(geojson_key, bucket_name)
+
+        # Make gzipped GeoJSON file public
+        s3_handler.set_key_publicly_visible(gzipped_key, bucket_name)
+
+    (check_if_geojson_not_exist() >> postgis_to_geojson() >> compress_geojson() >> make_files_public())
 
 
 create_ocsge_diff_centroid_vector_tiles()

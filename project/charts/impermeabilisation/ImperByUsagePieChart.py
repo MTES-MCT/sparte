@@ -65,7 +65,7 @@ class ImperByUsagePieChart(ImperByCouverturePieChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": f"Surfaces imperméabilisées par usage {self.title_end}"},
+            "title": {"text": f"Surfaces imperméables par usage {self.title_end}"},
             "series": self.series,
             "chart": {"type": "pie"},
             "tooltip": {

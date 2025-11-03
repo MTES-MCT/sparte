@@ -54,14 +54,15 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 									</thead>
 									<tbody>
 										{artifZonageIndex
-											?.slice().sort(
-												(a, b) => b.zonage_surface - a.zonage_surface
+											?.filter((a: ZonageData) => a && typeof a.zonage_surface === 'number')
+											?.sort(
+												(a: ZonageData, b: ZonageData) => b.zonage_surface - a.zonage_surface
 											)
-											.map((a) => (
+											.map((a: ZonageData) => (
 												<tr key={`${a.zonage_type}_${a.millesime_index}`}>
 													<td>
 														<b>
-															{ZonageType[a.zonage_type]} ({a.zonage_type})
+															{ZonageType[a.zonage_type as keyof typeof ZonageType]} ({a.zonage_type})
 														</b>
 													</td>
 													<td>
@@ -103,4 +104,4 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 			</div>
 		</div>
 	);
-}; 
+};

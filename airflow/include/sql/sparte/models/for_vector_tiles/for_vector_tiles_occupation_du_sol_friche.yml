@@ -1,0 +1,58 @@
+models:
+  - name: for_vector_tiles_occupation_du_sol_friche
+    columns:
+      - name: id
+        data_type: text
+        data_tests:
+          - not_null
+      - name: friche_site_id
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: year
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: departement
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: code
+              to: ref('departement')
+      - name: year_index
+        data_type: bigint
+        data_tests:
+          - not_null
+      - name: code_cs
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: code_us
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: is_artificial
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: is_impermeable
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
+      - name: surface
+        data_type: double precision
+        data_tests:
+          - not_null
+      - name: geom
+        data_type: user-defined
+        data_tests:
+          - not_null

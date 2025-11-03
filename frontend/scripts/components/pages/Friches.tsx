@@ -220,7 +220,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
         },
         {
             key: 'surface_imper' as keyof LandFriche,
-            label: 'Surface imperméabilisée',
+            label: 'Surface imperméable',
             sortable: true,
             render: (value: number, friche: LandFriche) => `${formatNumber({ number: value })} ha (${formatNumber({ number: friche.percent_imper })} %)`
         },

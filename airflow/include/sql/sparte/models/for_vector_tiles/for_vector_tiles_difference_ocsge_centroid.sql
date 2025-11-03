@@ -1,3 +1,10 @@
+{{
+    config(
+        materialized="table",
+        indexes=[{"columns": ["year_old_index", "year_new_index", "departement"], "type": "btree"}]
+    )
+}}
+
 SELECT
     year_old,
     year_new,
@@ -6,10 +13,6 @@ SELECT
     difference_commune.departement,
     new_is_impermeable,
     new_not_impermeable,
-    cs_new,
-    cs_old,
-    us_new,
-    us_old,
     difference_commune.srid_source,
     st_transform(st_centroid(difference_commune.geom), 4326) as geom,
     difference_commune.surface,

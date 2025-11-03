@@ -59,21 +59,11 @@ def create_ocsge_vector_tiles():
 
         sql = f"""
             SELECT
-                id,
-                code_cs,
-                code_us,
-                departement,
-                year,
-                index,
-                is_impermeable,
-                is_artificial,
-                critere_seuil,
-                st_transform(geom, 4326) as geom,
-                surface
+                *
             FROM
-                public_ocsge.occupation_du_sol_with_artif
+                public_for_vector_tiles.for_vector_tiles_occupation_du_sol
             WHERE
-                index = {index} and
+                year_index = {index} AND
                 departement = '{departement}'
         """
 
@@ -136,6 +126,18 @@ def create_ocsge_vector_tiles():
         pmtiles_filename = get_pmtiles_filename(index, departement)
         return f"rm /tmp/{pmtiles_filename}"
 
+    @task.python(trigger_rule="none_skipped")
+    def make_pmtiles_public(params: dict):
+        index = params.get("index")
+        departement = params.get("departement")
+        pmtiles_filename = get_pmtiles_filename(index, departement)
+        pmtiles_key = f"{vector_tiles_dir}/{pmtiles_filename}"
+
+        s3_handler = Container().s3_handler()
+
+        # Make PMTiles file public
+        s3_handler.set_key_publicly_visible(pmtiles_key, bucket_name)
+
     (
         check_if_vector_tiles_not_exist()
         >> postgis_to_geojson()
@@ -143,6 +145,7 @@ def create_ocsge_vector_tiles():
         >> upload()
         >> delete_geojson_file()
         >> delete_pmtiles_file()
+        >> make_pmtiles_public()
     )
 
 
