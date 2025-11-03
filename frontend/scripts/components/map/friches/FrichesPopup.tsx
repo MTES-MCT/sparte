@@ -67,7 +67,7 @@ export const FrichesPopup: React.FC<FrichesPopupProps> = ({ feature }) => {
             value: `${formatNumber({ number: properties.surface_artif })} ha (${formatNumber({ number: properties.percent_artif })} %)`,
         },
         {
-            label: "Surface imperméabilisée",
+            label: "Surface imperméable",
             value: `${formatNumber({ number: properties.surface_imper })} ha (${formatNumber({ number: properties.percent_imper })} %)`,
         }
         

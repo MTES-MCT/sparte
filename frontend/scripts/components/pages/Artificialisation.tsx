@@ -106,7 +106,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						<Card
 							icon="bi-droplet"
 							badgeClass="fr-badge--info"
-							badgeLabel="Surface artificialisée"
+							badgeLabel="Surfaces artificialisées"
 							value={`${formatNumber({ number: landArtifStockIndex.surface })} ha`}
 							label={
 								<>
