@@ -47,7 +47,7 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 										<tr>
 											<th scope="col">Type de zonage</th>
 											<th scope="col">Surface de zonage (ha)</th>
-											<th scope="col">Surface imperméabilisée (ha)</th>
+											<th scope="col">Surface imperméable (ha)</th>
 											<th scope="col">Taux d'imperméabilisation (%)</th>
 											<th scope="col">Nombre de zones</th>
 										</tr>
@@ -98,7 +98,7 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 				<ChartDetails sources={['ocsge', 'gpu']} chartId="impermeabilisation-zonage-tableau">
 					<div>
 						<h3 className="fr-mb-0">Calcul</h3>
-						<p className="fr-text--sm fr-mb-0">Qualifier l'imperméabilisation de chaque parcelle OCS GE via la nomenclature OCS GE. Puis comparer la surface totale des parcelles imperméabilisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+						<p className="fr-text--sm fr-mb-0">Qualifier l'imperméabilisation de chaque parcelle OCS GE via la nomenclature OCS GE. Puis comparer la surface totale des parcelles imperméables dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
 					</div>
 				</ChartDetails>
 			</div>
