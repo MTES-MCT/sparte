@@ -3,6 +3,7 @@ import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
 import { LandDetailResultType, LandType } from "@services/types/land";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
+import { getLandTypeLabel } from "@utils/landUtils";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
@@ -432,7 +433,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 			{child_land_types && (
 				<div className="fr-mb-7w">
-					<h2>Proportion des surfaces artificialisées</h2>
+					<h2>Artificialisation des {getLandTypeLabel(childLandType, true)}</h2>
 					<div className="fr-grid-row fr-grid-row--gutters">
 						<div className="fr-col-12 fr-col-lg-8">
 							<div className="bg-white fr-p-2w h-100 rounded">
@@ -449,9 +450,9 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 												onClick={() => setChildLandType(child_land_type)}
 												role="tab"
 												aria-selected={childLandType === child_land_type}
-												aria-label={`Sélectionner ${child_land_type}`}
+												aria-label={`Sélectionner ${getLandTypeLabel(child_land_type)}`}
 											>
-												{child_land_type}
+												{getLandTypeLabel(child_land_type)}
 											</button>
 										))}
 									</div>
