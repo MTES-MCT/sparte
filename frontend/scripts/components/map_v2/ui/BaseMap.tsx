@@ -5,12 +5,12 @@ import { useMap } from "../hooks/useMap";
 import { initMapFromConfig } from "../factory/initMapFromConfig";
 import { ControlsPanel } from "./controls/ControlsPanel";
 import { ControlsManager } from "../controls/ControlsManager";
-import { PopupManager } from "../popup/PopupManager";
-import { PopupPanel } from "./popup/PopupPanel";
+import { InfoPanelManager } from "../infoPanel/InfoPanelManager";
+import { InfoPanel } from "./infoPanel/InfoPanel";
 import { StatsBar } from "./stats/StatsBar";
 import { StatsManager } from "../stats/StatsManager";
 import type { MapConfig } from "../types/builder";
-import type { PopupState } from "../types/popup";
+import type { InfoPanelState } from "../types/infoPanel";
 import type { StatsState } from "../stats/StatsStateManager";
 import type { LandDetailResultType } from "@services/types/land";
 import type { LayerId } from "../types/registry";
@@ -38,7 +38,7 @@ const MapWrapper = styled.div`
 `;
 
 const MapContainer = styled.div<{ $isLoaded: boolean }>`
-	height: 55vh;
+	height: 70vh;
 	width: 100%;
 	opacity: ${({ $isLoaded }) => ($isLoaded ? 1 : 0)};
 	transition: opacity 0.3s ease-in-out;
@@ -74,14 +74,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
     const [controlsManager, setControlsManager] = useState<ControlsManager | null>(null);
-    const [popupManager, setPopupManager] = useState<PopupManager | null>(null);
+    const [infoPanelManager, setInfoPanelManager] = useState<InfoPanelManager | null>(null);
     const [statsManager, setStatsManager] = useState<StatsManager | null>(null);
-    const [popupState, setPopupState] = useState<PopupState>({
-        isVisible: false,
-        feature: null,
-        event: null,
-        position: { x: 0, y: 0 },
-        layerId: null
+    const [infoPanelState, setInfoPanelState] = useState<InfoPanelState>({
+        layers: []
     });
     const [statsState, setStatsState] = useState<StatsState>({
         layerId: null,
@@ -143,17 +139,17 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 setControlsManager(manager);
             }
 
-            // Initialiser le gestionnaire de popups si des popups sont définis
-            if (memoizedConfig.popups?.length > 0) {
-                const popupMgr = new PopupManager(map);
+            // Initialiser le gestionnaire d'info panels si des info panels sont définis
+            if (memoizedConfig.infoPanels?.length > 0) {
+                const infoPanelMgr = new InfoPanelManager(map);
                 
-                for (const popupConfig of memoizedConfig.popups) {
-                    popupMgr.registerPopup(popupConfig);
+                for (const infoPanelConfig of memoizedConfig.infoPanels) {
+                    infoPanelMgr.registerInfo(infoPanelConfig);
                 }
 
-                popupMgr.subscribe(setPopupState);
+                infoPanelMgr.subscribe(setInfoPanelState);
                 
-                setPopupManager(popupMgr);
+                setInfoPanelManager(infoPanelMgr);
             }
             
             isInitialized.current = true;
@@ -178,14 +174,14 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 
     useEffect(() => {
         return () => {
-            if (popupManager) {
-                popupManager.destroy();
+            if (infoPanelManager) {
+                infoPanelManager.destroy();
             }
             if (statsManager) {
                 statsManager.destroy();
             }
         };
-    }, [popupManager, statsManager]);
+    }, [infoPanelManager, statsManager]);
 
     useEffect(() => {
         if (center && mapRef.current && isMapLoaded) {
@@ -197,16 +193,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         }
     }, [center, isMapLoaded]);
 
-    const handleClosePopup = useCallback(() => {
-        if (popupManager) {
-            popupManager.hidePopup();
-        }
-    }, [popupManager]);
-
-    const currentPopupConfig = useMemo(() => {
-        if (!popupState.layerId || !memoizedConfig?.popups) return null;
-        return memoizedConfig.popups.find(p => p.layerId === popupState.layerId) || null;
-    }, [popupState.layerId, memoizedConfig?.popups]);
+    const infoPanelConfigs = useMemo(() => {
+        if (!memoizedConfig?.infoPanels) return new Map();
+        return new Map(memoizedConfig.infoPanels.map(config => [config.layerId, config]));
+    }, [memoizedConfig?.infoPanels]);
 
     return (
         <MapWrapper id={`${id}-wrapper`}>
@@ -224,14 +214,10 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                     manager={controlsManager}
                 />
             )}
-            {popupState.isVisible && currentPopupConfig && (
-                <PopupPanel
-                    popupState={popupState}
-                    popupConfig={currentPopupConfig}
-                    onClose={handleClosePopup}
-                    mapContainer={mapDiv.current}
-                />
-            )}
+            <InfoPanel
+                state={infoPanelState}
+                configs={infoPanelConfigs}
+            />
             {statsState.isVisible && statsState.categories.length > 0 && (
                 <StatsBar 
                     categories={statsState.categories}

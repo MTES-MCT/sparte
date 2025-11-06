@@ -27,7 +27,7 @@ export class FrichesLayer extends BaseLayer {
                     "friche reconvertie", "#18753C",
                     "friche avec projet", "#0063CB",
                     "friche sans projet", "#B34000",
-                    "#FFFFFF" // couleur par défaut
+                    "#FFFFFF"
                 ],
                 "fill-opacity": this.options.opacity ?? 0.4,
             },

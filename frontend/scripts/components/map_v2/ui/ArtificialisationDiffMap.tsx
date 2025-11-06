@@ -2,7 +2,7 @@ import React from "react";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import { ArtificialisationDiffPopup } from "./popup/ArtificialisationDiffPopup";
+import { ArtificialisationDiffInfo } from "./infoPanel/ArtificialisationDiffInfo";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 import { getStartMillesimeIndex, getLastMillesimeIndex } from "../utils/ocsge";
 
@@ -60,12 +60,11 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 				]
 			}
 		],
-		popups: [
+		infoPanels: [
 			{
 				layerId: "artificialisation-diff-layer",
-				trigger: "hover",
 				title: "Artificialisation",
-				renderContent: (feature) => <ArtificialisationDiffPopup feature={feature} />,
+				renderContent: (feature) => <ArtificialisationDiffInfo feature={feature} />,
 			}
 		]
     });

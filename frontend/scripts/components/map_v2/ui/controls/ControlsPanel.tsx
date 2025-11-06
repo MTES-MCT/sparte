@@ -7,14 +7,14 @@ import type { ControlsManager } from "../../controls/ControlsManager";
 
 const ToggleButton = styled(Button)`
     position: absolute;
-    bottom: calc(1vw + 18px);
+    bottom: 10px;
     left: 1vw;
     z-index: 2;
 `;
 
 const ControlPanel = styled.div<{ $isOpen: boolean }>`
     position: absolute;
-    bottom: calc(1vw + 18px);
+    bottom: 10px;
     left: 1vw;
 	top: 1vw;
 	width: 25vw;

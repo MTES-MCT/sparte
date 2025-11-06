@@ -1,74 +1,50 @@
 import React from "react";
-import styled from "styled-components";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { formatNumber } from "@utils/formatUtils";
-import { PopupContentProps } from "../../types/popup";
+import type maplibregl from "maplibre-gl";
 import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";
+import { InfoContent } from "./InfoContent";
+import { InfoRow } from "./InfoRow";
+import { InfoLabel } from "./InfoLabel";
+import { InfoValue } from "./InfoValue";
 
-const PopupContent = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-`;
+interface ArtificialisationDiffInfoProps {
+    feature: maplibregl.MapGeoJSONFeature;
+}
 
-const PopupRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-`;
-
-const PopupLabel = styled.span`
-    font-weight: 500;
-    color: #666;
-    font-size: 0.8rem;
-    min-width: 120px;
-`;
-
-const PopupValue = styled.span`
-    font-weight: 400;
-    text-align: right;
-    word-wrap: break-word;
-    font-size: 0.8rem;
-    color: #1e1e1e;
-    flex: 1;
-`;
-
-export const ImpermeabilisationDiffPopup: React.FC<PopupContentProps> = ({ 
-    feature 
-}) => {
+export const ArtificialisationDiffInfo: React.FC<ArtificialisationDiffInfoProps> = ({ feature }) => {
     const properties = feature?.properties;
 	
     if (!properties) {
         return (
-            <PopupContent>
-                <PopupRow>
-                    <PopupLabel>Information</PopupLabel>
-                    <PopupValue>Aucune donnée disponible</PopupValue>
-                </PopupRow>
-            </PopupContent>
+            <InfoContent>
+                <InfoRow>
+                    <InfoLabel>Information</InfoLabel>
+                    <InfoValue>Aucune donnée disponible</InfoValue>
+                </InfoRow>
+            </InfoContent>
         );
     }
 
-    const isImpermeable = properties.new_is_impermeable === true;
-    const isDesimpermeable = properties.new_not_impermeable === true;
+    const isArtificial = properties.new_is_artificial === true;
+    const isDesartificial = properties.new_not_artificial === true;
     const surface = properties.surface || 0;
-    const surfaceHa = surface / 10000; // Conversion m² vers hectares
+    const surfaceHa = surface / 10000;
 
-    const getStatusText = () => {
-        if (isImpermeable) return "Imperméabilisation";
-        if (isDesimpermeable) return "Désimperméabilisation";
+    const getStatusText = (): string => {
+        if (isArtificial) return "Artificialisation";
+        if (isDesartificial) return "Désartificialisation";
         return "Inconnu";
     };
 
-    const getSurfaceText = () => {
+    const getSurfaceText = (): string => {
         if (surface > 0) {
             return `${formatNumber({ number: surfaceHa })} ha (${formatNumber({ number: surface })} m²)`;
         }
         return 'Non renseigné';
     };
 
-    const getEvolutionInfo = () => {
+    const getEvolutionInfo = (): {period: string; usage: string; couverture: string} => {
         const yearOld = properties.year_old;
         const yearNew = properties.year_new;
         const usOld = properties.us_old;
@@ -85,13 +61,13 @@ export const ImpermeabilisationDiffPopup: React.FC<PopupContentProps> = ({
 
     const evolution = getEvolutionInfo();
 
-    const popupData = [
+    const infoData = [
         {
             label: "Type",
             value: (
                 <Badge 
 					noIcon
-                    severity={isImpermeable ? "error" : "success"}
+                    severity={isArtificial ? "error" : "success"}
                     small
                 >
                     {getStatusText()}
@@ -117,13 +93,14 @@ export const ImpermeabilisationDiffPopup: React.FC<PopupContentProps> = ({
     ];
 
     return (
-        <PopupContent>
-            {popupData.map((item, index) => (
-                <PopupRow key={`${item.label}-${index}`}>
-                    <PopupLabel>{item.label}</PopupLabel>
-                    <PopupValue>{item.value}</PopupValue>
-                </PopupRow>
+        <InfoContent>
+            {infoData.map((item, index) => (
+                <InfoRow key={`${item.label}-${index}`}>
+                    <InfoLabel>{item.label}</InfoLabel>
+                    <InfoValue>{item.value}</InfoValue>
+                </InfoRow>
             ))}
-        </PopupContent>
+        </InfoContent>
     );
 };
+

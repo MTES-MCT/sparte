@@ -2,7 +2,7 @@ import React from "react";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import { ImpermeabilisationDiffPopup } from "./popup/ImpermeabilisationDiffPopup";
+import { ImpermeabilisationDiffInfo } from "./infoPanel/ImpermeabilisationDiffInfo";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 import { getStartMillesimeIndex, getLastMillesimeIndex } from "../utils/ocsge";
 
@@ -60,12 +60,11 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 				]
 			}
 		],
-		popups: [
+		infoPanels: [
 			{
 				layerId: "impermeabilisation-diff-layer",
-				trigger: "hover",
 				title: "Imperméabilisation",
-				renderContent: (feature) => <ImpermeabilisationDiffPopup feature={feature} />,
+				renderContent: (feature) => <ImpermeabilisationDiffInfo feature={feature} />,
 			}
 		]
     });

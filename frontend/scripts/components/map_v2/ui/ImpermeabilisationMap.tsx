@@ -3,7 +3,7 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
-import { ImpermeabilisationPopup } from "./popup/ImpermeabilisationPopup";
+import { ImpermeabilisationInfo } from "./infoPanel/ImpermeabilisationInfo";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 import { getLastMillesimeIndex, getFirstDepartement } from "../utils/ocsge";
 
@@ -68,12 +68,11 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 				]
 			}
 		],
-		popups: [
+		infoPanels: [
 			{
 				layerId: "impermeabilisation-layer",
-				trigger: "hover",
 				title: "Surfaces imperméables",
-				renderContent: (feature) => <ImpermeabilisationPopup feature={feature} />,
+				renderContent: (feature) => <ImpermeabilisationInfo feature={feature} />,
 			}
 		]
     });

@@ -355,7 +355,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     </div>
                 </div>
             </div>
-            <h2 className="fr-mt-2w">Carte des friches</h2>
+            <h2 className="fr-mt-5w">Couverture et usage (OCS GE) des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w" ref={mapSectionRef}>
                 <div className="fr-col-12">
                     <FrichesMap

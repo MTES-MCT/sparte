@@ -1,10 +1,12 @@
 import React, { useMemo } from "react";
+import type maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { LandFriche } from "@services/types/land_friches";
-import { FrichesPopup } from "./popup/FrichesPopup";
+import { FrichesInfo, OcsgeFrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
+import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 
 interface FrichesMapProps {
     landData: LandDetailResultType;
@@ -42,25 +44,6 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
         controlGroups: [
             ...BASE_CONTROLS,
             {
-                id: "ocsge-friches-group",
-                label: "OCS GE Friches",
-                description: "Occupation du sol à grande échelle découpée aux friches du territoire",
-                controls: [
-                    {
-                        id: "ocsge-friches-visibility",
-                        type: "visibility",
-                        targetLayers: ["ocsge-friches-layer"],
-                        defaultValue: true
-                    },
-                    {
-                        id: "ocsge-friches-opacity",
-                        type: "opacity",
-                        targetLayers: ["ocsge-friches-layer"],
-                        defaultValue: 0.7
-                    }
-                ]
-            },
-            {
                 id: "friches-group",
                 label: "Friches",
                 description: "Visualisation des friches du territoire recensées dans le dispositif Cartofriches",
@@ -75,17 +58,41 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
                         id: "friches-opacity",
                         type: "opacity",
                         targetLayers: ["friches-layer"],
-                        defaultValue: 0.4
+                        defaultValue: 0.7
+                    }
+                ]
+            },
+            {
+                id: "ocsge-friches-group",
+                label: "Couverture et usage (OCS GE)",
+                description: "Données d'Occupation du sol à grande échelle (OCS GE).",
+                controls: [
+                    {
+                        id: "ocsge-friches-nomenclature",
+                        type: "ocsge-nomenclature",
+                        targetLayers: ["ocsge-friches-layer"],
+                        linkedFilterId: "ocsge-friches-filter",
+                        defaultValue: "couverture"
+                    },
+                    {
+                        id: "ocsge-friches-filter",
+                        type: "ocsge-nomenclature-filter",
+                        targetLayers: ["ocsge-friches-layer"],
+                        defaultValue: OCSGE_LAYER_NOMENCLATURES.artificialisation.couverture
                     }
                 ]
             }
         ],
-        popups: [
+        infoPanels: [
             {
                 layerId: "friches-layer",
-                trigger: "click",
                 title: "Friche",
-                renderContent: (feature: any) => <FrichesPopup feature={feature} />,
+                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <FrichesInfo feature={feature} />,
+            },
+            {
+                layerId: "ocsge-friches-layer",
+                title: "OCS GE",
+                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <OcsgeFrichesInfo feature={feature} />,
             }
         ]
     }), [extendedLandData]);

@@ -3,7 +3,7 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
-import { ArtificialisationPopup } from "./popup/ArtificialisationPopup";
+import { ArtificialisationInfo } from "./infoPanel/ArtificialisationInfo";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 import { getLastMillesimeIndex, getFirstDepartement } from "../utils/ocsge";
 
@@ -68,12 +68,11 @@ export const ArtificialisationMap: React.FC<ArtificialisationMapProps> = ({
 				]
 			}
 		],
-		popups: [
+		infoPanels: [
 			{
 				layerId: "artificialisation-layer",
-				trigger: "hover",
 				title: "Surfaces artificialisées",
-				renderContent: (feature) => <ArtificialisationPopup feature={feature} />,
+				renderContent: (feature) => <ArtificialisationInfo feature={feature} />,
 			}
 		]
     });

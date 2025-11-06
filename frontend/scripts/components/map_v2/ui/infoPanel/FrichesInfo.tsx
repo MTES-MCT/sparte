@@ -1,63 +1,40 @@
 import React from "react";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
-import { PopupContentProps } from "../../types/popup";
+import type maplibregl from "maplibre-gl";
 import { STATUT_BADGE_CONFIG } from "@components/features/friches/constants";
-
-const PopupContent = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-`;
-
-const PopupRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-`;
-
-const PopupLabel = styled.span`
-    font-weight: 500;
-    color: #666;
-    font-size: 0.8rem;
-    min-width: 120px;
-`;
-
-const PopupValue = styled.span`
-    font-weight: 400;
-    text-align: right;
-    word-wrap: break-word;
-    font-size: 0.8rem;
-    color: #1e1e1e;
-    flex: 1;
-`;
+import { InfoContent } from "./InfoContent";
+import { InfoRow } from "./InfoRow";
+import { InfoLabel } from "./InfoLabel";
+import { InfoValue } from "./InfoValue";
 
 const IconZoneActivite = styled.i`
-    font-size: 1.2rem;
+    font-size: 0.9rem;
 `;
 
-export const FrichesPopup: React.FC<PopupContentProps> = ({ 
-    feature 
-}) => {
+interface FrichesInfoProps {
+    feature: maplibregl.MapGeoJSONFeature;
+}
+
+export const FrichesInfo: React.FC<FrichesInfoProps> = ({ feature }) => {
     const properties = feature?.properties;
     
     if (!properties) {
         return (
-            <PopupContent>
-                <PopupRow>
-                    <PopupLabel>Information</PopupLabel>
-                    <PopupValue>Aucune donnée disponible</PopupValue>
-                </PopupRow>
-            </PopupContent>
+            <InfoContent>
+                <InfoRow>
+                    <InfoLabel>Information</InfoLabel>
+                    <InfoValue>Aucune donnée disponible</InfoValue>
+                </InfoRow>
+            </InfoContent>
         );
     }
 
-    const getBadgeClass = (statut: string) => {
+    const getBadgeClass = (statut: string): string => {
         return STATUT_BADGE_CONFIG[statut as keyof typeof STATUT_BADGE_CONFIG] ?? 'fr-badge--info';
     };
 
-    const popupData = [
+    const infoData = [
         {
             label: "Nom",
             value: properties.site_nom ?? 'Non renseigné'
@@ -101,20 +78,20 @@ export const FrichesPopup: React.FC<PopupContentProps> = ({
             value: `${formatNumber({ number: properties.surface_artif })} ha (${formatNumber({ number: properties.percent_artif })} %)`
         },
         {
-            label: "Surface imperméabilisée",
+            label: "Surface imperméable",
             value: `${formatNumber({ number: properties.surface_imper })} ha (${formatNumber({ number: properties.percent_imper })} %)`
         }
     ];
 
     return (
-        <PopupContent>
-            {popupData.map((item, index) => (
-                <PopupRow key={`${item.label}-${index}`}>
-                    <PopupLabel>{item.label}</PopupLabel>
-                    <PopupValue>{typeof item.value === 'string' ? item.value : item.value}</PopupValue>
-                </PopupRow>
+        <InfoContent>
+            {infoData.map((item, index) => (
+                <InfoRow key={`${item.label}-${index}`}>
+                    <InfoLabel>{item.label}</InfoLabel>
+                    <InfoValue>{typeof item.value === 'string' ? item.value : item.value}</InfoValue>
+                </InfoRow>
             ))}
-        </PopupContent>
+        </InfoContent>
     );
 };
 

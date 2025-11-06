@@ -1,6 +1,6 @@
 import type { LayerCategory } from './registry';
 import type { ControlGroup } from './controls';
-import type { LayerPopupConfig } from './popup';
+import type { LayerInfoConfig } from './infoPanel';
 
 type MillesimeRaw = { index: number;[k: string]: unknown };
 
@@ -126,7 +126,7 @@ export interface MapConfig {
     sources?: SourceConfig[];
     layers?: LayerConfig[];
     controlGroups?: ControlGroup[];
-    popups?: LayerPopupConfig[];
+    infoPanels?: LayerInfoConfig[];
 }
 
 export function defineMapConfig<const T extends MapConfig>(cfg: T): T {
