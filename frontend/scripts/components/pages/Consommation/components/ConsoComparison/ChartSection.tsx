@@ -1,5 +1,5 @@
 import React from "react";
-import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
+import GenericChart from "@components/charts/GenericChart";
 
 interface ChartSectionProps {
   id: string;
@@ -28,7 +28,7 @@ export const ChartSection: React.FC<ChartSectionProps> = ({
 }) => {
   return (
     <div className="bg-white fr-p-2w rounded h-100">
-      <ConsoGraph
+      <GenericChart
         isMap={isMap}
         id={id}
         land_id={landId}
@@ -42,7 +42,7 @@ export const ChartSection: React.FC<ChartSectionProps> = ({
         showDataTable={showDataTable}
       >
         {children}
-      </ConsoGraph>
+      </GenericChart>
     </div>
   );
 };

@@ -110,7 +110,7 @@ class ArtifUsagePieChartExport(ArtifByUsagePieChart):
                     **super().param["plotOptions"]["pie"],
                     "dataLabels": {
                         **super().param["plotOptions"]["pie"]["dataLabels"],
-                        "format": "<b>{key}</b><br/>{point.y:,.1f} ha",
+                        "format": "<b>{key}</b><br/>{point.y:,.1f} ha ({point.percentage:.1f}%)",
                     },
                 },
             },

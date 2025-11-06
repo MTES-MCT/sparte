@@ -4,7 +4,11 @@ from django.core.serializers import serialize
 from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import LEGEND_NAVIGATION_EXPORT
+from project.charts.constants import (
+    LEGEND_NAVIGATION_EXPORT,
+    MAP_NAVIGATION_EXPORT,
+    MAP_NORTH_INDICATOR,
+)
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
 from public_data.models import AdminRef, LandConsoStats
 
@@ -292,4 +296,11 @@ class ComparisonMapExport(ComparisonMap):
 
     @property
     def param(self):
-        return super().param | LEGEND_NAVIGATION_EXPORT
+        return super().param | {
+            "mapNavigation": MAP_NAVIGATION_EXPORT,
+            "legend": {
+                **super().param.get("legend", {}),
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
+            "subtitle": MAP_NORTH_INDICATOR,
+        }

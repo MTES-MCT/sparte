@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
+import RapportComplet from '@components/exports/RapportComplet/RapportComplet';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/ui/SearchBar'
 import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
@@ -63,7 +64,7 @@ if (ocsgeImplementationMap)
 const dashboard = document.getElementById('react-root');
 if (dashboard) {
   const projectId = dashboard.dataset.projectId;
-  
+
   createRoot(dashboard).render(
     <ErrorBoundary>
       <Provider store={store}>
@@ -71,4 +72,21 @@ if (dashboard) {
       </Provider>
     </ErrorBoundary>,
   );
+}
+
+const rapportCompletRoot = document.getElementById('react-rapport-complet');
+if (rapportCompletRoot) {
+  const landType = rapportCompletRoot.dataset.landType;
+  const landId = rapportCompletRoot.dataset.landId;
+  console.log('Rendering RapportComplet for landType:', landType, 'landId:', landId);
+
+  if (landType && landId) {
+    createRoot(rapportCompletRoot).render(
+      <ErrorBoundary>
+        <Provider store={store}>
+          <RapportComplet landType={landType} landId={landId} />
+        </Provider>
+      </ErrorBoundary>,
+    );
+  }
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { LogementVacantProgressionProps } from "../types";
-import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
+import GenericChart from "@components/charts/GenericChart";
 
 export const LogementVacantRatio: React.FC<LogementVacantProgressionProps> = ({
   landId,
@@ -10,7 +10,7 @@ export const LogementVacantRatio: React.FC<LogementVacantProgressionProps> = ({
 }) => {
   return (
     <div className="bg-white fr-p-2w rounded">
-      <ConsoGraph
+      <GenericChart
         id="logement_vacant_ratio_progression_chart"
         land_id={landId}
         land_type={landType}
@@ -26,7 +26,7 @@ export const LogementVacantRatio: React.FC<LogementVacantProgressionProps> = ({
             <strong>Détails du calcul :</strong> Taux de vacance &gt; 2 ans (parc privé) et &gt; 3 mois (bailleurs sociaux)
           </p>
         </div>
-      </ConsoGraph>
+      </GenericChart>
     </div>
   );
 };

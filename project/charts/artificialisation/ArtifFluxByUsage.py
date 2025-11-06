@@ -23,20 +23,6 @@ class ArtifFluxByUsage(DiagnosticChart):
     model_by_departement = LandArtifFluxUsageComposition
 
     def __init__(self, land, params):
-        """
-        Initialise le graphique de flux d'artificialisation par usage/couverture.
-
-        Args:
-            land: Instance de LandModel représentant le territoire
-            params: Dictionnaire de paramètres devant contenir 'millesime_new_index'
-                   et optionnellement 'departement'
-
-        Raises:
-            ValueError: Si 'millesime_new_index' n'est pas présent dans params
-        """
-        if "millesime_new_index" not in params:
-            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
-
         super().__init__(land=land, params=params)
 
     @property
@@ -218,7 +204,12 @@ class ArtifFluxByUsage(DiagnosticChart):
 class ArtifFluxByUsageExport(ArtifFluxByUsage):
     @property
     def title_end(self):
-        return f" sur le territoire de {self.land.name}"
+        return f"{super().title_end} sur le territoire de {self.land.name} (en ha)"
+
+    @property
+    def categories(self):
+        """Version export: affiche uniquement le code (usage ou couverture)"""
+        return [getattr(item, self.sol) for item in self.data]
 
     @property
     def param(self):

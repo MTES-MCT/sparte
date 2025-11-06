@@ -4,7 +4,12 @@ from django.core.serializers import serialize
 from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
+from project.charts.constants import (
+    LEGEND_NAVIGATION_EXPORT,
+    MAP_NAVIGATION_EXPORT,
+    MAP_NORTH_INDICATOR,
+    OCSGE_CREDITS,
+)
 from public_data.models import AdminRef, LandArtifStockIndex, LandModel
 
 
@@ -182,9 +187,7 @@ class ArtifMap(DiagnosticChart):
                     "opacity": 1,
                     "showInLegend": False,
                     "dataLabels": {
-                        "enabled": True,
-                        "format": "{point.name}",
-                        "y": 10,
+                        "enabled": False,
                     },
                     "tooltip": {
                         "valueDecimals": 1,
@@ -264,18 +267,59 @@ class ArtifMap(DiagnosticChart):
 class ArtifMapExport(ArtifMap):
     @property
     def param(self):
-        return super().param | {
+        base_param = super().param
+
+        # Modifier les séries des bulles pour ajouter les dataLabels
+        series = base_param["series"].copy()
+
+        # Série 1: Artificialisation (index 1)
+        if len(series) > 1:
+            series[1] = {
+                **series[1],
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "{point.z:.1f}",
+                    "style": {
+                        "fontSize": "10px",
+                        "fontWeight": "bold",
+                        "textOutline": "1px contrast",
+                    },
+                },
+            }
+
+        # Série 2: Désartificialisation (index 2)
+        if len(series) > 2:
+            series[2] = {
+                **series[2],
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "-{point.z:.1f}",
+                    "style": {
+                        "fontSize": "10px",
+                        "fontWeight": "bold",
+                        "textOutline": "1px contrast",
+                    },
+                },
+            }
+
+        return base_param | {
             "chart": {
-                **super().param["chart"],
-                "height": "800px",
+                **base_param["chart"],
+                "height": 600,
             },
             "credits": OCSGE_CREDITS,
+            "mapNavigation": {
+                **MAP_NAVIGATION_EXPORT,
+                "enabled": True,
+                "enableButtons": False,
+            },
             "legend": {
-                **super().param["legend"],
+                **base_param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
             },
             "title": {
-                "text": f"{super().param['title']['text']} sur le territoire {self.land.name}",
+                "text": f"{base_param['title']['text']} sur le territoire {self.land.name}",
             },
-            "subtitle": {"text": ""},
+            "subtitle": MAP_NORTH_INDICATOR,
+            "series": series,
         }

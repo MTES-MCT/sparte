@@ -121,4 +121,14 @@ class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
                     f" entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
                 )
             },
+            "plotOptions": {
+                "pie": {
+                    "allowPointSelect": False,
+                    "dataLabels": {
+                        "distance": 15,
+                        "enabled": True,
+                        "format": "{point.name}<br />{point.y:.2f} Ha ({point.percentage:.1f}%)",
+                    },
+                }
+            },
         }

@@ -3,6 +3,7 @@ from typing import Dict
 
 from django.db import connection
 from django.http import HttpResponse
+from django.views.generic import TemplateView
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -219,3 +220,20 @@ class SearchLandApiView(GenericViewSet):
         output = serializers.LandSerializer(results, many=True).data
 
         return Response(data=output)
+
+
+class RapportCompletView(TemplateView):
+    template_name = "public_data/rapport_complet.html"
+
+    def get_context_data(self, **kwargs):
+        land_type = self.kwargs.get("land_type")
+        land_id = self.kwargs.get("land_id")
+
+        kwargs.update(
+            {
+                "land_type": land_type,
+                "land_id": land_id,
+            }
+        )
+
+        return super().get_context_data(**kwargs)

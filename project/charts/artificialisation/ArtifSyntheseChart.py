@@ -1,5 +1,5 @@
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import DEFAULT_VALUE_DECIMALS
+from project.charts.constants import DEFAULT_VALUE_DECIMALS, OCSGE_CREDITS
 from public_data.models import LandArtifStockIndex
 
 
@@ -109,4 +109,94 @@ class ArtifSyntheseChart(DiagnosticChart):
         return {
             "headers": [],
             "rows": [],
+        }
+
+
+class ArtifSyntheseChartExport(ArtifSyntheseChart):
+    """Version export du graphique de synthèse d'artificialisation avec améliorations"""
+
+    @property
+    def series(self):
+        return [
+            {
+                "name": "Surfaces artificialisées",
+                "data": [stock_index.percent for stock_index in self.data],
+                "color": "#FA4B42",
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "{point.y:.2f}%",
+                    "style": {
+                        "fontSize": "11px",
+                        "fontWeight": "bold",
+                    },
+                },
+            }
+        ]
+
+    @property
+    def param(self):
+        base_param = super().param
+
+        # Récupérer le titre de base et ajouter (en %)
+        base_title = base_param.get("title", {}).get("text", self.title)
+
+        return base_param | {
+            "credits": OCSGE_CREDITS,
+            "title": {
+                "text": f"{base_title} (en %)",
+            },
+            "chart": {
+                "type": "column",  # Utiliser column au lieu de bar pour une meilleure lisibilité en export
+            },
+            "xAxis": {
+                "categories": self.years,
+                "title": {"text": "Période"},
+                "labels": {
+                    "style": {"fontSize": "11px"},
+                },
+            },
+            "yAxis": {
+                "min": 0,
+                "title": {
+                    "text": "Part de surface artificialisée (%)",
+                    "style": {"fontSize": "12px"},
+                },
+                "labels": {
+                    "format": "{value}%",
+                    "style": {"fontSize": "11px"},
+                },
+            },
+            "tooltip": {"enabled": False},  # Désactiver le tooltip pour l'export
+            "plotOptions": {
+                "column": {
+                    "borderWidth": 0,
+                    "dataLabels": {
+                        "enabled": True,
+                    },
+                }
+            },
+            "legend": {"enabled": False},
+            "series": self.series,
+        }
+
+    @property
+    def data_table(self):
+        headers = ["Période", "Surface artificialisée (ha)", "Part artificialisée (%)"]
+
+        rows = [
+            {
+                "name": "",
+                "data": [
+                    f"{'-'.join(map(str, stock_index.years))}",
+                    f"{stock_index.surface:.2f}",
+                    f"{stock_index.percent:.2f}",
+                ],
+            }
+            for stock_index in self.data
+        ]
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
         }

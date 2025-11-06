@@ -1,5 +1,5 @@
 import React from "react";
-import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
+import GenericChart from "@components/charts/GenericChart";
 import { ConsoStats } from "./ConsoStats";
 
 interface ConsoDemographyProps {
@@ -49,7 +49,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
       {/* Population and consumption progression chart */}
       <div className="fr-mt-5w">
         <div className="bg-white fr-p-2w rounded">
-          <ConsoGraph
+          <GenericChart
             id="population_conso_progression_chart"
             land_id={landId}
             land_type={landType}
@@ -67,7 +67,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
                 Évolution estimée = (somme des évolutions annuelles de la population) / (nombre d'années)
               </p>
             </div>
-          </ConsoGraph>
+          </GenericChart>
         </div>
       </div>
     </div>

@@ -20,8 +20,12 @@ from project.charts.artificialisation import (
     ArtifFluxByUsage,
     ArtifFluxByUsageExport,
     ArtifMap,
+    ArtifMapExport,
     ArtifNetFluxChart,
+    ArtifNetFluxChartExport,
     ArtifSyntheseChart,
+    ArtifSyntheseChartExport,
+    ArtifUsagePieChartExport,
 )
 from project.charts.consommation import (
     ComparisonMap,
@@ -29,8 +33,10 @@ from project.charts.consommation import (
     ConsoAnnualChart,
     ConsoMap,
     ConsoMapBubble,
+    ConsoMapBubbleExport,
     ConsoMapExport,
     ConsoMapRelative,
+    ConsoMapRelativeExport,
 )
 from project.charts.consommation.AnnualConsoComparisonChart import (
     AnnualConsoComparisonChart,
@@ -58,6 +64,7 @@ from project.charts.impermeabilisation import (
     ImperMap,
     ImperNetFluxChart,
     ImperSyntheseChart,
+    ImperUsagePieChartExport,
 )
 from project.charts.ObjectiveChart import ObjectiveChart
 from project.charts.urbanisme import (
@@ -129,13 +136,18 @@ def get_chart_klass_or_404(chart_id):
         "pie_imper_by_couverture": ImperByCouverturePieChart,
         "pie_imper_by_couverture_export": ImperByCouverturePieChartExport,
         "pie_artif_by_usage": ArtifByUsagePieChart,
+        "pie_artif_by_usage_export": ArtifUsagePieChartExport,
         "pie_imper_by_usage": ImperByUsagePieChart,
+        "pie_imper_by_usage_export": ImperUsagePieChartExport,
         "artif_map": ArtifMap,
+        "artif_map_export": ArtifMapExport,
         "imper_map": ImperMap,
         "conso_map": ConsoMap,
         "conso_map_export": ConsoMapExport,
         "conso_map_relative": ConsoMapRelative,
+        "conso_map_relative_export": ConsoMapRelativeExport,
         "conso_map_bubble": ConsoMapBubble,
+        "conso_map_bubble_export": ConsoMapBubbleExport,
         "comparison_map": ComparisonMap,
         "comparison_map_export": ComparisonMapExport,
         "friche_artif_composition": FricheArtifCompositionChart,
@@ -152,8 +164,10 @@ def get_chart_klass_or_404(chart_id):
         "objective_chart": ObjectiveChart,
         "objective_chart_export": ObjectiveChart,
         "artif_synthese": ArtifSyntheseChart,
+        "artif_synthese_export": ArtifSyntheseChartExport,
         "imper_synthese": ImperSyntheseChart,
         "artif_net_flux": ArtifNetFluxChart,
+        "artif_net_flux_export": ArtifNetFluxChartExport,
         "artif_flux_by_couverture": ArtifFluxByCouverture,
         "artif_flux_by_couverture_export": ArtifFluxByCouvertureExport,
         "artif_flux_by_usage": ArtifFluxByUsage,
