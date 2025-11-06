@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { useGetChartConfigQuery } from '@services/api';
 import GenericChart from '../GenericChart';
 
 type ArtifSyntheseChartProps = {
@@ -12,15 +11,12 @@ export const ArtifSyntheseChart = ({
     land_id,
     land_type,
 } : ArtifSyntheseChartProps) => {
-    const id = 'artif_synthese';
-    const { data, isLoading, error } = useGetChartConfigQuery({ id, land_id, land_type })
-
     return (
-        <GenericChart 
-            isMap={false} 
-            chartOptions={data}
-            isLoading={isLoading}
-            error={error}
+        <GenericChart
+            id="artif_synthese"
+            land_id={land_id}
+            land_type={land_type}
+            isMap={false}
             sources={["ocsge"]}
             showDataTable={false}
             showToolbar={false}

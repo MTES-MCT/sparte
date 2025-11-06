@@ -15,6 +15,7 @@ interface ChartData {
 interface ChartDataTableProps {
     data: ChartData;
     title: string;
+    compact?: boolean;
 }
 
 /**
@@ -36,13 +37,13 @@ export const formatCellContent = (cell: any): any => {
     return cell;
 };
 
-const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
+const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title, compact = false }) => {
     if (!data?.headers || !data?.rows) return null;
 
     const { headers, rows, boldFirstColumn = false, boldLastColumn = false, boldLastRow = false, formatFirstColumn = false } = data;
 
     return (
-        <div className="fr-table--sm fr-table fr-table--bordered fr-table--no-caption fr-mb-0 fr-mt-0">
+        <div className={`fr-table fr-table--bordered fr-table--no-caption fr-mb-0 fr-mt-0${compact ? ' fr-table--compact' : ''}`}>
             <div className="fr-table__wrapper">
                 <div className="fr-table__container">
                     <div className="fr-table__content">
@@ -90,6 +91,41 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title }) => {
                     </div>
                 </div>
             </div>
+            <style>{`
+                .fr-table {
+                    max-width: 100%;
+                    overflow-x: auto;
+                }
+
+                .fr-table__wrapper {
+                    max-width: 100%;
+                    overflow-x: auto;
+                }
+
+                .fr-table__container {
+                    max-width: 100%;
+                }
+
+                .fr-table table {
+                    table-layout: auto;
+                    width: 100%;
+                    max-width: 100%;
+                }
+
+                .fr-table th,
+                .fr-table td {
+                    text-wrap: wrap;
+                    min-width: 0;
+                    max-width: 100%;
+                }
+
+                .fr-table--compact th,
+                .fr-table--compact td {
+                    font-size: 0.75rem !important;
+                    padding: 0.25rem !important;
+                    text-align: center !important;
+                }
+            `}</style>
         </div>
     );
 };

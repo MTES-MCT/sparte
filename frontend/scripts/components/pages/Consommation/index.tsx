@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import Card from "@components/ui/Card";
-import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
+import GenericChart from "@components/charts/GenericChart";
 import { LandDetailResultType } from "@services/types/land";
 import { formatNumber } from "@utils/formatUtils";
 import { ConsommationControls } from "./components/ConsommationControls";
@@ -98,7 +98,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
 
         <div className="fr-mb-5w">
           <div className="bg-white fr-p-2w rounded">
-            <ConsoGraph
+            <GenericChart
               id="annual_total_conso_chart"
               land_id={land_id}
               land_type={land_type}
@@ -111,7 +111,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
               showDataTable={true}
             >
               <DetailsCalculationFichiersFonciers />
-            </ConsoGraph>
+            </GenericChart>
           </div>
         </div>
 
@@ -120,7 +120,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-lg-6">
             <div className="bg-white fr-p-2w rounded h-100">
-              <ConsoGraph
+              <GenericChart
                 id="pie_determinant"
                 land_id={land_id}
                 land_type={land_type}
@@ -143,12 +143,12 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                   <h6 className="fr-mb-2w fr-mt-2w">Calcul</h6>
                   <p className="fr-text--sm fr-mb-0">Données brutes, sans calcul</p>
                 </div>
-              </ConsoGraph>
+              </GenericChart>
             </div>
           </div>
           <div className="fr-col-12 fr-col-lg-6">
             <div className="bg-white fr-p-2w rounded h-100">
-              <ConsoGraph
+              <GenericChart
                 id="chart_determinant"
                 land_id={land_id}
                 land_type={land_type}
@@ -171,7 +171,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                   <h6 className="fr-mb-2w fr-mt-2w">Calcul</h6>
                   <p className="fr-text--sm fr-mb-0">Données brutes, sans calcul</p>
                 </div>
-              </ConsoGraph>
+              </GenericChart>
             </div>
           </div>
         </div>
@@ -202,7 +202,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
           <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-12 fr-col-lg-6">
               <div className="bg-white fr-p-2w rounded h-100">
-                <ConsoGraph
+                <GenericChart
                   id="conso_map_relative"
                   land_id={land_id}
                   land_type={land_type}
@@ -225,13 +225,13 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                       Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
                     </p>
                   </div>
-                </ConsoGraph>
+                </GenericChart>
               </div>
             </div>
 
             <div className="fr-col-12 fr-col-lg-6">
               <div className="bg-white fr-p-2w rounded h-100">
-                <ConsoGraph
+                <GenericChart
                   id="conso_map_bubble"
                   land_id={land_id}
                   land_type={land_type}
@@ -254,7 +254,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                       Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
                     </p>
                   </div>
-                </ConsoGraph>
+                </GenericChart>
               </div>
             </div>
           </div>

@@ -4,7 +4,12 @@ from django.core.serializers import serialize
 from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
+from project.charts.constants import (
+    LEGEND_NAVIGATION_EXPORT,
+    MAP_NAVIGATION_EXPORT,
+    MAP_NORTH_INDICATOR,
+    OCSGE_CREDITS,
+)
 from public_data.models import AdminRef, LandImperStockIndex, LandModel
 
 
@@ -248,6 +253,7 @@ class ImperMapExport(ImperMap):
                 "height": "800px",
             },
             "credits": OCSGE_CREDITS,
+            "mapNavigation": MAP_NAVIGATION_EXPORT,
             "legend": {
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
@@ -255,5 +261,5 @@ class ImperMapExport(ImperMap):
             "title": {
                 "text": f"{super().param['title']['text']} sur le territoire {self.land.name}",
             },
-            "subtitle": {"text": ""},
+            "subtitle": MAP_NORTH_INDICATOR,
         }

@@ -6,6 +6,7 @@ from project.charts.constants import (
     ARTIFICIALISATION_NETTE_COLOR,
     DEFAULT_VALUE_DECIMALS,
     DESARTIFICIALISATION_COLOR,
+    OCSGE_CREDITS,
 )
 from public_data.models.administration import Departement
 from public_data.models.artificialisation import LandArtifFlux, LandArtifFluxIndex
@@ -15,28 +16,6 @@ class ArtifNetFluxChart(DiagnosticChart):
     name = "Artificialisation"
 
     def __init__(self, land, params):
-        """
-        Initialise le graphique de flux net d'artificialisation.
-
-        Deux modes de paramètres sont possibles :
-        1. Mode standard : params doit contenir 'millesime_new_index' et 'millesime_old_index'
-        2. Mode département : params doit contenir 'millesime_new_index', 'millesime_old_index' ET 'departement'
-
-        Args:
-            land: Instance de LandModel représentant le territoire
-            params: Dictionnaire de paramètres avec les clés requises
-
-        Raises:
-            ValueError: Si les paramètres requis ne sont pas présents
-        """
-        # Vérification des paramètres obligatoires
-        if "millesime_new_index" not in params:
-            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
-
-        if "millesime_old_index" not in params:
-            raise ValueError("Le paramètre 'millesime_old_index' est obligatoire")
-
-        # Appel du constructeur parent
         super().__init__(land=land, params=params)
 
     @property
@@ -157,9 +136,38 @@ class ArtifNetFluxChart(DiagnosticChart):
                     "name": "",  # not used
                     "data": [
                         round(self.data.flux_artif, DEFAULT_VALUE_DECIMALS),
-                        round(self.data.flux_desartif, DEFAULT_VALUE_DECIMALS),
+                        f"-{round(self.data.flux_desartif, DEFAULT_VALUE_DECIMALS)}",
                         round(self.data.flux_artif_net, DEFAULT_VALUE_DECIMALS),
                     ],
                 }
             ],
+        }
+
+
+class ArtifNetFluxChartExport(ArtifNetFluxChart):
+    """Version export du graphique de flux d'artificialisation nette"""
+
+    @property
+    def param(self):
+        base_param = super().param
+        return base_param | {
+            "credits": OCSGE_CREDITS,
+            "title": {
+                "text": f"{base_param['title']['text']} sur le territoire {self.land.name} (en ha)",
+            },
+            "tooltip": {"enabled": False},
+            "plotOptions": {
+                "column": {
+                    "dataLabels": {
+                        "enabled": True,
+                        "format": "{point.y:,.1f}",
+                        "style": {
+                            "fontSize": "11px",
+                            "fontWeight": "bold",
+                        },
+                    },
+                    "pointPadding": 0.2,
+                    "borderWidth": 0,
+                }
+            },
         }

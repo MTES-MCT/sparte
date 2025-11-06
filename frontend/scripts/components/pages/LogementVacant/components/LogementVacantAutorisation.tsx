@@ -1,6 +1,6 @@
 import React from "react";
 import { LogementVacantAutorisationProps } from "../types";
-import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
+import GenericChart from "@components/charts/GenericChart";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useGetLogementVacantAutorisationStatsQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
@@ -103,7 +103,7 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
         <>
           {/* Chart 1: Comparison */}
           <div className="fr-mb-3w bg-white fr-p-2w rounded">
-            <ConsoGraph
+            <GenericChart
               id="logement_vacant_autorisation_comparison_chart"
               land_id={landId}
               land_type={landType}
@@ -120,7 +120,7 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
           <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
             <div className="fr-col-12 fr-col-lg-6">
               <div className="bg-white fr-p-2w h-100">
-                <ConsoGraph
+                <GenericChart
                   id="logement_vacant_autorisation_ratio_gauge_chart"
                   land_id={landId}
                   land_type={landType}
@@ -145,7 +145,7 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
 
           {/* Chart 3: Ratio Progression */}
           <div className="bg-white fr-p-2w rounded">
-            <ConsoGraph
+            <GenericChart
               id="logement_vacant_autorisation_ratio_progression_chart"
               land_id={landId}
               land_type={landType}

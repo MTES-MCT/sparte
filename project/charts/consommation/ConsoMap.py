@@ -3,7 +3,12 @@ import json
 from django.core.serializers import serialize
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import LEGEND_NAVIGATION_EXPORT
+from project.charts.constants import (
+    CEREMA_CREDITS,
+    LEGEND_NAVIGATION_EXPORT,
+    MAP_NAVIGATION_EXPORT,
+    MAP_NORTH_INDICATOR,
+)
 from public_data.models import AdminRef, LandConsoStats, LandModel
 
 
@@ -83,7 +88,8 @@ class ConsoMap(DiagnosticChart):
 
             # Calculate density: consumption (ha) / territory surface (ha)
             # Multiply by 100 to get percentage
-            conso_density_percent = (stats.total / land.surface * 100) if land.surface > 0 else 0
+            # stats.total is in m², need to convert to ha first
+            conso_density_percent = (stats.total / 10000 / land.surface * 100) if land.surface > 0 else 0
 
             data.append(
                 {
@@ -203,9 +209,7 @@ class ConsoMap(DiagnosticChart):
                     "opacity": 1,
                     "showInLegend": False,
                     "dataLabels": {
-                        "enabled": True,
-                        "format": "{point.name}",
-                        "y": 10,
+                        "enabled": False,
                     },
                     "tooltip": {
                         "valueDecimals": 1,
@@ -272,12 +276,9 @@ class ConsoMapExport(ConsoMap):
         return super().param | {
             "chart": {
                 **super().param["chart"],
-                "height": "800px",
             },
-            "credits": {
-                "enabled": True,
-                "text": "Source : Fichiers fonciers (Cerema, d'après DGFiP)",
-            },
+            "credits": CEREMA_CREDITS,
+            "mapNavigation": MAP_NAVIGATION_EXPORT,
             "legend": {
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
@@ -344,9 +345,7 @@ class ConsoMapRelative(ConsoMap):
                     "borderColor": "#999999",
                     "borderWidth": 1,
                     "dataLabels": {
-                        "enabled": True,
-                        "format": "{point.name}",
-                        "y": 10,
+                        "enabled": False,
                     },
                     "tooltip": {
                         "valueDecimals": 1,
@@ -366,6 +365,51 @@ class ConsoMapRelative(ConsoMap):
         }
 
         return DiagnosticChart.param.fget(self) | base_param
+
+
+class ConsoMapRelativeExport(ConsoMapRelative):
+    """Version export de la carte de consommation relative"""
+
+    @property
+    def param(self):
+        base_param = super().param
+
+        # Modifier la série pour ajouter les dataLabels
+        series = base_param["series"].copy()
+        if len(series) > 0:
+            series[0] = {
+                **series[0],
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "{point.total_conso_ha:.1f}",
+                    "style": {
+                        "fontSize": "10px",
+                        "fontWeight": "bold",
+                        "textOutline": "1px contrast",
+                    },
+                },
+            }
+
+        return base_param | {
+            "chart": {
+                **base_param["chart"],
+                "height": 600,
+            },
+            "credits": CEREMA_CREDITS,
+            "mapNavigation": MAP_NAVIGATION_EXPORT,
+            "legend": {
+                **base_param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "bottom",
+            },
+            "title": {
+                "text": f"{base_param['title']['text']} sur le territoire {self.land.name} (en %)",
+            },
+            "subtitle": MAP_NORTH_INDICATOR,
+            "series": series,
+        }
 
 
 class ConsoMapBubble(ConsoMap):
@@ -504,3 +548,48 @@ class ConsoMapBubble(ConsoMap):
         }
 
         return DiagnosticChart.param.fget(self) | base_param
+
+
+class ConsoMapBubbleExport(ConsoMapBubble):
+    """Version export de la carte de flux de consommation (bulles)"""
+
+    @property
+    def param(self):
+        base_param = super().param
+
+        # Modifier la série des bulles pour ajouter les dataLabels
+        series = base_param["series"].copy()
+        if len(series) > 1:
+            series[1] = {
+                **series[1],
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "{point.z:.1f}",
+                    "style": {
+                        "fontSize": "10px",
+                        "fontWeight": "bold",
+                        "textOutline": "1px contrast",
+                    },
+                },
+            }
+
+        return base_param | {
+            "chart": {
+                **base_param["chart"],
+                "height": 600,
+            },
+            "credits": CEREMA_CREDITS,
+            "mapNavigation": MAP_NAVIGATION_EXPORT,
+            "legend": {
+                **base_param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+                "align": "center",
+                "verticalAlign": "bottom",
+                "layout": "horizontal",
+            },
+            "title": {
+                "text": f"{base_param['title']['text']} sur le territoire {self.land.name} (en ha)",
+            },
+            "subtitle": MAP_NORTH_INDICATOR,
+            "series": series,
+        }

@@ -32,7 +32,10 @@ __all__ = [
     "ArtifMapExport",
     "ArtifByCouverturePieChartExport",
     "ArtifUsagePieChartExport",
+    "ArtifNetFluxChart",
+    "ArtifNetFluxChartExport",
     "ArtifSyntheseChart",
+    "ArtifSyntheseChartExport",
     "ImperByCouverturePieChart",
     "ImperByUsagePieChart",
     "ImperMap",
@@ -55,7 +58,10 @@ from .artificialisation import (
     ArtifByUsagePieChart,
     ArtifMap,
     ArtifMapExport,
+    ArtifNetFluxChart,
+    ArtifNetFluxChartExport,
     ArtifSyntheseChart,
+    ArtifSyntheseChartExport,
     ArtifUsagePieChartExport,
 )
 from .ConsoByDeterminantPieChart import (

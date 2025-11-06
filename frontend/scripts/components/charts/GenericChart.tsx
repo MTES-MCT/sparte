@@ -17,6 +17,7 @@ import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 
 import Loader from '@components/ui/Loader';
 import ChartDetails from './ChartDetails';
+import { useGetChartConfigQuery } from '@services/api';
 import '../../highcharts/lineargauge.js';
 
 // Initialize the modules
@@ -41,19 +42,24 @@ export type DataSource =
   | 'cartofriches';
 
 type GenericChartProps = {
-    chartOptions: {
-        highcharts_options: Highcharts.Options;
-        data_table?: any;
-    };
+    // Props pour le fetch automatique
+    id: string;
+    land_id: string;
+    land_type: string;
+    params?: object;
+
+    // Options de rendu
     containerProps?: React.HTMLAttributes<HTMLDivElement>;
     isMap?: boolean;
-    isLoading?: boolean;
-    error?: any;
     showToolbar?: boolean;
     sources?: DataSource[];
     children?: React.ReactNode;
     showDataTable?: boolean;
     dataTableHeader?: React.ReactNode;
+    dataTableOnly?: boolean;
+    hideToggle?: boolean;
+    compactDataTable?: boolean;
+    hideDetails?: boolean;
 }
 
 const LoaderContainer = styled.div`
@@ -65,18 +71,36 @@ const LoaderContainer = styled.div`
 `;
 
 const GenericChart = ({
-    chartOptions,
+    id,
+    land_id,
+    land_type,
+    params,
     containerProps,
     isMap = false,
-    isLoading = false,
-    error = null,
     showToolbar = true,
     sources = [],
     children,
     showDataTable = false,
-    dataTableHeader
+    dataTableHeader,
+    dataTableOnly = false,
+    compactDataTable = false,
+    hideDetails = false
 } : GenericChartProps) => {
     const chartRef = useRef<any>(null);
+
+    // Fetch des données du graphique
+    const { data: chartOptions, isLoading, isFetching, error } = useGetChartConfigQuery({
+        id,
+        land_id,
+        land_type,
+        ...params
+    });
+
+    // Combiner isLoading et isFetching pour un meilleur UX
+    const isLoadingOrFetching = isLoading || isFetching;
+
+    // Si dataTableOnly est true, showDataTable doit aussi être true
+    const effectiveShowDataTable = dataTableOnly || showDataTable;
 
     const handleDownloadPNG = () => {
         if (chartRef.current?.chart) {
@@ -92,7 +116,7 @@ const GenericChart = ({
         }
     };
 
-    if (isLoading) {
+    if (isLoadingOrFetching) {
         return <LoaderContainer>
             <Loader />
         </LoaderContainer>
@@ -108,7 +132,7 @@ const GenericChart = ({
     avant de les passer à HighchartsReact.
     */
     const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
-    
+
     // Génère un ID basé sur le titre du graphique (utilisé pour l'accessibilité des dataTable)
     const chartId = `chart-${String(mutableChartOptions.title?.text || '')
             .toLowerCase()
@@ -132,7 +156,7 @@ const GenericChart = ({
         }
     };
 
-    const dataTable = showDataTable ? {
+    const dataTable = effectiveShowDataTable ? {
         headers: chartOptions.data_table?.headers,
         rows: chartOptions.data_table?.rows,
         boldFirstColumn: chartOptions.data_table?.boldFirstColumn,
@@ -142,7 +166,7 @@ const GenericChart = ({
 
     return (
         <div>
-            {showToolbar && (
+            {!dataTableOnly && showToolbar && (
                 <div className="d-flex justify-content-end align-items-center fr-mb-2w">
                     <button
                         className="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm fr-mr-2w"
@@ -156,6 +180,7 @@ const GenericChart = ({
                     />
                 </div>
             )}
+            {!dataTableOnly && (
                 <HighchartsReact
                     ref={chartRef}
                     highcharts={Highcharts}
@@ -164,16 +189,21 @@ const GenericChart = ({
                     containerProps={{ ...defaultContainerProps, ...containerProps }}
                     constructorType={isMap ? 'mapChart' : 'chart'}
                 />
-            <ChartDetails
-                sources={sources}
-                showDataTable={showDataTable}
-                chartId={chartId}
-                dataTable={dataTable}
-                chartTitle={mutableChartOptions.title?.text}
-                dataTableHeader={dataTableHeader}
-            >
-                {children}
-            </ChartDetails>
+            )}
+            {!hideDetails && (
+                <ChartDetails
+                    sources={sources}
+                    showDataTable={effectiveShowDataTable}
+                    chartId={chartId}
+                    dataTable={dataTable}
+                    chartTitle={mutableChartOptions.title?.text}
+                    dataTableHeader={dataTableHeader}
+                    dataTableOnly={dataTableOnly}
+                    compactDataTable={compactDataTable}
+                >
+                    {children}
+                </ChartDetails>
+            )}
         </div>
     )
 }

@@ -152,6 +152,9 @@ class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
             "legend": {
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "bottom",
             },
             "credits": CEREMA_CREDITS,
             "title": {

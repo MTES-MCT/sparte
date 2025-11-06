@@ -1,6 +1,6 @@
 import React from "react";
 import { LogementVacantProgressionProps } from "../types";
-import { ConsoGraph } from "@components/charts/conso/ConsoGraph";
+import GenericChart from "@components/charts/GenericChart";
 
 export const LogementVacantConso: React.FC<LogementVacantProgressionProps> = ({
   landId,
@@ -10,7 +10,7 @@ export const LogementVacantConso: React.FC<LogementVacantProgressionProps> = ({
 }) => {
   return (
     <div className="bg-white fr-p-2w rounded">
-      <ConsoGraph
+      <GenericChart
         id="logement_vacant_conso_progression_chart"
         land_id={landId}
         land_type={landType}

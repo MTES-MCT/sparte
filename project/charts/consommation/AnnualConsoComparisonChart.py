@@ -1,11 +1,7 @@
 from functools import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import (
-    CEREMA_CREDITS,
-    HIGHLIGHT_COLOR,
-    LEGEND_NAVIGATION_EXPORT,
-)
+from project.charts.constants import CEREMA_CREDITS, HIGHLIGHT_COLOR
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
 from public_data.domain.containers import PublicDataContainer
 
@@ -149,12 +145,53 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
 
 class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
     @property
+    def export_series(self):
+        """
+        Génère une série par territoire pour avoir une couleur unique et une entrée dans la légende.
+        """
+        series = []
+        highlighted_land_id = self.land.land_id
+
+        for land_conso in self.data:
+            total_conso = sum(annual_conso.total for annual_conso in land_conso.consommation)
+
+            series.append(
+                {
+                    "name": land_conso.land.name,
+                    "data": [total_conso],
+                    "color": HIGHLIGHT_COLOR if land_conso.land.land_id == highlighted_land_id else None,
+                }
+            )
+
+        return series
+
+    @property
     def param(self):
         return super().param | {
             "credits": CEREMA_CREDITS,
+            "xAxis": {
+                "type": "category",
+                "labels": {
+                    "enabled": False,
+                },
+            },
             "legend": {
-                **super().param["legend"],
-                "navigation": LEGEND_NAVIGATION_EXPORT,
+                "enabled": True,
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "bottom",
+            },
+            "plotOptions": {
+                "column": {
+                    "dataLabels": {
+                        "enabled": True,
+                        "format": "{point.y:.1f}",
+                        "style": {
+                            "fontSize": "10px",
+                            "fontWeight": "bold",
+                        },
+                    },
+                },
             },
             "title": {
                 "text": (
@@ -164,4 +201,6 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
                 )
             },
             "subtitle": {"text": ""},
+            "series": self.export_series,
+            "drilldown": {"series": []},  # Désactiver le drilldown pour l'export
         }

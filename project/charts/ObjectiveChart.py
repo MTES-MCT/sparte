@@ -183,4 +183,8 @@ class ObjectiveChart(DiagnosticChart):
 
 
 class ObjectiveChartExport(ObjectiveChart):
-    pass
+    @property
+    def param(self):
+        return super().param | {
+            "title": {"text": f"Trajectoire de consommation d'espaces et objectif 2031 de {self.land.name}"}
+        }

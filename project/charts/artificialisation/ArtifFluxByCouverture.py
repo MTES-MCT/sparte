@@ -17,7 +17,12 @@ class ArtifFluxByCouverture(ArtifFluxByUsage):
 class ArtifFluxByCouvertureExport(ArtifFluxByCouverture):
     @property
     def title_end(self):
-        return f" sur le territoire de {self.land.name}"
+        return f"{super().title_end} sur le territoire de {self.land.name} (en ha)"
+
+    @property
+    def categories(self):
+        """Version export: affiche uniquement le code (usage ou couverture)"""
+        return [getattr(item, self.sol) for item in self.data]
 
     @property
     def param(self):
