@@ -38,7 +38,7 @@ const MapWrapper = styled.div`
 `;
 
 const MapContainer = styled.div<{ $isLoaded: boolean }>`
-	height: 70vh;
+	height: 65vh;
 	width: 100%;
 	opacity: ${({ $isLoaded }) => ($isLoaded ? 1 : 0)};
 	transition: opacity 0.3s ease-in-out;
@@ -62,6 +62,7 @@ interface BaseMapProps {
     config?: MapConfig;
     landData: LandDetailResultType;
     center?: [number, number] | null;
+    onMapLoad?: (map: maplibregl.Map) => void;
 }
 
 export const BaseMap: React.FC<BaseMapProps> = ({
@@ -70,6 +71,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     config,
     landData,
     center,
+    onMapLoad,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
@@ -132,8 +134,6 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                     statsMgr
                 );
                 
-                // Appliquer les valeurs par défaut aux layers
-                // C'est ici que la configuration "descend" vers les layers
                 await manager.applyDefaultValues();
                 
                 setControlsManager(manager);
@@ -151,10 +151,11 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 
                 setInfoPanelManager(infoPanelMgr);
             }
-            
+
             isInitialized.current = true;
+            onMapLoad?.(map);
         }
-    }, [memoizedConfig, landData]);
+    }, [memoizedConfig, landData, onMapLoad, id]);
 
     useEffect(() => {
         if (mapDiv.current && !mapRef.current) {

@@ -7,14 +7,14 @@ import { LandFriche } from "@services/types/land_friches";
 import { FrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 
-interface FrichesMapProps {
+interface FrichesImpermeableMapProps {
     landData: LandDetailResultType;
     frichesData?: LandFriche[];
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
 }
 
-export const FrichesMap: React.FC<FrichesMapProps> = ({
+export const FrichesImpermeableMap: React.FC<FrichesImpermeableMapProps> = ({
     landData,
     frichesData,
     center,
@@ -32,14 +32,13 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
     const config = useMemo(() => defineMapConfig({
         sources: [
             ...BASE_SOURCES,
-            { type: "friches" },
-            { type: "friches-centroid" }
+            { type: "ocsge-friches" },
+            { type: "friches" }
         ],
         layers: [
             ...BASE_LAYERS,
-            { type: "friches" },
-            { type: "friches-outline" },
-            { type: "friches-centroid-cluster" }
+            { type: "ocsge-friches-impermeable" },
+            { type: "friches-outline" }
         ],
         controlGroups: [
             ...BASE_CONTROLS,
@@ -51,14 +50,27 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
                     {
                         id: "friches-visibility",
                         type: "visibility",
-                        targetLayers: ["friches-layer", "friches-layer-outline", "friches-centroid-cluster"],
+                        targetLayers: ["friches-layer-outline"],
+                        defaultValue: true
+                    }
+                ]
+            },
+            {
+                id: "ocsge-friches-impermeable-group",
+                label: "Zones imperméables",
+                description: "Zones imperméables des friches (OCS GE).",
+                controls: [
+                    {
+                        id: "ocsge-friches-impermeable-visibility",
+                        type: "visibility",
+                        targetLayers: ["ocsge-friches-impermeable-layer"],
                         defaultValue: true
                     },
                     {
-                        id: "friches-opacity",
+                        id: "ocsge-friches-impermeable-opacity",
                         type: "opacity",
-                        targetLayers: ["friches-layer", "friches-layer-outline"],
-                        defaultValue: 0.8
+                        targetLayers: ["ocsge-friches-impermeable-layer"],
+                        defaultValue: 0.9
                     }
                 ]
             }
@@ -78,7 +90,7 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 
     return (
         <BaseMap
-            id="friches-ocsge-map"
+            id="friches-impermeable-map"
             config={config}
             landData={extendedLandData}
             center={center}

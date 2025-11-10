@@ -18,6 +18,14 @@ export const DESARTIFICIALISATION_COLOR = "#00ce67"
 export const IMPERMEABILISATION_COLOR = "#FA4B42"
 export const DESIMPERMEABILISATION_COLOR = "#00ce67"
 
+export const ARTIFICIALISATION_COLOR_RGB = "rgb(250, 75, 66)"
+export const IMPERMEABILISATION_COLOR_RGB = "rgb(250, 75, 66)"
+
+export const FRICHE_RECONVERTIE_COLOR = "#18753C"
+export const FRICHE_AVEC_PROJET_COLOR = "#0063CB"
+export const FRICHE_SANS_PROJET_COLOR = "#B34000"
+export const FRICHE_DEFAULT_COLOR = "#FFFFFF"
+
 export const IMPERMEABILISATION_FIELD = "new_is_impermeable";
 export const DESIMPERMEABILISATION_FIELD = "new_not_impermeable";
 export const ARTIFICIALISATION_FIELD = "new_is_artificial";

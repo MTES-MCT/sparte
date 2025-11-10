@@ -8,8 +8,11 @@ import { ArtificialisationDiffLayer } from "../layers/artificialisationDiffLayer
 import { ImpermeabilisationDiffCentroidClusterLayer } from "../layers/impermeabilisationDiffCentroidClusterLayer";
 import { ArtificialisationDiffCentroidClusterLayer } from "../layers/artificialisationDiffCentroidClusterLayer";
 import { FrichesLayer } from "../layers/frichesLayer";
+import { FrichesOutlineLayer } from "../layers/frichesOutlineLayer";
 import { FrichesCentroidClusterLayer } from "../layers/frichesCentroidClusterLayer";
 import { OcsgeFrichesLayer } from "../layers/ocsgeFrichesLayer";
+import { OcsgeFrichesImpermeableLayer } from "../layers/ocsgeFrichesImpermeableLayer";
+import { OcsgeFrichesArtificialLayer } from "../layers/ocsgeFrichesArtificialLayer";
 import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getAvailableMillesimes } from "../utils/ocsge";
@@ -72,12 +75,25 @@ const layerRegistry: Record<string, LayerFactory> = {
     "impermeabilisation-diff-centroid-cluster": () => new ImpermeabilisationDiffCentroidClusterLayer(),
     "artificialisation-diff-centroid-cluster": () => new ArtificialisationDiffCentroidClusterLayer(),
     "friches": () => new FrichesLayer(),
+    "friches-outline": () => new FrichesOutlineLayer(),
     "friches-centroid-cluster": () => new FrichesCentroidClusterLayer(),
     "ocsge-friches": (_cfg, landData) => {
         const millesimeIndex = getLastMillesimeIndex(landData.millesimes);
         const extendedLandData = landData as LandDetailResultWithFricheSiteIds;
         const fricheSiteIds = extendedLandData.fricheSiteIds;
         return new OcsgeFrichesLayer(millesimeIndex, fricheSiteIds);
+    },
+    "ocsge-friches-impermeable": (_cfg, landData) => {
+        const millesimeIndex = getLastMillesimeIndex(landData.millesimes);
+        const extendedLandData = landData as LandDetailResultWithFricheSiteIds;
+        const fricheSiteIds = extendedLandData.fricheSiteIds;
+        return new OcsgeFrichesImpermeableLayer(millesimeIndex, fricheSiteIds);
+    },
+    "ocsge-friches-artificial": (_cfg, landData) => {
+        const millesimeIndex = getLastMillesimeIndex(landData.millesimes);
+        const extendedLandData = landData as LandDetailResultWithFricheSiteIds;
+        const fricheSiteIds = extendedLandData.fricheSiteIds;
+        return new OcsgeFrichesArtificialLayer(millesimeIndex, fricheSiteIds);
     },
 };
 

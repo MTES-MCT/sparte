@@ -1,10 +1,10 @@
 import type { Millesime } from "@services/types/land";
 import type { NomenclatureType } from "./ocsge";
 
-export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'artificialisation-diff', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster', 'friches', 'friches-centroid-cluster', 'ocsge-friches'] as const;
+export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'artificialisation-diff', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster', 'friches', 'friches-centroid-cluster', 'ocsge-friches', 'ocsge-friches-impermeable', 'ocsge-friches-artificial'] as const;
 export type LayerCategory = typeof layerCategories[number];
 
-export const layerIds = ['orthophoto-layer', 'emprise-layer', 'impermeabilisation-layer', 'artificialisation-layer', 'impermeabilisation-diff-layer', 'artificialisation-diff-layer', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster', 'friches-layer', 'friches-centroid-cluster', 'ocsge-friches-layer'] as const;
+export const layerIds = ['orthophoto-layer', 'emprise-layer', 'impermeabilisation-layer', 'artificialisation-layer', 'impermeabilisation-diff-layer', 'artificialisation-diff-layer', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster', 'friches-layer', 'friches-centroid-cluster', 'ocsge-friches-layer', 'ocsge-friches-impermeable-layer', 'ocsge-friches-artificial-layer'] as const;
 export type LayerId = typeof layerIds[number];
 
 export type LayerIdToCategory = {
@@ -19,6 +19,8 @@ export type LayerIdToCategory = {
     'friches-layer': 'friches';
     'friches-centroid-cluster': 'friches-centroid-cluster';
     'ocsge-friches-layer': 'ocsge-friches';
+    'ocsge-friches-impermeable-layer': 'ocsge-friches-impermeable';
+    'ocsge-friches-artificial-layer': 'ocsge-friches-artificial';
 };
 
 export const layerCategoryToFactory = {
@@ -33,6 +35,8 @@ export const layerCategoryToFactory = {
     'friches': 'friches',
     'friches-centroid-cluster': 'friches-centroid-cluster',
     'ocsge-friches': 'ocsge-friches',
+    'ocsge-friches-impermeable': 'ocsge-friches-impermeable',
+    'ocsge-friches-artificial': 'ocsge-friches-artificial',
 } as const;
 
 export interface BaseLayerConfig {
@@ -55,7 +59,7 @@ export interface OcsgeDiffLayerConfig extends BaseLayerConfig {
 }
 
 export interface EmptyLayerConfig extends BaseLayerConfig {
-    type: 'orthophoto' | 'emprise' | 'impermeabilisation-diff-centroid-cluster' | 'artificialisation-diff-centroid-cluster' | 'friches' | 'friches-centroid-cluster' | 'ocsge-friches';
+    type: 'orthophoto' | 'emprise' | 'impermeabilisation-diff-centroid-cluster' | 'artificialisation-diff-centroid-cluster' | 'friches' | 'friches-centroid-cluster' | 'ocsge-friches' | 'ocsge-friches-impermeable' | 'ocsge-friches-artificial';
 }
 
 export type LayerConfig = OcsgeLayerConfig | OcsgeDiffLayerConfig | EmptyLayerConfig;

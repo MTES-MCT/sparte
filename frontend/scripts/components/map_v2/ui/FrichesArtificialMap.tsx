@@ -7,14 +7,14 @@ import { LandFriche } from "@services/types/land_friches";
 import { FrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 
-interface FrichesMapProps {
+interface FrichesArtificialMapProps {
     landData: LandDetailResultType;
     frichesData?: LandFriche[];
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
 }
 
-export const FrichesMap: React.FC<FrichesMapProps> = ({
+export const FrichesArtificialMap: React.FC<FrichesArtificialMapProps> = ({
     landData,
     frichesData,
     center,
@@ -32,14 +32,13 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
     const config = useMemo(() => defineMapConfig({
         sources: [
             ...BASE_SOURCES,
-            { type: "friches" },
-            { type: "friches-centroid" }
+            { type: "ocsge-friches" },
+            { type: "friches" }
         ],
         layers: [
             ...BASE_LAYERS,
-            { type: "friches" },
-            { type: "friches-outline" },
-            { type: "friches-centroid-cluster" }
+            { type: "ocsge-friches-artificial" },
+            { type: "friches-outline" }
         ],
         controlGroups: [
             ...BASE_CONTROLS,
@@ -51,14 +50,27 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
                     {
                         id: "friches-visibility",
                         type: "visibility",
-                        targetLayers: ["friches-layer", "friches-layer-outline", "friches-centroid-cluster"],
+                        targetLayers: ["friches-layer-outline"],
+                        defaultValue: true
+                    }
+                ]
+            },
+            {
+                id: "ocsge-friches-artificial-group",
+                label: "Zones artificielles",
+                description: "Zones artificielles des friches (OCS GE).",
+                controls: [
+                    {
+                        id: "ocsge-friches-artificial-visibility",
+                        type: "visibility",
+                        targetLayers: ["ocsge-friches-artificial-layer"],
                         defaultValue: true
                     },
                     {
-                        id: "friches-opacity",
+                        id: "ocsge-friches-artificial-opacity",
                         type: "opacity",
-                        targetLayers: ["friches-layer", "friches-layer-outline"],
-                        defaultValue: 0.8
+                        targetLayers: ["ocsge-friches-artificial-layer"],
+                        defaultValue: 0.9
                     }
                 ]
             }
@@ -78,7 +90,7 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 
     return (
         <BaseMap
-            id="friches-ocsge-map"
+            id="friches-artificial-map"
             config={config}
             landData={extendedLandData}
             center={center}

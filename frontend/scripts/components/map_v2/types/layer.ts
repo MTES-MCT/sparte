@@ -20,6 +20,12 @@ export interface StatCategory {
     percent: number;
 }
 
+export interface HoverHighlightOptions {
+    enabled: boolean;
+    propertyField: string;
+    hoverOpacity?: number;
+}
+
 export interface BaseLayerOptions {
     id: string;
     type: LayerType;
@@ -27,13 +33,5 @@ export interface BaseLayerOptions {
     visible?: boolean;
     opacity?: number;
     filters?: FilterSpecification[];
-    options?: Record<string, unknown>;
-    onClick?: (event: maplibregl.MapMouseEvent) => void;
-    legend?: {
-        title: string;
-        items: Array<{ color: string; label: string }>;
-    };
-    label?: string;
-    description?: string;
-    stats?: boolean;
+    hoverHighlight?: HoverHighlightOptions;
 }

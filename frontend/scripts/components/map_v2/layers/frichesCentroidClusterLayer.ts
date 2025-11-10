@@ -48,19 +48,35 @@ export class FrichesCentroidClusterLayer extends BaseLayer {
             },
         };
 
-        return [clusterLayer, clusterCountLayer];
+        const unclusteredPointLayer: LayerSpecification = {
+            id: `${this.options.id}-unclustered-point`,
+            type: "circle",
+            source: this.options.source,
+            filter: ["!", ["has", "point_count"]],
+            layout: {
+                visibility: this.options.visible ? "visible" : "none"
+            },
+            paint: {
+                "circle-radius": 6,
+                "circle-color": "#4318FF",
+                "circle-opacity": 1
+            },
+        };
+
+        return [clusterLayer, clusterCountLayer, unclusteredPointLayer];
     }
 
     setVisibility(visible: boolean): void {
         if (!this.map) return;
 
         const visibility = visible ? 'visible' : 'none';
-        const clusterIds = [
+        const layerIds = [
             `${this.options.id}-clusters`,
-            `${this.options.id}-cluster-count`
+            `${this.options.id}-cluster-count`,
+            `${this.options.id}-unclustered-point`
         ];
 
-        for (const layerId of clusterIds) {
+        for (const layerId of layerIds) {
             if (this.map.getLayer(layerId)) {
                 this.map.setLayoutProperty(layerId, 'visibility', visibility);
             }
@@ -72,8 +88,15 @@ export class FrichesCentroidClusterLayer extends BaseLayer {
     setOpacity(opacity: number): void {
         if (!this.map) return;
 
-        if (this.map.getLayer(`${this.options.id}-clusters`)) {
-            this.map.setPaintProperty(`${this.options.id}-clusters`, 'circle-opacity', opacity);
+        const clusterLayerId = `${this.options.id}-clusters`;
+        const unclusteredLayerId = `${this.options.id}-unclustered-point`;
+
+        if (this.map.getLayer(clusterLayerId)) {
+            this.map.setPaintProperty(clusterLayerId, 'circle-opacity', opacity);
+        }
+
+        if (this.map.getLayer(unclusteredLayerId)) {
+            this.map.setPaintProperty(unclusteredLayerId, 'circle-opacity', opacity);
         }
 
         this.options.opacity = opacity;

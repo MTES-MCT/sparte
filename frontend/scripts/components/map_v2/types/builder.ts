@@ -101,12 +101,24 @@ export interface FrichesLayerConfig extends BaseLayerConfig {
     type: 'friches';
 }
 
+export interface FrichesOutlineLayerConfig extends BaseLayerConfig {
+    type: 'friches-outline';
+}
+
 export interface FrichesCentroidClusterLayerConfig extends BaseLayerConfig {
     type: 'friches-centroid-cluster';
 }
 
 export interface OcsgeFrichesLayerConfig extends BaseLayerConfig {
     type: 'ocsge-friches';
+}
+
+export interface OcsgeFrichesImpermeableLayerConfig extends BaseLayerConfig {
+    type: 'ocsge-friches-impermeable';
+}
+
+export interface OcsgeFrichesArtificialLayerConfig extends BaseLayerConfig {
+    type: 'ocsge-friches-artificial';
 }
 
 export type LayerConfig =
@@ -119,8 +131,11 @@ export type LayerConfig =
     | ImpermeabilisationDiffCentroidClusterLayerConfig
     | ArtificialisationDiffCentroidClusterLayerConfig
     | FrichesLayerConfig
+    | FrichesOutlineLayerConfig
     | FrichesCentroidClusterLayerConfig
-    | OcsgeFrichesLayerConfig;
+    | OcsgeFrichesLayerConfig
+    | OcsgeFrichesImpermeableLayerConfig
+    | OcsgeFrichesArtificialLayerConfig;
 
 export interface MapConfig {
     sources?: SourceConfig[];

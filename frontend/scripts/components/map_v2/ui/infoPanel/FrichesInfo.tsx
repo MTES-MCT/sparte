@@ -36,8 +36,8 @@ export const FrichesInfo: React.FC<FrichesInfoProps> = ({ feature }) => {
 
     const infoData = [
         {
-            label: "Nom",
-            value: properties.site_nom ?? 'Non renseigné'
+            label: "Identifiant",
+            value: properties.site_id ?? 'Non renseigné'
         },
         {
             label: "Type",
@@ -52,34 +52,8 @@ export const FrichesInfo: React.FC<FrichesInfoProps> = ({ feature }) => {
             ) : 'Non renseigné'
         },
         {
-            label: "Pollution",
-            value: properties.friche_sol_pollution ?? 'Non renseigné'
-        },
-        {
             label: "Surface",
             value: properties.surface ? formatNumber({ number: properties.surface / 10000 }) + ' ha' : 'Non renseigné'
-        },
-        {
-            label: "Zone d'activité",
-            value: (
-                <IconZoneActivite className={`bi ${properties.friche_is_in_zone_activite ? 'bi-check text-success' : 'bi-x text-danger'}`}/>
-            )
-        },
-        {
-            label: "Zonage environnemental",
-            value: properties.friche_zonage_environnemental ?? 'Non renseigné'
-        },
-        {
-            label: "Type de zone",
-            value: properties.friche_type_zone ?? 'Non renseigné'
-        },
-        {
-            label: "Surface artificialisée",
-            value: `${formatNumber({ number: properties.surface_artif })} ha (${formatNumber({ number: properties.percent_artif })} %)`
-        },
-        {
-            label: "Surface imperméable",
-            value: `${formatNumber({ number: properties.surface_imper })} ha (${formatNumber({ number: properties.percent_imper })} %)`
         }
     ];
 

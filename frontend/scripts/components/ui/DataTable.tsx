@@ -27,6 +27,7 @@ const SortableHeader = styled.th<{ $isSortable?: boolean; $sortDirection?: 'asc'
     min-width: ${props => props.$isSortable ? '120px' : '100px'};
     padding-right: ${props => props.$isSortable ? '2.5rem' : '0.75rem'} !important;
     white-space: nowrap;
+    font-size: 0.75rem !important;
     
     ${props => props.$isSortable && `
         &:hover {
@@ -40,7 +41,7 @@ const SortableHeader = styled.th<{ $isSortable?: boolean; $sortDirection?: 'asc'
             top: 50%;
             transform: translateY(-50%);
             opacity: 0.5;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             pointer-events: none;
             z-index: 0;
         }
@@ -62,11 +63,11 @@ const SortableHeader = styled.th<{ $isSortable?: boolean; $sortDirection?: 'asc'
 `;
 
 const TableCell = styled.td`
-    min-width: 100px;
-    max-width: 300px;
+    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 0.75rem !important;
 `;
 
 const NoDataMessage = styled.div`
@@ -88,12 +89,12 @@ export function DataTable<T>({
     tooltipFields
 }: DataTableProps<T>) {
     const renderTableStructure = (children: React.ReactNode) => (
-        <div className={`fr-table fr-table--bordered fr-table--no-caption ${className}`}>
+        <div className={`fr-table fr-table--bordered fr-table--no-caption ${className}`} style={{ fontSize: '0.75rem' }}>
             <div className="fr-table__wrapper">
                 <div className="fr-table__container">
                     <div className="fr-table__content">
                         <table>
-                            {caption && <caption>{caption}</caption>}
+                            {caption && <caption style={{ fontSize: '0.75rem' }}>{caption}</caption>}
                             <thead>
                                 <tr>
                                     {columns.map((column) => (

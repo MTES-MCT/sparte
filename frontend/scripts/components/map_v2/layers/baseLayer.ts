@@ -7,6 +7,7 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 	readonly options: BaseLayerOptions;
 	loaded = false;
 	protected map?: maplibregl.Map;
+	private hoveredFeatureId: string | null = null;
 
 	constructor(options: BaseLayerOptions) {
 		this.options = {
@@ -19,6 +20,73 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 	// Injection des dépendances: map
 	attach(map: maplibregl.Map): void {
 		this.map = map;
+
+		// Configurer le hover highlight si activé
+		if (this.options.hoverHighlight?.enabled) {
+			this.setupHoverHighlight();
+		}
+	}
+
+	protected setupHoverHighlight(): void {
+		if (!this.map || !this.options.hoverHighlight) return;
+
+		const layerId = this.getId();
+		const { propertyField } = this.options.hoverHighlight;
+
+		this.map.on('mousemove', layerId, (e) => {
+			if (e.features && e.features.length > 0) {
+				const feature = e.features[0];
+				const featureId = feature.properties?.[propertyField];
+
+				if (featureId && featureId !== this.hoveredFeatureId) {
+					this.hoveredFeatureId = featureId;
+					this.applyHoverEffect(propertyField, featureId);
+				}
+			}
+		});
+
+		this.map.on('mouseleave', layerId, () => {
+			if (this.hoveredFeatureId !== null) {
+				this.hoveredFeatureId = null;
+				this.removeHoverEffect();
+			}
+		});
+	}
+
+	protected applyHoverEffect(propertyField: string, featureId: string): void {
+		if (!this.map || !this.options.hoverHighlight) return;
+
+		const layerId = this.getId();
+		const layer = this.map.getLayer(layerId);
+		if (!layer) return;
+
+		const opacityProperty = this.getOpacityPropertyForLayerType(layer.type);
+		if (!opacityProperty) return;
+
+		const hoverOpacity = this.options.hoverHighlight.hoverOpacity ?? 0;
+
+		const opacityExpression = [
+			"case",
+			["==", ["get", propertyField], featureId],
+			hoverOpacity,
+			this.options.opacity ?? 1
+		];
+
+		this.map.setPaintProperty(layerId, opacityProperty, opacityExpression);
+	}
+
+	protected removeHoverEffect(): void {
+		if (!this.map) return;
+
+		const layerId = this.getId();
+		const layer = this.map.getLayer(layerId);
+		if (!layer) return;
+
+		const opacityProperty = this.getOpacityPropertyForLayerType(layer.type);
+		if (!opacityProperty) return;
+
+		// Réinitialiser l'opacité à sa valeur par défaut
+		this.map.setPaintProperty(layerId, opacityProperty, this.options.opacity ?? 1);
 	}
 
 	async load(): Promise<void> {

@@ -4,17 +4,18 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { LandFriche } from "@services/types/land_friches";
-import { FrichesInfo } from "./infoPanel";
+import { FrichesInfo, OcsgeFrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
+import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 
-interface FrichesMapProps {
+interface FrichesOcsgeMapProps {
     landData: LandDetailResultType;
     frichesData?: LandFriche[];
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
 }
 
-export const FrichesMap: React.FC<FrichesMapProps> = ({
+export const FrichesOcsgeMap: React.FC<FrichesOcsgeMapProps> = ({
     landData,
     frichesData,
     center,
@@ -32,14 +33,13 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
     const config = useMemo(() => defineMapConfig({
         sources: [
             ...BASE_SOURCES,
-            { type: "friches" },
-            { type: "friches-centroid" }
+            { type: "ocsge-friches" },
+            { type: "friches" }
         ],
         layers: [
             ...BASE_LAYERS,
-            { type: "friches" },
-            { type: "friches-outline" },
-            { type: "friches-centroid-cluster" }
+            { type: "ocsge-friches" },
+            { type: "friches-outline" }
         ],
         controlGroups: [
             ...BASE_CONTROLS,
@@ -51,14 +51,28 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
                     {
                         id: "friches-visibility",
                         type: "visibility",
-                        targetLayers: ["friches-layer", "friches-layer-outline", "friches-centroid-cluster"],
+                        targetLayers: ["friches-layer-outline"],
                         defaultValue: true
+                    }
+                ]
+            },
+            {
+                id: "ocsge-friches-group",
+                label: "Couverture et usage (OCS GE)",
+                description: "Données d'Occupation du sol à grande échelle (OCS GE).",
+                controls: [
+                    {
+                        id: "ocsge-friches-nomenclature",
+                        type: "ocsge-nomenclature",
+                        targetLayers: ["ocsge-friches-layer"],
+                        linkedFilterId: "ocsge-friches-filter",
+                        defaultValue: "couverture"
                     },
                     {
-                        id: "friches-opacity",
-                        type: "opacity",
-                        targetLayers: ["friches-layer", "friches-layer-outline"],
-                        defaultValue: 0.8
+                        id: "ocsge-friches-filter",
+                        type: "ocsge-nomenclature-filter",
+                        targetLayers: ["ocsge-friches-layer"],
+                        defaultValue: OCSGE_LAYER_NOMENCLATURES.artificialisation.couverture
                     }
                 ]
             }
@@ -68,6 +82,11 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
                 layerId: "friches-layer",
                 title: "Friche",
                 renderContent: (feature: maplibregl.MapGeoJSONFeature) => <FrichesInfo feature={feature} />,
+            },
+            {
+                layerId: "ocsge-friches-layer",
+                title: "OCS GE",
+                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <OcsgeFrichesInfo feature={feature} />,
             }
         ]
     }), [extendedLandData]);
@@ -78,7 +97,7 @@ export const FrichesMap: React.FC<FrichesMapProps> = ({
 
     return (
         <BaseMap
-            id="friches-ocsge-map"
+            id="friches-map"
             config={config}
             landData={extendedLandData}
             center={center}
