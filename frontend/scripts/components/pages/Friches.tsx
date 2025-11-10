@@ -73,9 +73,12 @@ const ScrollableMapsColumn = styled.div`
     }
 `;
 
-const FRICHES_CHARTS: Array<{ id: string; sources: string[] }> = [
+const FRICHES_COMPOSITION_CHARTS: Array<{ id: string; sources: string[] }> = [
     { id: 'friche_artif_composition', sources: ['cartofriches', 'ocsge'] },
     { id: 'friche_imper_composition', sources: ['cartofriches', 'ocsge'] },
+];
+
+const FRICHES_ANALYSIS_CHARTS: Array<{ id: string; sources: string[] }> = [
     { id: 'friche_pollution', sources: ['cartofriches'] },
     { id: 'friche_surface', sources: ['cartofriches'] },
     { id: 'friche_type', sources: ['cartofriches'] },
@@ -349,7 +352,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         </p>
                     </div>
                     <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                        {FRICHES_CHARTS.map((chart) => (
+                        {FRICHES_ANALYSIS_CHARTS.map((chart) => (
                             <div key={chart.id} className="fr-col-12 fr-col-md-6">
                                 <div className="bg-white fr-p-2w rounded">
                                     <FrichesChart
@@ -369,6 +372,22 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     </div>
                 </>
             )}
+            <h2 className="fr-mt-7w">Composition des friches sans projet</h2>
+            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+                {FRICHES_COMPOSITION_CHARTS.map((chart) => (
+                    <div key={chart.id} className="fr-col-12 fr-col-md-6">
+                        <div className="bg-white fr-p-2w rounded">
+                            <FrichesChart
+                                id={chart.id}
+                                land_id={land_id}
+                                land_type={land_type}
+                                sources={chart.sources}
+                                showDataTable={true}
+                            />
+                        </div>
+                    </div>
+                ))}
+            </div>
             <h2 className="fr-mt-7w">Détail des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 <div className="fr-col-12">

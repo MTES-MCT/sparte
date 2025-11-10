@@ -92,7 +92,7 @@ class FricheArtifCompositionChart(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Part artificialisée des friches sans projet (en surface)"},
+            "title": {"text": "Surfaces artificialisées des friches sans projet"},
             "series": self.series,
             "chart": {"type": "pie"},
             "tooltip": {
@@ -139,8 +139,7 @@ class FricheArtifCompositionChartExport(FricheArtifCompositionChart):
     def param(self):
         years_text = self.get_years_text()
         title_text = (
-            f"Part artificialisée des friches sans projet (en surface) "
-            f"sur le territoire de {self.land.name}{years_text}"
+            f"Surfaces artificialisées des friches sans projet " f"sur le territoire de {self.land.name}{years_text}"
         )
         return super().param | {
             "title": {"text": title_text},
