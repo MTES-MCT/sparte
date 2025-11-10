@@ -1,7 +1,7 @@
 import { BaseLayer } from "./baseLayer";
 import type { LayerSpecification, FilterSpecification } from 'maplibre-gl';
 import type { LayerInterface } from "../types/layerInterface";
-import { IMPERMEABILISATION_COLOR_RGB } from "../constants/config";
+import { IMPERMEABILISATION_COLOR } from "../constants/config";
 
 export class OcsgeFrichesImpermeableLayer extends BaseLayer implements LayerInterface {
     private millesimeIndex: number;
@@ -14,6 +14,11 @@ export class OcsgeFrichesImpermeableLayer extends BaseLayer implements LayerInte
             source: "ocsge-friches-source",
             visible: true,
             opacity: 0.7,
+            hoverHighlight: {
+                enabled: true,
+                propertyField: "id",
+                hoverOpacity: 0.4
+            },
         });
 
         this.millesimeIndex = millesimeIndex;
@@ -25,7 +30,7 @@ export class OcsgeFrichesImpermeableLayer extends BaseLayer implements LayerInte
     }
 
     getColorExpression() {
-        return IMPERMEABILISATION_COLOR_RGB;
+        return IMPERMEABILISATION_COLOR;
     }
 
     protected getFricheSiteIdFilter(): FilterSpecification | null {

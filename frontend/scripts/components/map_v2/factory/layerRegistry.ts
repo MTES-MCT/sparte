@@ -77,11 +77,12 @@ const layerRegistry: Record<string, LayerFactory> = {
     "friches": () => new FrichesLayer(),
     "friches-outline": () => new FrichesOutlineLayer(),
     "friches-centroid-cluster": () => new FrichesCentroidClusterLayer(),
-    "ocsge-friches": (_cfg, landData) => {
+    "ocsge-friches": (cfg, landData) => {
+        const config = cfg as { nomenclature?: "couverture" | "usage" };
         const millesimeIndex = getLastMillesimeIndex(landData.millesimes);
         const extendedLandData = landData as LandDetailResultWithFricheSiteIds;
         const fricheSiteIds = extendedLandData.fricheSiteIds;
-        return new OcsgeFrichesLayer(millesimeIndex, fricheSiteIds);
+        return new OcsgeFrichesLayer(millesimeIndex, fricheSiteIds, config.nomenclature);
     },
     "ocsge-friches-impermeable": (_cfg, landData) => {
         const millesimeIndex = getLastMillesimeIndex(landData.millesimes);

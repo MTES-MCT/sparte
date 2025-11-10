@@ -1,7 +1,7 @@
 import { BaseLayer } from "./baseLayer";
 import type { LayerSpecification, FilterSpecification } from 'maplibre-gl';
 import type { LayerInterface } from "../types/layerInterface";
-import { ARTIFICIALISATION_COLOR_RGB } from "../constants/config";
+import { ARTIFICIALISATION_COLOR } from "../constants/config";
 
 export class OcsgeFrichesArtificialLayer extends BaseLayer implements LayerInterface {
     private millesimeIndex: number;
@@ -14,6 +14,11 @@ export class OcsgeFrichesArtificialLayer extends BaseLayer implements LayerInter
             source: "ocsge-friches-source",
             visible: true,
             opacity: 0.7,
+            hoverHighlight: {
+                enabled: true,
+                propertyField: "id",
+                hoverOpacity: 0.4
+            },
         });
 
         this.millesimeIndex = millesimeIndex;
@@ -25,7 +30,7 @@ export class OcsgeFrichesArtificialLayer extends BaseLayer implements LayerInter
     }
 
     getColorExpression() {
-        return ARTIFICIALISATION_COLOR_RGB;
+        return ARTIFICIALISATION_COLOR;
     }
 
     protected getFricheSiteIdFilter(): FilterSpecification | null {

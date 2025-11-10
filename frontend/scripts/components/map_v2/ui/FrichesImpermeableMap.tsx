@@ -4,7 +4,7 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { LandFriche } from "@services/types/land_friches";
-import { FrichesInfo } from "./infoPanel";
+import { OcsgeFrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 
 interface FrichesImpermeableMapProps {
@@ -52,13 +52,19 @@ export const FrichesImpermeableMap: React.FC<FrichesImpermeableMapProps> = ({
                         type: "visibility",
                         targetLayers: ["friches-layer-outline"],
                         defaultValue: true
+                    },
+                    {
+                        id: "friches-opacity",
+                        type: "opacity",
+                        targetLayers: ["friches-layer-outline"],
+                        defaultValue: 1
                     }
                 ]
             },
             {
                 id: "ocsge-friches-impermeable-group",
-                label: "Zones imperméables",
-                description: "Zones imperméables des friches (OCS GE).",
+                label: "Surfaces imperméables",
+                description: "Surfaces imperméables des friches (OCS GE).",
                 controls: [
                     {
                         id: "ocsge-friches-impermeable-visibility",
@@ -70,16 +76,16 @@ export const FrichesImpermeableMap: React.FC<FrichesImpermeableMapProps> = ({
                         id: "ocsge-friches-impermeable-opacity",
                         type: "opacity",
                         targetLayers: ["ocsge-friches-impermeable-layer"],
-                        defaultValue: 0.9
+                        defaultValue: 0.8
                     }
                 ]
             }
         ],
         infoPanels: [
             {
-                layerId: "friches-layer",
-                title: "Friche",
-                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <FrichesInfo feature={feature} />,
+                layerId: "ocsge-friches-impermeable-layer",
+                title: "Surfaces imperméables",
+                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <OcsgeFrichesInfo feature={feature} showCouverture={false} showUsage={false} />,
             }
         ]
     }), [extendedLandData]);

@@ -111,6 +111,7 @@ export interface FrichesCentroidClusterLayerConfig extends BaseLayerConfig {
 
 export interface OcsgeFrichesLayerConfig extends BaseLayerConfig {
     type: 'ocsge-friches';
+    nomenclature?: NomenclatureType;
 }
 
 export interface OcsgeFrichesImpermeableLayerConfig extends BaseLayerConfig {

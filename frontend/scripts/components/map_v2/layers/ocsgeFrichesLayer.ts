@@ -10,17 +10,26 @@ export class OcsgeFrichesLayer extends BaseLayer implements LayerInterface {
     private nomenclature: NomenclatureType = "couverture";
     private currentFilter: string[] = ALL_OCSGE_COUVERTURE_CODES;
 
-    constructor(millesimeIndex: number, fricheSiteIds?: string[]) {
+    constructor(millesimeIndex: number, fricheSiteIds?: string[], initialNomenclature?: NomenclatureType) {
         super({
             id: "ocsge-friches-layer",
             type: "fill",
             source: "ocsge-friches-source",
             visible: true,
             opacity: 0.7,
+            hoverHighlight: {
+                enabled: true,
+                propertyField: "id",
+                hoverOpacity: 0.4
+            },
         });
 
         this.millesimeIndex = millesimeIndex;
         this.fricheSiteIds = fricheSiteIds || [];
+        this.nomenclature = initialNomenclature || "couverture";
+        this.currentFilter = initialNomenclature === "usage"
+            ? ALL_OCSGE_USAGE_CODES
+            : ALL_OCSGE_COUVERTURE_CODES;
     }
 
     protected getSourceLayerName(): string {
@@ -34,14 +43,12 @@ export class OcsgeFrichesLayer extends BaseLayer implements LayerInterface {
         const cases = Object.entries(colors).map(([key]) => [
             "==", ["get", field], key
         ]);
-        const colorValues = Object.values(colors).map((color: string) =>
-            color.replace('rgb(', 'rgba(').replace(')', ', 0.7)')
-        );
+        const colorValues = Object.values(colors);
 
         return [
             "case",
             ...cases.flatMap((case_, index) => [case_, colorValues[index]]),
-            "rgba(200, 200, 200, 0.7)"
+            "rgb(200, 200, 200)"
         ];
     }
 

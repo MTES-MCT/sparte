@@ -9,9 +9,15 @@ import { InfoValue } from "./InfoValue";
 
 interface OcsgeFrichesInfoProps {
     feature: maplibregl.MapGeoJSONFeature;
+    showCouverture?: boolean;
+    showUsage?: boolean;
 }
 
-export const OcsgeFrichesInfo: React.FC<OcsgeFrichesInfoProps> = ({ feature }) => {
+export const OcsgeFrichesInfo: React.FC<OcsgeFrichesInfoProps> = ({ 
+    feature, 
+    showCouverture = true, 
+    showUsage = true 
+}) => {
     const properties = feature?.properties;
 	
     if (!properties) {
@@ -41,21 +47,25 @@ export const OcsgeFrichesInfo: React.FC<OcsgeFrichesInfoProps> = ({ feature }) =
     const infoData = [
         {
             label: "Surface",
-            value: getSurfaceText()
+            value: getSurfaceText(),
+            show: true
         },
         {
             label: "Année",
-            value: year || 'Non renseigné'
+            value: year || 'Non renseigné',
+            show: true
         },
         {
             label: "Couverture",
-            value: codeCs ? `${codeCs} - ${getCouvertureLabel(codeCs)}` : 'Non renseigné'
+            value: codeCs ? `${codeCs} - ${getCouvertureLabel(codeCs)}` : 'Non renseigné',
+            show: showCouverture
         },
         {
             label: "Usage",
-            value: codeUs ? `${codeUs} - ${getUsageLabel(codeUs)}` : 'Non renseigné'
+            value: codeUs ? `${codeUs} - ${getUsageLabel(codeUs)}` : 'Non renseigné',
+            show: showUsage
         }
-    ];
+    ].filter(item => item.show);
 
     return (
         <InfoContent>

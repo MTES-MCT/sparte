@@ -4,17 +4,18 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { LandFriche } from "@services/types/land_friches";
-import { OcsgeFrichesInfo } from "./infoPanel";
+import { FrichesInfo, OcsgeFrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
+import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 
-interface FrichesArtificialMapProps {
+interface FrichesOcsgeUsageMapProps {
     landData: LandDetailResultType;
     frichesData?: LandFriche[];
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
 }
 
-export const FrichesArtificialMap: React.FC<FrichesArtificialMapProps> = ({
+export const FrichesOcsgeUsageMap: React.FC<FrichesOcsgeUsageMapProps> = ({
     landData,
     frichesData,
     center,
@@ -37,7 +38,7 @@ export const FrichesArtificialMap: React.FC<FrichesArtificialMapProps> = ({
         ],
         layers: [
             ...BASE_LAYERS,
-            { type: "ocsge-friches-artificial" },
+            { type: "ocsge-friches", nomenclature: "usage" },
             { type: "friches-outline" }
         ],
         controlGroups: [
@@ -62,30 +63,41 @@ export const FrichesArtificialMap: React.FC<FrichesArtificialMapProps> = ({
                 ]
             },
             {
-                id: "ocsge-friches-artificial-group",
-                label: "Surfaces artificialisées",
-                description: "Surfaces artificialisées des friches (OCS GE).",
+                id: "ocsge-friches-group",
+                label: "Usage (OCS GE)",
+                description: "Données d'usage du sol à grande échelle (OCS GE).",
                 controls: [
                     {
-                        id: "ocsge-friches-artificial-visibility",
+                        id: "ocsge-friches-visibility",
                         type: "visibility",
-                        targetLayers: ["ocsge-friches-artificial-layer"],
+                        targetLayers: ["ocsge-friches-layer"],
                         defaultValue: true
                     },
                     {
-                        id: "ocsge-friches-artificial-opacity",
+                        id: "ocsge-friches-opacity",
                         type: "opacity",
-                        targetLayers: ["ocsge-friches-artificial-layer"],
+                        targetLayers: ["ocsge-friches-layer"],
                         defaultValue: 0.8
+                    },
+                    {
+                        id: "ocsge-friches-filter",
+                        type: "ocsge-nomenclature-filter",
+                        targetLayers: ["ocsge-friches-layer"],
+                        defaultValue: OCSGE_LAYER_NOMENCLATURES.artificialisation.usage
                     }
                 ]
             }
         ],
         infoPanels: [
             {
-                layerId: "ocsge-friches-artificial-layer",
-                title: "Surfaces artificialisées",
-                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <OcsgeFrichesInfo feature={feature} showCouverture={false} showUsage={false} />,
+                layerId: "friches-layer",
+                title: "Friche",
+                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <FrichesInfo feature={feature} />,
+            },
+            {
+                layerId: "ocsge-friches-layer",
+                title: "Usage (OCS GE)",
+                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <OcsgeFrichesInfo feature={feature} showCouverture={false} />,
             }
         ]
     }), [extendedLandData]);
@@ -96,7 +108,7 @@ export const FrichesArtificialMap: React.FC<FrichesArtificialMapProps> = ({
 
     return (
         <BaseMap
-            id="friches-artificial-map"
+            id="friches-ocsge-usage-map"
             config={config}
             landData={extendedLandData}
             center={center}
