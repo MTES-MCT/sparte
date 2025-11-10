@@ -114,7 +114,7 @@ const DetailsFricheByZonageType: React.FC = () => (
 
 export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
-    const mapSectionRef = useRef<HTMLDivElement>(null);
+    const mapsContainerRef = useRef<HTMLDivElement>(null);
     const { addMap, cleanup } = useMapSync();
     const { isMobile } = useWindowSize();
     const { land_id, land_type, friche_status } = landData;
@@ -181,10 +181,14 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     };
 
     useEffect(() => {
-        if (selectedFriche && mapSectionRef.current) {
-            mapSectionRef.current.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
+        if (selectedFriche && mapsContainerRef.current) {
+            const containerTop = mapsContainerRef.current.offsetTop;
+            const headerOffset = 180;
+            const scrollPosition = containerTop - headerOffset;
+            
+            window.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
             });
         }
     }, [selectedFriche]);
@@ -424,7 +428,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     </div>
                 </div>
             </div>
-            <MapsContainer ref={mapSectionRef}>
+            <MapsContainer ref={mapsContainerRef}>
                 <StickyMapColumn $isMobile={isMobile}>
                     <h2 className="fr-mb-3w">Friches</h2>
                     <FrichesMap
