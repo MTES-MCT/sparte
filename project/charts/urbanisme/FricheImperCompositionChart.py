@@ -106,7 +106,7 @@ class FricheImperCompositionChart(DiagnosticChart):
                     "dataLabels": {
                         "enabled": True,
                         "overflow": "justify",
-                        "format": "{point.name} - {point.percentage:.2f}%",
+                        "format": "{point.name} - {point.percentage:.1f}%",
                         "style": {
                             "textOverflow": "clip",
                             "width": "100px",

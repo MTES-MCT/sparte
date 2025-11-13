@@ -14,11 +14,6 @@ export class OcsgeFrichesArtificialLayer extends BaseLayer implements LayerInter
             source: "ocsge-friches-source",
             visible: true,
             opacity: 0.7,
-            hoverHighlight: {
-                enabled: true,
-                propertyField: "id",
-                hoverOpacity: 0.4
-            },
         });
 
         this.millesimeIndex = millesimeIndex;

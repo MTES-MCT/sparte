@@ -343,7 +343,14 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
             ].includes(friche_status) && (
                 <>
-                    <h2 className="fr-mt-7w">Composition des friches sans projet</h2>
+                    <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
+                    <div className="fr-callout fr-icon-information-line fr-mb-3w">
+                        <h3 className="fr-callout__title fr-text--md">Pourquoi se concentrer sur les friches sans projet ?</h3>
+                        <p className="fr-callout__text fr-text--sm">
+                            Les friches sans projet représentent des opportunités concrètes pour limiter l'artificialisation des sols. 
+                            Comprendre leurs caractéristiques (type, surface, pollution, zonage, ...) permet d'identifier les opportunités de réhabilitation les plus pertinentes.
+                        </p>
+                    </div>
                     <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                         {FRICHES_COMPOSITION_CHARTS.map((chart) => (
                             <div key={chart.id} className="fr-col-12 fr-col-md-6">
@@ -359,43 +366,30 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                             </div>
                         ))}
                     </div>
-                </>
-            )}
-            {[
-                FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
-                FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
-            ].includes(friche_status) && [
-                LandType.REGION,
-                LandType.DEPARTEMENT,
-            ].includes(land_type) && (
-                <>
-                    <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
-                    <div className="fr-callout fr-icon-information-line fr-mb-3w">
-                        <h3 className="fr-callout__title fr-text--md">Pourquoi se concentrer sur les friches sans projet ?</h3>
-                        <p className="fr-callout__text fr-text--sm">
-                            Les friches sans projet représentent des opportunités concrètes pour limiter l'artificialisation des sols. 
-                            Comprendre leurs caractéristiques (type, surface, pollution, zonage, ...) permet d'identifier les opportunités de réhabilitation les plus pertinentes.
-                        </p>
-                    </div>
-                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                        {FRICHES_ANALYSIS_CHARTS.map((chart) => (
-                            <div key={chart.id} className="fr-col-12 fr-col-md-6">
-                                <div className="bg-white fr-p-2w rounded">
-                                    <FrichesChart
-                                        id={chart.id}
-                                        land_id={land_id}
-                                        land_type={land_type}
-                                        sources={chart.sources}
-                                        showDataTable={true}
-                                    >
-                                        {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
-                                        {chart.id === 'friche_surface' && <DetailsFricheBySize />}
-                                        {chart.id === 'friche_zonage_type' && <DetailsFricheByZonageType />}
-                                    </FrichesChart>
+                    {[
+                        LandType.REGION,
+                        LandType.DEPARTEMENT,
+                    ].includes(land_type) && (
+                        <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+                            {FRICHES_ANALYSIS_CHARTS.map((chart) => (
+                                <div key={chart.id} className="fr-col-12 fr-col-md-6">
+                                    <div className="bg-white fr-p-2w rounded">
+                                        <FrichesChart
+                                            id={chart.id}
+                                            land_id={land_id}
+                                            land_type={land_type}
+                                            sources={chart.sources}
+                                            showDataTable={true}
+                                        >
+                                            {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
+                                            {chart.id === 'friche_surface' && <DetailsFricheBySize />}
+                                            {chart.id === 'friche_zonage_type' && <DetailsFricheByZonageType />}
+                                        </FrichesChart>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </>
             )}
             <h2 className="fr-mt-7w">Détail des friches</h2>
@@ -446,15 +440,6 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 </StickyMapColumn>
                 <ScrollableMapsColumn>
                     <div>
-                        <h2>Surfaces imperméables des friches</h2>
-                        <FrichesImpermeableMap
-                            landData={landData}
-                            frichesData={frichesData}
-                            center={selectedFriche}
-                            onMapLoad={handleMapLoad}
-                        />
-                    </div>
-                    <div>
                         <h2>Surfaces artificialisées des friches</h2>
                         <FrichesArtificialMap
                             landData={landData}
@@ -464,7 +449,16 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         />
                     </div>
                     <div>
-                        <h2>Couverture (OCS GE) des friches</h2>
+                        <h2>Surfaces imperméables des friches</h2>
+                        <FrichesImpermeableMap
+                            landData={landData}
+                            frichesData={frichesData}
+                            center={selectedFriche}
+                            onMapLoad={handleMapLoad}
+                        />
+                    </div>
+                    <div>
+                        <h2>Couverture des friches</h2>
                         <FrichesOcsgeCouvertureMap
                             landData={landData}
                             frichesData={frichesData}
@@ -473,7 +467,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         />
                     </div>
                     <div>
-                        <h2>Usage (OCS GE) des friches</h2>
+                        <h2>Usage des friches</h2>
                         <FrichesOcsgeUsageMap
                             landData={landData}
                             frichesData={frichesData}

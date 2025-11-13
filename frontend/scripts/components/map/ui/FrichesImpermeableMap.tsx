@@ -4,7 +4,6 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { LandFriche } from "@services/types/land_friches";
-import { OcsgeFrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 
 interface FrichesImpermeableMapProps {
@@ -76,16 +75,9 @@ export const FrichesImpermeableMap: React.FC<FrichesImpermeableMapProps> = ({
                         id: "ocsge-friches-impermeable-opacity",
                         type: "opacity",
                         targetLayers: ["ocsge-friches-impermeable-layer"],
-                        defaultValue: 0.8
+                        defaultValue: 0.6
                     }
                 ]
-            }
-        ],
-        infoPanels: [
-            {
-                layerId: "ocsge-friches-impermeable-layer",
-                title: "Surfaces imperméables",
-                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <OcsgeFrichesInfo feature={feature} showCouverture={false} showUsage={false} />,
             }
         ]
     }), [extendedLandData]);
