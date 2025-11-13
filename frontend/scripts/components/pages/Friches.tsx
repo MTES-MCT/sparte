@@ -446,8 +446,8 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 </StickyMapColumn>
                 <ScrollableMapsColumn>
                     <div>
-                        <h2>Surfaces imperméables des friches</h2>
-                        <FrichesImpermeableMap
+                        <h2>Surfaces artificialisées des friches</h2>
+                        <FrichesArtificialMap
                             landData={landData}
                             frichesData={frichesData}
                             center={selectedFriche}
@@ -455,8 +455,8 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         />
                     </div>
                     <div>
-                        <h2>Surfaces artificialisées des friches</h2>
-                        <FrichesArtificialMap
+                        <h2>Surfaces imperméables des friches</h2>
+                        <FrichesImpermeableMap
                             landData={landData}
                             frichesData={frichesData}
                             center={selectedFriche}
