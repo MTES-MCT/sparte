@@ -4,8 +4,8 @@ import type { LayerInterface } from "../types/layerInterface";
 import { IMPERMEABILISATION_COLOR } from "../constants/config";
 
 export class OcsgeFrichesImpermeableLayer extends BaseLayer implements LayerInterface {
-    private millesimeIndex: number;
-    private fricheSiteIds: string[] = [];
+    private readonly millesimeIndex: number;
+    private readonly fricheSiteIds: string[] = [];
 
     constructor(millesimeIndex: number, fricheSiteIds?: string[]) {
         super({

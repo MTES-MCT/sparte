@@ -14,6 +14,8 @@ import type { InfoPanelState } from "../types/infoPanel";
 import type { StatsState } from "../stats/StatsStateManager";
 import type { LandDetailResultType } from "@services/types/land";
 import type { LayerId } from "../types/registry";
+import type { BaseSource } from "../sources/baseSource";
+import type { BaseLayer } from "../layers/baseLayer";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -96,66 +98,103 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         updateControls,
     } = useMap(landData);
 
-    const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
-        if (memoizedConfig && !isInitialized.current) {
-            // Initialiser la carte et récupérer les instances de sources/layers
-            const { sources, layers } = await initMapFromConfig(memoizedConfig, map, landData);
-            
-            // Initialiser le gestionnaire de stats si des layers en ont besoin
-            let statsMgr: StatsManager | undefined;
-            if (memoizedConfig.layers?.some(l => l.stats)) {
-                statsMgr = new StatsManager(map);
-                
-                for (const layerConfig of memoizedConfig.layers) {
-                    if (layerConfig.stats) {
-                        const layerId = `${layerConfig.type}-layer` as LayerId;
-                        const layer = layers.get(layerId);
-                        if (layer && 'extractStats' in layer && typeof layer.extractStats === 'function') {
-                            statsMgr.registerStats(
-                                layerId,
-                                (features: maplibregl.MapGeoJSONFeature[]) => (layer as any).extractStats(features)
-                            );
-                            statsMgr.enableStats(layerId);
-                        }
-                    }
-                }
-
-                statsMgr.subscribe(setStatsState);
-                
-                setStatsManager(statsMgr);
-            }
-
-            // Initialiser le gestionnaire de contrôles si des groupes sont définis
-            if (memoizedConfig.controlGroups?.length > 0) {
-                const manager = new ControlsManager(
-                    memoizedConfig.controlGroups,
-                    sources,
-                    layers,
-                    statsMgr
-                );
-                
-                await manager.applyDefaultValues();
-                
-                setControlsManager(manager);
-            }
-
-            // Initialiser le gestionnaire d'info panels si des info panels sont définis
-            if (memoizedConfig.infoPanels?.length > 0) {
-                const infoPanelMgr = new InfoPanelManager(map);
-                
-                for (const infoPanelConfig of memoizedConfig.infoPanels) {
-                    infoPanelMgr.registerInfo(infoPanelConfig);
-                }
-
-                infoPanelMgr.subscribe(setInfoPanelState);
-                
-                setInfoPanelManager(infoPanelMgr);
-            }
-
-            isInitialized.current = true;
-            onMapLoad?.(map);
+    const initializeStatsManager = useCallback((
+        map: maplibregl.Map,
+        layers: Map<string, BaseLayer>,
+        layerConfigs: MapConfig['layers']
+    ): StatsManager | undefined => {
+        if (!layerConfigs?.some(l => l.stats)) {
+            return undefined;
         }
-    }, [memoizedConfig, landData, onMapLoad, id]);
+
+        const statsMgr = new StatsManager(map);
+        
+        for (const layerConfig of layerConfigs) {
+            if (!layerConfig.stats) continue;
+            
+            const layerId = `${layerConfig.type}-layer` as LayerId;
+            const layer = layers.get(layerId);
+            
+            if (layer && 'extractStats' in layer && typeof layer.extractStats === 'function') {
+                statsMgr.registerStats(
+                    layerId,
+                    (features: maplibregl.MapGeoJSONFeature[]) => (layer as any).extractStats(features)
+                );
+                statsMgr.enableStats(layerId);
+            }
+        }
+
+        statsMgr.subscribe(setStatsState);
+        return statsMgr;
+    }, []);
+
+    const initializeControlsManager = useCallback(async (
+        controlGroups: MapConfig['controlGroups'],
+        sources: Map<string, BaseSource>,
+        layers: Map<string, BaseLayer>,
+        statsMgr?: StatsManager
+    ): Promise<ControlsManager | undefined> => {
+        if (!controlGroups || controlGroups.length === 0) {
+            return undefined;
+        }
+
+        const manager = new ControlsManager(controlGroups, sources, layers, statsMgr);
+        await manager.applyDefaultValues();
+        return manager;
+    }, []);
+
+    const initializeInfoPanelManager = useCallback((
+        map: maplibregl.Map,
+        infoPanels: MapConfig['infoPanels']
+    ): InfoPanelManager | undefined => {
+        if (!infoPanels || infoPanels.length === 0) {
+            return undefined;
+        }
+
+        const infoPanelMgr = new InfoPanelManager(map);
+        
+        for (const infoPanelConfig of infoPanels) {
+            infoPanelMgr.registerInfo(infoPanelConfig);
+        }
+
+        infoPanelMgr.subscribe(setInfoPanelState);
+        return infoPanelMgr;
+    }, []);
+
+    const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
+        if (!memoizedConfig || isInitialized.current) {
+            return;
+        }
+
+        // Initialiser la carte et récupérer les instances de sources/layers
+        const { sources, layers } = await initMapFromConfig(memoizedConfig, map, landData);
+        
+        // Initialiser le gestionnaire de stats si des layers en ont besoin
+        const statsMgr = initializeStatsManager(map, layers, memoizedConfig.layers);
+        if (statsMgr) {
+            setStatsManager(statsMgr);
+        }
+
+        // Initialiser le gestionnaire de contrôles si des groupes sont définis
+        const controlsMgr = await initializeControlsManager(
+            memoizedConfig.controlGroups,
+            sources,
+            layers,
+            statsMgr
+        );
+        if (controlsMgr) {
+            setControlsManager(controlsMgr);
+        }
+
+        // Initialiser le gestionnaire d'info panels si des info panels sont définis
+        const infoPanelMgr = initializeInfoPanelManager(map, memoizedConfig.infoPanels);
+        if (infoPanelMgr) {
+            setInfoPanelManager(infoPanelMgr);
+        }
+
+        isInitialized.current = true;
+        onMapLoad?.(map);
+    }, [memoizedConfig, landData, onMapLoad, id, initializeStatsManager, initializeControlsManager, initializeInfoPanelManager]);
 
     useEffect(() => {
         if (mapDiv.current && !mapRef.current) {

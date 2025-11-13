@@ -87,9 +87,9 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
             const properties = feature.properties;
             const featureArea = area(feature.geometry);
 
-            if (properties && properties[this.getPositiveField()] === true) {
+            if (properties?.[this.getPositiveField()] === true) {
                 positiveSurface += featureArea;
-            } else if (properties && properties[this.getNegativeField()] === true) {
+            } else if (properties?.[this.getNegativeField()] === true) {
                 negativeSurface += featureArea;
             }
         }

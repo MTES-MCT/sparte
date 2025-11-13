@@ -5,7 +5,7 @@ import { getLastMillesimeIndex } from "../utils/ocsge";
 import { OCSGE_TILES_URL } from "../constants/config";
 
 export class OcsgeFrichesSource extends BaseOcsgeSource {
-    private millesimeIndex: number;
+    private readonly millesimeIndex: number;
 
     constructor(landData: LandDetailResultType) {
         super({

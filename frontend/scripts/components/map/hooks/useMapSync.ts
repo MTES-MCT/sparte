@@ -13,14 +13,14 @@ export const useMapSync = () => {
         const bearing = master.getBearing();
         const pitch = master.getPitch();
 
-        clones.forEach((clone) => {
+        for (const clone of clones) {
             clone.jumpTo({
                 center,
                 zoom,
                 bearing,
                 pitch
             });
-        });
+        }
     };
 
     const setupSync = useCallback(() => {
@@ -29,11 +29,11 @@ export const useMapSync = () => {
             return;
         }
 
-        syncFunctionsRef.current.forEach((fn, index) => {
+        for (const [index, fn] of syncFunctionsRef.current.entries()) {
             if (fn && maps[index]) {
                 maps[index].off('move', fn);
             }
-        });
+        }
 
         syncFunctionsRef.current = maps.map((map, index) => {
             const clones = maps.filter((_, i) => i !== index);
@@ -45,21 +45,21 @@ export const useMapSync = () => {
         });
 
         turnOffRef.current = () => {
-            maps.forEach((map, index) => {
+            for (const [index, map] of maps.entries()) {
                 const syncFn = syncFunctionsRef.current[index];
                 if (syncFn) {
                     map.off('move', syncFn);
                 }
-            });
+            }
         };
 
         turnOnRef.current = () => {
-            maps.forEach((map, index) => {
+            for (const [index, map] of maps.entries()) {
                 const syncFn = syncFunctionsRef.current[index];
                 if (syncFn) {
                     map.on('move', syncFn);
                 }
-            });
+            }
         };
 
         if (turnOnRef.current) turnOnRef.current();

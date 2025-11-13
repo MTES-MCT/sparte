@@ -5,8 +5,8 @@ import type { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, ALL_OCSGE_COUVERTURE_CODES, ALL_OCSGE_USAGE_CODES } from "../constants/ocsge_nomenclatures";
 
 export class OcsgeFrichesLayer extends BaseLayer implements LayerInterface {
-    private millesimeIndex: number;
-    private fricheSiteIds: string[] = [];
+    private readonly millesimeIndex: number;
+    private readonly fricheSiteIds: string[] = [];
     private nomenclature: NomenclatureType = "couverture";
     private currentFilter: string[] = ALL_OCSGE_COUVERTURE_CODES;
 

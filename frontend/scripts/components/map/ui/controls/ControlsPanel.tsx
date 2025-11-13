@@ -120,7 +120,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-	const [_forceUpdate, setForceUpdate] = useState(0);
+	const [, setForceUpdate] = useState(0);
 
 	useEffect(() => {
 		const unsubscribe = manager.subscribe(() => {

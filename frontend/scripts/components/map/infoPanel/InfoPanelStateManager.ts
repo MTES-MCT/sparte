@@ -1,7 +1,7 @@
 import { InfoPanelState, LayerInfo } from "../types/infoPanel";
 
 export class InfoPanelStateManager {
-    private state: InfoPanelState = {
+    private readonly state: InfoPanelState = {
         layers: []
     };
     private readonly updateCallbacks: Set<(state: InfoPanelState) => void> = new Set();

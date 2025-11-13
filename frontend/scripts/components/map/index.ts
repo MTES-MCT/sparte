@@ -17,6 +17,7 @@ export { ControlsManager } from './controls/ControlsManager';
 export { StatsBar } from './ui/stats';
 
 export { useMap } from './hooks/useMap';
+export { useMapSync } from './hooks/useMapSync';
 export {
     getLastMillesimeIndex,
     getStartMillesimeIndex,

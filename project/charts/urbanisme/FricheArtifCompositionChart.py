@@ -139,7 +139,7 @@ class FricheArtifCompositionChartExport(FricheArtifCompositionChart):
     def param(self):
         years_text = self.get_years_text()
         title_text = (
-            f"Surfaces artificialisées des friches sans projet " f"sur le territoire de {self.land.name}{years_text}"
+            f"Surfaces artificialisées des friches sans projet sur le territoire de {self.land.name}{years_text}"
         )
         return super().param | {
             "title": {"text": title_text},

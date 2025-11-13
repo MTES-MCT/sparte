@@ -57,7 +57,7 @@ export abstract class BaseSource {
 
         // 6. Attendre que la source soit chargée et forcer le rafraîchissement des clusters
         await this.waitForSourceLoad();
-        
+
         // Forcer la mise à jour des markers en déclenchant un événement moveend
         // Cela force le recalcul des clusters et la mise à jour des markers
         this.map.fire('moveend');
@@ -74,7 +74,7 @@ export abstract class BaseSource {
             }
 
             const checkLoaded = () => {
-                if (this.map!.isSourceLoaded(this.sourceId!)) {
+                if (this.map!.isSourceLoaded(this.sourceId)) {
                     this.map!.off('sourcedata', checkLoaded);
                     resolve();
                 }

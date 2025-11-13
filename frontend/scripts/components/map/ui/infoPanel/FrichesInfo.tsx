@@ -70,7 +70,7 @@ export const FrichesInfo: React.FC<FrichesInfoProps> = ({ feature }) => {
             {infoData.map((item, index) => (
                 <InfoRow key={`${item.label}-${index}`}>
                     <InfoLabel>{item.label}</InfoLabel>
-                    <InfoValue>{typeof item.value === 'string' ? item.value : item.value}</InfoValue>
+                    <InfoValue>{item.value}</InfoValue>
                 </InfoRow>
             ))}
         </InfoContent>

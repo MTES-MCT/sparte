@@ -14,7 +14,7 @@ import { SearchInput } from "@components/ui/SearchInput";
 import { FricheStatusEnum, LandDetailResultType, LandType } from "@services/types/land";
 import { FricheOverview, FricheAbstract } from "@components/features/friches";
 import useWindowSize from "@hooks/useWindowSize";
-import { useMapSync } from "@hooks/useMapSync";
+import { useMapSync } from "@components/map";
 import type maplibregl from "maplibre-gl";
 
 interface FrichesProps {

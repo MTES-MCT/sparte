@@ -79,12 +79,7 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
         const coordinates = coords.coordinates as [number, number];
 
         let marker = this.markers[id];
-        if (!marker) {
-            const el = this.createDonutElement(props);
-            marker = this.markers[id] = new maplibregl.Marker({
-                element: el
-            }).setLngLat(coordinates);
-        } else {
+        if (marker) {
             const oldElement = marker.getElement();
             const isOnScreen = this.markersOnScreen[id] !== undefined;
 
@@ -105,6 +100,11 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
             if (isOnScreen && this.map) {
                 marker.addTo(this.map);
             }
+        } else {
+            const el = this.createDonutElement(props);
+            marker = this.markers[id] = new maplibregl.Marker({
+                element: el
+            }).setLngLat(coordinates);
         }
 
         return { id, marker };

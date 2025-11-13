@@ -1,4 +1,3 @@
-import type maplibregl from "maplibre-gl";
 import type { FilterSpecification } from 'maplibre-gl';
 
 export type LayerType =
