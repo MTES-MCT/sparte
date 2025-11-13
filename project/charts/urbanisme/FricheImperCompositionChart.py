@@ -50,17 +50,17 @@ class FricheImperCompositionChart(DiagnosticChart):
             "headers": headers,
             "rows": [
                 {
-                    "name": "Imperméabilisé",
+                    "name": "Imperméable",
                     "data": [
-                        "Imperméabilisé",
+                        "Imperméable",
                         round(data["surface_imper"], DEFAULT_VALUE_DECIMALS),
                         round(data["surface_imper"] / total * 100, 2) if total > 0 else 0,
                     ],
                 },
                 {
-                    "name": "Non imperméabilisé",
+                    "name": "Non imperméable",
                     "data": [
-                        "Non imperméabilisé",
+                        "Non imperméable",
                         round(data["surface_non_imper"], DEFAULT_VALUE_DECIMALS),
                         round(data["surface_non_imper"] / total * 100, 2) if total > 0 else 0,
                     ],
@@ -76,12 +76,12 @@ class FricheImperCompositionChart(DiagnosticChart):
                 "name": "Composition imperméabilisation",
                 "data": [
                     {
-                        "name": "Imperméabilisé",
+                        "name": "Imperméable",
                         "y": data["surface_imper"],
                         "color": IMPERMEABILISATION_COLOR,
                     },
                     {
-                        "name": "Non imperméabilisé",
+                        "name": "Non imperméable",
                         "y": data["surface_non_imper"],
                         "color": NON_IMPERMEABLE_COLOR,
                     },
@@ -92,7 +92,7 @@ class FricheImperCompositionChart(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Part imperméabilisée des friches sans projet (en surface)"},
+            "title": {"text": "Surfaces imperméables des friches sans projet"},
             "series": self.series,
             "chart": {"type": "pie"},
             "tooltip": {
@@ -138,10 +138,7 @@ class FricheImperCompositionChartExport(FricheImperCompositionChart):
     @property
     def param(self):
         years_text = self.get_years_text()
-        title_text = (
-            f"Part imperméabilisée des friches sans projet (en surface) "
-            f"sur le territoire de {self.land.name}{years_text}"
-        )
+        title_text = f"Surfaces imperméables des friches sans projet sur le territoire de {self.land.name}{years_text}"
         return super().param | {
             "title": {"text": title_text},
             "credits": OCSGE_CARTOFRICHES_CREDITS,

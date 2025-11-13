@@ -4,7 +4,7 @@ import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
-import { FrichesMap } from "@components/map/friches/FrichesMap";
+import { FrichesMap, FrichesImpermeableMap, FrichesArtificialMap, FrichesOcsgeCouvertureMap, FrichesOcsgeUsageMap, useMapSync } from "@components/map";
 import { STATUT_BADGE_CONFIG, STATUT_ORDER } from "@components/features/friches/constants";
 import { LandFriche } from "@services/types/land_friches";
 import { useDataTable } from "@hooks/useDataTable";
@@ -13,6 +13,8 @@ import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
 import { FricheStatusEnum, LandDetailResultType, LandType } from "@services/types/land";
 import { FricheOverview, FricheAbstract } from "@components/features/friches";
+import useWindowSize from "@hooks/useWindowSize";
+import type maplibregl from "maplibre-gl";
 
 interface FrichesProps {
     landData: LandDetailResultType;
@@ -35,9 +37,47 @@ const SearchContainer = styled.div`
     margin-left: auto;
 `;
 
-const FRICHES_CHARTS: Array<{ id: string; sources: string[] }> = [
+const MapsContainer = styled.div`
+    display: flex;
+    align-items: flex-start;
+    gap: 2rem;
+    margin-top: 3rem;
+    
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+`;
+
+const StickyMapColumn = styled.div<{ $isMobile: boolean }>`
+    ${({ $isMobile }) => !$isMobile && `
+        position: sticky;
+        top: 11rem;
+    `}
+    width: 50%;
+    
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+`;
+
+const ScrollableMapsColumn = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    flex: 1;
+    width: 50%;
+    
+    @media (max-width: 768px) {
+        width: 100%;
+    }
+`;
+
+const FRICHES_COMPOSITION_CHARTS: Array<{ id: string; sources: string[] }> = [
     { id: 'friche_artif_composition', sources: ['cartofriches', 'ocsge'] },
     { id: 'friche_imper_composition', sources: ['cartofriches', 'ocsge'] },
+];
+
+const FRICHES_ANALYSIS_CHARTS: Array<{ id: string; sources: string[] }> = [
     { id: 'friche_pollution', sources: ['cartofriches'] },
     { id: 'friche_surface', sources: ['cartofriches'] },
     { id: 'friche_type', sources: ['cartofriches'] },
@@ -73,9 +113,15 @@ const DetailsFricheByZonageType: React.FC = () => (
 
 export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const [selectedFriche, setSelectedFriche] = useState<[number, number] | null>(null);
-    const mapSectionRef = useRef<HTMLDivElement>(null);
+    const mapsContainerRef = useRef<HTMLDivElement>(null);
+    const { addMap, cleanup } = useMapSync();
+    const { isMobile } = useWindowSize();
     const { land_id, land_type, friche_status } = landData;
     const { data: frichesData } = useGetLandFrichesQuery({ land_type, land_id });
+
+    const handleMapLoad = (map: maplibregl.Map) => {
+        addMap(map);
+    };
 
     const {
         paginatedData,
@@ -133,15 +179,25 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
         setSelectedFriche(point.coordinates);
     };
 
-    // Scroll vers la carte quand une friche est sélectionnée
     useEffect(() => {
-        if (selectedFriche && mapSectionRef.current) {
-            mapSectionRef.current.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
+        if (selectedFriche && mapsContainerRef.current) {
+            const containerTop = mapsContainerRef.current.offsetTop;
+            const headerOffset = 180;
+            const scrollPosition = containerTop - headerOffset;
+            
+            window.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
             });
         }
     }, [selectedFriche]);
+
+
+    useEffect(() => {
+        return () => {
+            cleanup();
+        };
+    }, [cleanup]);
 
     const columns = [
         {
@@ -227,7 +283,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     ];
 
 	return (
-		<div className="fr-container--fluid fr-p-3w">
+		<div className="fr-p-3w">
 			<div className="fr-grid-row fr-grid-row--gutters">
 				<div className="fr-col-12">
                     <Guide
@@ -285,6 +341,29 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             {[
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
+            ].includes(friche_status) && (
+                <>
+                    <h2 className="fr-mt-7w">Composition des friches sans projet</h2>
+                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+                        {FRICHES_COMPOSITION_CHARTS.map((chart) => (
+                            <div key={chart.id} className="fr-col-12 fr-col-md-6">
+                                <div className="bg-white fr-p-2w rounded">
+                                    <FrichesChart
+                                        id={chart.id}
+                                        land_id={land_id}
+                                        land_type={land_type}
+                                        sources={chart.sources}
+                                        showDataTable={true}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </>
+            )}
+            {[
+                FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
+                FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
             ].includes(friche_status) && [
                 LandType.REGION,
                 LandType.DEPARTEMENT,
@@ -299,7 +378,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         </p>
                     </div>
                     <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                        {FRICHES_CHARTS.map((chart) => (
+                        {FRICHES_ANALYSIS_CHARTS.map((chart) => (
                             <div key={chart.id} className="fr-col-12 fr-col-md-6">
                                 <div className="bg-white fr-p-2w rounded">
                                     <FrichesChart
@@ -355,15 +434,55 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     </div>
                 </div>
             </div>
-            <h2 className="fr-mt-2w">Carte des friches</h2>
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w" ref={mapSectionRef}>
-                <div className="fr-col-12">
+            <MapsContainer ref={mapsContainerRef}>
+                <StickyMapColumn $isMobile={isMobile}>
+                    <h2 className="fr-mb-3w">Friches</h2>
                     <FrichesMap
                         landData={landData}
+                        frichesData={frichesData}
                         center={selectedFriche}
+                        onMapLoad={handleMapLoad}
                     />
-                </div>
-            </div>
+                </StickyMapColumn>
+                <ScrollableMapsColumn>
+                    <div>
+                        <h2>Surfaces imperméables des friches</h2>
+                        <FrichesImpermeableMap
+                            landData={landData}
+                            frichesData={frichesData}
+                            center={selectedFriche}
+                            onMapLoad={handleMapLoad}
+                        />
+                    </div>
+                    <div>
+                        <h2>Surfaces artificialisées des friches</h2>
+                        <FrichesArtificialMap
+                            landData={landData}
+                            frichesData={frichesData}
+                            center={selectedFriche}
+                            onMapLoad={handleMapLoad}
+                        />
+                    </div>
+                    <div>
+                        <h2>Couverture (OCS GE) des friches</h2>
+                        <FrichesOcsgeCouvertureMap
+                            landData={landData}
+                            frichesData={frichesData}
+                            center={selectedFriche}
+                            onMapLoad={handleMapLoad}
+                        />
+                    </div>
+                    <div>
+                        <h2>Usage (OCS GE) des friches</h2>
+                        <FrichesOcsgeUsageMap
+                            landData={landData}
+                            frichesData={frichesData}
+                            center={selectedFriche}
+                            onMapLoad={handleMapLoad}
+                        />
+                    </div>
+                </ScrollableMapsColumn>
+            </MapsContainer>
             <h2 className="fr-mt-10w">Pour aller plus loin dans votre démarche de réhabilitation de friches </h2>
             <div className="fr-callout fr-icon-information-line">
                 <h3 className="fr-callout__title fr-text--md">Estimez les impacts environnementaux, sociaux et économiques de votre projet de réhabilitation grâce à Bénéfriches</h3>

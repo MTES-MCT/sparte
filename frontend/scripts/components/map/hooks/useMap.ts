@@ -1,158 +1,80 @@
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback, useEffect, useMemo } from "react";
 import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
-import { MapConfig, ControlRefs } from "../types";
-import { renderToString } from "react-dom/server";
+import { DEFAULT_MAP_STYLE, FRENCH_LOCALE } from "../constants/config";
+import { calculateMaxBoundsWithPadding } from "../utils/bounds";
+import type { LandDetailResultType } from "@services/types/land";
 
-const FIT_OPTIONS = {
-    padding: { top: 50, bottom: 50, left: 50, right: 50 },
-    speed: 0.1,
-};
+let PMTILES_PROTOCOL_REGISTERED = false;
 
-export const useMap = (config: MapConfig) => {
+export const useMap = (landData: LandDetailResultType) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
-    const controlsRef = useRef<ControlRefs>({});
-    const popupRef = useRef<maplibregl.Popup | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
-    const hasInitializedRef = useRef(false);
+    const controlsRef = useRef<{ [key: string]: maplibregl.IControl }>({});
+
+    const bounds = landData.bounds;
+    const maxBounds = useMemo(() => {
+        return bounds ? calculateMaxBoundsWithPadding(bounds, landData.land_type) : undefined;
+    }, [bounds, landData.land_type]);
 
     const initializeMap = useCallback((container: HTMLElement) => {
-        const protocol = new Protocol();
-        maplibregl.addProtocol("pmtiles", protocol.tile);
+        if (!PMTILES_PROTOCOL_REGISTERED) {
+            const protocol = new Protocol();
+            maplibregl.addProtocol("pmtiles", protocol.tile);
+            PMTILES_PROTOCOL_REGISTERED = true;
+        }
 
         mapRef.current = new maplibregl.Map({
             container,
-            style: config.style,
-            bounds: config.bounds,
-            maxBounds: config.maxBounds,
-            fitBoundsOptions: FIT_OPTIONS,
-            cooperativeGestures: config.controls?.cooperativeGestures,
+            style: DEFAULT_MAP_STYLE,
+            bounds: bounds,
+            maxBounds: maxBounds,
             maplibreLogo: false,
             attributionControl: false,
             fadeDuration: 0,
-            locale: {
-                'AttributionControl.ToggleAttribution': 'Ouvrir les crédits',
-                'AttributionControl.MapFeedback': 'Signaler une erreur cartographique',
-                'FullscreenControl.Enter': 'Entrer en plein écran',
-                'FullscreenControl.Exit': 'Quitter le plein écran',
-                'GeolocateControl.FindMyLocation': 'Trouver ma position',
-                'GeolocateControl.LocationNotAvailable': 'Localisation non disponible',
-                'LogoControl.Title': 'MapLibre logo',
-                'Map.Title': 'Carte',
-                'Marker.Title': 'Marqueur',
-                'NavigationControl.ResetBearing': 'Réinitialiser l\'orientation',
-                'NavigationControl.ZoomIn': 'Zoomer',
-                'NavigationControl.ZoomOut': 'Dézoomer',
-                'Popup.Close': 'Fermer la fenêtre',
-                'ScaleControl.Meters': 'm',
-                'ScaleControl.Kilometers': 'km',
-                'GlobeControl.Enable': 'Activer le mode globe',
-                'GlobeControl.Disable': 'Désactiver le mode globe',
-                'TerrainControl.Enable': 'Activer le mode terrain',
-                'TerrainControl.Disable': 'Désactiver le mode terrain',
-                'CooperativeGesturesHandler.WindowsHelpText': 'Utilisez Ctrl + défilement pour zoomer la carte',
-                'CooperativeGesturesHandler.MacHelpText': 'Utilisez ⌘ + défilement pour zoomer la carte',
-                'CooperativeGesturesHandler.MobileHelpText': 'Pincer pour zoomer la carte',
-            },
-        });
-
-        popupRef.current = new maplibregl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            maxWidth: '400px'
+            cooperativeGestures: true,
+            locale: FRENCH_LOCALE,
         });
 
         mapRef.current.on("load", () => {
             setIsMapLoaded(true);
         });
-    }, [config]);
 
-    const setupPopups = useCallback(() => {
-        if (!mapRef.current || !popupRef.current || !config.popups) return;
+        return mapRef.current;
+    }, [bounds, maxBounds]);
 
-        config.popups.forEach((popupConfig) => {
-            const { layerId, renderContent } = popupConfig;
+    const addControl = useCallback((control: maplibregl.IControl, id: string) => {
+        if (!mapRef.current || controlsRef.current[id]) return;
 
-            mapRef.current!.on('mouseenter', layerId, () => {
-                mapRef.current!.getCanvas().style.cursor = 'pointer';
-            });
+        controlsRef.current[id] = control;
+        mapRef.current.addControl(control, "top-right");
+    }, []);
 
-            mapRef.current!.on('mouseleave', layerId, () => {
-                mapRef.current!.getCanvas().style.cursor = '';
-                popupRef.current!.remove();
-            });
+    const addNavigationControl = useCallback(() => {
+        addControl(new maplibregl.NavigationControl(), 'navigationControl');
+    }, [addControl]);
 
-            mapRef.current!.on('mousemove', layerId, (e) => {
-                const feature = e.features?.[0];
-                if (feature) {
-                    const content = renderContent(feature, e);
-                    const htmlContent = typeof content === 'string' ? content : renderToString(content);
-                    
-                    popupRef.current!
-                        .setLngLat(e.lngLat)
-                        .setHTML(htmlContent)
-                        .addTo(mapRef.current);
-                }
-            });
-        });
-    }, [config.popups]);
+    const addFullscreenControl = useCallback(() => {
+        const mapContainer = mapRef.current?.getContainer();
+        const mapWrapper = mapContainer?.parentElement;
+
+        if (mapWrapper?.id) {
+            addControl(new maplibregl.FullscreenControl({ container: mapWrapper }), 'fullscreenControl');
+        } else {
+            addControl(new maplibregl.FullscreenControl(), 'fullscreenControl');
+        }
+    }, [addControl]);
 
     const updateControls = useCallback(() => {
-        if (!mapRef.current) return;
+        addNavigationControl();
+        addFullscreenControl();
+    }, [addNavigationControl, addFullscreenControl]);
 
-        // Scroll zoom
-        const scrollZoom = mapRef.current.scrollZoom;
-        config.controls?.scrollZoom ? scrollZoom.enable() : scrollZoom.disable();
-
-        // Navigation control
-        if (config.controls?.navigationControl && !controlsRef.current.navigationControl) {
-            const nav = new maplibregl.NavigationControl();
-            controlsRef.current.navigationControl = nav;
-            mapRef.current.addControl(nav, "top-right");
-        }
-
-        // Fullscreen control
-        if (config.controls?.fullscreenControl && !controlsRef.current.fullscreenControl) {
-            const fs = new maplibregl.FullscreenControl();
-            controlsRef.current.fullscreenControl = fs;
-            mapRef.current.addControl(fs, "top-right");
-        }
-    }, [config.controls]);
-
-    const updateSourcesAndLayers = useCallback(() => {
-        if (!mapRef.current) return;
-
-        // Ne faire fitBounds que lors de l'initialisation
-        if (!hasInitializedRef.current) {
-            mapRef.current.fitBounds(config.bounds, FIT_OPTIONS);
-            hasInitializedRef.current = true;
-        }
-
-        config.sources?.forEach(({ id, source }) => {
-            if (!mapRef.current!.getSource(id)) {
-                mapRef.current!.addSource(id, source);
-            }
-        });
-
-        config.layers?.forEach(({ id, layer }) => {
-            const map = mapRef.current!;
-            if (map.getLayer(id)) {
-                map.removeLayer(id);
-            }
-            map.addLayer(layer);
-        });
-    }, [config.bounds, config.layers, config.sources]);
-
-    // Nettoyage de la carte lors du démontage du composant
     useEffect(() => {
         return () => {
             if (mapRef.current) {
                 mapRef.current.remove();
                 mapRef.current = null;
-            }
-            if (popupRef.current) {
-                popupRef.current.remove();
-                popupRef.current = null;
             }
         };
     }, []);
@@ -162,7 +84,5 @@ export const useMap = (config: MapConfig) => {
         isMapLoaded,
         initializeMap,
         updateControls,
-        updateSourcesAndLayers,
-        setupPopups,
     };
 };
