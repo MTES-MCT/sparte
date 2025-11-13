@@ -4,7 +4,7 @@ import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { LandFriche } from "@services/types/land_friches";
-import { FrichesInfo, OcsgeFrichesInfo } from "./infoPanel";
+import { OcsgeFrichesInfo } from "./infoPanel";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 
@@ -89,11 +89,6 @@ export const FrichesOcsgeCouvertureMap: React.FC<FrichesOcsgeCouvertureMapProps>
             }
         ],
         infoPanels: [
-            {
-                layerId: "friches-layer",
-                title: "Friche",
-                renderContent: (feature: maplibregl.MapGeoJSONFeature) => <FrichesInfo feature={feature} />,
-            },
             {
                 layerId: "ocsge-friches-layer",
                 title: "Couverture (OCS GE)",

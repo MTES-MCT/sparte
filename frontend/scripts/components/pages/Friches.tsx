@@ -464,7 +464,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         />
                     </div>
                     <div>
-                        <h2>Couverture (OCS GE) des friches</h2>
+                        <h2>Couverture des friches</h2>
                         <FrichesOcsgeCouvertureMap
                             landData={landData}
                             frichesData={frichesData}
@@ -473,7 +473,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         />
                     </div>
                     <div>
-                        <h2>Usage (OCS GE) des friches</h2>
+                        <h2>Usage des friches</h2>
                         <FrichesOcsgeUsageMap
                             landData={landData}
                             frichesData={frichesData}
