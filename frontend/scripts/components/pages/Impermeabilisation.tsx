@@ -12,8 +12,8 @@ import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelecto
 import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import Card from "@components/ui/Card";
-import { ImpermeabilisationMap } from "@components/map_v2/ui/ImpermeabilisationMap";
-import { ImpermeabilisationDiffMap } from "@components/map_v2/ui/ImpermeabilisationDiffMap";
+import { ImpermeabilisationMap } from "@components/map/ui/ImpermeabilisationMap";
+import { ImpermeabilisationDiffMap } from "@components/map/ui/ImpermeabilisationDiffMap";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
