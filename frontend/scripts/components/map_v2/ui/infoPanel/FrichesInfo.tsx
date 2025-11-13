@@ -54,6 +54,14 @@ export const FrichesInfo: React.FC<FrichesInfoProps> = ({ feature }) => {
         {
             label: "Surface",
             value: properties.surface ? formatNumber({ number: properties.surface / 10000 }) + ' ha' : 'Non renseigné'
+        },
+        {
+            label: "Surface artificialisée",
+            value: `${formatNumber({ number: properties.surface_artif })} ha (${formatNumber({ number: properties.percent_artif })} %)`
+        },
+        {
+            label: "Surface imperméable",
+            value: `${formatNumber({ number: properties.surface_imper })} ha (${formatNumber({ number: properties.percent_imper })} %)`
         }
     ];
 
