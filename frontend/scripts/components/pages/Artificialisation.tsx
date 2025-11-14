@@ -17,8 +17,8 @@ import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalcu
 import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
 import Card from "@components/ui/Card";
-import { ArtificialisationMap } from "@components/map_v2/ui/ArtificialisationMap";
-import { ArtificialisationDiffMap } from "@components/map_v2/ui/ArtificialisationDiffMap";
+import { ArtificialisationMap } from "@components/map/ui/ArtificialisationMap";
+import { ArtificialisationDiffMap } from "@components/map/ui/ArtificialisationDiffMap";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;

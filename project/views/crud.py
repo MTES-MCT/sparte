@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
-from django.views.generic import DetailView, ListView, RedirectView
+from django.views.generic import DetailView, ListView, RedirectView, UpdateView
 
 from project.models import Project
 from project.models.enums import ProjectChangeReason
@@ -29,6 +29,20 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
             project._change_reason = ProjectChangeReason.USER_CLAIMED_PROJECT
             project.save()
         return super().get(request, *args, **kwargs)
+
+
+class ProjectSetTarget2031View(UpdateView):
+    model = Project
+    template_name = "project/components/forms/report_set_target_2031.html"
+    fields = ["target_2031"]
+    context_object_name = "diagnostic"
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return self.render_to_response(
+            self.get_context_data(success_message=True),
+            headers={"HX-Trigger": "load-graphic"},
+        )
 
 
 class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
