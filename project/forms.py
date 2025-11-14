@@ -1,5 +1,7 @@
 from django import forms
 
+from project.models import Project
+from project.models.enums import ProjectChangeReason
 from public_data.models import Departement, Epci, Region
 
 
@@ -36,6 +38,21 @@ class SelectTerritoryForm(forms.Form):
                 self.fields["epci"].queryset = epci_qs
             except Departement.DoesNotExist:
                 pass
+
+
+class UpdateProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = [
+            "target_2031",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.instance._change_reason = ProjectChangeReason.USER_UPDATED_PROJECT_FROM_PARAMS
+        return super().save(*args, **kwargs)
 
 
 class FilterAUUTable(forms.Form):

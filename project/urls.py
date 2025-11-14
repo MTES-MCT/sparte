@@ -32,6 +32,11 @@ urlpatterns = [
     path("<int:pk>/", RedirectView.as_view(pattern_name="project:report_synthesis", permanent=True), name="home"),
     path("<int:pk>/detail", ProjectDetailView.as_view(), name="project-detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
+    path(
+        "<int:pk>/set_target_2031",
+        views.ProjectSetTarget2031View.as_view(),
+        name="set-target-2031",
+    ),
     # REPORT
     path(
         route="<int:pk>/tableau-de-bord/artificialisation",
