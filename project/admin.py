@@ -109,8 +109,14 @@ def resend_request(modeladmin, request, queryset):  # pylint: disable=unused-arg
         request,
         f"Régénération et renvoit de {queryset.count()} demandes de diagnostics.",
     )
-    for request in queryset:
-        tasks.generate_word_diagnostic.apply_async((request.id,), link=tasks.send_word_diagnostic.s())
+    for req in queryset:
+        # Supprimer le fichier existant pour forcer la régénération
+        if req.sent_file:
+            req.sent_file.delete(save=False)
+        req.done = False
+        req.sent_date = None
+        req.save()
+        tasks.generate_word_diagnostic.apply_async((req.id,), link=tasks.send_word_diagnostic.s())
 
 
 @admin.register(Request)

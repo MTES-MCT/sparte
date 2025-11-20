@@ -32,11 +32,6 @@ urlpatterns = [
     path("<int:pk>/", RedirectView.as_view(pattern_name="project:report_synthesis", permanent=True), name="home"),
     path("<int:pk>/detail", ProjectDetailView.as_view(), name="project-detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
-    path(
-        "<int:pk>/set_target_2031",
-        views.ProjectSetTarget2031View.as_view(),
-        name="set-target-2031",
-    ),
     # REPORT
     path(
         route="<int:pk>/tableau-de-bord/artificialisation",
@@ -70,7 +65,7 @@ urlpatterns = [
     ),
     path(
         "<int:pk>/tableau-de-bord/trajectoires",
-        views.diagnostic.DiagnosticTarget2031View.as_view(),
+        views.diagnostic.DiagnosticTrajectoiresView.as_view(),
         name="report_target_2031",
     ),
     path(
@@ -79,11 +74,6 @@ urlpatterns = [
         name="report_local",
     ),
     # REPORT PARTIALS
-    path(
-        "<int:pk>/target-2031-graphic",
-        views.diagnostic.DiagnosticTarget2031GraphView.as_view(),
-        name="target-2031-graphic",
-    ),
     # MAP
     path(
         "<int:pk>/carte/consommation-villes-du-territoire",
