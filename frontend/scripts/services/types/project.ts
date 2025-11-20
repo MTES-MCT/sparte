@@ -40,6 +40,7 @@ export type ProjectDetailResultType = {
     departements: string[];
     bounds: [number, number, number, number];
     max_bounds: [number, number, number, number];
+    target_2031: number | null;
     centroid: {
 		latitude: number;
 		longitude: number;

@@ -7,8 +7,7 @@ from .DiagnosticFrichesView import DiagnosticFrichesView
 from .DiagnosticImpermeabilisationView import DiagnosticImpermeabilisationView
 from .DiagnosticLogementVacantView import DiagnosticLogementVacantView
 from .DiagnosticSynthesisView import DiagnosticSynthesisView
-from .DiagnosticTarget2031GraphView import DiagnosticTarget2031GraphView
-from .DiagnosticTarget2031View import DiagnosticTarget2031View
+from .DiagnosticTrajectoiresView import DiagnosticTrajectoiresView
 from .DiagnostictRapportLocalView import DiagnostictRapportLocalView
 
 __all__ = [
@@ -17,11 +16,10 @@ __all__ = [
     "DiagnosticDownloadWordView",
     "DiagnosticLogementVacantView",
     "DiagnosticSynthesisView",
-    "DiagnosticTarget2031GraphView",
-    "DiagnosticTarget2031View",
     "DiagnostictRapportLocalView",
     "DiagnosticArtificialisationView",
     "DiagnosticImpermeabilisationView",
     "DiagnosticDownloadsView",
     "DiagnosticFrichesView",
+    "DiagnosticTrajectoiresView",
 ]
