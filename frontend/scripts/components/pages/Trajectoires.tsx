@@ -186,9 +186,9 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             </>
                         }
                     >
-                        La loi Climat & Résilience fixe<strong> l'objectif d'atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire
-                        de réduction de moitié de la consommation d'espaces</strong> naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 
-                        par rapport à la décennie précédente 2011-2021.
+                        <p className="fr-text--sm fr-mb-2w">La loi n° 2021-1104 du 22 août 2021 dite “Climat et Résilience” fixe pour la France l’objectif de parvenir au Zéro Artificialisation Nette (ZAN) à l’horizon 2050 (article L.101-2-1 du Code de l’urbanisme). 
+                        À titre intermédiaire, les collectivités doivent inscrire leurs documents d’urbanisme dans une trajectoire visant nationalement à <strong>réduire de moitié la consommation d’espaces naturels, agricoles et forestiers (ENAF) sur la période 2021-2031, par rapport à la décennie 2011-2021.</strong></p>
+                        <p className="fr-text--sm"> Les données affichées sur cette plateforme proviennent du <strong>Portail national de l’artificialisation</strong> et sont produites par le CEREMA à partir des Fichiers Fonciers. Elles constituent une donnée <strong>de référence</strong> pour la mesure de la consommation d’ENAF. Ces données peuvent être complétées par des données locales (ex. MOS, bases communales, etc.) dès lors que celles-ci sont cohérentes avec les définitions légales et justifiées méthodologiquement. </p>
                     </Guide>
                 </div>
             </div>
