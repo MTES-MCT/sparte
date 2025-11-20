@@ -145,8 +145,8 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                     <Guide
-                        title="Cadre réglementaire"
-                        DrawerTitle="Cadre Réglementaire"
+                        title="Cadre réglementaire et données"
+                        DrawerTitle="Cadre réglementaire et données"
                         drawerChildren={
                             <>
                                 <p className="fr-text--sm mb-3">
@@ -306,20 +306,6 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 target_2031_custom: target_custom || 50
                             }}
                         />
-                    </div>
-                </div>
-            </div>
-
-            <div className="fr-mb-7w fr-mt-5w">
-                <div className="bg-white fr-p-4w rounded">
-                    <h6>
-                        D'où proviennent ces données ? 
-                    </h6>
-                    <div className="fr-highlight fr-highlight--no-margin">
-                        <p className="fr-text--sm">
-                            La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est mesurée avec les données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC de la DGFIP.
-                            Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2024, intégrant les évolutions réalisées au cours de l'année 2023.
-                        </p>
                     </div>
                 </div>
             </div>
