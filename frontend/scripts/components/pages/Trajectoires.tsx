@@ -36,38 +36,6 @@ const PeriodReferenceLabel = styled.p`
     margin-top: 1rem;
 `;
 
-const EmptyCard = styled.div`
-    background-color: white;
-    border-radius: 4px;
-    padding: 1.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    text-align: center;
-    border: 2px dashed #e5e5e5;
-`;
-
-const EmptyCardIcon = styled.i`
-    font-size: 3rem;
-    color: var(--text-mention-grey);
-`;
-
-const EmptyCardTitle = styled.h4`
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
-    color: var(--text-default-grey);
-`;
-
-const EmptyCardText = styled.p`
-    font-size: 0.875rem;
-    margin: 0;
-    color: var(--text-mention-grey);
-`;
-
 const MiniChartContainer = styled.div`
     margin-top: 0.75rem;
     display: flex;
