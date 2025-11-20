@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Guide from '@components/ui/Guide';
 import Card from '@components/ui/Card';
 import { TrajectoiresChart } from '@components/charts/trajectoires/TrajectoiresChart';
-import { TargetModal } from '@components/features/trajectoires/TargetModal';
+import { TargetModal, useTargetModal } from '@components/features/trajectoires/TargetModal';
 import { useUpdateProjectTarget2031Mutation } from '@services/api';
 import { formatNumber } from '@utils/formatUtils';
 import { LandDetailResultType } from '@services/types/land';
@@ -122,7 +122,8 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
     color1 = '#0063CB',
     color2 = '#00A95F'
 }) => {
-    const maxValue = Math.max(value1, value2, 1);
+    // Utiliser la valeur maximale réelle, avec un minimum très petit pour éviter la division par zéro
+    const maxValue = Math.max(value1, value2, 0.001);
     
     return (
         <MiniChartContainer>
@@ -148,19 +149,18 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
 
 const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) => {
     const { land_id, land_type, conso_details } = landData;
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const modal = useTargetModal();
     const [updateTarget2031, { isLoading: isUpdating }] = useUpdateProjectTarget2031Mutation();
 
     const conso_2011_2020 = conso_details?.conso_2011_2020;
     const conso_2011_2020_per_year = conso_2011_2020 / 10;
     const allowed_conso_2021_2030 = conso_details?.allowed_conso_2021_2030;
     const allowed_conso_2021_2030_per_year = allowed_conso_2021_2030 / 10;
-    const conso_since_2021 = conso_details?.conso_since_2021;
     const annual_conso_since_2021 = conso_details?.annual_conso_since_2021;
 
     // Calcul de l'objectif personnalisé
     const target_custom = projectData.target_2031;
-    const has_custom_target = target_custom !== null && target_custom !== 50;
+    const has_custom_target = Number(target_custom) !== 50;
     
     const annual_2020 = conso_2011_2020 / 10;
     const annual_custom_objective = has_custom_target 
@@ -170,7 +170,6 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
 
     const handleUpdateTarget = async (newTarget: number) => {
         await updateTarget2031({ projectId: projectData.id, target_2031: newTarget }).unwrap();
-        setIsModalOpen(false);
     };
 
     return (
@@ -257,12 +256,14 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                 
                 <div className="d-flex justify-content-between align-items-center fr-mb-2w">
                     <PeriodTitle>Période de réduction : 2021 - 2031 </PeriodTitle>
-                    <button
-                        className="fr-btn fr-btn--secondary fr-btn--sm"
-                        onClick={() => setIsModalOpen(true)}
-                    >
-                        Modifier l'objectif personnalisé
-                    </button>
+                    {has_custom_target && (
+                        <button
+                            className="fr-btn fr-btn--secondary fr-btn--sm"
+                            onClick={() => modal.open()}
+                        >
+                            Modifier l'objectif personnalisé
+                        </button>
+                    )}
                 </div>
                 <div className="fr-grid-row fr-grid-row--gutters">
                     <div className="fr-col-12 fr-col-md-6">
@@ -304,19 +305,21 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 />
                             </Card>
                         ) : (
-                            <EmptyCard>
-                                <EmptyCardIcon className="bi bi-star" />
-                                <EmptyCardTitle>Objectif personnalisé</EmptyCardTitle>
-                                <EmptyCardText>
-                                    Définissez votre propre objectif de réduction de la consommation d'espaces NAF
-                                </EmptyCardText>
-                                <button
-                                    className="fr-btn fr-btn--primary fr-btn--sm"
-                                    onClick={() => setIsModalOpen(true)}
-                                >
-                                    <i className="bi bi-plus-circle"></i>&nbsp;Définir un objectif
-                                </button>
-                            </EmptyCard>
+                            <Card
+                                isHighlighted={true}
+                                highlightBadge="Trajectoire selon objectif personnalisé"
+                                empty={true}
+                            >
+                                <div className="d-flex flex-column align-items-center gap-2 justify-content-center">
+                                    <p className="fr-text--sm">Simuler une trajectoire personnalisée en ajustant l'objectif de réduction.</p>
+                                    <button
+                                        className="fr-btn fr-btn--secondary fr-btn--sm"
+                                        onClick={() => modal.open()}
+                                    >
+                                        Définir un objectif personnalisé
+                                    </button>
+                                </div>
+                            </Card>
                         )}
                     </div>
                 </div>
@@ -354,8 +357,6 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
             </div>
 
             <TargetModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
                 currentTarget={target_custom}
                 onSubmit={handleUpdateTarget}
                 isLoading={isUpdating}
