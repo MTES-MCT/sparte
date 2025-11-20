@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -146,4 +147,8 @@ class UpdateProjectTarget2031APIView(View):
             return JsonResponse({"success": True, "target_2031": float(project.target_2031)})
 
         except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)}, status=500)
+            logger = logging.getLogger(__name__)
+            logger.error(f"Erreur lors de la mise à jour de target_2031 pour le projet {pk}: {str(e)}", exc_info=True)
+            return JsonResponse(
+                {"success": False, "error": "Une erreur est survenue lors de la mise à jour"}, status=500
+            )
