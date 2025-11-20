@@ -136,7 +136,7 @@ class ObjectiveChart(DiagnosticChart):
 
         # Calcul de la trajectoire nationale (50%)
         annual_objective_national = annual_2020 - (annual_2020 / 100.0 * target_national)
-        total_2031_national = total_2020
+        total_2031_national = 0
 
         for year in range(2021, 2031):
             total_2031_national += annual_objective_national
@@ -152,7 +152,7 @@ class ObjectiveChart(DiagnosticChart):
         # Calcul de la trajectoire personnalisée si elle existe
         if has_custom_target:
             annual_objective_custom = annual_2020 - (annual_2020 / 100.0 * target_custom)
-            total_2031_custom = total_2020
+            total_2031_custom = 0
 
             for year in range(2021, 2031):
                 total_2031_custom += annual_objective_custom
