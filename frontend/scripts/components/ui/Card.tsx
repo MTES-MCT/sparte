@@ -2,7 +2,7 @@ import React from 'react';
 import styled from "styled-components";
 
 interface CardProps {
-    icon: string;
+    icon?: string;
     badgeClass: string;
     badgeLabel: string;
     value: React.ReactNode;
@@ -45,10 +45,13 @@ const HighlightBadge = styled.div`
     letter-spacing: 0.5px;
 `;
 
-const CardHeader = styled.div`
+const CardHeader = styled.div<{ $hasNoIcon?: boolean }>`
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    ${({ $hasNoIcon }) => $hasNoIcon && `
+        padding-top: 1rem;
+    `}
 `;
 
 const CardIcon = styled.i<{ $isHighlighted?: boolean }>`
@@ -92,7 +95,7 @@ const CardFooter = styled.div`
 `;
 
 const Card: React.FC<CardProps> = ({
-    icon,
+    icon = "",
     badgeClass,
     badgeLabel,
     value,
@@ -109,8 +112,8 @@ const Card: React.FC<CardProps> = ({
                     <i className="bi bi-lightning-charge"></i> {highlightBadge}
                 </HighlightBadge>
             )}
-            <CardHeader>
-                <CardIcon className={icon} $isHighlighted={isHighlighted} />
+            <CardHeader $hasNoIcon={!icon}>
+                {icon && <CardIcon className={icon} $isHighlighted={isHighlighted} />}
                 <CardBadge className={`fr-badge fr-badge--no-icon ${badgeClass}`}>
                     {badgeLabel}
                 </CardBadge>

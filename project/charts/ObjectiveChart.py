@@ -57,21 +57,21 @@ class ObjectiveChart(DiagnosticChart):
                 "name": "Conso. annuelle réelle",
                 "yAxis": 1,
                 "data": list(),
-                "color": "#95ceff",
+                "color": "#D9D9D9",
                 "zIndex": 6,
             },
             {
                 "name": "Conso. cumulée réelle",
                 "data": list(),
                 "type": "line",
-                "color": "#95ceff",
+                "color": "#D9D9D9",
                 "zIndex": 5,
             },
             {
                 "name": "Objectif national annuel (50%)",
                 "yAxis": 1,
                 "data": list(),
-                "color": "#87cc78",
+                "color": "#b6c1ea",
                 "zIndex": 4,
             },
             {
@@ -79,7 +79,7 @@ class ObjectiveChart(DiagnosticChart):
                 "data": list(),
                 "type": "line",
                 "dashStyle": "ShortDash",
-                "color": "#a9ff96",
+                "color": "#b6c1ea",
                 "zIndex": 3,
             },
         ]
@@ -91,7 +91,7 @@ class ObjectiveChart(DiagnosticChart):
                         "name": f"Objectif personnalisé annuel ({target_custom}%)",
                         "yAxis": 1,
                         "data": list(),
-                        "color": "#ff9f40",
+                        "color": "#B6DFDE",
                         "zIndex": 2,
                     },
                     {
@@ -99,7 +99,7 @@ class ObjectiveChart(DiagnosticChart):
                         "data": list(),
                         "type": "line",
                         "dashStyle": "Dash",
-                        "color": "#ffb366",
+                        "color": "#B6DFDE",
                         "zIndex": 1,
                     },
                 ]
