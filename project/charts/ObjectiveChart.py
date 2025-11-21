@@ -68,14 +68,14 @@ class ObjectiveChart(DiagnosticChart):
                 "zIndex": 6,
             },
             {
-                "name": "Objectif national annuel (50%)",
+                "name": "Conso. annuelle selon objectif national (50%)",
                 "yAxis": 1,
                 "data": list(),
                 "color": "#b6c1ea",
                 "zIndex": 2,
             },
             {
-                "name": "Objectif national cumulé (50%)",
+                "name": "Conso. cumulée selon objectif national (50%)",
                 "data": list(),
                 "type": "line",
                 "dashStyle": "ShortDash",
@@ -88,14 +88,14 @@ class ObjectiveChart(DiagnosticChart):
             series.extend(
                 [
                     {
-                        "name": f"Objectif personnalisé annuel ({target_custom}%)",
+                        "name": f"Conso. annuelle selon objectif personnalisé ({target_custom}%)",
                         "yAxis": 1,
                         "data": list(),
                         "color": "#B6DFDE",
                         "zIndex": 1,
                     },
                     {
-                        "name": f"Objectif personnalisé cumulé ({target_custom}%)",
+                        "name": f"Conso. cumulée selon objectif personnalisé ({target_custom}%)",
                         "data": list(),
                         "type": "line",
                         "dashStyle": "Dash",
@@ -176,15 +176,15 @@ class ObjectiveChart(DiagnosticChart):
             "Année",
             "Conso. annuelle réelle (ha)",
             "Conso. cumulée réelle (ha)",
-            "Objectif national annuel (ha)",
-            "Objectif national cumulé (ha)",
+            "Conso. annuelle selon objectif national (50%) (ha)",
+            "Conso. cumulée selon objectif national (50%) (ha)",
         ]
 
         if has_custom_target:
             headers.extend(
                 [
-                    "Objectif personnalisé annuel (ha)",
-                    "Objectif personnalisé cumulé (ha)",
+                    f"Conso. annuelle selon objectif personnalisé ({target_custom}%) (ha)",
+                    f"Conso. cumulée selon objectif personnalisé ({target_custom}%) (ha)",
                 ]
             )
 
