@@ -130,7 +130,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Trajectoires endpoint={urls.trajectoires} />
+                                                <Trajectoires landData={landData} projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />

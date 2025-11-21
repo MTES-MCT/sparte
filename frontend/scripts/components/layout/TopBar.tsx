@@ -81,7 +81,7 @@ const TopBar: React.FC = () => {
     const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
     const location = useLocation();
-    const pathsToShowPeriod = ['consommation', 'trajectoires'];
+    const pathsToShowPeriod = ['consommation'];
     const shouldDisplayPeriod = pathsToShowPeriod.some(path => location.pathname.includes(path));
     const pathsToShowLevel = ['consommation'];
     const shouldDisplayLevel = pathsToShowLevel.some(path => location.pathname.includes(path));

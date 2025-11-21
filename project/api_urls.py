@@ -1,6 +1,7 @@
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import path
 
+from project.api_views import UpdateProjectTarget2031APIView
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByCouverturePieChartExport,
@@ -26,6 +27,7 @@ from project.charts.impermeabilisation import (
     ImperNetFluxChart,
     ImperSyntheseChart,
 )
+from project.charts.ObjectiveChart import ObjectiveChart
 from project.charts.urbanisme import (
     FricheArtifCompositionChart,
     FricheArtifCompositionChartExport,
@@ -97,6 +99,8 @@ def get_chart_klass_or_404(chart_id):
         "friche_zonage_type": FricheZonageTypeChart,
         "friche_zone_activite": FricheZoneActiviteChart,
         "conso_annual": ConsoAnnualChart,
+        "objective_chart": ObjectiveChart,
+        "objective_chart_export": ObjectiveChart,
         "artif_synthese": ArtifSyntheseChart,
         "imper_synthese": ImperSyntheseChart,
         "artif_net_flux": ArtifNetFluxChart,
@@ -146,6 +150,7 @@ def chart_view(request, id, land_type, land_id, *args, **kwargs):
 
 
 urlpatterns = [
+    path("project/<int:pk>/target-2031/", UpdateProjectTarget2031APIView.as_view(), name="update-target-2031"),
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path("landartifstock/", LandArtifStockViewset.as_view(), name="artifstock"),
     path("landimperstock/", LandImperStockViewset.as_view(), name="imperstock"),

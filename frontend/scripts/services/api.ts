@@ -96,6 +96,7 @@ export const djangoApi = createApi({
 		}),
 		getProject: builder.query({
 			query: (id) => `/project/${id}/detail`,
+			providesTags: (result, error, id) => [{ type: 'Project', id }],
 		}),
 		searchTerritory: builder.query({
 			query: (needle) => {
@@ -114,7 +115,24 @@ export const djangoApi = createApi({
 				method: 'GET'
 			}),
 		}),
+		updateProjectTarget2031: builder.mutation<
+			{ success: boolean; target_2031: number },
+			{ projectId: number; target_2031: number }
+		>({
+			query: ({ projectId, target_2031 }) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: `/api/project/${projectId}/target-2031/`,
+					method: 'POST',
+					body: { target_2031 },
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+			// Invalider le cache du projet après la mise à jour
+			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: projectId }],
+		}),
 	}),
+	tagTypes: ['Project'],
 });
 
 const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
@@ -122,6 +140,7 @@ const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
 const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
 const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
+const useUpdateProjectTarget2031Mutation = djangoApi.useUpdateProjectTarget2031Mutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
 const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
@@ -148,6 +167,7 @@ export {
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
 	useDownloadDiagnosticMutation,
+	useUpdateProjectTarget2031Mutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,

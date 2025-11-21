@@ -2,15 +2,16 @@ import React from 'react';
 import styled from "styled-components";
 
 interface CardProps {
-    icon: string;
-    badgeClass: string;
-    badgeLabel: string;
-    value: React.ReactNode;
-    label: React.ReactNode;
+    icon?: string;
+    badgeClass?: string;
+    badgeLabel?: string;
+    value?: React.ReactNode;
+    label?: React.ReactNode;
     isHighlighted?: boolean;
     highlightBadge?: string;
     className?: string;
     children?: React.ReactNode;
+    empty?: boolean;
 }
 
 const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
@@ -45,10 +46,13 @@ const HighlightBadge = styled.div`
     letter-spacing: 0.5px;
 `;
 
-const CardHeader = styled.div`
+const CardHeader = styled.div<{ $hasNoIcon?: boolean }>`
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    ${({ $hasNoIcon }) => $hasNoIcon && `
+        padding-top: 1rem;
+    `}
 `;
 
 const CardIcon = styled.i<{ $isHighlighted?: boolean }>`
@@ -87,40 +91,51 @@ const CardLabel = styled.div`
     margin-bottom: 0;
 `;
 
-const CardFooter = styled.div`
+const CardFooter = styled.div<{ $empty?: boolean }>`
     margin-top: 0.5rem;
+    ${({ $empty }) => $empty && `
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    `}
 `;
 
 const Card: React.FC<CardProps> = ({
-    icon,
-    badgeClass,
-    badgeLabel,
-    value,
-    label,
+    icon = "",
+    badgeClass = "",
+    badgeLabel = "",
+    value = "",
+    label = "",
     isHighlighted = false,
     highlightBadge,
     className = "",
-    children
+    children,
+    empty = false
 }) => {
     return (
         <CardContainer $isHighlighted={isHighlighted} className={className}>
-            {isHighlighted && highlightBadge && (
+            {highlightBadge && (
                 <HighlightBadge>
                     <i className="bi bi-lightning-charge"></i> {highlightBadge}
                 </HighlightBadge>
             )}
-            <CardHeader>
-                <CardIcon className={icon} $isHighlighted={isHighlighted} />
-                <CardBadge className={`fr-badge fr-badge--no-icon ${badgeClass}`}>
-                    {badgeLabel}
-                </CardBadge>
-            </CardHeader>
-            <CardContent>
-                <CardValue $isHighlighted={isHighlighted}>{value}</CardValue>
-                <CardLabel>{label}</CardLabel>
-            </CardContent>
+            {!empty && badgeClass && badgeLabel && (
+                <CardHeader $hasNoIcon={!icon}>
+                    {icon && <CardIcon className={icon} $isHighlighted={isHighlighted} />}
+                    <CardBadge className={`fr-badge fr-badge--no-icon ${badgeClass}`}>
+                        {badgeLabel}
+                    </CardBadge>
+                </CardHeader>
+            )}
+            {!empty && value && label && (
+                <CardContent>
+                    <CardValue $isHighlighted={isHighlighted}>{value}</CardValue>
+                    <CardLabel>{label}</CardLabel>
+                </CardContent>
+            )}
             {children && (
-                <CardFooter>
+                <CardFooter $empty={empty}>
                     {children}
                 </CardFooter>
             )}

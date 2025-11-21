@@ -166,6 +166,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "logements_vacants_available",
             "land_id",
             "land_type",
+            "target_2031",
             "departements",
             "bounds",
             "max_bounds",
@@ -181,6 +182,12 @@ class ProjectDownloadLinkSerializer(serializers.ModelSerializer):
     rapport_local_url = SerializerMethodField()
     rapport_complet_url = SerializerMethodField()
 
+    def _is_report_outdated(self, request_obj, project):
+        if not request_obj or not request_obj.sent_file:
+            return True
+
+        return project.updated_date > request_obj.created_date
+
     def get_rapport_local_url(self, obj):
         project: Project = obj
         requests = Request.objects.filter(
@@ -189,7 +196,9 @@ class ProjectDownloadLinkSerializer(serializers.ModelSerializer):
         ).order_by("-created_date")
 
         if requests.exists():
-            return requests.first().sent_file.url if requests.first().sent_file else None
+            latest_request = requests.first()
+            if not self._is_report_outdated(latest_request, project):
+                return latest_request.sent_file.url if latest_request.sent_file else None
 
         return None
 
@@ -201,7 +210,9 @@ class ProjectDownloadLinkSerializer(serializers.ModelSerializer):
         ).order_by("-created_date")
 
         if requests.exists():
-            return requests.first().sent_file.url if requests.first().sent_file else None
+            latest_request = requests.first()
+            if not self._is_report_outdated(latest_request, project):
+                return latest_request.sent_file.url if latest_request.sent_file else None
 
         return None
 
