@@ -49,11 +49,6 @@ const MiniChartBar = styled.div<{ $value: number; $maxValue: number; $color: str
     width: ${props => Math.max((props.$value / props.$maxValue) * 100, 2)}%;
     min-width: 2%;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 0.5rem;
-    font-size: 0.75rem;
 `;
 
 const MiniChartLabel = styled.div`
@@ -71,6 +66,16 @@ const MiniChartBarContainer = styled.div`
     background-color: #f5f5f5;
     border-radius: 10px;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+`;
+
+const MiniChartBarText = styled.span`
+    position: absolute;
+    right: 0.5rem;
+    font-size: 0.75rem;
+    z-index: 1;
+    pointer-events: none;
 `;
 
 interface MiniComparisonChartProps {
@@ -99,17 +104,19 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
                 <span>{label1}</span>
             </MiniChartLabel>
             <MiniChartBarContainer>
-                <MiniChartBar $value={value1} $maxValue={maxValue} $color={color1}>
-                    {value1 > maxValue * 0.15 && formatNumber({ number: value1 })} ha
-                </MiniChartBar>
+                <MiniChartBar $value={value1} $maxValue={maxValue} $color={color1} />
+                <MiniChartBarText>
+                    {formatNumber({ number: value1 })} ha
+                </MiniChartBarText>
             </MiniChartBarContainer>
             <MiniChartLabel>
                 <span>{label2}</span>
             </MiniChartLabel>
             <MiniChartBarContainer>
-                <MiniChartBar $value={value2} $maxValue={maxValue} $color={color2}>
-                    {value2 > maxValue * 0.15 && formatNumber({ number: value2 })} ha
-                </MiniChartBar>
+                <MiniChartBar $value={value2} $maxValue={maxValue} $color={color2} />
+                <MiniChartBarText>
+                    {formatNumber({ number: value2 })} ha
+                </MiniChartBarText>
             </MiniChartBarContainer>
         </MiniChartContainer>
     );
@@ -145,8 +152,8 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                     <Guide
-                        title="Cadre réglementaire"
-                        DrawerTitle="Cadre Réglementaire"
+                        title="Cadre réglementaire et données"
+                        DrawerTitle="Cadre réglementaire et données"
                         drawerChildren={
                             <>
                                 <p className="fr-text--sm mb-3">
@@ -207,7 +214,9 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 l'objectif du territoire dans le graphique ci-dessous. Par
                                 défaut, en attendant cette territorisalisation, l'outil
                                 affiche l'objectif national de réduction de 50%.
-                                <br /><br /><strong>Cet objectif est fourni à titre indicatif et n’a pas de valeur réglementaire.</strong>
+                                <br />
+                                <br />
+                                <strong>Cet objectif est fourni à titre indicatif et n’a pas de valeur réglementaire.</strong>
                             </span>
                         </p>
                     </div>
@@ -306,20 +315,6 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 target_2031_custom: target_custom || 50
                             }}
                         />
-                    </div>
-                </div>
-            </div>
-
-            <div className="fr-mb-7w fr-mt-5w">
-                <div className="bg-white fr-p-4w rounded">
-                    <h6>
-                        D'où proviennent ces données ? 
-                    </h6>
-                    <div className="fr-highlight fr-highlight--no-margin">
-                        <p className="fr-text--sm">
-                            La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est mesurée avec les données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC de la DGFIP.
-                            Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2024, intégrant les évolutions réalisées au cours de l'année 2023.
-                        </p>
                     </div>
                 </div>
             </div>
