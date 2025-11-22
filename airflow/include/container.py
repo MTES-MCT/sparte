@@ -12,9 +12,12 @@ from s3fs import S3FileSystem
 
 from .connectors import Brevo
 from .file_handling import (
+    CompressedFileHandler,
+    CompressedRemoteGeoPackageToDBHandler,
     CSVFileIngestor,
     DataGouvHandler,
     GeoJsonToGzippedGeoJsonOnS3Handler,
+    GeoPackageToDBHandler,
     HTTPFileHandler,
     RemoteToS3FileHandler,
     S3CSVFileToDBTableHandler,
@@ -285,4 +288,21 @@ class DomainContainer(containers.DeclarativeContainer):
         provides=MattermostNotificationService,
         mattermost_webhook_url=os.getenv("MATTERMOST_WEBHOOK_URL"),
         channel=os.getenv("MATTERMOST_CHANNEL"),
+    )
+
+    compressed_file_handler = providers.Factory(
+        provides=CompressedFileHandler,
+    )
+
+    geopackage_to_db_handler = providers.Factory(
+        provides=GeoPackageToDBHandler,
+        gdal_connection_string=InfraContainer().gdal_dbt_conn().encode(),
+    )
+
+    compressed_remote_geopackage_to_db_handler = providers.Factory(
+        provides=CompressedRemoteGeoPackageToDBHandler,
+        remote_to_s3_handler=remote_to_s3_file_handler,
+        s3_handler=s3_handler,
+        compression_handler=compressed_file_handler,
+        db_handler=geopackage_to_db_handler,
     )
