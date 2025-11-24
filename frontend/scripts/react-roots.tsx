@@ -9,7 +9,7 @@ import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementation
 import SearchBar from '@components/ui/SearchBar'
 import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
 import CookieConsentManager from '@components/ui/CookieConsent'
-import { FooterConsentManagementItem } from './hooks/useConsentManagement'
+import { FooterConsentManagementItem } from './hooks/useConsentManagement';
 
 // Gestionnaire de consentement des cookies
 const cookieConsentRoot = document.createElement('div');

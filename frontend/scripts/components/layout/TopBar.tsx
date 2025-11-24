@@ -1,102 +1,65 @@
 import React, { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@store/store';
-import { formatDateTime } from '@utils/formatUtils';
-import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
-import useWindowSize from '@hooks/useWindowSize';
-import { selectIsNavbarOpen } from "@store/navbarSlice";
-import Divider from '@components/ui/Divider';
+import { selectIsNavbarOpen, selectIsHeaderVisible } from "@store/navbarSlice";
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 
-const primaryColor = '#313178';
 const activeColor = '#4318FF';
-const secondaryColor = '#a1a1f8';
 
-const Container = styled.div`
+const Container = styled.div<{ $isHeaderVisible: boolean }>`
     position: sticky;
-    top: 80px;
+    top: ${({ $isHeaderVisible }) => ($isHeaderVisible ? '80px' : '0')};
     background: rgba(255, 255, 255, 0.8);
     border-bottom: 1px solid #EBEBEC;
     z-index: 998;
-    padding: 1rem;
+    padding: 1.5rem 1.5rem;
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: top 0.3s ease;
+`;
+
+const LeftSection = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
+const RightSection = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 `;
 
 const Title = styled.div`
     color: ${activeColor};
     margin: 0;
     padding: 0;
-    font-size: 2em;
-    line-height: 1em;
+    font-size: 1.75em;
+    line-height: 1.2em;
     font-weight: 600;
-`;
-
-const SubTitle = styled.div`
-    color: ${secondaryColor};
-    font-size: 0.8em;
-`;
-
-const ItemContainer = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-`;
-
-const Item = styled.div`
-    padding: 0.6rem 0.7rem;
-`;
-
-const ItemTitle = styled.div`
-    display: flex;
-    gap: 0.8rem;
-    color: ${primaryColor};
-    font-size: 0.85em;
-    font-weight: 500;
-`;
-
-const ItemContent = styled.div`
-    color: ${secondaryColor};
-    font-size: 0.85em;
-    padding-left: 1.7rem;
-    line-height: 0.8rem;
-
-    button {
-        background: none !important;
-        transition: color .3s ease;
-
-        &:hover {
-            color: ${activeColor};
-        }
-    }
 `;
 
 const TopBar: React.FC = () => {
     const projectData = useSelector((state: RootState) => state.project.projectData);
     const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
     const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
-    const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
-    const location = useLocation();
-    const pathsToShowPeriod = ['consommation'];
-    const shouldDisplayPeriod = pathsToShowPeriod.some(path => location.pathname.includes(path));
-    const pathsToShowLevel = ['consommation'];
-    const shouldDisplayLevel = pathsToShowLevel.some(path => location.pathname.includes(path));
-    const { isMobile } = useWindowSize(980);
     const isOpen = useSelector(selectIsNavbarOpen);
+    const isHeaderVisible = useSelector(selectIsHeaderVisible);
 
     return (
-        <Container ref={htmxRef}>
-            <div className="d-flex align-items-center">
+        <Container ref={htmxRef} $isHeaderVisible={isHeaderVisible}>
+            <LeftSection>
                 { !isOpen && <ButtonToggleNavbar /> }
                 <div>
                     <Title>{ memoizedProjectData?.territory_name }</Title>
-                    <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
                 </div>
-            </div>
+            </LeftSection>
+            <RightSection id="topbar-slot">
+                {/* Le contenu sera rendu ici via React Portal */}
+            </RightSection>
         </Container>
     );
 };

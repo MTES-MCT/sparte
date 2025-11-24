@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 import Card from "@components/ui/Card";
 import GenericChart from "@components/charts/GenericChart";
 import { LandDetailResultType } from "@services/types/land";
@@ -9,6 +8,7 @@ import { ConsoDemography } from "./components/ConsoDemography";
 import { ConsoComparison } from "./components/ConsoComparison";
 import { useConsoData, useNearestTerritories, useComparisonTerritories } from "./hooks";
 import { ConsommationControlsProvider, useConsommationControls } from "./context/ConsommationControlsContext";
+import { TopBarContent } from "@components/layout/TopBarContent";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
@@ -63,7 +63,10 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
 
   return (
     <>
-      <ConsommationControls />
+      {/* Enregistre les contrôles dans la TopBar de manière déclarative */}
+      <TopBarContent>
+        <ConsommationControls />
+      </TopBarContent>
 
       <div className="fr-container--fluid fr-p-3w">
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">

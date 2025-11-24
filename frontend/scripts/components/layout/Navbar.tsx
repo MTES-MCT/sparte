@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
+import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar, selectIsHeaderVisible } from '@store/navbarSlice';
 import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
@@ -39,17 +39,17 @@ const LinkStyle = css<{ $isActive: boolean }>`
     }
 `;
 
-const Container = styled.aside<{ $isOpen: boolean }>`
+const Container = styled.aside<{ $isOpen: boolean; $isHeaderVisible: boolean }>`
     position: fixed;
     left: ${({ $isOpen }) => ($isOpen ? '0' : '-280px')};
-    top: 80px;
+    top: ${({ $isHeaderVisible }) => ($isHeaderVisible ? '80px' : '0')};
     bottom: 0;
     width: 280px;
     display: flex;
     flex-direction: column;
     background: #fff;
     border-right: 1px solid #EEF2F7;
-    transition: left 0.3s ease;
+    transition: left 0.3s ease, top 0.3s ease;
     z-index: 999;
 `;
 
@@ -204,6 +204,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
 
     const dispatch = useDispatch();
     const isOpen = useSelector(selectIsNavbarOpen);
+    const isHeaderVisible = useSelector(selectIsHeaderVisible);
     const { isMobile } = useWindowSize();
 
     const shouldDisplayDownloads = landData.has_conso
@@ -228,7 +229,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
     return (
         <>
             {isMobile && <Overlay $isOpen={isOpen} onClick={() => dispatch(toggleNavbar())} />}
-            <Container aria-label="Sidebar" ref={htmxRef} $isOpen={isOpen}>
+            <Container aria-label="Sidebar" ref={htmxRef} $isOpen={isOpen} $isHeaderVisible={isHeaderVisible}>
                 <NavbarHeader>
                     <ButtonToggleNavbar />
                 </NavbarHeader>

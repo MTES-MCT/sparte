@@ -1,25 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { formatNumber } from "@utils/formatUtils";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
-
-const StickyContainer = styled.div`
-  position: sticky;
-  top: 160px;
-  z-index: 100;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-`;
-
-const Card = styled.div`
-  background: transparent;
-`;
-
-const CardBody = styled.div`
-  padding: 0.75rem 1rem;
-`;
 
 const ControlsRow = styled.div`
   min-height: 6rem;
@@ -46,37 +27,6 @@ const SeparatorText = styled.div`
   padding: 0 0.5rem;
 `;
 
-const CardsContainer = styled.div`
-  justify-content: flex-end;
-`;
-
-const MetricCard = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: white;
-  border-radius: 4px;
-  border: 2px solid var(--artwork-major-blue-france);
-`;
-
-const MetricIcon = styled.i`
-  font-size: 1.5rem;
-  color: var(--artwork-major-blue-france);
-`;
-
-const MetricLabel = styled.div`
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-mention-grey);
-`;
-
-const MetricValue = styled.div`
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: var(--artwork-major-blue-france);
-`;
-
 export const ConsommationControls: React.FC = () => {
   const {
     startYear,
@@ -87,14 +37,6 @@ export const ConsommationControls: React.FC = () => {
     maxYear,
     defaultStartYear,
     defaultEndYear,
-    showStickyConsoCard,
-    showStickyPerHabitantCard,
-    showStickyPopulationCard,
-    totalConsoHa,
-    consoPerNewHabitant,
-    populationEvolution,
-    isLoadingConso,
-    isLoadingPop,
     childLandTypes,
     childType,
     setChildType,
@@ -110,20 +52,8 @@ export const ConsommationControls: React.FC = () => {
     setEndYear(defaultEndYear);
   };
 
-  const formatPopulationEvolution = () => {
-    if (isLoadingPop || populationEvolution === null) {
-      return "...";
-    }
-
-    const sign = populationEvolution > 0 ? "+" : "";
-    return `${sign}${formatNumber({ number: populationEvolution })} hab`;
-  };
-
-  return (
-    <StickyContainer>
-      <Card className="fr-card fr-card--no-border fr-card--shadow">
-        <CardBody className="fr-card__body">
-            <ControlsRow className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+  const controlsContent = (
+    <ControlsRow className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
               <div className="fr-col-auto">
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
                   <div className="fr-col-auto">
@@ -141,7 +71,7 @@ export const ConsommationControls: React.FC = () => {
               </div>
 
 
-              <div className={showStickyConsoCard || showStickyPerHabitantCard || showStickyPopulationCard ? "fr-col-auto" : "fr-col"}>
+              <div className="fr-col">
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
                   <div className="fr-col-auto">
                     <select
@@ -219,65 +149,8 @@ export const ConsommationControls: React.FC = () => {
                   )}
                 </div>
               </div>
-
-              {(showStickyConsoCard || showStickyPerHabitantCard || showStickyPopulationCard) && (
-                <div className="fr-col">
-                  <CardsContainer className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
-                    {showStickyConsoCard && (
-                      <div className="fr-col-auto">
-                        <MetricCard>
-                          <MetricIcon className="bi-graph-up"></MetricIcon>
-                          <div>
-                            <MetricLabel>
-                              Consommation d'espaces
-                            </MetricLabel>
-                            <MetricValue>
-                              {isLoadingConso || totalConsoHa === null
-                                ? "..."
-                                : `${formatNumber({ number: totalConsoHa, addSymbol: true })} ha`}
-                            </MetricValue>
-                          </div>
-                        </MetricCard>
-                      </div>
-                    )}
-
-                    {showStickyPerHabitantCard && (
-                      <div className="fr-col-auto">
-                        <MetricCard>
-                          <MetricIcon className="bi-house"></MetricIcon>
-                          <div>
-                            <MetricLabel>
-                              Consommation par nouvel habitant
-                            </MetricLabel>
-                            <MetricValue>
-                              {consoPerNewHabitant}
-                            </MetricValue>
-                          </div>
-                        </MetricCard>
-                      </div>
-                    )}
-
-                    {showStickyPopulationCard && (
-                      <div className="fr-col-auto">
-                        <MetricCard>
-                          <MetricIcon className="bi-people"></MetricIcon>
-                          <div>
-                            <MetricLabel>
-                              Évolution de la population
-                            </MetricLabel>
-                            <MetricValue>
-                              {formatPopulationEvolution()}
-                            </MetricValue>
-                          </div>
-                        </MetricCard>
-                      </div>
-                    )}
-                  </CardsContainer>
-                </div>
-              )}
-            </ControlsRow>
-          </CardBody>
-        </Card>
-    </StickyContainer>
+    </ControlsRow>
   );
+
+  return controlsContent;
 };
