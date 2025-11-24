@@ -486,7 +486,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 								column
 							>
 								<DetailsCalculationOcsge />
-							</OcsgeGraph>
+							</GuideContent>
 						</div>
 					</div>
 					<div className="fr-col-12 fr-col-lg-4">
@@ -499,16 +499,16 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						</GuideContent>
 					</div>
 				</div>
-			</div>
-			
+			)}
+
 			{has_zonage && (
-				<ArtificialisationZonage 
+				<ArtificialisationZonage
 					artifZonageIndex={artifZonageIndex}
 					is_interdepartemental={is_interdepartemental}
 					landArtifStockIndex={landArtifStockIndex}
 				/>
 			)}
-			
+
 			<div className="fr-mb-7w">
 				<h2>Calcul de l'artificialisation des sols</h2>
 				<div className="bg-white fr-p-4w fr-mb-7w rounded">

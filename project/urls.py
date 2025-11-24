@@ -73,12 +73,6 @@ urlpatterns = [
         views.diagnostic.DiagnostictRapportLocalView.as_view(),
         name="report_local",
     ),
-    # REPORT PARTIALS
-    path(
-        "<int:pk>/target-2031-graphic",
-        views.diagnostic.DiagnosticTarget2031GraphView.as_view(),
-        name="target-2031-graphic",
-    ),
     # DOWNLOAD
     path(
         "<int:pk>/tableau-de-bord/telechargements",

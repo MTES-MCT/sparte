@@ -1,13 +1,13 @@
 import React from 'react';
 import Guide from '@components/ui/Guide';
 import Card from '@components/ui/Card';
-import { TrajectoiresChart } from '@components/charts/trajectoires/TrajectoiresChart';
 import { TargetModal, useTargetModal } from '@components/features/trajectoires/TargetModal';
 import { useUpdateProjectTarget2031Mutation } from '@services/api';
 import { formatNumber } from '@utils/formatUtils';
 import { LandDetailResultType } from '@services/types/land';
 import { ProjectDetailResultType } from '@services/types/project';
 import styled from 'styled-components';
+import GenericChart from '@components/charts/GenericChart';
 
 interface TrajectoiresProps {
     landData: LandDetailResultType;
@@ -305,16 +305,18 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 <div className="fr-col-12">
                     <div className="bg-white fr-p-2w rounded">
-                        <TrajectoiresChart
-                            id="objective_chart"
-                            land_id={land_id}
-                            land_type={land_type}
-                            sources={['majic']}
-                            showDataTable={true}
-                            params={{
-                                target_2031_custom: target_custom || 50
-                            }}
-                        />
+                      {land_id && land_type && (
+                                <GenericChart
+                                    id="objective_chart"
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    sources={['majic']}
+                                    showDataTable
+                                    params={{
+                                        target_2031_custom: target_custom || 50
+                                    }}
+                                />
+                          )}
                     </div>
                 </div>
             </div>

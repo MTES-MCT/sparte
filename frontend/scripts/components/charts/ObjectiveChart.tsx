@@ -1,13 +1,13 @@
 import React from 'react';
 
-import GenericChart from './GenericChart';
+import GenericChart, { DataSource } from './GenericChart';
 
 type ObjectiveChartProps = {
     land_id: string;
     land_type: string;
     target2031?: number;
     containerProps?: object;
-    sources?: string[];
+    sources?: DataSource[];
     children?: React.ReactNode;
     showDataTable?: boolean;
 };
