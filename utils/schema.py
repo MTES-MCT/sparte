@@ -12,6 +12,12 @@ from public_data.models import (
     Epci,
     ImperZonage,
     ImperZonageIndex,
+    LandArtifFlux,
+    LandArtifFluxCouvertureComposition,
+    LandArtifFluxCouvertureCompositionIndex,
+    LandArtifFluxIndex,
+    LandArtifFluxUsageComposition,
+    LandArtifFluxUsageCompositionIndex,
     LandArtifStock,
     LandArtifStockCouvertureComposition,
     LandArtifStockCouvertureCompositionIndex,
@@ -74,7 +80,11 @@ def init_unmanaged_schema_for_tests() -> None:
     d'anciens fichiers de migrations ne soient utilisés
     (de la période où les tables étaient managées par Django)
     """
-    if sys.argv[1:2] != ["test"]:
+    # Check if we're in a test environment (Django test or pytest)
+    is_django_test = sys.argv[1:2] == ["test"]
+    is_pytest = "pytest" in sys.argv[0] or any("pytest" in arg for arg in sys.argv)
+
+    if not (is_django_test or is_pytest):
         raise NotInTestEnvironmentError("Cette fonction ne doit être appelée que dans le cadre de tests unitaires")
 
     with connection.schema_editor() as schema_editor:
@@ -97,7 +107,7 @@ def init_unmanaged_schema_for_tests() -> None:
         drop_and_create_model(NearestTerritories, schema_editor)
         drop_and_create_model(SimilarTerritories, schema_editor)
 
-        # Artificialisation
+        # Artificialisation - Stock
         drop_and_create_model(ArtifZonage, schema_editor)
         drop_and_create_model(ArtifZonageIndex, schema_editor)
         drop_and_create_model(LandArtifStock, schema_editor)
@@ -106,6 +116,14 @@ def init_unmanaged_schema_for_tests() -> None:
         drop_and_create_model(LandArtifStockCouvertureCompositionIndex, schema_editor)
         drop_and_create_model(LandArtifStockUsageComposition, schema_editor)
         drop_and_create_model(LandArtifStockUsageCompositionIndex, schema_editor)
+
+        # Artificialisation - Flux
+        drop_and_create_model(LandArtifFlux, schema_editor)
+        drop_and_create_model(LandArtifFluxIndex, schema_editor)
+        drop_and_create_model(LandArtifFluxCouvertureComposition, schema_editor)
+        drop_and_create_model(LandArtifFluxCouvertureCompositionIndex, schema_editor)
+        drop_and_create_model(LandArtifFluxUsageComposition, schema_editor)
+        drop_and_create_model(LandArtifFluxUsageCompositionIndex, schema_editor)
 
         # Imperméabilisation - Stock
         drop_and_create_model(ImperZonage, schema_editor)

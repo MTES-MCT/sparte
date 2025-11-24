@@ -22,7 +22,7 @@ class TestArtifFluxByCouvertureParams(TestCase):
             ArtifFluxByCouverture(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     @patch("highcharts.charts.Chart.get_param")
     def test_init_with_millesime_new_index_succeeds(self, mock_get_param):

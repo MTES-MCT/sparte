@@ -14,6 +14,7 @@ from public_data.models.artificialisation import LandArtifFlux, LandArtifFluxInd
 
 class ArtifNetFluxChart(DiagnosticChart):
     name = "Artificialisation"
+    required_params = ["millesime_new_index", "millesime_old_index"]
 
     def __init__(self, land, params):
         super().__init__(land=land, params=params)

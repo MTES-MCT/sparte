@@ -49,6 +49,19 @@ class BaseChartTestCase(TestCase):
 class AnnualTotalConsoChartTest(BaseChartTestCase):
     """Tests for AnnualTotalConsoChart."""
 
+    def _create_mock_annual_consumption(self, year, total=10.5, habitat=5.0, activite=3.0):
+        """Helper to create mock AnnualConsommation objects."""
+        mock_conso = Mock()
+        mock_conso.year = year
+        mock_conso.total = total
+        mock_conso.habitat = habitat
+        mock_conso.activite = activite
+        mock_conso.mixte = 1.0
+        mock_conso.route = 0.5
+        mock_conso.ferre = 0.5
+        mock_conso.non_renseigne = 0.5
+        return mock_conso
+
     @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
     def test_chart_initialization(self, mock_service):
         """Test that chart initializes with land and params."""
@@ -78,6 +91,27 @@ class AnnualTotalConsoChartTest(BaseChartTestCase):
         )
 
     @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
+    def test_data_property_caches_result(self, mock_service):
+        """Test that data property caches the service call result."""
+        mock_progression = Mock()
+        mock_progression.consommation = [
+            self._create_mock_annual_consumption(2011, 10.0),
+            self._create_mock_annual_consumption(2012, 12.0),
+        ]
+        mock_service.return_value.get_by_land.return_value = mock_progression
+
+        chart = AnnualTotalConsoChart(land=self.mock_land, params=self.params)
+
+        # First access
+        data1 = chart.data
+        # Second access
+        data2 = chart.data
+
+        # Should only call service once due to caching
+        mock_service.return_value.get_by_land.assert_called_once()
+        self.assertIs(data1, data2)  # Same object reference
+
+    @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
     def test_series_property_structure(self, mock_service):
         """Test that series property returns correct structure."""
         mock_progression = Mock()
@@ -91,6 +125,32 @@ class AnnualTotalConsoChartTest(BaseChartTestCase):
         self.assertTrue(len(series) > 0)
         self.assertIn("name", series[0])
         self.assertIn("data", series[0])
+
+    @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
+    def test_series_with_real_data(self, mock_service):
+        """Test series generation with realistic consumption data."""
+        mock_progression = Mock()
+        mock_progression.consommation = [
+            self._create_mock_annual_consumption(2011, 10.5),
+            self._create_mock_annual_consumption(2012, 12.3),
+            self._create_mock_annual_consumption(2013, 8.7),
+        ]
+        mock_service.return_value.get_by_land.return_value = mock_progression
+
+        chart = AnnualTotalConsoChart(land=self.mock_land, params=self.params)
+        series = chart.series
+
+        self.assertEqual(len(series), 1)
+        self.assertEqual(series[0]["name"], "Test Territory")
+        self.assertEqual(len(series[0]["data"]), 3)
+
+        # Verify data points structure
+        self.assertEqual(series[0]["data"][0]["name"], "2011")
+        self.assertEqual(series[0]["data"][0]["y"], 10.5)
+        self.assertEqual(series[0]["data"][1]["name"], "2012")
+        self.assertEqual(series[0]["data"][1]["y"], 12.3)
+        self.assertEqual(series[0]["data"][2]["name"], "2013")
+        self.assertEqual(series[0]["data"][2]["y"], 8.7)
 
     @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
     def test_param_property_has_required_fields(self, mock_service):
@@ -108,6 +168,35 @@ class AnnualTotalConsoChartTest(BaseChartTestCase):
         self.assertIn("yAxis", param)
         self.assertIn("series", param)
         self.assertEqual(param["chart"]["type"], "column")
+
+    @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
+    def test_param_title_contains_territory_name(self, mock_service):
+        """Test that chart title includes the territory name."""
+        mock_progression = Mock()
+        mock_progression.consommation = []
+        mock_service.return_value.get_by_land.return_value = mock_progression
+
+        chart = AnnualTotalConsoChart(land=self.mock_land, params=self.params)
+        param = chart.param
+
+        self.assertIn("title", param)
+        self.assertIn("text", param["title"])
+        self.assertIn("Test Territory", param["title"]["text"])
+
+    @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
+    def test_param_with_empty_data(self, mock_service):
+        """Test that param works correctly with empty consumption data."""
+        mock_progression = Mock()
+        mock_progression.consommation = []
+        mock_service.return_value.get_by_land.return_value = mock_progression
+
+        chart = AnnualTotalConsoChart(land=self.mock_land, params=self.params)
+        param = chart.param
+
+        # Should still have valid structure
+        self.assertIn("series", param)
+        self.assertEqual(len(param["series"]), 1)
+        self.assertEqual(len(param["series"][0]["data"]), 0)
 
 
 class AnnualConsoByDeterminantChartTest(BaseChartTestCase):

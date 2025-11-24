@@ -21,6 +21,7 @@ class ArtifFluxByUsage(DiagnosticChart):
     sol = "usage"
     model = LandArtifFluxUsageCompositionIndex
     model_by_departement = LandArtifFluxUsageComposition
+    required_params = ["millesime_new_index"]
 
     def __init__(self, land, params):
         super().__init__(land=land, params=params)

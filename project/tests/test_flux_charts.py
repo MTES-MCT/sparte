@@ -23,7 +23,8 @@ class TestArtifNetFluxChartParams(TestCase):
         self.mock_land.land_id = "75056"
         self.mock_land.is_interdepartemental = False
 
-    def test_init_without_millesime_new_index_raises_error(self):
+    @patch("public_data.models.artificialisation.LandArtifFluxIndex.objects")
+    def test_init_without_millesime_new_index_raises_error(self, mock_objects):
         """Test que l'absence de millesime_new_index lève une ValueError."""
         params = {"millesime_old_index": 1}
 
@@ -31,9 +32,10 @@ class TestArtifNetFluxChartParams(TestCase):
             ArtifNetFluxChart(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
-    def test_init_without_millesime_old_index_raises_error(self):
+    @patch("public_data.models.artificialisation.LandArtifFluxIndex.objects")
+    def test_init_without_millesime_old_index_raises_error(self, mock_objects):
         """Test que l'absence de millesime_old_index lève une ValueError."""
         params = {"millesime_new_index": 2}
 
@@ -41,21 +43,30 @@ class TestArtifNetFluxChartParams(TestCase):
             ArtifNetFluxChart(land=self.mock_land, params=params)
 
         self.assertIn("millesime_old_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
-    def test_init_without_any_params_raises_error(self):
+    @patch("public_data.models.artificialisation.LandArtifFluxIndex.objects")
+    def test_init_without_any_params_raises_error(self, mock_objects):
         """Test que l'absence de tous les paramètres lève une ValueError."""
         params = {}
 
         with self.assertRaises(ValueError) as context:
             ArtifNetFluxChart(land=self.mock_land, params=params)
 
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
-    @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_all_required_params_succeeds(self, mock_get_param):
+    @patch("public_data.models.artificialisation.LandArtifFluxIndex.objects")
+    def test_init_with_all_required_params_succeeds(self, mock_objects):
         """Test que l'initialisation réussit avec tous les paramètres requis."""
-        mock_get_param.return_value = {}
+        # Mock data pour éviter les requêtes DB
+        mock_data = Mock()
+        mock_data.years_old = [2020, 2021]
+        mock_data.years_new = [2022, 2023]
+        mock_data.flux_artif = 10.5
+        mock_data.flux_desartif = 2.5
+        mock_data.flux_artif_net = 8.0
+        mock_objects.filter.return_value.first.return_value = mock_data
+
         params = {"millesime_new_index": 2, "millesime_old_index": 1}
 
         # Ne devrait pas lever d'erreur
@@ -66,9 +77,21 @@ class TestArtifNetFluxChartParams(TestCase):
             self.fail("ArtifNetFluxChart raised ValueError with valid params")
 
     @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_optional_departement_param_succeeds(self, mock_get_param):
+    @patch("public_data.models.artificialisation.LandArtifFlux.objects")
+    def test_init_with_optional_departement_param_succeeds(self, mock_objects, mock_get_param):
         """Test que l'initialisation réussit avec le paramètre optionnel departement."""
+        # Mock get_param pour éviter l'accès à self.param pendant l'initialisation
         mock_get_param.return_value = {}
+
+        # Mock data pour éviter les requêtes DB
+        mock_data = Mock()
+        mock_data.year_old = 2020
+        mock_data.year_new = 2023
+        mock_data.flux_artif = 10.5
+        mock_data.flux_desartif = 2.5
+        mock_data.flux_artif_net = 8.0
+        mock_objects.filter.return_value.first.return_value = mock_data
+
         params = {"millesime_new_index": 2, "millesime_old_index": 1, "departement": "75"}
 
         # Ne devrait pas lever d'erreur
@@ -89,7 +112,9 @@ class TestArtifFluxByUsageParams(TestCase):
         self.mock_land.land_id = "75056"
         self.mock_land.is_interdepartemental = False
 
-    def test_init_without_millesime_new_index_raises_error(self):
+    @patch("public_data.models.artificialisation.LandArtifFlux.objects")
+    @patch("public_data.models.artificialisation.LandArtifFluxIndex.objects")
+    def test_init_without_millesime_new_index_raises_error(self, mock_index, mock_flux):
         """Test que l'absence de millesime_new_index lève une ValueError."""
         params = {}
 
@@ -97,12 +122,20 @@ class TestArtifFluxByUsageParams(TestCase):
             ArtifFluxByUsage(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_millesime_new_index_succeeds(self, mock_get_param):
+    @patch("public_data.models.artificialisation.LandArtifFluxUsageCompositionIndex.objects")
+    def test_init_with_millesime_new_index_succeeds(self, mock_objects, mock_get_param):
         """Test que l'initialisation réussit avec millesime_new_index."""
+        # Mock get_param pour éviter l'accès à self.param pendant l'initialisation
         mock_get_param.return_value = {}
+
+        # Mock queryset pour éviter les requêtes DB
+        mock_queryset = Mock()
+        mock_queryset.exists.return_value = True
+        mock_objects.filter.return_value = mock_queryset
+
         params = {"millesime_new_index": 2}
 
         # Ne devrait pas lever d'erreur
@@ -113,9 +146,17 @@ class TestArtifFluxByUsageParams(TestCase):
             self.fail("ArtifFluxByUsage raised ValueError with valid params")
 
     @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_optional_departement_param_succeeds(self, mock_get_param):
+    @patch("public_data.models.artificialisation.LandArtifFluxUsageComposition.objects")
+    def test_init_with_optional_departement_param_succeeds(self, mock_objects, mock_get_param):
         """Test que l'initialisation réussit avec le paramètre optionnel departement."""
+        # Mock get_param pour éviter l'accès à self.param pendant l'initialisation
         mock_get_param.return_value = {}
+
+        # Mock queryset pour éviter les requêtes DB
+        mock_queryset = Mock()
+        mock_queryset.exists.return_value = True
+        mock_objects.filter.return_value = mock_queryset
+
         params = {"millesime_new_index": 2, "departement": "75"}
 
         # Ne devrait pas lever d'erreur
@@ -136,7 +177,9 @@ class TestArtifFluxByCouvertureParams(TestCase):
         self.mock_land.land_id = "75056"
         self.mock_land.is_interdepartemental = False
 
-    def test_init_without_millesime_new_index_raises_error(self):
+    @patch("public_data.models.artificialisation.LandArtifFlux.objects")
+    @patch("public_data.models.artificialisation.LandArtifFluxIndex.objects")
+    def test_init_without_millesime_new_index_raises_error(self, mock_index, mock_flux):
         """Test que l'absence de millesime_new_index lève une ValueError (hérité de ArtifFluxByUsage)."""
         params = {}
 
@@ -144,12 +187,20 @@ class TestArtifFluxByCouvertureParams(TestCase):
             ArtifFluxByCouverture(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_millesime_new_index_succeeds(self, mock_get_param):
+    @patch("public_data.models.artificialisation.LandArtifFluxCouvertureCompositionIndex.objects")
+    def test_init_with_millesime_new_index_succeeds(self, mock_objects, mock_get_param):
         """Test que l'initialisation réussit avec millesime_new_index."""
+        # Mock get_param pour éviter l'accès à self.param pendant l'initialisation
         mock_get_param.return_value = {}
+
+        # Mock queryset pour éviter les requêtes DB
+        mock_queryset = Mock()
+        mock_queryset.exists.return_value = True
+        mock_objects.filter.return_value = mock_queryset
+
         params = {"millesime_new_index": 2}
 
         # Ne devrait pas lever d'erreur
@@ -170,7 +221,9 @@ class TestImperFluxByUsageParams(TestCase):
         self.mock_land.land_id = "75056"
         self.mock_land.is_interdepartemental = False
 
-    def test_init_without_millesime_new_index_raises_error(self):
+    @patch("public_data.models.impermeabilisation.LandImperFlux.objects")
+    @patch("public_data.models.impermeabilisation.LandImperFluxIndex.objects")
+    def test_init_without_millesime_new_index_raises_error(self, mock_index, mock_flux):
         """Test que l'absence de millesime_new_index lève une ValueError."""
         params = {}
 
@@ -178,12 +231,20 @@ class TestImperFluxByUsageParams(TestCase):
             ImperFluxByUsage(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_millesime_new_index_succeeds(self, mock_get_param):
+    @patch("public_data.models.impermeabilisation.LandImperFluxUsageCompositionIndex.objects")
+    def test_init_with_millesime_new_index_succeeds(self, mock_objects, mock_get_param):
         """Test que l'initialisation réussit avec millesime_new_index."""
+        # Mock get_param pour éviter l'accès à self.param pendant l'initialisation
         mock_get_param.return_value = {}
+
+        # Mock queryset pour éviter les requêtes DB
+        mock_queryset = Mock()
+        mock_queryset.exists.return_value = True
+        mock_objects.filter.return_value = mock_queryset
+
         params = {"millesime_new_index": 2}
 
         # Ne devrait pas lever d'erreur
@@ -194,9 +255,17 @@ class TestImperFluxByUsageParams(TestCase):
             self.fail("ImperFluxByUsage raised ValueError with valid params")
 
     @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_optional_departement_param_succeeds(self, mock_get_param):
+    @patch("public_data.models.impermeabilisation.LandImperFluxUsageComposition.objects")
+    def test_init_with_optional_departement_param_succeeds(self, mock_objects, mock_get_param):
         """Test que l'initialisation réussit avec le paramètre optionnel departement."""
+        # Mock get_param pour éviter l'accès à self.param pendant l'initialisation
         mock_get_param.return_value = {}
+
+        # Mock queryset pour éviter les requêtes DB
+        mock_queryset = Mock()
+        mock_queryset.exists.return_value = True
+        mock_objects.filter.return_value = mock_queryset
+
         params = {"millesime_new_index": 2, "departement": "75"}
 
         # Ne devrait pas lever d'erreur
@@ -217,7 +286,9 @@ class TestImperFluxByCouvertureParams(TestCase):
         self.mock_land.land_id = "75056"
         self.mock_land.is_interdepartemental = False
 
-    def test_init_without_millesime_new_index_raises_error(self):
+    @patch("public_data.models.impermeabilisation.LandImperFlux.objects")
+    @patch("public_data.models.impermeabilisation.LandImperFluxIndex.objects")
+    def test_init_without_millesime_new_index_raises_error(self, mock_index, mock_flux):
         """Test que l'absence de millesime_new_index lève une ValueError (hérité de ImperFluxByUsage)."""
         params = {}
 
@@ -225,12 +296,20 @@ class TestImperFluxByCouvertureParams(TestCase):
             ImperFluxByCouverture(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_millesime_new_index_succeeds(self, mock_get_param):
+    @patch("public_data.models.impermeabilisation.LandImperFluxCouvertureCompositionIndex.objects")
+    def test_init_with_millesime_new_index_succeeds(self, mock_objects, mock_get_param):
         """Test que l'initialisation réussit avec millesime_new_index."""
+        # Mock get_param pour éviter l'accès à self.param pendant l'initialisation
         mock_get_param.return_value = {}
+
+        # Mock queryset pour éviter les requêtes DB
+        mock_queryset = Mock()
+        mock_queryset.exists.return_value = True
+        mock_objects.filter.return_value = mock_queryset
+
         params = {"millesime_new_index": 2}
 
         # Ne devrait pas lever d'erreur
@@ -251,7 +330,8 @@ class TestImperNetFluxChartParams(TestCase):
         self.mock_land.land_id = "75056"
         self.mock_land.is_interdepartemental = False
 
-    def test_init_without_millesime_new_index_raises_error(self):
+    @patch("public_data.models.impermeabilisation.LandImperFluxIndex.objects")
+    def test_init_without_millesime_new_index_raises_error(self, mock_objects):
         """Test que l'absence de millesime_new_index lève une ValueError."""
         params = {"millesime_old_index": 1}
 
@@ -259,9 +339,10 @@ class TestImperNetFluxChartParams(TestCase):
             ImperNetFluxChart(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
-    def test_init_without_millesime_old_index_raises_error(self):
+    @patch("public_data.models.impermeabilisation.LandImperFluxIndex.objects")
+    def test_init_without_millesime_old_index_raises_error(self, mock_objects):
         """Test que l'absence de millesime_old_index lève une ValueError."""
         params = {"millesime_new_index": 2}
 
@@ -269,21 +350,30 @@ class TestImperNetFluxChartParams(TestCase):
             ImperNetFluxChart(land=self.mock_land, params=params)
 
         self.assertIn("millesime_old_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
-    def test_init_without_any_params_raises_error(self):
+    @patch("public_data.models.impermeabilisation.LandImperFluxIndex.objects")
+    def test_init_without_any_params_raises_error(self, mock_objects):
         """Test que l'absence de tous les paramètres lève une ValueError."""
         params = {}
 
         with self.assertRaises(ValueError) as context:
             ImperNetFluxChart(land=self.mock_land, params=params)
 
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
-    @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_all_required_params_succeeds(self, mock_get_param):
+    @patch("public_data.models.impermeabilisation.LandImperFluxIndex.objects")
+    def test_init_with_all_required_params_succeeds(self, mock_objects):
         """Test que l'initialisation réussit avec tous les paramètres requis."""
-        mock_get_param.return_value = {}
+        # Mock data pour éviter les requêtes DB
+        mock_data = Mock()
+        mock_data.years_old = [2020, 2021]
+        mock_data.years_new = [2022, 2023]
+        mock_data.flux_imper = 10.5
+        mock_data.flux_desimper = 2.5
+        mock_data.flux_imper_net = 8.0
+        mock_objects.filter.return_value.first.return_value = mock_data
+
         params = {"millesime_new_index": 2, "millesime_old_index": 1}
 
         # Ne devrait pas lever d'erreur
@@ -293,10 +383,18 @@ class TestImperNetFluxChartParams(TestCase):
         except ValueError:
             self.fail("ImperNetFluxChart raised ValueError with valid params")
 
-    @patch("highcharts.charts.Chart.get_param")
-    def test_init_with_optional_departement_param_succeeds(self, mock_get_param):
+    @patch("public_data.models.impermeabilisation.LandImperFlux.objects")
+    def test_init_with_optional_departement_param_succeeds(self, mock_objects):
         """Test que l'initialisation réussit avec le paramètre optionnel departement."""
-        mock_get_param.return_value = {}
+        # Mock data pour éviter les requêtes DB
+        mock_data = Mock()
+        mock_data.year_old = 2020
+        mock_data.year_new = 2023
+        mock_data.flux_imper = 10.5
+        mock_data.flux_desimper = 2.5
+        mock_data.flux_imper_net = 8.0
+        mock_objects.filter.return_value.first.return_value = mock_data
+
         params = {"millesime_new_index": 2, "millesime_old_index": 1, "departement": "75"}
 
         # Ne devrait pas lever d'erreur

@@ -12,6 +12,7 @@ from public_data.models.impermeabilisation import LandImperFlux, LandImperFluxIn
 
 class ImperNetFluxChart(DiagnosticChart):
     name = "Imperméabilisation"
+    required_params = ["millesime_new_index", "millesime_old_index"]
 
     def __init__(self, land, params):
         """
@@ -28,14 +29,6 @@ class ImperNetFluxChart(DiagnosticChart):
         Raises:
             ValueError: Si les paramètres requis ne sont pas présents
         """
-        # Vérification des paramètres obligatoires
-        if "millesime_new_index" not in params:
-            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
-
-        if "millesime_old_index" not in params:
-            raise ValueError("Le paramètre 'millesime_old_index' est obligatoire")
-
-        # Appel du constructeur parent
         super().__init__(land=land, params=params)
 
     @property
