@@ -199,34 +199,17 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
-    async_set_combined_emprise_done = models.BooleanField(default=False)
-    async_cover_image_done = models.BooleanField(default=False)
-    async_add_comparison_lands_done = models.BooleanField(default=False)
-    async_generate_theme_map_conso_done = models.BooleanField(default=False)
-
     history = HistoricalRecords(
         user_db_constraint=False,
     )
 
     @property
     def async_complete(self) -> bool:
-        calculations_and_extend_ready = self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
-
-        static_maps_ready = self.async_cover_image_done
-
-        not_a_commune = self.land_type != AdminRef.COMMUNE
-
-        # logic below is duplicated from map_tasks in create.py
-        # TODO : refactor this
-
-        if not_a_commune:
-            static_maps_ready = static_maps_ready and self.async_generate_theme_map_conso_done
-
-        return calculations_and_extend_ready and static_maps_ready
+        return True
 
     @property
     def is_ready_to_be_displayed(self) -> bool:
-        return self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
+        return True
 
     class Meta:
         ordering = ["-created_date"]

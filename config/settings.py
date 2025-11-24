@@ -103,9 +103,7 @@ PROJECT_APPS = [
     "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
-    "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
-    "metabase.apps.MetabaseConfig",
     "crisp.apps.CrispConfig",
     "oidc.apps.OidcConfig",
 ]

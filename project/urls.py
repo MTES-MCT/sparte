@@ -89,16 +89,6 @@ urlpatterns = [
         ProjectDownloadLinkView.as_view(),
         name="report_download_url",
     ),
-    path(
-        "<int:pk>/all_charts_for_preview",
-        views.AllChartsForPreview.as_view(),
-        name="all_charts_for_preview",
-    ),
-    path(
-        "<int:request_id>/word/telechargement",
-        views.diagnostic.DiagnosticDownloadWordView.as_view(),
-        name="word_download",
-    ),
 ]
 
 # Add API urls

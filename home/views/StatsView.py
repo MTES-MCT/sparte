@@ -9,4 +9,6 @@ class StatsView(BreadCrumbMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         kwargs["team_email"] = app_parameter.TEAM_EMAIL
+        kwargs["STATS_HEIGHT"] = app_parameter.STATS_HEIGHT
+        kwargs["STATS_URL"] = app_parameter.STATS_URL
         return super().get_context_data(**kwargs)

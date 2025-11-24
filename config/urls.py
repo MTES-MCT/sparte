@@ -48,8 +48,6 @@ urlpatterns += [
     path("project/", include("project.urls")),
     path("api/", include("project.api_urls")),
     path("carte/", include("carto.urls")),
-    path("word/", include("diagnostic_word.urls")),
-    path("statistiques/", include("metabase.urls")),
     path("fancy-cache", include("fancy_cache.urls")),
     path("crisp/", include("crisp.urls")),
     path(
