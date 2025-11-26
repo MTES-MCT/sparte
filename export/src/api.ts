@@ -14,8 +14,8 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-app.post('/api/export', async (req, res) => {
-    const { url } = req.body;
+app.get('/api/export', async (req, res) => {
+    const url = req.query.url as string;
 
     if (!url) {
         res.status(400).json({ error: 'Missing required parameter: url' });
@@ -52,5 +52,5 @@ app.post('/api/export', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Export API running on port ${PORT}`);
-    console.log(`POST /api/export with body: { "url": "https://example.com/page-to-export" }`);
+    console.log(`GET /api/export?url=https://example.com/page-to-export`);
 });
