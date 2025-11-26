@@ -2,10 +2,11 @@
   "name": "sparte-export-api",
   "version": "1.0.0",
   "description": "API service for exporting Sparte reports to PDF",
-  "main": "dist/server.js",
+  "main": "dist/api.js",
   "scripts": {
     "build": "tsc",
     "dev": "PORT=3001 tsx watch src/api.ts",
+    "prod": "node dist/api.js",
     "cli": "tsx src/cli.ts"
   },
   "dependencies": {
