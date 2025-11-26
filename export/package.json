@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "PORT=3001 tsx watch src/api.ts",
-    "prod": "node dist/api.js",
+    "prod": "npx puppeteer browsers install chrome && node dist/api.js",
     "cli": "tsx src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest"
