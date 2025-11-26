@@ -1,9 +1,12 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { exportRapportToPdf } from './pdf-generator';
+import { exportToPdf } from './pdf-generator';
+import { validateUrlHost } from './url-validation';
 
 const app = express();
+app.use(express.json());
+
 const PORT = process.env.PORT;
 const OUTPUT_DIR = '/tmp/exports';
 
@@ -11,16 +14,27 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok' });
 });
 
-app.get('/api/export/rapport-complet/:landType/:landId', async (req, res) => {
-    const { landType, landId } = req.params;
+app.post('/api/export', async (req, res) => {
+    const { url } = req.body;
 
-    const filename = `rapport-${landType}-${landId}-${Date.now()}.pdf`;
+    if (!url) {
+        res.status(400).json({ error: 'Missing required parameter: url' });
+        return;
+    }
+
+    try {
+        validateUrlHost(url);
+    } catch (error: any) {
+        res.status(403).json({ error: 'Forbidden', message: error.message });
+        return;
+    }
+
+    const filename = `export-${Date.now()}.pdf`;
     const outputPath = path.join(OUTPUT_DIR, filename);
 
     try {
-        await exportRapportToPdf({
-            landType,
-            landId,
+        await exportToPdf({
+            url,
             outputPath
         });
 
@@ -38,5 +52,5 @@ app.get('/api/export/rapport-complet/:landType/:landId', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`Export API running on port ${PORT}`);
-    console.log(`GET /api/export/rapport-complet/COMM/69123`);
+    console.log(`POST /api/export with body: { "url": "https://example.com/page-to-export" }`);
 });

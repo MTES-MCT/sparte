@@ -7,7 +7,9 @@
     "build": "tsc",
     "dev": "PORT=3001 tsx watch src/api.ts",
     "prod": "node dist/api.js",
-    "cli": "tsx src/cli.ts"
+    "cli": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -21,6 +23,7 @@
     "@types/node": "^20.10.0",
     "nodemon": "^3.0.1",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.4"
   }
 }

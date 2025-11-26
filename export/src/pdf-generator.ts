@@ -1,24 +1,17 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 
 export interface ExportOptions {
-    landType: string;
-    landId: string;
+    url: string;
     outputPath: string;
-    baseUrl?: string;
 }
 
 /**
- * Export a rapport complet page to PDF using Puppeteer
+ * Export a page to PDF using Puppeteer
  */
-export async function exportRapportToPdf(options: ExportOptions): Promise<string> {
-    const {
-        landType,
-        landId,
-        outputPath,
-        baseUrl = process.env.SPARTE_BASE_URL || 'http://localhost:8080'
-    } = options;
+export async function exportToPdf(options: ExportOptions): Promise<string> {
+    const { url, outputPath } = options;
 
-    console.log(`Launching browser to export rapport for ${landType}/${landId}`);
+    console.log(`Launching browser to export: ${url}`);
     const browser: Browser = await puppeteer.launch({
         // @ts-ignore
         headless: "new",
@@ -33,7 +26,6 @@ export async function exportRapportToPdf(options: ExportOptions): Promise<string
     try {
         const page: Page = await browser.newPage();
 
-        const url = `${baseUrl}/exports/rapport-complet/${landType}/${landId}`;
         console.log(`Loading page: ${url}`);
 
         await page.goto(url, {
