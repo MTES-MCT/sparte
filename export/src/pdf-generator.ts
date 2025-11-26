@@ -20,6 +20,7 @@ export async function exportRapportToPdf(options: ExportOptions): Promise<string
 
     console.log(`Launching browser to export rapport for ${landType}/${landId}`);
     const browser: Browser = await puppeteer.launch({
+        // @ts-ignore
         headless: "new",
         args: ['--no-sandbox'],
         defaultViewport: {
