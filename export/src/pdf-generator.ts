@@ -1,16 +1,10 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 
-export interface ExportOptions {
-    url: string;
-    outputPath: string;
-}
-
 /**
  * Export a page to PDF using Puppeteer
+ * @returns PDF content as a Buffer
  */
-export async function exportToPdf(options: ExportOptions): Promise<string> {
-    const { url, outputPath } = options;
-
+export async function exportToPdf(url: string): Promise<Buffer> {
     console.log(`Launching browser to export: ${url}`);
     const browser: Browser = await puppeteer.launch({
         // @ts-ignore
@@ -34,8 +28,7 @@ export async function exportToPdf(options: ExportOptions): Promise<string> {
         });
 
         console.log('Generating PDF...');
-        await page.pdf({
-            path: outputPath,
+        const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
             displayHeaderFooter: true,
@@ -62,8 +55,8 @@ export async function exportToPdf(options: ExportOptions): Promise<string> {
             }
         });
 
-        console.log(`PDF generated successfully: ${outputPath}`);
-        return outputPath;
+        console.log('PDF generated successfully');
+        return Buffer.from(pdfBuffer);
     } catch (error) {
         console.error('Error generating PDF:', error);
         throw error;

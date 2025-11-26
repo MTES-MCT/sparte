@@ -1,16 +1,12 @@
 import express from 'express';
-import fs from 'fs';
-import path from 'path';
 import { exportToPdf } from './pdf-generator';
 import { validateUrlHost } from './url-validation';
 
 const app = express();
-app.use(express.json());
 
 const PORT = process.env.PORT;
-const OUTPUT_DIR = '/tmp/exports';
 
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
 });
 
@@ -29,21 +25,12 @@ app.get('/api/export', async (req, res) => {
         return;
     }
 
-    const filename = `export-${Date.now()}.pdf`;
-    const outputPath = path.join(OUTPUT_DIR, filename);
-
     try {
-        await exportToPdf({
-            url,
-            outputPath
-        });
+        const pdfBuffer = await exportToPdf(url);
 
-        res.download(outputPath, filename, () => {
-            // Delete temporary file after download
-            fs.unlink(outputPath, (err) => {
-                if (err) console.error('Failed to delete temp file:', err);
-            });
-        });
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="export-${Date.now()}.pdf"`);
+        res.send(pdfBuffer);
     } catch (error: any) {
         console.error('Export failed:', error);
         res.status(500).json({ error: 'PDF generation failed', message: error.message });

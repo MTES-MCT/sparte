@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 import { exportToPdf } from './pdf-generator';
 
@@ -20,12 +21,10 @@ if (args.length < 1) {
 const url = args[0];
 const outputPath = args[1] || path.join(process.cwd(), `export-${Date.now()}.pdf`);
 
-exportToPdf({
-    url,
-    outputPath
-})
-    .then(() => {
-        console.log('Export completed successfully');
+exportToPdf(url)
+    .then((pdfBuffer) => {
+        fs.writeFileSync(outputPath, pdfBuffer);
+        console.log(`Export completed successfully: ${outputPath}`);
         process.exit(0);
     })
     .catch((error: Error) => {
