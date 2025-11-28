@@ -406,3 +406,299 @@ class AnnualTotalConsoChartInterdepartementalTest(TestCase):
         self.assertIn("rows", data_table)
         self.assertIsInstance(data_table["headers"], list)
         self.assertIsInstance(data_table["rows"], list)
+
+
+class AnnualTotalConsoChartRegionTest(TestCase):
+    """
+    Tests for REGION behavior in data_table.
+
+    For REGIONs, interdepartemental EPCIs should:
+    - Be treated as normal EPCIs if all their départements are in the same region
+    - Be treated as interrégional (with sub-children display) if they span multiple regions
+    """
+
+    def setUp(self):
+        """Set up complex scenario with region and potentially interregional EPCIs."""
+        super().setUp()
+        init_unmanaged_schema_for_tests()
+
+        # Région Auvergne-Rhône-Alpes (84)
+        self.mock_region = Mock(spec=LandModel)
+        self.mock_region.land_id = "84"
+        self.mock_region.land_type = "REGION"
+        self.mock_region.name = "Auvergne-Rhône-Alpes"
+        self.mock_region.child_land_types = [AdminRef.DEPARTEMENT]
+
+        self.params = {
+            "start_date": 2011,
+            "end_date": 2013,
+            "child_type": AdminRef.DEPARTEMENT,
+        }
+
+    def _create_mock_departement(
+        self, land_id, name, is_interdepartemental=False, departements=None, parent_keys=None
+    ):
+        """Create mock Département."""
+        mock_dept = Mock(spec=LandModel)
+        mock_dept.land_id = land_id
+        mock_dept.land_type = AdminRef.DEPARTEMENT
+        mock_dept.name = name
+        mock_dept.is_interdepartemental = is_interdepartemental
+        mock_dept.departements = departements or [land_id]
+        mock_dept.parent_keys = parent_keys or [f"REGION_{self.mock_region.land_id}"]
+        mock_dept.child_land_types = [AdminRef.EPCI] if is_interdepartemental else []
+        return mock_dept
+
+    def _create_mock_conso(self, land_id, land_type, year, total):
+        """Create mock LandConso."""
+        mock = Mock()
+        mock.land_id = land_id
+        mock.land_type = land_type
+        mock.year = year
+        mock.total = total * 10000  # Convert ha to m²
+        return mock
+
+    @patch("project.charts.AnnualTotalConsoChart.LandConso")
+    @patch("project.charts.AnnualTotalConsoChart.LandModel")
+    @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
+    def test_region_with_interdep_dept_same_region(self, mock_service, mock_landmodel_class, mock_landconso_class):
+        """
+        Test that interdepartemental département within same region is displayed normally.
+
+        Scenario: Region 84 contains Dept 69 which is interdepartemental but both
+        departments (69 and 01) are in the same region 84.
+        Expected: Dept 69 should be displayed as a normal row (not as interrégional).
+        """
+        mock_progression = Mock()
+        mock_progression.consommation = []
+        mock_service.return_value.get_by_land.return_value = mock_progression
+
+        # Département 69 (Rhône) - interdépartemental but both depts in same region
+        dept_69 = self._create_mock_departement(
+            "69",
+            "Rhône",
+            is_interdepartemental=True,
+            departements=["69", "01"],  # Both in region 84
+            parent_keys=["REGION_84"],
+        )
+
+        # Département 01 (Ain)
+        dept_01 = self._create_mock_departement(
+            "01",
+            "Ain",
+            is_interdepartemental=False,
+            departements=["01"],
+            parent_keys=["REGION_84"],
+        )
+
+        # Mock pour vérifier les départements des children
+        mock_dept_69_obj = Mock(spec=LandModel)
+        mock_dept_69_obj.land_id = "69"
+        mock_dept_69_obj.parent_keys = ["REGION_84"]
+
+        mock_dept_01_obj = Mock(spec=LandModel)
+        mock_dept_01_obj.land_id = "01"
+        mock_dept_01_obj.parent_keys = ["REGION_84"]
+
+        def mock_landmodel_filter(**kwargs):
+            mock_qs = Mock()
+            land_type = kwargs.get("land_type")
+            parent_keys_contains = kwargs.get("parent_keys__contains", [])
+            land_id_in = kwargs.get("land_id__in", [])
+
+            if land_type == AdminRef.DEPARTEMENT and "REGION_84" in parent_keys_contains:
+                mock_qs.__iter__ = lambda self: iter([dept_69, dept_01])
+                mock_values_list = Mock()
+                mock_values_list.__iter__ = lambda self: iter(["69", "01"])
+                mock_qs.values_list.return_value = mock_values_list
+            elif land_type == "DEPART" and land_id_in:
+                # Vérification des départements pour is_inter
+                depts = []
+                if "69" in land_id_in:
+                    depts.append(mock_dept_69_obj)
+                if "01" in land_id_in:
+                    depts.append(mock_dept_01_obj)
+                mock_qs.__iter__ = lambda self, d=depts: iter(d)
+            else:
+                mock_qs.__iter__ = lambda self: iter([])
+                mock_qs.exists.return_value = False
+                mock_values_list = Mock()
+                mock_values_list.__iter__ = lambda self: iter([])
+                mock_qs.values_list.return_value = mock_values_list
+
+            mock_qs.order_by.return_value = mock_qs
+            return mock_qs
+
+        mock_landmodel_class.objects.filter.side_effect = mock_landmodel_filter
+
+        consumption_data = [
+            self._create_mock_conso("69", AdminRef.DEPARTEMENT, 2011, 100),
+            self._create_mock_conso("69", AdminRef.DEPARTEMENT, 2012, 110),
+            self._create_mock_conso("01", AdminRef.DEPARTEMENT, 2011, 50),
+            self._create_mock_conso("01", AdminRef.DEPARTEMENT, 2012, 55),
+        ]
+
+        def mock_landconso_filter(**kwargs):
+            mock_qs = Mock()
+            land_type = kwargs.get("land_type")
+            land_ids = kwargs.get("land_id__in", [])
+            year_gte = kwargs.get("year__gte")
+            year_lte = kwargs.get("year__lte")
+
+            filtered = [
+                c
+                for c in consumption_data
+                if (
+                    c.land_type == land_type
+                    and c.land_id in land_ids
+                    and (year_gte is None or c.year >= year_gte)
+                    and (year_lte is None or c.year <= year_lte)
+                )
+            ]
+            mock_qs.__iter__ = lambda self, f=filtered: iter(f)
+            return mock_qs
+
+        mock_landconso_class.objects.filter.side_effect = mock_landconso_filter
+
+        chart = AnnualTotalConsoChart(land=self.mock_region, params=self.params)
+        data_table = chart.data_table
+
+        rows_by_name = {}
+        for row in data_table["rows"]:
+            name = row["data"][0].strip()
+            rows_by_name[name] = row["data"]
+
+        # Département 69 should be displayed normally (not as interrégional)
+        # because both of its départements are in the same region
+        self.assertIn("Rhône", rows_by_name)
+        # Should NOT have "(interrégional)" suffix
+        interregional_found = any("interrégional" in name for name in rows_by_name.keys())
+        self.assertFalse(interregional_found, "No département should be marked as interrégional")
+
+    @patch("project.charts.AnnualTotalConsoChart.LandConso")
+    @patch("project.charts.AnnualTotalConsoChart.LandModel")
+    @patch("public_data.domain.containers.PublicDataContainer.consommation_progression_service")
+    def test_region_with_interregional_dept(self, mock_service, mock_landmodel_class, mock_landconso_class):
+        """
+        Test that interdepartemental département spanning multiple regions is marked as interrégional.
+
+        Scenario: Region 84 contains Dept X which spans both region 84 and region 93.
+        Expected: Dept X should be displayed as "(interrégional)" with sub-children.
+        """
+        mock_progression = Mock()
+        mock_progression.consommation = []
+        mock_service.return_value.get_by_land.return_value = mock_progression
+
+        # Département X - interdépartemental spanning two regions
+        dept_x = self._create_mock_departement(
+            "XX",
+            "Département Interrégional",
+            is_interdepartemental=True,
+            departements=["XX", "YY"],  # YY is in another region
+            parent_keys=["REGION_84"],
+        )
+
+        # Mock département YY is in region 93 (different region)
+        mock_dept_xx = Mock(spec=LandModel)
+        mock_dept_xx.land_id = "XX"
+        mock_dept_xx.parent_keys = ["REGION_84"]
+
+        mock_dept_yy = Mock(spec=LandModel)
+        mock_dept_yy.land_id = "YY"
+        mock_dept_yy.parent_keys = ["REGION_93"]  # Different region!
+
+        # Mock EPCI children of dept_x
+        mock_epci = Mock(spec=LandModel)
+        mock_epci.land_id = "EPCI001"
+        mock_epci.land_type = AdminRef.EPCI
+        mock_epci.name = "EPCI dans région 84"
+        mock_epci.parent_keys = ["DEPART_XX", "REGION_84"]
+
+        def mock_landmodel_filter(**kwargs):
+            mock_qs = Mock()
+            land_type = kwargs.get("land_type")
+            parent_keys_contains = kwargs.get("parent_keys__contains", [])
+            land_id_in = kwargs.get("land_id__in", [])
+
+            if land_type == AdminRef.DEPARTEMENT and "REGION_84" in parent_keys_contains:
+                mock_qs.__iter__ = lambda self: iter([dept_x])
+                mock_values_list = Mock()
+                mock_values_list.__iter__ = lambda self: iter(["XX"])
+                mock_qs.values_list.return_value = mock_values_list
+            elif land_type == "DEPART" and land_id_in:
+                # Vérification des départements pour is_inter
+                depts = []
+                if "XX" in land_id_in:
+                    depts.append(mock_dept_xx)
+                if "YY" in land_id_in:
+                    depts.append(mock_dept_yy)
+                mock_qs.__iter__ = lambda self, d=depts: iter(d)
+            elif land_type == AdminRef.EPCI and "DEPART_XX" in parent_keys_contains:
+                # Return EPCI children
+                inner_mock_qs = Mock()
+
+                def inner_filter(**inner_kwargs):
+                    result_qs = Mock()
+                    result_qs.__iter__ = lambda self: iter([mock_epci])
+                    result_qs.exists.return_value = True
+                    mock_values_list = Mock()
+                    mock_values_list.__iter__ = lambda self: iter(["EPCI001"])
+                    result_qs.values_list.return_value = mock_values_list
+                    result_qs.order_by.return_value = result_qs
+                    return result_qs
+
+                inner_mock_qs.filter = inner_filter
+                inner_mock_qs.__iter__ = lambda self: iter([mock_epci])
+                inner_mock_qs.exists.return_value = True
+                inner_mock_qs.order_by.return_value = inner_mock_qs
+                return inner_mock_qs
+            else:
+                mock_qs.__iter__ = lambda self: iter([])
+                mock_qs.exists.return_value = False
+                mock_values_list = Mock()
+                mock_values_list.__iter__ = lambda self: iter([])
+                mock_qs.values_list.return_value = mock_values_list
+
+            mock_qs.order_by.return_value = mock_qs
+            return mock_qs
+
+        mock_landmodel_class.objects.filter.side_effect = mock_landmodel_filter
+
+        consumption_data = [
+            self._create_mock_conso("EPCI001", AdminRef.EPCI, 2011, 50),
+            self._create_mock_conso("EPCI001", AdminRef.EPCI, 2012, 55),
+        ]
+
+        def mock_landconso_filter(**kwargs):
+            mock_qs = Mock()
+            land_type = kwargs.get("land_type")
+            land_ids = kwargs.get("land_id__in", [])
+            year_gte = kwargs.get("year__gte")
+            year_lte = kwargs.get("year__lte")
+
+            filtered = [
+                c
+                for c in consumption_data
+                if (
+                    c.land_type == land_type
+                    and c.land_id in land_ids
+                    and (year_gte is None or c.year >= year_gte)
+                    and (year_lte is None or c.year <= year_lte)
+                )
+            ]
+            mock_qs.__iter__ = lambda self, f=filtered: iter(f)
+            return mock_qs
+
+        mock_landconso_class.objects.filter.side_effect = mock_landconso_filter
+
+        chart = AnnualTotalConsoChart(land=self.mock_region, params=self.params)
+        data_table = chart.data_table
+
+        rows_by_name = {}
+        for row in data_table["rows"]:
+            name = row["data"][0].strip()
+            rows_by_name[name] = row["data"]
+
+        # Should find interrégional marker
+        interregional_found = any("interrégional" in name for name in rows_by_name.keys())
+        self.assertTrue(interregional_found, "Département spanning multiple regions should be marked as interrégional")
