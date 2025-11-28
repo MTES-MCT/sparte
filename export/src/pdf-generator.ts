@@ -30,7 +30,6 @@ export async function exportToPdf(options: ExportOptions): Promise<Buffer> {
             // @ts-ignore
             headless: "new",
             pipe: true,
-            waitForInitialPage: false,
             args: ['--no-sandbox'],
             defaultViewport: {
                 width: 794,
@@ -47,7 +46,7 @@ export async function exportToPdf(options: ExportOptions): Promise<Buffer> {
         console.log(`Loading page: ${url}`);
 
         await page.goto(url, {
-            waitUntil: 'networkidle2',
+            waitUntil: 'networkidle0',
         });
 
         console.log('Generating PDF...');
