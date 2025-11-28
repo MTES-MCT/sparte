@@ -14,23 +14,39 @@ const Container = styled.div<{ $isHeaderVisible: boolean }>`
     background: rgba(255, 255, 255, 0.8);
     border-bottom: 1px solid #EBEBEC;
     z-index: 998;
-    padding: 1.5rem 1.5rem;
+    padding: 1.5rem;
+    min-height: 5.8rem;
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: space-between;
     transition: top 0.3s ease;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
 `;
 
 const LeftSection = styled.div`
     display: flex;
     align-items: center;
+
+    @media (max-width: 768px) {
+        width: 100%;
+    }
 `;
 
 const RightSection = styled.div`
     display: flex;
     align-items: center;
     gap: 1rem;
+
+    @media (max-width: 768px) {
+        width: 100%;
+        justify-content: flex-start;
+    }
 `;
 
 const Title = styled.div`
@@ -53,9 +69,7 @@ const TopBar: React.FC = () => {
         <Container ref={htmxRef} $isHeaderVisible={isHeaderVisible}>
             <LeftSection>
                 { !isOpen && <ButtonToggleNavbar /> }
-                <div>
-                    <Title>{ memoizedProjectData?.territory_name }</Title>
-                </div>
+                <Title>{ memoizedProjectData?.territory_name }</Title>
             </LeftSection>
             <RightSection id="topbar-slot">
                 {/* Le contenu sera rendu ici via React Portal */}
