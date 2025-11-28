@@ -77,22 +77,6 @@ const ArtifDetailSection: React.FC<ArtifDetailSectionProps> = ({ landData }) => 
             hideDetails
           />
         </ChartContainer>
-
-        <DataTableContainer>
-          <GenericChart
-            id="artif_net_flux_export"
-              land_id={landData.land_id}
-              land_type={landData.land_type}
-              params={{
-                millesime_new_index: maxIndex,
-                millesime_old_index: minIndex,
-              }}
-              sources={["ocsge"]}
-            dataTableOnly
-            compactDataTable
-          />
-        </DataTableContainer>
-
         <KeyPointsBox>
           <h4>Points clés</h4>
           <ul>

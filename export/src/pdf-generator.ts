@@ -1,11 +1,33 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
 
+interface ExportOptions {
+    url: string;
+    headerUrl: string;
+    footerUrl: string;
+}
+
+async function fetchTemplate(url: string): Promise<string> {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch template from ${url}: ${response.statusText}`);
+    }
+    return response.text();
+}
+
 /**
  * Export a page to PDF using Puppeteer
  * @returns PDF content as a Buffer
  */
-export async function exportToPdf(url: string): Promise<Buffer> {
+export async function exportToPdf(options: ExportOptions): Promise<Buffer> {
+    const { url, headerUrl, footerUrl } = options;
+
     console.log(`Launching browser to export: ${url}`);
+
+    const [headerTemplate, footerTemplate] = await Promise.all([
+        fetchTemplate(headerUrl),
+        fetchTemplate(footerUrl),
+    ]);
+
     const browser: Browser = await puppeteer.launch({
         // @ts-ignore
         headless: "new",
@@ -32,23 +54,9 @@ export async function exportToPdf(url: string): Promise<Buffer> {
             format: 'A4',
             printBackground: true,
             displayHeaderFooter: true,
-            timeout: 120000, // 2 minutes timeout for PDF generation
-            headerTemplate: `
-                <div style="width: 100%; font-size: 9px; padding: 5mm 20mm 3mm 20mm; margin: 0; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #000091; font-weight: 600; font-size: 10px;">Mon Diagnostic Artificialisation</span>
-                    <span style="color: #666; font-size: 9px;">Diagnostic territorial de sobriété foncière</span>
-                </div>
-            `,
-            footerTemplate: `
-                <div style="width: 100%; font-size: 9px; padding: 3mm 20mm 5mm 20mm; margin: 0; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #666; font-size: 9px;">
-                        <span class="date"></span>
-                    </span>
-                    <span style="color: #000091; font-weight: 600; font-size: 9px;">
-                        Page <span class="pageNumber"></span> / <span class="totalPages"></span>
-                    </span>
-                </div>
-            `,
+            timeout: 120000,
+            headerTemplate,
+            footerTemplate,
             margin: {
                 top: '20mm',
                 bottom: '20mm',

@@ -199,6 +199,7 @@ class ArtifFluxByUsage(DiagnosticChart):
                 }
                 for item in self.data
             ],
+            "boldFirstColumn": True,
         }
 
 

@@ -102,6 +102,7 @@ class ArtifMap(DiagnosticChart):
 
         return {
             "headers": headers,
+            "boldFirstColumn": True,
             "rows": [
                 {
                     "name": "",  # not used

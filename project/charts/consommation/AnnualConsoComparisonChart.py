@@ -140,6 +140,7 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         return {
             "headers": headers,
             "rows": rows,
+            "boldFirstColumn": True,
         }
 
 

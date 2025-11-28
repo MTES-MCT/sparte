@@ -436,6 +436,10 @@ if DEBUG:
 
 HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highcharts.com/")
 
+# Configuration for export server (PDF generation)
+
+EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3001")
+
 # EMAIL
 """Configuration of e-mails
 

@@ -233,3 +233,11 @@ class RapportCompletView(TemplateView):
             }
         )
         return super().get_context_data(**kwargs)
+
+
+class PdfHeaderView(TemplateView):
+    template_name = "public_data/pdf_header.html"
+
+
+class PdfFooterView(TemplateView):
+    template_name = "public_data/pdf_footer.html"

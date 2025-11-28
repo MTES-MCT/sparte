@@ -1,15 +1,7 @@
-import React, { useState, ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import Guide from '@components/ui/Guide';
-import { useDownloadDiagnosticMutation, useGetProjectDownloadLinksQuery } from '@services/api';
-import { ProjectDetailResultType } from "@services/types/project";
-
-type DocumentTypeLiteral = 'rapport-complet' | 'rapport-local';
-
-interface ReportConfig {
-    title: string;
-    description: string;
-    documentType: DocumentTypeLiteral;
-}
+import { useGetEnvironmentQuery } from '@services/api';
+import { LandDetailResultType } from '@services/types/land';
 
 interface NoticeProps {
     type: 'success' | 'warning';
@@ -17,34 +9,10 @@ interface NoticeProps {
     reportTitle: string;
 }
 
-interface DownloadCardProps {
-    report: ReportConfig;
-    onDownload: (report: ReportConfig) => void;
-    isDisabled: boolean;
-    downloadUrl?: string;
-}
-
-interface DownloadsProps {
-    projectData: ProjectDetailResultType;
-}
-
 const NOTICE_TITLES = {
     success: (reportTitle: string) => `Votre demande de téléchargement du rapport ${reportTitle} a bien été prise en compte`,
     warning: (reportTitle: string) => `Erreur lors de votre demande de téléchargement du rapport ${reportTitle}`
 } as const;
-
-export const REPORTS: ReportConfig[] = [
-    {
-        title: "complet",
-        description: "Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols sur votre territoire, incluant les indicateurs clés, au regard de la loi climat et résilience.",
-        documentType: "rapport-complet"
-    },
-    {
-        title: "triennal local",
-        description: "Trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire réalisée en partenariat avec la DGALN.",
-        documentType: "rapport-local"
-    }
-];
 
 export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) => (
     <div className={`bg-white fr-mt-2w fr-alert fr-alert--${type}`}>
@@ -53,81 +21,25 @@ export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) =>
     </div>
 );
 
-const DownloadCard: React.FC<DownloadCardProps> = ({ report, onDownload, isDisabled, downloadUrl }) => (
-    <div className={`fr-card fr-enlarge-link ${isDisabled ? 'fr-card--disabled' : ''}`}>
-        <div className="fr-card__body">
-            <div className="fr-card__content">
-                <h3 className="fr-card__title">
-                    {downloadUrl ? (
-                        <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="fr-link">
-                            Rapport {report.title}
-                        </a>
-                    ) : (
+interface DownloadsProps {
+    landData: LandDetailResultType;
+}
 
-                    <a
-                        className="fr-link"
-                        href="#"
-                        onClick={(e) => {
-                            if (!isDisabled) onDownload(report);
-                        }}
-                        aria-disabled={isDisabled}
-                    >
-                        Rapport {report.title}
-                    </a>
-                    )}
-                </h3>
-                <p className="fr-card__desc">{report.description}</p>
-                <div className="fr-card__end">
-                    {downloadUrl ? (
-                 <p className="fr-card__detail">
-                        Télécharger le rapport {report.title} au format Word
-                    </p>
-                    ) : (
-                                         <p className="fr-card__detail">
-                        Recevoir le rapport {report.title} au format Word par email
-                    </p>
-                    )}
-   
-                </div>
-            </div>
-        </div>
-    </div>
-);
+const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
+    const { land_id, land_type } = landData || {}
+    const { data: env } = useGetEnvironmentQuery(null);
+    const exportServerUrl = env?.export_server_url ?? null;
+    const [isLoading, setIsLoading] = useState(false);
 
-const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
-    const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<ReactNode | null>(null);
-    const [disabledDocuments, setDisabledDocuments] = useState<Set<string>>(new Set());
-    const [currentReport, setCurrentReport] = useState<ReportConfig | null>(null);
-    const [downloadDiagnostic] = useDownloadDiagnosticMutation();
-    const { data: downloadLinks } = useGetProjectDownloadLinksQuery(projectData.id)
+    const pageUrl = `${globalThis.location.origin}/exports/rapport-complet/${land_type}/${land_id}`;
+    const exportUrl = exportServerUrl ? `${exportServerUrl}/api/export?url=${encodeURIComponent(pageUrl)}` : null;
 
-    const {
-        rapport_complet_url,
-        rapport_local_url
-    } = downloadLinks || {};
+    const handleClick = () => {
+        if (isLoading || !exportUrl) return;
 
-    const urls = {
-        "rapport-complet": rapport_complet_url,
-        "rapport-local": rapport_local_url
-    } satisfies Record<DocumentTypeLiteral, string | null>;
-
-    const handleDownload = async (report: ReportConfig) => {
-        if (disabledDocuments.has(report.documentType)) return;
-
-        setError(null);
-        setMessage(null);
-        setCurrentReport(report);
-        setDisabledDocuments(new Set([report.documentType]));
-        try {
-            const response = await downloadDiagnostic({ 
-                projectId: projectData.id, 
-                documentType: report.documentType 
-            }).unwrap();
-            setMessage(response.message);
-        } catch (error: any) {
-            setError(error.data?.error || 'Une erreur est survenue');
-        }
+        setIsLoading(true);
+        globalThis.location.href = exportUrl;
+        setTimeout(() => setIsLoading(false), 2000);
     };
 
     return (
@@ -138,31 +50,22 @@ const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
                         <p>Nos rapports téléchargeables vous permettent d'accéder à des analyses détaillées de l'évolution de l'artificialisation des sols, des données quantitatives sur la consommation d'espaces NAF (naturels, agricoles et forestiers), ainsi qu'à des cartographies des zones concernées.</p>
                         <p>Ces documents sont régulièrement mis à jour pour refléter les dernières données disponibles et les évolutions réglementaires.</p>
                     </Guide>
-                    {message && currentReport && (
-                        <Notice 
-                            type="success" 
-                            message={message} 
-                            reportTitle={currentReport.title} 
-                        />
-                    )}
-                    {error && currentReport && (
-                        <Notice 
-                            type="warning" 
-                            message={<span dangerouslySetInnerHTML={{ __html: error }} />} 
-                            reportTitle={currentReport.title} 
-                        />
-                    )}
-                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-                        {REPORTS.map((report) => (
-                            <div key={report.documentType} className="fr-col-12 fr-col-md-6">
-                                <DownloadCard
-                                    report={report}
-                                    onDownload={handleDownload}
-                                    downloadUrl={urls[report.documentType]}
-                                    isDisabled={disabledDocuments.has(report.documentType)}
-                                />
-                            </div>
-                        ))}
+                    <div className="fr-mt-3w">
+                        <button
+                            className="fr-btn"
+                            onClick={handleClick}
+                            disabled={isLoading || !exportUrl}
+                            aria-busy={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <span className="fr-spinner fr-spinner--sm fr-mr-1w" aria-hidden="true" />
+                                    Génération en cours...
+                                </>
+                            ) : (
+                                'Télécharger le rapport complet (PDF)'
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>

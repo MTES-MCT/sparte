@@ -102,8 +102,7 @@ const TrajectoireSection: React.FC<TrajectoireSectionProps> = ({ landData }) => 
             land_id={landData.land_id}
             land_type={landData.land_type}
             params={{
-              start_date: "2011",
-              end_date: "2031",
+              target_2031_custom: 50,
             }}
             sources={["majic"]}
             showToolbar={false}
@@ -117,8 +116,7 @@ const TrajectoireSection: React.FC<TrajectoireSectionProps> = ({ landData }) => 
             land_id={landData.land_id}
             land_type={landData.land_type}
             params={{
-              start_date: "2011",
-              end_date: "2031",
+              target_2031_custom: 50,
             }}
             sources={["majic"]}
             dataTableOnly

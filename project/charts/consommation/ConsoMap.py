@@ -123,6 +123,7 @@ class ConsoMap(DiagnosticChart):
 
         return {
             "headers": headers,
+            "boldFirstColumn": True,
             "rows": [
                 {
                     "name": "",  # not used
@@ -273,20 +274,32 @@ class ConsoMap(DiagnosticChart):
 class ConsoMapExport(ConsoMap):
     @property
     def param(self):
-        return super().param | {
+        base_param = super().param
+        series = base_param["series"].copy()
+        # Activer les dataLabels sur la première série (carte)
+        series[0] = {
+            **series[0],
+            "dataLabels": {
+                "enabled": True,
+                "format": "{point.conso_density_percent:.1f}",
+                "style": {"fontSize": "8px", "textOutline": "1px white"},
+            },
+        }
+        return base_param | {
             "chart": {
-                **super().param["chart"],
+                **base_param["chart"],
             },
             "credits": CEREMA_CREDITS,
             "mapNavigation": MAP_NAVIGATION_EXPORT,
             "legend": {
-                **super().param["legend"],
+                **base_param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
             },
             "title": {
-                "text": f"{super().param['title']['text']} sur le territoire {self.land.name}",
+                "text": f"{base_param['title']['text']} sur le territoire {self.land.name}",
             },
             "subtitle": {"text": ""},
+            "series": series,
         }
 
 
@@ -373,23 +386,16 @@ class ConsoMapRelativeExport(ConsoMapRelative):
     @property
     def param(self):
         base_param = super().param
-
-        # Modifier la série pour ajouter les dataLabels
         series = base_param["series"].copy()
-        if len(series) > 0:
-            series[0] = {
-                **series[0],
-                "dataLabels": {
-                    "enabled": True,
-                    "format": "{point.total_conso_ha:.1f}",
-                    "style": {
-                        "fontSize": "10px",
-                        "fontWeight": "bold",
-                        "textOutline": "1px contrast",
-                    },
-                },
-            }
-
+        # Activer les dataLabels sur la première série (carte)
+        series[0] = {
+            **series[0],
+            "dataLabels": {
+                "enabled": True,
+                "format": "{point.conso_density_percent:.1f}",
+                "style": {"fontSize": "8px", "textOutline": "1px white"},
+            },
+        }
         return base_param | {
             "chart": {
                 **base_param["chart"],
@@ -430,6 +436,7 @@ class ConsoMapBubble(ConsoMap):
 
         return {
             "headers": headers,
+            "boldFirstColumn": True,
             "rows": [
                 {
                     "name": "",  # not used
@@ -512,6 +519,7 @@ class ConsoMapBubble(ConsoMap):
                     "type": "mapbubble",
                     "joinBy": ["land_id"],
                     "showInLegend": True,
+                    "maxSize": "8%",
                     "marker": {
                         "fillOpacity": 0.5,
                     },
@@ -556,23 +564,16 @@ class ConsoMapBubbleExport(ConsoMapBubble):
     @property
     def param(self):
         base_param = super().param
-
-        # Modifier la série des bulles pour ajouter les dataLabels
         series = base_param["series"].copy()
-        if len(series) > 1:
-            series[1] = {
-                **series[1],
-                "dataLabels": {
-                    "enabled": True,
-                    "format": "{point.z:.1f}",
-                    "style": {
-                        "fontSize": "10px",
-                        "fontWeight": "bold",
-                        "textOutline": "1px contrast",
-                    },
-                },
-            }
-
+        # Activer les dataLabels sur la première série (carte)
+        series[0] = {
+            **series[0],
+            "dataLabels": {
+                "enabled": True,
+                "format": "{point.total_conso_ha:.1f}",
+                "style": {"fontSize": "8px", "textOutline": "1px white"},
+            },
+        }
         return base_param | {
             "chart": {
                 **base_param["chart"],

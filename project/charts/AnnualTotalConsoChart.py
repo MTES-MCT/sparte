@@ -88,8 +88,21 @@ class AnnualTotalConsoChart(DiagnosticChart):
             sub_children_by_type = {}  # Garder trace des sub_children par type
 
             for child in children:
-                if child.is_interdepartemental:
-                    # Ce child est interdépartemental, récupérer ses propres children
+                # Vérifier si le child est "inter" par rapport au territoire parent
+                # Pour les REGION, on vérifie si le child a des départements dans d'autres régions
+                is_inter = child.is_interdepartemental
+                if self.land.land_type == "REGION" and child.is_interdepartemental:
+                    # Vérifier si tous les départements du child sont dans cette région
+                    region_key = f"REGION_{self.land.land_id}"
+                    child_depts = LandModel.objects.filter(
+                        land_type="DEPART",
+                        land_id__in=child.departements,
+                    )
+                    # Si tous les départements ont cette région comme parent, ce n'est pas interrégional
+                    is_inter = any(region_key not in dept.parent_keys for dept in child_depts)
+
+                if is_inter:
+                    # Ce child est interdépartemental/interrégional, récupérer ses propres children
                     # MAIS seulement ceux qui appartiennent aussi au territoire parent (self.land)
                     sub_child_types = child.child_land_types
                     if sub_child_types:
@@ -219,9 +232,10 @@ class AnnualTotalConsoChart(DiagnosticChart):
                 child_name = child.name
 
                 if child.is_interdepartemental and child.land_id in interdep_children:
-                    # Ajouter une ligne pour le child interdépartemental (en gras)
+                    # Ajouter une ligne pour le child interdépartemental/interrégional (en gras)
+                    inter_label = "interrégional" if self.land.land_type == "REGION" else "interdépartemental"
                     row_data = (
-                        [f"{child_name} (interdépartemental)"]
+                        [f"{child_name} ({inter_label})"]
                         + [
                             round(conso_with_totals.get(child_name, {}).get(str(year), 0), DEFAULT_VALUE_DECIMALS)
                             for year in years
