@@ -23,20 +23,22 @@ export async function exportToPdf(options: ExportOptions): Promise<Buffer> {
 
     console.log(`Launching browser to export: ${url}`);
 
-    const [headerTemplate, footerTemplate] = await Promise.all([
+    const [headerTemplate, footerTemplate, browser] = await Promise.all([
         fetchTemplate(headerUrl),
         fetchTemplate(footerUrl),
+        puppeteer.launch({
+            // @ts-ignore
+            headless: "new",
+            pipe: true,
+            waitForInitialPage: false,
+            args: ['--no-sandbox'],
+            defaultViewport: {
+                width: 794,
+                height: 1123
+            },
+        })
     ]);
 
-    const browser: Browser = await puppeteer.launch({
-        // @ts-ignore
-        headless: "new",
-        args: ['--no-sandbox'],
-        defaultViewport: {
-            width: 794,
-            height: 1123
-        },
-    });
     console.log(`Browser launched`);
 
     try {
@@ -45,8 +47,7 @@ export async function exportToPdf(options: ExportOptions): Promise<Buffer> {
         console.log(`Loading page: ${url}`);
 
         await page.goto(url, {
-            waitUntil: 'networkidle0',
-            timeout: 60000,
+            waitUntil: 'networkidle2',
         });
 
         console.log('Generating PDF...');

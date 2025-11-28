@@ -27,12 +27,17 @@ interface DownloadsProps {
 
 const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
     const { land_id, land_type } = landData || {}
+    console.log(landData)
     const { data: env } = useGetEnvironmentQuery(null);
-    const exportServerUrl = env?.export_server_url ?? null;
     const [isLoading, setIsLoading] = useState(false);
 
     const pageUrl = `${globalThis.location.origin}/exports/rapport-complet/${land_type}/${land_id}`;
-    const exportUrl = exportServerUrl ? `${exportServerUrl}/api/export?url=${encodeURIComponent(pageUrl)}` : null;
+    const exportUrl = env
+        ? `${env.export_server_url}/api/export` +
+          `?url=${encodeURIComponent(pageUrl)}` +
+          `&headerUrl=${encodeURIComponent(env.pdf_header_url)}` +
+          `&footerUrl=${encodeURIComponent(env.pdf_footer_url)}`
+        : null;
 
     const handleClick = () => {
         if (isLoading || !exportUrl) return;

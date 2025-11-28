@@ -228,7 +228,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Téléchargements"
                                             >
-                                                <Downloads projectData={projectData} />
+                                                <Downloads landData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />

@@ -37,21 +37,95 @@ class ArtifSyntheseChart(DiagnosticChart):
 
     @property
     def series(self):
-        return [
-            {
-                "name": "Stock d'artificialisation",
-                "data": [
+        data_points = []
+        flux_points = []
+        data_list = list(self.data)
+
+        for i, stock_index in enumerate(data_list):
+            data_points.append(
+                {
+                    "y": stock_index.percent,
+                    "surface": stock_index.surface,
+                }
+            )
+
+            # Pour la courbe de flux, on place le point entre les deux barres
+            if i > 0:
+                flux_surface = stock_index.flux_surface or 0
+                # Position au milieu entre la barre précédente et actuelle
+                flux_points.append(
                     {
-                        "y": stock_index.percent,
-                        "flux_percent_str": self.get_formatted_flux_percent_str(stock_index.flux_percent),
-                        "flux_stock_str": self.get_formatted_flux_surface_str(stock_index.flux_surface),
-                        "stock": stock_index.surface,
+                        "x": i - 0.5,
+                        "y": (data_list[i - 1].percent + stock_index.percent) / 2,
+                        "flux": flux_surface,
                     }
-                    for stock_index in self.data
-                ],
-                "color": "#f4cfc4",
-            }
+                )
+
+        series = [
+            {
+                "name": "Part artificialisée",
+                "type": "column",
+                "data": data_points,
+                "color": "#818CF8",
+                "borderRadius": 3,
+                "zIndex": 1,
+            },
         ]
+
+        # Ajouter les lignes de connexion entre les barres
+        if len(data_list) > 1:
+            for i in range(1, len(data_list)):
+                flux_surface = data_list[i].flux_surface or 0
+                # Ligne entre les deux barres
+                series.append(
+                    {
+                        "name": "Flux" if i == 1 else f"Flux {i}",
+                        "type": "line",
+                        "data": [
+                            {"x": i - 1, "y": data_list[i - 1].percent},
+                            {"x": i, "y": data_list[i].percent},
+                        ],
+                        "color": "#F97316",
+                        "lineWidth": 2,
+                        "marker": {"enabled": False},
+                        "dataLabels": {"enabled": False},
+                        "enableMouseTracking": False,
+                        "showInLegend": i == 1,
+                        "zIndex": 2,
+                    }
+                )
+                # Point au milieu pour afficher le label du flux
+                flux_label = f"+{flux_surface:,.1f} ha" if flux_surface >= 0 else f"{flux_surface:,.1f} ha"
+                series.append(
+                    {
+                        "name": f"Flux label {i}",
+                        "type": "scatter",
+                        "data": [
+                            {
+                                "x": i - 0.5,
+                                "y": (data_list[i - 1].percent + data_list[i].percent) / 2,
+                                "name": flux_label,
+                            }
+                        ],
+                        "color": "#F97316",
+                        "marker": {"radius": 0},
+                        "dataLabels": {
+                            "enabled": True,
+                            "format": "{point.name}",
+                            "style": {
+                                "fontSize": "11px",
+                                "fontWeight": "bold",
+                                "color": "#F97316",
+                                "textOutline": "2px white",
+                            },
+                        },
+                        "enableMouseTracking": False,
+                        "showInLegend": False,
+                        "zIndex": 3,
+                    }
+                )
+
+        return series
 
     @property
     def title(self):
@@ -69,33 +143,70 @@ class ArtifSyntheseChart(DiagnosticChart):
     @property
     def param(self):
         return {
-            "chart": {"type": "bar"},
-            "title": {"text": self.title},
+            "chart": {
+                "type": "column",
+                "backgroundColor": "transparent",
+            },
+            "title": {
+                "text": self.title,
+                "style": {
+                    "fontSize": "14px",
+                    "fontWeight": "600",
+                },
+            },
             "xAxis": {
                 "categories": self.years,
                 "title": {"text": None},
+                "labels": {
+                    "style": {"fontSize": "12px"},
+                },
+                "lineColor": "#E5E7EB",
             },
             "yAxis": {
-                "min": 0,
-                "title": {"text": "%", "align": "high"},
-                "labels": {"overflow": "justify"},
-                "gridLineWidth": 0,
+                "title": {
+                    "text": "Part artificialisée (%)",
+                    "style": {"fontSize": "12px", "color": "#6B7280"},
+                },
+                "labels": {
+                    "format": "{value}%",
+                    "style": {"fontSize": "11px", "color": "#6B7280"},
+                },
+                "gridLineColor": "#F3F4F6",
+                "gridLineDashStyle": "Dash",
             },
             "tooltip": {
-                "valueSuffix": " %",
-                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+                "backgroundColor": "rgba(255, 255, 255, 0.95)",
+                "borderColor": "#E5E7EB",
+                "borderRadius": 8,
+                "shadow": True,
+                "useHTML": True,
+                "headerFormat": '<div style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #1F2937;">{point.key}</div>',  # noqa: E501
                 "pointFormat": """
-                    Part artificialisée : <b>{point.y:.2f}%</b> {point.flux_percent_str} <br/>
-                    Surface artificialisée : <b>{point.stock:,.2f} ha</b> {point.flux_stock_str}
+                    <div style="padding: 4px 0;">
+                        <span style="color: #6B7280;">Part du territoire :</span>
+                        <b style="color: #1F2937;">{point.y:.2f}%</b>
+                    </div>
+                    <div style="padding: 4px 0;">
+                        <span style="color: #6B7280;">Surface :</span>
+                        <b style="color: #1F2937;">{point.surface:,.1f} ha</b>
+                    </div>
                 """,
             },
             "plotOptions": {
-                "bar": {
+                "column": {
+                    "borderRadius": 3,
                     "dataLabels": {
                         "enabled": True,
-                        "format": "{point.y:.2f}%",
-                    }
-                }
+                        "format": "{point.y:.2f}%<br/>({point.surface:,.0f} ha)",
+                        "style": {
+                            "fontSize": "10px",
+                            "fontWeight": "600",
+                            "textOutline": "none",
+                            "color": "#6B7280",
+                            "textAlign": "center",
+                        },
+                    },
+                },
             },
             "legend": {
                 "enabled": False,
@@ -113,70 +224,19 @@ class ArtifSyntheseChart(DiagnosticChart):
 
 
 class ArtifSyntheseChartExport(ArtifSyntheseChart):
-    """Version export du graphique de synthèse d'artificialisation avec améliorations"""
-
-    @property
-    def series(self):
-        return [
-            {
-                "name": "Surfaces artificialisées",
-                "data": [stock_index.percent for stock_index in self.data],
-                "color": "#FA4B42",
-                "dataLabels": {
-                    "enabled": True,
-                    "format": "{point.y:.2f}%",
-                    "style": {
-                        "fontSize": "11px",
-                        "fontWeight": "bold",
-                    },
-                },
-            }
-        ]
+    """Version export du graphique de synthèse d'artificialisation"""
 
     @property
     def param(self):
         base_param = super().param
 
-        # Récupérer le titre de base et ajouter (en %)
-        base_title = base_param.get("title", {}).get("text", self.title)
-
         return base_param | {
             "credits": OCSGE_CREDITS,
             "title": {
-                "text": f"{base_title} (en %)",
+                **base_param.get("title", {}),
+                "text": f"{self.title} (en %)",
             },
-            "chart": {
-                "type": "column",  # Utiliser column au lieu de bar pour une meilleure lisibilité en export
-            },
-            "xAxis": {
-                "categories": self.years,
-                "title": {"text": "Période"},
-                "labels": {
-                    "style": {"fontSize": "11px"},
-                },
-            },
-            "yAxis": {
-                "min": 0,
-                "title": {
-                    "text": "Part de surface artificialisée (%)",
-                    "style": {"fontSize": "12px"},
-                },
-                "labels": {
-                    "format": "{value}%",
-                    "style": {"fontSize": "11px"},
-                },
-            },
-            "tooltip": {"enabled": False},  # Désactiver le tooltip pour l'export
-            "plotOptions": {
-                "column": {
-                    "borderWidth": 0,
-                    "dataLabels": {
-                        "enabled": True,
-                    },
-                }
-            },
-            "legend": {"enabled": False},
-            "series": self.series,
+            "tooltip": {"enabled": False},
         }
 
     @property
