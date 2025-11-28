@@ -9,6 +9,8 @@ import { ConsoComparison } from "./components/ConsoComparison";
 import { useConsoData, useNearestTerritories, useComparisonTerritories } from "./hooks";
 import { ConsommationControlsProvider, useConsommationControls } from "./context/ConsommationControlsContext";
 import { TopBarContent } from "@components/layout/TopBarContent";
+import Loader from "@components/ui/Loader";
+import Guide from "@components/ui/Guide";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
@@ -30,7 +32,6 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
     childType,
     setChildType,
     consoCardRef,
-    perHabitantCardRef,
     populationCardRef,
     landTypeLabels: LAND_TYPE_LABELS,
     totalConsoHa,
@@ -70,29 +71,31 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
 
       <div className="fr-container--fluid fr-p-3w">
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-          <div className="fr-col-12 fr-col-md-3" ref={consoCardRef}>
+          <div className="fr-col-12 fr-col-lg-4" ref={consoCardRef}>
             <Card
-              icon="bi-graph-up"
+              icon="bi-bar-chart"
               badgeClass="fr-badge--error"
               badgeLabel="Consommation d'espaces"
               value={
-                isLoadingConso || totalConsoHa === null ? "..." : `${formatNumber({ number: totalConsoHa, addSymbol: true })} ha`
+                isLoadingConso || totalConsoHa === null ? <Loader size={32} /> : `${formatNumber({ number: totalConsoHa, addSymbol: true })} ha`
               }
               label={`Entre ${startYear} et ${endYear}`}
               isHighlighted={true}
               highlightBadge="Donnée clé"
             />
           </div>
-          <div className="fr-col-12 fr-col-md-9">
-            <div className="bg-white fr-p-4w rounded h-100">
-              <h6>Qu'est-ce que la consommation d'espaces ?</h6>
+          <div className="fr-col-12 fr-col-lg-8">
+            <Guide
+              title="Qu'est-ce que la consommation d'espaces ?"
+              className="h-100"
+            >
               <p className="fr-text--sm">
                 La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme <strong>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</strong> (article 194 de la loi Climat et résilience).
               </p>
               <p className="fr-text--sm">
                 Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait. Un espace urbanisé n'est plus un espace d'usage NAF (Naturel, Agricole et Forestier). Si l'artificialisation des sols traduit globalement un changement de couverture physique, la consommation traduit un changement d'usage. A titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.
               </p>
-            </div>
+            </Guide>
           </div>
         </div>
 

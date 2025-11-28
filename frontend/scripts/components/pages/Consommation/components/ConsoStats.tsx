@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "@components/ui/Card";
+import Loader from "@components/ui/Loader";
 import { formatNumber } from "@utils/formatUtils";
 
 interface ConsoStatsProps {
@@ -28,7 +29,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
 }) => {
   const formatPopulationValue = () => {
     if (isLoadingPop || populationEvolution === null) {
-      return "...";
+      return <Loader size={32} />;
     }
 
     const sign = populationEvolution > 0 ? "+" : "";
@@ -51,7 +52,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
 
   const formatDensityValue = () => {
     if (isLoadingPop || populationDensity === null) {
-      return "...";
+      return <Loader size={32} />;
     }
 
     return `${formatNumber({ number: populationDensity, decimals: 1 })} hab/ha`;
@@ -59,7 +60,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
 
   const formatPopulationStockValue = () => {
     if (isLoadingPop || populationStock === null) {
-      return "...";
+      return <Loader size={32} />;
     }
 
     return `${formatNumber({ number: populationStock })} hab`;
@@ -67,7 +68,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
 
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-      <div className="fr-col-12 fr-col-md-4" ref={populationCardRef}>
+      <div className="fr-col-12 fr-col-lg-4" ref={populationCardRef}>
         <Card
           icon="bi-people"
           badgeClass="fr-badge--success"
@@ -78,7 +79,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
           highlightBadge="Donnée clé"
         />
       </div>
-      <div className="fr-col-12 fr-col-md-4">
+      <div className="fr-col-12 fr-col-lg-4">
         <Card
           icon="bi-people-fill"
           badgeClass="fr-badge--info"
@@ -88,7 +89,7 @@ export const ConsoStats: React.FC<ConsoStatsProps> = ({
           isHighlighted={false}
         />
       </div>
-      <div className="fr-col-12 fr-col-md-4">
+      <div className="fr-col-12 fr-col-lg-4">
         <Card
           icon="bi-bar-chart"
           badgeClass="fr-badge--info"
