@@ -3,24 +3,23 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
-import { selectIsNavbarOpen, selectIsHeaderVisible } from "@store/navbarSlice";
+import { selectIsNavbarOpen } from "@store/navbarSlice";
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 
 const activeColor = '#4318FF';
 
-const Container = styled.div<{ $isHeaderVisible: boolean }>`
+const Container = styled.div`
     position: sticky;
-    top: ${({ $isHeaderVisible }) => ($isHeaderVisible ? '80px' : '0')};
+    top: 0;
     background: rgba(255, 255, 255, 0.8);
     border-bottom: 1px solid #EBEBEC;
-    z-index: 998;
+    z-index: 997;
     padding: 1.5rem;
     min-height: 5.8rem;
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: top 0.3s ease;
 
     @media (max-width: 768px) {
         flex-direction: column;
@@ -63,10 +62,9 @@ const TopBar: React.FC = () => {
     const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
     const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const isOpen = useSelector(selectIsNavbarOpen);
-    const isHeaderVisible = useSelector(selectIsHeaderVisible);
 
     return (
-        <Container ref={htmxRef} $isHeaderVisible={isHeaderVisible}>
+        <Container ref={htmxRef}>
             <LeftSection>
                 { !isOpen && <ButtonToggleNavbar /> }
                 <Title>{ memoizedProjectData?.territory_name }</Title>

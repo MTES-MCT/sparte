@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar, selectIsHeaderVisible } from '@store/navbarSlice';
+import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
@@ -39,18 +39,25 @@ const LinkStyle = css<{ $isActive: boolean }>`
     }
 `;
 
-const Container = styled.aside<{ $isOpen: boolean; $isHeaderVisible: boolean }>`
-    position: fixed;
-    left: ${({ $isOpen }) => ($isOpen ? '0' : '-280px')};
-    top: ${({ $isHeaderVisible }) => ($isHeaderVisible ? '80px' : '0')};
-    bottom: 0;
-    width: 280px;
+const Container = styled.aside<{ $isOpen: boolean; $isMobile: boolean; $height: string }>`
+    position: ${({ $isMobile }) => ($isMobile ? 'fixed' : 'sticky')};
+    top: 0;
+    width: ${({ $isOpen, $isMobile }) => ($isMobile || $isOpen ? '280px' : '0')};
+    height: ${({ $height }) => $height};
     display: flex;
     flex-direction: column;
     background: #fff;
-    border-right: 1px solid #EEF2F7;
-    transition: left 0.3s ease, top 0.3s ease;
+    border-right: ${({ $isOpen, $isMobile }) => ($isMobile || $isOpen ? '1px solid #EEF2F7' : 'none')};
     z-index: 999;
+    overflow: hidden;
+    transform: ${({ $isMobile, $isOpen }) => ($isMobile && !$isOpen ? 'translate3d(-280px, 0, 0)' : 'translate3d(0, 0, 0)')};
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), height 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    align-self: flex-start;
+    
+    ${({ $isMobile }) => $isMobile && `
+        left: 0;
+        bottom: 0;
+    `}
 `;
 
 const MenuList = styled.ul`
@@ -114,6 +121,7 @@ const DownloadLink = styled(Link)`
 const NavContainer = styled.div`
     flex: 1 1 0%;
     overflow-y: auto;
+    min-height: 0;
 `;
 
 const NavbarHeader = styled.div`
@@ -132,7 +140,7 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
     transition: opacity 0.3s ease;
     opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
     pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
-    z-index: 999;
+    z-index: 998;
 `;
 
 const MenuText = styled.span<{ $disabled?: boolean }>`
@@ -204,13 +212,32 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
 
     const dispatch = useDispatch();
     const isOpen = useSelector(selectIsNavbarOpen);
-    const isHeaderVisible = useSelector(selectIsHeaderVisible);
     const { isMobile } = useWindowSize();
+    const [navbarHeight, setNavbarHeight] = useState<string>('calc(100vh - 80px)');
 
     const shouldDisplayDownloads = landData.has_conso
 
-
     const isActive = (url?: string) => location.pathname === url;
+
+    // Calcul dynamique de la hauteur selon le scroll
+    useEffect(() => {
+        if (isMobile) {
+            setNavbarHeight('100vh');
+            return;
+        }
+
+        const updateHeight = () => {
+            const scrollY = window.scrollY;
+            // Si on a scrollé au-delà du header (80px), la navbar prend 100vh
+            // Sinon, elle prend calc(100vh - 80px) pour laisser la place au header
+            const height = scrollY >= 80 ? '100vh' : 'calc(100vh - 80px)';
+            setNavbarHeight(height);
+        };
+
+        updateHeight();
+        window.addEventListener('scroll', updateHeight, { passive: true });
+        return () => window.removeEventListener('scroll', updateHeight);
+    }, [isMobile]);
 
     // responsive
     useEffect(() => {
@@ -229,7 +256,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
     return (
         <>
             {isMobile && <Overlay $isOpen={isOpen} onClick={() => dispatch(toggleNavbar())} />}
-            <Container aria-label="Sidebar" ref={htmxRef} $isOpen={isOpen} $isHeaderVisible={isHeaderVisible}>
+            <Container aria-label="Sidebar" ref={htmxRef} $isOpen={isOpen} $isMobile={isMobile} $height={navbarHeight}>
                 <NavbarHeader>
                     <ButtonToggleNavbar />
                 </NavbarHeader>

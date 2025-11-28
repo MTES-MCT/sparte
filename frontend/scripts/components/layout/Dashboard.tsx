@@ -32,17 +32,19 @@ interface DashboardProps {
     projectId: string;
 }
 
-const Main = styled.main<{ $isOpen: boolean; $isMobile: boolean }>`
-    margin-left: ${({ $isOpen, $isMobile }) => {
-        if ($isMobile) return '0';
-        return $isOpen ? '280px' : '0';
-    }};
-    margin-top: 80px;
-    flex-grow: 1;
+const ContentWrapper = styled.div`
+    display: flex;
+    flex: 1;
+    position: relative;
+    min-height: calc(100vh - 80px);
+`;
+
+const Main = styled.main`
+    flex: 1;
     display: flex;
     flex-direction: column;
     background: #f8f9ff;
-    transition: margin-left 0.3s ease;
+    min-width: 0;
 `;
 
 const Content = styled.div`
@@ -86,11 +88,12 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                     <Header projectData={projectData} />
                     <Router>
                         <TrackingWrapper />
-                        <Navbar projectData={projectData} landData={landData} />
-                        <Main $isOpen={isOpen} $isMobile={isMobile}>
-                            <TopBar />
-                            <Content>
-                                <Routes>
+                        <ContentWrapper>
+                            <Navbar projectData={projectData} landData={landData} />
+                            <Main>
+                                <TopBar />
+                                <Content>
+                                    <Routes>
                                     <Route
                                         path={urls.synthese}
                                         element={
@@ -233,9 +236,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         }
                                     />
                                 </Routes>
-                            </Content>
-                            <Footer projectData={projectData} />
-                        </Main>
+                                </Content>
+                                <Footer projectData={projectData} />
+                            </Main>
+                        </ContentWrapper>
                     </Router>
                 </>
             )}

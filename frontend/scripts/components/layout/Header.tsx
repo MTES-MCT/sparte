@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import useWindowSize from '@hooks/useWindowSize';
 import { Tooltip } from 'react-tooltip'
 import SearchBar from '@components/ui/SearchBar';
 import { ProjectDetailResultType } from '@services/types/project';
-import { setHeaderVisibility } from '@store/navbarSlice';
 
 interface Logo {
     src: string;
@@ -17,11 +15,10 @@ interface Logo {
 const activeColor = '#4318FF';
 const secondaryColor = '#a1a1f8';
 
-const HeaderContainer = styled.header<{ $isVisible: boolean }>`
-    position: fixed;
-    top: 0;
-    left: 0;
+const HeaderContainer = styled.header`
+    position: relative;
     width: 100%;
+    height: 80px;
     z-index: 1000;
     display: flex;
     justify-content: space-between;
@@ -29,8 +26,6 @@ const HeaderContainer = styled.header<{ $isVisible: boolean }>`
     padding: 0.3rem 1rem;
     background-color: #fff;
     border-bottom: 1px solid #EEF2F7;
-    transform: translateY(${({ $isVisible }) => ($isVisible ? '0' : '-100%')});
-    transition: transform 0.3s ease;
 `;
 
 const LogoContainer = styled.div`
@@ -130,42 +125,19 @@ const ButtonToggleMenu = styled.i<{ $isMobile: boolean }>`
 `;
 
 const Header = ({ projectData }: { projectData: ProjectDetailResultType}) => {
-    const dispatch = useDispatch();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
     const { isMobile } = useWindowSize(980);
     const { header } = projectData || {};
 
-    // Handle scroll behavior
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-
-            // Show header when scrolling up, hide when scrolling down
-            if (currentScrollY < lastScrollY || currentScrollY < 10) {
-                setIsVisible(true);
-                dispatch(setHeaderVisibility(true));
-            } else if (currentScrollY > lastScrollY && currentScrollY > 80) {
-                setIsVisible(false);
-                dispatch(setHeaderVisibility(false));
-            }
-
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY, dispatch]);
-
     // responsive
     useEffect(() => {
-        if (isMobile)
-            setIsMenuOpen(false); // Ferme le menu automatiquement si on passe en mode mobile
+        if (isMobile) {
+            setIsMenuOpen(false);
+        }
     }, [isMobile]);
 
     return (
-        <HeaderContainer $isVisible={isVisible}>
+        <HeaderContainer>
             <LogoContainer>
                 {header?.logos.map((logo) => (
                     logo.url ? (
