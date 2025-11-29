@@ -8,7 +8,7 @@ from public_data.domain.containers import PublicDataContainer
 
 class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     """
-    Graphique de consommation annuelle d'espaces des territoires voisins.
+    Graphique de consommation annuelle d'espaces des territoires de comparaison.
     """
 
     required_params = ["start_date", "end_date"]
@@ -94,7 +94,13 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
 
         return super().param | {
             "chart": {"type": "column", "height": 500},
-            "title": {"text": "Consommation d'espaces du territoire et des territoires voisins (ha)"},
+            "title": {
+                "text": (
+                    f"Consommation d'espaces NAF de {self.land.name} "
+                    "et des territoires de comparaison "
+                    f"({self.params['start_date']} et {self.params['end_date']})"
+                )
+            },
             "subtitle": {"text": "Cliquez sur un territoire pour voir le détail de sa consommation d'espaces."},
             "yAxis": {"title": {"text": "Consommation d'espaces (ha)"}},
             "xAxis": {
@@ -195,9 +201,9 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
             },
             "title": {
                 "text": (
-                    f"Comparaison de la consommation d'espaces NAF entre {self.land.name} "
-                    "et les territoires voisins "
-                    f"entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
+                    f"Consommation d'espaces NAF de {self.land.name} "
+                    "et des territoires de comparaison "
+                    f"({self.params['start_date']} et {self.params['end_date']})"
                 )
             },
             "subtitle": {"text": ""},

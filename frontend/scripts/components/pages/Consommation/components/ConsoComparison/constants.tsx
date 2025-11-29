@@ -11,7 +11,7 @@ export const CHART_DESCRIPTIONS = {
       <>
         <p className="fr-text--sm fr-mb-0">
           Ce graphique compare la consommation d'espaces NAF de votre territoire avec celle de
-          territoires voisins, sélectionnés en fonction de leur proximité géographique.
+          d'autres territoires, sélectionnés en fonction de leur proximité géographique.
         </p>
         <p className="fr-text--sm fr-mb-0">
           Cliquez sur un territoire pour voir le détail année par année de sa consommation d'espaces NAF.

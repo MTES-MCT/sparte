@@ -54,7 +54,13 @@ class AnnualConsoProportionalComparisonChart(ComparisonChartMixin, DiagnosticCha
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Consommation d'espaces relative à la surface des territoires (en %)"},
+            "title": {
+                "text": (
+                    f"Consommation d'espaces NAF relative à la surface de {self.land.name} "
+                    "et des territoires de comparaison "
+                    f"({self.params['start_date']} - {self.params['end_date']})"
+                )
+            },
             "subtitle": {"text": "La taille des zones est proportionnelle à la surface des territoires."},
             "tooltip": {
                 "pointFormat": (
@@ -119,7 +125,7 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
             "title": {
                 "text": (
                     f"Consommation d'espaces NAF relative à la surface de {self.land.name} "
-                    "et des territoires voisins "
+                    "et des territoires de comparaison "
                     f"entre {self.params['start_date']} et {self.params['end_date']} (en %)"
                 )
             },

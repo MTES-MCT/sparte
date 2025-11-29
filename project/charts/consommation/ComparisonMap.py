@@ -181,7 +181,12 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
             "chart": {
                 "map": json.loads(geojson),
             },
-            "title": {"text": f"Carte de comparaison - {self.start_year} à {self.end_year}"},
+            "title": {
+                "text": (
+                    f"Consommation d'espaces NAF de {self.land.name} et des territoires de comparaison "
+                    f"({self.start_year} à {self.end_year})"
+                )
+            },
             "mapNavigation": {"enabled": len(self.lands) > 20},
             "legend": {
                 "title": {"text": "Consommation relative à la surface (%)"},
@@ -201,7 +206,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                 "min": min([d["conso_density_percent"] for d in data_with_values]) if data_with_values else 0,
                 "max": max([d["conso_density_percent"] for d in data_with_values]) if data_with_values else 1,
                 "minColor": "#FFFFFF",
-                "maxColor": "#e1000f",
+                "maxColor": "#6a6af4",
             },
             "series": [
                 {
@@ -238,12 +243,6 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                         "pointFormat": (
                             "<b>{point.name}</b>:<br/>"
                             "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
-                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
-                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
-                            "Activité: {point.activite_ha:,.1f} ha<br/>"
-                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
-                            "Route: {point.route_ha:,.1f} ha<br/>"
-                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
                         ),
                     },
                 },
@@ -276,14 +275,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                     "tooltip": {
                         "valueDecimals": 1,
                         "pointFormat": (
-                            "<b>{point.name}</b>:<br/>"
-                            "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
-                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
-                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
-                            "Activité: {point.activite_ha:,.1f} ha<br/>"
-                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
-                            "Route: {point.route_ha:,.1f} ha<br/>"
-                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
+                            "<b>{point.name}</b>:<br/>" "Consommation totale: {point.total_conso_ha:,.1f} ha<br/>"
                         ),
                     },
                 },

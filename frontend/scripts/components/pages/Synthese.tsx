@@ -202,7 +202,7 @@ const SyntheseConso = ({
       </div>
       <CallToAction
         title={`Diagnostiquer et simuler la consommation d'espaces NAF de ${name}`}
-        text="Découvrez dans notre diagnostic de consommation d'espaces NAF : analyse détaillée de la consommation d'espaces NAF par destination, mise en relation avec l'évolution démographique, et comparaison avec une selection de territoires voisins."
+        text="Découvrez dans notre diagnostic de consommation d'espaces NAF : analyse détaillée de la consommation d'espaces NAF par destination, mise en relation avec l'évolution démographique, et comparaison avec d'autres territoires."
       >
         <div className="d-flex align-items-center gap-3">
           <Link

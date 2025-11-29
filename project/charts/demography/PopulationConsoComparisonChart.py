@@ -1,13 +1,10 @@
 import logging
 from functools import cached_property
 
-from django.core.exceptions import ObjectDoesNotExist
-
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import HIGHLIGHT_COLOR
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
 from public_data.domain.containers import PublicDataContainer
-from public_data.models import AdminRef
 
 logger = logging.getLogger(__name__)
 
@@ -38,19 +35,6 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
 
         comparison_lands = self._get_comparison_lands()
 
-        # Get comparison stats for median calculation
-        # May not exist for some land types (e.g., REGION) or when comparison land doesn't exist
-        try:
-            comparison = PublicDataContainer.consommation_comparison_service().get_by_land(
-                land=self.land, start_date=start_date, end_date=end_date
-            )
-        except ObjectDoesNotExist as e:
-            logger.info(
-                f"No comparison data available for {self.land.land_type} {self.land.land_id} "
-                f"({start_date}-{end_date}). Median line will not be displayed. Error: {e}"
-            )
-            comparison = None
-
         # Get stats for all lands
         consommation_stats = PublicDataContainer.consommation_stats_service().get_by_lands(
             comparison_lands, start_date, end_date
@@ -63,45 +47,11 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         )
 
         return {
-            "comparison": comparison,
             "lands": comparison_lands,
             "consommation_stats": consommation_stats,
             "population_stats": population_stats,
             "population_progression": population_progression,
         }
-
-    @property
-    def median_series(self):
-        """Calculate and return median series."""
-        comparison = self.data["comparison"]
-
-        # No median line if comparison data doesn't exist
-        if comparison is None:
-            return []
-
-        population_stats = self.data["population_stats"]
-
-        # No median line if no population stats available
-        if not population_stats:
-            logger.warning(
-                f"No population stats available for {self.land.land_type} {self.land.land_id}. "
-                "Median line will not be displayed."
-            )
-            return []
-
-        max_pop_evo = max([p.evolution for p in population_stats])
-
-        name = f"Ratio médian des {AdminRef.get_label(comparison.relevance_level).lower()} <br>à l'échelle de {comparison.land.name}"  # noqa: E501
-        return [
-            {
-                "type": "line",
-                "name": name,
-                "data": [[0, 0], [max_pop_evo, comparison.median_ratio_pop_conso / 10000 * max_pop_evo]],
-                "marker": {"enabled": False},
-                "states": {"hover": {"lineWidth": 0}},
-                "enableMouseTracking": False,
-            }
-        ]
 
     @property
     def bubble_series(self):
@@ -136,8 +86,8 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
 
     @property
     def series(self):
-        """Combine bubble and median series."""
-        return self.bubble_series + self.median_series
+        """Return bubble series."""
+        return self.bubble_series
 
     @property
     def param(self):
@@ -159,8 +109,8 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "credits": {"enabled": False},
             "title": {
                 "text": (
-                    f"Consommation d'espaces au regard de l'évolution de la population à {self.land.name} "
-                    f"et territoires voisins ({self.params['start_date']} - {self.params['end_date']})"
+                    f"Consommation d'espaces au regard de l'évolution de la population de {self.land.name} "
+                    f"et des territoires de comparaison ({self.params['start_date']} - {self.params['end_date']})"
                 )
             },
             "xAxis": {
