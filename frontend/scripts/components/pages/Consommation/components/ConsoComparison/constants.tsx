@@ -3,7 +3,7 @@ import React from "react";
 export const CHART_DESCRIPTIONS = {
   comparisonMap: {
     title: "À propos",
-    content: "Cette carte affiche votre territoire (surligné en bleu) et les territoires voisins sélectionnés pour la comparaison. La couleur indique la consommation d'espaces NAF relative à la surface du territoire, et la taille des bulles représente la consommation d'espaces NAF totale.",
+    content: "Cette carte affiche votre territoire (surligné en bleu) et les territoires de comparaison. La couleur indique la consommation d'espaces NAF relative à la surface du territoire, et la taille des bulles représente la consommation d'espaces NAF totale.",
   },
   comparisonChart: {
     title: "À propos",

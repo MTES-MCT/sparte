@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Territory } from "@components/ui/SearchBar";
 
 interface TerritoryBadgeProps {
@@ -6,39 +6,36 @@ interface TerritoryBadgeProps {
   onRemove: (territory: Territory) => void;
 }
 
-const BADGE_STYLES = {
-  container: {
-    background: "#e3e3fd",
-    color: "#4318FF",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    padding: "0.25rem 0.5rem",
-  },
-  removeButton: {
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    padding: 0,
-    color: "#4318FF",
-    fontSize: "1rem",
-    lineHeight: 1,
-  },
-} as const;
-
 export const TerritoryBadge: React.FC<TerritoryBadgeProps> = ({ territory, onRemove }) => {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const button = buttonRef.current;
+    if (!button) return;
+
+    // Empêcher le comportement par défaut du DSFR qui essaie de supprimer le nœud
+    const handleDismiss = (e: Event) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      onRemove(territory);
+    };
+
+    button.addEventListener("click", handleDismiss, true);
+
+    return () => {
+      button.removeEventListener("click", handleDismiss, true);
+    };
+  }, [territory, onRemove]);
+
   return (
-    <div
-      className="fr-badge fr-badge--sm"
-      style={BADGE_STYLES.container}
-    >
-      <span>{territory.name}</span>
+    <div>
       <button
-        onClick={() => onRemove(territory)}
-        style={BADGE_STYLES.removeButton}
+        ref={buttonRef}
+        type="button"
+        className="fr-tag fr-tag--sm fr-tag--dismiss"
         aria-label={`Retirer ${territory.name}`}
       >
-        ×
+        {territory.name}
       </button>
     </div>
   );

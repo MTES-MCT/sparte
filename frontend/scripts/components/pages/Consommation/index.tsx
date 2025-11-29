@@ -121,7 +121,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
           </div>
         </div>
 
-        <h3 id="conso-determinants">Répartition de la consommation d'espaces NAF par type de destination</h3>
+        <h3 id="conso-determinants">Répartition de la consommation d'espaces NAF par destination</h3>
 
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className="fr-col-12 fr-col-lg-6">

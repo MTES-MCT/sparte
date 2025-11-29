@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { Territory } from "@components/ui/SearchBar";
 import SearchBar from "@components/ui/SearchBar";
-import Guide from "@components/ui/Guide";
 import { TerritoryBadge } from "./TerritoryBadge";
 import { ChartSection } from "./ChartSection";
 import { CHART_DESCRIPTIONS, GUIDE_TEXTS } from "./constants";
@@ -21,10 +20,6 @@ interface ConsoComparisonProps {
   onRemoveTerritory: (territory: Territory) => void;
   onReset: () => void;
 }
-
-const InfoBody = styled.div`
-  text-align: left;
-`;
 
 const TerritoryList = styled.div`
   display: flex;
@@ -64,26 +59,15 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
 
   return (
     <div className="fr-mt-7w">
-      <h3 id="conso-comparaison">Comparaison avec les territoires voisins</h3>
-
-      <div className="fr-notice fr-notice--info fr-mb-3w">
-        <div className="fr-container">
-          <InfoBody className="fr-notice__body">
-            <p className="fr-notice__title">À propos des territoires voisins</p>
-            <p className="fr-text--sm fr-mb-0">
-              Les territoires voisins ont été automatiquement sélectionnés en fonction de leur
-              proximité avec {landName}. La sélection se base sur la distance géographique entre les
-              centroïdes des territoires.
-            </p>
-          </InfoBody>
-        </div>
-      </div>
+      <h3 id="conso-comparaison">Comparaison avec d'autres territoires</h3>
 
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div className="fr-col-12 fr-col-lg-6">
           <div className="bg-white fr-p-3w rounded h-100">
-            <h5 className="fr-mb-3w">Territoires voisins ({territories.length})</h5>
-
+            <h5 className="fr-mb-1w">Territoires de comparaison sélectionnés ({territories.length})</h5>
+            <p className="fr-text--xs">
+              <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec {landName}.
+            </p>
             {!isDefaultSelection && (
               <button
                 onClick={onReset}
@@ -92,7 +76,6 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
                 Remettre la sélection par défaut
               </button>
             )}
-
             <TerritoryList>
               {territories.length === 0 ? (
                 <EmptyText className="fr-text--sm">
@@ -108,16 +91,13 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
                 ))
               )}
             </TerritoryList>
-
-            <div>
-              <hr className="fr-my-3w" />
-              <h6 className="fr-mb-2w">Ajouter d'autres territoires</h6>
-              <SearchBar
-                onTerritorySelect={onAddTerritory}
-                excludeTerritories={excludedTerritories}
-                disableOverlay={true}
-              />
-            </div>
+            <hr className="fr-mt-4w" />
+            <SearchBar
+              label="Ajouter un territoire de comparaison"
+              onTerritorySelect={onAddTerritory}
+              excludeTerritories={excludedTerritories}
+              disableOverlay={true}
+            />
           </div>
         </div>
 
@@ -134,7 +114,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
           >
             <div>
               <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.comparisonMap.title}</h6>
-              <p className="fr-text--sm fr-mb-0">
+              <p className="fr-text--xs fr-mb-0">
                 {CHART_DESCRIPTIONS.comparisonMap.content}
               </p>
             </div>

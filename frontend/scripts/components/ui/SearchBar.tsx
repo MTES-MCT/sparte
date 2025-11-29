@@ -9,6 +9,7 @@ interface SearchBarProps {
     onTerritorySelect?: (territory: Territory) => void;
     excludeTerritories?: Territory[];
     disableOverlay?: boolean;
+    label?: string;
 }
 
 export interface Territory {
@@ -141,10 +142,16 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
+const Label = styled.label`
+    font-size: 0.85em;
+    margin-bottom: 0.5rem;
+`;
+
 const SearchBar: React.FC<SearchBarProps> = ({
     onTerritorySelect,
     excludeTerritories = [],
     disableOverlay = false,
+    label = "",
 }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
@@ -218,6 +225,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     return (
         <>
             {!disableOverlay && <Overlay $visible={isFocused} />}
+            {label && <Label htmlFor="search-bar-territory">{label}</Label>}
             <SearchContainer ref={searchContainerRef} $useHighZIndex={!disableOverlay}>
                 <Icon className="bi bi-search" />
                 <Input
