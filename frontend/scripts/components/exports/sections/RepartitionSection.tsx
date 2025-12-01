@@ -9,7 +9,6 @@ import {
   SubTitle,
   ChartContainer,
   DataTableContainer,
-  ConclusionBox,
 } from "../ExportStyles";
 
 interface RepartitionSectionProps {
@@ -176,17 +175,6 @@ const RepartitionSection: React.FC<RepartitionSectionProps> = ({ landData }) => 
             compactDataTable
           />
         </DataTableContainer>
-
-        <ConclusionBox>
-          <h4>Analyse croisée couverture-usage</h4>
-          <p>
-            L'analyse combinée de la couverture et de l'usage permet d'identifier précisément
-            les dynamiques d'artificialisation sur le territoire. Par exemple, une surface
-            imperméabilisée (couverture CS1.1) peut avoir différents usages (résidentiel US6,
-            commercial US3, industriel US2, etc.). Cette granularité permet d'adapter les
-            politiques publiques aux réalités locales.
-          </p>
-        </ConclusionBox>
       </Content>
     </SectionContainer>
   );
