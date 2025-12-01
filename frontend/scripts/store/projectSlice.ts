@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const projectSlice = createSlice({
+  // DEPERECATED : use landData in landSlice instead
   name: 'project',
   initialState: {
     projectData: null,

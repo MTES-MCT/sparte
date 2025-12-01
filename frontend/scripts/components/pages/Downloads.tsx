@@ -1,8 +1,9 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Guide from '@components/ui/Guide';
 import { RootState } from '@store/store';
-import { selectPdfExportStatus, selectPdfExportBlobUrl, selectPdfExportError } from '@store/pdfExportSlice';
+import { selectPdfExportStatus, selectPdfExportBlobUrl, selectPdfExportError, selectPdfExportFileSize } from '@store/pdfExportSlice';
+import { LandDetailResultType } from '@services/types/land';
 
 interface NoticeProps {
     type: 'success' | 'warning';
@@ -22,29 +23,65 @@ export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) =>
     </div>
 );
 
-const Downloads: React.FC = () => {
+const sanitizeFilename = (str: string): string => {
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9-_]/g, '_')
+        .replace(/_+/g, '_')
+        .toLowerCase();
+};
+
+interface DownloadsProps {
+    landData: LandDetailResultType;
+}
+
+const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} o`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+};
+
+const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
     const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
     const pdfBlobUrl = useSelector((state: RootState) => selectPdfExportBlobUrl(state));
     const pdfError = useSelector((state: RootState) => selectPdfExportError(state));
+    const fileSize = useSelector((state: RootState) => selectPdfExportFileSize(state));
+    const [hasDownloaded, setHasDownloaded] = useState(false);
 
     const isLoading = pdfStatus === 'loading';
     const isReady = pdfStatus === 'succeeded' && pdfBlobUrl;
     const hasFailed = pdfStatus === 'failed';
 
+    const getFilename = (): string => {
+        const timestamp = new Date().toISOString().slice(0, 10);
+        const territoryName = landData?.name || 'territoire';
+        const landId = landData?.land_id || '';
+
+        return `${sanitizeFilename(territoryName)}_${landId}_${timestamp}.pdf`;
+    };
+
     const handleClick = () => {
-        if (!pdfBlobUrl) return;
+        if (!pdfBlobUrl || hasDownloaded) return;
 
         const link = document.createElement('a');
         link.href = pdfBlobUrl;
-        link.download = 'rapport-complet.pdf';
+        link.download = getFilename();
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        link.remove();
+        setHasDownloaded(true);
+
+        setTimeout(() => {
+            setHasDownloaded(false);
+        }, 6000);
     };
 
     const getButtonText = () => {
+        const sizeText = fileSize ? ` (PDF - ${formatFileSize(fileSize)})` : '';
+        if (hasDownloaded) return `Téléchargement effectué ✓${sizeText}`;
         if (isLoading) return 'Génération du PDF en cours, veuillez patienter...';
-        if (isReady) return 'Télécharger le rapport complet (PDF)';
+        if (isReady) return `Télécharger le rapport complet${sizeText}`;
         if (hasFailed) return 'Erreur - Réessayer';
         return 'Préparation du rapport...';
     };
@@ -70,8 +107,9 @@ const Downloads: React.FC = () => {
                         <button
                             className="fr-btn"
                             onClick={handleClick}
-                            disabled={!isReady}
+                            disabled={!isReady || hasDownloaded}
                             aria-busy={isLoading}
+                            style={hasDownloaded ? { backgroundColor: '#18753c', color: 'white' } : undefined}
                         >
                             {isLoading && (
                                 <span className="fr-spinner fr-spinner--sm fr-mr-1w" aria-hidden="true" />

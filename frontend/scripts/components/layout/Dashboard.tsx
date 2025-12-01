@@ -83,19 +83,20 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
 
     // Lancer le téléchargement du PDF au démarrage
     useEffect(() => {
-        if (projectData && env && pdfExportStatus === 'idle') {
+        if (landData && env && pdfExportStatus === 'idle') {
             const { export_server_url, pdf_header_url, pdf_footer_url } = env;
             if (export_server_url && pdf_header_url && pdf_footer_url) {
                 dispatch(fetchPdfExport({
                     exportServerUrl: export_server_url,
                     pdfHeaderUrl: pdf_header_url,
                     pdfFooterUrl: pdf_footer_url,
-                    landType: projectData.land_type,
-                    landId: projectData.land_id,
+                    landType: landData.land_type,
+                    landId: landData.land_id,
+                    landName: landData.name,
                 }));
             }
         }
-    }, [projectData, env, pdfExportStatus, dispatch]);
+    }, [landData, env, pdfExportStatus, dispatch]);
 
 
     return (
@@ -247,7 +248,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Téléchargements"
                                             >
-                                                <Downloads />
+                                                <Downloads landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
