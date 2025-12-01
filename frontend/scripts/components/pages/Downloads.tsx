@@ -1,7 +1,8 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
+import { useSelector } from 'react-redux';
 import Guide from '@components/ui/Guide';
-import { useGetEnvironmentQuery } from '@services/api';
-import { LandDetailResultType } from '@services/types/land';
+import { RootState } from '@store/store';
+import { selectPdfExportStatus, selectPdfExportBlobUrl, selectPdfExportError } from '@store/pdfExportSlice';
 
 interface NoticeProps {
     type: 'success' | 'warning';
@@ -21,30 +22,31 @@ export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) =>
     </div>
 );
 
-interface DownloadsProps {
-    landData: LandDetailResultType;
-}
+const Downloads: React.FC = () => {
+    const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
+    const pdfBlobUrl = useSelector((state: RootState) => selectPdfExportBlobUrl(state));
+    const pdfError = useSelector((state: RootState) => selectPdfExportError(state));
 
-const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
-    const { land_id, land_type } = landData || {}
-    console.log(landData)
-    const { data: env } = useGetEnvironmentQuery(null);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const pageUrl = `${globalThis.location.origin}/exports/rapport-complet/${land_type}/${land_id}`;
-    const exportUrl = env
-        ? `${env.export_server_url}/api/export` +
-          `?url=${encodeURIComponent(pageUrl)}` +
-          `&headerUrl=${encodeURIComponent(env.pdf_header_url)}` +
-          `&footerUrl=${encodeURIComponent(env.pdf_footer_url)}`
-        : null;
+    const isLoading = pdfStatus === 'loading';
+    const isReady = pdfStatus === 'succeeded' && pdfBlobUrl;
+    const hasFailed = pdfStatus === 'failed';
 
     const handleClick = () => {
-        if (isLoading || !exportUrl) return;
+        if (!pdfBlobUrl) return;
 
-        setIsLoading(true);
-        globalThis.location.href = exportUrl;
-        setTimeout(() => setIsLoading(false), 2000);
+        const link = document.createElement('a');
+        link.href = pdfBlobUrl;
+        link.download = 'rapport-complet.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const getButtonText = () => {
+        if (isLoading) return 'Génération du PDF en cours, veuillez patienter...';
+        if (isReady) return 'Télécharger le rapport complet (PDF)';
+        if (hasFailed) return 'Erreur - Réessayer';
+        return 'Préparation du rapport...';
     };
 
     return (
@@ -55,21 +57,26 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
                         <p>Nos rapports téléchargeables vous permettent d'accéder à des analyses détaillées de l'évolution de l'artificialisation des sols, des données quantitatives sur la consommation d'espaces NAF (naturels, agricoles et forestiers), ainsi qu'à des cartographies des zones concernées.</p>
                         <p>Ces documents sont régulièrement mis à jour pour refléter les dernières données disponibles et les évolutions réglementaires.</p>
                     </Guide>
+
+                    {hasFailed && pdfError && (
+                        <Notice
+                            type="warning"
+                            message={pdfError}
+                            reportTitle="complet"
+                        />
+                    )}
+
                     <div className="fr-mt-3w">
                         <button
                             className="fr-btn"
                             onClick={handleClick}
-                            disabled={isLoading || !exportUrl}
+                            disabled={!isReady}
                             aria-busy={isLoading}
                         >
-                            {isLoading ? (
-                                <>
-                                    <span className="fr-spinner fr-spinner--sm fr-mr-1w" aria-hidden="true" />
-                                    Génération en cours...
-                                </>
-                            ) : (
-                                'Télécharger le rapport complet (PDF)'
+                            {isLoading && (
+                                <span className="fr-spinner fr-spinner--sm fr-mr-1w" aria-hidden="true" />
                             )}
+                            {getButtonText()}
                         </button>
                     </div>
                 </div>

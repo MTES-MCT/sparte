@@ -1,10 +1,17 @@
 import express from 'express';
+import cors from 'cors';
 import { exportToPdf } from './pdf-generator';
 import { validateUrlHost } from './url-validation';
 
 const app = express();
 
 const PORT = process.env.PORT;
+
+// Activer CORS pour permettre les requêtes depuis le frontend
+app.use(cors({
+    origin: true,
+    credentials: true,
+}));
 
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });

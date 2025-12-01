@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@store/store';
+import { RootState, AppDispatch } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetLandQuery, useGetProjectQuery } from '@services/api';
+import { useGetLandQuery, useGetProjectQuery, useGetEnvironmentQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
+import { fetchPdfExport, selectPdfExportStatus } from '@store/pdfExportSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import Footer from '@components/layout/Footer';
@@ -53,7 +54,7 @@ const Content = styled.div`
 
 
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { data: projectData, error, isLoading } = useGetProjectQuery(projectId);
     const { data: landData } = useGetLandQuery(
         {
@@ -64,19 +65,37 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             skip: !projectData
         }
     );
-    
+    const { data: env } = useGetEnvironmentQuery(null);
+
     const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status } = landData || {};
 
     const { urls, logements_vacants_available } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
+    const pdfExportStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
     const { isMobile } = useWindowSize();
 
     useEffect(() => {
-        if (projectData) {        
-            dispatch(setProjectData(projectData));        
+        if (projectData) {
+            dispatch(setProjectData(projectData));
         }
     }, [projectData, dispatch]);
+
+    // Lancer le téléchargement du PDF au démarrage
+    useEffect(() => {
+        if (projectData && env && pdfExportStatus === 'idle') {
+            const { export_server_url, pdf_header_url, pdf_footer_url } = env;
+            if (export_server_url && pdf_header_url && pdf_footer_url) {
+                dispatch(fetchPdfExport({
+                    exportServerUrl: export_server_url,
+                    pdfHeaderUrl: pdf_header_url,
+                    pdfFooterUrl: pdf_footer_url,
+                    landType: projectData.land_type,
+                    landId: projectData.land_id,
+                }));
+            }
+        }
+    }, [projectData, env, pdfExportStatus, dispatch]);
 
 
     return (
@@ -228,7 +247,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Téléchargements"
                                             >
-                                                <Downloads landData={projectData} />
+                                                <Downloads />
                                             </RouteWrapper>
                                         }
                                     />
