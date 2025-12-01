@@ -3,7 +3,6 @@ import logging
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -11,10 +10,6 @@ from rest_framework import generics, viewsets
 from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
-from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
-    PlanningCompetencyServiceSudocuh,
-)
 
 from .models import Emprise, Project, Request, RequestedDocumentChoices
 from .serializers import (
@@ -62,19 +57,10 @@ class ProjectDownloadLinkView(generics.RetrieveAPIView):
         return Response(data=serializer.data)
 
 
-class DiagnosticDownloadAPIView(generics.RetrieveAPIView):
-    def get(self, request, pk, requested_document):
-        if not request.user.is_authenticated:
-            next_url = reverse("project:report_downloads", kwargs={"pk": pk})
-            login_url = reverse("users:signin") + f"?next={next_url}"
-            signup_url = reverse("users:signup") + f"?next={next_url}"
-            error_message = (
-                "Le téléchargement des rapports n'est accessible qu'aux utilisateurs connectés.</br>"
-                f'<a class="fr-link fr-text--sm" href="{login_url}">Se connecter</a> ou '
-                f'<a class="fr-link fr-text--sm" href="{signup_url}">créer un compte</a>.'
-            )
-            return JsonResponse({"error": error_message}, status=401)
+class RecordDownloadRequestAPIView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, pk, requested_document):
         if requested_document not in RequestedDocumentChoices.values:
             return JsonResponse({"error": f"Type de rapport invalide {requested_document}"}, status=400)
 
@@ -84,29 +70,16 @@ class DiagnosticDownloadAPIView(generics.RetrieveAPIView):
             return JsonResponse({"error": "Projet non trouvé"}, status=404)
 
         # Création de la requête
-        new_request = Request.objects.create(
+        Request.objects.create(
             user=request.user,
             project=project,
             first_name=request.user.first_name,
             last_name=request.user.last_name,
             email=request.user.email,
             requested_document=requested_document,
-            du_en_cours=PlanningCompetencyServiceSudocuh.planning_document_in_revision(project.land),
-            competence_urba=PlanningCompetencyServiceSudocuh.has_planning_competency(project.land),
         )
-        new_request._change_reason = "New request"
-        new_request.save()
 
-        return JsonResponse(
-            {
-                "success": True,
-                "message": (
-                    "Vous recevrez le document par email dans quelques minutes. Si vous ne recevez "
-                    "pas le document, veuillez vérifier votre dossier spams. Si le problème persiste, "
-                    "vous pouvez revenir sur cette page une fois le diagnostic crée et télécharger le document directement."  # noqa: E501
-                ),
-            }
-        )
+        return JsonResponse({"success": True})
 
 
 @method_decorator(csrf_exempt, name="dispatch")

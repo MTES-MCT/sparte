@@ -3,7 +3,9 @@ import { useSelector } from 'react-redux';
 import Guide from '@components/ui/Guide';
 import { RootState } from '@store/store';
 import { selectPdfExportStatus, selectPdfExportBlobUrl, selectPdfExportError, selectPdfExportFileSize } from '@store/pdfExportSlice';
+import { useRecordDownloadRequestMutation } from '@services/api';
 import { LandDetailResultType } from '@services/types/land';
+import { ProjectDetailResultType } from '@services/types/project';
 
 interface NoticeProps {
     type: 'success' | 'warning';
@@ -34,6 +36,7 @@ const sanitizeFilename = (str: string): string => {
 
 interface DownloadsProps {
     landData: LandDetailResultType;
+    projectData: ProjectDetailResultType;
 }
 
 const formatFileSize = (bytes: number): string => {
@@ -42,12 +45,13 @@ const formatFileSize = (bytes: number): string => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
 };
 
-const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
+const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
     const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
     const pdfBlobUrl = useSelector((state: RootState) => selectPdfExportBlobUrl(state));
     const pdfError = useSelector((state: RootState) => selectPdfExportError(state));
     const fileSize = useSelector((state: RootState) => selectPdfExportFileSize(state));
     const [hasDownloaded, setHasDownloaded] = useState(false);
+    const [recordDownloadRequest, { isError: requiresLogin }] = useRecordDownloadRequestMutation();
 
     const isLoading = pdfStatus === 'loading';
     const isReady = pdfStatus === 'succeeded' && pdfBlobUrl;
@@ -61,8 +65,18 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
         return `${sanitizeFilename(territoryName)}_${landId}_${timestamp}.pdf`;
     };
 
-    const handleClick = () => {
+    const handleClick = async () => {
         if (!pdfBlobUrl || hasDownloaded) return;
+
+        // Enregistrer la demande de téléchargement
+        const result = await recordDownloadRequest({
+            projectId: projectData.id,
+            documentType: 'rapport-complet',
+        });
+
+        if (!result.data?.success) {
+            return;
+        }
 
         const link = document.createElement('a');
         link.href = pdfBlobUrl;
@@ -99,6 +113,18 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
                         <Notice
                             type="warning"
                             message={pdfError}
+                            reportTitle="complet"
+                        />
+                    )}
+
+                    {requiresLogin && (
+                        <Notice
+                            type="warning"
+                            message={
+                                <>
+                                    Veuillez vous <a href="/users/signin/">connecter</a> pour télécharger le rapport.
+                                </>
+                            }
                             reportTitle="complet"
                         />
                     )}

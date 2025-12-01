@@ -6,10 +6,10 @@ from project.models.create import create_project_api_view
 
 from . import views
 from .api_views import (
-    DiagnosticDownloadAPIView,
     EmpriseViewSet,
     ProjectDetailView,
     ProjectDownloadLinkView,
+    RecordDownloadRequestAPIView,
 )
 
 app_name = "project"
@@ -80,9 +80,9 @@ urlpatterns = [
         name="report_downloads",
     ),
     path(
-        "<int:pk>/telechargement/<slug:requested_document>",
-        DiagnosticDownloadAPIView.as_view(),
-        name="report_download",
+        "<int:pk>/downloadRequest/<slug:requested_document>",
+        RecordDownloadRequestAPIView.as_view(),
+        name="download_request",
     ),
     path(
         "<int:pk>/telechargement-liens",
