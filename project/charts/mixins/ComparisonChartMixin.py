@@ -46,6 +46,7 @@ class ComparisonChartMixin:
         Get list of lands to compare, including the current land.
 
         If comparison_lands parameter is provided, uses custom territories.
+        If comparison_lands is an empty string, returns only the main territory (no comparison).
         Otherwise, falls back to nearest territories from the database.
 
         Returns:
@@ -54,11 +55,19 @@ class ComparisonChartMixin:
         """
         comparison_lands = [self.land]
 
-        # Check if custom comparison lands are provided
-        if "comparison_lands" in self.params and self.params["comparison_lands"]:
-            custom_lands = self._parse_comparison_lands_param()
-            comparison_lands.extend(custom_lands)
+        # Check if comparison_lands parameter is provided
+        if "comparison_lands" in self.params:
+            comparison_lands_param = self.params["comparison_lands"]
+            # Empty string means explicitly no comparison territories
+            if comparison_lands_param == "":
+                # Return only the main territory
+                return comparison_lands
+            # Non-empty string means custom territories
+            elif comparison_lands_param:
+                custom_lands = self._parse_comparison_lands_param()
+                comparison_lands.extend(custom_lands)
         else:
+            # No parameter provided, use default nearest territories
             nearest_lands = self._get_nearest_territories_lands()
             comparison_lands.extend(nearest_lands)
 

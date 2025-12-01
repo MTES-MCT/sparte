@@ -90,12 +90,19 @@ export const useComparisonTerritories = (
   }, [additionalTerritories, suggestedTerritories, excludedTerritories]);
 
   // Build comma-separated list of territory IDs for API
+  // Empty string means explicitly no comparison territories (backend will return only main territory)
+  // null means use default nearest territories
   const comparisonLandIds = React.useMemo(() => {
     if (effectiveComparisonTerritories.length === 0) {
-      return null;
+      // If user has explicitly removed all territories, send empty string
+      // Otherwise (default state), send null to use default territories
+      if (additionalTerritories.length === 0 && excludedTerritories.length === 0) {
+        return null; // Default state: use nearest territories
+      }
+      return ""; // User explicitly removed all: no comparison territories
     }
     return effectiveComparisonTerritories.map((t) => `${t.land_type}_${t.source_id}`).join(",");
-  }, [effectiveComparisonTerritories]);
+  }, [effectiveComparisonTerritories, additionalTerritories, excludedTerritories]);
 
   // When no territories selected, backend uses default nearest territories
   const isDefaultSelection = additionalTerritories.length === 0 && excludedTerritories.length === 0;

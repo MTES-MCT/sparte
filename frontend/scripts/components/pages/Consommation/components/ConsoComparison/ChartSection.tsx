@@ -36,7 +36,7 @@ export const ChartSection: React.FC<ChartSectionProps> = ({
         params={{
           start_date: String(startYear),
           end_date: String(endYear),
-          ...(comparisonLandIds && { comparison_lands: comparisonLandIds }),
+          ...(comparisonLandIds !== null && { comparison_lands: comparisonLandIds }),
         }}
         sources={sources}
         showDataTable={showDataTable}
