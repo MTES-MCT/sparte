@@ -6,6 +6,8 @@ interface ExportOptions {
     footerUrl: string;
 }
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 async function fetchTemplate(url: string): Promise<string> {
     const response = await fetch(url);
     if (!response.ok) {
@@ -48,6 +50,11 @@ export async function exportToPdf(options: ExportOptions): Promise<Buffer> {
         await page.goto(url, {
             waitUntil: 'networkidle0',
         });
+
+        // wait 500ms to ensure all resources are loaded
+        console.log('Waiting for page to stabilize...');
+        await delay(5000);
+
 
         console.log('Generating PDF...');
         const pdfBuffer = await page.pdf({
