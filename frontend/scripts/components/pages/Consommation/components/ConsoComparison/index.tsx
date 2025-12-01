@@ -152,9 +152,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
           >
             <div>
               <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.surfaceProportional.title}</h6>
-              <p className="fr-text--sm fr-mb-0">
-                {CHART_DESCRIPTIONS.surfaceProportional.content}
-              </p>
+              {CHART_DESCRIPTIONS.surfaceProportional.content}
             </div>
           </ChartSection>
         </div>
@@ -180,9 +178,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
             >
               <div>
                 <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.populationConso.title}</h6>
-                <p className="fr-text--sm fr-mb-0">
-                  {CHART_DESCRIPTIONS.populationConso.content}
-                </p>
+                {CHART_DESCRIPTIONS.populationConso.content}
               </div>
             </ChartSection>
           </div>

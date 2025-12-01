@@ -19,7 +19,7 @@ interface ConsommationProps {
 const DetailsCalculationFichiersFonciers: React.FC = () => (
   <div>
     <h6 className="fr-mb-0">Calcul</h6>
-    <p className="fr-text--sm fr-mb-0">Données brutes, sans calcul</p>
+    <p className="fr-text--xs fr-mb-0">Données brutes, sans calcul</p>
   </div>
 );
 
@@ -137,18 +137,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                 sources={["majic"]}
                 showDataTable={true}
               >
-                <div>
-                  <h6 className="fr-mb-0">Source</h6>
-                  <p className="fr-text--sm fr-mb-0">
-                    Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
-                  </p>
-                  <p className="fr-text--sm fr-mb-0">
-                    La ligne "inconnu" comprend les éléments dont la destination n'est pas définie dans les
-                    fichiers fonciers.
-                  </p>
-                  <h6 className="fr-mb-2w fr-mt-2w">Calcul</h6>
-                  <p className="fr-text--sm fr-mb-0">Données brutes, sans calcul</p>
-                </div>
+                <DetailsCalculationFichiersFonciers />
               </GenericChart>
             </div>
           </div>
@@ -165,18 +154,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                 sources={["majic"]}
                 showDataTable={true}
               >
-                <div>
-                  <h6 className="fr-mb-0">Source</h6>
-                  <p className="fr-text--sm fr-mb-0">
-                    Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
-                  </p>
-                  <p className="fr-text--sm fr-mb-0">
-                    La ligne "inconnu" comprend les éléments dont la destination n'est pas définie dans les
-                    fichiers fonciers.
-                  </p>
-                  <h6 className="fr-mb-2w fr-mt-2w">Calcul</h6>
-                  <p className="fr-text--sm fr-mb-0">Données brutes, sans calcul</p>
-                </div>
+                <DetailsCalculationFichiersFonciers />
               </GenericChart>
             </div>
           </div>
@@ -209,6 +187,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
             <div className="fr-col-12 fr-col-lg-6">
               <div className="bg-white fr-p-2w rounded h-100">
                 <GenericChart
+                  key={`conso_map_relative-${childType}-${startYear}-${endYear}`}
                   id="conso_map_relative"
                   land_id={land_id}
                   land_type={land_type}
@@ -223,11 +202,11 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                 >
                   <div>
                     <h6 className="fr-mb-0">Comprendre la carte</h6>
-                    <p className="fr-text--sm fr-mb-0">
+                    <p className="fr-text--xs fr-mb-0">
                       Cette carte permet de visualiser la consommation d'espaces NAF relative à la surface de chaque territoire, représentée par l'intensité de la couleur : plus la teinte est foncée, plus la consommation d'espaces est importante par rapport à la surface du territoire.
                     </p>
                     <h6 className="fr-mb-0 fr-mt-2w">Source</h6>
-                    <p className="fr-text--sm fr-mb-0">
+                    <p className="fr-text--xs fr-mb-0">
                       Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
                     </p>
                   </div>
@@ -238,6 +217,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
             <div className="fr-col-12 fr-col-lg-6">
               <div className="bg-white fr-p-2w rounded h-100">
                 <GenericChart
+                  key={`conso_map_bubble-${childType}-${startYear}-${endYear}`}
                   id="conso_map_bubble"
                   land_id={land_id}
                   land_type={land_type}
@@ -252,11 +232,11 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData }) => {
                 >
                   <div>
                     <h6 className="fr-mb-0">Comprendre la carte</h6>
-                    <p className="fr-text--sm fr-mb-0">
+                    <p className="fr-text--xs fr-mb-0">
                       Cette carte permet de visualiser les flux de consommation d'espaces NAF par territoire : la taille des cercles est proportionnelle à la consommation totale d'espaces sur la période sélectionnée.
                     </p>
                     <h6 className="fr-mb-0 fr-mt-2w">Source</h6>
-                    <p className="fr-text--sm fr-mb-0">
+                    <p className="fr-text--xsfr-mb-0">
                       Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
                     </p>
                   </div>

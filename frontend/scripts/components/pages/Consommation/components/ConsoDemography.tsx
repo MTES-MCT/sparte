@@ -62,8 +62,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
           >
             <div>
               <h6 className="fr-mb-0">Calcul</h6>
-              <p className="fr-text--sm fr-mb-0">Données brutes, sans calcul</p>
-              <p className="fr-text--sm fr-mb-0">
+              <p className="fr-text--xs fr-mb-0">Données brutes, sans calcul</p>
+              <p className="fr-text--xs fr-mb-0">
                 Évolution estimée = (somme des évolutions annuelles de la population) / (nombre d'années)
               </p>
             </div>

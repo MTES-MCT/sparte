@@ -253,7 +253,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                         {
                             "land_id": d["land_id"],
                             "z": d["total_conso_ha"],
-                            "color": "#FC9292",
+                            "color": "#6a6af4",
                             "total_conso_ha": d["total_conso_ha"],
                             "habitat_ha": d["habitat_ha"],
                             "activite_ha": d["activite_ha"],
@@ -271,7 +271,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
                     "marker": {
                         "fillOpacity": 0.5,
                     },
-                    "color": "#ff5b5b",
+                    "color": "#6a6af4",
                     "tooltip": {
                         "valueDecimals": 1,
                         "pointFormat": (

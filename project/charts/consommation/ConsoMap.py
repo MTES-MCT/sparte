@@ -178,7 +178,7 @@ class ConsoMap(DiagnosticChart):
                     f"entre {self.start_year} et {self.end_year}"
                 )
             },
-            "mapNavigation": {"enabled": self.lands.count() > 20},
+            "mapNavigation": {"enabled": True},
             "legend": {
                 "title": {"text": "Consommation relative à la surface (%)"},
                 "backgroundColor": "#ffffff",
@@ -319,7 +319,7 @@ class ConsoMapRelative(ConsoMap):
                     f"entre {self.start_year} et {self.end_year}"
                 )
             },
-            "mapNavigation": {"enabled": self.lands.count() > 20},
+            "mapNavigation": {"enabled": True},
             "legend": {
                 "title": {"text": "Consommation relative à la surface (%)"},
                 "backgroundColor": "#ffffff",
@@ -331,7 +331,7 @@ class ConsoMapRelative(ConsoMap):
                 "min": min([d["conso_density_percent"] for d in data_with_values]) if data_with_values else 0,
                 "max": max([d["conso_density_percent"] for d in data_with_values]) if data_with_values else 1,
                 "minColor": "#FFFFFF",
-                "maxColor": "#e1000f",
+                "maxColor": "#6a6af4",
                 "dataClassColor": "category",
             },
             "series": [
@@ -353,11 +353,6 @@ class ConsoMapRelative(ConsoMap):
                             "<b>{point.name}</b>:<br/>"
                             "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
                             "Total: {point.total_conso_ha:,.1f} ha<br/>"
-                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
-                            "Activité: {point.activite_ha:,.1f} ha<br/>"
-                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
-                            "Route: {point.route_ha:,.1f} ha<br/>"
-                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
                         ),
                     },
                 },
@@ -471,7 +466,7 @@ class ConsoMapBubble(ConsoMap):
                     f"entre {self.start_year} et {self.end_year}"
                 )
             },
-            "mapNavigation": {"enabled": self.lands.count() > 20},
+            "mapNavigation": {"enabled": True},
             "legend": {
                 "title": {"text": "Consommation totale (ha)"},
                 "backgroundColor": "#ffffff",
@@ -515,12 +510,12 @@ class ConsoMapBubble(ConsoMap):
                     "marker": {
                         "fillOpacity": 0.5,
                     },
-                    "color": "#ff5b5b",
+                    "color": "#6a6af4",
                     "data": [
                         {
                             "land_id": d["land_id"],
                             "z": d["total_conso_ha"],
-                            "color": "#FC9292",
+                            "color": "#6a6af4",
                             "total_conso_ha": d["total_conso_ha"],
                             "habitat_ha": d["habitat_ha"],
                             "activite_ha": d["activite_ha"],
@@ -533,15 +528,7 @@ class ConsoMapBubble(ConsoMap):
                     ],
                     "tooltip": {
                         "valueDecimals": 1,
-                        "pointFormat": (
-                            "<b>{point.name}</b>:<br/>"
-                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
-                            "Habitat: {point.habitat_ha:,.1f} ha<br/>"
-                            "Activité: {point.activite_ha:,.1f} ha<br/>"
-                            "Mixte: {point.mixte_ha:,.1f} ha<br/>"
-                            "Route: {point.route_ha:,.1f} ha<br/>"
-                            "Ferroviaire: {point.ferroviaire_ha:,.1f} ha"
-                        ),
+                        "pointFormat": ("<b>{point.name}</b>:<br/>" "Total: {point.total_conso_ha:,.1f} ha<br/>"),
                     },
                 },
             ],
