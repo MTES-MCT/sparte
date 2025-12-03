@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, useLayoutEffect } from 'react';
 import { formatNumber } from "@utils/formatUtils";
 interface ChartData {
     headers: string[];
@@ -38,12 +38,27 @@ export const formatCellContent = (cell: any): any => {
 };
 
 const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title, compact = false }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [shrinkLevel, setShrinkLevel] = useState(0);
+    const maxShrinkLevel = 5;
+
+    useLayoutEffect(() => {
+        if (containerRef.current) {
+            const table = containerRef.current.querySelector('table');
+            if (table && table.scrollWidth > containerRef.current.clientWidth && shrinkLevel < maxShrinkLevel) {
+                setShrinkLevel(prev => prev + 1);
+            }
+        }
+    }, [data, shrinkLevel]);
+
     if (!data?.headers || !data?.rows) return null;
 
     const { headers, rows, boldFirstColumn = false, boldLastColumn = false, boldLastRow = false, formatFirstColumn = false } = data;
 
+    const shrinkClass = shrinkLevel > 0 ? ` fr-table--shrink-${shrinkLevel}` : '';
+
     return (
-        <div className={`fr-table fr-table--bordered fr-table--no-caption fr-mb-0 fr-mt-0${compact ? ' fr-table--compact' : ''}`}>
+        <div ref={containerRef} className={`fr-table fr-table--bordered fr-table--no-caption fr-mb-0 fr-mt-0${compact ? ' fr-table--compact' : ''}${shrinkClass}`}>
             <div className="fr-table__wrapper">
                 <div className="fr-table__container">
                     <div className="fr-table__content">
@@ -78,7 +93,10 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title, compact = 
                                                 const isNumeric = typeof cell === 'number' || (typeof cell === 'string' && !Number.isNaN(Number(cell)));
 
                                                 return (
-                                                    <td key={`${row.name}-${rowIndex}-${cellIndex}`} className={isNumeric && shouldFormatAsNumber ? 'fr-cell--right' : ''}>
+                                                    <td
+                                                        key={`${row.name}-${rowIndex}-${cellIndex}`}
+                                                        className={isNumeric && shouldFormatAsNumber ? 'fr-cell--right' : ''}
+                                                    >
                                                         {shouldBold ? <strong>{cellContent}</strong> : cellContent}
                                                     </td>
                                                 );
@@ -121,9 +139,39 @@ const ChartDataTable: React.FC<ChartDataTableProps> = ({ data, title, compact = 
 
                 .fr-table--compact th,
                 .fr-table--compact td {
-                    font-size: 0.75rem !important;
-                    padding: 0.25rem !important;
+                    font-size: 0.75rem;
+                    padding: 0.2rem !important;
                     text-align: center !important;
+                }
+
+                .fr-table--shrink-1 th,
+                .fr-table--shrink-1 td {
+                    font-size: 0.7rem !important;
+                    padding: 0.18rem !important;
+                }
+
+                .fr-table--shrink-2 th,
+                .fr-table--shrink-2 td {
+                    font-size: 0.65rem !important;
+                    padding: 0.16rem !important;
+                }
+
+                .fr-table--shrink-3 th,
+                .fr-table--shrink-3 td {
+                    font-size: 0.6rem !important;
+                    padding: 0.14rem !important;
+                }
+
+                .fr-table--shrink-4 th,
+                .fr-table--shrink-4 td {
+                    font-size: 0.55rem !important;
+                    padding: 0.12rem !important;
+                }
+
+                .fr-table--shrink-5 th,
+                .fr-table--shrink-5 td {
+                    font-size: 0.5rem !important;
+                    padding: 0.1rem !important;
                 }
             `}</style>
         </div>

@@ -110,6 +110,7 @@ const development = {
         liveReload: false,
         static: path.resolve(__dirname, 'static'),
         port: 3000,
+        allowedHosts: 'all',
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "X-Requested-With, Content-Type",

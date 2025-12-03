@@ -6,15 +6,10 @@ import utils.validators
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("public_data", "0198_artifzonageindex_landartifstock_and_more"),
         ("project", "0109_remove_historicalproject_async_add_city_done_and_more"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="project",
-            name="cities",
-        ),
         migrations.AlterField(
             model_name="historicalrequest",
             name="organism",

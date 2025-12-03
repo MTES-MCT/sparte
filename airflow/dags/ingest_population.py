@@ -42,9 +42,9 @@ def ingest_population():
     def ingest() -> int | None:
         s3_path = f"{bucket_name}/{filename}"
         tmp_localpath = f"/tmp/{filename}"
-        Container().s3().get_file(s3_path, tmp_localpath)
+        InfraContainer().s3().get_file(s3_path, tmp_localpath)
         df = pd.read_excel(tmp_localpath, skiprows=5)
-        row_count = df.to_sql(name=staging_table_name, con=Container().sqlalchemy_dbt_conn(), if_exists="replace")
+        row_count = df.to_sql(name=staging_table_name, con=InfraContainer().sqlalchemy_dbt_conn(), if_exists="replace")
         os.remove(tmp_localpath)
         return row_count
 

@@ -62,6 +62,7 @@ class ArtifByCouverturePieChart(DiagnosticChart):
                 }
                 for item in self.data
             ],
+            "boldFirstColumn": True,
         }
 
     @cached_property

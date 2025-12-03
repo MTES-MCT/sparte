@@ -226,14 +226,18 @@ class RapportCompletView(TemplateView):
     template_name = "public_data/rapport_complet.html"
 
     def get_context_data(self, **kwargs):
-        land_type = self.kwargs.get("land_type")
-        land_id = self.kwargs.get("land_id")
-
         kwargs.update(
             {
-                "land_type": land_type,
-                "land_id": land_id,
+                "land_type": self.kwargs.get("land_type"),
+                "land_id": self.kwargs.get("land_id"),
             }
         )
-
         return super().get_context_data(**kwargs)
+
+
+class PdfHeaderView(TemplateView):
+    template_name = "public_data/pdf_header.html"
+
+
+class PdfFooterView(TemplateView):
+    template_name = "public_data/pdf_footer.html"

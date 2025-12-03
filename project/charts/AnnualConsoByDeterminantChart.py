@@ -156,6 +156,10 @@ class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
                 "align": "center",
                 "verticalAlign": "bottom",
             },
+            "yAxis": {
+                **super().param["yAxis"],
+                "stackLabels": {"enabled": False},
+            },
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (

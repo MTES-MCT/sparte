@@ -162,9 +162,9 @@ export const djangoApi = createApi({
 				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`
 			},
 		}),
-		downloadDiagnostic: builder.mutation<{ message: string }, { projectId: number; documentType: string }>({
+		recordDownloadRequest: builder.mutation<{ success: boolean }, { projectId: number; documentType: string }>({
 			query: ({ projectId, documentType }) => ({
-				url: `/project/${projectId}/telechargement/${documentType}`,
+				url: `/project/${projectId}/downloadRequest/${documentType}`,
 				method: 'GET'
 			}),
 		}),
@@ -192,7 +192,7 @@ const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
 const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
-const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
+const useRecordDownloadRequestMutation = djangoApi.useRecordDownloadRequestMutation;
 const useUpdateProjectTarget2031Mutation = djangoApi.useUpdateProjectTarget2031Mutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
@@ -230,7 +230,7 @@ export {
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
 	useGetSimilarTerritoriesByPopulationQuery,
-	useDownloadDiagnosticMutation,
+	useRecordDownloadRequestMutation,
 	useUpdateProjectTarget2031Mutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,

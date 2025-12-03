@@ -2,7 +2,6 @@
 
 SELECT
     index,
-    annee_cog,
     circonscription_reg2016 AS circonscription_region_2016,
     circonscription_dept    AS circonscription_departement,
     communes_code_insee     AS commune_code,

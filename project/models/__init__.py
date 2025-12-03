@@ -3,7 +3,6 @@ __all__ = [
     "ErrorTracking",
     "Project",
     "Request",
-    "trigger_async_tasks",
     "user_directory_path",
     "RequestedDocumentChoices",
     "RNUPackage",
@@ -20,4 +19,4 @@ from .utils import user_directory_path
 
 # isort: split
 
-from .create import create_project_api_view, trigger_async_tasks
+from .create import create_project_api_view

@@ -60,6 +60,7 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
                 }
                 for item in self.data
             ],
+            "boldFirstColumn": True,
         }
 
     @property

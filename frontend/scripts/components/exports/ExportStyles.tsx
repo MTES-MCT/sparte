@@ -173,27 +173,6 @@ export const IntroBox = styled.div`
   }
 `;
 
-export const ConclusionBox = styled.div`
-  background: #e8f5e9;
-  border-left: 4px solid #4caf50;
-  padding: 1.5rem;
-  margin: 2rem 0;
-  border-radius: 4px;
-
-  h4 {
-    margin-top: 0;
-    color: #2e7d32;
-  }
-
-  p {
-    margin: 0 !important;
-    font-size: 0.8rem !important;
-    color: #333 !important;
-    line-height: 1.6 !important;
-    text-align: left !important;
-  }
-`;
-
 export const SimulationBox = styled.div`
   background: #e8f5e9;
   border-left: 4px solid #4caf50;

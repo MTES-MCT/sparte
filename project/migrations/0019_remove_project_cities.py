@@ -8,9 +8,4 @@ class Migration(migrations.Migration):
         ("project", "0018_auto_20211231_0446"),
     ]
 
-    operations = [
-        migrations.RemoveField(
-            model_name="project",
-            name="cities",
-        ),
-    ]
+    operations = []

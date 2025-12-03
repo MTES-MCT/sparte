@@ -4,7 +4,7 @@ import useHtmx from "@hooks/useHtmx";
 import Loader from "@components/ui/Loader";
 import Button from "@components/ui/Button";
 import CallToAction from "@components/ui/CallToAction";
-import { useDownloadDiagnosticMutation } from "@services/api";
+import { useRecordDownloadRequestMutation } from "@services/api";
 import { Notice } from "./Downloads";
 
 /*
@@ -27,16 +27,16 @@ const RapportLocal: React.FC<{ endpoint: string; projectData: any }> = ({
 
   const [message, setMessage] = React.useState<string | null>(null);
   const [error, setError] = React.useState<ReactNode | null>(null);
-  const [downloadDiagnostic] = useDownloadDiagnosticMutation();
+  const [recordDownloadRequest] = useRecordDownloadRequestMutation();
 
   const handleDownload = async () => {
     setMessage(null);
     try {
-      const response = await downloadDiagnostic({
+      await recordDownloadRequest({
         projectId: projectData.id,
         documentType: "rapport-local",
       }).unwrap();
-      setMessage(response.message);
+      setMessage("Votre demande a été enregistrée. Vous recevrez le document par email dans quelques minutes.");
     } catch (error: any) {
       setError(error.data?.error ?? "Une erreur est survenue");
     }
