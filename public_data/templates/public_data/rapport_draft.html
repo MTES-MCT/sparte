@@ -1,0 +1,31 @@
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <title>Rapport | Mon Diagnostic Artificialisation</title>
+
+        <link crossorigin="anonymous" rel="icon" href="{% static 'favicon/favicon.svg' %}">
+
+        {% if debug %}
+            <link rel="stylesheet" href="http://localhost:3000/assets/styles/main.css">
+        {% else %}
+            {% render_bundle 'main' 'css' %}
+        {% endif %}
+    </head>
+
+    <body>
+        <div id="react-rapport-draft" data-draft-id="{{ draft_id }}"></div>
+
+        {% if debug %}
+            <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
+        {% else %}
+            {% render_bundle 'main' 'js' %}
+        {% endif %}
+    </body>
+</html>
+

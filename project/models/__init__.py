@@ -8,12 +8,14 @@ __all__ = [
     "RequestedDocumentChoices",
     "RNUPackage",
     "RNUPackageRequest",
+    "ReportDraft",
     "create_project_api_view",
 ]
 
 
 from .export_job import ExportJob
 from .project_base import Emprise, Project
+from .report_draft import ReportDraft
 from .request import ErrorTracking, Request, RequestedDocumentChoices
 from .RNUPackage import RNUPackage
 from .RNUPackageRequest import RNUPackageRequest

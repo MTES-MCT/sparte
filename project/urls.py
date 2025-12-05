@@ -80,6 +80,21 @@ urlpatterns = [
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads",
     ),
+    path(
+        "<int:pk>/tableau-de-bord/telechargements/<uuid:draft_id>",
+        views.diagnostic.DiagnosticDownloadsView.as_view(),
+        name="report_downloads_draft",
+    ),
+    path(
+        "<int:pk>/downloadRequest/<slug:requested_document>",
+        RecordDownloadRequestAPIView.as_view(),
+        name="download_request",
+    ),
+    path(
+        "<int:pk>/telechargement-liens",
+        ProjectDownloadLinkView.as_view(),
+        name="report_download_url",
+    ),
     # Export PDF (polling)
     path("export/start/", ExportStartView.as_view(), name="export_start"),
     path("export/status/<str:job_id>/", ExportStatusView.as_view(), name="export_status"),

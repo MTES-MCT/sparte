@@ -1,7 +1,8 @@
 from django.http import FileResponse, Http404, JsonResponse
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-from project.api_views import UpdateProjectTarget2031APIView
+from project.api_views import ReportDraftViewSet, UpdateProjectTarget2031APIView
 from project.charts import (
     AnnualConsoByDeterminantChart,
     AnnualConsoByDeterminantChartExport,
@@ -128,6 +129,9 @@ from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
 
 app_name = "api"
 
+router = DefaultRouter()
+router.register(r"report-drafts", ReportDraftViewSet, basename="report-draft")
+
 
 def get_chart_klass_or_404(chart_id):
     charts = {
@@ -237,6 +241,7 @@ def chart_view(request, id, land_type, land_id):
 
 
 urlpatterns = [
+    path("", include(router.urls)),
     path("project/<int:pk>/target-2031/", UpdateProjectTarget2031APIView.as_view(), name="update-target-2031"),
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path(

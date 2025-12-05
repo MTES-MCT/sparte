@@ -6,6 +6,13 @@ import { ArtifZonageIndexType } from "./types/artif_zonage";
 import { UseLandFrichesStatutType } from "./types/land_friches_statut";
 import { UseLandFrichesType } from "./types/land_friches";
 import { UseEnvTypes } from "./types/env";
+import {
+    ReportDraft,
+    ReportDraftListItem,
+    CreateReportDraftPayload,
+    UpdateReportDraftPayload,
+    ReportTypeOption,
+} from "./types/reportDraft";
 
 export const djangoApi = createApi({
 	reducerPath: "djangoApi",
@@ -162,11 +169,14 @@ export const djangoApi = createApi({
 				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`
 			},
 		}),
-		recordDownloadRequest: builder.mutation<{ success: boolean }, { projectId: number; documentType: string }>({
-			query: ({ projectId, documentType }) => ({
-				url: `/project/${projectId}/downloadRequest/${documentType}`,
-				method: 'GET'
-			}),
+		recordDownloadRequest: builder.mutation<{ success: boolean }, { projectId: number; documentType: string; draftId?: string }>({
+			query: ({ projectId, documentType, draftId }) => {
+				let url = `/project/${projectId}/downloadRequest/${documentType}`;
+				if (draftId) {
+					url += `?draft_id=${draftId}`;
+				}
+				return { url, method: 'GET' };
+			},
 		}),
 		updateProjectTarget2031: builder.mutation<
 			{ success: boolean; target_2031: number },
@@ -181,7 +191,6 @@ export const djangoApi = createApi({
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},
-			// Invalider le cache du projet après la mise à jour
 			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: projectId }],
 		}),
 		startExportPdf: builder.mutation<{ jobId: string }, { land_type: string; land_id: string; report_type: string }>({
@@ -204,8 +213,61 @@ export const djangoApi = createApi({
 		getExportStatus: builder.query<{ status: 'pending' | 'completed' | 'failed'; error?: string }, string>({
 			query: (jobId) => `/project/export/status/${jobId}/`,
 		}),
+		getReportDrafts: builder.query<ReportDraftListItem[], { projectId: number; reportType?: string }>({
+			query: ({ projectId, reportType }) => {
+				const params = new URLSearchParams({ project_id: projectId.toString() });
+				if (reportType) params.append('report_type', reportType);
+				return `/api/report-drafts/?${params}`;
+			},
+			providesTags: (result) =>
+				result
+					? [...result.map(({ id }) => ({ type: 'ReportDraft' as const, id })), { type: 'ReportDraft', id: 'LIST' }]
+					: [{ type: 'ReportDraft', id: 'LIST' }],
+		}),
+		getReportDraft: builder.query<ReportDraft, string>({
+			query: (id) => `/api/report-drafts/${id}/`,
+			providesTags: (result, error, id) => [{ type: 'ReportDraft', id }],
+		}),
+		getReportTypes: builder.query<ReportTypeOption[], void>({
+			query: () => '/api/report-drafts/report_types/',
+		}),
+		createReportDraft: builder.mutation<ReportDraft, CreateReportDraftPayload>({
+			query: (body) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: '/api/report-drafts/',
+					method: 'POST',
+					body,
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+			invalidatesTags: [{ type: 'ReportDraft', id: 'LIST' }],
+		}),
+		updateReportDraft: builder.mutation<ReportDraft, UpdateReportDraftPayload>({
+			query: ({ id, ...body }) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: `/api/report-drafts/${id}/`,
+					method: 'PATCH',
+					body,
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+			invalidatesTags: (result, error, { id }) => [{ type: 'ReportDraft', id }, { type: 'ReportDraft', id: 'LIST' }],
+		}),
+		deleteReportDraft: builder.mutation<void, string>({
+			query: (id) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: `/api/report-drafts/${id}/`,
+					method: 'DELETE',
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+			invalidatesTags: [{ type: 'ReportDraft', id: 'LIST' }],
+		}),
 	}),
-	tagTypes: ['Project'],
+	tagTypes: ['Project', 'ReportDraft'],
 });
 
 const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
@@ -235,6 +297,12 @@ const {
 	useGetSimilarTerritoriesQuery,
 	useGetSimilarTerritoriesByPopulationQuery,
 	useGetLogementVacantAutorisationStatsQuery,
+	useGetReportDraftsQuery,
+	useGetReportDraftQuery,
+	useGetReportTypesQuery,
+	useCreateReportDraftMutation,
+	useUpdateReportDraftMutation,
+	useDeleteReportDraftMutation,
 } = djangoApi;
 
 export {
@@ -263,4 +331,10 @@ export {
 	useStartExportPdfMutation,
 	useLazyDownloadExportPdfQuery,
 	useLazyGetExportStatusQuery,
+	useGetReportDraftsQuery,
+	useGetReportDraftQuery,
+	useGetReportTypesQuery,
+	useCreateReportDraftMutation,
+	useUpdateReportDraftMutation,
+	useDeleteReportDraftMutation,
 };

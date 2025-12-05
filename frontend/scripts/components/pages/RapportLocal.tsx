@@ -4,8 +4,8 @@ import useHtmx from "@hooks/useHtmx";
 import Loader from "@components/ui/Loader";
 import Button from "@components/ui/Button";
 import CallToAction from "@components/ui/CallToAction";
+import Notice from "@components/ui/Notice";
 import { useRecordDownloadRequestMutation } from "@services/api";
-import { Notice } from "./Downloads";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.

@@ -228,7 +228,17 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         path={urls.downloads}
                                         element={
                                             <RouteWrapper
-                                                title="Téléchargements"
+                                                title="Générer un rapport"
+                                            >
+                                                <Downloads landData={landData} projectData={projectData} />
+                                            </RouteWrapper>
+                                        }
+                                    />
+                                    <Route
+                                        path={`${urls.downloads}/:draftId`}
+                                        element={
+                                            <RouteWrapper
+                                                title="Générer un rapport"
                                             >
                                                 <Downloads landData={landData} projectData={projectData} />
                                             </RouteWrapper>
