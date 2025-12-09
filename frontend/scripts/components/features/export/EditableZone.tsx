@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import Document from '@tiptap/extension-document';
 import Paragraph from '@tiptap/extension-paragraph';
@@ -10,97 +10,60 @@ import OrderedList from '@tiptap/extension-ordered-list';
 import ListItem from '@tiptap/extension-list-item';
 import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Button } from '@codegouvfr/react-dsfr/Button';
 import styled from 'styled-components';
 
-const ZoneWrapper = styled.div<{ $isFocused: boolean }>`
+const ZoneWrapper = styled.div`
     position: relative;
-    border: 2px dashed ${props => props.$isFocused ? '#000091' : '#c0c0c0'};
-    border-radius: 8px;
+    border: 1px solid var(--border-default-grey);
     margin: 1.5rem 0;
-    background: ${props => props.$isFocused ? '#f8f8ff' : '#fafafa'};
-    transition: all 0.2s ease;
-    cursor: text;
-
-    &:hover {
-        border-color: #000091;
-        background: #f8f8ff;
-    }
+    border-radius: 4px;
+    overflow: hidden;
 `;
 
 const ZoneHeader = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 16px;
-    background: linear-gradient(135deg, #000091 0%, #1212ff 100%);
-    border-radius: 6px 6px 0 0;
-`;
-
-const ZoneLabel = styled.span`
-    font-size: 13px;
-    font-weight: 600;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-`;
-
-const ZoneHint = styled.span`
-    font-size: 11px;
-    color: rgba(255, 255, 255, 0.7);
+    padding: 0.75rem 1rem;
+    background: var(--background-alt-grey);
+    border-bottom: 1px solid var(--border-default-grey);
 `;
 
 const Toolbar = styled.div`
     display: flex;
-    gap: 4px;
-    padding: 10px 16px;
+    gap: 0.7rem;
+    padding: 0.75rem 1rem;
     border-bottom: 1px solid #e0e0e0;
     background: white;
     flex-wrap: wrap;
 `;
 
-const ToolbarButton = styled.button<{ $active?: boolean }>`
-    padding: 6px 10px;
-    border: 1px solid ${props => props.$active ? '#000091' : '#ddd'};
-    border-radius: 4px;
-    background: ${props => props.$active ? '#000091' : 'white'};
-    color: ${props => props.$active ? 'white' : '#333'};
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    transition: all 0.15s ease;
+const Icon = styled.i`
+    font-size: 1.4em;
+`;
 
-    &:hover {
-        background: ${props => props.$active ? '#0000b3' : '#f0f0f0'};
-        border-color: ${props => props.$active ? '#0000b3' : '#bbb'};
-    }
-
-    &:active {
-        transform: scale(0.95);
-    }
+const Label = styled.label`
+    font-size: 0.875rem;
 `;
 
 const EditorArea = styled.div`
-    padding: 16px;
-    min-height: 100px;
+    padding: 1rem;
+    min-height: 6.25rem;
 
     .ProseMirror {
         outline: none;
-        min-height: 80px;
-        font-size: 0.9rem;
-        line-height: 1.7;
-        color: #333;
+        min-height: 5rem;
+        font-size: 0.875rem;
+        line-height: 1.5rem;
 
         > * + * {
-            margin-top: 0.75em;
+            margin-top: 0.75rem;
         }
 
         p {
             margin: 0;
+            font-size: 0.875rem;
         }
 
         ul, ol {
@@ -117,7 +80,7 @@ const EditorArea = styled.div`
         }
 
         .is-editor-empty:first-child::before {
-            color: #999;
+            color: var(--text-mention-grey);
             content: attr(data-placeholder);
             float: left;
             height: 0;
@@ -140,8 +103,6 @@ const EditableZone: React.FC<EditableZoneProps> = ({
     onChange,
     placeholder = 'Cliquez ici pour ajouter votre commentaire...',
 }) => {
-    const [isFocused, setIsFocused] = useState(false);
-
     const editor = useEditor({
         extensions: [
             Document,
@@ -165,8 +126,6 @@ const EditableZone: React.FC<EditableZoneProps> = ({
                 onChange(html);
             }
         },
-        onFocus: () => setIsFocused(true),
-        onBlur: () => setIsFocused(false),
     });
 
     useEffect(() => {
@@ -181,68 +140,80 @@ const EditableZone: React.FC<EditableZoneProps> = ({
 
     if (!editor) {
         return (
-            <ZoneWrapper $isFocused={false}>
+            <ZoneWrapper className="fr-input-group">
                 <ZoneHeader>
-                    <ZoneLabel>✏️ {label}</ZoneLabel>
+                    <Label className="fr-label">{label}</Label>
                 </ZoneHeader>
                 <EditorArea>
-                    <p style={{ color: '#999', fontStyle: 'italic' }}>Chargement...</p>
+                    <p style={{ color: 'var(--text-mention-grey)', fontStyle: 'italic' }}>Chargement...</p>
                 </EditorArea>
             </ZoneWrapper>
         );
     }
 
     return (
-        <ZoneWrapper $isFocused={isFocused} onClick={focusEditor}>
+        <ZoneWrapper onClick={focusEditor} className="fr-input-group">
             <ZoneHeader>
-                <ZoneLabel>✏️ {label}</ZoneLabel>
-                <ZoneHint>Zone éditable</ZoneHint>
+                <Label className="fr-label">{label}</Label>
+                <span className="fr-hint-text">Zone éditable optionnelle</span>
             </ZoneHeader>
             <Toolbar onClick={(e) => e.stopPropagation()}>
-                <ToolbarButton
+                <Button
+                    size="small"
+                    priority={editor.isActive('bold') ? 'primary' : 'tertiary'}
                     type="button"
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        editor.chain().focus().toggleBold().run();
-                    }}
-                    $active={editor.isActive('bold')}
                     title="Gras (Ctrl+B)"
-                >
-                    <strong>B</strong>
-                </ToolbarButton>
-                <ToolbarButton
-                    type="button"
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        editor.chain().focus().toggleItalic().run();
+                    nativeButtonProps={{
+                        onMouseDown: (e) => {
+                            e.preventDefault();
+                            editor.chain().focus().toggleBold().run();
+                        },
                     }}
-                    $active={editor.isActive('italic')}
+                >
+                    <Icon className="bi bi-type-bold" aria-hidden="true"></Icon>
+                </Button>
+                <Button
+                    size="small"
+                    priority={editor.isActive('italic') ? 'primary' : 'tertiary'}
+                    type="button"
                     title="Italique (Ctrl+I)"
-                >
-                    <em>I</em>
-                </ToolbarButton>
-                <ToolbarButton
-                    type="button"
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        editor.chain().focus().toggleBulletList().run();
+                    nativeButtonProps={{
+                        onMouseDown: (e) => {
+                            e.preventDefault();
+                            editor.chain().focus().toggleItalic().run();
+                        },
                     }}
-                    $active={editor.isActive('bulletList')}
+                >
+                    <Icon className="bi bi-type-italic" aria-hidden="true"></Icon>
+                </Button>
+                <Button
+                    size="small"
+                    priority={editor.isActive('bulletList') ? 'primary' : 'tertiary'}
+                    type="button"
                     title="Liste à puces"
-                >
-                    • Liste
-                </ToolbarButton>
-                <ToolbarButton
-                    type="button"
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        editor.chain().focus().toggleOrderedList().run();
+                    nativeButtonProps={{
+                        onMouseDown: (e) => {
+                            e.preventDefault();
+                            editor.chain().focus().toggleBulletList().run();
+                        },
                     }}
-                    $active={editor.isActive('orderedList')}
-                    title="Liste numérotée"
                 >
-                    1. Liste
-                </ToolbarButton>
+                    <Icon className="bi bi-list-ul" aria-hidden="true"></Icon>
+                </Button>
+                <Button
+                    size="small"
+                    priority={editor.isActive('orderedList') ? 'primary' : 'tertiary'}
+                    type="button"
+                    title="Liste numérotée"
+                    nativeButtonProps={{
+                        onMouseDown: (e) => {
+                            e.preventDefault();
+                            editor.chain().focus().toggleOrderedList().run();
+                        },
+                    }}
+                >
+                    <Icon className="bi bi-list-ol" aria-hidden="true"></Icon>
+                </Button>
             </Toolbar>
             <EditorArea onClick={(e) => e.stopPropagation()}>
                 <EditorContent editor={editor} />

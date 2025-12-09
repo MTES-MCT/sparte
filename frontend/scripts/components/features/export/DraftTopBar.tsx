@@ -139,12 +139,6 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
         }
     };
 
-    const statusIcon = {
-        saving: 'fr-spinner fr-spinner--sm',
-        saved: 'fr-icon-checkbox-circle-line fr-icon--sm',
-        error: 'fr-icon-error-line fr-icon--sm',
-    }[saveStatus];
-
     const statusLabel = saveStatus === 'saving' ? 'Enregistrement...' :
         saveStatus === 'error' ? 'Erreur' :
         lastSavedTime ? lastSavedTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
@@ -179,7 +173,7 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
                 <Badge small noIcon>{typeLabel}</Badge>
                 {statusLabel && (
                     <StatusText $status={saveStatus}>
-                        <span className={statusIcon} aria-hidden="true" />
+                        <span className="fr-icon-checkbox-circle-line fr-icon--sm" aria-hidden="true" />
                         {statusLabel}
                     </StatusText>
                 )}
