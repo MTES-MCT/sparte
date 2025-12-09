@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
 interface DraftTopBarProps {
     name: string;
@@ -17,113 +19,81 @@ interface DraftTopBarProps {
 const TopBar = styled.div`
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(8px);
     border: 1px solid #EBEBEC;
     position: sticky;
     top: 5.4rem;
     z-index: 100;
-    border-radius: 5px;
 `;
 
-const DraftInfo = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex: 1;
-    min-width: 0;
-`;
-
-const DraftNameWrapper = styled.div`
+const NameSection = styled.div`
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    min-width: 0;
     flex: 1;
+    min-width: 0;
 `;
 
-const DraftNameDisplay = styled.button`
-    font-size: 0.9rem;
+const NameButton = styled.button`
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-title-grey);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     background: none;
     border: none;
     padding: 0.25rem 0.5rem;
-    margin: -0.25rem -0.5rem;
     border-radius: 0.25rem;
     cursor: pointer;
-    text-align: left;
-    max-width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    max-width: 300px;
+    
+    span:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
     &:hover {
         background: var(--background-alt-grey);
     }
 `;
 
-const DraftNameInput = styled.input`
-    font-size: 0.9rem;
+const NameInput = styled.input`
+    font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-title-grey);
-    background: white;
-    border: 1px solid var(--border-active-blue-france);
     padding: 0.25rem 0.5rem;
-    margin: -0.25rem -0.5rem;
+    border: 1px solid var(--border-active-blue-france);
     border-radius: 0.25rem;
-    outline: none;
     min-width: 200px;
-    max-width: 400px;
+    max-width: 300px;
 
     &:focus {
+        outline: none;
         box-shadow: 0 0 0 2px var(--background-contrast-blue-france);
     }
 `;
 
-const EditIcon = styled.i`
+const StatusText = styled.span<{ $status: 'saved' | 'saving' | 'error' }>`
     font-size: 0.75rem;
-    color: var(--text-mention-grey);
-    flex-shrink: 0;
-`;
-
-const DraftType = styled.span`
-    padding: 0.125rem 0.5rem;
-    background: var(--background-contrast-blue-france);
-    color: var(--text-label-blue-france);
-    border-radius: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    white-space: nowrap;
-    flex-shrink: 0;
-`;
-
-const DraftActions = styled.div`
+    color: ${({ $status }) => 
+        $status === 'saved' ? 'var(--text-default-success)' :
+        $status === 'error' ? 'var(--text-default-error)' :
+        'var(--text-mention-grey)'
+    };
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-left: auto;
+    gap: 0.25rem;
+    white-space: nowrap;
 `;
 
-const SaveStatus = styled.div<{ $status: 'saved' | 'saving' | 'error' }>`
+const Actions = styled.div`
     display: flex;
     align-items: center;
-    gap: 0.375rem;
-    font-size: 0.75rem;
-    white-space: nowrap;
-    color: ${props => {
-        switch (props.$status) {
-            case 'saved': return 'var(--text-default-success)';
-            case 'saving': return 'var(--text-mention-grey)';
-            case 'error': return 'var(--text-default-error)';
-        }
-    }};
-
-    i {
-        font-size: 0.875rem;
-    }
+    gap: 0.8rem;
 `;
 
 const DraftTopBar: React.FC<DraftTopBarProps> = ({
@@ -153,11 +123,6 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
         }
     }, [isEditing]);
 
-    const handleStartEdit = () => {
-        setIsEditing(true);
-        setEditedName(name);
-    };
-
     const handleSave = () => {
         const trimmedName = editedName.trim();
         if (trimmedName && trimmedName !== name) {
@@ -166,90 +131,77 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
         setIsEditing(false);
     };
 
-    const handleCancel = () => {
-        setEditedName(name);
-        setIsEditing(false);
-    };
-
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleSave();
-        } else if (e.key === 'Escape') {
-            handleCancel();
+        if (e.key === 'Enter') handleSave();
+        if (e.key === 'Escape') {
+            setEditedName(name);
+            setIsEditing(false);
         }
     };
 
+    const statusIcon = {
+        saving: 'fr-spinner fr-spinner--sm',
+        saved: 'fr-icon-checkbox-circle-line fr-icon--sm',
+        error: 'fr-icon-error-line fr-icon--sm',
+    }[saveStatus];
+
+    const statusLabel = saveStatus === 'saving' ? 'Enregistrement...' :
+        saveStatus === 'error' ? 'Erreur' :
+        lastSavedTime ? lastSavedTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '';
+
     return (
         <TopBar>
-            <button
-                className="fr-btn fr-btn--tertiary-no-outline fr-btn--sm fr-icon-arrow-left-line"
+            <Button
+                priority="tertiary"
+                size="small"
+                iconId="fr-icon-arrow-left-line"
                 onClick={onBack}
+                title="Retour à la liste"
             >
                 Retour
-            </button>
-            <DraftInfo>
-                <DraftNameWrapper>
-                    {isEditing ? (
-                        <DraftNameInput
-                            ref={inputRef}
-                            type="text"
-                            value={editedName}
-                            onChange={(e) => setEditedName(e.target.value)}
-                            onBlur={handleSave}
-                            onKeyDown={handleKeyDown}
-                        />
-                    ) : (
-                        <DraftNameDisplay onClick={handleStartEdit} title="Cliquer pour modifier le nom">
-                            {name}
-                            <EditIcon className="fr-icon-edit-line fr-ml-1v" aria-hidden="true" />
-                        </DraftNameDisplay>
-                    )}
-                </DraftNameWrapper>
-                <DraftType>{typeLabel}</DraftType>
-            </DraftInfo>
-            <DraftActions>
-                <SaveStatus $status={saveStatus}>
-                    {saveStatus === 'saving' && (
-                        <>
-                            <span className="fr-spinner fr-spinner--sm" aria-hidden="true" />
-                            Enregistrement...
-                        </>
-                    )}
-                    {saveStatus === 'saved' && (
-                        <>
-                            <i className="bi bi-check-circle-fill" />
-                            {lastSavedTime 
-                                ? `Enregistré à ${lastSavedTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
-                                : 'Enregistré'
-                            }
-                        </>
-                    )}
-                    {saveStatus === 'error' && (
-                        <>
-                            <i className="bi bi-exclamation-circle-fill" />
-                            Erreur
-                        </>
-                    )}
-                </SaveStatus>
-                <button
-                    className="fr-btn fr-btn--sm fr-icon-download-line"
+            </Button>
+            <NameSection>
+                {isEditing ? (
+                    <NameInput
+                        ref={inputRef}
+                        type="text"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        onBlur={handleSave}
+                        onKeyDown={handleKeyDown}
+                    />
+                ) : (
+                    <NameButton onClick={() => setIsEditing(true)} title="Modifier le nom">
+                        <span>{name}</span>
+                        <span className="fr-icon-edit-line fr-icon--sm" aria-hidden="true" />
+                    </NameButton>
+                )}
+                <Badge small noIcon>{typeLabel}</Badge>
+                {statusLabel && (
+                    <StatusText $status={saveStatus}>
+                        <span className={statusIcon} aria-hidden="true" />
+                        {statusLabel}
+                    </StatusText>
+                )}
+            </NameSection>
+
+            <Actions>
+                <Button
+                    size="small"
+                    iconId="fr-icon-download-line"
                     onClick={onExport}
                     disabled={isPdfLoading || exportDisabled}
                 >
                     {isPdfLoading ? 'Export...' : 'Télécharger'}
-                </button>
-                <button
-                    className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
-                    onClick={() => {
-                        if (window.confirm('Voulez-vous vraiment supprimer ce rapport ?')) {
-                            onDelete();
-                        }
-                    }}
-                    title="Supprimer ce rapport"
-                >
-                    Supprimer
-                </button>
-            </DraftActions>
+                </Button>
+                <Button
+                    priority="tertiary"
+                    size="small"
+                    iconId="fr-icon-delete-line"
+                    onClick={() => window.confirm('Supprimer ce rapport ?') && onDelete()}
+                    title="Supprimer"
+                />
+            </Actions>
         </TopBar>
     );
 };
