@@ -77,20 +77,19 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
         selectedDraftId,
         selectedDraft,
         drafts,
-        reportTypes,
         localContent,
         saveStatus,
         lastSavedTime,
-        showCreateModal,
         isDraftsLoading,
         isDraftLoading,
         isCreating,
         isPdfLoading,
         exportDisabled,
-        setShowCreateModal,
+        prefilledReportType,
         handleContentChange,
         handleSelectDraft,
         handleDeleteDraft,
+        handleRenameDraft,
         handleCreateDraft,
         handleCreateReportOfType,
         handleExportPdf,
@@ -114,10 +113,16 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
                             Créez et téléchargez facilement des rapports à partir de nos trames pré-remplies, personnalisez-les et retrouvez les à tout moment.
                         </p>
 
+                        <SectionHeader>
+                            <SectionTitle>
+                                Créer un nouveau rapport
+                            </SectionTitle>
+                        </SectionHeader>
+
                         <CardsGrid>
                             <ActionCard
                                 icon="fr-icon-bar-chart-box-line"
-                                title="Créer un Rapport Complet"
+                                title="Rapport Complet"
                                 description="Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols."
                                 onClick={() => handleCreateReportOfType('rapport-complet')}
                                 disabled={isCreating}
@@ -125,7 +130,7 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
 
                             <ActionCard
                                 icon="fr-icon-calendar-event-line"
-                                title="Créer un Rapport Triennal Local"
+                                title="Rapport Triennal Local"
                                 description="Trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols réalisée en partenariat avec la DGALN."
                                 onClick={() => handleCreateReportOfType('rapport-local')}
                                 disabled={isCreating}
@@ -159,7 +164,6 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
                                             typeLabel={draft.report_type_display}
                                             updatedAt={draft.updated_at}
                                             onClick={() => handleSelectDraft(draft.id)}
-                                            onDelete={() => handleDeleteDraft(draft.id)}
                                         />
                                     ))}
                                 </CardsGrid>
@@ -182,18 +186,17 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
                         onContentChange={handleContentChange}
                         onBack={handleBack}
                         onExport={handleExportPdf}
+                        onRename={handleRenameDraft}
+                        onDelete={() => handleDeleteDraft(selectedDraft.id)}
                     />
                 )}
             </MainContent>
 
-            {showCreateModal && (
-                <CreateReportModal
-                    reportTypes={reportTypes}
-                    isLoading={isCreating}
-                    onSubmit={handleCreateDraft}
-                    onClose={() => setShowCreateModal(false)}
-                />
-            )}
+            <CreateReportModal
+                reportType={prefilledReportType}
+                isLoading={isCreating}
+                onSubmit={handleCreateDraft}
+            />
         </div>
     );
 };

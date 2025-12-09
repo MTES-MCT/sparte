@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface ActionCardProps {
-    icon: string;
+    icon?: string;
     title: string;
     description: string;
     onClick: () => void;
@@ -68,7 +68,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
     return (
         <CardButton onClick={onClick} disabled={disabled}>
             <CardHeader>
-                <CardIcon className={icon} aria-hidden="true" />
+                {icon && <CardIcon className={icon} aria-hidden="true" />}
                 <CardTitle>{title}</CardTitle>
             </CardHeader>
             <CardDescription>{description}</CardDescription>

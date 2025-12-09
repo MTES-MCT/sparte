@@ -10,7 +10,6 @@ import {
 import {
     useGetReportDraftsQuery,
     useGetReportDraftQuery,
-    useGetReportTypesQuery,
     useCreateReportDraftMutation,
     useUpdateReportDraftMutation,
     useDeleteReportDraftMutation,
@@ -18,6 +17,7 @@ import {
     useGetEnvironmentQuery,
 } from '@services/api';
 import { ReportType } from '@services/types/reportDraft';
+import { useCreateReportModal } from '@components/features/export';
 
 const AUTOSAVE_DELAY = 2000;
 
@@ -40,10 +40,10 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { draftId: urlDraftId } = useParams<{ draftId?: string }>();
+    const createReportModal = useCreateReportModal();
 
     // Local state
     const [selectedDraftId, setSelectedDraftId] = useState<string | null>(urlDraftId || null);
-    const [showCreateModal, setShowCreateModal] = useState(false);
     const [localContent, setLocalContent] = useState<Record<string, string>>({});
     const [saveStatus, setSaveStatus] = useState<'saved' | 'saving' | 'error'>('saved');
     const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
@@ -65,10 +65,6 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
         selectedDraftId!,
         { skip: !selectedDraftId }
     );
-
-    const { data: reportTypes = [] } = useGetReportTypesQuery(undefined, {
-        skip: !isAuthenticated,
-    });
 
     // API mutations
     const [createDraft, { isLoading: isCreating }] = useCreateReportDraftMutation();
@@ -160,6 +156,19 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
         }
     }, [deleteDraft, selectedDraftId, navigate, downloadsUrl]);
 
+    const handleRenameDraft = useCallback(async (newName: string) => {
+        if (!selectedDraftId) return;
+
+        setSaveStatus('saving');
+        try {
+            await updateDraft({ id: selectedDraftId, name: newName });
+            setSaveStatus('saved');
+            setLastSavedTime(new Date());
+        } catch {
+            setSaveStatus('error');
+        }
+    }, [selectedDraftId, updateDraft]);
+
     const handleCreateDraft = useCallback(async (data: { name: string; reportType: ReportType }) => {
         const result = await createDraft({
             project: projectId,
@@ -170,30 +179,16 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
 
         if ('data' in result) {
             navigate(`${downloadsUrl}/${result.data.id}`);
-            setShowCreateModal(false);
         }
     }, [createDraft, projectId, navigate, downloadsUrl]);
 
+    // State for prefilling the create modal (default to 'rapport-complet')
+    const [prefilledReportType, setPrefilledReportType] = useState<ReportType>('rapport-complet');
+
     const handleCreateReportOfType = useCallback((reportType: ReportType) => {
-        const reportNames = {
-            'rapport-complet': 'Rapport Complet',
-            'rapport-local': 'Rapport Triennal Local',
-        };
-
-        const timestamp = new Date().toLocaleDateString('fr-FR');
-        const defaultName = `${reportNames[reportType]} - ${timestamp}`;
-
-        createDraft({
-            project: projectId,
-            report_type: reportType,
-            name: defaultName,
-            content: {},
-        }).then((result) => {
-            if ('data' in result) {
-                navigate(`${downloadsUrl}/${result.data.id}`);
-            }
-        });
-    }, [createDraft, projectId, navigate, downloadsUrl]);
+        setPrefilledReportType(reportType);
+        createReportModal.open();
+    }, [createReportModal]);
 
     const handleExportPdf = useCallback(async () => {
         if (!selectedDraft || !environment) return;
@@ -234,26 +229,25 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
         selectedDraftId,
         selectedDraft,
         drafts,
-        reportTypes,
         localContent,
         saveStatus,
         lastSavedTime,
-        showCreateModal,
-        
+        prefilledReportType,
+
         // Loading states
         isDraftsLoading,
         isDraftLoading,
         isCreating,
         isPdfLoading: pdfStatus === 'loading',
-        
+
         // Derived state
         exportDisabled: !environment,
-        
+
         // Actions
-        setShowCreateModal,
         handleContentChange,
         handleSelectDraft,
         handleDeleteDraft,
+        handleRenameDraft,
         handleCreateDraft,
         handleCreateReportOfType,
         handleExportPdf,

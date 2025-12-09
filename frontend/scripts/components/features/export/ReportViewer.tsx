@@ -2,7 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import { ReportDraft } from '@services/types/reportDraft';
-import { EditableRapportComplet, EditableRapportLocal } from '@components/report';
+import EditableRapportComplet from './EditableRapportComplet';
+import EditableRapportLocal from './EditableRapportLocal';
 import DraftTopBar from './DraftTopBar';
 import EmptyState from './EmptyState';
 
@@ -17,6 +18,8 @@ interface ReportViewerProps {
     onContentChange: (key: string, value: string) => void;
     onBack: () => void;
     onExport: () => void;
+    onRename: (newName: string) => void;
+    onDelete: () => void;
 }
 
 const ReportWrapper = styled.div`
@@ -42,6 +45,8 @@ const ReportViewer: React.FC<ReportViewerProps> = ({
     onContentChange,
     onBack,
     onExport,
+    onRename,
+    onDelete,
 }) => {
     const renderReportContent = () => {
         if (draft.report_type === 'rapport-complet') {
@@ -77,6 +82,8 @@ const ReportViewer: React.FC<ReportViewerProps> = ({
                 isPdfLoading={isPdfLoading}
                 onBack={onBack}
                 onExport={onExport}
+                onRename={onRename}
+                onDelete={onDelete}
                 exportDisabled={exportDisabled}
             />
 

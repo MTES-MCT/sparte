@@ -1,62 +1,51 @@
 import React from 'react';
-import styled from 'styled-components';
-import { CreateReportForm } from '@components/report';
-import { ReportType, ReportTypeOption } from '@services/types/reportDraft';
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
+import CreateReportForm from './CreateReportForm';
+import { ReportType } from '@services/types/reportDraft';
 
 interface CreateReportModalProps {
-    reportTypes: ReportTypeOption[];
+    reportType: ReportType;
     isLoading: boolean;
     onSubmit: (data: { name: string; reportType: ReportType }) => void;
-    onClose: () => void;
 }
 
-const Modal = styled.div`
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 24px;
-`;
-
-const ModalContent = styled.div`
-    background: white;
-    border-radius: 8px;
-    padding: 32px;
-    max-width: 500px;
-    width: 100%;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-`;
-
-const ModalTitle = styled.h3`
-    margin: 0 0 24px 0;
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-`;
+const modal = createModal({
+    id: "create-report-modal",
+    isOpenedByDefault: false,
+});
 
 const CreateReportModal: React.FC<CreateReportModalProps> = ({
-    reportTypes,
+    reportType,
     isLoading,
     onSubmit,
-    onClose,
 }) => {
+    const isOpen = useIsModalOpen(modal);
+
+    const handleSubmit = (data: { name: string; reportType: ReportType }) => {
+        onSubmit(data);
+        modal.close();
+    };
+
+    // Ne rendre le formulaire que quand le modal est ouvert
+    // pour éviter les problèmes de DOM nesting
     return (
-        <Modal onClick={onClose}>
-            <ModalContent onClick={(e) => e.stopPropagation()}>
-                <ModalTitle>Créer un nouveau rapport</ModalTitle>
+        <modal.Component
+            title="Créer un nouveau rapport"
+            size="medium"
+        >
+            {isOpen && (
                 <CreateReportForm
-                    reportTypes={reportTypes}
-                    onSubmit={onSubmit}
-                    onCancel={onClose}
+                    reportType={reportType}
+                    onSubmit={handleSubmit}
+                    onCancel={() => modal.close()}
                     isLoading={isLoading}
                 />
-            </ModalContent>
-        </Modal>
+            )}
+        </modal.Component>
     );
 };
 
-export default CreateReportModal;
+export const useCreateReportModal = () => modal;
 
+export default CreateReportModal;

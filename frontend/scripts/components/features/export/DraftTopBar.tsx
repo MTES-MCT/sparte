@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 
 interface DraftTopBarProps {
@@ -9,6 +9,8 @@ interface DraftTopBarProps {
     isPdfLoading: boolean;
     onBack: () => void;
     onExport: () => void;
+    onRename: (newName: string) => void;
+    onDelete: () => void;
     exportDisabled?: boolean;
 }
 
@@ -34,13 +36,57 @@ const DraftInfo = styled.div`
     min-width: 0;
 `;
 
-const DraftName = styled.span`
+const DraftNameWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    flex: 1;
+`;
+
+const DraftNameDisplay = styled.button`
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-title-grey);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background: none;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    margin: -0.25rem -0.5rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    text-align: left;
+    max-width: 100%;
+
+    &:hover {
+        background: var(--background-alt-grey);
+    }
+`;
+
+const DraftNameInput = styled.input`
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-title-grey);
+    background: white;
+    border: 1px solid var(--border-active-blue-france);
+    padding: 0.25rem 0.5rem;
+    margin: -0.25rem -0.5rem;
+    border-radius: 0.25rem;
+    outline: none;
+    min-width: 200px;
+    max-width: 400px;
+
+    &:focus {
+        box-shadow: 0 0 0 2px var(--background-contrast-blue-france);
+    }
+`;
+
+const EditIcon = styled.i`
+    font-size: 0.75rem;
+    color: var(--text-mention-grey);
+    flex-shrink: 0;
 `;
 
 const DraftType = styled.span`
@@ -51,6 +97,7 @@ const DraftType = styled.span`
     font-size: 0.75rem;
     font-weight: 500;
     white-space: nowrap;
+    flex-shrink: 0;
 `;
 
 const DraftActions = styled.div`
@@ -87,8 +134,51 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
     isPdfLoading,
     onBack,
     onExport,
+    onRename,
+    onDelete,
     exportDisabled = false,
 }) => {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedName, setEditedName] = useState(name);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        setEditedName(name);
+    }, [name]);
+
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [isEditing]);
+
+    const handleStartEdit = () => {
+        setIsEditing(true);
+        setEditedName(name);
+    };
+
+    const handleSave = () => {
+        const trimmedName = editedName.trim();
+        if (trimmedName && trimmedName !== name) {
+            onRename(trimmedName);
+        }
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setEditedName(name);
+        setIsEditing(false);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSave();
+        } else if (e.key === 'Escape') {
+            handleCancel();
+        }
+    };
+
     return (
         <TopBar>
             <button
@@ -98,7 +188,23 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
                 Retour
             </button>
             <DraftInfo>
-                <DraftName>{name}</DraftName>
+                <DraftNameWrapper>
+                    {isEditing ? (
+                        <DraftNameInput
+                            ref={inputRef}
+                            type="text"
+                            value={editedName}
+                            onChange={(e) => setEditedName(e.target.value)}
+                            onBlur={handleSave}
+                            onKeyDown={handleKeyDown}
+                        />
+                    ) : (
+                        <DraftNameDisplay onClick={handleStartEdit} title="Cliquer pour modifier le nom">
+                            {name}
+                            <EditIcon className="fr-icon-edit-line fr-ml-1v" aria-hidden="true" />
+                        </DraftNameDisplay>
+                    )}
+                </DraftNameWrapper>
                 <DraftType>{typeLabel}</DraftType>
             </DraftInfo>
             <DraftActions>
@@ -132,10 +238,20 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
                 >
                     {isPdfLoading ? 'Export...' : 'Télécharger'}
                 </button>
+                <button
+                    className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-delete-line"
+                    onClick={() => {
+                        if (window.confirm('Voulez-vous vraiment supprimer ce rapport ?')) {
+                            onDelete();
+                        }
+                    }}
+                    title="Supprimer ce rapport"
+                >
+                    Supprimer
+                </button>
             </DraftActions>
         </TopBar>
     );
 };
 
 export default DraftTopBar;
-
