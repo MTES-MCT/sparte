@@ -11,23 +11,29 @@ import {
     MainContent,
 } from '../styles';
 import {
+    TerritoryInfoSection,
     DefinitionSection,
     TrajectoireSection,
     ConsoDetailSection,
+    ConsoDestinationSection,
     ComparisonSection,
+    ComparisonRelativeSection,
     ArtifDefinitionSection,
     ArtifDetailSection,
-    RepartitionSection,
+    ArtifCouvertureSection,
+    ArtifUsageSection,
 } from '../sections';
 import CoverPage from './CoverPage';
-import TerritoryInfoPage from './TerritoryInfoPage';
 
 export interface RapportCompletContent {
-    intro?: string;
-    conso_comment?: string;
-    comparison_comment?: string;
-    artif_comment?: string;
-    conclusion?: string;
+    trajectoire?: string;
+    consommation_annuelle?: string;
+    consommation_destinations?: string;
+    comparison_absolue?: string;
+    comparison_relative?: string;
+    artificialisation_detail?: string;
+    artificialisation_couverture?: string;
+    artificialisation_usage?: string;
 }
 
 interface RapportCompletProps {
@@ -52,23 +58,16 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
     const reportContent = (
         <>
-            <TerritoryInfoPage
-                landData={landData}
-                consoStartYear={CONSO_START_YEAR}
-                consoEndYear={CONSO_END_YEAR}
-            />
-
-            <ContentZone
-                label="Introduction générale"
-                content={content.intro || ''}
-                mode={mode}
-                onChange={handleChange('intro')}
-                placeholder="Présentez ici le contexte de votre territoire et les enjeux de ce diagnostic de sobriété foncière..."
-            />
-
             <DefinitionSection />
 
             <TrajectoireSection landData={landData} />
+
+            <ContentZone
+                content={content.trajectoire || ''}
+                mode={mode}
+                onChange={handleChange('trajectoire')}
+                placeholder="Commentez la trajectoire. Quelles sont les tendances ? Quels sont les principaux facteurs ?"
+            />
 
             <ConsoDetailSection
                 landData={landData}
@@ -77,11 +76,23 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             />
 
             <ContentZone
-                label="Commentaire sur la consommation d'espaces"
-                content={content.conso_comment || ''}
+                content={content.consommation_annuelle || ''}
                 mode={mode}
-                onChange={handleChange('conso_comment')}
-                placeholder="Analysez et commentez les données de consommation d'espaces NAF présentées ci-dessus. Quelles sont les tendances ? Quels sont les principaux facteurs ?"
+                onChange={handleChange('consommation_annuelle')}
+                placeholder="Commentez la consommation annuelle. Quelles sont les tendances ? Quels sont les principaux facteurs ?"
+            />
+
+            <ConsoDestinationSection
+                landData={landData}
+                startYear={CONSO_START_YEAR}
+                endYear={CONSO_END_YEAR}
+            />
+
+            <ContentZone
+                content={content.consommation_destinations || ''}
+                mode={mode}
+                onChange={handleChange('consommation_destinations')}
+                placeholder="Commentez la consommation d'espaces par destinations. Quelles sont les tendances ? Quels sont les principaux facteurs ?"
             />
 
             <ComparisonSection
@@ -91,11 +102,23 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             />
 
             <ContentZone
-                label="Commentaire sur les comparaisons territoriales"
-                content={content.comparison_comment || ''}
+                content={content.comparison_absolue || ''}
                 mode={mode}
-                onChange={handleChange('comparison_comment')}
-                placeholder="Analysez la position de votre territoire par rapport aux territoires voisins ou similaires. Comment se situe-t-il ?"
+                onChange={handleChange('comparison_absolue')}
+                placeholder="Commentez la consommation absolue de votre territoire par rapport aux territoires de comparaison."
+            />
+
+            <ComparisonRelativeSection
+                landData={landData}
+                startYear={CONSO_START_YEAR}
+                endYear={CONSO_END_YEAR}
+            />
+
+            <ContentZone
+                content={content.comparison_relative || ''}
+                mode={mode}
+                onChange={handleChange('comparison_relative')}
+                placeholder="Commentez la consommation relative de votre territoire par rapport aux territoires de comparaison."
             />
 
             {landData.has_ocsge && (
@@ -104,25 +127,32 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     <ArtifDetailSection landData={landData} />
 
-                    <RepartitionSection landData={landData} />
+                    <ContentZone
+                        content={content.artificialisation_detail || ''}
+                        mode={mode}
+                        onChange={handleChange('artificialisation_detail')}
+                        placeholder="Commentez les données d'artificialisation présentées. Quels sont les principaux flux ? Quelles évolutions constatez-vous ?"
+                    />
+
+                    <ArtifCouvertureSection landData={landData} />
 
                     <ContentZone
-                        label="Commentaire sur l'artificialisation"
-                        content={content.artif_comment || ''}
+                        content={content.artificialisation_couverture || ''}
                         mode={mode}
-                        onChange={handleChange('artif_comment')}
-                        placeholder="Commentez les données d'artificialisation présentées. Quels sont les principaux flux ? Quelles évolutions constatez-vous ?"
+                        onChange={handleChange('artificialisation_couverture')}
+                        placeholder="Commentez la répartition des surfaces artificialisées par type de couverture. Quels sont les principaux flux ? Quelles évolutions constatez-vous ?"
+                    />
+
+                    <ArtifUsageSection landData={landData} />
+
+                    <ContentZone
+                        content={content.artificialisation_usage || ''}
+                        mode={mode}
+                        onChange={handleChange('artificialisation_usage')}
+                        placeholder="Commentez la répartition des surfaces artificialisées par type d'usage. Quels sont les principaux flux ? Quelles évolutions constatez-vous ?"
                     />
                 </>
             )}
-
-            <ContentZone
-                label="Conclusion et perspectives"
-                content={content.conclusion || ''}
-                mode={mode}
-                onChange={handleChange('conclusion')}
-                placeholder="Synthétisez les enseignements du diagnostic et décrivez les orientations et mesures envisagées pour atteindre les objectifs de sobriété foncière de votre territoire."
-            />
         </>
     );
 
@@ -134,6 +164,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         landData={landData}
                         reportTitle="Rapport Complet"
                         reportSubtitle="Diagnostic territorial de sobriété foncière"
+                    />
+                    <TerritoryInfoSection
+                        landData={landData}
+                        consoStartYear={CONSO_START_YEAR}
+                        consoEndYear={CONSO_END_YEAR}
                     />
                     <MainContent>
                         {reportContent}
@@ -149,6 +184,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 landData={landData}
                 reportTitle="Rapport Complet"
                 reportSubtitle="Diagnostic territorial de sobriété foncière"
+            />
+            <TerritoryInfoSection
+                landData={landData}
+                consoStartYear={CONSO_START_YEAR}
+                consoEndYear={CONSO_END_YEAR}
             />
             <MainContent>
                 {reportContent}

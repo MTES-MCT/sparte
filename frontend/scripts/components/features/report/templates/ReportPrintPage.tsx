@@ -11,7 +11,6 @@ interface ReportPrintPageProps {
 /**
  * Entry point pour le rendu PDF d'un rapport.
  * Utilisé par Puppeteer pour générer le PDF.
- * Charge le brouillon et affiche le bon template selon le type de rapport.
  */
 const ReportPrintPage: React.FC<ReportPrintPageProps> = ({ draftId }) => {
     const { data: draft, isLoading: isDraftLoading, error: draftError } = useGetReportDraftQuery(draftId);

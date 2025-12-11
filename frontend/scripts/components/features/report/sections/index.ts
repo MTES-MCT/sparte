@@ -1,7 +1,11 @@
+export { default as TerritoryInfoSection } from './TerritoryInfoSection';
 export { default as DefinitionSection } from './DefinitionSection';
 export { default as TrajectoireSection } from './TrajectoireSection';
 export { default as ConsoDetailSection } from './ConsoDetailSection';
+export { default as ConsoDestinationSection } from './ConsoDestinationSection';
 export { default as ComparisonSection } from './ComparisonSection';
+export { default as ComparisonRelativeSection } from './ComparisonRelativeSection';
 export { default as ArtifDefinitionSection } from './ArtifDefinitionSection';
 export { default as ArtifDetailSection } from './ArtifDetailSection';
-export { default as RepartitionSection } from './RepartitionSection';
+export { default as ArtifCouvertureSection } from './ArtifCouvertureSection';
+export { default as ArtifUsageSection } from './ArtifUsageSection';

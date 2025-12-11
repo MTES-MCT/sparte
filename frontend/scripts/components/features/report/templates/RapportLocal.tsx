@@ -76,7 +76,6 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </SectionContainer>
 
             <ContentZone
-                label="Introduction"
                 content={content.intro || ''}
                 mode={mode}
                 onChange={handleChange('intro')}
@@ -149,7 +148,6 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </SectionContainer>
 
             <ContentZone
-                label="Commentaire sur le bilan de consommation"
                 content={content.bilan_comment || ''}
                 mode={mode}
                 onChange={handleChange('bilan_comment')}
@@ -204,7 +202,6 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </SectionContainer>
 
             <ContentZone
-                label="Évaluation du respect des objectifs"
                 content={content.objectifs_comment || ''}
                 mode={mode}
                 onChange={handleChange('objectifs_comment')}
@@ -212,7 +209,6 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             />
 
             <ContentZone
-                label="Perspectives et mesures envisagées"
                 content={content.perspectives || ''}
                 mode={mode}
                 onChange={handleChange('perspectives')}

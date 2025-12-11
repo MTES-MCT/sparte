@@ -16,9 +16,9 @@ import styled from 'styled-components';
 const ZoneWrapper = styled.div`
     position: relative;
     border: 1px solid var(--border-default-grey);
-    margin: 1.5rem 0;
     border-radius: 4px;
     overflow: hidden;
+    margin-bottom: 2rem;
 `;
 
 const ZoneHeader = styled.div`
@@ -123,7 +123,6 @@ const PrintContentBox = styled.div`
 export type ContentZoneMode = 'edit' | 'print';
 
 interface ContentZoneProps {
-    label: string;
     content: string;
     mode: ContentZoneMode;
     placeholder?: string;
@@ -131,11 +130,10 @@ interface ContentZoneProps {
 }
 
 const EditableContent: React.FC<{
-    label: string;
     content: string;
     placeholder: string;
     onChange: (content: string) => void;
-}> = ({ label, content, placeholder, onChange }) => {
+}> = ({ content, placeholder, onChange }) => {
     const editor = useEditor({
         extensions: [
             Document,
@@ -173,9 +171,9 @@ const EditableContent: React.FC<{
 
     if (!editor) {
         return (
-            <ZoneWrapper className="fr-input-group">
+            <ZoneWrapper>
                 <ZoneHeader>
-                    <Label className="fr-label">{label}</Label>
+                    <Label className="fr-label">Commentaire</Label>
                 </ZoneHeader>
                 <EditorArea>
                     <p style={{ color: 'var(--text-mention-grey)', fontStyle: 'italic' }}>Chargement...</p>
@@ -185,10 +183,10 @@ const EditableContent: React.FC<{
     }
 
     return (
-        <ZoneWrapper onClick={focusEditor} className="fr-input-group">
+        <ZoneWrapper onClick={focusEditor}>
             <ZoneHeader>
-                <Label className="fr-label">{label}</Label>
-                <span className="fr-hint-text">Zone éditable optionnelle</span>
+                <Label className="fr-label">Commentaire</Label>
+                <span className="fr-hint-text">(optionnel)</span>
             </ZoneHeader>
             <Toolbar onClick={(e) => e.stopPropagation()}>
                 <Button
@@ -263,7 +261,6 @@ const PrintContent: React.FC<{ content: string }> = ({ content }) => {
 };
 
 const ContentZone: React.FC<ContentZoneProps> = ({
-    label,
     content,
     mode,
     placeholder = 'Cliquez ici pour ajouter votre commentaire...',
@@ -276,7 +273,6 @@ const ContentZone: React.FC<ContentZoneProps> = ({
         }
         return (
             <EditableContent
-                label={label}
                 content={content}
                 placeholder={placeholder}
                 onChange={onChange}

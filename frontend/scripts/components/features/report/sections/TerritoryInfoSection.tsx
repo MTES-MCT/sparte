@@ -1,27 +1,16 @@
 import React from "react";
 import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
+import { FullPageContainer } from "../styles";
 
-interface TerritoryInfoPageProps {
+interface TerritoryInfoSectionProps {
     landData: LandDetailResultType;
     consoStartYear: number;
     consoEndYear: number;
 }
 
-const PageContainer = styled.section`
-    min-height: 217mm;
-    max-height: 217mm;
-    display: flex;
-    flex-direction: column;
+const PageContainer = styled(FullPageContainer)`
     justify-content: flex-start;
-    page-break-after: always;
-    padding-top: 2rem;
-    box-sizing: border-box;
-    position: relative;
-
-    @media print {
-        page-break-after: always;
-    }
 `;
 
 const PageHeader = styled.div`
@@ -73,9 +62,10 @@ const PeriodContent = styled.div`
     min-width: 0;
 `;
 
-const PeriodIcon = styled.div`
+const PeriodIcon = styled.i`
     font-size: 1.5rem;
     flex-shrink: 0;
+    color: #000091;
 `;
 
 const PeriodInfo = styled.div`
@@ -150,7 +140,7 @@ const PeriodValue = styled.div<{ $available?: boolean }>`
     white-space: nowrap;
 `;
 
-const TerritoryInfoPage: React.FC<TerritoryInfoPageProps> = ({ landData, consoStartYear, consoEndYear }) => {
+const TerritoryInfoSection: React.FC<TerritoryInfoSectionProps> = ({ landData, consoStartYear, consoEndYear }) => {
     return (
         <PageContainer>
             <PageHeader>
@@ -163,7 +153,7 @@ const TerritoryInfoPage: React.FC<TerritoryInfoPageProps> = ({ landData, consoSt
                     {/* Consommation NAF */}
                     <PeriodItem $available={landData.has_conso}>
                         <PeriodContent>
-                            <PeriodIcon>📊</PeriodIcon>
+                            <PeriodIcon className="bi bi-bar-chart" />
                             <PeriodInfo>
                                 <PeriodLabel>Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)</PeriodLabel>
                                 <PeriodSource>Source : Fichiers fonciers (Cerema)</PeriodSource>
@@ -177,7 +167,7 @@ const TerritoryInfoPage: React.FC<TerritoryInfoPageProps> = ({ landData, consoSt
                     {/* OCS GE - Artificialisation */}
                     <PeriodItem $available={landData.has_ocsge}>
                         <PeriodContent>
-                            <PeriodIcon>🗺️</PeriodIcon>
+                            <PeriodIcon className="bi bi-geo-alt" />
                             <PeriodInfo>
                                 <PeriodLabel>Artificialisation des sols</PeriodLabel>
                                 <PeriodSource>Source : OCS GE (IGN)</PeriodSource>
@@ -255,5 +245,4 @@ const TerritoryInfoPage: React.FC<TerritoryInfoPageProps> = ({ landData, consoSt
     );
 };
 
-export default TerritoryInfoPage;
-
+export default TerritoryInfoSection;

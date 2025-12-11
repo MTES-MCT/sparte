@@ -4,4 +4,3 @@ export { default as RapportLocal } from './RapportLocal';
 export type { RapportLocalContent } from './RapportLocal';
 export { default as ReportPrintPage } from './ReportPrintPage';
 export { default as CoverPage } from './CoverPage';
-export { default as TerritoryInfoPage } from './TerritoryInfoPage';
