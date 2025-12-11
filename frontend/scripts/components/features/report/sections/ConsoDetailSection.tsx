@@ -1,23 +1,20 @@
 import React from "react";
-import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import GenericChart from "@components/charts/GenericChart";
-import Paragraph from "../Paragraph";
 import {
-  SectionContainer,
-  SectionTitle,
-  SubTitle,
-  ChartContainer,
-  DataTableContainer,
-} from "../ExportStyles";
+    Paragraph,
+    SectionContainer,
+    SectionTitle,
+    SubTitle,
+    ChartContainer,
+    DataTableContainer,
+} from "../shared";
 
 interface ConsoDetailSectionProps {
-  landData: LandDetailResultType;
-  startYear: number;
-  endYear: number;
+    landData: LandDetailResultType;
+    startYear: number;
+    endYear: number;
 }
-
-const Content = styled.div``;
 
 const ConsoDetailSection: React.FC<ConsoDetailSectionProps> = ({ landData, startYear, endYear }) => {
 
@@ -25,7 +22,7 @@ const ConsoDetailSection: React.FC<ConsoDetailSectionProps> = ({ landData, start
     <SectionContainer>
       <SectionTitle>Détail de la consommation d'espaces</SectionTitle>
 
-      <Content>
+      <>
         <SubTitle>Évolution annuelle de la consommation totale</SubTitle>
           <Paragraph>
             Le graphique ci-dessous présente l'évolution annuelle de la consommation d'espaces
@@ -203,9 +200,9 @@ const ConsoDetailSection: React.FC<ConsoDetailSectionProps> = ({ landData, start
               </DataTableContainer>
             </>
           )}
-      </Content>
+        </>
     </SectionContainer>
-  );
+    );
 };
 
 export default ConsoDetailSection;

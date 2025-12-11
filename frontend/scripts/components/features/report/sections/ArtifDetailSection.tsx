@@ -1,23 +1,20 @@
 import React from "react";
-import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import GenericChart from "@components/charts/GenericChart";
-import Paragraph from "../Paragraph";
 import {
-  SectionContainer,
-  SectionTitle,
-  SubTitle,
-  ChartContainer,
-  DataTableContainer,
-  IntroBox,
-  KeyPointsBox,
-} from "../ExportStyles";
+    Paragraph,
+    SectionContainer,
+    SectionTitle,
+    SubTitle,
+    ChartContainer,
+    DataTableContainer,
+    IntroBox,
+    KeyPointsBox,
+} from "../shared";
 
 interface ArtifDetailSectionProps {
-  landData: LandDetailResultType;
+    landData: LandDetailResultType;
 }
-
-const Content = styled.div``;
 
 const ArtifDetailSection: React.FC<ArtifDetailSectionProps> = ({ landData }) => {
   // Récupérer le dernier millésime disponible
@@ -29,7 +26,7 @@ const ArtifDetailSection: React.FC<ArtifDetailSectionProps> = ({ landData }) => 
     <SectionContainer>
       <SectionTitle>Détail de l'artificialisation</SectionTitle>
 
-      <Content>
+      <>
         <IntroBox>
           <p>
             Les données d'artificialisation sont issues de l'OCS GE (Occupation des Sols à
@@ -141,9 +138,9 @@ const ArtifDetailSection: React.FC<ArtifDetailSectionProps> = ({ landData }) => 
             </DataTableContainer>
           </>
         )}
-      </Content>
+        </>
     </SectionContainer>
-  );
+    );
 };
 
 export default ArtifDetailSection;

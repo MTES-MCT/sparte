@@ -1,21 +1,18 @@
 import React from "react";
-import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import GenericChart from "@components/charts/GenericChart";
-import Paragraph from "../Paragraph";
 import {
-  SectionContainer,
-  SectionTitle,
-  SubTitle,
-  ChartContainer,
-  DataTableContainer,
-} from "../ExportStyles";
+    Paragraph,
+    SectionContainer,
+    SectionTitle,
+    SubTitle,
+    ChartContainer,
+    DataTableContainer,
+} from "../shared";
 
 interface RepartitionSectionProps {
-  landData: LandDetailResultType;
+    landData: LandDetailResultType;
 }
-
-const Content = styled.div``;
 
 const RepartitionSection: React.FC<RepartitionSectionProps> = ({ landData }) => {
   // Récupérer le dernier millésime disponible
@@ -27,7 +24,7 @@ const RepartitionSection: React.FC<RepartitionSectionProps> = ({ landData }) => 
     <SectionContainer>
       <SectionTitle>Répartitions des surfaces artificialisées par couverture et usage</SectionTitle>
 
-      <Content>
+      <>
         <Paragraph>
           L'OCS GE permet d'analyser finement les surfaces artificialisées selon deux
           dimensions complémentaires : la couverture du sol (ce qui couvre physiquement
@@ -175,9 +172,9 @@ const RepartitionSection: React.FC<RepartitionSectionProps> = ({ landData }) => 
             compactDataTable
           />
         </DataTableContainer>
-      </Content>
+      </>
     </SectionContainer>
-  );
+    );
 };
 
 export default RepartitionSection;

@@ -2,6 +2,7 @@ import React from 'react';
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import CreateReportForm from './CreateReportForm';
+
 import { ReportType } from '@services/types/reportDraft';
 
 interface CreateReportModalProps {

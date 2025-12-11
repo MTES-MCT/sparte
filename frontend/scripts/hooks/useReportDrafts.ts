@@ -17,7 +17,7 @@ import {
     useGetEnvironmentQuery,
 } from '@services/api';
 import { ReportType } from '@services/types/reportDraft';
-import { useCreateReportModal } from '@components/features/export';
+import { useCreateReportModal } from '@components/features/report';
 
 const AUTOSAVE_DELAY = 2000;
 

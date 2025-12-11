@@ -1,17 +1,15 @@
 import React from "react";
 import styled from "styled-components";
-import Paragraph from "../Paragraph";
 import {
-  SectionContainer,
-  SectionTitle,
-  SubTitle,
-  SubSubTitle,
-  HighlightBox,
-  InfoBox,
-  QuoteBox,
-} from "../ExportStyles";
-
-const Content = styled.div``;
+    Paragraph,
+    SectionContainer,
+    SectionTitle,
+    SubTitle,
+    SubSubTitle,
+    HighlightBox,
+    InfoBox,
+    QuoteBox,
+} from "../shared";
 
 const ComparisonTable = styled.table`
   width: 100%;
@@ -49,7 +47,7 @@ const ArtifDefinitionSection: React.FC = () => {
     <SectionContainer>
       <SectionTitle>Artificialisation</SectionTitle>
 
-      <Content>
+      <>
         <SubTitle>Définition légale</SubTitle>
         <Paragraph>
           L'article 192 modifie le code de l'urbanisme et donne une définition de
@@ -151,9 +149,9 @@ const ArtifDefinitionSection: React.FC = () => {
             </tbody>
           </ComparisonTable>
         </InfoBox>
-      </Content>
+      </>
     </SectionContainer>
-  );
+    );
 };
 
 export default ArtifDefinitionSection;

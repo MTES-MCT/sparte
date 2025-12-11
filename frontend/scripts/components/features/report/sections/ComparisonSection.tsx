@@ -1,24 +1,21 @@
 import React from "react";
-import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import GenericChart from "@components/charts/GenericChart";
-import Paragraph from "../Paragraph";
 import {
-  SectionContainer,
-  SectionTitle,
-  SubTitle,
-  ChartContainer,
-  DataTableContainer,
-  NoteBox,
-} from "../ExportStyles";
+    Paragraph,
+    SectionContainer,
+    SectionTitle,
+    SubTitle,
+    ChartContainer,
+    DataTableContainer,
+    NoteBox,
+} from "../shared";
 
 interface ComparisonSectionProps {
-  landData: LandDetailResultType;
-  startYear: number;
-  endYear: number;
+    landData: LandDetailResultType;
+    startYear: number;
+    endYear: number;
 }
-
-const Content = styled.div``;
 
 const ComparisonSection: React.FC<ComparisonSectionProps> = ({ landData, startYear, endYear }) => {
 
@@ -26,7 +23,7 @@ const ComparisonSection: React.FC<ComparisonSectionProps> = ({ landData, startYe
     <SectionContainer>
       <SectionTitle>Comparaison avec une sélection de territoires</SectionTitle>
 
-      <Content>
+      <>
         <Paragraph>
           Cette section permet de situer votre territoire par rapport à d'autres territoires
           comparables en termes de consommation d'espaces. La comparaison porte sur la
@@ -115,9 +112,9 @@ const ComparisonSection: React.FC<ComparisonSectionProps> = ({ landData, startYe
             de comparer des territoires soumis à des dynamiques et contraintes similaires.
           </p>
         </NoteBox>
-      </Content>
+      </>
     </SectionContainer>
-  );
+    );
 };
 
 export default ComparisonSection;

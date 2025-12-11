@@ -9,7 +9,7 @@ import {
     CreateReportModal,
     ReportViewer,
     LoadingState,
-} from '@components/features/export';
+} from '@components/features/report';
 import { useReportDrafts } from '@hooks/useReportDrafts';
 
 const MainContent = styled.main`

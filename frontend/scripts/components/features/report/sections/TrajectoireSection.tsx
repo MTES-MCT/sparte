@@ -1,30 +1,27 @@
 import React from "react";
-import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import GenericChart from "@components/charts/GenericChart";
-import Paragraph from "../Paragraph";
 import {
-  SectionContainer,
-  SectionTitle,
-  SubTitle,
-  ChartContainer,
-  DataTableContainer,
-  InfoBox,
-  SimulationBox,
-} from "../ExportStyles";
+    Paragraph,
+    SectionContainer,
+    SectionTitle,
+    SubTitle,
+    ChartContainer,
+    DataTableContainer,
+    InfoBox,
+    SimulationBox,
+} from "../shared";
 
 interface TrajectoireSectionProps {
-  landData: LandDetailResultType;
+    landData: LandDetailResultType;
 }
-
-const Content = styled.div``;
 
 const TrajectoireSection: React.FC<TrajectoireSectionProps> = ({ landData }) => {
   return (
     <SectionContainer>
       <SectionTitle>Trajectoires de consommation d'espace</SectionTitle>
 
-      <Content>
+      <>
         <Paragraph>
           La loi Climat & Résilience fixe l'objectif d'atteindre le « zéro artificialisation
           nette des sols » en 2050, avec un objectif intermédiaire de réduction de moitié de
@@ -123,9 +120,9 @@ const TrajectoireSection: React.FC<TrajectoireSectionProps> = ({ landData }) => 
             compactDataTable
           />
         </DataTableContainer>
-      </Content>
+      </>
     </SectionContainer>
-  );
+    );
 };
 
 export default TrajectoireSection;

@@ -90,19 +90,52 @@ const EditorArea = styled.div`
     }
 `;
 
-interface EditableZoneProps {
+const PrintContentBox = styled.div`
+    background: #f0f7ff;
+    border-left: 4px solid #000091;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+
+    p {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        color: #333;
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+
+    ul, ol {
+        margin: 0.5rem 0;
+        padding-left: 1.5rem;
+    }
+
+    li {
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+`;
+
+export type ContentZoneMode = 'edit' | 'print';
+
+interface ContentZoneProps {
     label: string;
     content: string;
-    onChange: (content: string) => void;
+    mode: ContentZoneMode;
     placeholder?: string;
+    onChange?: (content: string) => void;
 }
 
-const EditableZone: React.FC<EditableZoneProps> = ({
-    label,
-    content,
-    onChange,
-    placeholder = 'Cliquez ici pour ajouter votre commentaire...',
-}) => {
+const EditableContent: React.FC<{
+    label: string;
+    content: string;
+    placeholder: string;
+    onChange: (content: string) => void;
+}> = ({ label, content, placeholder, onChange }) => {
     const editor = useEditor({
         extensions: [
             Document,
@@ -222,4 +255,36 @@ const EditableZone: React.FC<EditableZoneProps> = ({
     );
 };
 
-export default EditableZone;
+const PrintContent: React.FC<{ content: string }> = ({ content }) => {
+    if (!content || content === "<p></p>" || content.trim() === "") {
+        return null;
+    }
+    return <PrintContentBox dangerouslySetInnerHTML={{ __html: content }} />;
+};
+
+const ContentZone: React.FC<ContentZoneProps> = ({
+    label,
+    content,
+    mode,
+    placeholder = 'Cliquez ici pour ajouter votre commentaire...',
+    onChange,
+}) => {
+    if (mode === 'edit') {
+        if (!onChange) {
+            console.warn('ContentZone: onChange is required in edit mode');
+            return null;
+        }
+        return (
+            <EditableContent
+                label={label}
+                content={content}
+                placeholder={placeholder}
+                onChange={onChange}
+            />
+        );
+    }
+
+    return <PrintContent content={content} />;
+};
+
+export default ContentZone;

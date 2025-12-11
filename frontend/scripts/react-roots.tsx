@@ -4,8 +4,7 @@ import { Provider } from 'react-redux';
 import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
-import RapportComplet from '@components/exports/RapportComplet/RapportComplet';
-import RapportDraft from '@components/exports/RapportDraft';
+import { ReportPrintPage } from '@components/features/report';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/ui/SearchBar'
 import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
@@ -75,31 +74,16 @@ if (dashboard) {
   );
 }
 
-const rapportCompletRoot = document.getElementById('react-rapport-complet');
-if (rapportCompletRoot) {
-  const landType = rapportCompletRoot.dataset.landType;
-  const landId = rapportCompletRoot.dataset.landId;
-
-  if (landType && landId) {
-    createRoot(rapportCompletRoot).render(
-      <ErrorBoundary>
-        <Provider store={store}>
-          <RapportComplet landType={landType} landId={landId} />
-        </Provider>
-      </ErrorBoundary>,
-    );
-  }
-}
-
-const rapportDraftRoot = document.getElementById('react-rapport-draft');
-if (rapportDraftRoot) {
-  const draftId = rapportDraftRoot.dataset.draftId;
+// Entry point pour le rendu PDF des rapports (utilisé par Puppeteer)
+const reportPrintRoot = document.getElementById('react-rapport-draft');
+if (reportPrintRoot) {
+  const draftId = reportPrintRoot.dataset.draftId;
 
   if (draftId) {
-    createRoot(rapportDraftRoot).render(
+    createRoot(reportPrintRoot).render(
       <ErrorBoundary>
         <Provider store={store}>
-          <RapportDraft draftId={draftId} />
+          <ReportPrintPage draftId={draftId} />
         </Provider>
       </ErrorBoundary>,
     );

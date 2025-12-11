@@ -2,10 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import { ReportDraft } from '@services/types/reportDraft';
-import EditableRapportComplet from './EditableRapportComplet';
-import EditableRapportLocal from './EditableRapportLocal';
+import { RapportComplet } from '../templates';
+import { RapportLocal } from '../templates';
 import DraftTopBar from './DraftTopBar';
-import EmptyState from './EmptyState';
+import { EmptyState } from '../ui';
 
 interface ReportViewerProps {
     draft: ReportDraft;
@@ -51,9 +51,10 @@ const ReportViewer: React.FC<ReportViewerProps> = ({
     const renderReportContent = () => {
         if (draft.report_type === 'rapport-complet') {
             return (
-                <EditableRapportComplet
+                <RapportComplet
                     landData={landData}
                     content={content}
+                    mode="edit"
                     onContentChange={onContentChange}
                 />
             );
@@ -61,9 +62,10 @@ const ReportViewer: React.FC<ReportViewerProps> = ({
 
         if (draft.report_type === 'rapport-local') {
             return (
-                <EditableRapportLocal
+                <RapportLocal
                     landData={landData}
                     content={content}
+                    mode="edit"
                     onContentChange={onContentChange}
                 />
             );
@@ -103,4 +105,3 @@ export const LoadingState: React.FC = () => (
 );
 
 export default ReportViewer;
-

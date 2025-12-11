@@ -1,21 +1,18 @@
 import React from "react";
-import styled from "styled-components";
-import Paragraph from "../Paragraph";
 import {
-  SectionContainer,
-  SectionTitle,
-  SubTitle,
-  HighlightBox,
-} from "../ExportStyles";
-
-const Content = styled.div``;
+    Paragraph,
+    SectionContainer,
+    SectionTitle,
+    SubTitle,
+    HighlightBox,
+} from "../shared";
 
 const DefinitionSection: React.FC = () => {
   return (
     <SectionContainer>
       <SectionTitle>Définition de la consommation d'espaces NAF (Naturel, Agricole et Forestier) et contexte juridique</SectionTitle>
 
-      <Content>
+      <>
         <Paragraph>
           Chaque année, 24 000 ha d'espaces NAF sont consommés
           en moyenne en France, soit près de 5 terrains de football par heure. Tous les territoires
@@ -85,7 +82,7 @@ const DefinitionSection: React.FC = () => {
           échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble
           du territoire national d'ici fin 2024.
         </Paragraph>
-      </Content>
+      </>
     </SectionContainer>
   );
 };
