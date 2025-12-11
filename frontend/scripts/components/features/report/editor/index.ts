@@ -1,3 +1,4 @@
-export { default as DraftCard } from './DraftCard';
-export { default as DraftTopBar } from './DraftTopBar';
-export { default as ReportViewer, LoadingState } from './ReportViewer';
+export { default as EditorTopBar } from './EditorTopBar';
+export { default as ReportEditor, LoadingState } from './ReportEditor';
+export { default as ContentZone } from './ContentZone';
+export type { ContentZoneMode } from './ContentZone';

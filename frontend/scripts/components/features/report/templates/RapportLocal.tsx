@@ -4,7 +4,8 @@ import GenericChart from '@components/charts/GenericChart';
 import {
     ContentZone,
     ContentZoneMode,
-    CoverPage,
+} from '../editor';
+import {
     Paragraph,
     ReportContainer,
     PrintLayout,
@@ -18,7 +19,8 @@ import {
     HighlightBox,
     InfoBox,
     LegalReference,
-} from '../shared';
+} from '../styles';
+import CoverPage from './CoverPage';
 
 export interface RapportLocalContent {
     intro?: string;

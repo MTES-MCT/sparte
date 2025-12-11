@@ -4,10 +4,10 @@ import { LandDetailResultType } from '@services/types/land';
 import { ReportDraft } from '@services/types/reportDraft';
 import { RapportComplet } from '../templates';
 import { RapportLocal } from '../templates';
-import DraftTopBar from './DraftTopBar';
-import { EmptyState } from '../ui';
+import EditorTopBar from './EditorTopBar';
+import { EmptyState } from '../list';
 
-interface ReportViewerProps {
+interface ReportEditorProps {
     draft: ReportDraft;
     landData: LandDetailResultType;
     content: Record<string, string>;
@@ -34,7 +34,7 @@ const ReportContainer = styled.div`
     margin: 0 auto;
 `;
 
-const ReportViewer: React.FC<ReportViewerProps> = ({
+const ReportEditor: React.FC<ReportEditorProps> = ({
     draft,
     landData,
     content,
@@ -76,7 +76,7 @@ const ReportViewer: React.FC<ReportViewerProps> = ({
 
     return (
         <>
-            <DraftTopBar
+            <EditorTopBar
                 name={draft.name}
                 typeLabel={draft.report_type_display}
                 saveStatus={saveStatus}
@@ -104,4 +104,5 @@ export const LoadingState: React.FC = () => (
     </EmptyState>
 );
 
-export default ReportViewer;
+export default ReportEditor;
+

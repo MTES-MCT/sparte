@@ -3,12 +3,13 @@ import { LandDetailResultType } from '@services/types/land';
 import {
     ContentZone,
     ContentZoneMode,
-    CoverPage,
+} from '../editor';
+import {
     ReportContainer,
     PrintLayout,
     PrintContent,
     MainContent,
-} from '../shared';
+} from '../styles';
 import {
     DefinitionSection,
     TrajectoireSection,
@@ -18,7 +19,8 @@ import {
     ArtifDetailSection,
     RepartitionSection,
 } from '../sections';
-import TerritoryInfoPage from './components/TerritoryInfoPage';
+import CoverPage from './CoverPage';
+import TerritoryInfoPage from './TerritoryInfoPage';
 
 export interface RapportCompletContent {
     intro?: string;

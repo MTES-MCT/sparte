@@ -10,7 +10,7 @@ import {
     DataTableContainer,
     IntroBox,
     KeyPointsBox,
-} from "../shared";
+} from "../styles";
 
 interface ArtifDetailSectionProps {
     landData: LandDetailResultType;

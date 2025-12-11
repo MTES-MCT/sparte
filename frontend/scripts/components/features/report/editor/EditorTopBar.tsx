@@ -4,7 +4,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import Loader from '@components/ui/Loader';
 
-interface DraftTopBarProps {
+interface EditorTopBarProps {
     name: string;
     typeLabel: string;
     saveStatus: 'saved' | 'saving' | 'error';
@@ -103,7 +103,7 @@ const LoaderWrapper = styled.span`
     margin-right: 0.5rem;
 `;
 
-const DraftTopBar: React.FC<DraftTopBarProps> = ({
+const EditorTopBar: React.FC<EditorTopBarProps> = ({
     name,
     typeLabel,
     saveStatus,
@@ -212,4 +212,5 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
     );
 };
 
-export default DraftTopBar;
+export default EditorTopBar;
+

@@ -5,9 +5,9 @@ import { ProjectDetailResultType } from '@services/types/project';
 import ActionCard from '@components/ui/ActionCard';
 import {
     LoginPrompt,
-    DraftCard,
+    ReportCard,
     CreateReportModal,
-    ReportViewer,
+    ReportEditor,
     LoadingState,
 } from '@components/features/report';
 import { useReportDrafts } from '@hooks/useReportDrafts';
@@ -158,7 +158,7 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
                             ) : (
                                 <CardsGrid>
                                     {drafts.map(draft => (
-                                        <DraftCard
+                                        <ReportCard
                                             key={draft.id}
                                             title={draft.name}
                                             typeLabel={draft.report_type_display}
@@ -175,7 +175,7 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
                 {selectedDraftId && isDraftLoading && <LoadingState />}
 
                 {selectedDraftId && selectedDraft && !isDraftLoading && (
-                    <ReportViewer
+                    <ReportEditor
                         draft={selectedDraft}
                         landData={landData}
                         content={localContent}

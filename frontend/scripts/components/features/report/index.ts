@@ -1,18 +1,19 @@
 // Templates
-export { RapportComplet, RapportLocal, ReportPrintPage } from './templates';
+export { RapportComplet, RapportLocal, ReportPrintPage, CoverPage, TerritoryInfoPage } from './templates';
 export type { RapportCompletContent, RapportLocalContent } from './templates';
 
 // Sections
 export * from './sections';
 
-// Shared components
-export * from './shared';
+// Styles
+export * from './styles';
 
 // Editor components
-export { DraftCard, DraftTopBar, ReportViewer, LoadingState } from './editor';
+export { EditorTopBar, ReportEditor, LoadingState, ContentZone } from './editor';
+export type { ContentZoneMode } from './editor';
+
+// List components
+export { ReportCard, EmptyState, LoginPrompt } from './list';
 
 // Modals
 export { CreateReportForm, CreateReportModal, useCreateReportModal } from './modals';
-
-// UI components
-export { EmptyState, LoginPrompt } from './ui';

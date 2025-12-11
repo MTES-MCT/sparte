@@ -5,7 +5,7 @@ import {
     SectionTitle,
     SubTitle,
     HighlightBox,
-} from "../shared";
+} from "../styles";
 
 const DefinitionSection: React.FC = () => {
   return (

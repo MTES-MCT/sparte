@@ -19,3 +19,4 @@ const Paragraph: React.FC<ParagraphProps> = ({ children, className = "" }) => {
 };
 
 export default Paragraph;
+

@@ -9,7 +9,7 @@ import {
     HighlightBox,
     InfoBox,
     QuoteBox,
-} from "../shared";
+} from "../styles";
 
 const ComparisonTable = styled.table`
   width: 100%;

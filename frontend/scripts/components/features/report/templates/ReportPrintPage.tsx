@@ -2,12 +2,17 @@ import React from "react";
 import { useGetLandQuery, useGetReportDraftQuery } from "@services/api";
 import RapportComplet from './RapportComplet';
 import RapportLocal from './RapportLocal';
-import { PrintLayout, PrintContent, MainContent } from '../shared';
+import { PrintLayout, PrintContent, MainContent } from '../styles';
 
 interface ReportPrintPageProps {
     draftId: string;
 }
 
+/**
+ * Entry point pour le rendu PDF d'un rapport.
+ * Utilisé par Puppeteer pour générer le PDF.
+ * Charge le brouillon et affiche le bon template selon le type de rapport.
+ */
 const ReportPrintPage: React.FC<ReportPrintPageProps> = ({ draftId }) => {
     const { data: draft, isLoading: isDraftLoading, error: draftError } = useGetReportDraftQuery(draftId);
 
@@ -55,6 +60,7 @@ const ReportPrintPage: React.FC<ReportPrintPageProps> = ({ draftId }) => {
         );
     }
 
+    // Rendu du bon template selon le type de rapport
     if (draft.report_type === 'rapport-local') {
         return (
             <RapportLocal

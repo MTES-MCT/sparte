@@ -8,7 +8,7 @@ import {
     SubTitle,
     ChartContainer,
     DataTableContainer,
-} from "../shared";
+} from "../styles";
 
 interface RepartitionSectionProps {
     landData: LandDetailResultType;

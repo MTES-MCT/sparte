@@ -2,14 +2,14 @@ import React from 'react';
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
-interface DraftCardProps {
+interface ReportCardProps {
     title: string;
     typeLabel: string;
     updatedAt: string;
     onClick: () => void;
 }
 
-const DraftCard: React.FC<DraftCardProps> = ({
+const ReportCard: React.FC<ReportCardProps> = ({
     title,
     typeLabel,
     updatedAt,
@@ -38,4 +38,5 @@ const DraftCard: React.FC<DraftCardProps> = ({
     );
 };
 
-export default DraftCard;
+export default ReportCard;
+

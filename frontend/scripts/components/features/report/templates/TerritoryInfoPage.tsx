@@ -256,3 +256,4 @@ const TerritoryInfoPage: React.FC<TerritoryInfoPageProps> = ({ landData, consoSt
 };
 
 export default TerritoryInfoPage;
+

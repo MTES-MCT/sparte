@@ -9,7 +9,7 @@ import {
     ChartContainer,
     DataTableContainer,
     NoteBox,
-} from "../shared";
+} from "../styles";
 
 interface ComparisonSectionProps {
     landData: LandDetailResultType;

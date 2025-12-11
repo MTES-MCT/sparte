@@ -10,7 +10,7 @@ import {
     DataTableContainer,
     InfoBox,
     SimulationBox,
-} from "../shared";
+} from "../styles";
 
 interface TrajectoireSectionProps {
     landData: LandDetailResultType;
