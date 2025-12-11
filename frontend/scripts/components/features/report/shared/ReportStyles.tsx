@@ -1,6 +1,5 @@
 import styled from "styled-components";
 
-// === Layout principal ===
 export const ReportContainer = styled.div`
     width: 100%;
     background: white;
@@ -33,7 +32,6 @@ export const MainContent = styled.div`
     padding: 20mm;
 `;
 
-// === Sections ===
 export const SectionContainer = styled.section`
     margin-bottom: 3rem;
 `;
@@ -61,7 +59,6 @@ export const SubSubTitle = styled.h4`
     margin-bottom: 0.75rem;
 `;
 
-// === Conteneurs de données ===
 export const ChartContainer = styled.div`
     margin: 2rem 0;
     background: white;
@@ -79,7 +76,6 @@ export const DataTableContainer = styled.div`
     margin: 1.5rem 0;
 `;
 
-// === Boîtes d'information ===
 export const InfoBox = styled.div`
     background: #fff8e6;
     border-left: 4px solid #ffc107;

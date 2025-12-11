@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import { useGetLandQuery, useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
+import { selectIsNavbarOpen } from '@store/navbarSlice';
+import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import usePdfExport from '@hooks/usePdfExport';
 import Footer from '@components/layout/Footer';
@@ -70,14 +72,14 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
 
     const { urls, logements_vacants_available } = projectData || {};
 
+    const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
+    const { isMobile } = useWindowSize();
 
     useEffect(() => {
         if (projectData) {
             dispatch(setProjectData(projectData));
         }
     }, [projectData, dispatch]);
-
-    usePdfExport(landData);
 
 
     return (

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import Loader from '@components/ui/Loader';
 
 interface DraftTopBarProps {
     name: string;
@@ -96,6 +97,12 @@ const Actions = styled.div`
     gap: 0.8rem;
 `;
 
+const LoaderWrapper = styled.span`
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.5rem;
+`;
+
 const DraftTopBar: React.FC<DraftTopBarProps> = ({
     name,
     typeLabel,
@@ -182,11 +189,16 @@ const DraftTopBar: React.FC<DraftTopBarProps> = ({
             <Actions>
                 <Button
                     size="small"
-                    iconId="fr-icon-download-line"
+                    iconId={isPdfLoading ? undefined : "fr-icon-download-line"}
                     onClick={onExport}
                     disabled={isPdfLoading || exportDisabled}
                 >
-                    {isPdfLoading ? 'Export...' : 'Télécharger'}
+                    {isPdfLoading && (
+                        <LoaderWrapper>
+                            <Loader size={16} wrap={false} />
+                        </LoaderWrapper>
+                    )}
+                    {isPdfLoading ? 'Génération...' : 'Télécharger'}
                 </Button>
                 <Button
                     priority="tertiary"

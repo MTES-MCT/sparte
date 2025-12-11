@@ -75,13 +75,14 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
     // Sync selectedDraftId with URL
     useEffect(() => {
         setSelectedDraftId(urlDraftId || null);
+        dispatch(resetPdfExport());
         if (!urlDraftId) {
             setLocalContent({});
             lastSavedRef.current = {};
             setSaveStatus('saved');
             setLastSavedTime(null);
         }
-    }, [urlDraftId]);
+    }, [urlDraftId, dispatch]);
 
     // Redirect on draft error
     useEffect(() => {
