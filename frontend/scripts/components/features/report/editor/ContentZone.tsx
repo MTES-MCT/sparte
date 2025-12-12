@@ -44,7 +44,7 @@ const Icon = styled.i`
 `;
 
 const Label = styled.label`
-    font-size: 0.875rem;
+    font-size: 0.8rem;
 `;
 
 const EditorArea = styled.div`
@@ -186,7 +186,6 @@ const EditableContent: React.FC<{
         <ZoneWrapper onClick={focusEditor}>
             <ZoneHeader>
                 <Label className="fr-label">Commentaire</Label>
-                <span className="fr-hint-text">(optionnel)</span>
             </ZoneHeader>
             <Toolbar onClick={(e) => e.stopPropagation()}>
                 <Button

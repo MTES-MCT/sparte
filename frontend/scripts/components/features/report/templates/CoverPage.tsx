@@ -47,6 +47,7 @@ const CoverTitle = styled.h1`
     margin: 5rem 0 1rem 0;
     line-height: 1.2;
     letter-spacing: -0.02em;
+    text-align: center;
 `;
 
 const CoverSubtitle = styled.p`
@@ -89,7 +90,7 @@ const CoverFooter = styled.div`
 
 const FooterLine = styled.div`
     height: 2px;
-    background-color: #EBEBEC;
+    background: linear-gradient(to right, transparent, #EBEBEC, transparent);
     margin-bottom: 1.5rem;
 `;
 

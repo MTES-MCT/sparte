@@ -52,7 +52,7 @@ export const MainContent = styled.div`
 
 /** Container standard pour une section du rapport */
 export const SectionContainer = styled.section`
-    margin-bottom: 2rem;
+    margin-bottom: 4rem;
 
     @media print {
         page-break-inside: avoid;
@@ -74,7 +74,7 @@ export const SubTitle = styled.h3`
     font-size: 1.1rem;
     font-weight: 600;
     color: #000091;
-    margin: 2rem 0 1rem 0;
+    margin: 3rem 0 1rem 0;
 `;
 
 /** Sous-sous-titre (h4) */
