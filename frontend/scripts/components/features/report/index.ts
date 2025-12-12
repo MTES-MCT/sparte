@@ -1,7 +1,5 @@
-export { RapportComplet, RapportLocal, ReportPrintPage, CoverPage } from './templates';
+export { RapportComplet, RapportLocal, ReportPrintPage, CoverPage, AvailableDataPage } from './templates';
 export type { RapportCompletContent, RapportLocalContent } from './templates';
-
-export * from './sections';
 
 export * from './styles';
 
