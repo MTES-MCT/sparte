@@ -1,0 +1,15 @@
+{
+    "name": "highcharts-export-server",
+    "version": "1.0.0",
+    "engines": {
+        "node": "23"
+    },
+    "dependencies": {
+        "highcharts-export-server": "5.0.0",
+        "highcharts": "^11.4.7"
+    },
+    "scripts": {
+        "preinstall": "npm i -g highcharts-export-server@5.0.0",
+        "start": "./start.sh"
+    }
+}
