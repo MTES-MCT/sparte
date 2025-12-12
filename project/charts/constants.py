@@ -24,11 +24,15 @@ def get_multiple_line_credit_position(line_count=2) -> dict[str, int]:
     }
 
 
+DEFAULT_HREF = "https://mondiagartif.beta.gouv.fr/"
+
+
 CEREMA_CREDITS = {
     "enabled": True,
     "text": "Graphique : MonDiagnosticArtificialisation | Données : Fichiers fonciers au 1er janvier 2024 (Cerema)",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
+    "href": DEFAULT_HREF,
 }
 
 OCSGE_CREDITS = {
@@ -36,6 +40,7 @@ OCSGE_CREDITS = {
     "text": "Graphique : MonDiagnosticArtificialisation | Données : OCS GE (IGN)",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
+    "href": DEFAULT_HREF,
 }
 
 OCSGE_CARTOFRICHES_CREDITS = {
@@ -43,6 +48,7 @@ OCSGE_CARTOFRICHES_CREDITS = {
     "text": "Graphique : MonDiagnosticArtificialisation | Données : Cartofriches (Cerema), OCS GE (IGN)",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
+    "href": DEFAULT_HREF,
 }
 
 IMPERMEABLE_OCSGE_CREDITS = {
@@ -56,6 +62,7 @@ INSEE_CREDITS = {
     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
+    "href": DEFAULT_HREF,
 }
 
 
@@ -87,6 +94,20 @@ NO_DATA_STYLE = {
 }
 
 LEGEND_NAVIGATION_EXPORT = {"enabled": False}
+MAP_NAVIGATION_EXPORT = {"enabled": False}
+
+MAP_NORTH_INDICATOR = {
+    "text": "N ↑",
+    "align": "right",
+    "verticalAlign": "top",
+    "x": -10,
+    "y": 50,
+    "style": {
+        "fontSize": "16px",
+        "fontWeight": "bold",
+        "color": "#000",
+    },
+}
 
 HIGHLIGHT_COLOR = "#FA4B42"
 ARTIFICIALISATION_COLOR = "#FA4B42"

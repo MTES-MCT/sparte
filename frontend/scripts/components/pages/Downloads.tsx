@@ -1,15 +1,11 @@
-import React, { useState, ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
+import { useSelector } from 'react-redux';
 import Guide from '@components/ui/Guide';
-import { useDownloadDiagnosticMutation, useGetProjectDownloadLinksQuery } from '@services/api';
-import { ProjectDetailResultType } from "@services/types/project";
-
-type DocumentTypeLiteral = 'rapport-complet' | 'rapport-local';
-
-interface ReportConfig {
-    title: string;
-    description: string;
-    documentType: DocumentTypeLiteral;
-}
+import { RootState } from '@store/store';
+import { selectPdfExportStatus, selectPdfExportBlobUrl, selectPdfExportError, selectPdfExportFileSize } from '@store/pdfExportSlice';
+import { useRecordDownloadRequestMutation } from '@services/api';
+import { LandDetailResultType } from '@services/types/land';
+import { ProjectDetailResultType } from '@services/types/project';
 
 interface NoticeProps {
     type: 'success' | 'warning';
@@ -17,34 +13,10 @@ interface NoticeProps {
     reportTitle: string;
 }
 
-interface DownloadCardProps {
-    report: ReportConfig;
-    onDownload: (report: ReportConfig) => void;
-    isDisabled: boolean;
-    downloadUrl?: string;
-}
-
-interface DownloadsProps {
-    projectData: ProjectDetailResultType;
-}
-
 const NOTICE_TITLES = {
     success: (reportTitle: string) => `Votre demande de téléchargement du rapport ${reportTitle} a bien été prise en compte`,
     warning: (reportTitle: string) => `Erreur lors de votre demande de téléchargement du rapport ${reportTitle}`
 } as const;
-
-export const REPORTS: ReportConfig[] = [
-    {
-        title: "complet",
-        description: "Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols sur votre territoire, incluant les indicateurs clés, au regard de la loi climat et résilience.",
-        documentType: "rapport-complet"
-    },
-    {
-        title: "triennal local",
-        description: "Trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire réalisée en partenariat avec la DGALN.",
-        documentType: "rapport-local"
-    }
-];
 
 export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) => (
     <div className={`bg-white fr-mt-2w fr-alert fr-alert--${type}`}>
@@ -53,81 +25,79 @@ export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) =>
     </div>
 );
 
-const DownloadCard: React.FC<DownloadCardProps> = ({ report, onDownload, isDisabled, downloadUrl }) => (
-    <div className={`fr-card fr-enlarge-link ${isDisabled ? 'fr-card--disabled' : ''}`}>
-        <div className="fr-card__body">
-            <div className="fr-card__content">
-                <h3 className="fr-card__title">
-                    {downloadUrl ? (
-                        <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="fr-link">
-                            Rapport {report.title}
-                        </a>
-                    ) : (
+const sanitizeFilename = (str: string): string => {
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-zA-Z0-9-_]/g, '_')
+        .replace(/_+/g, '_')
+        .toLowerCase();
+};
 
-                    <a
-                        className="fr-link"
-                        href="#"
-                        onClick={(e) => {
-                            if (!isDisabled) onDownload(report);
-                        }}
-                        aria-disabled={isDisabled}
-                    >
-                        Rapport {report.title}
-                    </a>
-                    )}
-                </h3>
-                <p className="fr-card__desc">{report.description}</p>
-                <div className="fr-card__end">
-                    {downloadUrl ? (
-                 <p className="fr-card__detail">
-                        Télécharger le rapport {report.title} au format Word
-                    </p>
-                    ) : (
-                                         <p className="fr-card__detail">
-                        Recevoir le rapport {report.title} au format Word par email
-                    </p>
-                    )}
-   
-                </div>
-            </div>
-        </div>
-    </div>
-);
+interface DownloadsProps {
+    landData: LandDetailResultType;
+    projectData: ProjectDetailResultType;
+}
 
-const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
-    const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<ReactNode | null>(null);
-    const [disabledDocuments, setDisabledDocuments] = useState<Set<string>>(new Set());
-    const [currentReport, setCurrentReport] = useState<ReportConfig | null>(null);
-    const [downloadDiagnostic] = useDownloadDiagnosticMutation();
-    const { data: downloadLinks } = useGetProjectDownloadLinksQuery(projectData.id)
+const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} o`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+};
 
-    const {
-        rapport_complet_url,
-        rapport_local_url
-    } = downloadLinks || {};
+const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
+    const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
+    const pdfBlobUrl = useSelector((state: RootState) => selectPdfExportBlobUrl(state));
+    const pdfError = useSelector((state: RootState) => selectPdfExportError(state));
+    const fileSize = useSelector((state: RootState) => selectPdfExportFileSize(state));
+    const [hasDownloaded, setHasDownloaded] = useState(false);
+    const [recordDownloadRequest, { isError: requiresLogin }] = useRecordDownloadRequestMutation();
 
-    const urls = {
-        "rapport-complet": rapport_complet_url,
-        "rapport-local": rapport_local_url
-    } satisfies Record<DocumentTypeLiteral, string | null>;
+    const isLoading = pdfStatus === 'loading';
+    const isReady = pdfStatus === 'succeeded' && pdfBlobUrl;
+    const hasFailed = pdfStatus === 'failed';
 
-    const handleDownload = async (report: ReportConfig) => {
-        if (disabledDocuments.has(report.documentType)) return;
+    const getFilename = (): string => {
+        const timestamp = new Date().toISOString().slice(0, 10);
+        const territoryName = landData?.name || 'territoire';
+        const landId = landData?.land_id || '';
 
-        setError(null);
-        setMessage(null);
-        setCurrentReport(report);
-        setDisabledDocuments(new Set([report.documentType]));
-        try {
-            const response = await downloadDiagnostic({ 
-                projectId: projectData.id, 
-                documentType: report.documentType 
-            }).unwrap();
-            setMessage(response.message);
-        } catch (error: any) {
-            setError(error.data?.error || 'Une erreur est survenue');
+        return `${sanitizeFilename(territoryName)}_${landId}_${timestamp}.pdf`;
+    };
+
+    const handleClick = async () => {
+        if (!pdfBlobUrl || hasDownloaded) return;
+
+        // Enregistrer la demande de téléchargement
+        const result = await recordDownloadRequest({
+            projectId: projectData.id,
+            documentType: 'rapport-complet',
+        });
+
+        if (!result.data?.success) {
+            return;
         }
+
+        const link = document.createElement('a');
+        link.href = pdfBlobUrl;
+        link.download = getFilename();
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setHasDownloaded(true);
+
+        setTimeout(() => {
+            setHasDownloaded(false);
+        }, 6000);
+    };
+
+    const getButtonText = () => {
+        const sizeText = fileSize ? ` (PDF - ${formatFileSize(fileSize)})` : '';
+        if (hasDownloaded) return `Téléchargement effectué ✓${sizeText}`;
+        if (isLoading) return 'Génération du PDF en cours, veuillez patienter...';
+        if (isReady) return `Télécharger le rapport complet${sizeText}`;
+        if (hasFailed) return 'Erreur - Réessayer';
+        return 'Préparation du rapport...';
     };
 
     return (
@@ -138,31 +108,40 @@ const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
                         <p>Nos rapports téléchargeables vous permettent d'accéder à des analyses détaillées de l'évolution de l'artificialisation des sols, des données quantitatives sur la consommation d'espaces NAF (naturels, agricoles et forestiers), ainsi qu'à des cartographies des zones concernées.</p>
                         <p>Ces documents sont régulièrement mis à jour pour refléter les dernières données disponibles et les évolutions réglementaires.</p>
                     </Guide>
-                    {message && currentReport && (
-                        <Notice 
-                            type="success" 
-                            message={message} 
-                            reportTitle={currentReport.title} 
+
+                    {hasFailed && pdfError && (
+                        <Notice
+                            type="warning"
+                            message={pdfError}
+                            reportTitle="complet"
                         />
                     )}
-                    {error && currentReport && (
-                        <Notice 
-                            type="warning" 
-                            message={<span dangerouslySetInnerHTML={{ __html: error }} />} 
-                            reportTitle={currentReport.title} 
+
+                    {requiresLogin && (
+                        <Notice
+                            type="warning"
+                            message={
+                                <>
+                                    Veuillez vous <a href="/users/signin/">connecter</a> pour télécharger le rapport.
+                                </>
+                            }
+                            reportTitle="complet"
                         />
                     )}
-                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-                        {REPORTS.map((report) => (
-                            <div key={report.documentType} className="fr-col-12 fr-col-md-6">
-                                <DownloadCard
-                                    report={report}
-                                    onDownload={handleDownload}
-                                    downloadUrl={urls[report.documentType]}
-                                    isDisabled={disabledDocuments.has(report.documentType)}
-                                />
-                            </div>
-                        ))}
+
+                    <div className="fr-mt-3w">
+                        <button
+                            className="fr-btn"
+                            onClick={handleClick}
+                            disabled={!isReady || hasDownloaded}
+                            aria-busy={isLoading}
+                            style={hasDownloaded ? { backgroundColor: '#18753c', color: 'white' } : undefined}
+                        >
+                            {isLoading && (
+                                <span className="fr-spinner fr-spinner--sm fr-mr-1w" aria-hidden="true" />
+                            )}
+                            {getButtonText()}
+                        </button>
                     </div>
                 </div>
             </div>

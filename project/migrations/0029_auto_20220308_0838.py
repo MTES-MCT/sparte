@@ -11,55 +11,32 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.SeparateDatabaseAndState(
-            database_operations=[
-                # Old table name from checking with sqlmigrate, new table
-                # name from AuthorBook._meta.db_table.
-                migrations.RunSQL(
-                    sql=("ALTER TABLE project_project_cities RENAME TO " "project_projectcommune"),
-                    reverse_sql=("ALTER TABLE project_projectcommune RENAME TO " "project_project_cities"),
+        migrations.CreateModel(
+            name="ProjectCommune",
+            fields=[
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
                 ),
-            ],
-            state_operations=[
-                migrations.CreateModel(
-                    name="ProjectCommune",
-                    fields=[
-                        (
-                            "id",
-                            models.BigAutoField(
-                                auto_created=True,
-                                primary_key=True,
-                                serialize=False,
-                                verbose_name="ID",
-                            ),
-                        ),
-                        (
-                            "commune",
-                            models.ForeignKey(
-                                on_delete=django.db.models.deletion.PROTECT,
-                                to="public_data.commune",
-                                to_field="insee",
-                            ),
-                        ),
-                        (
-                            "project",
-                            models.ForeignKey(
-                                on_delete=django.db.models.deletion.CASCADE,
-                                to="project.project",
-                            ),
-                        ),
-                    ],
+                (
+                    "commune",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="public_data.commune",
+                    ),
                 ),
-                migrations.AlterField(
-                    model_name="project",
-                    name="cities",
-                    field=models.ManyToManyField(
-                        to="public_data.Commune",
-                        through="project.ProjectCommune",
-                        verbose_name="Communes",
-                        blank=True,
+                (
+                    "project",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="project.project",
                     ),
                 ),
             ],
-        )
+        ),
     ]

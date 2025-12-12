@@ -6,7 +6,6 @@ from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
 from .AdminRef import AdminRef
-from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
@@ -15,7 +14,7 @@ class ScotManager(IntersectManager):
         return self.get(source_id=source_id)
 
 
-class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
+class Scot(LandMixin, models.Model):
     class Meta:
         managed = False
 

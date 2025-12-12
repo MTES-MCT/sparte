@@ -37,11 +37,11 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
     @staticmethod
     def has_planning_competency(land: Land) -> bool:
         if land.land_type == AdminRef.EPCI:
-            return SudocuhEpci.objects.get(siren=land.official_id).competence_plan
+            return SudocuhEpci.objects.get(siren=land.land_id).competence_plan
 
         if land.land_type == AdminRef.COMMUNE:
             return PlanningCompetencyServiceSudocuh.commune_has_planning_competency(
-                commune=Commune.objects.get(insee=land.official_id)
+                commune=Commune.objects.get(insee=land.land_id)
             )
 
         # if the land is not a commune or an EPCI, it does not have planning competency
@@ -50,7 +50,7 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
     @staticmethod
     def planning_document_in_revision(land: Land) -> bool:
         if land.land_type == AdminRef.COMMUNE:
-            commune = Commune.objects.get(insee=land.official_id)
+            commune = Commune.objects.get(insee=land.land_id)
             try:
                 return Sudocuh.objects.get(code_insee=commune.insee).du_en_cours is not None
             except Sudocuh.DoesNotExist:
@@ -59,7 +59,7 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
                 return False
 
         if land.land_type == AdminRef.EPCI:
-            epci = Epci.objects.get(source_id=land.official_id)
+            epci = Epci.objects.get(source_id=land.land_id)
 
             # below we use a combination of filter and first instead of get
             # because using get could raise two exceptions: DoesNotExist and MultipleObjectsReturned

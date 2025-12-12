@@ -1,10 +1,10 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import (
+    CEREMA_CREDITS,
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
 )
-from project.models import Project
 from public_data.models import LandConso
 
 
@@ -14,6 +14,25 @@ class ObjectiveChart(DiagnosticChart):
     """
 
     name = "suivi de l'objectif"
+    required_params = ["target_2031_custom"]
+
+    @classmethod
+    def validate_target_2031_custom(cls, value) -> float:
+        """Valide et retourne target_2031_custom comme float entre 0 et 100."""
+        try:
+            target = float(value)
+        except (TypeError, ValueError):
+            raise ValueError(f"target_2031_custom doit être un nombre, reçu: {value}")
+
+        if not 0 <= target <= 100:
+            raise ValueError(f"target_2031_custom doit être entre 0 et 100, reçu: {target}")
+
+        return target
+
+    @property
+    def target_2031_custom(self) -> float:
+        """Retourne la valeur validée de target_2031_custom."""
+        return self.validate_target_2031_custom(self.params["target_2031_custom"])
 
     @property
     def param(self):
@@ -49,7 +68,7 @@ class ObjectiveChart(DiagnosticChart):
     @property
     def series(self):
         target_national = 50
-        target_custom = float(self.params.get("target_2031_custom", 50))
+        target_custom = self.target_2031_custom
         has_custom_target = target_custom != target_national
 
         series = [
@@ -169,7 +188,7 @@ class ObjectiveChart(DiagnosticChart):
 
     @property
     def data_table(self):
-        target_custom = float(self.params.get("target_2031_custom", 50))
+        target_custom = self.target_2031_custom
         has_custom_target = target_custom != 50
 
         headers = [
@@ -222,58 +241,13 @@ class ObjectiveChart(DiagnosticChart):
 
 
 class ObjectiveChartExport(ObjectiveChart):
-    """
-    Version Export pour les rapports Word/PDF.
-    Hérite de ObjectiveChart pour avoir exactement le même rendu.
-    Adapte juste le constructeur pour accepter un Project au lieu de (land, params).
-    """
-
-    def __init__(self, project: Project, **kwargs):
-        """
-        Constructeur compatible avec l'export Word qui attend un Project.
-        """
-        # Convertir le Project en paramètres pour ObjectiveChart
-        land = project.land_model
-        params = {"target_2031_custom": float(project.target_2031) if project.target_2031 else 50}
-
-        super().__init__(land=land, params=params)
-
-        self.project = project
-
-    # Propriétés nécessaires pour l'export Word
-    @property
-    def total_2020(self):
-        """Consommation totale de la période de référence 2011-2020"""
-        conso_data = LandConso.objects.filter(
-            land_id=self.land.land_id,
-            land_type=self.land.land_type,
-            year__gte=2011,
-            year__lte=2020,
-        )
-        return sum(item.total / 10000 for item in conso_data)  # Conversion m² -> ha
+    """Version Export avec un titre différent."""
 
     @property
-    def annual_2020(self):
-        """Consommation annuelle moyenne de la période de référence"""
-        return self.total_2020 / 10.0
-
-    @property
-    def annual_objective_2031(self):
-        """Consommation annuelle objectif pour 2021-2031"""
-        target = float(self.project.target_2031) if self.project.target_2031 else 50
-        return self.annual_2020 - (self.annual_2020 * (target / 100.0))
-
-    @property
-    def conso_2031(self):
-        """Consommation totale autorisée pour 2021-2031"""
-        return self.annual_objective_2031 * 10.0
-
-    @property
-    def total_real(self):
-        """Consommation réelle depuis 2021"""
-        conso_data = LandConso.objects.filter(
-            land_id=self.land.land_id,
-            land_type=self.land.land_type,
-            year__gte=2021,
-        )
-        return sum(item.total / 10000 for item in conso_data)  # Conversion m² -> ha
+    def param(self):
+        return super().param | {
+            "title": {
+                "text": f"Trajectoire de consommation d'espaces NAF à {self.land.name} entre 2021 et 2031 (en ha)"
+            },
+            "credits": CEREMA_CREDITS,
+        }

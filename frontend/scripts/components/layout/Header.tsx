@@ -9,17 +9,16 @@ interface Logo {
     src: string;
     alt: string;
     height?: string;
-    url?: string; 
+    url?: string;
 }
 
 const activeColor = '#4318FF';
 const secondaryColor = '#a1a1f8';
 
 const HeaderContainer = styled.header`
-    position: fixed;
-    top: 0;
-    left: 0;
+    position: relative;
     width: 100%;
+    height: 80px;
     z-index: 1000;
     display: flex;
     justify-content: space-between;
@@ -130,11 +129,11 @@ const Header = ({ projectData }: { projectData: ProjectDetailResultType}) => {
     const { isMobile } = useWindowSize(980);
     const { header } = projectData || {};
 
-
     // responsive
     useEffect(() => {
-        if (isMobile)
-            setIsMenuOpen(false); // Ferme le menu automatiquement si on passe en mode mobile
+        if (isMobile) {
+            setIsMenuOpen(false);
+        }
     }, [isMobile]);
 
     return (

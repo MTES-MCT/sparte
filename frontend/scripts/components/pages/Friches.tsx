@@ -483,7 +483,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 <p className="fr-callout__text fr-text--sm">Vous avez un projet d'aménagement urbain ou un projet photovoltaïque sur une friche ? Calculez les impacts de votre projet grâce à la plateforme Bénéfriches !</p>
                 <br />
                 <a target="_blank" rel="noopener noreferrer external" title="" href="https://benefriches.ademe.fr/" className="fr-notice__link fr-link fr-text--sm">
-                    Accèder à Bénéfriches
+                    Accéder à Bénéfriches
                 </a>
             </div>
             <div className="fr-callout fr-icon-information-line">
@@ -491,7 +491,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 <p className="fr-callout__text fr-text--sm">UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que les conseillers publics (selon les territoires : DDT, DREAL, EPF...)</p>
                 <br />
                 <a target="_blank" rel="noopener noreferrer external" title="" href="https://urbanvitaliz.fr/" className="fr-notice__link fr-link fr-text--sm">
-                    Accèder à UrbanVitaliz
+                    Accéder à UrbanVitaliz
                 </a>
             </div>
 		</div>

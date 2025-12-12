@@ -6,8 +6,8 @@ from .ArtifByUsagePieChart import ArtifByUsagePieChart, ArtifUsagePieChartExport
 from .ArtifFluxByCouverture import ArtifFluxByCouverture, ArtifFluxByCouvertureExport
 from .ArtifFluxByUsage import ArtifFluxByUsage, ArtifFluxByUsageExport
 from .ArtifMap import ArtifMap, ArtifMapExport
-from .ArtifNetFluxChart import ArtifNetFluxChart
-from .ArtifSyntheseChart import ArtifSyntheseChart
+from .ArtifNetFluxChart import ArtifNetFluxChart, ArtifNetFluxChartExport
+from .ArtifSyntheseChart import ArtifSyntheseChart, ArtifSyntheseChartExport
 
 __all__ = [
     "ArtifByCouverturePieChart",
@@ -21,5 +21,7 @@ __all__ = [
     "ArtifMap",
     "ArtifMapExport",
     "ArtifNetFluxChart",
+    "ArtifNetFluxChartExport",
     "ArtifSyntheseChart",
+    "ArtifSyntheseChartExport",
 ]

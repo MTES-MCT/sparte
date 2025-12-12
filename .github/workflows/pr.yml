@@ -40,7 +40,31 @@ jobs:
       - uses: pre-commit/action@v3.0.1
         env:
           SKIP: ggshield,sqlfluff-lint,sqlfluff-fix
-  test:
+
+  test-frontend:
+    name: Frontend Tests (Jest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run frontend tests
+        run: npm test -- --coverage
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+        continue-on-error: true
+
+  test-backend:
+    name: Backend Tests (Django)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,16 +72,24 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pipenv'
-      - run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+      - name: Install pipenv
+        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
       - uses: nyurik/action-setup-postgis@v1
         id: pg
-      - run: psql -c "ALTER ROLE postgres SUPERUSER;"
-      - run: pipenv install --dev
-      - run: sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y gdal-bin libgdal-dev
-      - run: npm install  # Installe les dépendances front
-      - run: npm run build  # Exécute Webpack pour générer webpack-stats.json
-      - run: pipenv run python -Wa manage.py test
+      - name: Configure PostgreSQL
+        run: psql -c "ALTER ROLE postgres SUPERUSER;"
+      - name: Install Python dependencies
+        run: pipenv install --dev
+      - name: Install GDAL
+        run: |
+          sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin libgdal-dev
+      - name: Install Node dependencies (for webpack build)
+        run: npm install
+      - name: Build frontend assets
+        run: npm run build
+      - name: Run backend tests
+        run: pipenv run python -Wa manage.py test
         env:
           DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}

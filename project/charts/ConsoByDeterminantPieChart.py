@@ -1,25 +1,31 @@
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import CEREMA_CREDITS
 from public_data.domain.containers import PublicDataContainer
 
 
-class ConsoByDeterminantPieChart(ProjectChart):
+class ConsoByDeterminantPieChart(DiagnosticChart):
     """
     Graphique en secteurs de consommation totale par destination (habitat, activité, mixte etc.)
     """
 
+    required_params = ["start_date", "end_date"]
     name = "determinant overview"
 
-    def _get_series(self):
+    @property
+    def data(self):
+        """Get total consumption stats for the land."""
+        consommation_stats = PublicDataContainer.consommation_stats_service().get_by_land(
+            land=self.land,
+            start_date=int(self.params["start_date"]),
+            end_date=int(self.params["end_date"]),
+        )
+        return consommation_stats
+
+    @property
+    def series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
         """
-        consommation_total = PublicDataContainer.consommation_stats_service().get_by_land(
-            land=self.project.land_proxy,
-            start_date=self.project.analyse_start_date,
-            end_date=self.project.analyse_end_date,
-        )
-
         category_to_attr = {
             "Habitat": "habitat",
             "Activité": "activite",
@@ -29,12 +35,12 @@ class ConsoByDeterminantPieChart(ProjectChart):
             "Inconnu": "non_renseigne",
         }
 
-        data = {category: getattr(consommation_total, attr) for category, attr in category_to_attr.items()}
+        data_dict = {category: getattr(self.data, attr) for category, attr in category_to_attr.items()}
 
         return [
             {
                 "name": "Destinations",
-                "data": [{"name": category, "y": value} for category, value in data.items()],
+                "data": [{"name": category, "y": value} for category, value in data_dict.items()],
             }
         ]
 
@@ -43,7 +49,7 @@ class ConsoByDeterminantPieChart(ProjectChart):
         return super().param | {
             "chart": {"type": "pie"},
             "title": {
-                "text": "Sur la période",
+                "text": f"Consommation d'espaces par destination à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})",  # noqa: E501
             },
             "tooltip": {"enabled": False},
             "plotOptions": {
@@ -57,12 +63,51 @@ class ConsoByDeterminantPieChart(ProjectChart):
                     },
                 }
             },
-            "series": self._get_series(),
+            "series": self.series,
         }
 
-    # To remove after refactoring
-    def add_series(self):
-        pass
+    @property
+    def data_table(self):
+        category_to_attr = {
+            "Habitat": "habitat",
+            "Activité": "activite",
+            "Mixte": "mixte",
+            "Route": "route",
+            "Ferré": "ferre",
+            "Inconnu": "non_renseigne",
+        }
+
+        headers = [
+            "Destination",
+            f"Consommation d'espaces NAF (ha) {self.params['start_date']}-{self.params['end_date']}",
+        ]
+
+        rows = [
+            {
+                "name": "",
+                "data": [
+                    category,
+                    f"{getattr(self.data, attr):.2f}",
+                ],
+            }
+            for category, attr in category_to_attr.items()
+        ]
+
+        # Ajouter la ligne Total
+        total = sum(getattr(self.data, attr) for attr in category_to_attr.values())
+        rows.append(
+            {
+                "name": "",
+                "data": ["Total", f"{total:.2f}"],
+            }
+        )
+
+        return {
+            "headers": headers,
+            "rows": rows,
+            "boldFirstColumn": True,
+            "boldLastRow": True,
+        }
 
 
 class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
@@ -72,8 +117,18 @@ class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (
-                    f"Destinations de la consommation d'espaces NAF de {self.project.territory_name}"
-                    f" entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
+                    f"Destinations de la consommation d'espaces NAF de {self.land.name}"
+                    f" entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
                 )
+            },
+            "plotOptions": {
+                "pie": {
+                    "allowPointSelect": False,
+                    "dataLabels": {
+                        "distance": 15,
+                        "enabled": True,
+                        "format": "{point.name}<br />{point.y:.2f} Ha ({point.percentage:.1f}%)",
+                    },
+                }
             },
         }

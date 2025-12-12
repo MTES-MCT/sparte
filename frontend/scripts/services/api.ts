@@ -18,6 +18,35 @@ export const djangoApi = createApi({
 				method: "GET",
 			}),
 		}),
+		getLandConsoStats: builder.query({
+			query: ({land_type, land_id, from_year, to_year}) => {
+				return `/api/landconsostats/?${new URLSearchParams({
+					land_type,
+					land_id,
+					from_year: from_year.toString(),
+					to_year: to_year.toString()
+				})}`
+			},
+		}),
+		getLandPopStats: builder.query({
+			query: ({land_type, land_id, from_year, to_year}) => {
+				return `/api/landpopstats/?${new URLSearchParams({
+					land_type,
+					land_id,
+					from_year: from_year.toString(),
+					to_year: to_year.toString()
+				})}`
+			},
+		}),
+		getLandPopDensity: builder.query({
+			query: ({land_type, land_id, year}) => {
+				return `/api/landpopulationdensity/?${new URLSearchParams({
+					land_type,
+					land_id,
+					year: year.toString()
+				})}`
+			},
+		}),
 		getChartConfig: builder.query({
 			query: ({id, land_type, land_id, ...params}) => {
 				const queryParams = new URLSearchParams(params)
@@ -82,6 +111,22 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getSimilarTerritories: builder.query({
+			query: ({land_type, land_id}) => {
+				return `/api/nearestterritories/?${new URLSearchParams({
+					land_type,
+					land_id
+				})}`
+			},
+		}),
+		getSimilarTerritoriesByPopulation: builder.query({
+			query: ({land_type, land_id}) => {
+				return `/api/similarterritories/?${new URLSearchParams({
+					land_type,
+					land_id
+				})}`
+			},
+		}),
 		getEnvironment: builder.query({
 			query: () => "/env",
 		}),
@@ -109,9 +154,17 @@ export const djangoApi = createApi({
 				};
 			},
 		}),
-		downloadDiagnostic: builder.mutation<{ message: string }, { projectId: number; documentType: string }>({
+		getLogementVacantAutorisationStats: builder.query({
+			query: ({land_type, land_id, end_date}) => {
+				const queryParams = new URLSearchParams({
+					end_date: end_date.toString()
+				})
+				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`
+			},
+		}),
+		recordDownloadRequest: builder.mutation<{ success: boolean }, { projectId: number; documentType: string }>({
 			query: ({ projectId, documentType }) => ({
-				url: `/project/${projectId}/telechargement/${documentType}`,
+				url: `/project/${projectId}/downloadRequest/${documentType}`,
 				method: 'GET'
 			}),
 		}),
@@ -139,7 +192,7 @@ const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
 const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
-const useDownloadDiagnosticMutation = djangoApi.useDownloadDiagnosticMutation;
+const useRecordDownloadRequestMutation = djangoApi.useRecordDownloadRequestMutation;
 const useUpdateProjectTarget2031Mutation = djangoApi.useUpdateProjectTarget2031Mutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
@@ -153,6 +206,12 @@ const {
 	useGetChartConfigQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandConsoStatsQuery,
+	useGetLandPopStatsQuery,
+	useGetLandPopDensityQuery,
+	useGetSimilarTerritoriesQuery,
+	useGetSimilarTerritoriesByPopulationQuery,
+	useGetLogementVacantAutorisationStatsQuery,
 } = djangoApi;
 
 export {
@@ -166,10 +225,16 @@ export {
 	useGetImperZonageIndexQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandImperStockIndexQuery,
-	useDownloadDiagnosticMutation,
+	useGetLandConsoStatsQuery,
+	useGetLandPopStatsQuery,
+	useGetLandPopDensityQuery,
+	useGetSimilarTerritoriesQuery,
+	useGetSimilarTerritoriesByPopulationQuery,
+	useRecordDownloadRequestMutation,
 	useUpdateProjectTarget2031Mutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,
 	useGetLandGeomQuery,
+	useGetLogementVacantAutorisationStatsQuery,
 };

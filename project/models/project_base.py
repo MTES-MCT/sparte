@@ -199,34 +199,17 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
-    async_set_combined_emprise_done = models.BooleanField(default=False)
-    async_cover_image_done = models.BooleanField(default=False)
-    async_add_comparison_lands_done = models.BooleanField(default=False)
-    async_generate_theme_map_conso_done = models.BooleanField(default=False)
-
     history = HistoricalRecords(
         user_db_constraint=False,
     )
 
     @property
     def async_complete(self) -> bool:
-        calculations_and_extend_ready = self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
-
-        static_maps_ready = self.async_cover_image_done
-
-        not_a_commune = self.land_type != AdminRef.COMMUNE
-
-        # logic below is duplicated from map_tasks in create.py
-        # TODO : refactor this
-
-        if not_a_commune:
-            static_maps_ready = static_maps_ready and self.async_generate_theme_map_conso_done
-
-        return calculations_and_extend_ready and static_maps_ready
+        return True
 
     @property
     def is_ready_to_be_displayed(self) -> bool:
-        return self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
+        return True
 
     class Meta:
         ordering = ["-created_date"]
@@ -366,7 +349,7 @@ class Project(BaseProject):
         from public_data.domain.containers import PublicDataContainer
 
         conso = PublicDataContainer.consommation_stats_service().get_by_land(
-            land=self.land_proxy, start_date=2011, end_date=2020
+            land=self.land_model, start_date=2011, end_date=2020
         )
         return conso.total
 
@@ -374,7 +357,7 @@ class Project(BaseProject):
         from public_data.domain.containers import PublicDataContainer
 
         conso = PublicDataContainer.consommation_progression_service().get_by_land(
-            land=self.land_proxy, start_date=2011, end_date=2020
+            land=self.land_model, start_date=2011, end_date=2020
         )
         return {f"{c.year}": c.total for c in conso.consommation}
 
@@ -383,7 +366,7 @@ class Project(BaseProject):
         from public_data.domain.containers import PublicDataContainer
 
         conso = PublicDataContainer.consommation_stats_service().get_by_land(
-            land=self.land_proxy, start_date=self.analyse_start_date, end_date=self.analyse_end_date
+            land=self.land_model, start_date=self.analyse_start_date, end_date=self.analyse_end_date
         )
         return conso.total
 
@@ -391,10 +374,9 @@ class Project(BaseProject):
 
     def get_conso_per_year(self, coef=1):
         from public_data.domain.containers import PublicDataContainer
-        from public_data.models import Land
 
         conso = PublicDataContainer.consommation_progression_service().get_by_land(
-            land=Land(public_key=f"{self.land_type}_{self.land_id}"),
+            land=self.land_model,
             start_date=int(self.analyse_start_date),
             end_date=int(self.analyse_end_date),
         )
@@ -498,6 +480,28 @@ class Project(BaseProject):
     def comparison_lands_and_self_land(self) -> list[Land]:
         look_a_likes = self.get_look_a_like()
         return [self.land_proxy] + look_a_likes
+
+    def comparison_land_models_and_self(self) -> list[LandModel]:
+        """Return comparison lands and self land as LandModel objects"""
+        land_models = [self.land_model]
+
+        # Get look_a_like public keys
+        try:
+            public_keys = {_ for _ in self.look_a_like.split(";") if _}
+        except AttributeError:
+            public_keys = set()
+
+        # Convert each public_key to LandModel
+        for public_key in public_keys:
+            try:
+                land_type, land_id = public_key.strip().split("_")
+                land_model = LandModel.objects.get(land_type=land_type, land_id=land_id)
+                land_models.append(land_model)
+            except (ValueError, LandModel.DoesNotExist, LandException):
+                # Skip invalid or not found land models
+                continue
+
+        return sorted(land_models, key=lambda x: x.name)
 
 
 class Emprise(DataColorationMixin, gis_models.Model):

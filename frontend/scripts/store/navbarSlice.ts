@@ -8,7 +8,7 @@ interface NavbarState {
 
 const initialState: NavbarState = {
     isOpen: true,
-    wasOpened: true, 
+    wasOpened: true,
 };
 
 const navbarSlice = createSlice({
@@ -25,7 +25,7 @@ const navbarSlice = createSlice({
             } else {
                 state.isOpen = state.wasOpened; // Rétablir l'état précédent en desktop
             }
-        }
+        },
     },
 });
 

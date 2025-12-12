@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@store/store';
+import { RootState, AppDispatch } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetLandQuery, useGetProjectQuery } from '@services/api';
+import { useGetLandQuery, useGetProjectQuery, useGetEnvironmentQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
+import { fetchPdfExport, selectPdfExportStatus } from '@store/pdfExportSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import Footer from '@components/layout/Footer';
@@ -13,7 +14,7 @@ import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
 import TopBar from '@components/layout/TopBar';
 import Synthese from '@components/pages/Synthese';
-import Consommation from '@components/pages/Consommation';
+import { Consommation } from '@components/pages/Consommation';
 import LogementVacant from '@components/pages/LogementVacant';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
@@ -32,17 +33,19 @@ interface DashboardProps {
     projectId: string;
 }
 
-const Main = styled.main<{ $isOpen: boolean; $isMobile: boolean }>`
-    margin-left: ${({ $isOpen, $isMobile }) => {
-        if ($isMobile) return '0';
-        return $isOpen ? '280px' : '0';
-    }};
-    margin-top: 80px;
-    flex-grow: 1;
+const ContentWrapper = styled.div`
+    display: flex;
+    flex: 1;
+    position: relative;
+    min-height: calc(100vh - 80px);
+`;
+
+const Main = styled.main`
+    flex: 1;
     display: flex;
     flex-direction: column;
     background: #f8f9ff;
-    transition: margin-left 0.3s ease;
+    min-width: 0;
 `;
 
 const Content = styled.div`
@@ -53,7 +56,7 @@ const Content = styled.div`
 
 
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { data: projectData, error, isLoading } = useGetProjectQuery(projectId);
     const { data: landData } = useGetLandQuery(
         {
@@ -64,19 +67,39 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             skip: !projectData
         }
     );
-    
+    const { data: env } = useGetEnvironmentQuery(null);
+
     const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status } = landData || {};
 
     const { urls, logements_vacants_available } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
+    const pdfExportStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
     const { isMobile } = useWindowSize();
 
     useEffect(() => {
-        if (projectData) {        
-            dispatch(setProjectData(projectData));        
+        if (projectData) {
+            dispatch(setProjectData(projectData));
         }
     }, [projectData, dispatch]);
+
+    // Lancer le téléchargement du PDF au démarrage
+    useEffect(() => {
+        if (landData && env && pdfExportStatus === 'idle') {
+            const { export_server_url, pdf_header_url, pdf_footer_url } = env;
+            if (export_server_url && pdf_header_url && pdf_footer_url) {
+                dispatch(fetchPdfExport({
+                    exportServerUrl: export_server_url,
+                    pdfHeaderUrl: pdf_header_url,
+                    pdfFooterUrl: pdf_footer_url,
+                    landType: landData.land_type,
+                    landId: landData.land_id,
+                    landName: landData.name,
+                }));
+            }
+        }
+    }, [landData, env, pdfExportStatus, dispatch]);
+
 
     return (
         <>
@@ -85,11 +108,12 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                     <Header projectData={projectData} />
                     <Router>
                         <TrackingWrapper />
-                        <Navbar projectData={projectData} landData={landData} />
-                        <Main $isOpen={isOpen} $isMobile={isMobile}>
-                            <TopBar />
-                            <Content>
-                                <Routes>
+                        <ContentWrapper>
+                            <Navbar projectData={projectData} landData={landData} />
+                            <Main>
+                                <TopBar />
+                                <Content>
+                                    <Routes>
                                     <Route
                                         path={urls.synthese}
                                         element={
@@ -115,7 +139,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Consommation endpoint={urls.consommation} />
+                                                <Consommation landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -145,9 +169,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <OcsgeStatus status={ocsge_status} />
                                                 }
                                             >
-                                                    <Artificialisation
-                                                        landData={landData}
-                                                    />
+                                                    <Artificialisation landData={landData} />
                                                 </RouteWrapper>
                                         }
                                     />
@@ -171,7 +193,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     <Route
                                         path={urls.logementVacant}
                                         element={
-                                            <RouteWrapper 
+                                            <RouteWrapper
                                                 title="Vacance des logements"
                                                 showPage={logements_vacants_available}
                                                 showStatus={!logements_vacants_available}
@@ -179,11 +201,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <LogementVacantStatus />
                                                 }
                                             >
-                                                <LogementVacant 
-                                                    endpoint={urls.logementVacant} 
-                                                    landData={landData}
-                                                    projectData={projectData}
-                                                />
+                                                <LogementVacant landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -233,14 +251,15 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Téléchargements"
                                             >
-                                                <Downloads projectData={projectData} />
+                                                <Downloads landData={landData} projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />
                                 </Routes>
-                            </Content>
-                            <Footer projectData={projectData} />
-                        </Main>
+                                </Content>
+                                <Footer projectData={projectData} />
+                            </Main>
+                        </ContentWrapper>
                     </Router>
                 </>
             )}

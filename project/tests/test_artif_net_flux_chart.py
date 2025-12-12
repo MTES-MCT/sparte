@@ -22,7 +22,7 @@ class TestArtifNetFluxChartParams(TestCase):
             ArtifNetFluxChart(land=self.mock_land, params=params)
 
         self.assertIn("millesime_new_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     def test_init_without_millesime_old_index_raises_error(self):
         """Test que l'absence de millesime_old_index lève une ValueError."""
@@ -32,7 +32,7 @@ class TestArtifNetFluxChartParams(TestCase):
             ArtifNetFluxChart(land=self.mock_land, params=params)
 
         self.assertIn("millesime_old_index", str(context.exception))
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     def test_init_without_any_params_raises_error(self):
         """Test que l'absence de tous les paramètres lève une ValueError."""
@@ -41,7 +41,7 @@ class TestArtifNetFluxChartParams(TestCase):
         with self.assertRaises(ValueError) as context:
             ArtifNetFluxChart(land=self.mock_land, params=params)
 
-        self.assertIn("obligatoire", str(context.exception))
+        self.assertIn("required", str(context.exception).lower())
 
     @patch("highcharts.charts.Chart.get_param")
     def test_init_with_all_required_params_succeeds(self, mock_get_param):

@@ -19,11 +19,9 @@ class ImperFluxByUsage(DiagnosticChart):
     name = "Imperméabilisation"
     sol = "usage"
     model = LandImperFluxUsageCompositionIndex
+    required_params = ["millesime_new_index"]
 
     def __init__(self, land, params):
-        if "millesime_new_index" not in params:
-            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
-
         super().__init__(land=land, params=params)
 
     @property

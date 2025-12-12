@@ -6,10 +6,10 @@ from project.models.create import create_project_api_view
 
 from . import views
 from .api_views import (
-    DiagnosticDownloadAPIView,
     EmpriseViewSet,
     ProjectDetailView,
     ProjectDownloadLinkView,
+    RecordDownloadRequestAPIView,
 )
 
 app_name = "project"
@@ -73,13 +73,6 @@ urlpatterns = [
         views.diagnostic.DiagnostictRapportLocalView.as_view(),
         name="report_local",
     ),
-    # REPORT PARTIALS
-    # MAP
-    path(
-        "<int:pk>/carte/consommation-villes-du-territoire",
-        views.CitySpaceConsoMapView.as_view(),
-        name="theme-city-conso",
-    ),
     # DOWNLOAD
     path(
         "<int:pk>/tableau-de-bord/telechargements",
@@ -87,24 +80,14 @@ urlpatterns = [
         name="report_downloads",
     ),
     path(
-        "<int:pk>/telechargement/<slug:requested_document>",
-        DiagnosticDownloadAPIView.as_view(),
-        name="report_download",
+        "<int:pk>/downloadRequest/<slug:requested_document>",
+        RecordDownloadRequestAPIView.as_view(),
+        name="download_request",
     ),
     path(
         "<int:pk>/telechargement-liens",
         ProjectDownloadLinkView.as_view(),
         name="report_download_url",
-    ),
-    path(
-        "<int:pk>/all_charts_for_preview",
-        views.AllChartsForPreview.as_view(),
-        name="all_charts_for_preview",
-    ),
-    path(
-        "<int:request_id>/word/telechargement",
-        views.diagnostic.DiagnosticDownloadWordView.as_view(),
-        name="word_download",
     ),
 ]
 
