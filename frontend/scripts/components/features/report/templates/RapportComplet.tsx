@@ -22,6 +22,8 @@ import {
     ArtifDetailSection,
     ArtifCouvertureSection,
     ArtifUsageSection,
+    ImperCouvertureSection,
+    ImperUsageSection,
 } from '../sections';
 import CoverPage from './CoverPage';
 
@@ -34,6 +36,8 @@ export interface RapportCompletContent {
     artificialisation_detail?: string;
     artificialisation_couverture?: string;
     artificialisation_usage?: string;
+    impermeabilisation_couverture?: string;
+    impermeabilisation_usage?: string;
 }
 
 interface RapportCompletProps {
@@ -150,6 +154,24 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         mode={mode}
                         onChange={handleChange('artificialisation_usage')}
                         placeholder="Commentez la répartition des surfaces artificialisées par type d'usage. Quels sont les principaux flux ? Quelles évolutions constatez-vous ?"
+                    />
+
+                    <ImperCouvertureSection landData={landData} />
+
+                    <ContentZone
+                        content={content.impermeabilisation_couverture || ''}
+                        mode={mode}
+                        onChange={handleChange('impermeabilisation_couverture')}
+                        placeholder="Commentez la répartition des surfaces imperméabilisées par type de couverture. Quels sont les principaux flux ? Quelles évolutions constatez-vous ?"
+                    />
+
+                    <ImperUsageSection landData={landData} />
+
+                    <ContentZone
+                        content={content.impermeabilisation_usage || ''}
+                        mode={mode}
+                        onChange={handleChange('impermeabilisation_usage')}
+                        placeholder="Commentez la répartition des surfaces imperméabilisées par type d'usage. Quels sont les principaux flux ? Quelles évolutions constatez-vous ?"
                     />
                 </>
             )}

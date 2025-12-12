@@ -9,3 +9,5 @@ export { default as ArtifDefinitionSection } from './ArtifDefinitionSection';
 export { default as ArtifDetailSection } from './ArtifDetailSection';
 export { default as ArtifCouvertureSection } from './ArtifCouvertureSection';
 export { default as ArtifUsageSection } from './ArtifUsageSection';
+export { default as ImperCouvertureSection } from './ImperCouvertureSection';
+export { default as ImperUsageSection } from './ImperUsageSection';

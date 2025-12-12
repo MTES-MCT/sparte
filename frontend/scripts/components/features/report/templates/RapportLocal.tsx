@@ -31,6 +31,8 @@ import {
     ComparisonRelativeSection,
     ArtifCouvertureSection,
     ArtifUsageSection,
+    ImperCouvertureSection,
+    ImperUsageSection,
 } from '../sections';
 import CoverPage from './CoverPage';
 import { LandMillesimeTable } from '@components/features/ocsge/LandMillesimeTable';
@@ -490,6 +492,21 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
             <SectionContainer>
                 <SectionTitle>3° Les surfaces dont les sols ont été rendus imperméables</SectionTitle>
+                {landData.has_ocsge ? (
+                    <>
+                        <Paragraph>
+                            Il s'agit ici d'indiquer, à l'échelle d'un document de planification ou d'urbanisme, les surfaces dont les sols ont été rendus imperméables au sens des 1° et 2° de la nomenclature annexée à l'article R. 101-1 du code de l'urbanisme.
+                        </Paragraph>
+                        <ImperCouvertureSection landData={landData} />
+                        <ImperUsageSection landData={landData} />
+                    </>
+                ) : (
+                    <InfoBox>
+                        <p>
+                            Les données d'occupation des sols à grande échelle (OCS GE) ne sont pas disponibles pour ce territoire.
+                        </p>
+                    </InfoBox>
+                )}
             </SectionContainer>
 
             <SectionContainer>
