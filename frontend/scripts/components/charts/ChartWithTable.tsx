@@ -13,21 +13,21 @@ interface ChartWithTableProps {
 }
 
 const ChartContainer = styled.div`
-    margin: 1.5rem 0;
+    margin: 2rem 0;
+    border: 1px solid #EBEBEC;
+    padding: 1rem 0;
+    background: white;
 
     @media print {
         page-break-inside: avoid;
+        border: 1px solid #EBEBEC;
     }
 `;
 
 const DataTableContainer = styled.div`
-    margin: 1rem 0;
+    margin: 0.5rem 0 0.75rem 0;
 `;
 
-/**
- * Composant combinant un graphique et son tableau de données associé.
- * Évite la duplication de code dans les rapports.
- */
 const ChartWithTable: React.FC<ChartWithTableProps> = ({
     chartId,
     landId,
@@ -45,7 +45,6 @@ const ChartWithTable: React.FC<ChartWithTableProps> = ({
                     land_id={landId}
                     land_type={landType}
                     params={params}
-                    sources={sources}
                     showToolbar={false}
                     hideDetails
                     isMap={isMap}
@@ -58,7 +57,6 @@ const ChartWithTable: React.FC<ChartWithTableProps> = ({
                         land_id={landId}
                         land_type={landType}
                         params={params}
-                        sources={sources}
                         dataTableOnly
                         compactDataTable
                     />

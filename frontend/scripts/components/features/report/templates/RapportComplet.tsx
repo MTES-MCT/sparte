@@ -9,6 +9,7 @@ import {
     PrintLayout,
     PrintContent,
     MainContent,
+    ReportTypography,
 } from '../styles';
 import ChartWithTable from '@components/charts/ChartWithTable';
 import CoverPage from './CoverPage';
@@ -58,7 +59,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 SECTION: Définition de la consommation d'espaces NAF
             ═══════════════════════════════════════════════════════════════════ */}
             <section className="fr-mb-6w">
-                <h2 className="fr-h2">Définition de la consommation d'espaces NAF et contexte juridique</h2>
+                <h2>Définition de la consommation d'espaces NAF et contexte juridique</h2>
 
                 <p className="fr-text--sm">
                     Chaque année, 24 000 ha d'espaces NAF sont consommés en moyenne en France, soit près de 5 terrains de football par heure. 
@@ -80,14 +81,14 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </p>
                 </div>
 
-                <h3 className="fr-h3">Cadre législatif</h3>
+                <h3>Cadre législatif</h3>
                 <p className="fr-text--sm">
                     Les dispositions introduites par la <strong>loi n° 2021-1104 du 22 août 2021</strong> portant lutte contre le dérèglement climatique 
                     (dite « Loi Climat et résilience ») ont été complétées par la <strong>loi n° 2023-630 du 20 juillet 2023</strong> visant à faciliter 
                     la mise en œuvre des objectifs de lutte contre l'artificialisation des sols.
                 </p>
 
-                <h3 className="fr-h3">Période 2021-2031 : Consommation d'espaces NAF</h3>
+                <h3>Période 2021-2031 : Consommation d'espaces NAF</h3>
                 <p className="fr-text--sm">
                     Pour la période 2021-2031, il s'agit de raisonner en consommation d'espaces. La consommation d'espaces NAF est entendue comme 
                     « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).
@@ -96,7 +97,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     Au niveau national, la consommation d'espaces NAF est mesurée par les fichiers fonciers retraités par le CEREMA.
                 </p>
 
-                <h3 className="fr-h3">À partir de 2031 : Artificialisation</h3>
+                <h3>À partir de 2031 : Artificialisation</h3>
                 <p className="fr-text--sm">
                     A partir de 2031, il s'agit de raisonner en artificialisation. L'artificialisation nette est définie comme 
                     « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » 
@@ -108,7 +109,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 SECTION: Trajectoires de consommation d'espace
             ═══════════════════════════════════════════════════════════════════ */}
             <section className="fr-mb-6w">
-                <h2 className="fr-h2">Trajectoires de consommation d'espace</h2>
+                <h2>Trajectoires de consommation d'espace</h2>
 
                 <p className="fr-text--sm">
                     La loi Climat & Résilience fixe l'objectif d'atteindre le « zéro artificialisation nette des sols » en 2050, 
@@ -128,13 +129,13 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </ul>
                 </div>
 
-                <h3 className="fr-h3">Projets d'envergure nationale</h3>
+                <h3>Projets d'envergure nationale</h3>
                 <p className="fr-text--sm">
                     La loi prévoit que la consommation foncière des projets d'envergure nationale ou européenne et d'intérêt général majeur 
                     sera comptabilisée au niveau national. Un forfait de 12 500 hectares est déterminé pour la période 2021-2031.
                 </p>
 
-                <h3 className="fr-h3">Garanties pour les communes</h3>
+                <h3>Garanties pour les communes</h3>
                 <p className="fr-text--sm">
                     Une surface minimale d'un hectare de consommation est garantie à toutes les communes couvertes par un document d'urbanisme 
                     prescrit, arrêté ou approuvé avant le 22 août 2026, pour la période 2021-2031.
@@ -168,9 +169,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 SECTION: Détail de la consommation d'espaces
             ═══════════════════════════════════════════════════════════════════ */}
             <section className="fr-mb-6w">
-                <h2 className="fr-h2">Détail de la consommation d'espaces</h2>
+                <h2>Détail de la consommation d'espaces</h2>
 
-                <h3 className="fr-h3">Évolution annuelle de la consommation totale</h3>
+                <h3>Évolution annuelle de la consommation totale</h3>
                 <p className="fr-text--sm">
                     Le graphique ci-dessous présente l'évolution annuelle de la consommation d'espaces NAF sur votre territoire.
                 </p>
@@ -185,7 +186,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 {landData.child_land_types && landData.child_land_types.length > 0 && (
                     <>
-                        <h3 className="fr-h3">Cartographie de la consommation relative</h3>
+                        <h3>Cartographie de la consommation relative</h3>
                         <p className="fr-text--sm">
                             La carte ci-dessous présente la consommation d'espaces relative à la surface de chaque territoire (en % de la surface totale).
                         </p>
@@ -202,7 +203,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             isMap
                         />
 
-                        <h3 className="fr-h3">Cartographie de la consommation absolue</h3>
+                        <h3>Cartographie de la consommation absolue</h3>
                         <p className="fr-text--sm">
                             La carte ci-dessous présente la consommation d'espaces en valeur absolue (en hectares).
                         </p>
@@ -233,9 +234,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 SECTION: Consommation par destination
             ═══════════════════════════════════════════════════════════════════ */}
             <section className="fr-mb-6w">
-                <h2 className="fr-h2">Consommation par destination</h2>
+                <h2>Consommation par destination</h2>
 
-                <h3 className="fr-h3">Évolution annuelle par destination</h3>
+                <h3>Évolution annuelle par destination</h3>
                 <p className="fr-text--sm">
                     La répartition de la consommation d'espaces par destination permet d'identifier les principaux facteurs de consommation : 
                     habitat, activités économiques, infrastructures de transport, etc.
@@ -249,7 +250,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     sources={["majic"]}
                 />
 
-                <h3 className="fr-h3">Répartition totale par destination</h3>
+                <h3>Répartition totale par destination</h3>
                 <p className="fr-text--sm">
                     Le graphique ci-dessous présente la répartition en pourcentage de la consommation totale par destination 
                     sur la période {CONSO_START_YEAR}-{CONSO_END_YEAR}.
@@ -276,7 +277,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 SECTION: Comparaison avec d'autres territoires
             ═══════════════════════════════════════════════════════════════════ */}
             <section className="fr-mb-6w">
-                <h2 className="fr-h2">Comparaison avec d'autres territoires</h2>
+                <h2>Comparaison avec d'autres territoires</h2>
 
                 <p className="fr-text--sm">
                     Cette section permet de situer votre territoire par rapport à d'autres territoires. 
@@ -291,7 +292,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </p>
                 </div>
 
-                <h3 className="fr-h3">Consommation absolue</h3>
+                <h3>Consommation absolue</h3>
                 <p className="fr-text--sm">
                     Le graphique ci-dessous présente la consommation annuelle d'espaces en hectares pour votre territoire et les territoires de comparaison.
                 </p>
@@ -316,7 +317,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 SECTION: Consommation relative
             ═══════════════════════════════════════════════════════════════════ */}
             <section className="fr-mb-6w">
-                <h2 className="fr-h2">Consommation relative</h2>
+                <h2>Consommation relative</h2>
 
                 <p className="fr-text--sm">
                     Pour une comparaison plus équitable entre territoires de tailles différentes, la consommation peut être rapportée 
@@ -346,9 +347,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 <>
                     {/* Artificialisation - Définition */}
                     <section className="fr-mb-6w">
-                        <h2 className="fr-h2">Artificialisation</h2>
+                        <h2>Artificialisation</h2>
 
-                        <h3 className="fr-h3">Définition légale</h3>
+                        <h3>Définition légale</h3>
                         <p className="fr-text--sm">
                             L'article 192 modifie le code de l'urbanisme et donne une définition de l'artificialisation telle qu'elle doit être considérée 
                             et évaluée dans les documents d'urbanisme et de planification :
@@ -382,7 +383,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     {/* Artificialisation - Détail */}
                     <section className="fr-mb-6w">
-                        <h2 className="fr-h2">Détail de l'artificialisation</h2>
+                        <h2>Détail de l'artificialisation</h2>
 
                         <div className="fr-callout fr-callout--blue-ecume">
                             <p className="fr-callout__text">
@@ -391,7 +392,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             </p>
                         </div>
 
-                        <h3 className="fr-h3">Synthèse de l'artificialisation</h3>
+                        <h3>Synthèse de l'artificialisation</h3>
                         <p className="fr-text--sm">
                             Le graphique ci-dessous présente une vue d'ensemble de l'artificialisation sur votre territoire.
                         </p>
@@ -404,7 +405,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             showTable={false}
                         />
 
-                        <h3 className="fr-h3">Flux d'artificialisation et désartificialisation</h3>
+                        <h3>Flux d'artificialisation et désartificialisation</h3>
                         <p className="fr-text--sm">
                             L'artificialisation nette correspond au solde entre les surfaces nouvellement artificialisées et les surfaces désartificialisées.
                         </p>
@@ -430,7 +431,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                         {landData.child_land_types && landData.child_land_types.length > 0 && (
                             <>
-                                <h3 className="fr-h3">Cartographie de l'artificialisation</h3>
+                                <h3>Cartographie de l'artificialisation</h3>
                                 <p className="fr-text--sm">
                                     La carte ci-dessous présente la proportion de sols artificialisés par territoire.
                                 </p>
@@ -460,7 +461,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     {/* Artificialisation par couverture */}
                     <section className="fr-mb-6w">
-                        <h2 className="fr-h2">Répartition par type de couverture</h2>
+                        <h2>Répartition par type de couverture</h2>
 
                         <p className="fr-text--sm">
                             La couverture du sol décrit la nature physique de ce qui recouvre le territoire : 
@@ -475,7 +476,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             sources={["ocsge"]}
                         />
 
-                        <h3 className="fr-h3">Flux d'artificialisation par type de couverture</h3>
+                        <h3>Flux d'artificialisation par type de couverture</h3>
                         <p className="fr-text--sm">
                             Ce graphique montre quels types de couverture ont été principalement artificialisés ou désartificialisés au cours de la période.
                         </p>
@@ -498,7 +499,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     {/* Artificialisation par usage */}
                     <section className="fr-mb-6w">
-                        <h2 className="fr-h2">Répartition par type d'usage</h2>
+                        <h2>Répartition par type d'usage</h2>
 
                         <p className="fr-text--sm">
                             L'usage du sol indique la fonction ou l'activité qui se déroule sur le territoire : 
@@ -513,7 +514,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             sources={["ocsge"]}
                         />
 
-                        <h3 className="fr-h3">Flux d'artificialisation par type d'usage</h3>
+                        <h3>Flux d'artificialisation par type d'usage</h3>
                         <p className="fr-text--sm">
                             Ce graphique montre quels usages ont contribué à l'artificialisation ou à la désartificialisation au cours de la période.
                         </p>
@@ -536,7 +537,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     {/* Imperméabilisation par couverture */}
                     <section className="fr-mb-6w">
-                        <h2 className="fr-h2">Répartition de l'imperméabilisation par type de couverture</h2>
+                        <h2>Répartition de l'imperméabilisation par type de couverture</h2>
 
                         <p className="fr-text--sm">
                             La couverture du sol décrit la nature physique de ce qui recouvre le territoire. 
@@ -551,7 +552,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             sources={["ocsge"]}
                         />
 
-                        <h3 className="fr-h3">Flux d'imperméabilisation par type de couverture</h3>
+                        <h3>Flux d'imperméabilisation par type de couverture</h3>
                         <p className="fr-text--sm">
                             Ce graphique montre quels types de couverture ont contribué à l'imperméabilisation ou à la désimperméabilisation.
                         </p>
@@ -574,7 +575,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     {/* Imperméabilisation par usage */}
                     <section className="fr-mb-6w">
-                        <h2 className="fr-h2">Répartition de l'imperméabilisation par type d'usage</h2>
+                        <h2>Répartition de l'imperméabilisation par type d'usage</h2>
 
                         <p className="fr-text--sm">
                             L'usage du sol indique la fonction ou l'activité qui se déroule sur le territoire.
@@ -588,7 +589,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             sources={["ocsge"]}
                         />
 
-                        <h3 className="fr-h3">Flux d'imperméabilisation par type d'usage</h3>
+                        <h3>Flux d'imperméabilisation par type d'usage</h3>
                         <p className="fr-text--sm">
                             Ce graphique montre quels usages ont contribué à l'imperméabilisation ou à la désimperméabilisation.
                         </p>
@@ -628,7 +629,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         consoEndYear={CONSO_END_YEAR}
                     />
                     <MainContent>
-                        {reportContent}
+                        <ReportTypography>
+                            {reportContent}
+                        </ReportTypography>
                     </MainContent>
                 </PrintContent>
             </PrintLayout>
@@ -648,7 +651,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 consoEndYear={CONSO_END_YEAR}
             />
             <MainContent>
-                {reportContent}
+                <ReportTypography>
+                    {reportContent}
+                </ReportTypography>
             </MainContent>
         </ReportContainer>
     );

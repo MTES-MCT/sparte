@@ -93,9 +93,8 @@ const EditorArea = styled.div`
 const PrintContentBox = styled.div`
     background: #f0f7ff;
     border-left: 4px solid #000091;
-    padding: 1.5rem;
+    padding: 1rem;
     margin: 2rem 0;
-    border-radius: 0 8px 8px 0;
 
     p {
         margin: 0 0 0.5rem 0;
