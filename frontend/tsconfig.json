@@ -9,19 +9,19 @@
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "typeRoots": ["./node_modules/@types", "./frontend/types"],
-        "baseUrl": "./frontend",
+        "typeRoots": ["./node_modules/@types", "./types"],
+        "baseUrl": ".",
         "paths": {
             "@components/*": ["scripts/components/*"],
             "@hooks/*": ["scripts/hooks/*"],
             "@store/*": ["scripts/store/*"],
             "@services/*": ["scripts/services/*"],
             "@images/*": ["images/*"],
-            "@utils/*": ["scripts/utils/*"],
+            "@utils/*": ["scripts/utils/*"]
         }
     },
     "include": [
-        "frontend/**/*",
-        "frontend/types/globals.d.ts"
-    ],
+        "**/*",
+        "types/globals.d.ts"
+    ]
 }

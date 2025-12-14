@@ -1,6 +1,7 @@
 __all__ = [
     "Emprise",
     "ErrorTracking",
+    "ExportJob",
     "Project",
     "Request",
     "user_directory_path",
@@ -11,6 +12,7 @@ __all__ = [
 ]
 
 
+from .export_job import ExportJob
 from .project_base import Emprise, Project
 from .request import ErrorTracking, Request, RequestedDocumentChoices
 from .RNUPackage import RNUPackage

@@ -53,8 +53,16 @@ class ForceNonceCSPMiddleware(CSPMiddleware):
         """Replace nonce placeholder by its true value."""
         response = super().process_response(request, response)
         if isinstance(response, HttpResponse):
-            content = response.content.decode("utf-8")
-            response.content = content.replace("[NONCE_PLACEHOLDER]", request.csp_nonce).encode("utf-8")
+            content_type = response.get("Content-Type", "")
+            # Ne pas traiter les contenus binaires (PDF, images, etc.)
+            if content_type.startswith(("application/pdf", "application/octet", "image/")):
+                return response
+            try:
+                content = response.content.decode("utf-8")
+                response.content = content.replace("[NONCE_PLACEHOLDER]", request.csp_nonce).encode("utf-8")
+            except UnicodeDecodeError:
+                # Contenu binaire non décodable, on le laisse tel quel
+                pass
         return response
 
 

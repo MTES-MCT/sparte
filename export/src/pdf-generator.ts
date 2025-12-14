@@ -1,4 +1,4 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
+import puppeteer, { Page } from 'puppeteer';
 
 interface ExportOptions {
     url: string;
@@ -9,10 +9,12 @@ interface ExportOptions {
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 async function fetchTemplate(url: string): Promise<string> {
+    console.log(`Fetching template from: ${url}`);
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error(`Failed to fetch template from ${url}: ${response.statusText}`);
     }
+    console.log(`Template fetched successfully from: ${url}`);
     return response.text();
 }
 
@@ -32,7 +34,15 @@ export async function exportToPdf(options: ExportOptions): Promise<Buffer> {
             // @ts-ignore
             headless: "new",
             pipe: true,
-            args: ['--no-sandbox'],
+            args: [
+                '--no-sandbox',
+                '--disable-web-security',
+                '--ignore-certificate-errors',
+                '--disable-features=IsolateOrigins,site-per-process',
+                '--allow-running-insecure-content',
+                '--disable-setuid-sandbox',
+            ],
+            ignoreHTTPSErrors: true,
             defaultViewport: {
                 width: 794,
                 height: 1123
