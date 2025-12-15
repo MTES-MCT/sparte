@@ -55,6 +55,7 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
                     landData={landData}
                     content={content}
                     mode="edit"
+                    projectId={draft.project}
                     onContentChange={onContentChange}
                 />
             );

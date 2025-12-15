@@ -65,15 +65,10 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
         onContentChange?.(key, value);
     };
 
-    // Calcul des index min/max pour les flux (uniquement si OCSGE disponible)
-    const { maxIndex, minIndex } = useMemo(() => {
-        if (!landData.has_ocsge || !landData.millesimes || landData.millesimes.length === 0) {
-            return { maxIndex: 0, minIndex: 0 };
-        }
-        const max = Math.max(...landData.millesimes.map(m => m.index));
-        const min = max > 0 ? max - 1 : 0;
-        return { maxIndex: max, minIndex: min };
-    }, [landData.has_ocsge, landData.millesimes]);
+    // Récupérer le dernier millésime disponible
+    const millesimes = landData.millesimes || [];
+    const maxIndex = millesimes.length > 0 ? Math.max(...millesimes.map(m => m.index)) : 0;
+    const minIndex = maxIndex > 0 ? maxIndex - 1 : 0;
 
     // Récupération des données d'artificialisation pour le dernier millésime (uniquement si OCSGE disponible)
     const { defaultStockIndex } = useMillesime({
@@ -239,7 +234,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </section>
 
             <section>
-                <h2>1 Consommation des espaces naturels, agricoles et forestiers</h2>
+                <h2>1 Consommation des espaces NAF (Naturels, Agricoles et Forestiers)</h2>
 
                 <div className="fr-badge fr-badge--warning fr-badge--sm fr-mb-3w">Indicateurs obligatoires</div>
                 
@@ -260,12 +255,12 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                     sources={["majic"]}
                 />
 
-                <h3>1.2 Raisons des évolutions observées</h3>
+                <h3>1.2 Répartition de la consommation totale par destination</h3>
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Les destinations de la consommation d'espaces NAF constituent les usages pour lesquels le territoire a consommé : 
-                        pour de l'habitat, de l'activité, des infrastructures routières, des infrastructures ferroviaires, ou pour des usages mixtes ou non renseignés.
+                        La répartition de la consommation d'espaces par destination permet d'identifier les principaux facteurs de consommation : 
+                        habitat, activités économiques, infrastructures de transport, etc.
                     </p>
                 </div>
 
@@ -351,10 +346,14 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                     onChange={handleChange('consommation_autres_indicateurs')}
                     placeholder=""
                 />
-            </section>
 
-            <section>
                 <h3>1.7 Comparaison de la consommation annuelle absolue</h3>
+                
+                <div className="fr-callout">
+                    <p className="fr-callout__text">
+                        <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec le territoire de <strong>{landData.name}</strong>.
+                    </p>
+                </div>
 
                 <ChartWithTable
                     chartId="comparison_chart_export"
@@ -365,6 +364,12 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                 />
 
                 <h3>1.8 Comparaison de la consommation annuelle relative à la surface</h3>
+
+                <div className="fr-callout">
+                    <p className="fr-callout__text">
+                        <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec le territoire de <strong>{landData.name}</strong>.
+                    </p>
+                </div>
 
                 <ChartWithTable
                     chartId="surface_proportional_chart_export"
