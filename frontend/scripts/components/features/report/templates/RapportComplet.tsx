@@ -365,50 +365,14 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     sources={["majic"]}
                 />
 
-                {landData.child_land_types && landData.child_land_types.length > 0 && (
-                    <>
-                        <h3>Cartographie de la consommation relative</h3>
-                        <p className="fr-text--sm">
-                            La carte ci-dessous présente la consommation d'espaces relative à la surface de chaque territoire (en % de la surface totale).
-                        </p>
-                        <ChartWithTable
-                            chartId="conso_map_relative_export"
-                            landId={landData.land_id}
-                            landType={landData.land_type}
-                            params={{
-                                start_date: String(consoStartYear),
-                                end_date: String(consoEndYear),
-                                child_land_type: landData.child_land_types[0],
-                            }}
-                            sources={["majic"]}
-                            isMap
-                        />
-
-                        <h3>Cartographie de la consommation absolue</h3>
-                        <p className="fr-text--sm">
-                            La carte ci-dessous présente la consommation d'espaces en valeur absolue (en hectares).
-                        </p>
-                        <ChartWithTable
-                            chartId="conso_map_bubble_export"
-                            landId={landData.land_id}
-                            landType={landData.land_type}
-                            params={{
-                                start_date: String(consoStartYear),
-                                end_date: String(consoEndYear),
-                                child_land_type: landData.child_land_types[0],
-                            }}
-                            sources={["majic"]}
-                            isMap
-                        />
-                    </>
-                )}
-
-                <ContentZone
-                    content={content.consommation_annuelle || ''}
-                    mode={mode}
-                    onChange={handleChange('consommation_annuelle')}
-                    placeholder="Commentez la consommation annuelle. Quelles sont les tendances ? Quels sont les principaux facteurs ?"
-                />
+                <div className="fr-mt-4w">
+                    <ContentZone
+                        content={content.consommation_annuelle || ''}
+                        mode={mode}
+                        onChange={handleChange('consommation_annuelle')}
+                        placeholder="Commentez la consommation annuelle. Quelles sont les tendances ? Quels sont les principaux facteurs ?"
+                    />
+                </div>
 
                 <h3>3.2 Répartition de la consommation totale par destination</h3>
 
@@ -446,6 +410,38 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         placeholder="Commentez la consommation d'espaces par destinations. Quelles sont les tendances ? Quels sont les principaux facteurs ?"
                     />
                 </div>
+                
+                <h3>3.4 Cartes de consommation d'espaces</h3>
+
+                {landData.child_land_types && landData.child_land_types.length > 0 && (
+                    <ChartWithTable
+                        chartId="conso_map_bubble_export"
+                        landId={landData.land_id}
+                        landType={landData.land_type}
+                        params={{
+                            start_date: String(consoStartYear),
+                            end_date: String(consoEndYear),
+                            child_land_type: landData.child_land_types[0],
+                        }}
+                        sources={["majic"]}
+                        isMap
+                    />
+                )}
+
+                {landData.child_land_types && landData.child_land_types.length > 0 && (
+                    <ChartWithTable
+                        chartId="conso_map_relative_export"
+                        landId={landData.land_id}
+                        landType={landData.land_type}
+                        params={{
+                            start_date: String(consoStartYear),
+                            end_date: String(consoEndYear),
+                            child_land_type: landData.child_land_types[0],
+                        }}
+                        sources={["majic"]}
+                        isMap
+                    />
+                )}
             </section>
 
             <section className="fr-mb-6w">
