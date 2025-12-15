@@ -23,7 +23,7 @@ from two_factor.admin import AdminSiteOTPRequired
 from two_factor.urls import urlpatterns as tf_urls
 from two_factor.views import LoginView
 
-from config.views import EnvironmentView
+from config.views import EnvironmentView, WebpackProxyView
 from public_data.views import PdfFooterView, PdfHeaderView, RapportCompletView
 
 admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
@@ -73,5 +73,10 @@ if settings.DEBUG:
     except ImportError:
         pass
 
-    path = settings.BASE_DIR / "htmlcov"
-    urlpatterns += static("/cov/", document_root=path)
+    # Proxy webpack dev server pour le développement
+    urlpatterns += [
+        path("webpack-dev/<path:path>", WebpackProxyView.as_view(), name="webpack_proxy"),
+    ]
+
+    htmlcov_path = settings.BASE_DIR / "htmlcov"
+    urlpatterns += static("/cov/", document_root=htmlcov_path)

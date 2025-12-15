@@ -184,6 +184,29 @@ export const djangoApi = createApi({
 			// Invalider le cache du projet après la mise à jour
 			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: projectId }],
 		}),
+		startExportPdf: builder.mutation<{ jobId: string }, { url: string; headerUrl: string; footerUrl: string }>({
+			query: ({ url, headerUrl, footerUrl }) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: '/project/export/start/',
+					method: 'POST',
+					body: { url, headerUrl, footerUrl },
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+		}),
+		getExportStatus: builder.query<{ status: string; error?: string } | Blob, { jobId: string; t: number }>({
+			query: ({ jobId, t }) => ({
+				url: `/project/export/status/${jobId}/?t=${t}`,
+				responseHandler: async (response) => {
+					const contentType = response.headers.get('content-type');
+					if (contentType?.includes('application/pdf')) {
+						return response.blob();
+					}
+					return response.json();
+				},
+			}),
+		}),
 	}),
 	tagTypes: ['Project'],
 });
@@ -199,6 +222,8 @@ const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQu
 const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
 const useGetEnvironmentQuery: UseEnvTypes = djangoApi.useGetEnvironmentQuery;
 const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
+const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
+const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
 
 const {
 	useGetDepartementListQuery,
@@ -237,4 +262,6 @@ export {
 	useGetProjectDownloadLinksQuery,
 	useGetLandGeomQuery,
 	useGetLogementVacantAutorisationStatsQuery,
+	useStartExportPdfMutation,
+	useLazyGetExportStatusQuery,
 };

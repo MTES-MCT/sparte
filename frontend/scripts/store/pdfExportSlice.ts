@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface LandInfo {
     name: string;
@@ -21,44 +21,6 @@ const initialState: PdfExportState = {
     fileSize: null,
 };
 
-interface FetchPdfParams {
-    exportServerUrl: string;
-    pdfHeaderUrl: string;
-    pdfFooterUrl: string;
-    landType: string;
-    landId: string;
-    landName: string;
-}
-
-export const fetchPdfExport = createAsyncThunk(
-    'pdfExport/fetchPdf',
-    async (params: FetchPdfParams, { rejectWithValue }) => {
-        const { exportServerUrl, pdfHeaderUrl, pdfFooterUrl, landType, landId, landName } = params;
-
-        const pageUrl = `${globalThis.location.origin}/exports/rapport-complet/${landType}/${landId}`;
-        const exportUrl = `${exportServerUrl}/api/export` +
-            `?url=${encodeURIComponent(pageUrl)}` +
-            `&headerUrl=${encodeURIComponent(pdfHeaderUrl)}` +
-            `&footerUrl=${encodeURIComponent(pdfFooterUrl)}`;
-
-        try {
-            const response = await fetch(exportUrl);
-
-            if (!response.ok) {
-                throw new Error(`Erreur lors de la génération du PDF: ${response.statusText}`);
-            }
-
-            const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            const fileSize = blob.size;
-
-            return { blobUrl, landInfo: { name: landName, landId }, fileSize };
-        } catch (error) {
-            return rejectWithValue(error instanceof Error ? error.message : 'Erreur inconnue');
-        }
-    }
-);
-
 const pdfExportSlice = createSlice({
     name: 'pdfExport',
     initialState,
@@ -70,28 +32,27 @@ const pdfExportSlice = createSlice({
             state.blobUrl = null;
             state.status = 'idle';
             state.error = null;
+            state.landInfo = null;
+            state.fileSize = null;
         },
-    },
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchPdfExport.pending, (state) => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(fetchPdfExport.fulfilled, (state, action: PayloadAction<{ blobUrl: string; landInfo: LandInfo; fileSize: number }>) => {
-                state.status = 'succeeded';
-                state.blobUrl = action.payload.blobUrl;
-                state.landInfo = action.payload.landInfo;
-                state.fileSize = action.payload.fileSize;
-            })
-            .addCase(fetchPdfExport.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload as string;
-            });
+        setPdfExportLoading: (state) => {
+            state.status = 'loading';
+            state.error = null;
+        },
+        setPdfExportSuccess: (state, action: PayloadAction<{ blobUrl: string; landInfo: LandInfo; fileSize: number }>) => {
+            state.status = 'succeeded';
+            state.blobUrl = action.payload.blobUrl;
+            state.landInfo = action.payload.landInfo;
+            state.fileSize = action.payload.fileSize;
+        },
+        setPdfExportError: (state, action: PayloadAction<string>) => {
+            state.status = 'failed';
+            state.error = action.payload;
+        },
     },
 });
 
-export const { resetPdfExport } = pdfExportSlice.actions;
+export const { resetPdfExport, setPdfExportLoading, setPdfExportSuccess, setPdfExportError } = pdfExportSlice.actions;
 
 export const selectPdfExportStatus = (state: { pdfExport: PdfExportState }) => state.pdfExport.status;
 export const selectPdfExportBlobUrl = (state: { pdfExport: PdfExportState }) => state.pdfExport.blobUrl;
