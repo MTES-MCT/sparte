@@ -20,12 +20,13 @@ services:
       - app-network
 
   frontend:
-    build: ./frontend
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
     image: sparte/frontend:latest
     volumes:
-      - ./frontend:/app
+      - .:/app
       - /app/node_modules
-      - ./static:/static
     ports:
       - "3002:3000"
     networks:

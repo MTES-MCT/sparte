@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "noImplicitAny": true,
+        "module": "es6",
+        "target": "es5",
+        "jsx": "react",
+        "allowJs": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "typeRoots": ["./node_modules/@types", "./frontend/types"],
+        "baseUrl": ".",
+        "paths": {
+            "@components/*": ["frontend/scripts/components/*"],
+            "@hooks/*": ["frontend/scripts/hooks/*"],
+            "@store/*": ["frontend/scripts/store/*"],
+            "@services/*": ["frontend/scripts/services/*"],
+            "@images/*": ["frontend/images/*"],
+            "@utils/*": ["frontend/scripts/utils/*"],
+            "scripts/*": ["frontend/scripts/*"]
+        }
+    },
+    "include": [
+        "frontend/**/*",
+        "frontend/types/globals.d.ts"
+    ]
+}

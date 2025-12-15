@@ -24,7 +24,7 @@
 
         <!-- Webpack Bundle CSS -->
         {% if debug %}
-            <link rel="stylesheet" href="http://localhost:3000/assets/styles/main.css">
+            <link rel="stylesheet" href="/webpack-dev/assets/styles/main.css">
         {% else %}
             {% render_bundle 'main' 'css' %}
         {% endif %}
@@ -73,7 +73,7 @@
 
         <!-- Webpack Bundle JS -->
         {% if debug %}
-            <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
+            <script src="/webpack-dev/assets/scripts/bundle.dev.js"></script>
         {% else %}
             {% render_bundle 'main' 'js' %}
         {% endif %}
