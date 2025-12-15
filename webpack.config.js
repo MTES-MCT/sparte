@@ -9,7 +9,7 @@ const BundleTracker = require('webpack-bundle-tracker');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const common = {
-    entry: './scripts/index.js',
+    entry: './frontend/scripts/index.js',
     resolve: {
         extensions: [".js", ".jsx", ".ts", ".tsx"],
         plugins: [
@@ -100,7 +100,7 @@ const development = {
     ...common,
     mode: 'development',
     output: {
-        path: path.resolve(__dirname, '../static'),
+        path: path.resolve(__dirname, 'static'),
         filename: 'assets/scripts/bundle.dev.js',
     },
     devtool: 'cheap-module-source-map',
@@ -108,7 +108,7 @@ const development = {
         hot: true,
         open: false,
         liveReload: false,
-        static: path.resolve(__dirname, '../static'),
+        static: path.resolve(__dirname, 'static'),
         host: '0.0.0.0',
         port: 3000,
         allowedHosts: 'all',
@@ -117,7 +117,7 @@ const development = {
             "Access-Control-Allow-Headers": "X-Requested-With, Content-Type",
         },
         watchFiles: {
-            paths: ['scripts/**/*', 'styles/**/*'],
+            paths: ['frontend/scripts/**/*', 'frontend/styles/**/*'],
             options: {
                 usePolling: true,
                 interval: 1000,
@@ -156,7 +156,7 @@ const production = {
     ...common,
     mode: 'production',
     output: {
-        path: path.resolve(__dirname, '../static'),
+        path: path.resolve(__dirname, 'static'),
         filename: 'assets/scripts/bundle.[contenthash].js',
     },
     devtool: false,
@@ -178,7 +178,7 @@ const production = {
             chunkFilename: '[id].[contenthash].css'
         }),
         new BundleTracker({
-            path: path.resolve(__dirname, '../static'),
+            path: path.resolve(__dirname, 'static'),
             filename: 'webpack-stats.json',
         }),
         new CleanWebpackPlugin({
