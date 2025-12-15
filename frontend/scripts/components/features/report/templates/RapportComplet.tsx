@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { LandDetailResultType } from '@services/types/land';
 import TimelineTrajectoireZanImage from '@images/timeline-trajectoire-zan.png';
 import { useGetProjectQuery } from '@services/api';
@@ -23,9 +23,12 @@ import {
 import ChartWithTable from '@components/charts/ChartWithTable';
 import CoverPage from './CoverPage';
 import AvailableDataPage from './AvailableDataPage';
+import Drawer from '@components/ui/Drawer';
 import styled from 'styled-components';
 
 export interface RapportCompletContent {
+    conso_start_year?: string;
+    conso_end_year?: string;
     trajectoire?: string;
     consommation_annuelle?: string;
     consommation_destinations?: string;
@@ -44,10 +47,48 @@ interface RapportCompletProps {
     mode: ContentZoneMode;
     projectId: number;
     onContentChange?: (key: string, value: string) => void;
+    isSettingsOpen?: boolean;
+    onSettingsChange?: (isOpen: boolean) => void;
 }
 
-const CONSO_START_YEAR = 2011;
-const CONSO_END_YEAR = 2023;
+const DEFAULT_consoStartYear = 2011;
+const DEFAULT_consoEndYear = 2023;
+
+// Années disponibles pour la sélection (fichiers fonciers disponibles depuis 2009)
+const AVAILABLE_YEARS = Array.from({ length: 15 }, (_, i) => 2009 + i);
+
+const SettingsSection = styled.div`
+    margin-bottom: 1.5rem;
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+`;
+
+const SettingsInfo = styled.p`
+    font-size: 0.8rem;
+    color: #666;
+    margin: 1rem 0 0 0;
+    line-height: 1.4;
+`;
+
+const CalloutEditInfo = styled.div`
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    
+    @media print {
+        display: none !important;
+    }
+`;
+
+const CalloutEditText = styled.p`
+    font-size: 0.75rem;
+`;
 
 const TimelineImage = styled.img`
     width: 100%;
@@ -67,15 +108,27 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     mode,
     projectId,
     onContentChange,
+    isSettingsOpen: externalIsSettingsOpen,
+    onSettingsChange,
 }) => {
+    const [internalIsSettingsOpen, setInternalIsSettingsOpen] = useState(false);
+    
+    // Utilise le state externe si fourni, sinon le state local
+    const isSettingsOpen = externalIsSettingsOpen !== undefined ? externalIsSettingsOpen : internalIsSettingsOpen;
+    const setIsSettingsOpen = onSettingsChange || setInternalIsSettingsOpen;
+    
     const handleChange = (key: keyof RapportCompletContent) => (value: string) => {
         onContentChange?.(key, value);
     };
 
+    // Années de la période de consommation (modifiables)
+    const consoStartYear = parseInt(content.conso_start_year || String(DEFAULT_consoStartYear));
+    const consoEndYear = parseInt(content.conso_end_year || String(DEFAULT_consoEndYear));
+
     const { data: projectData } = useGetProjectQuery(String(projectId));
 
     // Calcul de l'objectif personnalisé
-    const target_custom = projectData.target_2031;
+    const target_custom = projectData?.target_2031 || 50;
     const has_custom_target = Number(target_custom) !== 50;
 
     // Récupérer le dernier millésime disponible
@@ -102,6 +155,60 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             (e: LandArtifStockIndex) => e.millesime_index === defaultStockIndex
         ) ?? defautLandArtifStockIndex,
         [landArtifStockIndexes, defaultStockIndex]
+    );
+
+    const settingsDrawer = mode === 'edit' && (
+        <>
+            <Drawer
+                isOpen={isSettingsOpen}
+                title="Paramètres du rapport"
+                onClose={() => setIsSettingsOpen(false)}
+            >
+                <SettingsSection>
+                    <h3 className="fr-text--lg fr-mb-2w">Période d'analyse de la consommation</h3>
+
+                    <div className="fr-select-group">
+                        <label className="fr-label fr-text--sm fr-mb-0" htmlFor="select-start-year">
+                            Année de début
+                        </label>
+                        <select
+                            className="fr-select"
+                            id="select-start-year"
+                            name="select-start-year"
+                            aria-describedby="select-start-year-messages"
+                            value={consoStartYear}
+                            onChange={(e) => handleChange('conso_start_year')(e.target.value)}
+                        >
+                            {AVAILABLE_YEARS.filter(y => y < consoEndYear).map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="fr-select-group fr-mt-2w">
+                        <label className="fr-label fr-text--sm fr-mb-0" htmlFor="select-end-year">
+                            Année de fin
+                        </label>
+                        <select
+                            className="fr-select"
+                            id="select-end-year"
+                            name="select-end-year"
+                            aria-describedby="select-end-year-messages"
+                            value={consoEndYear}
+                            onChange={(e) => handleChange('conso_end_year')(e.target.value)}
+                        >
+                            {AVAILABLE_YEARS.filter(y => y > consoStartYear).map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <SettingsInfo>
+                        Modifie la période affichée dans les graphiques de consommation d'espaces NAF.
+                    </SettingsInfo>
+                </SettingsSection>
+            </Drawer>
+        </>
     );
 
     const reportContent = (
@@ -225,13 +332,36 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             <section className="fr-mb-6w">
                 <h2>3 Détail de la consommation d'espaces</h2>
 
+                <div className="fr-callout">
+                    <p className="fr-callout__text">
+                        Les graphiques de cette section présentent les données de consommation d'espaces NAF
+                        sur la période du <strong>1er janvier {consoStartYear}</strong> au{' '}
+                        <strong>31 décembre {consoEndYear}</strong>.
+                    </p>
+                    {mode === 'edit' && (
+                        <CalloutEditInfo>
+                            <CalloutEditText className="fr-mb-0">
+                                <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
+                                La période d'analyse peut être modifiée dans les paramètres du rapport
+                            </CalloutEditText>
+                            <button 
+                                className="fr-btn fr-btn--sm fr-mt-0"
+                                onClick={() => setIsSettingsOpen(true)}
+                                title="Modifier la période"
+                            >
+                                Modifier
+                            </button>
+                        </CalloutEditInfo>
+                    )}
+                </div>
+
                 <h3>3.1 Évolution annuelle de la consommation</h3>
 
                 <ChartWithTable
                     chartId="annual_total_conso_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(CONSO_START_YEAR), end_date: String(CONSO_END_YEAR) }}
+                    params={{ start_date: String(consoStartYear), end_date: String(consoEndYear) }}
                     sources={["majic"]}
                 />
 
@@ -246,8 +376,8 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             landId={landData.land_id}
                             landType={landData.land_type}
                             params={{
-                                start_date: String(CONSO_START_YEAR),
-                                end_date: String(CONSO_END_YEAR),
+                                start_date: String(consoStartYear),
+                                end_date: String(consoEndYear),
                                 child_land_type: landData.child_land_types[0],
                             }}
                             sources={["majic"]}
@@ -263,8 +393,8 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             landId={landData.land_id}
                             landType={landData.land_type}
                             params={{
-                                start_date: String(CONSO_START_YEAR),
-                                end_date: String(CONSO_END_YEAR),
+                                start_date: String(consoStartYear),
+                                end_date: String(consoEndYear),
                                 child_land_type: landData.child_land_types[0],
                             }}
                             sources={["majic"]}
@@ -293,7 +423,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="pie_determinant_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(CONSO_START_YEAR), end_date: String(CONSO_END_YEAR) }}
+                    params={{ start_date: String(consoStartYear), end_date: String(consoEndYear) }}
                     sources={["majic"]}
                     showTable={false}
                 />
@@ -304,7 +434,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="chart_determinant_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(CONSO_START_YEAR), end_date: String(CONSO_END_YEAR) }}
+                    params={{ start_date: String(consoStartYear), end_date: String(consoEndYear) }}
                     sources={["majic"]}
                 />
 
@@ -333,7 +463,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="comparison_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(CONSO_START_YEAR), end_date: String(CONSO_END_YEAR) }}
+                    params={{ start_date: String(consoStartYear), end_date: String(consoEndYear) }}
                     sources={["majic"]}
                 />
 
@@ -359,7 +489,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="surface_proportional_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(CONSO_START_YEAR), end_date: String(CONSO_END_YEAR) }}
+                    params={{ start_date: String(consoStartYear), end_date: String(consoEndYear) }}
                     sources={["majic"]}
                 />
 
@@ -643,8 +773,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     />
                     <AvailableDataPage
                         landData={landData}
-                        consoStartYear={CONSO_START_YEAR}
-                        consoEndYear={CONSO_END_YEAR}
+                        consoStartYear={consoStartYear}
+                        consoEndYear={consoEndYear}
+                        mode="print"
                     />
                     <MainContent>
                         <ReportTypography>
@@ -658,6 +789,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
     return (
         <ReportContainer>
+            {settingsDrawer}
             <CoverPage
                 landData={landData}
                 reportTitle="Rapport Complet"
@@ -665,8 +797,10 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             />
             <AvailableDataPage
                 landData={landData}
-                consoStartYear={CONSO_START_YEAR}
-                consoEndYear={CONSO_END_YEAR}
+                consoStartYear={consoStartYear}
+                consoEndYear={consoEndYear}
+                mode={mode}
+                onOpenSettings={() => setIsSettingsOpen(true)}
             />
             <MainContent>
                 <ReportTypography>

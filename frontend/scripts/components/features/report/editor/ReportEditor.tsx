@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import { ReportDraft } from '@services/types/reportDraft';
@@ -48,6 +48,8 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
     onRename,
     onDelete,
 }) => {
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    
     const renderReportContent = () => {
         if (draft.report_type === 'rapport-complet') {
             return (
@@ -57,6 +59,8 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
                     mode="edit"
                     projectId={draft.project}
                     onContentChange={onContentChange}
+                    isSettingsOpen={isSettingsOpen}
+                    onSettingsChange={setIsSettingsOpen}
                 />
             );
         }
@@ -87,6 +91,7 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
                 onExport={onExport}
                 onRename={onRename}
                 onDelete={onDelete}
+                onSettingsClick={draft.report_type === 'rapport-complet' ? () => setIsSettingsOpen(true) : undefined}
                 exportDisabled={exportDisabled}
             />
 

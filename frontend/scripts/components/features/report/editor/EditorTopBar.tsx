@@ -14,6 +14,7 @@ interface EditorTopBarProps {
     onExport: () => void;
     onRename: (newName: string) => void;
     onDelete: () => void;
+    onSettingsClick?: () => void;
     exportDisabled?: boolean;
 }
 
@@ -113,6 +114,7 @@ const EditorTopBar: React.FC<EditorTopBarProps> = ({
     onExport,
     onRename,
     onDelete,
+    onSettingsClick,
     exportDisabled = false,
 }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -187,6 +189,15 @@ const EditorTopBar: React.FC<EditorTopBarProps> = ({
             </NameSection>
 
             <Actions>
+                {onSettingsClick && (
+                    <Button
+                        priority="tertiary"
+                        size="small"
+                        iconId="fr-icon-settings-5-line"
+                        onClick={onSettingsClick}
+                        title="Paramètres du rapport"
+                    />
+                )}
                 <Button
                     size="small"
                     iconId={isPdfLoading ? undefined : "fr-icon-download-line"}
