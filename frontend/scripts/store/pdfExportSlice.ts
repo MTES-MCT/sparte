@@ -6,19 +6,17 @@ export interface LandInfo {
 }
 
 export interface PdfExportState {
-    blobUrl: string | null;
+    jobId: string | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
     landInfo: LandInfo | null;
-    fileSize: number | null;
 }
 
 const initialState: PdfExportState = {
-    blobUrl: null,
+    jobId: null,
     status: 'idle',
     error: null,
     landInfo: null,
-    fileSize: null,
 };
 
 const pdfExportSlice = createSlice({
@@ -26,24 +24,19 @@ const pdfExportSlice = createSlice({
     initialState,
     reducers: {
         resetPdfExport: (state) => {
-            if (state.blobUrl) {
-                URL.revokeObjectURL(state.blobUrl);
-            }
-            state.blobUrl = null;
+            state.jobId = null;
             state.status = 'idle';
             state.error = null;
             state.landInfo = null;
-            state.fileSize = null;
         },
         setPdfExportLoading: (state) => {
             state.status = 'loading';
             state.error = null;
         },
-        setPdfExportSuccess: (state, action: PayloadAction<{ blobUrl: string; landInfo: LandInfo; fileSize: number }>) => {
+        setPdfExportSuccess: (state, action: PayloadAction<{ jobId: string; landInfo: LandInfo }>) => {
             state.status = 'succeeded';
-            state.blobUrl = action.payload.blobUrl;
+            state.jobId = action.payload.jobId;
             state.landInfo = action.payload.landInfo;
-            state.fileSize = action.payload.fileSize;
         },
         setPdfExportError: (state, action: PayloadAction<string>) => {
             state.status = 'failed';
@@ -55,9 +48,8 @@ const pdfExportSlice = createSlice({
 export const { resetPdfExport, setPdfExportLoading, setPdfExportSuccess, setPdfExportError } = pdfExportSlice.actions;
 
 export const selectPdfExportStatus = (state: { pdfExport: PdfExportState }) => state.pdfExport.status;
-export const selectPdfExportBlobUrl = (state: { pdfExport: PdfExportState }) => state.pdfExport.blobUrl;
+export const selectPdfExportJobId = (state: { pdfExport: PdfExportState }) => state.pdfExport.jobId;
 export const selectPdfExportError = (state: { pdfExport: PdfExportState }) => state.pdfExport.error;
 export const selectPdfExportLandInfo = (state: { pdfExport: PdfExportState }) => state.pdfExport.landInfo;
-export const selectPdfExportFileSize = (state: { pdfExport: PdfExportState }) => state.pdfExport.fileSize;
 
 export default pdfExportSlice.reducer;

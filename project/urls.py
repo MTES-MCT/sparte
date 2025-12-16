@@ -7,7 +7,6 @@ from project.models.create import create_project_api_view
 from . import views
 from .api_views import (
     EmpriseViewSet,
-    ExportPdfView,
     ExportStartView,
     ExportStatusView,
     ProjectDetailView,
@@ -81,15 +80,10 @@ urlpatterns = [
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads",
     ),
-    path(
-        "<int:pk>/downloadRequest/<slug:requested_document>",
-        RecordDownloadRequestAPIView.as_view(),
-        name="download_request",
-    ),
     # Export PDF (polling)
     path("export/start/", ExportStartView.as_view(), name="export_start"),
     path("export/status/<str:job_id>/", ExportStatusView.as_view(), name="export_status"),
-    path("export/pdf/<str:job_id>/", ExportPdfView.as_view(), name="export_pdf"),
+    path("export/download/<str:job_id>/", RecordDownloadRequestAPIView.as_view(), name="export_download"),
 ]
 
 # Add API urls

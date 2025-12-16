@@ -195,16 +195,10 @@ export const djangoApi = createApi({
 				};
 			},
 		}),
-		getExportStatus: builder.query<{ status: string; error?: string } | Blob, { jobId: string; t: number }>({
-			query: ({ jobId, t }) => ({
-				url: `/project/export/status/${jobId}/?t=${t}`,
-				responseHandler: async (response) => {
-					const contentType = response.headers.get('content-type');
-					if (contentType?.includes('application/pdf')) {
-						return response.blob();
-					}
-					return response.json();
-				},
+		downloadExportPdf: builder.query<Blob, { jobId: string; projectId: number }>({
+			query: ({ jobId, projectId }) => ({
+				url: `/project/export/download/${jobId}/?project_id=${projectId}`,
+				responseHandler: (response) => response.blob(),
 			}),
 		}),
 	}),
@@ -223,7 +217,7 @@ const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuer
 const useGetEnvironmentQuery: UseEnvTypes = djangoApi.useGetEnvironmentQuery;
 const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
 const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
-const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
+const useLazyDownloadExportPdfQuery = djangoApi.useLazyDownloadExportPdfQuery;
 
 const {
 	useGetDepartementListQuery,
@@ -263,5 +257,5 @@ export {
 	useGetLandGeomQuery,
 	useGetLogementVacantAutorisationStatsQuery,
 	useStartExportPdfMutation,
-	useLazyGetExportStatusQuery,
+	useLazyDownloadExportPdfQuery,
 };

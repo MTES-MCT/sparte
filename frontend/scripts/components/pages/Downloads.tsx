@@ -2,8 +2,8 @@ import React, { ReactNode, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Guide from '@components/ui/Guide';
 import { RootState } from '@store/store';
-import { selectPdfExportStatus, selectPdfExportBlobUrl, selectPdfExportError, selectPdfExportFileSize } from '@store/pdfExportSlice';
-import { useRecordDownloadRequestMutation } from '@services/api';
+import { selectPdfExportStatus, selectPdfExportJobId, selectPdfExportError } from '@store/pdfExportSlice';
+import { useLazyDownloadExportPdfQuery } from '@services/api';
 import { LandDetailResultType } from '@services/types/land';
 import { ProjectDetailResultType } from '@services/types/project';
 
@@ -39,22 +39,15 @@ interface DownloadsProps {
     projectData: ProjectDetailResultType;
 }
 
-const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} o`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
-};
-
 const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
     const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
-    const pdfBlobUrl = useSelector((state: RootState) => selectPdfExportBlobUrl(state));
+    const jobId = useSelector((state: RootState) => selectPdfExportJobId(state));
     const pdfError = useSelector((state: RootState) => selectPdfExportError(state));
-    const fileSize = useSelector((state: RootState) => selectPdfExportFileSize(state));
+    const [downloadPdf, { isFetching: isDownloading }] = useLazyDownloadExportPdfQuery();
     const [hasDownloaded, setHasDownloaded] = useState(false);
-    const [recordDownloadRequest, { isError: requiresLogin }] = useRecordDownloadRequestMutation();
 
     const isLoading = pdfStatus === 'loading';
-    const isReady = pdfStatus === 'succeeded' && pdfBlobUrl;
+    const isReady = pdfStatus === 'succeeded' && jobId;
     const hasFailed = pdfStatus === 'failed';
 
     const getFilename = (): string => {
@@ -66,36 +59,28 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
     };
 
     const handleClick = async () => {
-        if (!pdfBlobUrl || hasDownloaded) return;
+        if (!jobId || hasDownloaded || isDownloading) return;
 
-        // Enregistrer la demande de téléchargement
-        const result = await recordDownloadRequest({
-            projectId: projectData.id,
-            documentType: 'rapport-complet',
-        });
-
-        if (!result.data?.success) {
-            return;
+        const result = await downloadPdf({ jobId, projectId: projectData.id });
+        if (result.data) {
+            const blobUrl = URL.createObjectURL(result.data);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = getFilename();
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(blobUrl);
+            setHasDownloaded(true);
+            setTimeout(() => setHasDownloaded(false), 6000);
         }
-
-        const link = document.createElement('a');
-        link.href = pdfBlobUrl;
-        link.download = getFilename();
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        setHasDownloaded(true);
-
-        setTimeout(() => {
-            setHasDownloaded(false);
-        }, 6000);
     };
 
     const getButtonText = () => {
-        const sizeText = fileSize ? ` (PDF - ${formatFileSize(fileSize)})` : '';
-        if (hasDownloaded) return `Téléchargement effectué ✓${sizeText}`;
+        if (hasDownloaded) return 'Téléchargement effectué ✓';
+        if (isDownloading) return 'Téléchargement en cours...';
         if (isLoading) return 'Génération du PDF en cours, veuillez patienter...';
-        if (isReady) return `Télécharger le rapport complet${sizeText}`;
+        if (isReady) return 'Télécharger le rapport complet';
         if (hasFailed) return 'Erreur - Réessayer';
         return 'Préparation du rapport...';
     };
@@ -113,18 +98,6 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
                         <Notice
                             type="warning"
                             message={pdfError}
-                            reportTitle="complet"
-                        />
-                    )}
-
-                    {requiresLogin && (
-                        <Notice
-                            type="warning"
-                            message={
-                                <>
-                                    Veuillez vous <a href="/users/signin/">connecter</a> pour télécharger le rapport.
-                                </>
-                            }
                             reportTitle="complet"
                         />
                     )}

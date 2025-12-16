@@ -1,21 +1,35 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from project.models import Project, Request, RequestedDocumentChoices
+from project.models import ExportJob, Project, Request
 
 
 class RecordDownloadRequestAPIView(generics.RetrieveAPIView):
+    """
+    Enregistre une demande de téléchargement et retourne le PDF.
+
+    GET /project/export/download/<job_id>/?project_id=123
+    """
+
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk, requested_document):
-        if requested_document not in RequestedDocumentChoices.values:
-            return JsonResponse({"error": f"Type de rapport invalide {requested_document}"}, status=400)
-
+    def get(self, request, job_id):
         try:
-            project = Project.objects.get(pk=pk)
-        except Project.DoesNotExist:
-            return JsonResponse({"error": "Projet non trouvé"}, status=404)
+            job = ExportJob.objects.get(job_id=job_id, user=request.user)
+        except ExportJob.DoesNotExist:
+            return JsonResponse({"error": "Job non trouvé"}, status=404)
+
+        if job.status != ExportJob.Status.COMPLETED or not job.pdf_file:
+            return JsonResponse({"error": "PDF non disponible"}, status=404)
+
+        project_id = request.query_params.get("project_id")
+        project = None
+        if project_id:
+            try:
+                project = Project.objects.get(pk=project_id)
+            except Project.DoesNotExist:
+                return JsonResponse({"error": "project_id invalide"}, status=400)
 
         Request.objects.create(
             user=request.user,
@@ -23,7 +37,11 @@ class RecordDownloadRequestAPIView(generics.RetrieveAPIView):
             first_name=request.user.first_name,
             last_name=request.user.last_name,
             email=request.user.email,
-            requested_document=requested_document,
+            requested_document=job.report_type,
         )
 
-        return JsonResponse({"success": True})
+        return HttpResponse(
+            content=job.pdf_file.read(),
+            status=200,
+            content_type="application/pdf",
+        )

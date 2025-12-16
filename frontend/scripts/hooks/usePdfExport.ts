@@ -18,8 +18,8 @@ interface ExportStatusResponse {
 }
 
 /**
- * Hook pour lancer et suivre l'export PDF d'un diagnostic.
- * Lance automatiquement l'export quand landData est disponible.
+ * Hook pour lancer la génération du PDF et suivre son statut.
+ * Ne télécharge pas le PDF, stocke uniquement le jobId quand terminé.
  */
 const usePdfExport = (landData: LandData | undefined) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -44,17 +44,10 @@ const usePdfExport = (landData: LandData | undefined) => {
                 if (status === 'completed') {
                     done = true;
                     clearInterval(intervalId);
-                    const pdfRes = await fetch(`/project/export/pdf/${jobId}/`, { credentials: 'include' });
-                    if (pdfRes.ok) {
-                        const blob = await pdfRes.blob();
-                        dispatch(setPdfExportSuccess({
-                            blobUrl: URL.createObjectURL(blob),
-                            landInfo: { name, landId: land_id },
-                            fileSize: blob.size,
-                        }));
-                    } else {
-                        dispatch(setPdfExportError('Erreur lors du téléchargement du PDF'));
-                    }
+                    dispatch(setPdfExportSuccess({
+                        jobId,
+                        landInfo: { name, landId: land_id },
+                    }));
                 } else if (status === 'failed') {
                     done = true;
                     clearInterval(intervalId);
