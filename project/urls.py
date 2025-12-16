@@ -10,6 +10,7 @@ from .api_views import (
     ExportStartView,
     ExportStatusView,
     ProjectDetailView,
+    ProjectDownloadLinkView,
     RecordDownloadRequestAPIView,
 )
 
@@ -79,6 +80,16 @@ urlpatterns = [
         "<int:pk>/tableau-de-bord/telechargements",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/telechargements/<uuid:draft_id>",
+        views.diagnostic.DiagnosticDownloadsView.as_view(),
+        name="report_downloads_draft",
+    ),
+    path(
+        "<int:pk>/telechargement-liens",
+        ProjectDownloadLinkView.as_view(),
+        name="report_download_url",
     ),
     # Export PDF (polling)
     path("export/start/", ExportStartView.as_view(), name="export_start"),

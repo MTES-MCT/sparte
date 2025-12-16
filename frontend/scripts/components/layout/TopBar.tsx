@@ -14,8 +14,8 @@ const Container = styled.div`
     background: rgba(255, 255, 255, 0.8);
     border-bottom: 1px solid #EBEBEC;
     z-index: 997;
-    padding: 1.5rem;
-    min-height: 5.8rem;
+    padding: 1rem 1.5rem;
+    min-height: 4.6rem;
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;

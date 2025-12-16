@@ -151,8 +151,7 @@ const GenericChart = ({
     const defaultContainerProps = {
         style: {
             height: shouldUseDefaultHeight ? "400px" : (chartHeight === null ? "auto" : `${chartHeight}px`),
-            width: "100%",
-            marginBottom: "2rem"
+            width: "100%"
         }
     };
 

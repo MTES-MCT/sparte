@@ -25,6 +25,13 @@ from two_factor.views import LoginView
 
 from config.views import EnvironmentView, WebpackProxyView
 from public_data.views import PdfFooterView, PdfHeaderView, RapportCompletView
+from config.views import EnvironmentView
+from public_data.views import (
+    PdfFooterView,
+    PdfHeaderView,
+    RapportCompletView,
+    RapportDraftView,
+)
 
 admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
 if settings.TWO_FACTOR_ENABLED:
@@ -53,6 +60,7 @@ urlpatterns += [
     path(
         "exports/rapport-complet/<str:land_type>/<str:land_id>", RapportCompletView.as_view(), name="rapport_complet"
     ),
+    path("exports/rapport-draft/<uuid:draft_id>", RapportDraftView.as_view(), name="rapport_draft"),
     path("exports/pdf-header", PdfHeaderView.as_view(), name="pdf_header"),
     path("exports/pdf-footer", PdfFooterView.as_view(), name="pdf_footer"),
     path("env", view=EnvironmentView.as_view(), name="env"),

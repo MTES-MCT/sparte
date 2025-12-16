@@ -146,11 +146,11 @@ class Project(BaseProject):
     def cities(self) -> QuerySet[Commune]:
         return self.land_proxy.get_cities()
 
-    look_a_like = models.CharField(
-        "Territoire pour se comparer",
-        max_length=250,
+    comparison_lands = models.JSONField(
+        "Territoires de comparaison",
+        default=list,
         blank=True,
-        null=True,
+        help_text="Liste des territoires de comparaison",
     )
     target_2031 = models.DecimalField(
         "Objectif de réduction à 2031 (en %)",
@@ -291,57 +291,15 @@ class Project(BaseProject):
             ConsommationCorrectionStatus.FUSION,
         ]
 
-    def add_look_a_like(self, public_key, many=False):
-        """Add a public_key to look a like keeping the field formated
-        and avoiding duplicate. Can process a list if many=True."""
-        try:
-            keys = {_ for _ in self.look_a_like.split(";")}
-        except AttributeError:
-            keys = set()
-        if many:
-            for item in public_key:
-                keys.add(item)
-        else:
-            keys.add(public_key)
-        self.look_a_like = ";".join(list(keys))
-
-    def remove_look_a_like(self, public_key, many=False):
-        """Remove a public_key from look_a_like property keeping it formated"""
-        try:
-            keys = {_ for _ in self.look_a_like.split(";")}
-            if many:
-                for key in public_key:
-                    keys.remove(key)
-            else:
-                keys.remove(public_key)
-            self.look_a_like = ";".join(list(keys))
-        except (AttributeError, KeyError):
-            return
-
-    @property
-    def nb_look_a_like(self):
-        try:
-            return len({_ for _ in self.look_a_like.split(";") if _ != ""})
-        except AttributeError:
-            return 0
-
-    def get_look_a_like(self):
-        """If a public_key is corrupted it removes it and hide the error"""
-        lands = list()
-        to_remove = list()
-        try:
-            # TODO: use ArrayField in models
-            public_keys = {_ for _ in self.look_a_like.split(";") if _}
-        except AttributeError:
-            public_keys = set()
-        for public_key in public_keys:
+    def get_comparison_lands_as_land_objects(self):
+        """Retourne les territoires de comparaison comme objets Land"""
+        lands = []
+        for item in self.comparison_lands or []:
             try:
+                public_key = f"{item['land_type']}_{item['land_id']}"
                 lands.append(Land(public_key))
-            except LandException:
-                to_remove.append(public_key)
-        if to_remove:
-            self.remove_look_a_like(to_remove, many=True)
-            self.save(update_fields=["look_a_like"])
+            except (LandException, KeyError):
+                continue
         return sorted(lands, key=lambda x: x.name)
 
     def get_bilan_conso(self):
@@ -389,19 +347,18 @@ class Project(BaseProject):
     def get_city_conso_per_year(self, group_name=None):
         return self.get_land_conso_per_year("city_name", group_name=group_name)
 
-    def get_look_a_like_pop_change_per_year(
+    def get_comparison_lands_pop_change_per_year(
         self,
         criteria: Literal["pop", "household"] = "pop",
     ):
-        """Return same data as get_pop_per_year but for land listed in
-        look_a_like property"""
+        """Return same data as get_pop_per_year but for comparison lands"""
         return {
             land.name: land.get_pop_change_per_year(
                 self.analyse_start_date,
                 self.analyse_end_date,
                 criteria=criteria,
             )
-            for land in self.get_look_a_like()
+            for land in self.get_comparison_lands_as_land_objects()
         }
 
     def get_absolute_url(self):
@@ -478,27 +435,18 @@ class Project(BaseProject):
         return (self.get_arbitrary_comparison_lands() or self.get_neighbors()).order_by("name")[:limit]
 
     def comparison_lands_and_self_land(self) -> list[Land]:
-        look_a_likes = self.get_look_a_like()
-        return [self.land_proxy] + look_a_likes
+        comparison_lands = self.get_comparison_lands_as_land_objects()
+        return [self.land_proxy] + comparison_lands
 
     def comparison_land_models_and_self(self) -> list[LandModel]:
         """Return comparison lands and self land as LandModel objects"""
         land_models = [self.land_model]
 
-        # Get look_a_like public keys
-        try:
-            public_keys = {_ for _ in self.look_a_like.split(";") if _}
-        except AttributeError:
-            public_keys = set()
-
-        # Convert each public_key to LandModel
-        for public_key in public_keys:
+        for item in self.comparison_lands or []:
             try:
-                land_type, land_id = public_key.strip().split("_")
-                land_model = LandModel.objects.get(land_type=land_type, land_id=land_id)
+                land_model = LandModel.objects.get(land_type=item["land_type"], land_id=item["land_id"])
                 land_models.append(land_model)
-            except (ValueError, LandModel.DoesNotExist, LandException):
-                # Skip invalid or not found land models
+            except (KeyError, LandModel.DoesNotExist):
                 continue
 
         return sorted(land_models, key=lambda x: x.name)

@@ -235,6 +235,18 @@ class RapportCompletView(TemplateView):
         return super().get_context_data(**kwargs)
 
 
+class RapportDraftView(TemplateView):
+    template_name = "public_data/rapport_draft.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs.update(
+            {
+                "draft_id": self.kwargs.get("draft_id"),
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
 class PdfHeaderView(TemplateView):
     template_name = "public_data/pdf_header.html"
 

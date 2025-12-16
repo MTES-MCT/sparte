@@ -200,7 +200,7 @@ const DownloadItems: React.FC<DownloadItemsProps> = ({ downloadsUrl }) => (
         to={downloadsUrl}
         className="fr-btn fr-btn--icon-left fr-icon-download-line"
     >
-        Téléchargements
+        Générer un rapport
     </DownloadLink>
 );
 

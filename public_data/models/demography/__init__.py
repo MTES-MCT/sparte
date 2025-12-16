@@ -14,8 +14,3 @@ from .NearestTerritories import (  # noqa : F401
     NearestTerritoriesSerializer,
     NearestTerritoriesViewset,
 )
-from .SimilarTerritories import (  # noqa : F401
-    SimilarTerritories,
-    SimilarTerritoriesSerializer,
-    SimilarTerritoriesViewset,
-)

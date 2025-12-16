@@ -1,8 +1,6 @@
 import React from "react";
-import styled from "styled-components";
 import { Territory } from "@components/ui/SearchBar";
-import SearchBar from "@components/ui/SearchBar";
-import { TerritoryBadge } from "./TerritoryBadge";
+import TerritorySelector from "@components/features/TerritorySelector";
 import { ChartSection } from "./ChartSection";
 import { CHART_DESCRIPTIONS, GUIDE_TEXTS } from "./constants";
 import GuideContent from "@components/ui/GuideContent";
@@ -14,23 +12,13 @@ interface ConsoComparisonProps {
   startYear: number;
   endYear: number;
   territories: Territory[];
+  excludedTerritories: Territory[];
   comparisonLandIds: string | null;
   isDefaultSelection: boolean;
   onAddTerritory: (territory: Territory) => void;
   onRemoveTerritory: (territory: Territory) => void;
   onReset: () => void;
 }
-
-const TerritoryList = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-`;
-
-const EmptyText = styled.p`
-  color: #666;
-`;
 
 export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
   landId,
@@ -39,24 +27,13 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
   startYear,
   endYear,
   territories,
+  excludedTerritories,
   comparisonLandIds,
   isDefaultSelection,
   onAddTerritory,
   onRemoveTerritory,
   onReset,
 }) => {
-  const mainTerritory: Territory = {
-    id: 0,
-    name: landName,
-    source_id: landId,
-    land_type: landType,
-    land_type_label: '',
-    area: 0,
-    public_key: '',
-  };
-
-  const excludedTerritories = [mainTerritory, ...territories];
-
   return (
     <div className="fr-mt-7w">
       <h3 id="conso-comparaison">Comparaison avec d'autres territoires</h3>
@@ -64,39 +41,19 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div className="fr-col-12 fr-col-lg-6">
           <div className="bg-white fr-p-3w rounded h-100">
-            <h5 className="fr-mb-1w">Territoires de comparaison sélectionnés ({territories.length})</h5>
             <p className="fr-text--xs">
-              <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec {landName}.
+              <i className="bi bi-info-circle fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec {landName}.
             </p>
-            {!isDefaultSelection && (
-              <button
-                onClick={onReset}
-                className="fr-btn fr-btn--sm fr-btn--secondary fr-mb-3w"
-              >
-                Remettre la sélection par défaut
-              </button>
-            )}
-            <TerritoryList>
-              {territories.length === 0 ? (
-                <EmptyText className="fr-text--sm">
-                  Aucun territoire sélectionné
-                </EmptyText>
-              ) : (
-                territories.map((territory) => (
-                  <TerritoryBadge
-                    key={`${territory.land_type}_${territory.source_id}`}
-                    territory={territory}
-                    onRemove={onRemoveTerritory}
-                  />
-                ))
-              )}
-            </TerritoryList>
-            <hr className="fr-mt-4w" />
-            <SearchBar
-              label="Ajouter un territoire de comparaison"
-              onTerritorySelect={onAddTerritory}
-              excludeTerritories={excludedTerritories}
-              disableOverlay={true}
+            <TerritorySelector
+              territories={territories}
+              excludedTerritories={excludedTerritories}
+              isDefaultSelection={isDefaultSelection}
+              onAddTerritory={onAddTerritory}
+              onRemoveTerritory={onRemoveTerritory}
+              onReset={onReset}
+              searchLabel="Ajouter un territoire de comparaison"
+              showCount={true}
+              compact={true}
             />
           </div>
         </div>
