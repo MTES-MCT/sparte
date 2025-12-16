@@ -5,8 +5,9 @@
   "main": "dist/api.js",
   "scripts": {
     "build": "tsc",
+    "scalingo-postbuild": "tsc && npx puppeteer browsers install chrome",
     "dev": "PORT=3001 ALLOWED_HOSTS=localhost tsx watch src/api.ts",
-    "prod": "npx puppeteer browsers install chrome && node dist/api.js",
+    "prod": "node dist/api.js",
     "cli": "tsx src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest"
