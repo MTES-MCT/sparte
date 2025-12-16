@@ -17,8 +17,19 @@ class ExportJob(models.Model):
         COMPLETED = "completed", "Terminé"
         FAILED = "failed", "Échec"
 
+    class ReportType(models.TextChoices):
+        RAPPORT_COMPLET = "rapport-complet", "Rapport complet"
+        RAPPORT_LOCAL = "rapport-local", "Rapport local"
+
     job_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    land_type = models.CharField(max_length=50, blank=True)
+    land_id = models.CharField(max_length=50, blank=True)
+    report_type = models.CharField(
+        max_length=30,
+        choices=ReportType.choices,
+        blank=True,
+    )
     pdf_file = models.FileField(upload_to=export_pdf_path, blank=True)
     error = models.TextField(blank=True, null=True)
     user = models.ForeignKey(

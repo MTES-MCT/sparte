@@ -10,6 +10,13 @@ interface LandData {
     name: string;
 }
 
+type ExportStatus = 'pending' | 'completed' | 'failed';
+
+interface ExportStatusResponse {
+    status: ExportStatus;
+    error?: string;
+}
+
 /**
  * Hook pour lancer et suivre l'export PDF d'un diagnostic.
  * Lance automatiquement l'export quand landData est disponible.
@@ -21,6 +28,8 @@ const usePdfExport = (landData: LandData | undefined) => {
     useEffect(() => {
         if (!landData) return;
 
+        const { land_id, land_type, name } = landData;
+
         let intervalId: ReturnType<typeof setInterval> | undefined;
         let done = false;
 
@@ -30,16 +39,9 @@ const usePdfExport = (landData: LandData | undefined) => {
                 const res = await fetch(`/project/export/status/${jobId}/`, { credentials: 'include' });
                 if (done) return;
 
-                if (res.headers.get('content-type')?.includes('application/pdf')) {
-                    done = true;
-                    clearInterval(intervalId);
-                    const blob = await res.blob();
-                    dispatch(setPdfExportSuccess({
-                        blobUrl: URL.createObjectURL(blob),
-                        landInfo: { name: landData.name, landId: landData.land_id },
-                        fileSize: blob.size,
-                    }));
-                } else if (res.status === 404) {
+                const { status, error }: ExportStatusResponse = await res.json();
+
+                if (status === 'completed') {
                     done = true;
                     clearInterval(intervalId);
                     const pdfRes = await fetch(`/project/export/pdf/${jobId}/`, { credentials: 'include' });
@@ -47,18 +49,18 @@ const usePdfExport = (landData: LandData | undefined) => {
                         const blob = await pdfRes.blob();
                         dispatch(setPdfExportSuccess({
                             blobUrl: URL.createObjectURL(blob),
-                            landInfo: { name: landData.name, landId: landData.land_id },
+                            landInfo: { name, landId: land_id },
                             fileSize: blob.size,
                         }));
+                    } else {
+                        dispatch(setPdfExportError('Erreur lors du téléchargement du PDF'));
                     }
-                } else {
-                    const { status, error } = await res.json();
-                    if (status === 'failed') {
-                        done = true;
-                        clearInterval(intervalId);
-                        dispatch(setPdfExportError(error || 'Erreur export'));
-                    }
+                } else if (status === 'failed') {
+                    done = true;
+                    clearInterval(intervalId);
+                    dispatch(setPdfExportError(error || 'Erreur export'));
                 }
+                // Si status === 'pending', on continue le polling
             } catch {
                 // Ignorer les erreurs réseau
             }
@@ -66,9 +68,9 @@ const usePdfExport = (landData: LandData | undefined) => {
 
         dispatch(setPdfExportLoading());
         startExportPdf({
-            url: `/exports/rapport-complet/${landData.land_type}/${landData.land_id}`,
-            headerUrl: `/exports/pdf-header`,
-            footerUrl: `/exports/pdf-footer`,
+            land_type,
+            land_id,
+            report_type: 'rapport-complet',
         }).unwrap().then(({ jobId }) => {
             if (done) return;
             poll(jobId);

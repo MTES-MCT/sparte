@@ -1,7 +1,5 @@
-import logging
-
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views import View
 
 from project.models import ExportJob
@@ -15,7 +13,7 @@ class ExportStatusView(LoginRequiredMixin, View):
 
     Retourne:
     - Si pending: {"status": "pending"}
-    - Si completed: Le PDF directement (content-type: application/pdf)
+    - Si completed: {"status": "completed"}
     - Si failed: {"status": "failed", "error": "..."}
     - Si job_id inconnu: 404
     """
@@ -34,13 +32,7 @@ class ExportStatusView(LoginRequiredMixin, View):
         if job.status == ExportJob.Status.FAILED:
             return JsonResponse({"status": "failed", "error": job.error}, status=500)
 
-        if job.status == ExportJob.Status.COMPLETED and job.pdf_file:
-            logger = logging.getLogger(__name__)
-            logger.info(f"Export status {job_id} - Retour PDF depuis S3")
-            return HttpResponse(
-                content=job.pdf_file.read(),
-                status=200,
-                content_type="application/pdf",
-            )
+        if job.status == ExportJob.Status.COMPLETED:
+            return JsonResponse({"status": "completed"})
 
         return JsonResponse({"error": "État inconnu"}, status=500)

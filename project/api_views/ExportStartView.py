@@ -1,5 +1,4 @@
 import logging
-import re
 import threading
 from urllib.parse import urljoin
 
@@ -12,25 +11,14 @@ from rest_framework.views import APIView
 
 from project.models import ExportJob
 
-ALLOWED_EXPORT_PATH = re.compile(r"^/exports/[\w\-/]+$")
 
-
-class InvalidExportPathError(ValueError):
-    """Chemin d'export invalide."""
-
-
-def _build_export_url(path: str) -> str:
-    """Construit l'URL complète pour l'export à partir d'un chemin relatif sécurisé."""
-    if not path or not path.startswith("/"):
-        raise InvalidExportPathError("Le chemin doit commencer par /")
-
-    if not ALLOWED_EXPORT_PATH.match(path):
-        raise InvalidExportPathError("Chemin d'export non autorisé")
-
-    if any(c in path for c in ("@", ":", "\\", "\n", "\r")):
-        raise InvalidExportPathError("Caractères non autorisés dans le chemin")
-
-    return urljoin(settings.EXPORT_BASE_URL, path)
+def _build_export_urls(land_type: str, land_id: str, report_type: str) -> tuple[str, str, str]:
+    """Construit les URLs d'export à partir des paramètres land."""
+    base_url = settings.EXPORT_BASE_URL
+    url = urljoin(base_url, f"/exports/{report_type}/{land_type}/{land_id}")
+    header_url = urljoin(base_url, "/exports/pdf-header")
+    footer_url = urljoin(base_url, "/exports/pdf-footer")
+    return url, header_url, footer_url
 
 
 def _run_export_job(job_pk: int, export_server_url: str, url: str, header_url: str, footer_url: str):
@@ -105,9 +93,9 @@ class ExportStartView(APIView):
 
     POST avec JSON body:
     {
-        "url": "/exports/rapport-complet/COMMUNE/12345",
-        "headerUrl": "/exports/pdf-header",
-        "footerUrl": "/exports/pdf-footer"
+        "land_type": "COMMUNE",
+        "land_id": "12345",
+        "report_type": "rapport-complet"
     }
 
     Retourne: {"jobId": "uuid..."}
@@ -127,31 +115,33 @@ class ExportStartView(APIView):
 
         logger.info(f"[Export] Serveur d'export configuré: {export_server_url}")
 
-        url = request.data.get("url")
-        header_url = request.data.get("headerUrl")
-        footer_url = request.data.get("footerUrl")
+        land_type = request.data.get("land_type")
+        land_id = request.data.get("land_id")
+        report_type = request.data.get("report_type")
 
-        logger.info(f"[Export] Paramètres reçus: url={url}, headerUrl={header_url}, footerUrl={footer_url}")
+        logger.info(f"[Export] Paramètres reçus: land_type={land_type}, land_id={land_id}, report_type={report_type}")
 
-        if not all([url, header_url, footer_url]):
+        if not all([land_type, land_id, report_type]):
             logger.warning("[Export] Paramètres manquants dans la requête")
             return JsonResponse(
-                {"error": "Paramètres manquants: url, headerUrl, footerUrl requis"},
+                {"error": "Paramètres manquants: land_type, land_id, report_type requis"},
                 status=400,
             )
 
-        try:
-            logger.info("[Export] Validation et construction des URLs...")
-            url = _build_export_url(url)
-            header_url = _build_export_url(header_url)
-            footer_url = _build_export_url(footer_url)
-            logger.info(f"[Export] URLs validées: url={url}, headerUrl={header_url}, footerUrl={footer_url}")
-        except InvalidExportPathError as e:
-            logger.warning(f"[Export] Chemin d'export invalide: {e}")
-            return JsonResponse({"error": str(e)}, status=400)
+        if report_type not in [choice[0] for choice in ExportJob.ReportType.choices]:
+            logger.warning(f"[Export] report_type invalide: {report_type}")
+            return JsonResponse({"error": "report_type invalide"}, status=400)
+
+        url, header_url, footer_url = _build_export_urls(land_type, land_id, report_type)
+        logger.info(f"[Export] URLs construites: url={url}, headerUrl={header_url}, footerUrl={footer_url}")
 
         logger.info(f"[Export] Création du job d'export pour l'utilisateur {request.user.id}...")
-        job = ExportJob.objects.create(user=request.user)
+        job = ExportJob.objects.create(
+            user=request.user,
+            land_type=land_type,
+            land_id=land_id,
+            report_type=report_type,
+        )
         logger.info(f"[Export] Job {job.job_id} créé en base de données (pk={job.pk})")
 
         logger.info(f"[Export] Job {job.job_id} - Lancement du thread d'export...")

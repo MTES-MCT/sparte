@@ -184,13 +184,13 @@ export const djangoApi = createApi({
 			// Invalider le cache du projet après la mise à jour
 			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: projectId }],
 		}),
-		startExportPdf: builder.mutation<{ jobId: string }, { url: string; headerUrl: string; footerUrl: string }>({
-			query: ({ url, headerUrl, footerUrl }) => {
+		startExportPdf: builder.mutation<{ jobId: string }, { land_type: string; land_id: string; report_type: string }>({
+			query: ({ land_type, land_id, report_type }) => {
 				const csrfToken = getCsrfToken();
 				return {
 					url: '/project/export/start/',
 					method: 'POST',
-					body: { url, headerUrl, footerUrl },
+					body: { land_type, land_id, report_type },
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},

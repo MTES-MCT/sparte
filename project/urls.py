@@ -11,7 +11,6 @@ from .api_views import (
     ExportStartView,
     ExportStatusView,
     ProjectDetailView,
-    ProjectDownloadLinkView,
     RecordDownloadRequestAPIView,
 )
 
@@ -86,11 +85,6 @@ urlpatterns = [
         "<int:pk>/downloadRequest/<slug:requested_document>",
         RecordDownloadRequestAPIView.as_view(),
         name="download_request",
-    ),
-    path(
-        "<int:pk>/telechargement-liens",
-        ProjectDownloadLinkView.as_view(),
-        name="report_download_url",
     ),
     # Export PDF (polling)
     path("export/start/", ExportStartView.as_view(), name="export_start"),
