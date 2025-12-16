@@ -3,7 +3,36 @@ from django.urls import exceptions, reverse
 from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
-from project.models import Project, Request, RNUPackage, RNUPackageRequest
+from project.models import ExportJob, Project, Request, RNUPackage, RNUPackageRequest
+
+
+@admin.register(ExportJob)
+class ExportJobAdmin(admin.ModelAdmin):
+    model = ExportJob
+    list_display = (
+        "job_id",
+        "user",
+        "status",
+        "created_at",
+        "updated_at",
+        "link_to_pdf",
+    )
+    list_filter = ("status", "created_at")
+    search_fields = ("job_id", "user__email")
+    readonly_fields = (
+        "job_id",
+        "created_at",
+        "updated_at",
+        "link_to_pdf",
+    )
+    list_select_related = ("user",)
+
+    def link_to_pdf(self, obj):
+        if obj.pdf_file:
+            return format_html('<a href="{}" target="_blank">Télécharger le PDF</a>', obj.pdf_file.url)
+        return "-"
+
+    link_to_pdf.short_description = "Fichier PDF"
 
 
 @admin.register(Project)
