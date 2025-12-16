@@ -201,6 +201,9 @@ export const djangoApi = createApi({
 				responseHandler: (response) => response.blob(),
 			}),
 		}),
+		getExportStatus: builder.query<{ status: 'pending' | 'completed' | 'failed'; error?: string }, string>({
+			query: (jobId) => `/project/export/status/${jobId}/`,
+		}),
 	}),
 	tagTypes: ['Project'],
 });
@@ -218,6 +221,7 @@ const useGetEnvironmentQuery: UseEnvTypes = djangoApi.useGetEnvironmentQuery;
 const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
 const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
 const useLazyDownloadExportPdfQuery = djangoApi.useLazyDownloadExportPdfQuery;
+const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
 
 const {
 	useGetDepartementListQuery,
@@ -258,4 +262,5 @@ export {
 	useGetLogementVacantAutorisationStatsQuery,
 	useStartExportPdfMutation,
 	useLazyDownloadExportPdfQuery,
+	useLazyGetExportStatusQuery,
 };

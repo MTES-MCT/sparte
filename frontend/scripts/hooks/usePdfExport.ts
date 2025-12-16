@@ -1,20 +1,13 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@store/store';
-import { useStartExportPdfMutation } from '@services/api';
+import { useStartExportPdfMutation, useLazyGetExportStatusQuery } from '@services/api';
 import { setPdfExportLoading, setPdfExportSuccess, setPdfExportError, resetPdfExport } from '@store/pdfExportSlice';
 
 interface LandData {
     land_id: string;
     land_type: string;
     name: string;
-}
-
-type ExportStatus = 'pending' | 'completed' | 'failed';
-
-interface ExportStatusResponse {
-    status: ExportStatus;
-    error?: string;
 }
 
 /**
@@ -24,6 +17,7 @@ interface ExportStatusResponse {
 const usePdfExport = (landData: LandData | undefined) => {
     const dispatch = useDispatch<AppDispatch>();
     const [startExportPdf] = useStartExportPdfMutation();
+    const [getExportStatus] = useLazyGetExportStatusQuery();
 
     useEffect(() => {
         if (!landData) return;
@@ -36,10 +30,10 @@ const usePdfExport = (landData: LandData | undefined) => {
         const poll = async (jobId: string) => {
             if (done) return;
             try {
-                const res = await fetch(`/project/export/status/${jobId}/`, { credentials: 'include' });
+                const result = await getExportStatus(jobId).unwrap();
                 if (done) return;
 
-                const { status, error }: ExportStatusResponse = await res.json();
+                const { status, error } = result;
 
                 if (status === 'completed') {
                     done = true;
