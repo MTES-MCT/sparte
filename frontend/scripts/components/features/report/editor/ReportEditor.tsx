@@ -6,6 +6,7 @@ import { RapportComplet } from '../templates';
 import { RapportLocal } from '../templates';
 import EditorTopBar from './EditorTopBar';
 import { EmptyState } from '../list';
+import DeleteReportModal, { useDeleteReportModal } from '../modals/DeleteReportModal';
 
 interface ReportEditorProps {
     draft: ReportDraft;
@@ -49,6 +50,7 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
     onDelete,
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const deleteModal = useDeleteReportModal();
     
     const renderReportContent = () => {
         if (draft.report_type === 'rapport-complet') {
@@ -93,7 +95,7 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
                 onBack={onBack}
                 onExport={onExport}
                 onRename={onRename}
-                onDelete={onDelete}
+                onDelete={() => deleteModal.open()}
                 onSettingsClick={() => setIsSettingsOpen(true)}
                 exportDisabled={exportDisabled}
             />
@@ -103,6 +105,8 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
                     {renderReportContent()}
                 </ReportContainer>
             </ReportWrapper>
+
+            <DeleteReportModal onConfirm={onDelete} />
         </>
     );
 };

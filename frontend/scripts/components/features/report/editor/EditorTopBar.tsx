@@ -215,7 +215,7 @@ const EditorTopBar: React.FC<EditorTopBarProps> = ({
                     priority="tertiary"
                     size="small"
                     iconId="fr-icon-delete-line"
-                    onClick={() => window.confirm('Supprimer ce rapport ?') && onDelete()}
+                    onClick={onDelete}
                     title="Supprimer"
                 />
             </Actions>
