@@ -120,7 +120,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Consommation landData={landData} />
+                                                <Consommation landData={landData} projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />

@@ -59,13 +59,13 @@ const ReportPrintPage: React.FC<ReportPrintPageProps> = ({ draftId }) => {
         );
     }
 
-    // Rendu du bon template selon le type de rapport
     if (draft.report_type === 'rapport-local') {
         return (
             <RapportLocal
                 landData={landData}
                 content={draft.content || {}}
                 mode="print"
+                projectId={draft.project}
             />
         );
     }

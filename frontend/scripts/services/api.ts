@@ -7,11 +7,11 @@ import { UseLandFrichesStatutType } from "./types/land_friches_statut";
 import { UseLandFrichesType } from "./types/land_friches";
 import { UseEnvTypes } from "./types/env";
 import {
-    ReportDraft,
-    ReportDraftListItem,
-    CreateReportDraftPayload,
-    UpdateReportDraftPayload,
-    ReportTypeOption,
+	ReportDraft,
+	ReportDraftListItem,
+	CreateReportDraftPayload,
+	UpdateReportDraftPayload,
+	ReportTypeOption,
 } from "./types/reportDraft";
 
 export const djangoApi = createApi({
@@ -26,7 +26,7 @@ export const djangoApi = createApi({
 			}),
 		}),
 		getLandConsoStats: builder.query({
-			query: ({land_type, land_id, from_year, to_year}) => {
+			query: ({ land_type, land_id, from_year, to_year }) => {
 				return `/api/landconsostats/?${new URLSearchParams({
 					land_type,
 					land_id,
@@ -36,7 +36,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getLandPopStats: builder.query({
-			query: ({land_type, land_id, from_year, to_year}) => {
+			query: ({ land_type, land_id, from_year, to_year }) => {
 				return `/api/landpopstats/?${new URLSearchParams({
 					land_type,
 					land_id,
@@ -46,7 +46,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getLandPopDensity: builder.query({
-			query: ({land_type, land_id, year}) => {
+			query: ({ land_type, land_id, year }) => {
 				return `/api/landpopulationdensity/?${new URLSearchParams({
 					land_type,
 					land_id,
@@ -55,7 +55,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getChartConfig: builder.query({
-			query: ({id, land_type, land_id, ...params}) => {
+			query: ({ id, land_type, land_id, ...params }) => {
 				const queryParams = new URLSearchParams(params)
 				return `/api/chart/${id}/${land_type}/${land_id}?${queryParams}`
 			},
@@ -67,7 +67,7 @@ export const djangoApi = createApi({
 			}
 		}),
 		getLandArtifStockIndex: builder.query({
-			query: ({land_type, land_id, millesime_index}) => {
+			query: ({ land_type, land_id, millesime_index }) => {
 				return `/api/landartifstockindex/?${new URLSearchParams({
 					land_type,
 					land_id,
@@ -76,7 +76,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getLandImperStockIndex: builder.query({
-			query: ({land_type, land_id, millesime_index}) => {
+			query: ({ land_type, land_id, millesime_index }) => {
 				return `/api/landimperstockindex/?${new URLSearchParams({
 					land_type,
 					land_id,
@@ -85,7 +85,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getArtifZonageIndex: builder.query({
-			query: ({land_type, land_id, millesime_index}) => {
+			query: ({ land_type, land_id, millesime_index }) => {
 				return `/api/artifzonageindex/?${new URLSearchParams({
 					land_type,
 					land_id,
@@ -94,7 +94,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getImperZonageIndex: builder.query({
-			query: ({land_type, land_id, millesime_index}) => {
+			query: ({ land_type, land_id, millesime_index }) => {
 				return `/api/imperzonageindex/?${new URLSearchParams({
 					land_type,
 					land_id,
@@ -103,7 +103,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getLandFrichesStatut: builder.query({
-			query: ({land_type, land_id}) => {
+			query: ({ land_type, land_id }) => {
 				return `/api/landfrichestatut/?${new URLSearchParams({
 					land_type,
 					land_id
@@ -111,7 +111,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getLandFriches: builder.query({
-			query: ({land_type, land_id}) => {
+			query: ({ land_type, land_id }) => {
 				return `/api/landfriche/?${new URLSearchParams({
 					land_type,
 					land_id
@@ -119,16 +119,8 @@ export const djangoApi = createApi({
 			},
 		}),
 		getSimilarTerritories: builder.query({
-			query: ({land_type, land_id}) => {
+			query: ({ land_type, land_id }) => {
 				return `/api/nearestterritories/?${new URLSearchParams({
-					land_type,
-					land_id
-				})}`
-			},
-		}),
-		getSimilarTerritoriesByPopulation: builder.query({
-			query: ({land_type, land_id}) => {
-				return `/api/similarterritories/?${new URLSearchParams({
 					land_type,
 					land_id
 				})}`
@@ -154,15 +146,15 @@ export const djangoApi = createApi({
 			query: (needle) => {
 				const csrfToken = getCsrfToken();
 				return {
-				url: "/public/search-land",
-				method: "POST",
-				body: { needle },
-				headers: csrfToken ? { "X-CSRFToken": csrfToken } : {},
+					url: "/public/search-land",
+					method: "POST",
+					body: { needle },
+					headers: csrfToken ? { "X-CSRFToken": csrfToken } : {},
 				};
 			},
 		}),
 		getLogementVacantAutorisationStats: builder.query({
-			query: ({land_type, land_id, end_date}) => {
+			query: ({ land_type, land_id, end_date }) => {
 				const queryParams = new URLSearchParams({
 					end_date: end_date.toString()
 				})
@@ -191,7 +183,22 @@ export const djangoApi = createApi({
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},
-			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: projectId }],
+			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: String(projectId) }],
+		}),
+		updateProjectComparisonLands: builder.mutation<
+			{ success: boolean; comparison_lands: Array<{ land_type: string; land_id: string; name: string }> },
+			{ projectId: number; comparison_lands: Array<{ land_type: string; land_id: string; name: string }> }
+		>({
+			query: ({ projectId, comparison_lands }) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: `/api/project/${projectId}/comparison-lands/`,
+					method: 'POST',
+					body: { comparison_lands },
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: String(projectId) }],
 		}),
 		startExportPdf: builder.mutation<{ jobId: string }, { land_type: string; land_id: string; report_type: string }>({
 			query: ({ land_type, land_id, report_type }) => {
@@ -276,6 +283,7 @@ const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZ
 const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
 const useRecordDownloadRequestMutation = djangoApi.useRecordDownloadRequestMutation;
 const useUpdateProjectTarget2031Mutation = djangoApi.useUpdateProjectTarget2031Mutation;
+const useUpdateProjectComparisonLandsMutation = djangoApi.useUpdateProjectComparisonLandsMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
 const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
@@ -295,7 +303,6 @@ const {
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
-	useGetSimilarTerritoriesByPopulationQuery,
 	useGetLogementVacantAutorisationStatsQuery,
 	useGetReportDraftsQuery,
 	useGetReportDraftQuery,
@@ -320,9 +327,9 @@ export {
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
-	useGetSimilarTerritoriesByPopulationQuery,
 	useRecordDownloadRequestMutation,
 	useUpdateProjectTarget2031Mutation,
+	useUpdateProjectComparisonLandsMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,

@@ -2,7 +2,11 @@ from django.http import FileResponse, Http404, JsonResponse
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from project.api_views import ReportDraftViewSet, UpdateProjectTarget2031APIView
+from project.api_views import (
+    ReportDraftViewSet,
+    UpdateProjectComparisonLandsAPIView,
+    UpdateProjectTarget2031APIView,
+)
 from project.charts import (
     AnnualConsoByDeterminantChart,
     AnnualConsoByDeterminantChartExport,
@@ -123,7 +127,6 @@ from public_data.models import (
     LandPopStatsViewset,
     LandPopulationDensityViewset,
     NearestTerritoriesViewset,
-    SimilarTerritoriesViewset,
 )
 from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
 
@@ -243,6 +246,11 @@ def chart_view(request, id, land_type, land_id):
 urlpatterns = [
     path("", include(router.urls)),
     path("project/<int:pk>/target-2031/", UpdateProjectTarget2031APIView.as_view(), name="update-target-2031"),
+    path(
+        "project/<int:pk>/comparison-lands/",
+        UpdateProjectComparisonLandsAPIView.as_view(),
+        name="update-comparison-lands",
+    ),
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path(
         "logementvacantautorisationstats/<str:land_type>/<str:land_id>",
@@ -257,7 +265,6 @@ urlpatterns = [
     path("landpopstats/", LandPopStatsViewset.as_view(), name="popstats"),
     path("landpopulationdensity/", LandPopulationDensityViewset.as_view(), name="populationdensity"),
     path("nearestterritories/", NearestTerritoriesViewset.as_view(), name="nearestterritories"),
-    path("similarterritories/", SimilarTerritoriesViewset.as_view(), name="similarterritories"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),

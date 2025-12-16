@@ -166,6 +166,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
             "land_id",
             "land_type",
             "target_2031",
+            "comparison_lands",
             "departements",
             "bounds",
             "max_bounds",
@@ -236,8 +237,6 @@ class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
 
 class ReportDraftSerializer(serializers.ModelSerializer):
     report_type_display = serializers.CharField(source="get_report_type_display", read_only=True)
-    land_type = serializers.CharField(source="project.land_type", read_only=True)
-    land_id = serializers.CharField(source="project.land_id", read_only=True)
 
     class Meta:
         model = ReportDraft
@@ -250,10 +249,11 @@ class ReportDraftSerializer(serializers.ModelSerializer):
             "content",
             "land_type",
             "land_id",
+            "comparison_lands",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at", "report_type_display", "land_type", "land_id"]
+        read_only_fields = ["id", "created_at", "updated_at", "report_type_display"]
 
 
 class ReportDraftListSerializer(serializers.ModelSerializer):

@@ -71,7 +71,10 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
                     landData={landData}
                     content={content}
                     mode="edit"
+                    projectId={draft.project}
                     onContentChange={onContentChange}
+                    isSettingsOpen={isSettingsOpen}
+                    onSettingsChange={setIsSettingsOpen}
                 />
             );
         }
@@ -91,7 +94,7 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
                 onExport={onExport}
                 onRename={onRename}
                 onDelete={onDelete}
-                onSettingsClick={draft.report_type === 'rapport-complet' ? () => setIsSettingsOpen(true) : undefined}
+                onSettingsClick={() => setIsSettingsOpen(true)}
                 exportDisabled={exportDisabled}
             />
 

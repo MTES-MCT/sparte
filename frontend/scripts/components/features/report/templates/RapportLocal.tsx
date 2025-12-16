@@ -1,17 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import AnnexeArticleR101Image from '@images/annexe-article-r-101-1-code-urbanisme.png';
-import { useGetLandArtifStockIndexQuery } from '@services/api';
+import { useGetLandArtifStockIndexQuery, useGetProjectQuery } from '@services/api';
 import { useMillesime } from '@hooks/useMillesime';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
 import { formatNumber } from '@utils/formatUtils';
 import { LandMillesimeTable } from '@components/features/ocsge/LandMillesimeTable';
 import { MillesimeDisplay } from '@components/features/ocsge/MillesimeDisplay';
-import {
-    ContentZone,
-    ContentZoneMode,
-} from '../editor';
+import { ContentZone, ContentZoneMode } from '../editor';
 import {
     ReportContainer,
     PrintLayout,
@@ -22,8 +19,12 @@ import {
 } from '../styles';
 import ChartWithTable from '@components/charts/ChartWithTable';
 import CoverPage from './CoverPage';
+import Drawer from '@components/ui/Drawer';
+import { useReportComparisonTerritories } from '../hooks';
+import { ComparisonTerritoriesSettings, ComparisonTerritoriesCallout } from '../components';
 
 export interface RapportLocalContent {
+    comparison_territories?: string;
     consommation_raison_evolutions?: string;
     evaluation_respect_trajectoire?: string;
     consommation_repartition_naf?: string;
@@ -37,7 +38,10 @@ interface RapportLocalProps {
     landData: LandDetailResultType;
     content: RapportLocalContent;
     mode: ContentZoneMode;
+    projectId: number;
     onContentChange?: (key: string, value: string) => void;
+    isSettingsOpen?: boolean;
+    onSettingsChange?: (isOpen: boolean) => void;
 }
 
 const CONSO_START_YEAR = 2011;
@@ -55,22 +59,36 @@ const AnnexeImage = styled.img`
     }
 `;
 
+const SettingsSection = styled.div`
+    margin-bottom: 1.5rem;
+    &:last-child {
+        margin-bottom: 0;
+    }
+`;
+
 const RapportLocal: React.FC<RapportLocalProps> = ({
     landData,
     content,
     mode,
+    projectId,
     onContentChange,
+    isSettingsOpen: externalIsSettingsOpen,
+    onSettingsChange,
 }) => {
+    const [internalIsSettingsOpen, setInternalIsSettingsOpen] = useState(false);
+    const isSettingsOpen = externalIsSettingsOpen ?? internalIsSettingsOpen;
+    const setIsSettingsOpen = onSettingsChange || setInternalIsSettingsOpen;
+
     const handleChange = (key: keyof RapportLocalContent) => (value: string) => {
         onContentChange?.(key, value);
     };
 
-    // Récupérer le dernier millésime disponible
+    const { data: projectData } = useGetProjectQuery(String(projectId));
+
     const millesimes = landData.millesimes || [];
     const maxIndex = millesimes.length > 0 ? Math.max(...millesimes.map(m => m.index)) : 0;
     const minIndex = maxIndex > 0 ? maxIndex - 1 : 0;
 
-    // Récupération des données d'artificialisation pour le dernier millésime (uniquement si OCSGE disponible)
     const { defaultStockIndex } = useMillesime({
         millesimes_by_index: landData?.millesimes_by_index || []
     });
@@ -83,12 +101,47 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
         skip: !landData.has_ocsge
     });
 
-    // Données du dernier millésime
     const latestArtifData: LandArtifStockIndex = useMemo(() =>
         landArtifStockIndexes?.find(
             (e: LandArtifStockIndex) => e.millesime_index === defaultStockIndex
         ) ?? defautLandArtifStockIndex,
         [landArtifStockIndexes, defaultStockIndex]
+    );
+
+    const {
+        territories,
+        comparisonLandIds,
+        isDefaultSelection,
+        excludedTerritories,
+        handleAddTerritory,
+        handleRemoveTerritory,
+        handleResetTerritories,
+    } = useReportComparisonTerritories({
+        landId: landData?.land_id,
+        landType: landData?.land_type,
+        landName: landData?.name || '',
+        contentComparisonTerritories: content.comparison_territories,
+        projectComparisonLands: projectData?.comparison_lands,
+        onContentChange: handleChange('comparison_territories'),
+    });
+
+    const settingsDrawer = mode === 'edit' && (
+        <Drawer
+            isOpen={isSettingsOpen}
+            title="Paramètres du rapport"
+            onClose={() => setIsSettingsOpen(false)}
+        >
+            <SettingsSection>
+                <ComparisonTerritoriesSettings
+                    territories={territories}
+                    excludedTerritories={excludedTerritories}
+                    isDefaultSelection={isDefaultSelection}
+                    onAddTerritory={handleAddTerritory}
+                    onRemoveTerritory={handleRemoveTerritory}
+                    onReset={handleResetTerritories}
+                />
+            </SettingsSection>
+        </Drawer>
     );
 
     const reportContent = (
@@ -349,33 +402,45 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                 <h3>1.7 Comparaison de la consommation annuelle absolue</h3>
                 
-                <div className="fr-callout">
-                    <p className="fr-callout__text">
-                        <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec le territoire de <strong>{landData.name}</strong>.
-                    </p>
-                </div>
+                <ComparisonTerritoriesCallout
+                    territories={territories}
+                    landName={landData.name}
+                    isDefaultSelection={isDefaultSelection}
+                    mode={mode}
+                    onSettingsClick={() => setIsSettingsOpen(true)}
+                />
 
                 <ChartWithTable
                     chartId="comparison_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(CONSO_START_YEAR), end_date: String(CONSO_END_YEAR) }}
+                    params={{
+                        start_date: String(CONSO_START_YEAR),
+                        end_date: String(CONSO_END_YEAR),
+                        ...(comparisonLandIds && { comparison_lands: comparisonLandIds }),
+                    }}
                     sources={["majic"]}
                 />
 
                 <h3>1.8 Comparaison de la consommation annuelle relative à la surface</h3>
 
-                <div className="fr-callout">
-                    <p className="fr-callout__text">
-                        <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec le territoire de <strong>{landData.name}</strong>.
-                    </p>
-                </div>
+                <ComparisonTerritoriesCallout
+                    territories={territories}
+                    landName={landData.name}
+                    isDefaultSelection={isDefaultSelection}
+                    mode={mode}
+                    onSettingsClick={() => setIsSettingsOpen(true)}
+                />
 
                 <ChartWithTable
                     chartId="surface_proportional_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(CONSO_START_YEAR), end_date: String(CONSO_END_YEAR) }}
+                    params={{
+                        start_date: String(CONSO_START_YEAR),
+                        end_date: String(CONSO_END_YEAR),
+                        ...(comparisonLandIds && { comparison_lands: comparisonLandIds }),
+                    }}
                     sources={["majic"]}
                 />
 
@@ -431,25 +496,25 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                         <TwoColumnLayout>
                             <p>
-                                L’article 192 modifie le code de l’urbanisme et donne une <strong>définition de l’artificialisation</strong> telle qu’elle doit être considérée et évaluée dans les documents d’urbanisme et de planification :
+                                L'article 192 modifie le code de l'urbanisme et donne une <strong>définition de l'artificialisation</strong> telle qu'elle doit être considérée et évaluée dans les documents d'urbanisme et de planification :
                             </p>
                             <p>
-                                « Au sein des documents de planification et d’urbanisme, lorsque la loi ou le règlement prévoit des objectifs de réduction de l’artificialisation des sols ou de son rythme, ces objectifs sont fixés et évalués en considérant comme :
+                                « Au sein des documents de planification et d'urbanisme, lorsque la loi ou le règlement prévoit des objectifs de réduction de l'artificialisation des sols ou de son rythme, ces objectifs sont fixés et évalués en considérant comme :
                             </p>
                             <p>
-                                a) Artificialisée une surface dont les sols sont soit imperméabilisés en raison du bâti ou d’un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites ; 
+                                a) Artificialisée une surface dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites ; 
                             </p>
                             <p>
-                                b) Non artificialisée une surface soit naturelle, nue ou couverte d’eau, soit végétalisée, constituant un habitat naturel ou utilisée à usage de cultures. 
+                                b) Non artificialisée une surface soit naturelle, nue ou couverte d'eau, soit végétalisée, constituant un habitat naturel ou utilisée à usage de cultures. 
                             </p>
                             <p>
-                                Un décret en Conseil d’État fixe les conditions d’application du présent article. Il établit notamment une nomenclature des sols artificialisés ainsi que l’échelle à laquelle l’artificialisation des sols doit être appréciée dans les documents de planification et d’urbanisme. »
+                                Un décret en Conseil d'État fixe les conditions d'application du présent article. Il établit notamment une nomenclature des sols artificialisés ainsi que l'échelle à laquelle l'artificialisation des sols doit être appréciée dans les documents de planification et d'urbanisme. »
                             </p>
                             <p>
-                                Cet article est le premier à définir textuellement ce qui doit être considéré comme artificialisé et non artificialisé. Les composantes des espaces artificialisés sont explicitement d’une grande finesse de définition, tant géographique que descriptive.
+                                Cet article est le premier à définir textuellement ce qui doit être considéré comme artificialisé et non artificialisé. Les composantes des espaces artificialisés sont explicitement d'une grande finesse de définition, tant géographique que descriptive.
                             </p>
                             <p>
-                                Le décret d’application du 29 avril 2022 précise encore la notion d’artificialisation au sens de la loi Climat et Résilience qui est traduite dans l’OCS GE comme la somme des surfaces anthropisées (CS1.1), sans les carrières (US1.3), et des surfaces herbacées (CS2.2) à usage de production secondaire, tertiaire, résidentielle ou réseaux (US2, US3, US235, US4, US5).
+                                Le décret d'application du 29 avril 2022 précise encore la notion d'artificialisation au sens de la loi Climat et Résilience qui est traduite dans l'OCS GE comme la somme des surfaces anthropisées (CS1.1), sans les carrières (US1.3), et des surfaces herbacées (CS2.2) à usage de production secondaire, tertiaire, résidentielle ou réseaux (US2, US3, US235, US4, US5).
                             </p>
                         </TwoColumnLayout>
 
@@ -658,6 +723,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
     return (
         <ReportContainer>
+            {settingsDrawer}
             <CoverPage
                 landData={landData}
                 reportTitle="Rapport local de suivi de l'artificialisation des sols"

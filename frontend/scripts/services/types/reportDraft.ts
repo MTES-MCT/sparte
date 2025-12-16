@@ -1,3 +1,5 @@
+import { ComparisonLand } from "./project";
+
 export type ReportType = "rapport-complet" | "rapport-local";
 
 export interface ReportTypeOption {
@@ -14,6 +16,7 @@ export interface ReportDraft {
     content: Record<string, string>;
     land_type: string;
     land_id: string;
+    comparison_lands: ComparisonLand[];
     created_at: string;
     updated_at: string;
 }
@@ -33,11 +36,15 @@ export interface CreateReportDraftPayload {
     report_type: ReportType;
     name: string;
     content: Record<string, string>;
+    land_type?: string;
+    land_id?: string;
+    comparison_lands?: ComparisonLand[];
 }
 
 export interface UpdateReportDraftPayload {
     id: string;
     name?: string;
     content?: Record<string, string>;
+    comparison_lands?: ComparisonLand[];
 }
 

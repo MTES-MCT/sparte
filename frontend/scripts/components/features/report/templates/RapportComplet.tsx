@@ -1,17 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { LandDetailResultType } from '@services/types/land';
 import TimelineTrajectoireZanImage from '@images/timeline-trajectoire-zan.png';
-import { useGetProjectQuery } from '@services/api';
-import { useGetLandArtifStockIndexQuery } from '@services/api';
+import { useGetProjectQuery, useGetLandArtifStockIndexQuery } from '@services/api';
 import { useMillesime } from '@hooks/useMillesime';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
 import { formatNumber } from '@utils/formatUtils';
 import { LandMillesimeTable } from '@components/features/ocsge/LandMillesimeTable';
 import { MillesimeDisplay } from '@components/features/ocsge/MillesimeDisplay';
-import {
-    ContentZone,
-    ContentZoneMode,
-} from '../editor';
+import { ContentZone, ContentZoneMode } from '../editor';
 import {
     ReportContainer,
     PrintLayout,
@@ -25,10 +21,13 @@ import CoverPage from './CoverPage';
 import AvailableDataPage from './AvailableDataPage';
 import Drawer from '@components/ui/Drawer';
 import styled from 'styled-components';
+import { useReportComparisonTerritories } from '../hooks';
+import { ComparisonTerritoriesSettings, ComparisonTerritoriesCallout } from '../components';
 
 export interface RapportCompletContent {
     conso_start_year?: string;
     conso_end_year?: string;
+    comparison_territories?: string;
     trajectoire?: string;
     consommation_annuelle?: string;
     consommation_destinations?: string;
@@ -157,6 +156,23 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
         [landArtifStockIndexes, defaultStockIndex]
     );
 
+    const {
+        territories,
+        comparisonLandIds,
+        isDefaultSelection,
+        excludedTerritories,
+        handleAddTerritory,
+        handleRemoveTerritory,
+        handleResetTerritories,
+    } = useReportComparisonTerritories({
+        landId: landData?.land_id,
+        landType: landData?.land_type,
+        landName: landData?.name || '',
+        contentComparisonTerritories: content.comparison_territories,
+        projectComparisonLands: projectData?.comparison_lands,
+        onContentChange: handleChange('comparison_territories'),
+    });
+
     const settingsDrawer = mode === 'edit' && (
         <>
             <Drawer
@@ -206,6 +222,17 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     <SettingsInfo>
                         Modifie la période affichée dans les graphiques de consommation d'espaces NAF.
                     </SettingsInfo>
+                </SettingsSection>
+
+                <SettingsSection>
+                    <ComparisonTerritoriesSettings
+                        territories={territories}
+                        excludedTerritories={excludedTerritories}
+                        isDefaultSelection={isDefaultSelection}
+                        onAddTerritory={handleAddTerritory}
+                        onRemoveTerritory={handleRemoveTerritory}
+                        onReset={handleResetTerritories}
+                    />
                 </SettingsSection>
             </Drawer>
         </>
@@ -447,11 +474,13 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             <section className="fr-mb-6w">
                 <h2>4 Comparaison avec d'autres territoires</h2>
 
-                <div className="fr-callout">
-                    <p className="fr-callout__text">
-                        <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec le territoire de <strong>{landData.name}</strong>.
-                    </p>
-                </div>
+                <ComparisonTerritoriesCallout
+                    territories={territories}
+                    landName={landData.name}
+                    isDefaultSelection={isDefaultSelection}
+                    mode={mode}
+                    onSettingsClick={() => setIsSettingsOpen(true)}
+                />
 
                 <h3>4.1 Comparaison de la consommation annuelle absolue</h3>
 
@@ -459,7 +488,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="comparison_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(consoStartYear), end_date: String(consoEndYear) }}
+                    params={{ 
+                        start_date: String(consoStartYear), 
+                        end_date: String(consoEndYear),
+                        ...(comparisonLandIds !== null && { comparison_lands: comparisonLandIds }),
+                    }}
                     sources={["majic"]}
                 />
 
@@ -485,7 +518,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="surface_proportional_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ start_date: String(consoStartYear), end_date: String(consoEndYear) }}
+                    params={{ 
+                        start_date: String(consoStartYear), 
+                        end_date: String(consoEndYear),
+                        ...(comparisonLandIds !== null && { comparison_lands: comparisonLandIds }),
+                    }}
                     sources={["majic"]}
                 />
 

@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db import models
 
 from project.models.request import RequestedDocumentChoices
+from public_data.models import AdminRef
 
 
 class ReportDraft(models.Model):
@@ -24,6 +25,25 @@ class ReportDraft(models.Model):
     )
     name = models.CharField(max_length=255)
     content = models.JSONField(default=dict)
+    land_type = models.CharField(
+        "Type de territoire",
+        choices=AdminRef.CHOICES,
+        max_length=7,
+        blank=True,
+        null=True,
+    )
+    land_id = models.CharField(
+        "Identifiant du territoire",
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    comparison_lands = models.JSONField(
+        "Territoires de comparaison",
+        default=list,
+        blank=True,
+        help_text="Liste des territoires de comparaison",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
