@@ -4,8 +4,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { RootState, AppDispatch } from '@store/store';
 import {
     selectPdfExportStatus,
-    fetchDraftPdfExport,
     resetPdfExport,
+    setPdfExportLoading,
+    setPdfExportSuccess,
+    setPdfExportError,
 } from '@store/pdfExportSlice';
 import {
     useGetReportDraftsQuery,
@@ -13,8 +15,8 @@ import {
     useCreateReportDraftMutation,
     useUpdateReportDraftMutation,
     useDeleteReportDraftMutation,
-    useRecordDownloadRequestMutation,
-    useGetEnvironmentQuery,
+    useStartExportPdfMutation,
+    useLazyGetExportStatusQuery,
 } from '@services/api';
 import { ReportType } from '@services/types/reportDraft';
 import { useCreateReportModal } from '@components/features/report';
@@ -54,7 +56,6 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
 
     // API queries
     const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
-    const { data: environment } = useGetEnvironmentQuery(undefined);
 
     const { data: drafts = [], isLoading: isDraftsLoading } = useGetReportDraftsQuery(
         { projectId },
@@ -70,7 +71,8 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
     const [createDraft, { isLoading: isCreating }] = useCreateReportDraftMutation();
     const [updateDraft] = useUpdateReportDraftMutation();
     const [deleteDraft] = useDeleteReportDraftMutation();
-    const [recordDownload] = useRecordDownloadRequestMutation();
+    const [startExportPdf] = useStartExportPdfMutation();
+    const [getExportStatus] = useLazyGetExportStatusQuery();
 
     // Sync selectedDraftId with URL
     useEffect(() => {
@@ -192,34 +194,52 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
     }, [createReportModal]);
 
     const handleExportPdf = useCallback(async () => {
-        if (!selectedDraft || !environment) return;
+        if (!selectedDraft) return;
 
         dispatch(resetPdfExport());
+        dispatch(setPdfExportLoading());
 
-        const result = await dispatch(fetchDraftPdfExport({
-            exportServerUrl: environment.export_server_url,
-            pdfHeaderUrl: `${globalThis.location.origin}/exports/pdf-header`,
-            pdfFooterUrl: `${globalThis.location.origin}/exports/pdf-footer`,
-            draftId: selectedDraft.id,
-            draftName: selectedDraft.name,
-        })).unwrap();
+        try {
+            const { jobId } = await startExportPdf({ draftId: selectedDraft.id }).unwrap();
 
-        await recordDownload({
-            projectId,
-            documentType: selectedDraft.report_type,
-            draftId: selectedDraft.id,
-        });
+            const pollStatus = async (): Promise<void> => {
+                const result = await getExportStatus(jobId).unwrap();
 
-        const timestamp = new Date().toISOString().slice(0, 10);
-        const filename = `${sanitizeFilename(selectedDraft.name)}_${timestamp}.pdf`;
+                if (result.status === 'completed') {
+                    dispatch(setPdfExportSuccess({
+                        jobId,
+                        landInfo: { name: selectedDraft.name, landId: selectedDraft.id },
+                    }));
 
-        const link = document.createElement('a');
-        link.href = result.blobUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-    }, [selectedDraft, environment, dispatch, recordDownload, projectId]);
+                    const response = await fetch(`/project/export/download/${jobId}/?project_id=${projectId}`);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        const timestamp = new Date().toISOString().slice(0, 10);
+                        const filename = `${sanitizeFilename(selectedDraft.name)}_${timestamp}.pdf`;
+
+                        const blobUrl = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = filename;
+                        document.body.appendChild(link);
+                        link.click();
+                        link.remove();
+                        URL.revokeObjectURL(blobUrl);
+                    }
+                } else if (result.status === 'failed') {
+                    dispatch(setPdfExportError(result.error || 'Erreur lors de la génération du PDF'));
+                } else {
+                    // status === 'pending', continuer le polling
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    await pollStatus();
+                }
+            };
+
+            await pollStatus();
+        } catch {
+            dispatch(setPdfExportError('Erreur lors de la génération du PDF'));
+        }
+    }, [selectedDraft, dispatch, startExportPdf, getExportStatus, projectId]);
 
     const handleBack = useCallback(() => {
         navigate(downloadsUrl);
@@ -242,7 +262,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
         isPdfLoading: pdfStatus === 'loading',
 
         // Derived state
-        exportDisabled: !environment,
+        exportDisabled: false,
 
         // Actions
         handleContentChange,

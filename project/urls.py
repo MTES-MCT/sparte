@@ -10,6 +10,7 @@ from .api_views import (
     ExportStartView,
     ExportStatusView,
     ProjectDetailView,
+    ProjectDownloadLinkView,
     RecordDownloadRequestAPIView,
 )
 
@@ -84,11 +85,6 @@ urlpatterns = [
         "<int:pk>/tableau-de-bord/telechargements/<uuid:draft_id>",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads_draft",
-    ),
-    path(
-        "<int:pk>/downloadRequest/<slug:requested_document>",
-        RecordDownloadRequestAPIView.as_view(),
-        name="download_request",
     ),
     path(
         "<int:pk>/telechargement-liens",

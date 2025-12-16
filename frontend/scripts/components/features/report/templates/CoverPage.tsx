@@ -90,7 +90,7 @@ const CoverFooter = styled.div`
 
 const FooterLine = styled.div`
     height: 2px;
-    background: linear-gradient(to right, transparent, #EBEBEC, transparent);
+    background: #EBEBEC;
     margin-bottom: 1.5rem;
 `;
 

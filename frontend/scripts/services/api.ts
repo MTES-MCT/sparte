@@ -161,15 +161,6 @@ export const djangoApi = createApi({
 				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`
 			},
 		}),
-		recordDownloadRequest: builder.mutation<{ success: boolean }, { projectId: number; documentType: string; draftId?: string }>({
-			query: ({ projectId, documentType, draftId }) => {
-				let url = `/project/${projectId}/downloadRequest/${documentType}`;
-				if (draftId) {
-					url += `?draft_id=${draftId}`;
-				}
-				return { url, method: 'GET' };
-			},
-		}),
 		updateProjectTarget2031: builder.mutation<
 			{ success: boolean; target_2031: number },
 			{ projectId: number; target_2031: number }
@@ -200,22 +191,16 @@ export const djangoApi = createApi({
 			},
 			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: String(projectId) }],
 		}),
-		startExportPdf: builder.mutation<{ jobId: string }, { land_type: string; land_id: string; report_type: string }>({
-			query: ({ land_type, land_id, report_type }) => {
+		startExportPdf: builder.mutation<{ jobId: string }, { draftId: string }>({
+			query: ({ draftId }) => {
 				const csrfToken = getCsrfToken();
 				return {
 					url: '/project/export/start/',
 					method: 'POST',
-					body: { land_type, land_id, report_type },
+					body: { draft_id: draftId },
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},
-		}),
-		downloadExportPdf: builder.query<Blob, { jobId: string; projectId: number }>({
-			query: ({ jobId, projectId }) => ({
-				url: `/project/export/download/${jobId}/?project_id=${projectId}`,
-				responseHandler: (response) => response.blob(),
-			}),
 		}),
 		getExportStatus: builder.query<{ status: 'pending' | 'completed' | 'failed'; error?: string }, string>({
 			query: (jobId) => `/project/export/status/${jobId}/`,
@@ -281,7 +266,6 @@ const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
 const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
-const useRecordDownloadRequestMutation = djangoApi.useRecordDownloadRequestMutation;
 const useUpdateProjectTarget2031Mutation = djangoApi.useUpdateProjectTarget2031Mutation;
 const useUpdateProjectComparisonLandsMutation = djangoApi.useUpdateProjectComparisonLandsMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
@@ -290,7 +274,6 @@ const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuer
 const useGetEnvironmentQuery: UseEnvTypes = djangoApi.useGetEnvironmentQuery;
 const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
 const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
-const useLazyDownloadExportPdfQuery = djangoApi.useLazyDownloadExportPdfQuery;
 const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
 
 const {
@@ -327,7 +310,6 @@ export {
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
-	useRecordDownloadRequestMutation,
 	useUpdateProjectTarget2031Mutation,
 	useUpdateProjectComparisonLandsMutation,
 	useGetLandFrichesStatutQuery,
@@ -336,7 +318,6 @@ export {
 	useGetLandGeomQuery,
 	useGetLogementVacantAutorisationStatsQuery,
 	useStartExportPdfMutation,
-	useLazyDownloadExportPdfQuery,
 	useLazyGetExportStatusQuery,
 	useGetReportDraftsQuery,
 	useGetReportDraftQuery,

@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetLandQuery, useGetProjectQuery } from '@services/api';
+import { useGetLandQuery, useGetProjectQuery, useGetEnvironmentQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
-import usePdfExport from '@hooks/usePdfExport';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
@@ -67,6 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             skip: !projectData
         }
     );
+    const { data: env } = useGetEnvironmentQuery(null);
 
     const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status } = landData || {};
 
