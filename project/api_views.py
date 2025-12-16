@@ -201,7 +201,12 @@ class ReportDraftViewSet(viewsets.ModelViewSet):
         return ReportDraftSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        project = serializer.validated_data.get("project")
+        serializer.save(
+            user=self.request.user,
+            land_type=project.land_type,
+            land_id=project.land_id,
+        )
 
     def list(self, request, *args, **kwargs):
         project_id = request.query_params.get("project_id")
