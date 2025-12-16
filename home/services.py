@@ -1,16 +1,14 @@
 import logging
 
-from celery import shared_task
 from django_app_parameter import app_parameter
 
 from utils.emails import SibTemplateEmail
 
-from .models import AliveTimeStamp, ContactForm, Newsletter
+from .models import ContactForm, Newsletter
 
 logger = logging.getLogger(__name__)
 
 
-@shared_task
 def send_contact_form(contact_form_id):
     logger.info("Send contact email to team")
     logger.info("contact_email_id=%s", contact_form_id)
@@ -34,7 +32,6 @@ def send_contact_form(contact_form_id):
         logger.info("End send contact email to team")
 
 
-@shared_task
 def send_nwl_confirmation(newsletter_id):
     logger.info("Send newsletter subscription confirmation request")
     logger.info("newsletter_id=%s", newsletter_id)
@@ -53,7 +50,6 @@ def send_nwl_confirmation(newsletter_id):
         logger.info("End send newsletter subscription confirmation")
 
 
-@shared_task
 def send_nwl_final(newsletter_id):
     logger.info("Send newsletter finale")
     logger.info("newsletter_id=%s", newsletter_id)
@@ -66,8 +62,3 @@ def send_nwl_final(newsletter_id):
         logger.exception(exc)
     finally:
         logger.info("End send newsletter subscription confirmation")
-
-
-@shared_task
-def update_alive_timestamp(queue_name):
-    AliveTimeStamp.objects.create(queue_name=queue_name)

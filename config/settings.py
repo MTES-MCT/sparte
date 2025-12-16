@@ -381,15 +381,6 @@ WEBPACK_LOADER = {
     }
 }
 
-# Celery configuration
-CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
-CELERY_ACKS_LATE = True
-CELERY_TASK_ACKS_LATE = True
-CELERY_WORKER_PREFETCH_MULTIPLIER = 1
-CELERY_RESULT_EXTENDED = True
-CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
-
 # django-debug-toolbar configuration
 
 # activate only if debug is True
