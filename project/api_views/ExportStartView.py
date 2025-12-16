@@ -30,8 +30,7 @@ def _build_export_url(path: str) -> str:
     if any(c in path for c in ("@", ":", "\\", "\n", "\r")):
         raise InvalidExportPathError("Caractères non autorisés dans le chemin")
 
-    base_url = getattr(settings, "EXPORT_BASE_URL", "http://django:8080")
-    return urljoin(base_url, path)
+    return urljoin(settings.EXPORT_BASE_URL, path)
 
 
 def _run_export_job(job_pk: int, export_server_url: str, url: str, header_url: str, footer_url: str):

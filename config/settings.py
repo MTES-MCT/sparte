@@ -439,6 +439,7 @@ HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highchart
 # Configuration for export server (PDF generation)
 
 EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3001")
+EXPORT_BASE_URL = env.str("EXPORT_BASE_URL", default="http://django:8080")
 
 # EMAIL
 """Configuration of e-mails
