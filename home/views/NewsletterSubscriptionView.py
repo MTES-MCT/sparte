@@ -1,7 +1,7 @@
 from django.views.generic import FormView
 
 from home.forms import NewsletterForm
-from home.tasks import send_nwl_confirmation
+from home.services import send_nwl_confirmation
 
 
 class NewsletterSubscriptionView(FormView):
@@ -10,5 +10,5 @@ class NewsletterSubscriptionView(FormView):
 
     def form_valid(self, form):
         self.object = form.save()
-        send_nwl_confirmation.delay(self.object.id)
+        send_nwl_confirmation(self.object.id)
         return self.render_to_response(self.get_context_data())

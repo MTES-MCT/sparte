@@ -51,8 +51,6 @@ services:
       - .:/app
     env_file: .env
     environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - SCALINGO_REDIS_URL=redis://redis:6379/0
       - EXPORT_SERVER_URL=http://export-server:3000
       - EXPORT_BASE_URL=http://django:8080
@@ -64,70 +62,6 @@ services:
       - export-server
     networks:
       - app-network
-
-  worker-quick:
-    build: .
-    image: sparte/backend:latest
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1
-    env_file: .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app-network
-
-  worker-long:
-    build: .
-    image: sparte/backend:latest
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1 -Q long
-    env_file: .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app-network
-
-  worker-beat:
-    build: .
-    image: sparte/backend:latest
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: celery -A config.celery beat --loglevel=debug
-    env_file: .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app-network
-
-  flower:
-    image: mher/flower
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - FLOWER_PORT=8887
-    networks:
-      - app-network
-    ports:
-      - 8887:8887
 
 networks:
   app-network:
