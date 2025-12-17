@@ -28,9 +28,7 @@ const ReportCard: React.FC<ReportCardProps> = ({
             title={title}
             detail={`Modifié le ${formattedDate}`}
             start={<Badge small>{typeLabel}</Badge>}
-            buttonProps={{
-                onClick: onClick,
-            }}
+            buttonProps={{ onClick }}
             orientation="vertical"
             small
             titleAs='h4'

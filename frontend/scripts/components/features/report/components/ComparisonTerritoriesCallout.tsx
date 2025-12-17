@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Territory } from '@components/ui/SearchBar';
-import { ContentZoneMode } from '../editor';
+import { ContentZoneMode } from '../editor/ContentZone';
 
 interface ComparisonTerritoriesCalloutProps {
     territories: Territory[];

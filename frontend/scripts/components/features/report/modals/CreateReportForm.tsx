@@ -3,6 +3,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { ReportType } from '@services/types/reportDraft';
+import { LandDetailResultType } from '@services/types/land';
 
 const REPORT_TYPE_LABELS: Record<ReportType, string> = {
     'rapport-complet': 'Rapport Complet',
@@ -14,15 +15,25 @@ interface CreateReportFormProps {
     onSubmit: (data: { name: string; reportType: ReportType }) => void;
     onCancel: () => void;
     isLoading?: boolean;
+    landData: LandDetailResultType;
 }
+
+const formatDate = () => {
+    const now = new Date();
+    const month = now.toLocaleDateString('fr-FR', { month: 'long' });
+    const year = now.getFullYear();
+    return `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
+};
 
 const CreateReportForm: React.FC<CreateReportFormProps> = ({
     reportType,
     onSubmit,
     onCancel,
     isLoading,
+    landData,
 }) => {
-    const [name, setName] = useState('');
+    const defaultName = `${REPORT_TYPE_LABELS[reportType]} - ${landData.name} - ${formatDate()}`;
+    const [name, setName] = useState(defaultName);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
-import { ReportDraft } from '@services/types/reportDraft';
-import { RapportComplet } from '../templates';
-import { RapportLocal } from '../templates';
+import { ReportDraft, ReportType } from '@services/types/reportDraft';
+import { RapportComplet, RapportLocal } from '../templates';
 import EditorTopBar from './EditorTopBar';
 import { EmptyState } from '../list';
 import DeleteReportModal, { useDeleteReportModal } from '../modals/DeleteReportModal';
+
+const REPORT_COMPONENTS: Record<ReportType, React.ComponentType<any>> = {
+    'rapport-complet': RapportComplet,
+    'rapport-local': RapportLocal,
+};
 
 interface ReportEditorProps {
     draft: ReportDraft;
@@ -51,37 +55,17 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
 }) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const deleteModal = useDeleteReportModal();
-    
-    const renderReportContent = () => {
-        if (draft.report_type === 'rapport-complet') {
-            return (
-                <RapportComplet
-                    landData={landData}
-                    content={content}
-                    mode="edit"
-                    projectId={draft.project}
-                    onContentChange={onContentChange}
-                    isSettingsOpen={isSettingsOpen}
-                    onSettingsChange={setIsSettingsOpen}
-                />
-            );
-        }
 
-        if (draft.report_type === 'rapport-local') {
-            return (
-                <RapportLocal
-                    landData={landData}
-                    content={content}
-                    mode="edit"
-                    projectId={draft.project}
-                    onContentChange={onContentChange}
-                    isSettingsOpen={isSettingsOpen}
-                    onSettingsChange={setIsSettingsOpen}
-                />
-            );
-        }
+    const ReportComponent = REPORT_COMPONENTS[draft.report_type];
 
-        return null;
+    const reportProps = {
+        landData,
+        content,
+        mode: 'edit' as const,
+        projectId: draft.project,
+        onContentChange,
+        isSettingsOpen,
+        onSettingsChange: setIsSettingsOpen,
     };
 
     return (
@@ -102,7 +86,7 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
 
             <ReportWrapper>
                 <ReportContainer>
-                    {renderReportContent()}
+                    {ReportComponent && <ReportComponent {...reportProps} />}
                 </ReportContainer>
             </ReportWrapper>
 

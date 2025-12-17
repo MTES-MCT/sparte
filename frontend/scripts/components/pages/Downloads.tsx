@@ -196,6 +196,7 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
                 reportType={prefilledReportType}
                 isLoading={isCreating}
                 onSubmit={handleCreateDraft}
+                landData={landData}
             />
         </div>
     );

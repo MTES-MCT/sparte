@@ -8,7 +8,7 @@ import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/
 import { formatNumber } from '@utils/formatUtils';
 import { LandMillesimeTable } from '@components/features/ocsge/LandMillesimeTable';
 import { MillesimeDisplay } from '@components/features/ocsge/MillesimeDisplay';
-import { ContentZone, ContentZoneMode } from '../editor';
+import ContentZone, { ContentZoneMode } from '../editor/ContentZone';
 import {
     ReportContainer,
     PrintLayout,

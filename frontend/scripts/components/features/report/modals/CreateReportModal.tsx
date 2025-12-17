@@ -4,11 +4,13 @@ import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 import CreateReportForm from './CreateReportForm';
 
 import { ReportType } from '@services/types/reportDraft';
+import { LandDetailResultType } from '@services/types/land';
 
 interface CreateReportModalProps {
     reportType: ReportType;
     isLoading: boolean;
     onSubmit: (data: { name: string; reportType: ReportType }) => void;
+    landData: LandDetailResultType;
 }
 
 const modal = createModal({
@@ -20,6 +22,7 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
     reportType,
     isLoading,
     onSubmit,
+    landData,
 }) => {
     const isOpen = useIsModalOpen(modal);
 
@@ -41,6 +44,7 @@ const CreateReportModal: React.FC<CreateReportModalProps> = ({
                     onSubmit={handleSubmit}
                     onCancel={() => modal.close()}
                     isLoading={isLoading}
+                    landData={landData}
                 />
             )}
         </modal.Component>
