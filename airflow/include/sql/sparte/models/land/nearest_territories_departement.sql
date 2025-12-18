@@ -9,4 +9,4 @@
     )
 }}
 
-{{ nearest_territories('DEPART') }}
+{{ nearest_territories('DEPARTEMENT') }}

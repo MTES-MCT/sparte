@@ -9,4 +9,4 @@
     )
 }}
 
-{{ nearest_territories('COMM') }}
+{{ nearest_territories('COMMUNE') }}
