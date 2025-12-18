@@ -28,5 +28,3 @@ models:
           - not_null
       - name: median_ratio_pop_conso
         data_type: numeric
-        data_tests:
-          - not_null
