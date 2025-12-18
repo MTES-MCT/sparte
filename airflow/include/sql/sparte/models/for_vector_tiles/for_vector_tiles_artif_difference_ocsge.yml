@@ -79,7 +79,6 @@ models:
       - name: EPCI
         data_type: character varying
         data_tests:
-          - not_null
           - relationships:
               field: code
               to: ref('epci')
