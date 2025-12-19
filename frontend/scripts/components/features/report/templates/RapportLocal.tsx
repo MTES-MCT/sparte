@@ -674,14 +674,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </section>
 
             <section>
-                <h2>4 Evaluation du respect des objectifs de réduction</h2>
-
-                <div className="fr-callout">
-                    <p className="fr-callout__text">
-                        Il s'agit ici d'indiquer, à partir de 2031, à l'échelle d'un document de planification ou d'urbanisme, 
-                        les surfaces dont les sols ont été rendus imperméables entre deux dates.
-                    </p>
-                </div>
+                <h2>4 Evaluation du respect des objectifs de réduction de la consommation d'espaces NAF et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme</h2>
 
                 <ContentZone
                     content={content.evaluation_respect_trajectoire || ''}
