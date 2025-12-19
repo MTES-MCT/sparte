@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import AnnexeArticleR101Image from '@images/annexe-article-r-101-1-code-urbanisme.png';
@@ -79,9 +79,9 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
     const isSettingsOpen = externalIsSettingsOpen ?? internalIsSettingsOpen;
     const setIsSettingsOpen = onSettingsChange || setInternalIsSettingsOpen;
 
-    const handleChange = (key: keyof RapportLocalContent) => (value: string) => {
+    const handleChange = useCallback((key: keyof RapportLocalContent) => (value: string) => {
         onContentChange?.(key, value);
-    };
+    }, [onContentChange]);
 
     const { data: projectData } = useGetProjectQuery(String(projectId));
 

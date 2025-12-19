@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { LandDetailResultType } from '@services/types/land';
 import TimelineTrajectoireZanImage from '@images/timeline-trajectoire-zan.png';
 import { useGetProjectQuery, useGetLandArtifStockIndexQuery } from '@services/api';
@@ -116,9 +116,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     const isSettingsOpen = externalIsSettingsOpen !== undefined ? externalIsSettingsOpen : internalIsSettingsOpen;
     const setIsSettingsOpen = onSettingsChange || setInternalIsSettingsOpen;
     
-    const handleChange = (key: keyof RapportCompletContent) => (value: string) => {
+    const handleChange = useCallback((key: keyof RapportCompletContent) => (value: string) => {
         onContentChange?.(key, value);
-    };
+    }, [onContentChange]);
 
     // Années de la période de consommation (modifiables)
     const consoStartYear = parseInt(content.conso_start_year || String(DEFAULT_consoStartYear));

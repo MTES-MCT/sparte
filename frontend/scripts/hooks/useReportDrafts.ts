@@ -21,7 +21,7 @@ import {
 import { ReportType } from '@services/types/reportDraft';
 import { useCreateReportModal } from '@components/features/report';
 
-const AUTOSAVE_DELAY = 2000;
+const AUTOSAVE_DELAY = 100; // Délai minimal car ContentZone gère déjà le debounce
 
 const sanitizeFilename = (str: string): string => {
     return str
@@ -53,6 +53,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
     // Refs for autosave
     const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const lastSavedRef = useRef<Record<string, string>>({});
+    const localContentRef = useRef<Record<string, string>>({});
 
     // API queries
     const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
@@ -80,6 +81,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
         dispatch(resetPdfExport());
         if (!urlDraftId) {
             setLocalContent({});
+            localContentRef.current = {};
             lastSavedRef.current = {};
             setSaveStatus('saved');
             setLastSavedTime(null);
@@ -96,20 +98,26 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
     // Sync local content with selected draft
     useEffect(() => {
         if (selectedDraft) {
-            setLocalContent(selectedDraft.content || {});
-            lastSavedRef.current = selectedDraft.content || {};
+            const content = selectedDraft.content || {};
+            setLocalContent(content);
+            localContentRef.current = content;
+            lastSavedRef.current = content;
             setSaveStatus('saved');
         }
     }, [selectedDraft]);
 
-    // Cleanup timeout on unmount
+    // Sauvegarde et cleanup au démontage
     useEffect(() => {
         return () => {
             if (saveTimeoutRef.current) {
                 clearTimeout(saveTimeoutRef.current);
             }
+            // Sauvegarde immédiate des changements en attente au démontage
+            if (selectedDraftId && JSON.stringify(localContentRef.current) !== JSON.stringify(lastSavedRef.current)) {
+                updateDraft({ id: selectedDraftId, content: localContentRef.current });
+            }
         };
-    }, []);
+    }, [selectedDraftId, updateDraft]);
 
     // Autosave logic
     const performSave = useCallback(async (content: Record<string, string>) => {
@@ -127,29 +135,29 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
         }
     }, [selectedDraftId, updateDraft]);
 
-    const scheduleSave = useCallback((content: Record<string, string>) => {
+    // Handlers
+    const handleContentChange = useCallback((key: string, value: string) => {
+        setLocalContent(prev => {
+            const newContent = { ...prev, [key]: value };
+            localContentRef.current = newContent;
+            return newContent;
+        });
+        // Schedule save (en dehors du state updater pour éviter les problèmes)
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
         }
         saveTimeoutRef.current = setTimeout(() => {
-            performSave(content);
+            performSave(localContentRef.current);
         }, AUTOSAVE_DELAY);
     }, [performSave]);
-
-    // Handlers
-    const handleContentChange = useCallback((key: string, value: string) => {
-        const newContent = { ...localContent, [key]: value };
-        setLocalContent(newContent);
-        scheduleSave(newContent);
-    }, [localContent, scheduleSave]);
 
     const handleSelectDraft = useCallback((draftId: string) => {
         if (saveTimeoutRef.current) {
             clearTimeout(saveTimeoutRef.current);
-            performSave(localContent);
+            performSave(localContentRef.current);
         }
         navigate(`${downloadsUrl}/${draftId}`);
-    }, [localContent, performSave, navigate, downloadsUrl]);
+    }, [performSave, navigate, downloadsUrl]);
 
     const handleDeleteDraft = useCallback(async (draftIdToDelete: string) => {
         await deleteDraft(draftIdToDelete);
