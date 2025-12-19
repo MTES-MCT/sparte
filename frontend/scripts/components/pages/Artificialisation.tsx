@@ -114,7 +114,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 									<MillesimeDisplay
 										is_interdepartemental={is_interdepartemental}
 										landArtifStockIndex={landArtifStockIndex}
-										between={false}
 									/>
 								</>
 							}

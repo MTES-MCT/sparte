@@ -114,7 +114,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 									<MillesimeDisplay
 										is_interdepartemental={is_interdepartemental}
 										landArtifStockIndex={landImperStockIndex}
-										between={false}
 									/>
 								</>
 							}

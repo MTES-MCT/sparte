@@ -523,11 +523,11 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                         <div className="fr-callout">
                             <p className="fr-callout__text">
-                                En <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={false} /></strong>, sur le territoire de {landData.name}, <strong>{formatNumber({ number: latestArtifData.surface })} ha</strong> étaient artificialisés, 
+                                <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} capitalize /></strong>, sur le territoire de {landData.name}, <strong>{formatNumber({ number: latestArtifData.surface })} ha</strong> étaient artificialisés, 
                                 ce qui correspond à <strong>{formatNumber({ number: latestArtifData.percent })}%</strong> de sa surface totale ({formatNumber({ number: landData.surface })} ha).
                             </p>
                             <p className="fr-callout__text">
-                                L'artificialisation nette <MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={true} /> est de <strong>{formatNumber({ number: latestArtifData.flux_surface, addSymbol: true })} ha</strong>.
+                                L'artificialisation nette <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={true} /></strong> est de <strong>{formatNumber({ number: latestArtifData.flux_surface, addSymbol: true })} ha</strong>.
                             </p>
                         </div>
 
