@@ -73,6 +73,7 @@ const TerritoryName = styled.h2`
     margin: 1rem 0;
     line-height: 1.2;
     letter-spacing: -0.02em;
+    text-align: center;
 `;
 
 const TerritoryMeta = styled.div`

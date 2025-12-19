@@ -15,6 +15,7 @@ import {
     MainContent,
     ReportTypography,
     TwoColumnLayout,
+    CalloutEditInfo,
 } from '../styles';
 import ChartWithTable from '@components/charts/ChartWithTable';
 import CoverPage from './CoverPage';
@@ -28,6 +29,7 @@ export interface RapportCompletContent {
     conso_start_year?: string;
     conso_end_year?: string;
     comparison_territories?: string;
+    target_2031?: string;
     trajectoire?: string;
     consommation_annuelle?: string;
     consommation_destinations?: string;
@@ -57,11 +59,7 @@ const DEFAULT_consoEndYear = 2023;
 const AVAILABLE_YEARS = Array.from({ length: 15 }, (_, i) => 2009 + i);
 
 const SettingsSection = styled.div`
-    margin-bottom: 1.5rem;
-    
-    &:last-child {
-        margin-bottom: 0;
-    }
+    margin-bottom: 2.5rem;
 `;
 
 const SettingsInfo = styled.p`
@@ -69,24 +67,6 @@ const SettingsInfo = styled.p`
     color: #666;
     margin: 1rem 0 0 0;
     line-height: 1.4;
-`;
-
-const CalloutEditInfo = styled.div`
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px dashed #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    
-    @media print {
-        display: none !important;
-    }
-`;
-
-const CalloutEditText = styled.p`
-    font-size: 0.75rem;
 `;
 
 const TimelineImage = styled.img`
@@ -126,8 +106,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
     const { data: projectData } = useGetProjectQuery(String(projectId));
 
-    // Calcul de l'objectif personnalisé
-    const target_custom = projectData?.target_2031 || 50;
+    // Calcul de l'objectif personnalisé (depuis le content ou la valeur du projet par défaut)
+    const defaultTarget2031 = projectData?.target_2031 || 50;
+    const target_custom = content.target_2031 ? parseFloat(content.target_2031) : defaultTarget2031;
     const has_custom_target = Number(target_custom) !== 50;
 
     // Récupérer le dernier millésime disponible
@@ -234,6 +215,35 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         onReset={handleResetTerritories}
                     />
                 </SettingsSection>
+
+                <SettingsSection>
+                    <h3 className="fr-text--lg fr-mb-2w">Objectif non-réglementaire de réduction 2031</h3>
+
+                    <div className="fr-input-group">
+                        <label className="fr-label fr-text--sm fr-mb-0" htmlFor="input-target-2031">
+                            Objectif de réduction personnalisé
+                        </label>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <input
+                                className="fr-input"
+                                type="number"
+                                id="input-target-2031"
+                                name="input-target-2031"
+                                min="0"
+                                max="100"
+                                step="1"
+                                value={target_custom}
+                                onChange={(e) => handleChange('target_2031')(e.target.value)}
+                                style={{ width: '100px' }}
+                            />
+                            <span>%</span>
+                        </div>
+                    </div>
+
+                    <SettingsInfo>
+                        Le graphique de la trajectoire de consommation d'espaces NAF affiche par défaut une trajectoire avec un objectif de réduction de 50% (objectif national). Vous pouvez ajouter une trajectoire personnalisée en ajustant l'objectif de réduction ci-dessus.
+                    </SettingsInfo>
+                </SettingsSection>
             </Drawer>
         </>
     );
@@ -336,6 +346,21 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             Vous n'avez pas personnalisé votre objectif non-réglementaire de réduction.
                         </p>
                     )}
+                    {mode === 'edit' && (
+                        <CalloutEditInfo>
+                            <p className="fr-mb-0">
+                                <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
+                                L'objectif de réduction peut être modifié dans les paramètres du rapport
+                            </p>
+                            <button 
+                                className="fr-btn fr-btn--sm fr-mt-0"
+                                onClick={() => setIsSettingsOpen(true)}
+                                title="Modifier l'objectif"
+                            >
+                                Modifier
+                            </button>
+                        </CalloutEditInfo>
+                    )}
                 </div>
 
                 <ChartWithTable
@@ -367,10 +392,10 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </p>
                     {mode === 'edit' && (
                         <CalloutEditInfo>
-                            <CalloutEditText className="fr-mb-0">
+                            <p className="fr-mb-0">
                                 <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                                 La période d'analyse peut être modifiée dans les paramètres du rapport
-                            </CalloutEditText>
+                            </p>
                             <button 
                                 className="fr-btn fr-btn--sm fr-mt-0"
                                 onClick={() => setIsSettingsOpen(true)}

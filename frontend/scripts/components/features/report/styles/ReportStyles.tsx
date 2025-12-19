@@ -74,7 +74,7 @@ export const ReportTypography = styled.div`
         margin-bottom: 4rem;
 
         p {
-            font-size: 10pt !important;
+            font-size: 9pt !important;
             line-height: 1.5 !important;
             margin-bottom: 0.5rem !important;
             text-align: justify;
@@ -197,6 +197,21 @@ export const ReportTypography = styled.div`
 
     .highcharts-data-label text {
         font-size: 8pt !important;
+    }
+`;
+
+/** Info d'édition dans les callouts (visible uniquement en mode édition) */
+export const CalloutEditInfo = styled.div`
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    
+    @media print {
+        display: none !important;
     }
 `;
 

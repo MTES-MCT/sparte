@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Territory } from '@components/ui/SearchBar';
 import { ContentZoneMode } from '../editor/ContentZone';
+import { CalloutEditInfo } from '../styles';
 
 interface ComparisonTerritoriesCalloutProps {
     territories: Territory[];
@@ -10,23 +10,6 @@ interface ComparisonTerritoriesCalloutProps {
     mode: ContentZoneMode;
     onSettingsClick: () => void;
 }
-
-const CalloutEditInfo = styled.div`
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px dashed #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    @media print {
-        display: none !important;
-    }
-`;
-
-const CalloutEditText = styled.p`
-    font-size: 0.75rem;
-`;
 
 const ComparisonTerritoriesCallout: React.FC<ComparisonTerritoriesCalloutProps> = ({
     territories,
@@ -50,10 +33,10 @@ const ComparisonTerritoriesCallout: React.FC<ComparisonTerritoriesCalloutProps> 
             </p>
             {mode === 'edit' && (
                 <CalloutEditInfo>
-                    <CalloutEditText className="fr-mb-0">
+                    <div className="fr-mb-0">
                         <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                         Les territoires de comparaison peuvent être modifiés dans les paramètres du rapport.
-                    </CalloutEditText>
+                    </div>
                     <button 
                         className="fr-btn fr-btn--sm fr-mt-0"
                         onClick={onSettingsClick}
