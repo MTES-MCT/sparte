@@ -485,18 +485,10 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 								title="Comprendre les données"
 								column
 							>
-								<DetailsCalculationOcsge />
+								<p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
+								<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
 							</GuideContent>
 						</div>
-					</div>
-					<div className="fr-col-12 fr-col-lg-4">
-						<GuideContent
-							title="Comprendre les données"
-							column
-						>
-							<p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
-							<p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
-						</GuideContent>
 					</div>
 				</div>
 			)}
