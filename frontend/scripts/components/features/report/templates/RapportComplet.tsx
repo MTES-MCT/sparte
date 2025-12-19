@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { LandDetailResultType } from '@services/types/land';
 import TimelineTrajectoireZanImage from '@images/timeline-trajectoire-zan.png';
 import { useGetProjectQuery, useGetLandArtifStockIndexQuery } from '@services/api';
@@ -116,9 +116,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     const isSettingsOpen = externalIsSettingsOpen !== undefined ? externalIsSettingsOpen : internalIsSettingsOpen;
     const setIsSettingsOpen = onSettingsChange || setInternalIsSettingsOpen;
     
-    const handleChange = (key: keyof RapportCompletContent) => (value: string) => {
+    const handleChange = useCallback((key: keyof RapportCompletContent) => (value: string) => {
         onContentChange?.(key, value);
-    };
+    }, [onContentChange]);
 
     // Années de la période de consommation (modifiables)
     const consoStartYear = parseInt(content.conso_start_year || String(DEFAULT_consoStartYear));
@@ -572,11 +572,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                         <div className="fr-callout">
                             <p className="fr-callout__text">
-                                En <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={false} /></strong>, sur le territoire de {landData.name}, <strong>{formatNumber({ number: latestArtifData.surface })} ha</strong> étaient artificialisés, 
+                                <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} capitalize /></strong>, sur le territoire de {landData.name}, <strong>{formatNumber({ number: latestArtifData.surface })} ha</strong> étaient artificialisés, 
                                 ce qui correspond à <strong>{formatNumber({ number: latestArtifData.percent })}%</strong> de sa surface totale ({formatNumber({ number: landData.surface })} ha).
                             </p>
                             <p className="fr-callout__text">
-                                L'artificialisation nette <MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={true} /> est de <strong>{formatNumber({ number: latestArtifData.flux_surface, addSymbol: true })} ha</strong>.
+                                L'artificialisation nette <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={true} /></strong> est de <strong>{formatNumber({ number: latestArtifData.flux_surface, addSymbol: true })} ha</strong>.
                             </p>
                         </div>
 

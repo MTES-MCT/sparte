@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import AnnexeArticleR101Image from '@images/annexe-article-r-101-1-code-urbanisme.png';
@@ -79,9 +79,9 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
     const isSettingsOpen = externalIsSettingsOpen ?? internalIsSettingsOpen;
     const setIsSettingsOpen = onSettingsChange || setInternalIsSettingsOpen;
 
-    const handleChange = (key: keyof RapportLocalContent) => (value: string) => {
+    const handleChange = useCallback((key: keyof RapportLocalContent) => (value: string) => {
         onContentChange?.(key, value);
-    };
+    }, [onContentChange]);
 
     const { data: projectData } = useGetProjectQuery(String(projectId));
 
@@ -523,11 +523,11 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                         <div className="fr-callout">
                             <p className="fr-callout__text">
-                                En <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={false} /></strong>, sur le territoire de {landData.name}, <strong>{formatNumber({ number: latestArtifData.surface })} ha</strong> étaient artificialisés, 
+                                <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} capitalize /></strong>, sur le territoire de {landData.name}, <strong>{formatNumber({ number: latestArtifData.surface })} ha</strong> étaient artificialisés, 
                                 ce qui correspond à <strong>{formatNumber({ number: latestArtifData.percent })}%</strong> de sa surface totale ({formatNumber({ number: landData.surface })} ha).
                             </p>
                             <p className="fr-callout__text">
-                                L'artificialisation nette <MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={true} /> est de <strong>{formatNumber({ number: latestArtifData.flux_surface, addSymbol: true })} ha</strong>.
+                                L'artificialisation nette <strong><MillesimeDisplay is_interdepartemental={landData.is_interdepartemental} landArtifStockIndex={latestArtifData} between={true} /></strong> est de <strong>{formatNumber({ number: latestArtifData.flux_surface, addSymbol: true })} ha</strong>.
                             </p>
                         </div>
 
@@ -674,14 +674,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </section>
 
             <section>
-                <h2>4 Evaluation du respect des objectifs de réduction</h2>
-
-                <div className="fr-callout">
-                    <p className="fr-callout__text">
-                        Il s'agit ici d'indiquer, à partir de 2031, à l'échelle d'un document de planification ou d'urbanisme, 
-                        les surfaces dont les sols ont été rendus imperméables entre deux dates.
-                    </p>
-                </div>
+                <h2>4 Evaluation du respect des objectifs de réduction de la consommation d'espaces NAF et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme</h2>
 
                 <ContentZone
                     content={content.evaluation_respect_trajectoire || ''}

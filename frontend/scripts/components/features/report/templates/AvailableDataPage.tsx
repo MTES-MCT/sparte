@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import { FullPageContainer } from "../styles";
+import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 
 interface AvailableDataPageProps {
     landData: LandDetailResultType;
@@ -58,43 +59,6 @@ const PeriodItem = styled.div<{ $available?: boolean }>`
     @media print {
         padding: 1.5rem 1rem;
     }
-`;
-
-const MillesimesList = styled.div`
-    display: flex;
-    gap: 1rem;
-    font-size: 0.85rem;
-    color: #000091;
-    font-weight: 600;
-    align-items: flex-start;
-
-    @media print {
-        font-size: 9pt;
-
-        span, p {
-            font-size: 9pt !important;
-        }
-    }
-`;
-
-const MillesimeColumn = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    flex: 1;
-`;
-
-const MillesimeGroup = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-`;
-
-const MillesimeYears = styled.div`
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-left: 0.5rem;
 `;
 
 const EditableInfo = styled.div`
@@ -178,70 +142,17 @@ const AvailableDataPage: React.FC<AvailableDataPageProps> = ({
                             <p className="fr-text--sm fr-text--bold fr-mb-0">Artificialisation des sols</p>
                             <p className="fr-text--xs fr-mb-0"><em>Source : OCS GE (IGN)</em></p>
                         </div>
-                        {(() => {
-                            if (!landData.has_ocsge || !landData.millesimes || landData.millesimes.length === 0) {
-                                return <span>Non disponible</span>;
-                            }
-
-                            if (!landData.is_interdepartemental) {
-                                return (
-                                    <span className="fr-text--sm fr-text--bold">
-                                        {Math.min(...landData.millesimes.map(m => m.year))} - {Math.max(...landData.millesimes.map(m => m.year))}
-                                    </span>
-                                );
-                            }
-
-                            // Interdépartemental: millésime 1 à gauche, les autres à droite
-                            const millesime1 = landData.millesimes_by_index?.find(m => m.index === 1);
-                            const autresMillesimes = landData.millesimes_by_index?.filter(m => m.index !== 1) || [];
-
-                            return (
-                                <MillesimesList>
-                                    {millesime1 && (
-                                        <MillesimeColumn>
-                                            <MillesimeGroup>
-                                                <span className="fr-text--xs fr-text--bold">Millésime {millesime1.index}</span>
-                                                <MillesimeYears>
-                                                    {landData.millesimes
-                                                        .filter(m => m.index === millesime1.index)
-                                                        .map((millesime) => (
-                                                            <span key={`${millesime.year}-${millesime.departement}`} className="fr-text--xs">
-                                                                {millesime.year}
-                                                                {millesime.departement && (
-                                                                    <span className="fr-text--xs"> ({millesime.departement})</span>
-                                                                )}
-                                                            </span>
-                                                        ))}
-                                                </MillesimeYears>
-                                            </MillesimeGroup>
-                                        </MillesimeColumn>
-                                    )}
-                                    {autresMillesimes.length > 0 && (
-                                        <MillesimeColumn>
-                                            {autresMillesimes.map((millesimeIndex) => {
-                                                const yearsByIndex = landData.millesimes.filter(m => m.index === millesimeIndex.index);
-                                                return (
-                                                    <MillesimeGroup key={millesimeIndex.index}>
-                                                        <span className="fr-text--xs fr-text--bold">Millésime {millesimeIndex.index}</span>
-                                                        <MillesimeYears>
-                                                            {yearsByIndex.map((millesime) => (
-                                                                <span key={`${millesime.year}-${millesime.departement}`} className="fr-text--xs">
-                                                                    {millesime.year}
-                                                                    {millesime.departement && (
-                                                                        <span className="fr-text--xs"> ({millesime.departement})</span>
-                                                                    )}
-                                                                </span>
-                                                            ))}
-                                                        </MillesimeYears>
-                                                    </MillesimeGroup>
-                                                );
-                                            })}
-                                        </MillesimeColumn>
-                                    )}
-                                </MillesimesList>
-                            );
-                        })()}
                     </PeriodItemHeader>
+                    { landData.has_ocsge ? (
+                        <LandMillesimeTable
+                            millesimes={landData.millesimes}
+                            territory_name={landData.name}
+                            is_interdepartemental={landData.is_interdepartemental}
+                            compact={true}
+                        />
+                    ) : (
+                        <span className="fr-text--sm fr-text--bold">Non disponible</span>
+                    )}
                 </PeriodItem>
             </PeriodsGrid>
         </PageContainer>

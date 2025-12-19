@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import Document from '@tiptap/extension-document';
 import Paragraph from '@tiptap/extension-paragraph';
@@ -128,11 +128,32 @@ interface ContentZoneProps {
     onChange?: (content: string) => void;
 }
 
+const DEBOUNCE_DELAY = 500;
+
 const EditableContent: React.FC<{
     content: string;
     placeholder: string;
     onChange: (content: string) => void;
 }> = ({ content, placeholder, onChange }) => {
+    const onChangeRef = useRef(onChange);
+    const debounceRef = useRef<NodeJS.Timeout | null>(null);
+    const lastSentToParentRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        onChangeRef.current = onChange;
+    });
+
+    const flushPendingChanges = useCallback((currentHtml: string) => {
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
+            debounceRef.current = null;
+        }
+        if (currentHtml !== lastSentToParentRef.current) {
+            lastSentToParentRef.current = currentHtml;
+            onChangeRef.current(currentHtml);
+        }
+    }, []);
+
     const editor = useEditor({
         extensions: [
             Document,
@@ -152,17 +173,39 @@ const EditableContent: React.FC<{
         content: content || '',
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
-            if (html !== content) {
-                onChange(html);
+            
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current);
             }
+            debounceRef.current = setTimeout(() => {
+                flushPendingChanges(html);
+            }, DEBOUNCE_DELAY);
         },
-    });
+        onBlur: ({ editor }) => {
+            flushPendingChanges(editor.getHTML());
+        },
+    }, []);
 
+    // Sync depuis le parent (chargement initial ou changement de draft)
     useEffect(() => {
-        if (editor && content !== editor.getHTML()) {
+        if (!editor) return;
+        
+        const currentHtml = editor.getHTML();
+        // Ne sync que si le contenu du parent est différent de ce qu'on a dans l'éditeur
+        // ET différent de ce qu'on vient d'envoyer au parent
+        if (content !== currentHtml && content !== lastSentToParentRef.current) {
             editor.commands.setContent(content || '');
         }
-    }, [content]);
+    }, [content, editor]);
+
+    // Cleanup au démontage
+    useEffect(() => {
+        return () => {
+            if (debounceRef.current) {
+                clearTimeout(debounceRef.current);
+            }
+        };
+    }, []);
 
     const focusEditor = useCallback(() => {
         editor?.chain().focus().run();
@@ -282,4 +325,3 @@ const ContentZone: React.FC<ContentZoneProps> = ({
 };
 
 export default ContentZone;
-
