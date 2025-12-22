@@ -104,7 +104,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
             lastSavedRef.current = content;
             setSaveStatus('saved');
         }
-    }, [selectedDraft]);
+    }, [selectedDraftId, selectedDraft]);
 
     // Sauvegarde et cleanup au démontage
     useEffect(() => {
