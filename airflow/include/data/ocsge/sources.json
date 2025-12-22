@@ -661,7 +661,7 @@
             "2023": "https://data.geopf.fr/telechargement/download/OCSGE-ARTIFICIALISATION/OCS-GE_2-0_ARTIFICIALISATION_GPKG_LAMB93_D041_2023-01-01/OCS-GE_2-0_ARTIFICIALISATION_GPKG_LAMB93_D041_2023-01-01.7z"
         },
         "difference": {
-            "2018_2023": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF-2018-2023_GPKG_LAMB93_D041_2025-04-15/OCS-GE_2-0_DIFF-2018-2023_GPKG_LAMB93_D041_2025-04-15.7z"
+            "2018_2023": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF-2018-2023_GPKG_LAMB93_D041_2025-07-24/OCS-GE_2-0_DIFF-2018-2023_GPKG_LAMB93_D041_2025-07-24.7z"
         },
         "occupation_du_sol_et_zone_construite": {
             "2018": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__GPKG_LAMB93_D041_2018-01-01/OCS-GE_2-0__GPKG_LAMB93_D041_2018-01-01.7z",
@@ -1565,6 +1565,22 @@
         },
         "artif_difference": {
             "2017_2022": "https://data.geopf.fr/telechargement/download/OCSGE-ARTIFICIALISATION/OCS-GE-ARTIFICIALISATION_2-0_DIFF-2017-2022_GPKG_RGAF09UTM20_D972_2025-09-16/OCS-GE-ARTIFICIALISATION_2-0_DIFF-2017-2022_GPKG_RGAF09UTM20_D972_2025-09-16.7z"
+        }
+    },
+    "973": {
+        "artif": {
+            "2018": "https://data.geopf.fr/telechargement/download/OCSGE-ARTIFICIALISATION/OCS-GE_2-0_ARTIFICIALISATION_GPKG_RGFG95UTM22_D973_2018-01-01/OCS-GE_2-0_ARTIFICIALISATION_GPKG_RGFG95UTM22_D973_2018-01-01.7z",
+            "2022": "https://data.geopf.fr/telechargement/download/OCSGE-ARTIFICIALISATION/OCS-GE_2-0_ARTIFICIALISATION_GPKG_RGFG95UTM22_D973_2022-01-01/OCS-GE_2-0_ARTIFICIALISATION_GPKG_RGFG95UTM22_D973_2022-01-01.7z"
+        },
+        "artif_difference": {
+            "2018_2022":"https://data.geopf.fr/telechargement/download/OCSGE-ARTIFICIALISATION/OCS-GE-ARTIFICIALISATION_2-0_DIFF-2018-2022_GPKG_RGFG95UTM22_D973_2025-11_04/OCS-GE-ARTIFICIALISATION_2-0_DIFF-2018-2022_GPKG_RGFG95UTM22_D973_2025-11_04.7z"
+        },
+        "difference": {
+            "2018_2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF-2018-2022_GPKG_RGFG95UTM22_D973_2025-10-30/OCS-GE_2-0_DIFF-2018-2022_GPKG_RGFG95UTM22_D973_2025-10-30.7z"
+        },
+        "occupation_du_sol_et_zone_construite": {
+            "2018": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__GPKG_RGFG95UTM22_D973_2018-01-01/OCS-GE_2-0__GPKG_RGFG95UTM22_D973_2018-01-01.7z",
+            "2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__GPKG_RGFG95UTM22_D973_2022-01-01/OCS-GE_2-0__GPKG_RGFG95UTM22_D973_2022-01-01.7z"
         }
     },
     "974": {

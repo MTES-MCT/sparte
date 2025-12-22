@@ -36,6 +36,9 @@ type ChartDetailsProps = {
         rows: any[];
     };
     chartTitle?: string;
+    dataTableHeader?: React.ReactNode;
+    dataTableOnly?: boolean;
+    compactDataTable?: boolean;
 }
 
 const ChartDetails: React.FC<ChartDetailsProps> = ({
@@ -44,51 +47,73 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
     children,
     chartId,
     dataTable,
-    chartTitle
+    chartTitle,
+    dataTableHeader,
+    dataTableOnly = false,
+    compactDataTable = false
 }) => {
+    // Le contenu est plié par défaut
     const [isVisible, setIsVisible] = useState(false);
 
     if (!(sources.length > 0 || showDataTable)) {
         return null;
     }
 
+    // Si dataTableOnly, afficher directement le datatable sans le drawer
+    if (dataTableOnly) {
+        return (
+            <div>
+                {showDataTable && dataTable && (
+                    <>
+                        {dataTableHeader}
+                        <ChartDataTable data={dataTable} title={chartTitle} compact={compactDataTable} />
+                        {children}
+                    </>
+                )}
+            </div>
+        );
+    }
+
     return (
         <Container>
-            <Header>
-                {sources.length > 0 && (
-                    <ChartDataSource 
-                        sources={sources}
-                        displayMode="tag"
-                    />
-                )}
-                {(sources.length > 0 || showDataTable) && (
-                    <button
-                        className="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill"
-                        onClick={() => setIsVisible(!isVisible)}
-                        title={isVisible ? "Masquer les données" : "Afficher les données"}
-                        aria-expanded={isVisible}
-                        aria-controls={`${chartId}-details`}
-                    >
-                        Détails données et calcul
-                    </button>
-                )}
-            </Header>
+                <Header>
+                    {sources.length > 0 && (
+                        <ChartDataSource
+                            sources={sources}
+                            displayMode="tag"
+                        />
+                    )}
+                    {(sources.length > 0 || showDataTable) && (
+                        <button
+                            className="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill"
+                            onClick={() => setIsVisible(!isVisible)}
+                            title={isVisible ? "Masquer les données" : "Afficher les données"}
+                            aria-expanded={isVisible}
+                            aria-controls={`${chartId}-details`}
+                        >
+                            Détails données et calcul
+                        </button>
+                    )}
+                </Header>
             {(sources.length > 0 || showDataTable) && (
-                <DataContainer 
+                <DataContainer
                     $isVisible={isVisible}
                     id={`${chartId}-details`}
                     aria-label="Détails des données et calculs"
                     aria-hidden={!isVisible}
                 >
                     {sources.length > 0 && (
-                        <ChartDataSource 
+                        <ChartDataSource
                             sources={sources}
                             displayMode="text"
                         />
                     )}
                     {children}
                     {showDataTable && dataTable && (
-                        <ChartDataTable data={dataTable} title={chartTitle} />
+                        <>
+                            {dataTableHeader}
+                            <ChartDataTable data={dataTable} title={chartTitle} compact={compactDataTable} />
+                        </>
                     )}
                 </DataContainer>
             )}

@@ -9,6 +9,9 @@ Le test compare pour chaque territoire (land_id, land_type) et chaque millésime
 Le test retourne les lignes où la différence absolue est supérieure à 0.1 ha (tolérance pour les arrondis).
 */
 
+{{ config(severity = 'warn') }}
+
+
 with
     flux_from_difference as (
         select

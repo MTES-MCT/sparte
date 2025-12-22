@@ -10,18 +10,19 @@
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "typeRoots": ["./node_modules/@types", "./frontend/types"],
-        "baseUrl": "./frontend",
+        "baseUrl": ".",
         "paths": {
-            "@components/*": ["scripts/components/*"],
-            "@hooks/*": ["scripts/hooks/*"],
-            "@store/*": ["scripts/store/*"],
-            "@services/*": ["scripts/services/*"],
-            "@images/*": ["images/*"],
-            "@utils/*": ["scripts/utils/*"],
+            "@components/*": ["frontend/scripts/components/*"],
+            "@hooks/*": ["frontend/scripts/hooks/*"],
+            "@store/*": ["frontend/scripts/store/*"],
+            "@services/*": ["frontend/scripts/services/*"],
+            "@images/*": ["frontend/images/*"],
+            "@utils/*": ["frontend/scripts/utils/*"],
+            "scripts/*": ["frontend/scripts/*"]
         }
     },
     "include": [
         "frontend/**/*",
         "frontend/types/globals.d.ts"
-    ],
+    ]
 }

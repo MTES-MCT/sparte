@@ -18,20 +18,6 @@ class ArtifByCouverturePieChart(DiagnosticChart):
     by_index_klass = LandArtifStockCouvertureCompositionIndex
 
     def __init__(self, land, params):
-        """
-        Initialise le graphique camembert d'artificialisation par couverture.
-
-        Args:
-            land: Instance de LandModel représentant le territoire
-            params: Dictionnaire de paramètres devant contenir 'index'
-                   et optionnellement 'departement'
-
-        Raises:
-            ValueError: Si 'index' n'est pas présent dans params
-        """
-        if "index" not in params:
-            raise ValueError("Le paramètre 'index' est obligatoire")
-
         super().__init__(land=land, params=params)
 
     @cached_property
@@ -76,6 +62,7 @@ class ArtifByCouverturePieChart(DiagnosticChart):
                 }
                 for item in self.data
             ],
+            "boldFirstColumn": True,
         }
 
     @cached_property
@@ -159,7 +146,7 @@ class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
                     **super().param["plotOptions"]["pie"],
                     "dataLabels": {
                         **super().param["plotOptions"]["pie"]["dataLabels"],
-                        "format": "<b>{key}</b><br/>{point.y:,.1f} ha",
+                        "format": "<b>{key}</b><br/>{point.y:,.1f} ha ({point.percentage:.1f}%)",
                     },
                 },
             },

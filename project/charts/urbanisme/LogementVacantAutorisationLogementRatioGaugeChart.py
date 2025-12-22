@@ -1,25 +1,30 @@
-from project.charts.base_project_chart import ProjectChart
+from project.charts.base_project_chart import DiagnosticChart
 from public_data.domain.containers import PublicDataContainer
 
 
-class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
+class LogementVacantAutorisationLogementRatioGaugeChart(DiagnosticChart):
     """
     Graphique en barre de comparaison du nombre de logements vacants et d'autorisations de construction de logements.
     """
 
-    def __init__(self, project, start_date, end_date):
-        super().__init__(project=project, start_date=start_date, end_date=end_date)
+    required_params = ["start_date", "end_date"]
+
+    @property
+    def name(self):
+        return f"logement vacant autorisation ratio gauge {self.params['start_date']}-{self.params['end_date']}"
 
     def _get_series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
         """
+        start_date = int(self.params["start_date"])
+        end_date = int(self.params["end_date"])
 
         autorisation_logement_progression = (
             PublicDataContainer.autorisation_logement_progression_service().get_by_land(
-                land=self.project.land_proxy,
-                start_date=self.start_date,
-                end_date=self.end_date,
+                land=self.land,
+                start_date=start_date,
+                end_date=end_date,
             )
         )
 
@@ -27,6 +32,10 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
         last_year_autorisation_logement_progression = (
             autorisation_logement_progression.get_last_year_autorisation_logement()
         )
+
+        # Handle cases where data is not available
+        if last_year_autorisation_logement_progression is None:
+            return []
 
         raw_value = round(last_year_autorisation_logement_progression.percent_autorises_on_vacants_parc_general, 0)
 
@@ -59,6 +68,8 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
 
     @property
     def param(self):
+        end_date = int(self.params["end_date"])
+
         return super().param | {
             "chart": {
                 "type": "gauge",
@@ -67,7 +78,7 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
             "title": {
                 "text": (
                     "Rapport entre le nombre de logements vacants et le nombre d'autorisations de "
-                    f"construction de logements ({self.end_date})"
+                    f"construction de logements ({end_date})"
                 ),
             },
             "yAxis": {
@@ -115,7 +126,3 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
             },
             "series": self._get_series(),
         }
-
-    # To remove after refactoring
-    def add_series(self):
-        pass

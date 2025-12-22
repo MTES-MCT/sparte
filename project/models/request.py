@@ -29,6 +29,14 @@ class Request(models.Model):
         blank=True,
         null=True,
     )
+    report_draft = models.ForeignKey(
+        "project.ReportDraft",
+        on_delete=models.SET_NULL,
+        verbose_name="Brouillon de rapport",
+        blank=True,
+        null=True,
+        related_name="download_requests",
+    )
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
     sent_date = models.DateTimeField("date d'envoi", null=True, blank=True)

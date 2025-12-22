@@ -21,22 +21,9 @@ class ArtifFluxByUsage(DiagnosticChart):
     sol = "usage"
     model = LandArtifFluxUsageCompositionIndex
     model_by_departement = LandArtifFluxUsageComposition
+    required_params = ["millesime_new_index"]
 
     def __init__(self, land, params):
-        """
-        Initialise le graphique de flux d'artificialisation par usage/couverture.
-
-        Args:
-            land: Instance de LandModel représentant le territoire
-            params: Dictionnaire de paramètres devant contenir 'millesime_new_index'
-                   et optionnellement 'departement'
-
-        Raises:
-            ValueError: Si 'millesime_new_index' n'est pas présent dans params
-        """
-        if "millesime_new_index" not in params:
-            raise ValueError("Le paramètre 'millesime_new_index' est obligatoire")
-
         super().__init__(land=land, params=params)
 
     @property
@@ -212,21 +199,53 @@ class ArtifFluxByUsage(DiagnosticChart):
                 }
                 for item in self.data
             ],
+            "boldFirstColumn": True,
         }
 
 
 class ArtifFluxByUsageExport(ArtifFluxByUsage):
     @property
     def title_end(self):
-        return f" sur le territoire de {self.land.name}"
+        return f"{super().title_end} sur le territoire de {self.land.name} (en ha)"
+
+    @property
+    def categories(self):
+        """Version export: affiche uniquement le code (usage ou couverture)"""
+        return [getattr(item, self.sol) for item in self.data]
+
+    @property
+    def series(self):
+        base_series = super().series
+        if not base_series:
+            return None
+
+        # Ajouter les dataLabels avec la couleur de la série
+        for serie in base_series:
+            serie["dataLabels"] = {
+                "enabled": True,
+                "format": "{point.y:,.2f}",
+                "allowOverlap": True,
+                "style": {
+                    "textOutline": "none",
+                    "color": serie["color"],
+                },
+            }
+        return base_series
 
     @property
     def param(self):
         return super().param | {
+            "chart": {"type": "bar", "height": 900},
             "credits": OCSGE_CREDITS,
             "title": {"text": self.title},
             "legend": {
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
+            "plotOptions": {
+                "bar": {
+                    "groupPadding": 0.2,
+                    "borderWidth": 0,
+                }
             },
         }

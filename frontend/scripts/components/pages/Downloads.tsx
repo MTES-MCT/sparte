@@ -1,171 +1,203 @@
-import React, { useState, ReactNode } from 'react';
-import Guide from '@components/ui/Guide';
-import { useDownloadDiagnosticMutation, useGetProjectDownloadLinksQuery } from '@services/api';
-import { ProjectDetailResultType } from "@services/types/project";
+import React from 'react';
+import styled from 'styled-components';
+import { LandDetailResultType } from '@services/types/land';
+import { ProjectDetailResultType } from '@services/types/project';
+import ActionCard from '@components/ui/ActionCard';
+import {
+    LoginPrompt,
+    ReportCard,
+    CreateReportModal,
+    ReportEditor,
+    LoadingState,
+} from '@components/features/report';
+import { useReportDrafts } from '@hooks/useReportDrafts';
 
-type DocumentTypeLiteral = 'rapport-complet' | 'rapport-local';
+const MainContent = styled.main`
+    width: 100%;
+`;
 
-interface ReportConfig {
-    title: string;
-    description: string;
-    documentType: DocumentTypeLiteral;
-}
+const CardsGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    width: 100%;
 
-interface NoticeProps {
-    type: 'success' | 'warning';
-    message: string | ReactNode;
-    reportTitle: string;
-}
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+`;
 
-interface DownloadCardProps {
-    report: ReportConfig;
-    onDownload: (report: ReportConfig) => void;
-    isDisabled: boolean;
-    downloadUrl?: string;
-}
+const MyReportsSection = styled.section`
+    margin-top: 2.5rem;
+`;
+
+const SectionHeader = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+`;
+
+const SectionTitle = styled.h2`
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-title-grey);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    span {
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: var(--text-mention-grey);
+    }
+`;
+
+const EmptyDrafts = styled.div`
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-mention-grey);
+    font-size: 0.875rem;
+    background: var(--background-alt-grey);
+    border-radius: 0.5rem;
+`;
 
 interface DownloadsProps {
+    landData: LandDetailResultType;
     projectData: ProjectDetailResultType;
 }
 
-const NOTICE_TITLES = {
-    success: (reportTitle: string) => `Votre demande de téléchargement du rapport ${reportTitle} a bien été prise en compte`,
-    warning: (reportTitle: string) => `Erreur lors de votre demande de téléchargement du rapport ${reportTitle}`
-} as const;
-
-export const REPORTS: ReportConfig[] = [
-    {
-        title: "complet",
-        description: "Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols sur votre territoire, incluant les indicateurs clés, au regard de la loi climat et résilience.",
-        documentType: "rapport-complet"
-    },
-    {
-        title: "triennal local",
-        description: "Trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire réalisée en partenariat avec la DGALN.",
-        documentType: "rapport-local"
-    }
-];
-
-export const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) => (
-    <div className={`bg-white fr-mt-2w fr-alert fr-alert--${type}`}>
-        <h3 className="fr-alert__title">{NOTICE_TITLES[type](reportTitle)}</h3>
-        <p>{message}</p>
-    </div>
-);
-
-const DownloadCard: React.FC<DownloadCardProps> = ({ report, onDownload, isDisabled, downloadUrl }) => (
-    <div className={`fr-card fr-enlarge-link ${isDisabled ? 'fr-card--disabled' : ''}`}>
-        <div className="fr-card__body">
-            <div className="fr-card__content">
-                <h3 className="fr-card__title">
-                    {downloadUrl ? (
-                        <a href={downloadUrl} target="_blank" rel="noopener noreferrer" className="fr-link">
-                            Rapport {report.title}
-                        </a>
-                    ) : (
-
-                    <a
-                        className="fr-link"
-                        href="#"
-                        onClick={(e) => {
-                            if (!isDisabled) onDownload(report);
-                        }}
-                        aria-disabled={isDisabled}
-                    >
-                        Rapport {report.title}
-                    </a>
-                    )}
-                </h3>
-                <p className="fr-card__desc">{report.description}</p>
-                <div className="fr-card__end">
-                    {downloadUrl ? (
-                 <p className="fr-card__detail">
-                        Télécharger le rapport {report.title} au format Word
-                    </p>
-                    ) : (
-                                         <p className="fr-card__detail">
-                        Recevoir le rapport {report.title} au format Word par email
-                    </p>
-                    )}
-   
-                </div>
-            </div>
-        </div>
-    </div>
-);
-
-const Downloads: React.FC<DownloadsProps> = ({ projectData }) => {
-    const [message, setMessage] = useState<string | null>(null);
-    const [error, setError] = useState<ReactNode | null>(null);
-    const [disabledDocuments, setDisabledDocuments] = useState<Set<string>>(new Set());
-    const [currentReport, setCurrentReport] = useState<ReportConfig | null>(null);
-    const [downloadDiagnostic] = useDownloadDiagnosticMutation();
-    const { data: downloadLinks } = useGetProjectDownloadLinksQuery(projectData.id)
+const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
+    const isAuthenticated = projectData.header.menuItems.some(
+        item => item.label === 'Mon compte' && item.shouldDisplay
+    );
 
     const {
-        rapport_complet_url,
-        rapport_local_url
-    } = downloadLinks || {};
+        selectedDraftId,
+        selectedDraft,
+        drafts,
+        localContent,
+        saveStatus,
+        lastSavedTime,
+        isDraftsLoading,
+        isDraftLoading,
+        isCreating,
+        isPdfLoading,
+        exportDisabled,
+        prefilledReportType,
+        handleContentChange,
+        handleSelectDraft,
+        handleDeleteDraft,
+        handleRenameDraft,
+        handleCreateDraft,
+        handleCreateReportOfType,
+        handleExportPdf,
+        handleBack,
+    } = useReportDrafts({
+        projectId: projectData.id,
+        downloadsUrl: projectData.urls.downloads,
+        isAuthenticated,
+    });
 
-    const urls = {
-        "rapport-complet": rapport_complet_url,
-        "rapport-local": rapport_local_url
-    } satisfies Record<DocumentTypeLiteral, string | null>;
-
-    const handleDownload = async (report: ReportConfig) => {
-        if (disabledDocuments.has(report.documentType)) return;
-
-        setError(null);
-        setMessage(null);
-        setCurrentReport(report);
-        setDisabledDocuments(new Set([report.documentType]));
-        try {
-            const response = await downloadDiagnostic({ 
-                projectId: projectData.id, 
-                documentType: report.documentType 
-            }).unwrap();
-            setMessage(response.message);
-        } catch (error: any) {
-            setError(error.data?.error || 'Une erreur est survenue');
-        }
-    };
+    if (!isAuthenticated) {
+        return <LoginPrompt />;
+    }
 
     return (
-        <div className="fr-container--fluid fr-p-3w">
-            <div className="fr-grid-row">
-                <div className="fr-col-12">
-                    <Guide title="Qu'y a-t-il dans nos rapports téléchargeables ?">
-                        <p>Nos rapports téléchargeables vous permettent d'accéder à des analyses détaillées de l'évolution de l'artificialisation des sols, des données quantitatives sur la consommation d'espaces NAF (naturels, agricoles et forestiers), ainsi qu'à des cartographies des zones concernées.</p>
-                        <p>Ces documents sont régulièrement mis à jour pour refléter les dernières données disponibles et les évolutions réglementaires.</p>
-                    </Guide>
-                    {message && currentReport && (
-                        <Notice 
-                            type="success" 
-                            message={message} 
-                            reportTitle={currentReport.title} 
-                        />
-                    )}
-                    {error && currentReport && (
-                        <Notice 
-                            type="warning" 
-                            message={<span dangerouslySetInnerHTML={{ __html: error }} />} 
-                            reportTitle={currentReport.title} 
-                        />
-                    )}
-                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-                        {REPORTS.map((report) => (
-                            <div key={report.documentType} className="fr-col-12 fr-col-md-6">
-                                <DownloadCard
-                                    report={report}
-                                    onDownload={handleDownload}
-                                    downloadUrl={urls[report.documentType]}
-                                    isDisabled={disabledDocuments.has(report.documentType)}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
+        <div className="fr-px-3w fr-pb-3w">
+            <MainContent>
+                {!selectedDraftId && (
+                    <>
+                        <p className="fr-text--sm">
+                            Créez et téléchargez facilement des rapports à partir de nos trames pré-remplies, personnalisez-les et retrouvez les à tout moment.
+                        </p>
+
+                        <SectionHeader>
+                            <SectionTitle>
+                                Créer un nouveau rapport
+                            </SectionTitle>
+                        </SectionHeader>
+
+                        <CardsGrid>
+                            <ActionCard
+                                icon="fr-icon-bar-chart-box-line"
+                                title="Rapport Complet"
+                                description="Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols."
+                                onClick={() => handleCreateReportOfType('rapport-complet')}
+                                disabled={isCreating}
+                            />
+
+                            <ActionCard
+                                icon="fr-icon-calendar-event-line"
+                                title="Rapport Triennal Local"
+                                description="Trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols réalisée en partenariat avec la DGALN."
+                                onClick={() => handleCreateReportOfType('rapport-local')}
+                                disabled={isCreating}
+                            />
+                        </CardsGrid>
+
+                        <MyReportsSection>
+                            <SectionHeader>
+                                <SectionTitle>
+                                    <i className="fr-icon-archive-line" aria-hidden="true" />
+                                    Mes rapports
+                                    <span>({drafts.length})</span>
+                                </SectionTitle>
+                            </SectionHeader>
+
+                            {isDraftsLoading ? (
+                                <EmptyDrafts>
+                                    <span className="fr-spinner fr-spinner--sm" aria-hidden="true" />
+                                    Chargement...
+                                </EmptyDrafts>
+                            ) : drafts.length === 0 ? (
+                                <EmptyDrafts>
+                                    Aucun rapport enregistré. Créez votre premier rapport ci-dessus.
+                                </EmptyDrafts>
+                            ) : (
+                                <CardsGrid>
+                                    {drafts.map(draft => (
+                                        <ReportCard
+                                            key={draft.id}
+                                            title={draft.name}
+                                            typeLabel={draft.report_type_display}
+                                            updatedAt={draft.updated_at}
+                                            onClick={() => handleSelectDraft(draft.id)}
+                                        />
+                                    ))}
+                                </CardsGrid>
+                            )}
+                        </MyReportsSection>
+                    </>
+                )}
+
+                {selectedDraftId && isDraftLoading && <LoadingState />}
+
+                {selectedDraftId && selectedDraft && !isDraftLoading && (
+                    <ReportEditor
+                        draft={selectedDraft}
+                        landData={landData}
+                        content={localContent}
+                        saveStatus={saveStatus}
+                        lastSavedTime={lastSavedTime}
+                        isPdfLoading={isPdfLoading}
+                        exportDisabled={exportDisabled}
+                        onContentChange={handleContentChange}
+                        onBack={handleBack}
+                        onExport={handleExportPdf}
+                        onRename={handleRenameDraft}
+                        onDelete={() => handleDeleteDraft(selectedDraft.id)}
+                    />
+                )}
+            </MainContent>
+
+            <CreateReportModal
+                reportType={prefilledReportType}
+                isLoading={isCreating}
+                onSubmit={handleCreateDraft}
+                landData={landData}
+            />
         </div>
     );
 };

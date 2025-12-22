@@ -6,10 +6,12 @@ from project.models.create import create_project_api_view
 
 from . import views
 from .api_views import (
-    DiagnosticDownloadAPIView,
     EmpriseViewSet,
+    ExportStartView,
+    ExportStatusView,
     ProjectDetailView,
     ProjectDownloadLinkView,
+    RecordDownloadRequestAPIView,
 )
 
 app_name = "project"
@@ -73,13 +75,6 @@ urlpatterns = [
         views.diagnostic.DiagnostictRapportLocalView.as_view(),
         name="report_local",
     ),
-    # REPORT PARTIALS
-    # MAP
-    path(
-        "<int:pk>/carte/consommation-villes-du-territoire",
-        views.CitySpaceConsoMapView.as_view(),
-        name="theme-city-conso",
-    ),
     # DOWNLOAD
     path(
         "<int:pk>/tableau-de-bord/telechargements",
@@ -87,25 +82,19 @@ urlpatterns = [
         name="report_downloads",
     ),
     path(
-        "<int:pk>/telechargement/<slug:requested_document>",
-        DiagnosticDownloadAPIView.as_view(),
-        name="report_download",
+        "<int:pk>/tableau-de-bord/telechargements/<uuid:draft_id>",
+        views.diagnostic.DiagnosticDownloadsView.as_view(),
+        name="report_downloads_draft",
     ),
     path(
         "<int:pk>/telechargement-liens",
         ProjectDownloadLinkView.as_view(),
         name="report_download_url",
     ),
-    path(
-        "<int:pk>/all_charts_for_preview",
-        views.AllChartsForPreview.as_view(),
-        name="all_charts_for_preview",
-    ),
-    path(
-        "<int:request_id>/word/telechargement",
-        views.diagnostic.DiagnosticDownloadWordView.as_view(),
-        name="word_download",
-    ),
+    # Export PDF (polling)
+    path("export/start/", ExportStartView.as_view(), name="export_start"),
+    path("export/status/<str:job_id>/", ExportStatusView.as_view(), name="export_status"),
+    path("export/download/<str:job_id>/", RecordDownloadRequestAPIView.as_view(), name="export_download"),
 ]
 
 # Add API urls

@@ -19,7 +19,31 @@ services:
     networks:
       - app-network
 
-  app:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: sparte/frontend:latest
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3002:3000"
+    networks:
+      - app-network
+
+  export-server:
+    build: ./export
+    image: sparte/export-server:latest
+    environment:
+      - PORT=3000
+      - ALLOWED_HOSTS=localhost,django,frontend
+    depends_on:
+      - frontend
+    networks:
+      - app-network
+
+  django:
     build: .
     image: sparte/backend:latest
     command: ["sh", "-c", "python manage.py runserver 0.0.0.0:8080 --nothreading"]
@@ -27,98 +51,15 @@ services:
       - .:/app
     env_file: .env
     environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - SCALINGO_REDIS_URL=redis://redis:6379/0
+      - EXPORT_SERVER_URL=http://export-server:3000
+      - EXPORT_BASE_URL=http://django:8080
     ports:
       - "8080:8080"
     depends_on:
       - db
       - redis
-    networks:
-      - app-network
-
-  worker-quick:
-    build: .
-    image: sparte/backend:latest
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1
-    env_file: .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app-network
-
-  worker-long:
-    build: .
-    image: sparte/backend:latest
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1 -Q long
-    env_file: .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app-network
-
-  worker-beat:
-    build: .
-    image: sparte/backend:latest
-    working_dir: /app
-    volumes:
-      - .:/app
-    command: celery -A config.celery beat --loglevel=debug
-    env_file: .env
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    networks:
-      - app-network
-
-  flower:
-    image: mher/flower
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - FLOWER_PORT=8887
-    networks:
-      - app-network
-    ports:
-      - 8887:8887
-
-  jupyter:
-    image: sparte/backend:latest
-    command: python manage.py shell_plus --notebook
-    volumes:
-      - .:/app
-    env_file: .env
-    environment:
-      - DJANGO_ALLOW_ASYNC_UNSAFE=true
-      - JUPYTER_CONFIG_DIR=/app/config/
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    ports:
-      - 8888:8888
+      - export-server
     networks:
       - app-network
 

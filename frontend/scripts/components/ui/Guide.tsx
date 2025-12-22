@@ -48,9 +48,10 @@ interface GuideProps {
     children: ReactNode;
     DrawerTitle?: string;
     drawerChildren?: ReactNode;
+    className?: string;
 }
 
-const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChildren }) => {
+const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChildren, className }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
@@ -58,7 +59,7 @@ const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChild
     };
 
     return (
-        <Container className="fr-mb-5w">
+        <Container className={`fr-mb-5w ${className}`}>
             <div>
                 <Title>{ title }</Title>
                 <Content>

@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { useGetChartConfigQuery } from '@services/api';
 import GenericChart from '../GenericChart';
 
 type OcsgeGraphProps = {
@@ -26,15 +25,14 @@ export const OcsgeGraph = ({
     children,
     showDataTable = false
 } : OcsgeGraphProps) => {
-    const { data, isLoading, error } = useGetChartConfigQuery({ id, land_id, land_type, ...params })
-
     return (
-        <GenericChart 
-            isMap={isMap} 
-            chartOptions={data}
+        <GenericChart
+            id={id}
+            land_id={land_id}
+            land_type={land_type}
+            params={params}
+            isMap={isMap}
             containerProps={containerProps}
-            isLoading={isLoading}
-            error={error}
             sources={sources}
             showDataTable={showDataTable}
         >

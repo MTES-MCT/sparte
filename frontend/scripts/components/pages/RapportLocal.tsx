@@ -1,11 +1,9 @@
-import React, { ReactNode } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import { useHtmlLoader } from "@hooks/useHtmlLoader";
 import useHtmx from "@hooks/useHtmx";
 import Loader from "@components/ui/Loader";
-import Button from "@components/ui/Button";
 import CallToAction from "@components/ui/CallToAction";
-import { useDownloadDiagnosticMutation } from "@services/api";
-import { Notice } from "./Downloads";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -22,25 +20,7 @@ const RapportLocal: React.FC<{ endpoint: string; projectData: any }> = ({
   projectData,
 }) => {
   const { content, isLoading } = useHtmlLoader(endpoint);
-  const { urls } = projectData;
   const htmxRef = useHtmx([isLoading]);
-
-  const [message, setMessage] = React.useState<string | null>(null);
-  const [error, setError] = React.useState<ReactNode | null>(null);
-  const [downloadDiagnostic] = useDownloadDiagnosticMutation();
-
-  const handleDownload = async () => {
-    setMessage(null);
-    try {
-      const response = await downloadDiagnostic({
-        projectId: projectData.id,
-        documentType: "rapport-local",
-      }).unwrap();
-      setMessage(response.message);
-    } catch (error: any) {
-      setError(error.data?.error ?? "Une erreur est survenue");
-    }
-  };
 
   if (isLoading) return <Loader />;
 
@@ -48,42 +28,22 @@ const RapportLocal: React.FC<{ endpoint: string; projectData: any }> = ({
     <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          {urls && (
+          {projectData?.urls?.downloads && (
             <CallToAction
               title="Besoin d'aide ?"
-              text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l’artificialisation des sols de votre territoire."
+              text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
             >
-              <div>
-                {message && (
-                  <Notice
-                    type="success"
-                    message={message}
-                    reportTitle="Rapport local"
-                  />
-                )}
-                {error && (
-                  <Notice
-                    type="warning"
-                    message={
-                      <span dangerouslySetInnerHTML={{ __html: error }} />
-                    }
-                    reportTitle="Rapport local"
-                  />
-                )}
-                {!message && !error && (
-                  <Button
-                    type="htmx"
-                    icon="bi bi-file-earmark-word"
-                    label="Télécharger le rapport triennal local"
-                    onClick={handleDownload}
-                  />
-                )}
-              </div>
+              <Link
+                to={projectData.urls.downloads}
+                className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
+              >
+                Accéder aux téléchargements
+              </Link>
             </CallToAction>
           )}
           <div
             dangerouslySetInnerHTML={{ __html: content }}
-            className="fr-mt-5w"
+            className="fr-mt-3w"
           />
         </div>
       </div>

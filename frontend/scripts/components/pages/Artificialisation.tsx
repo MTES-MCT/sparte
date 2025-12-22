@@ -114,7 +114,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 									<MillesimeDisplay
 										is_interdepartemental={is_interdepartemental}
 										landArtifStockIndex={landArtifStockIndex}
-										between={false}
 									/>
 								</>
 							}
@@ -492,15 +491,15 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					</div>
 				</div>
 			)}
-			
+
 			{has_zonage && (
-				<ArtificialisationZonage 
+				<ArtificialisationZonage
 					artifZonageIndex={artifZonageIndex}
 					is_interdepartemental={is_interdepartemental}
 					landArtifStockIndex={landArtifStockIndex}
 				/>
 			)}
-			
+
 			<div className="fr-mb-7w">
 				<h2>Calcul de l'artificialisation des sols</h2>
 				<div className="bg-white fr-p-4w fr-mb-7w rounded">

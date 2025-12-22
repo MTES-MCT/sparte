@@ -103,9 +103,7 @@ PROJECT_APPS = [
     "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
-    "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
-    "metabase.apps.MetabaseConfig",
     "crisp.apps.CrispConfig",
     "oidc.apps.OidcConfig",
 ]
@@ -383,15 +381,6 @@ WEBPACK_LOADER = {
     }
 }
 
-# Celery configuration
-CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
-CELERY_ACKS_LATE = True
-CELERY_TASK_ACKS_LATE = True
-CELERY_WORKER_PREFETCH_MULTIPLIER = 1
-CELERY_RESULT_EXTENDED = True
-CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
-
 # django-debug-toolbar configuration
 
 # activate only if debug is True
@@ -437,6 +426,11 @@ if DEBUG:
 # Configuration for highchart
 
 HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highcharts.com/")
+
+# Configuration for export server (PDF generation)
+
+EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3001")
+EXPORT_BASE_URL = env.str("EXPORT_BASE_URL", default="http://django:8080")
 
 # EMAIL
 """Configuration of e-mails

@@ -16,6 +16,7 @@ urlpatterns = [
     path("robots.txt", views.RobotView.as_view(), name="robots"),
     path("contact", views.ContactView.as_view(), name="contact"),
     path("satisfaction", views.SatisfactionView.as_view(), name="satisfaction"),
+    path("statistiques", views.StatsView.as_view(), name="stats"),
     path(
         "newsletter/inscription",
         views.NewsletterSubscriptionView.as_view(),

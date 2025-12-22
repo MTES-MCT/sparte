@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -109,10 +109,27 @@ const development = {
         open: false,
         liveReload: false,
         static: path.resolve(__dirname, 'static'),
+        host: '0.0.0.0',
         port: 3000,
+        allowedHosts: 'all',
         headers: {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "X-Requested-With, Content-Type",
+        },
+        watchFiles: {
+            paths: ['frontend/scripts/**/*', 'frontend/styles/**/*'],
+            options: {
+                usePolling: true,
+                interval: 1000,
+                ignored: /node_modules/,
+            },
+        },
+        client: {
+            webSocketURL: {
+                hostname: 'localhost',
+                pathname: '/ws',
+                port: 3002,
+            },
         },
     },
     plugins: [
@@ -121,7 +138,13 @@ const development = {
             analyzerPort: '8989',
             openAnalyzer: false
         }),
-        new ReactRefreshWebpackPlugin(),
+        new ReactRefreshWebpackPlugin({
+            overlay: {
+                sockHost: 'localhost',
+                sockPort: 3002,
+                sockPath: '/ws',
+            },
+        }),
         new MiniCssExtractPlugin({
             filename: 'assets/styles/[name].css',
             chunkFilename: '[id].css'

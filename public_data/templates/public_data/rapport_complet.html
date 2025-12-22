@@ -1,0 +1,32 @@
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <title>Rapport Complet | Mon Diagnostic Artificialisation</title>
+
+        <link crossorigin="anonymous" rel="icon" href="{% static 'favicon/favicon.svg' %}">
+
+        <!-- Webpack Bundle CSS -->
+        {% if debug %}
+            <link rel="stylesheet" href="/webpack-dev/assets/styles/main.css">
+        {% else %}
+            {% render_bundle 'main' 'css' %}
+        {% endif %}
+    </head>
+
+    <body>
+        <div id="react-rapport-complet" data-land-type="{{ land_type }}" data-land-id="{{ land_id }}"></div>
+
+        <!-- Webpack Bundle JS -->
+        {% if debug %}
+            <script src="/webpack-dev/assets/scripts/bundle.dev.js"></script>
+        {% else %}
+            {% render_bundle 'main' 'js' %}
+        {% endif %}
+    </body>
+</html>

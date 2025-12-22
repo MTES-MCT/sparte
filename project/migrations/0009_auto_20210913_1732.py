@@ -10,15 +10,10 @@ import project.models
 class Migration(migrations.Migration):
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("public_data", "0008_artifcommune"),
         ("project", "0008_alter_project_import_status"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="project",
-            name="is_manually_linked",
-        ),
         migrations.AlterField(
             model_name="project",
             name="analyse_end_date",
@@ -38,11 +33,6 @@ class Migration(migrations.Migration):
                 max_length=4,
                 verbose_name="Date de début",
             ),
-        ),
-        migrations.AlterField(
-            model_name="project",
-            name="cities",
-            field=models.ManyToManyField(blank=True, to="public_data.ArtifCommune", verbose_name="Communes"),
         ),
         migrations.AlterField(
             model_name="project",

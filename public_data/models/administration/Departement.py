@@ -7,7 +7,6 @@ from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
 from .AdminRef import AdminRef
-from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
@@ -16,7 +15,7 @@ class DepartementManager(IntersectManager):
         return self.get(source_id=source_id)
 
 
-class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
+class Departement(LandMixin, models.Model):
     class Meta:
         verbose_name = "Département"
         managed = False

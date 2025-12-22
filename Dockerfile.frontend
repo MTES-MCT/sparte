@@ -1,0 +1,15 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copier les fichiers de dépendances
+COPY package.json package-lock.json ./
+
+# Installer les dépendances
+RUN npm ci
+
+# Exposer le port du dev server
+EXPOSE 3000
+
+# Lancer le dev server
+CMD ["npm", "run", "dev"]

@@ -3,8 +3,6 @@ __all__ = [
     "AnnualTotalConsoChartExport",
     "AnnualConsoByDeterminantChart",
     "AnnualConsoByDeterminantChartExport",
-    "AnnualConsoChart",
-    "AnnualConsoChartExport",
     "AnnualConsoComparisonChart",
     "AnnualConsoComparisonChartExport",
     "AnnualConsoProportionalComparisonChart",
@@ -34,7 +32,10 @@ __all__ = [
     "ArtifMapExport",
     "ArtifByCouverturePieChartExport",
     "ArtifUsagePieChartExport",
+    "ArtifNetFluxChart",
+    "ArtifNetFluxChartExport",
     "ArtifSyntheseChart",
+    "ArtifSyntheseChartExport",
     "ImperByCouverturePieChart",
     "ImperByUsagePieChart",
     "ImperMap",
@@ -50,7 +51,6 @@ from .AnnualConsoByDeterminantChart import (
     AnnualConsoByDeterminantChart,
     AnnualConsoByDeterminantChartExport,
 )
-from .AnnualConsoChart import AnnualConsoChart, AnnualConsoChartExport
 from .AnnualTotalConsoChart import AnnualTotalConsoChart, AnnualTotalConsoChartExport
 from .artificialisation import (
     ArtifByCouverturePieChart,
@@ -58,7 +58,10 @@ from .artificialisation import (
     ArtifByUsagePieChart,
     ArtifMap,
     ArtifMapExport,
+    ArtifNetFluxChart,
+    ArtifNetFluxChartExport,
     ArtifSyntheseChart,
+    ArtifSyntheseChartExport,
     ArtifUsagePieChartExport,
 )
 from .ConsoByDeterminantPieChart import (

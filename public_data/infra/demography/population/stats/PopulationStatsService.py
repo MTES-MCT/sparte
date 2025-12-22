@@ -1,17 +1,17 @@
 from public_data.domain.demography.population.entity import PopulationStatistics
 from public_data.domain.demography.population.stats import BasePopulationStatsService
-from public_data.models import Land, LandPopStats
+from public_data.models import LandModel, LandPopStats
 
 
 class PopulationStatsService(BasePopulationStatsService):
     def get_by_land(
         self,
-        land: Land,
+        land: LandModel,
         start_date: int,
         end_date: int,
     ) -> PopulationStatistics:
         data = LandPopStats.objects.get(
-            land_id=land.id,
+            land_id=land.land_id,
             land_type=land.land_type,
             from_year=start_date,
             to_year=end_date,
@@ -27,7 +27,7 @@ class PopulationStatsService(BasePopulationStatsService):
 
     def get_by_lands(
         self,
-        lands: list[Land],
+        lands: list[LandModel],
         start_date: int,
         end_date: int,
     ) -> list[PopulationStatistics]:

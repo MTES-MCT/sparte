@@ -1,19 +1,38 @@
-from django.contrib import messages
 from django.contrib.gis import admin
-from django.http import HttpResponseRedirect
 from django.urls import exceptions, reverse
 from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
-from project import tasks
-from project.models import (
-    ErrorTracking,
-    Project,
-    Request,
-    RNUPackage,
-    RNUPackageRequest,
-)
-from project.models.exceptions import TooOldException
+from project.models import ExportJob, Project, Request, RNUPackage, RNUPackageRequest
+
+
+@admin.register(ExportJob)
+class ExportJobAdmin(admin.ModelAdmin):
+    model = ExportJob
+    list_display = (
+        "job_id",
+        "user",
+        "status",
+        "created_at",
+        "updated_at",
+        "link_to_pdf",
+    )
+    list_filter = ("status", "created_at")
+    search_fields = ("job_id", "user__email")
+    readonly_fields = (
+        "job_id",
+        "created_at",
+        "updated_at",
+        "link_to_pdf",
+    )
+    list_select_related = ("user",)
+
+    def link_to_pdf(self, obj):
+        if obj.pdf_file:
+            return format_html('<a href="{}" target="_blank">Télécharger le PDF</a>', obj.pdf_file.url)
+        return "-"
+
+    link_to_pdf.short_description = "Fichier PDF"
 
 
 @admin.register(Project)
@@ -35,94 +54,11 @@ class ProjectAdmin(SimpleHistoryAdmin):
         "name",
         "user__email",
     )
-    change_form_template = "project/admin/project_detail.html"
-    history_list_display = [
-        "async_set_combined_emprise_done",
-        "async_cover_image_done",
-        "async_add_comparison_lands_done",
-        "async_generate_theme_map_conso_done",
-    ]
-
-    def response_change(self, request, obj):
-        if "_generate-conso-map" in request.POST:
-            tasks.generate_theme_map_conso.delay(obj.id)
-            msg = "Génération de la carte thématique de la consommation en cours"
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(".")
-
-        elif "_generate-artif-map" in request.POST:
-            tasks.generate_theme_map_artif.delay(obj.id)
-            msg = "Génération de la carte thématique de l'artificialisation en cours"
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(".")
-
-        elif "_generate-understand-artif-map" in request.POST:
-            tasks.generate_theme_map_understand_artif.delay(obj.id)
-            msg = "Génération de la carte thématique Comprendre Son Artif. en cours"
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(".")
-
-        elif "_generate-cover" in request.POST:
-            tasks.generate_cover_image.delay(obj.id)
-            msg = "Génération de l'image de couverture en cours"
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(".")
-
-        elif "_generate-all" in request.POST:
-            from project.models import trigger_async_tasks
-
-            try:
-                public_key = obj.get_public_key()
-                trigger_async_tasks(obj, public_key)
-                messages.add_message(request, messages.INFO, "Génération de l'image de couverture en cours")
-            except TooOldException:
-                messages.add_message(request, messages.ERROR, "Projet trop vieux pour reconstruire les city")
-            return HttpResponseRedirect(".")
-
-        return super().response_change(request, obj)
-
-
-class ErrorTrackingAdmin(admin.StackedInline):
-    model = ErrorTracking
-    list_display = (
-        "id",
-        "request",
-        "created_date",
-    )
-    readonly_fields = (
-        "id",
-        "request",
-        "created_date",
-        "exception",
-    )
-    extra = 0
-    verbose_name = "Exception"
-    can_delete = False
-
-    def has_add_permission(self, request, obj):
-        return False
-
-
-@admin.action(description="Regénérer et renvoyer les diagnostics sélectionnés")
-def resend_request(modeladmin, request, queryset):  # pylint: disable=unused-argument
-    messages.info(
-        request,
-        f"Régénération et renvoit de {queryset.count()} demandes de diagnostics.",
-    )
-    for req in queryset:
-        # Supprimer le fichier existant pour forcer la régénération
-        if req.sent_file:
-            req.sent_file.delete(save=False)
-        req.done = False
-        req.sent_date = None
-        req.save()
-        tasks.generate_word_diagnostic.apply_async((req.id,), link=tasks.send_word_diagnostic.s())
 
 
 @admin.register(Request)
 class RequestAdmin(admin.ModelAdmin):
     model = Request
-    actions = [resend_request]
     list_display = (
         "email",
         "created_date",
@@ -172,7 +108,6 @@ class RequestAdmin(admin.ModelAdmin):
             },
         ),
     )
-    inlines = [ErrorTrackingAdmin]
     readonly_fields = (
         "requested_document",
         "first_name",
@@ -214,25 +149,6 @@ class RequestAdmin(admin.ModelAdmin):
             return format_html("Diagnostic inconnu")
 
     link_to_project.short_description = "Projet admin"  # type: ignore
-
-    change_form_template = "project/admin/request_detail.html"
-
-    def response_change(self, request, obj):
-        if "_send-action" in request.POST:
-            obj.done = False
-            obj.sent_date = None
-            obj.save()
-            tasks.send_word_diagnostic.delay(obj.id)
-            msg = "Envoie du diagnostic en cours"
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(".")
-        elif "_generate-action" in request.POST:
-            obj.sent_file.delete(save=True)
-            tasks.generate_word_diagnostic.delay(obj.id)
-            msg = "Génération du diagnostic en cours"
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(".")
-        return super().response_change(request, obj)
 
 
 @admin.register(RNUPackage)
