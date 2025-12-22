@@ -47,6 +47,24 @@ select
     end as status
 from raw_status
 order by land_type desc
+),
+productor_issue_lands as (
+    select land_id, land_type
+    from {{ ref('guyane_incomplete_lands') }}
+),
+with_productor_issue as (
+    select
+        w.land_id,
+        w.land_type,
+        w.departement_count,
+        w.index_count,
+        case
+            when p.land_id is not null then 'PARTIAL_DUE_TO_PRODUCTOR_ISSUE'
+            else w.status
+        end as status
+    from without_simplified_status w
+    left join productor_issue_lands p
+        on w.land_id = p.land_id and w.land_type = p.land_type
 )
 select
     land_id,
@@ -59,4 +77,4 @@ select
         when status = 'COMPLETE_NOT_UNIFORM' THEN true
         else false
     end as has_ocsge
-from without_simplified_status
+from with_productor_issue
