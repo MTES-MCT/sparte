@@ -60,6 +60,7 @@ models:
                 - COMPLETE_NOT_UNIFORM
                 - COMPLETE_UNIFORM
                 - PARTIAL
+                - PARTIAL_DUE_TO_PRODUCTOR_ISSUE
                 - NO_DATA
       - name: has_ocsge
         data_type: boolean
