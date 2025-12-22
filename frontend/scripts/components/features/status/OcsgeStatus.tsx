@@ -11,6 +11,7 @@ export enum OcsgeStatusEnum {
     COMPLETE_UNIFORM = "COMPLETE_UNIFORM",
     COMPLETE_NOT_UNIFORM = "COMPLETE_NOT_UNIFORM",
     PARTIAL = "PARTIAL",
+    PARTIAL_DUE_TO_PRODUCTOR_ISSUE = "PARTIAL_DUE_TO_PRODUCTOR_ISSUE",
     NO_DATA = "NO_DATA",
     UNDEFINED = "UNDEFINED",
 }
@@ -26,6 +27,7 @@ const errorMessage = `${defaultMessage} ${detailMessage}`;
 const statusMessages: { [key in OcsgeStatusEnum]?: string } = {
     COMPLETE_NOT_UNIFORM: `Les données OCS GE sont disponibles sur ce territoire, mais les dates des millésimes ne sont pas uniformes entre toutes les collectivités.`,
     PARTIAL: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire. ${detailMessage}`,
+    PARTIAL_DUE_TO_PRODUCTOR_ISSUE: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire en raison d'un problème lié à la production de la donnée. ${detailMessage}`,
     NO_DATA: errorMessage,
     UNDEFINED: errorMessage,
 };
@@ -33,6 +35,7 @@ const statusMessages: { [key in OcsgeStatusEnum]?: string } = {
 const titleMessages: { [key in OcsgeStatusEnum]?: string } = {
     COMPLETE_NOT_UNIFORM: "Données OCS GE disponibles mais non uniformes",
     PARTIAL: "Données OCS GE partiellement disponibles",
+    PARTIAL_DUE_TO_PRODUCTOR_ISSUE: "Données OCS GE partiellement disponibles en raison d'un problème lié à la production de la donnée",
     NO_DATA: "Données OCS GE non disponibles",
     UNDEFINED: "Données OCS GE non disponibles",
 };
