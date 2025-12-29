@@ -35,18 +35,6 @@
         "web": {
             "amount": 1,
             "size": "2XL"
-        },
-        "celerydefaultworker": {
-            "amount": 1,
-            "size": "M"
-        },
-        "celerylongworker": {
-            "amount": 1,
-            "size": "XL"
-        },
-        "celerybeat": {
-            "amount": 1,
-            "size": "S"
         }
     },
     "scripts": {
