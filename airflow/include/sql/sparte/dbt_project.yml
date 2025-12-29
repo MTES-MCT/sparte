@@ -30,6 +30,8 @@ models:
     insert: ["alexis", "sofian", "scaleway_server"]
     update: ["alexis", "sofian", "scaleway_server"]
   sparte:
+    docurba:
+      +schema: docurba
     analytics:
       +schema: analytics
     app:
