@@ -106,10 +106,15 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
     const { data: projectData } = useGetProjectQuery(String(projectId));
 
+    // Objectif territorialisé (réglementaire) ou national par défaut (50%)
+    const objectif_reduction = landData.territorialisation?.has_objectif
+        ? landData.territorialisation?.objectif ?? 50
+        : 50;
+
     // Calcul de l'objectif personnalisé (depuis le content ou la valeur du projet par défaut)
     const defaultTarget2031 = projectData?.target_2031 || 50;
     const target_custom = content.target_2031 ? parseFloat(content.target_2031) : defaultTarget2031;
-    const has_custom_target = Number(target_custom) !== 50;
+    const has_custom_target = Number(target_custom) !== objectif_reduction;
 
     // Récupérer le dernier millésime disponible
     const millesimes = landData.millesimes || [];
@@ -367,7 +372,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="objective_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ target_2031_custom: target_custom }}
+                    params={has_custom_target ? { target_2031_custom: target_custom } : {}}
                     sources={["majic"]}
                 />
 

@@ -6,6 +6,7 @@ from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
 )
 from public_data.models import LandConso
+from public_data.models.territorialisation import TerritorialisationObjectif
 
 
 class ObjectiveChart(DiagnosticChart):
@@ -14,7 +15,6 @@ class ObjectiveChart(DiagnosticChart):
     """
 
     name = "suivi de l'objectif"
-    required_params = ["target_2031_custom"]
 
     @classmethod
     def validate_target(cls, value) -> float:
@@ -30,17 +30,23 @@ class ObjectiveChart(DiagnosticChart):
         return target
 
     @property
-    def target_2031_custom(self) -> float:
-        """Retourne la valeur validée de target_2031_custom."""
-        return self.validate_target(self.params["target_2031_custom"])
-
-    @property
-    def target_territorialise(self) -> float | None:
-        """Retourne la valeur validée de target_territorialise ou None."""
-        value = self.params.get("target_territorialise")
+    def target_2031_custom(self) -> float | None:
+        """Retourne la valeur validée de target_2031_custom ou None si non fourni."""
+        value = self.params.get("target_2031_custom")
         if value is None or value == "":
             return None
         return self.validate_target(value)
+
+    @property
+    def target_territorialise(self) -> float | None:
+        """Récupère l'objectif territorialisé depuis la table TerritorialisationObjectif."""
+        objectif = TerritorialisationObjectif.objects.filter(
+            land__land_id=self.land.land_id,
+            land__land_type=self.land.land_type,
+        ).first()
+        if objectif is None:
+            return None
+        return float(objectif.objectif_de_reduction)
 
     @property
     def has_territorialisation(self) -> bool:
@@ -83,7 +89,7 @@ class ObjectiveChart(DiagnosticChart):
         # Objectif de référence : territorialisé (réglementaire) ou national (50%)
         target_reference = self.target_territorialise if self.has_territorialisation else 50
         target_custom = self.target_2031_custom
-        has_custom_target = target_custom != target_reference
+        has_custom_target = target_custom is not None and target_custom != target_reference
 
         # Couleurs et labels selon le type d'objectif
         if self.has_territorialisation:
@@ -214,7 +220,7 @@ class ObjectiveChart(DiagnosticChart):
     def data_table(self):
         target_reference = self.target_territorialise if self.has_territorialisation else 50
         target_custom = self.target_2031_custom
-        has_custom_target = target_custom != target_reference
+        has_custom_target = target_custom is not None and target_custom != target_reference
 
         if self.has_territorialisation:
             reference_label = f"réglementaire ({target_reference}%)"

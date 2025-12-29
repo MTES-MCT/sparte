@@ -157,7 +157,9 @@ class Project(BaseProject):
         max_digits=4,
         decimal_places=1,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        default=50,
+        null=True,
+        blank=True,
+        default=None,
         help_text=(
             "L'objectif fixé au niveau national par la loi Climat et résilience est de "
             "réduire de 50% la consommation d'espaces sur 2021-2031 par rapport à la "

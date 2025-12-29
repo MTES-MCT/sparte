@@ -130,6 +130,8 @@ class LandModel(models.Model):
                     "objectif": float(current.objectif_de_reduction),
                     "parent_name": current.parent.name if current.parent else None,
                     "nom_document": current.nom_document,
+                    "document_url": current.document_url,
+                    "document_comment": current.document_comment,
                 }
             )
 
@@ -140,11 +142,23 @@ class LandModel(models.Model):
             else:
                 current = None
 
+        hierarchy_ordered = list(reversed(hierarchy))
+
+        # Document source = avant-dernier de la hiérarchie (le parent qui définit l'objectif)
+        source_document = None
+        if len(hierarchy_ordered) >= 2:
+            parent_item = hierarchy_ordered[-2]
+            source_document = {
+                "land_name": parent_item["land_name"],
+                "nom_document": parent_item["nom_document"],
+            }
+
         return {
             "has_objectif": True,
             "objectif": float(objectif.objectif_de_reduction),
-            "hierarchy": list(reversed(hierarchy)),
+            "hierarchy": hierarchy_ordered,
             "has_children": has_children,
+            "source_document": source_document,
         }
 
 

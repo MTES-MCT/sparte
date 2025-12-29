@@ -8,6 +8,7 @@ interface TargetModalProps {
     currentTarget: number | null;
     onSubmit: (newTarget: number) => void;
     isLoading?: boolean;
+    objectifTerritorialise?: number | null;
 }
 
 const modal = createModal({
@@ -19,9 +20,13 @@ export const TargetModal: React.FC<TargetModalProps> = ({
     currentTarget,
     onSubmit,
     isLoading = false,
+    objectifTerritorialise = null,
 }) => {
     const [target, setTarget] = useState<string>(currentTarget?.toString() || '50');
     const [error, setError] = useState<string | null>(null);
+
+    // L'objectif de référence est l'objectif territorialisé s'il existe, sinon 50%
+    const objectifReference = objectifTerritorialise ?? 50;
 
     useEffect(() => {
         if (modal.isOpenedByDefault) {
@@ -50,8 +55,11 @@ export const TargetModal: React.FC<TargetModalProps> = ({
             return false;
         }
 
-        if (targetValue === 50) {
-            setError("La valeur 50% correspond à l'objectif national. Veuillez entrer une valeur différente pour un objectif personnalisé.");
+        if (targetValue === objectifReference) {
+            const label = objectifTerritorialise !== null
+                ? "l'objectif territorialisé"
+                : "l'objectif national";
+            setError(`La valeur ${objectifReference}% correspond à ${label}. Veuillez entrer une valeur différente pour un objectif personnalisé.`);
             return false;
         }
 
@@ -63,7 +71,7 @@ export const TargetModal: React.FC<TargetModalProps> = ({
     return (
         <modal.Component
             title={
-                currentTarget !== null && currentTarget !== 50
+                currentTarget !== null && currentTarget !== objectifReference
                     ? 'Modifier l\'objectif personnalisé'
                     : 'Définir un objectif personnalisé'
             }
@@ -90,9 +98,12 @@ export const TargetModal: React.FC<TargetModalProps> = ({
                         onChange: (e) => {
                             setTarget(e.target.value);
                             const value = parseFloat(e.target.value);
-                            if (!isNaN(value) && value === 50) {
-                                setError("La valeur 50% correspond à l'objectif national. Veuillez entrer une valeur différente pour un objectif personnalisé.");
-                            } else if (error && error.includes('50%')) {
+                            if (!isNaN(value) && value === objectifReference) {
+                                const label = objectifTerritorialise !== null
+                                    ? "l'objectif territorialisé"
+                                    : "l'objectif national";
+                                setError(`La valeur ${objectifReference}% correspond à ${label}. Veuillez entrer une valeur différente pour un objectif personnalisé.`);
+                            } else if (error && error.includes('correspond à')) {
                                 setError(null);
                             }
                         },

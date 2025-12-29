@@ -128,11 +128,11 @@ class TerritorialisationMap(DiagnosticChart):
                 "map": json.loads(geojson),
             },
             "title": {
-                "text": f"Objectifs territorialisés de {self.land.name}",
+                "text": f"Objectifs des membres de {self.land.name}",
                 "style": {"fontSize": "16px", "fontWeight": "600"},
             },
             "subtitle": {
-                "text": f"{nb_territoires} territoire{'s' if nb_territoires > 1 else ''} · {objectif_text}",
+                "text": f"{nb_territoires} membre{'s' if nb_territoires > 1 else ''} · {objectif_text}",
                 "style": {"fontSize": "12px", "color": "#666"},
             },
             "caption": {
@@ -170,17 +170,11 @@ class TerritorialisationMap(DiagnosticChart):
                     "borderColor": "#888888",
                     "borderWidth": 1,
                     "dataLabels": {
-                        "enabled": True,
-                        "format": "-{point.objectif}%",
-                        "style": {
-                            "fontSize": "11px",
-                            "fontWeight": "600",
-                            "textOutline": "2px white",
-                        },
+                        "enabled": False,
                     },
                     "tooltip": {
                         "headerFormat": "",
-                        "pointFormat": "<b>{point.name}</b><br/>Objectif : <b style='color: #A558A0;'>-{point.objectif}%</b><br/><span style='font-size: 10px; color: #888;'>Source : {point.nom_document}</span>",  # noqa
+                        "pointFormat": "<b>{point.name}</b><br/>Objectif : <b style='color: #A558A0;'>-{point.objectif}%</b>",  # noqa
                     },
                 },
             ],

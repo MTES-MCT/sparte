@@ -32,7 +32,25 @@ class TerritorialisationObjectif(models.Model):
         "Nom du document",
         max_length=255,
         default="SRADDET",
-        help_text="Nom du document source de l'objectif",
+        help_text="Nom du document dans lequel doit s'inscrire l'objectif",
+    )
+    is_in_document = models.BooleanField(
+        "Inscrit dans le document",
+        default=False,
+        help_text="Indique si l'objectif est inscrit dans le document d'urbanisme",
+    )
+    document_url = models.URLField(
+        "URL du document",
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Lien vers le document source",
+    )
+    document_comment = models.TextField(
+        "Commentaire",
+        blank=True,
+        default="",
+        help_text="Commentaire ou précision sur l'objectif",
     )
 
     def __str__(self):

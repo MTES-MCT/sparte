@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TerritorialisationHierarchyItem } from '@services/types/land';
+import GenericChart from '@components/charts/GenericChart';
 
 type TerritorialisationHierarchyProps = {
     hierarchy: TerritorialisationHierarchyItem[];
+    land_id: string;
+    land_type: string;
+    land_name: string;
+    has_children: boolean;
 };
 
 const Container = styled.div`
@@ -32,9 +37,9 @@ const IconWrapper = styled.div`
     box-shadow: 0 3px 8px rgba(165, 88, 160, 0.25);
 `;
 
-const Icon = styled.span`
-    font-size: 1rem;
-    filter: grayscale(1) brightness(10);
+const Icon = styled.i`
+    font-size: 1.1rem;
+    color: white;
 `;
 
 const Title = styled.h4`
@@ -44,6 +49,12 @@ const Title = styled.h4`
     color: #4a4a4a;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+`;
+
+const Subtitle = styled.p`
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0 0 1rem 0;
 `;
 
 
@@ -158,22 +169,103 @@ const ObjectifLabel = styled.span<{ $isCurrent: boolean }>`
     margin-top: 0.25rem;
 `;
 
-const TerritorialisationHierarchy = ({ hierarchy }: TerritorialisationHierarchyProps) => {
+const ChildrenCard = styled.div<{ $isExpanded: boolean }>`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    background: ${props => props.$isExpanded ? 'rgba(165, 88, 160, 0.08)' : 'white'};
+    border: 1px dashed ${props => props.$isExpanded ? '#A558A0' : '#ccc'};
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 150px;
+    align-self: stretch;
+
+    &:hover {
+        background: rgba(165, 88, 160, 0.08);
+        border-color: #A558A0;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+`;
+
+const ChildrenIcon = styled.div`
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+`;
+
+const ChildrenLabel = styled.span`
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #A558A0;
+    text-align: center;
+`;
+
+const ChildrenAction = styled.span`
+    font-size: 0.65rem;
+    color: #888;
+    margin-top: 0.25rem;
+`;
+
+const MapSection = styled.div<{ $isVisible: boolean }>`
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(165, 88, 160, 0.15);
+    display: ${props => props.$isVisible ? 'block' : 'none'};
+`;
+
+const MapDescription = styled.p`
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0 0 1rem 0;
+`;
+
+const FRANCE_ITEM: TerritorialisationHierarchyItem = {
+    land_id: 'NATION',
+    land_type: 'NATION',
+    land_name: 'France',
+    objectif: 50,
+    parent_name: null,
+    nom_document: 'Loi Climat et Résilience',
+    document_url: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924',
+    document_comment: 'Article 194 de la loi n° 2021-1104 du 22 août 2021',
+};
+
+const TerritorialisationHierarchy = ({
+    hierarchy,
+    land_id,
+    land_type,
+    land_name,
+    has_children
+}: TerritorialisationHierarchyProps) => {
+    const [showMap, setShowMap] = useState(false);
+
     if (!hierarchy || hierarchy.length === 0) {
         return null;
     }
+
+    // Ajouter France en premier si pas déjà présent
+    const fullHierarchy = hierarchy[0]?.land_type === 'NATION'
+        ? hierarchy
+        : [FRANCE_ITEM, ...hierarchy];
 
     return (
         <Container>
             <Header>
                 <IconWrapper>
-                    <Icon>📊</Icon>
+                    <Icon className="bi bi-diagram-3" />
                 </IconWrapper>
                 <Title>Chaîne de territorialisation</Title>
             </Header>
+            <Subtitle>
+                L'objectif de réduction de votre territoire provient d'une déclinaison progressive depuis l'échelon national.
+            </Subtitle>
             <TimelineContainer>
-                {hierarchy.map((item, index) => {
-                    const isCurrent = index === hierarchy.length - 1;
+                {fullHierarchy.map((item, index) => {
+                    const isCurrent = index === fullHierarchy.length - 1;
                     const isFirst = index === 0;
                     return (
                         <TimelineItem key={item.land_id} $isFirst={isFirst} $isLast={isCurrent}>
@@ -195,7 +287,41 @@ const TerritorialisationHierarchy = ({ hierarchy }: TerritorialisationHierarchyP
                         </TimelineItem>
                     );
                 })}
+                {has_children && (
+                    <TimelineItem $isFirst={false} $isLast={false}>
+                        <Connector />
+                        <ChildrenCard
+                            $isExpanded={showMap}
+                            onClick={() => setShowMap(!showMap)}
+                        >
+                            <ChildrenIcon>
+                                <i className={`bi bi-diagram-3${showMap ? '-fill' : ''}`} />
+                            </ChildrenIcon>
+                            <ChildrenLabel>Membres</ChildrenLabel>
+                            <ChildrenAction>
+                                {showMap ? 'Masquer' : 'Voir la carte'}
+                            </ChildrenAction>
+                        </ChildrenCard>
+                    </TimelineItem>
+                )}
             </TimelineContainer>
+
+            {has_children && (
+                <MapSection $isVisible={showMap}>
+                    <MapDescription>
+                        Objectifs de réduction assignés à chaque membre de {land_name}.
+                    </MapDescription>
+                    <div className="bg-white fr-p-2w rounded">
+                        <GenericChart
+                            id="territorialisation_map"
+                            isMap
+                            land_id={land_id}
+                            land_type={land_type}
+                            showDataTable
+                        />
+                    </div>
+                </MapSection>
+            )}
         </Container>
     );
 };

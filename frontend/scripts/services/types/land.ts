@@ -95,6 +95,8 @@ export type TerritorialisationHierarchyItem = {
     objectif: number;
     parent_name: string | null;
     nom_document: string;
+    document_url: string | null;
+    document_comment: string;
     hierarchy?: TerritorialisationHierarchyItem[];
 };
 
@@ -123,6 +125,10 @@ export type LandDetailResultType = {
         objectif: number | null;
         hierarchy: TerritorialisationHierarchyItem[];
         has_children: boolean;
+        source_document: {
+            land_name: string;
+            nom_document: string;
+        } | null;
     };
     ocsge_status: OcsgeStatusEnum;
     friche_status: FricheStatusEnum;

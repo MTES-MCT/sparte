@@ -109,13 +109,13 @@ class TerritorialisationProgressMap(DiagnosticChart):
                 "map": json.loads(geojson),
             },
             "title": {
-                "text": "Consommation par rapport aux objectifs",
+                "text": f"Avancement des membres de {self.land.name}",
                 "style": {"fontSize": "16px", "fontWeight": "600"},
             },
             "subtitle": {
-                "text": f"{nb_territoires} territoire{'s' if nb_territoires > 1 else ''} · {en_depassement} en dépassement"  # noqa
+                "text": f"{nb_territoires} membre{'s' if nb_territoires > 1 else ''} · {en_depassement} en dépassement"  # noqa
                 if en_depassement
-                else f"{nb_territoires} territoire{'s' if nb_territoires > 1 else ''}",
+                else f"{nb_territoires} membre{'s' if nb_territoires > 1 else ''}",
                 "style": {"fontSize": "12px", "color": "#666"},
             },
             "caption": {
@@ -157,13 +157,7 @@ class TerritorialisationProgressMap(DiagnosticChart):
                     "borderColor": "#888888",
                     "borderWidth": 1,
                     "dataLabels": {
-                        "enabled": True,
-                        "format": "{point.progress}%",
-                        "style": {
-                            "fontSize": "11px",
-                            "fontWeight": "600",
-                            "textOutline": "2px white",
-                        },
+                        "enabled": False,
                     },
                     "tooltip": {
                         "headerFormat": "",
