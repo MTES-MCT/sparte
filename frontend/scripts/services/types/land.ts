@@ -88,6 +88,16 @@ export enum LandType {
 
 
 
+export type TerritorialisationHierarchyItem = {
+    land_id: string;
+    land_type: string;
+    land_name: string;
+    objectif: number;
+    parent_name: string | null;
+    nom_document: string;
+    hierarchy?: TerritorialisationHierarchyItem[];
+};
+
 export type LandDetailResultType = {
     land_id: string;
     land_type: LandType;
@@ -108,6 +118,12 @@ export type LandDetailResultType = {
     has_conso: boolean;
     has_friche: boolean;
     has_logements_vacants: boolean;
+    territorialisation: {
+        has_objectif: boolean;
+        objectif: number | null;
+        hierarchy: TerritorialisationHierarchyItem[];
+        has_children: boolean;
+    };
     ocsge_status: OcsgeStatusEnum;
     friche_status: FricheStatusEnum;
     friche_status_details: FricheStatusDetails;

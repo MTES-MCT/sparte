@@ -17,22 +17,35 @@ class ObjectiveChart(DiagnosticChart):
     required_params = ["target_2031_custom"]
 
     @classmethod
-    def validate_target_2031_custom(cls, value) -> float:
-        """Valide et retourne target_2031_custom comme float entre 0 et 100."""
+    def validate_target(cls, value) -> float:
+        """Valide et retourne un objectif comme float entre 0 et 100."""
         try:
             target = float(value)
         except (TypeError, ValueError):
-            raise ValueError(f"target_2031_custom doit être un nombre, reçu: {value}")
+            raise ValueError(f"L'objectif doit être un nombre, reçu: {value}")
 
         if not 0 <= target <= 100:
-            raise ValueError(f"target_2031_custom doit être entre 0 et 100, reçu: {target}")
+            raise ValueError(f"L'objectif doit être entre 0 et 100, reçu: {target}")
 
         return target
 
     @property
     def target_2031_custom(self) -> float:
         """Retourne la valeur validée de target_2031_custom."""
-        return self.validate_target_2031_custom(self.params["target_2031_custom"])
+        return self.validate_target(self.params["target_2031_custom"])
+
+    @property
+    def target_territorialise(self) -> float | None:
+        """Retourne la valeur validée de target_territorialise ou None."""
+        value = self.params.get("target_territorialise")
+        if value is None or value == "":
+            return None
+        return self.validate_target(value)
+
+    @property
+    def has_territorialisation(self) -> bool:
+        """Retourne True si un objectif territorialisé est défini."""
+        return self.target_territorialise is not None
 
     @property
     def param(self):
@@ -67,9 +80,20 @@ class ObjectiveChart(DiagnosticChart):
 
     @property
     def series(self):
-        target_national = 50
+        # Objectif de référence : territorialisé (réglementaire) ou national (50%)
+        target_reference = self.target_territorialise if self.has_territorialisation else 50
         target_custom = self.target_2031_custom
-        has_custom_target = target_custom != target_national
+        has_custom_target = target_custom != target_reference
+
+        # Couleurs et labels selon le type d'objectif
+        if self.has_territorialisation:
+            reference_label = f"réglementaire ({target_reference}%)"
+            color_bar = "#A558A0"  # Violet
+            color_line = "#8B4789"  # Violet foncé
+        else:
+            reference_label = "national (50%)"
+            color_bar = "#b6c1ea"  # Bleu
+            color_line = "#8c9ace"  # Bleu foncé
 
         series = [
             {
@@ -87,18 +111,18 @@ class ObjectiveChart(DiagnosticChart):
                 "zIndex": 6,
             },
             {
-                "name": "Conso. annuelle selon objectif national (50%)",
+                "name": f"Conso. annuelle selon objectif {reference_label}",
                 "yAxis": 1,
                 "data": list(),
-                "color": "#b6c1ea",
+                "color": color_bar,
                 "zIndex": 2,
             },
             {
-                "name": "Conso. cumulée selon objectif national (50%)",
+                "name": f"Conso. cumulée selon objectif {reference_label}",
                 "data": list(),
                 "type": "line",
                 "dashStyle": "ShortDash",
-                "color": "#8c9ace",
+                "color": color_line,
                 "zIndex": 5,
             },
         ]
@@ -153,20 +177,20 @@ class ObjectiveChart(DiagnosticChart):
 
         annual_2020 = total_2020 / 10.0
 
-        # Calcul de la trajectoire nationale (50%)
-        annual_objective_national = annual_2020 - (annual_2020 / 100.0 * target_national)
-        total_2031_national = 0
+        # Calcul de la trajectoire de référence (territorialisée ou nationale)
+        annual_objective_reference = annual_2020 - (annual_2020 / 100.0 * target_reference)
+        total_2031_reference = 0
 
         for year in range(2021, 2031):
-            total_2031_national += annual_objective_national
+            total_2031_reference += annual_objective_reference
             series[3]["data"].append(
                 {
                     "name": str(year),
-                    "y": total_2031_national,
-                    "progression": annual_objective_national,
+                    "y": total_2031_reference,
+                    "progression": annual_objective_reference,
                 }
             )
-            series[2]["data"].append({"name": str(year), "y": annual_objective_national})
+            series[2]["data"].append({"name": str(year), "y": annual_objective_reference})
 
         # Calcul de la trajectoire personnalisée si elle existe
         if has_custom_target:
@@ -188,15 +212,21 @@ class ObjectiveChart(DiagnosticChart):
 
     @property
     def data_table(self):
+        target_reference = self.target_territorialise if self.has_territorialisation else 50
         target_custom = self.target_2031_custom
-        has_custom_target = target_custom != 50
+        has_custom_target = target_custom != target_reference
+
+        if self.has_territorialisation:
+            reference_label = f"réglementaire ({target_reference}%)"
+        else:
+            reference_label = "national (50%)"
 
         headers = [
             "Année",
             "Conso. annuelle réelle (ha)",
             "Conso. cumulée réelle (ha)",
-            "Conso. annuelle selon objectif national (50%) (ha)",
-            "Conso. cumulée selon objectif national (50%) (ha)",
+            f"Conso. annuelle selon objectif {reference_label} (ha)",
+            f"Conso. cumulée selon objectif {reference_label} (ha)",
         ]
 
         if has_custom_target:
@@ -209,11 +239,11 @@ class ObjectiveChart(DiagnosticChart):
 
         real = {_["name"]: _["y"] for _ in self.series[0]["data"]}
         added_real = {_["name"]: _["y"] for _ in self.series[1]["data"]}
-        objective_national = {_["name"]: _["y"] for _ in self.series[2]["data"]}
-        added_objective_national = {_["name"]: _["y"] for _ in self.series[3]["data"]}
+        objective_reference = {_["name"]: _["y"] for _ in self.series[2]["data"]}
+        added_objective_reference = {_["name"]: _["y"] for _ in self.series[3]["data"]}
 
-        years = set(real.keys()) | set(objective_national.keys()) | set(added_real.keys())
-        years |= set(added_objective_national.keys())
+        years = set(real.keys()) | set(objective_reference.keys()) | set(added_real.keys())
+        years |= set(added_objective_reference.keys())
 
         rows = []
         for year in sorted(years):
@@ -221,8 +251,8 @@ class ObjectiveChart(DiagnosticChart):
                 year,
                 real.get(year, "-"),
                 added_real.get(year, "-"),
-                objective_national.get(year, "-"),
-                added_objective_national.get(year, "-"),
+                objective_reference.get(year, "-"),
+                added_objective_reference.get(year, "-"),
             ]
 
             if has_custom_target:

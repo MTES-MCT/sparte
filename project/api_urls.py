@@ -16,6 +16,8 @@ from project.charts import (
     ConsoByDeterminantPieChartExport,
     ObjectiveChart,
     ObjectiveChartExport,
+    TerritorialisationMap,
+    TerritorialisationProgressMap,
 )
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
@@ -197,6 +199,9 @@ def get_chart_klass_or_404(chart_id):
         # Objective chart
         "objective_chart": ObjectiveChart,
         "objective_chart_export": ObjectiveChartExport,
+        # Territorialisation
+        "territorialisation_map": TerritorialisationMap,
+        "territorialisation_progress_map": TerritorialisationProgressMap,
         # Logement vacant charts
         "logement_vacant_progression_chart": LogementVacantProgressionChart,
         "logement_vacant_ratio_progression_chart": LogementVacantRatioProgressionChart,

@@ -88,6 +88,8 @@ from .impermeabilisation import (
     ImperUsagePieChartExport,
 )
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
+from .TerritorialisationMap import TerritorialisationMap
+from .TerritorialisationProgressMap import TerritorialisationProgressMap
 from .urbanisme.FrichePollutionChart import FrichePollutionChart
 from .urbanisme.FricheSurfaceChart import FricheSurfaceChart
 from .urbanisme.FricheTypeChart import FricheTypeChart

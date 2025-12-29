@@ -97,10 +97,60 @@ class LandModel(models.Model):
         db_table = "public_data_land"
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.land_id} - {self.land_type})"
+
+    @property
+    def territorialisation(self):
+        from public_data.models.territorialisation import TerritorialisationObjectif
+
+        objectif = self.territorialisation_objectifs.first()
+        has_children = TerritorialisationObjectif.objects.filter(
+            parent__land_id=self.land_id,
+            parent__land_type=self.land_type,
+        ).exists()
+
+        if not objectif:
+            return {
+                "has_objectif": False,
+                "objectif": None,
+                "hierarchy": [],
+                "has_children": has_children,
+            }
+
+        # Construire la hiérarchie en remontant les parents
+        hierarchy = []
+        current = objectif
+
+        while current:
+            hierarchy.append(
+                {
+                    "land_id": current.land.land_id,
+                    "land_type": current.land.land_type,
+                    "land_name": current.land.name,
+                    "objectif": float(current.objectif_de_reduction),
+                    "parent_name": current.parent.name if current.parent else None,
+                    "nom_document": current.nom_document,
+                }
+            )
+
+            # Chercher l'objectif du parent
+            if current.parent:
+                parent_objectif = current.parent.territorialisation_objectifs.first()
+                current = parent_objectif
+            else:
+                current = None
+
+        return {
+            "has_objectif": True,
+            "objectif": float(objectif.objectif_de_reduction),
+            "hierarchy": list(reversed(hierarchy)),
+            "has_children": has_children,
+        }
 
 
 class LandModelSerializer(serializers.ModelSerializer):
+    territorialisation = serializers.DictField(read_only=True)
+
     class Meta:
         model = LandModel
         exclude = (

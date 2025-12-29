@@ -5,4 +5,5 @@ from .demography import *  # noqa: F401, F403
 from .impermeabilisation import *  # noqa: F401, F403
 from .mixins import *  # noqa: F401, F403
 from .sudocuh import Sudocuh, SudocuhEpci  # noqa: F401
+from .territorialisation import *  # noqa: F401, F403
 from .urbanisme import *  # noqa: F401, F403

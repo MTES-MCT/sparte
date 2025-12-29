@@ -2,6 +2,9 @@ import React from 'react';
 import Guide from '@components/ui/Guide';
 import Card from '@components/ui/Card';
 import { TargetModal, useTargetModal } from '@components/features/trajectoires/TargetModal';
+import { TerritorialisationHierarchy } from '@components/features/trajectoires/TerritorialisationHierarchy';
+import { TerritorialisationWarning } from '@components/features/trajectoires/TerritorialisationWarning';
+import GuideContent from '@components/ui/GuideContent';
 import { useUpdateProjectTarget2031Mutation } from '@services/api';
 import { formatNumber } from '@utils/formatUtils';
 import { LandDetailResultType } from '@services/types/land';
@@ -24,16 +27,6 @@ const PeriodTitle = styled.h4`
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.8rem;
-`;
-
-const PeriodReferenceValue = styled.span`
-    font-size: 2.8rem;
-    font-weight: 600;
-`;
-
-const PeriodReferenceLabel = styled.p`
-    font-size: 0.85rem;
-    margin-top: 1rem;
 `;
 
 const MiniChartContainer = styled.div`
@@ -81,8 +74,8 @@ const MiniChartBarText = styled.span`
 interface MiniComparisonChartProps {
     value1: number;
     label1: string;
-    value2: number;
-    label2: string;
+    value2?: number;
+    label2?: string;
     color1?: string;
     color2?: string;
 }
@@ -95,9 +88,8 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
     color1 = '#0063CB',
     color2 = '#00A95F'
 }) => {
-    // Utiliser la valeur maximale réelle, avec un minimum très petit pour éviter la division par zéro
-    const maxValue = Math.max(value1, value2, 0.001);
-    
+    const maxValue = Math.max(value1, value2 ?? 0, 0.001);
+
     return (
         <MiniChartContainer>
             <MiniChartLabel>
@@ -109,39 +101,46 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
                     {formatNumber({ number: value1 })} ha
                 </MiniChartBarText>
             </MiniChartBarContainer>
-            <MiniChartLabel>
-                <span>{label2}</span>
-            </MiniChartLabel>
-            <MiniChartBarContainer>
-                <MiniChartBar $value={value2} $maxValue={maxValue} $color={color2} />
-                <MiniChartBarText>
-                    {formatNumber({ number: value2 })} ha
-                </MiniChartBarText>
-            </MiniChartBarContainer>
+            {value2 !== undefined && label2 && (
+                <>
+                    <MiniChartLabel>
+                        <span>{label2}</span>
+                    </MiniChartLabel>
+                    <MiniChartBarContainer>
+                        <MiniChartBar $value={value2} $maxValue={maxValue} $color={color2} />
+                        <MiniChartBarText>
+                            {formatNumber({ number: value2 })} ha
+                        </MiniChartBarText>
+                    </MiniChartBarContainer>
+                </>
+            )}
         </MiniChartContainer>
     );
 };
 
+
 const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) => {
-    const { land_id, land_type, conso_details } = landData;
+    const { land_id, land_type, conso_details, territorialisation } = landData;
     const modal = useTargetModal();
     const [updateTarget2031, { isLoading: isUpdating }] = useUpdateProjectTarget2031Mutation();
 
     const conso_2011_2020 = conso_details?.conso_2011_2020;
     const conso_2011_2020_per_year = conso_2011_2020 / 10;
-    const allowed_conso_2021_2030 = conso_details?.allowed_conso_2021_2030;
-    const allowed_conso_2021_2030_per_year = allowed_conso_2021_2030 / 10;
     const annual_conso_since_2021 = conso_details?.annual_conso_since_2021;
+
+    // Objectif territorialisé (réglementaire) ou national par défaut (50%)
+    const has_territorialisation = territorialisation?.has_objectif ?? false;
+    const objectif_reduction = has_territorialisation
+        ? territorialisation?.objectif ?? 50
+        : 50;
+    const allowed_conso_2021_2030 = conso_2011_2020 * (1 - objectif_reduction / 100);
+    const allowed_conso_2021_2030_per_year = allowed_conso_2021_2030 / 10;
 
     // Calcul de l'objectif personnalisé
     const target_custom = projectData.target_2031;
     const has_custom_target = Number(target_custom) !== 50;
-    
-    const annual_2020 = conso_2011_2020 / 10;
-    const annual_custom_objective = has_custom_target 
-        ? annual_2020 - (annual_2020 * ((target_custom || 50) / 100))
-        : annual_2020 - (annual_2020 * 0.5);
-    const allowed_conso_custom = annual_custom_objective * 10;
+    const allowed_conso_custom = conso_2011_2020 * (1 - (target_custom || 50) / 100);
+    const allowed_conso_custom_per_year = allowed_conso_custom / 10;
 
     const handleUpdateTarget = async (newTarget: number) => {
         await updateTarget2031({ projectId: projectData.id, target_2031: newTarget }).unwrap();
@@ -200,39 +199,63 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                 </div>
             </div>
 
-            <div className="fr-notice fr-notice--warning fr-mb-5w">
-                <div className="fr-px-2w">
-                    <div className="fr-notice__body">
-                        <p>
-                            <span className="fr-notice__title fr-text--sm">
-                                L'équipe travaille à l'intégration des objectifs déjà
-                                territorialisés de réduction de la consommation d'espaces
-                                NAF.{" "}
-                            </span>
-                            <span className="fr-notice__desc fr-text--sm">
-                                Dans l'attente de cette mise à jour, vous pouvez modifier
-                                l'objectif du territoire dans le graphique ci-dessous. Par
-                                défaut, en attendant cette territorisalisation, l'outil
-                                affiche l'objectif national de réduction de 50%.
-                                <br />
-                                <br />
-                                <strong>Cet objectif est fourni à titre indicatif et n’a pas de valeur réglementaire.</strong>
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
+            {!territorialisation?.has_objectif && <TerritorialisationWarning />}
+
+            {territorialisation?.has_objectif && territorialisation?.hierarchy?.length > 0 && (
+                <TerritorialisationHierarchy hierarchy={territorialisation.hierarchy} />
+            )}
 
             <Container>
-                <PeriodTitle>Période de référence: 2011 - 2021</PeriodTitle>
-                <PeriodReferenceValue>
-                    <span>{formatNumber({ number: conso_2011_2020 })} ha</span>
-                    <span className="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w">{formatNumber({ number: conso_2011_2020_per_year })} ha/an</span>
-                </PeriodReferenceValue>
-                <PeriodReferenceLabel className="fr-mb-5w">Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</PeriodReferenceLabel>
-                
-                <div className="d-flex justify-content-between align-items-center fr-mb-2w">
-                    <PeriodTitle>Période de réduction : 2021 - 2031 </PeriodTitle>
+                <PeriodTitle>Période de référence : 2011 - 2021</PeriodTitle>
+                <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
+                    <div className="fr-col-12 fr-col-lg-5">
+                        <Card
+                            icon="bi-calendar-range"
+                            badgeClass="fr-badge--grey"
+                            badgeLabel="Consommation de référence"
+                            value={`${formatNumber({ number: conso_2011_2020 })} ha`}
+                            label="Consommation cumulée du 1er jan. 2011 au 31 déc. 2020 (10 ans)"
+                            isHighlighted={true}
+                            highlightBadge="Base de calcul"
+                        >
+                            <MiniComparisonChart
+                                value1={conso_2011_2020_per_year}
+                                label1="Consommation annuelle moyenne durant la période de référence"
+                                value2={allowed_conso_2021_2030_per_year}
+                                label2="Objectif annuel 2021-2030"
+                                color1="#6a6a6a"
+                                color2={has_territorialisation ? "#A558A0" : "#00A95F"}
+                            />
+                        </Card>
+                    </div>
+                    <div className="fr-col-12 fr-col-lg-7">
+                        <GuideContent title="Pourquoi cette période de référence ?" column>
+                            <p>
+                                La <strong>période 2011-2020</strong> sert de base pour calculer les objectifs de réduction
+                                de consommation d'espaces. C'est la consommation observée sur cette décennie qui détermine
+                                l'enveloppe maximale autorisée pour 2021-2031.
+                            </p>
+                            <p>
+                                {has_territorialisation ? (
+                                    <>
+                                        L'objectif territorialisé pour ce territoire est de <strong>réduire de {objectif_reduction}%</strong> la
+                                        consommation d'espaces NAF par rapport à cette période de référence. Cet objectif provient
+                                        des documents de planification (SRADDET, SCoT, PLU) qui déclinent l'objectif national.
+                                    </>
+                                ) : (
+                                    <>
+                                        L'objectif national est de <strong>réduire de 50%</strong> la consommation d'espaces NAF
+                                        par rapport à cette période de référence. Les documents de planification (SRADDET, SCoT, PLU)
+                                        peuvent territorialiser cet objectif avec des taux différents selon les territoires.
+                                    </>
+                                )}
+                            </p>
+                        </GuideContent>
+                    </div>
+                </div>
+
+                <div className="d-flex justify-content-between align-items-center fr-mb-1w">
+                    <PeriodTitle>Période de réduction : 2021 - 2031</PeriodTitle>
                     {has_custom_target && (
                         <button
                             className="fr-btn fr-btn--secondary fr-btn--sm"
@@ -242,53 +265,55 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                         </button>
                     )}
                 </div>
+                <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
+                    Retrouvez ci-dessous l'objectif de réduction {has_territorialisation ? "territorialisé issu des documents de planification" : "national fixé par la loi"} pour
+                    votre territoire. Vous pouvez également définir un <strong>objectif personnalisé</strong> pour simuler différents scénarios de trajectoire.
+                </p>
                 <div className="fr-grid-row fr-grid-row--gutters">
                     <div className="fr-col-12 fr-col-md-6">
                         <Card
-                            badgeClass="fr-badge--blue-ecume"
-                            badgeLabel="Objectif de réduction (non-réglementaire) : 50%"
+                            icon="bi-bullseye"
+                            badgeClass={has_territorialisation ? "fr-badge--purple-glycine" : "fr-badge--blue-ecume"}
+                            badgeLabel={has_territorialisation ? "Objectif territorialisé (réglementaire)" : "Objectif national (non-réglementaire)"}
                             value={`${formatNumber({ number: allowed_conso_2021_2030 })} ha`}
-                            label="Consommation maximale pour la période du 1er jan. 2021 au 31 déc. 2030 (10 ans)"
-                            isHighlighted={true}
-                            highlightBadge="trajectoire selon objectif national"
+                            label="Consommation maximale du 1er jan. 2021 au 31 déc. 2030 (10 ans)"
                         >
                             <MiniComparisonChart
                                 value1={annual_conso_since_2021}
                                 label1="Consommation annuelle moyenne depuis 2021"
                                 value2={allowed_conso_2021_2030_per_year}
-                                label2="Consommation annuelle moyenne selon objectif national"
-                                color1="#D9D9D9"
-                                color2="#b6c1ea"
+                                label2={has_territorialisation ? "Consommation annuelle maximum pour 2021-2030 (territorialisé)" : "Consommation annuelle maximum 2021-2030 (national)"}
+                                color1="#0063CB"
+                                color2={has_territorialisation ? "#A558A0" : "#00A95F"}
                             />
                         </Card>
                     </div>
                     <div className="fr-col-12 fr-col-md-6">
                         {has_custom_target ? (
                             <Card
+                                icon="bi-sliders"
                                 badgeClass="fr-badge--green-archipel"
-                                badgeLabel={`Objectif de réduction (personnalisé) : ${target_custom}%`}
+                                badgeLabel="Objectif personnalisé"
                                 value={`${formatNumber({ number: allowed_conso_custom })} ha`}
-                                label="Consommation maximale pour la période du 1er jan. 2021 au 31 déc. 2030 (10 ans)"
-                                isHighlighted={true}
-                                highlightBadge="Trajectoire selon objectif personnalisé"
+                                label="Consommation maximale du 1er jan. 2021 au 31 déc. 2030 (10 ans)"
                             >
                                 <MiniComparisonChart
                                     value1={annual_conso_since_2021}
                                     label1="Consommation annuelle moyenne depuis 2021"
-                                    value2={annual_custom_objective}
-                                    label2="Consommation annuelle moyenne selon objectif personnalisé"
-                                    color1="#D9D9D9"
-                                    color2="#B6DFDE"
+                                    value2={allowed_conso_custom_per_year}
+                                    label2="Consommation annuelle maximum pour 2021-2030 (personnalisé)"
+                                    color1="#0063CB"
+                                    color2="#98cecc"
                                 />
                             </Card>
                         ) : (
                             <Card
-                                isHighlighted={true}
-                                highlightBadge="Trajectoire selon objectif personnalisé"
-                                empty={true}
+                                icon="bi-sliders"
+                                badgeClass="fr-badge--grey"
+                                badgeLabel="Objectif personnalisé"
                             >
                                 <div className="d-flex flex-column align-items-center gap-2 justify-content-center">
-                                    <p className="fr-text--sm">Simuler une trajectoire personnalisée en ajustant l'objectif de réduction.</p>
+                                    <p className="fr-text--sm fr-mb-0">Simuler une trajectoire personnalisée en ajustant l'objectif de réduction.</p>
                                     <button
                                         className="fr-btn fr-btn--secondary fr-btn--sm"
                                         onClick={() => modal.open()}
@@ -313,13 +338,80 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                     sources={['majic']}
                                     showDataTable
                                     params={{
-                                        target_2031_custom: target_custom || 50
+                                        target_2031_custom: has_custom_target ? target_custom : objectif_reduction,
+                                        ...(has_territorialisation && { target_territorialise: objectif_reduction })
                                     }}
                                 />
                           )}
                     </div>
                 </div>
             </div>
+
+            {territorialisation?.has_children && (
+                <div className="fr-mt-3w">
+                    <h4 className="fr-h4 fr-mb-2w">Territorialisation des objectifs</h4>
+                    <div className="fr-grid-row fr-grid-row--gutters">
+                        <div className="fr-col-12 fr-col-lg-8">
+                            <div className="bg-white fr-p-2w rounded h-100">
+                                <GenericChart
+                                    id="territorialisation_map"
+                                    isMap
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    showDataTable
+                                />
+                            </div>
+                        </div>
+                        <div className="fr-col-12 fr-col-lg-4">
+                            <GuideContent title="Comprendre la carte" column>
+                                <p>
+                                    Cette carte présente les <strong>objectifs de réduction de consommation d'espaces</strong> assignés aux territoires.
+                                </p>
+                                <p>
+                                    Chaque territoire affiche son objectif en pourcentage, correspondant à la réduction attendue entre 2021-2031
+                                    par rapport à 2011-2021. Plus la couleur est foncée, plus l'objectif est ambitieux.
+                                </p>
+                                <p>
+                                    Les objectifs proviennent des <strong>documents de planification</strong> (SRADDET, SCoT, PLU, etc.).
+                                </p>
+                            </GuideContent>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {territorialisation?.has_children && (
+                <div className="fr-mt-3w">
+                    <h4 className="fr-h4 fr-mb-2w">Situation par rapport aux objectifs</h4>
+                    <div className="fr-grid-row fr-grid-row--gutters">
+                        <div className="fr-col-12 fr-col-lg-8">
+                            <div className="bg-white fr-p-2w rounded h-100">
+                                <GenericChart
+                                    id="territorialisation_progress_map"
+                                    isMap
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    showDataTable
+                                />
+                            </div>
+                        </div>
+                        <div className="fr-col-12 fr-col-lg-4">
+                            <GuideContent title="Comprendre la carte" column>
+                                <p>
+                                    Cette carte montre la <strong>progression de chaque territoire vers son objectif</strong>.
+                                </p>
+                                <p>
+                                    Le pourcentage affiché représente la part de l'enveloppe de consommation 2021-2030 déjà utilisée.
+                                    Un territoire à 50% a consommé la moitié de son budget. Au-delà de 100%, il est en dépassement.
+                                </p>
+                                <p>
+                                    Consommation issue des <strong>fichiers fonciers</strong> (Cerema), objectifs des documents de planification.
+                                </p>
+                            </GuideContent>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <TargetModal
                 currentTarget={target_custom}
