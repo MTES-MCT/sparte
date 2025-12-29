@@ -1,13 +1,11 @@
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
-from include.pools import DBT_POOL
-from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
 
 from airflow.decorators import dag, task
 
-SCOT_ENDPOINT = "https://api-sudocuh.datahub.din.developpement-durable.gouv.fr/sudocuh/enquetes/ref/scot/liste/CSV?annee_cog=2024"  # noqa: E501 (line too long)
-SCOT_COMMUNES_ENDPOINT = "https://api-sudocuh.datahub.din.developpement-durable.gouv.fr/sudocuh/enquetes/ref/scot/communes/CSV?annee_cog=2024"  # noqa: E501 (line too long)
+SCOT_ENDPOINT_DOCURBA = "https://docurba.beta.gouv.fr/api/scots"  # noqa: E501
+SCOT_PERIMETRE_DOCURBA = "https://docurba.beta.gouv.fr/api/perimetres"  # noqa: E501
 
 
 @dag(
@@ -21,62 +19,61 @@ SCOT_COMMUNES_ENDPOINT = "https://api-sudocuh.datahub.din.developpement-durable.
 )
 def ingest_scots():
     bucket_name = InfraContainer().bucket_name()
-    scot_filename = "scot.csv"
-    scot_communes_filename = "scot_communes.csv"
+    scot_docurba_filename = "scot_docurba.csv"
+    scot_perimetre_filename = "scot_perimetre_docurba.csv"
 
     @task.python
-    def download_scots() -> str:
+    def download_scot_docurba() -> str:
         return (
             Container()
             .remote_to_s3_file_handler()
             .download_http_file_and_upload_to_s3(
-                url=SCOT_ENDPOINT,
-                s3_key=scot_filename,
+                url=SCOT_ENDPOINT_DOCURBA,
+                s3_key=scot_docurba_filename,
                 s3_bucket=bucket_name,
             )
         )
 
     @task.python
-    def download_scot_communes() -> str:
-        return (
-            Container()
-            .remote_to_s3_file_handler()
-            .download_http_file_and_upload_to_s3(
-                url=SCOT_COMMUNES_ENDPOINT,
-                s3_key=scot_communes_filename,
-                s3_bucket=bucket_name,
-            )
-        )
-
-    @task.python
-    def ingest_scots() -> int | None:
+    def ingest_scot_docurba() -> int | None:
         return (
             Container()
             .s3_csv_file_to_db_table_handler()
             .ingest_s3_csv_file_to_db_table(
                 s3_bucket=bucket_name,
-                s3_key=scot_filename,
-                table_name="sudocuh_scot",
+                s3_key=scot_docurba_filename,
+                table_name="docurba_scots",
+                separator=",",
             )
         )
 
     @task.python
-    def ingest_scot_communes() -> int | None:
+    def download_scot_perimetre() -> str:
+        return (
+            Container()
+            .remote_to_s3_file_handler()
+            .download_http_file_and_upload_to_s3(
+                url=SCOT_PERIMETRE_DOCURBA,
+                s3_key=scot_perimetre_filename,
+                s3_bucket=bucket_name,
+            )
+        )
+
+    @task.python
+    def ingest_scot_perimetre() -> int | None:
         return (
             Container()
             .s3_csv_file_to_db_table_handler()
             .ingest_s3_csv_file_to_db_table(
                 s3_bucket=bucket_name,
-                s3_key=scot_communes_filename,
-                table_name="sudocuh_scot_communes",
+                s3_key=scot_perimetre_filename,
+                table_name="docurba_scots_perimetre",
+                separator=",",
             )
         )
 
-    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
-    def dbt_build():
-        return get_dbt_command_from_directory(cmd="dbt build -s sudocuh")
-
-    (download_scots() >> ingest_scots() >> download_scot_communes() >> ingest_scot_communes() >> dbt_build())
+    download_scot_docurba() >> ingest_scot_docurba()
+    download_scot_perimetre() >> ingest_scot_perimetre()
 
 
 ingest_scots()

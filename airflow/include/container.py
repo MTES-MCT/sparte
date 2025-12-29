@@ -16,8 +16,10 @@ from .file_handling import (
     DataGouvHandler,
     GeoJsonToGzippedGeoJsonOnS3Handler,
     HTTPFileHandler,
+    PaginatedJsonToS3Handler,
     RemoteToS3FileHandler,
     S3CSVFileToDBTableHandler,
+    S3GeoJsonFileToDBTableHandler,
     S3Handler,
     S3ToDataGouvHandler,
     SQLToCSVOnS3Handler,
@@ -222,6 +224,12 @@ class DomainContainer(containers.DeclarativeContainer):
         tmp_path_generator=tmp_path_generator,
     )
 
+    paginated_json_to_s3_handler = providers.Factory(
+        provides=PaginatedJsonToS3Handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+    )
+
     s3_csv_file_to_db_table_handler = providers.Factory(
         provides=S3CSVFileToDBTableHandler,
         s3_handler=s3_handler,
@@ -230,6 +238,13 @@ class DomainContainer(containers.DeclarativeContainer):
             provides=CSVFileIngestor,
             db_sqlalchemy_conn=InfraContainer().sqlalchemy_dbt_conn,
         ),
+    )
+
+    s3_geojson_file_to_db_table_handler = providers.Factory(
+        provides=S3GeoJsonFileToDBTableHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
     )
 
     sql_to_geojsonseq_on_s3_handler = providers.Factory(
