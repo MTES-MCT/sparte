@@ -55,14 +55,6 @@ export const TargetModal: React.FC<TargetModalProps> = ({
             return false;
         }
 
-        if (targetValue === objectifReference) {
-            const label = objectifTerritorialise !== null
-                ? "l'objectif territorialisé"
-                : "l'objectif national";
-            setError(`La valeur ${objectifReference}% correspond à ${label}. Veuillez entrer une valeur différente pour un objectif personnalisé.`);
-            return false;
-        }
-
         onSubmit(targetValue);
         modal.close();
         return true;
@@ -97,15 +89,6 @@ export const TargetModal: React.FC<TargetModalProps> = ({
                         value: target,
                         onChange: (e) => {
                             setTarget(e.target.value);
-                            const value = parseFloat(e.target.value);
-                            if (!isNaN(value) && value === objectifReference) {
-                                const label = objectifTerritorialise !== null
-                                    ? "l'objectif territorialisé"
-                                    : "l'objectif national";
-                                setError(`La valeur ${objectifReference}% correspond à ${label}. Veuillez entrer une valeur différente pour un objectif personnalisé.`);
-                            } else if (error && error.includes('correspond à')) {
-                                setError(null);
-                            }
                         },
                         disabled: isLoading,
                         required: true,
