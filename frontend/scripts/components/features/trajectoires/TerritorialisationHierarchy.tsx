@@ -12,49 +12,30 @@ type TerritorialisationHierarchyProps = {
 };
 
 const Container = styled.div`
-    background: linear-gradient(135deg, #faf8fb 0%, #f5f0f7 100%);
-    border-radius: 12px;
-    padding: 1.5rem 2rem;
+    background-color: var(--background-alt-grey);
+    border-radius: 4px;
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
-    border: 1px solid rgba(165, 88, 160, 0.15);
 `;
 
 const Header = styled.div`
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    margin-bottom: 1.25rem;
-`;
-
-const IconWrapper = styled.div`
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #A558A0 0%, #8B4789 100%);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 8px rgba(165, 88, 160, 0.25);
-`;
-
-const Icon = styled.i`
-    font-size: 1.1rem;
-    color: white;
+    margin-bottom: 0.5rem;
 `;
 
 const Title = styled.h4`
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
     margin: 0;
-    color: #4a4a4a;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    color: var(--text-title-grey);
 `;
 
 const Subtitle = styled.p`
-    font-size: 0.8rem;
-    color: #888;
-    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: var(--text-mention-grey);
+    margin: 0 0 1.5rem 0;
 `;
 
 
@@ -63,6 +44,7 @@ const TimelineContainer = styled.div`
     align-items: stretch;
     gap: 0;
     padding: 0.5rem 0;
+    overflow-x: auto;
 `;
 
 const TimelineItem = styled.div<{ $isFirst: boolean; $isLast: boolean }>`
@@ -72,9 +54,9 @@ const TimelineItem = styled.div<{ $isFirst: boolean; $isLast: boolean }>`
 `;
 
 const Connector = styled.div`
-    width: 40px;
+    width: 32px;
     height: 2px;
-    background: linear-gradient(90deg, rgba(165, 88, 160, 0.3), rgba(165, 88, 160, 0.5));
+    background: var(--border-default-grey);
     position: relative;
 
     &::after {
@@ -85,7 +67,7 @@ const Connector = styled.div`
         transform: translateY(-50%);
         width: 0;
         height: 0;
-        border-left: 6px solid rgba(165, 88, 160, 0.5);
+        border-left: 6px solid var(--border-default-grey);
         border-top: 4px solid transparent;
         border-bottom: 4px solid transparent;
     }
@@ -94,78 +76,45 @@ const Connector = styled.div`
 const Card = styled.div<{ $isCurrent: boolean }>`
     display: flex;
     flex-direction: column;
-    padding: ${props => props.$isCurrent ? '1rem 1.5rem' : '0.75rem 1.25rem'};
+    padding: 0.75rem 1rem;
     background: ${props => props.$isCurrent
-        ? 'linear-gradient(135deg, #A558A0 0%, #8B4789 100%)'
-        : 'white'};
-    color: ${props => props.$isCurrent ? 'white' : '#3a3a3a'};
-    border-radius: 12px;
-    box-shadow: ${props => props.$isCurrent
-        ? '0 6px 20px rgba(165, 88, 160, 0.35)'
-        : '0 2px 8px rgba(0,0,0,0.06)'};
-    border: ${props => props.$isCurrent ? 'none' : '1px solid #eee'};
-    transition: all 0.2s ease;
-    position: relative;
-    min-width: ${props => props.$isCurrent ? '180px' : '150px'};
-
-    ${props => props.$isCurrent && `
-        &::before {
-            content: 'Territoire actuel';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.65rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: #A558A0;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 10px;
-            white-space: nowrap;
-        }
-    `}
-
-    &:hover {
-        transform: translateY(-3px);
-        box-shadow: ${props => props.$isCurrent
-            ? '0 8px 25px rgba(165, 88, 160, 0.4)'
-            : '0 4px 12px rgba(0,0,0,0.1)'};
-    }
+        ? 'var(--background-action-high-blue-france)'
+        : 'var(--background-default-grey)'};
+    color: ${props => props.$isCurrent ? 'white' : 'var(--text-default-grey)'};
+    border-radius: 4px;
+    border: 1px solid ${props => props.$isCurrent ? 'transparent' : 'var(--border-default-grey)'};
 `;
 
 const TerritoryName = styled.span<{ $isCurrent: boolean }>`
-    font-size: ${props => props.$isCurrent ? '1rem' : '0.875rem'};
-    font-weight: ${props => props.$isCurrent ? '600' : '500'};
-    margin-bottom: 0.35rem;
+    font-size: 0.875rem;
+    font-weight: ${props => props.$isCurrent ? '700' : '600'};
+    margin-bottom: 0.25rem;
     line-height: 1.3;
 `;
 
 const DocumentBadge = styled.span<{ $isCurrent: boolean }>`
     display: inline-block;
-    font-size: 0.65rem;
+    font-size: 0.625rem;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: 2px 6px;
+    border-radius: 2px;
     margin-bottom: 0.5rem;
-    background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'rgba(165, 88, 160, 0.1)'};
-    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.9)' : '#A558A0'};
+    background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'var(--background-contrast-grey)'};
+    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.9)' : 'var(--text-mention-grey)'};
     width: fit-content;
 `;
 
 const ObjectifValue = styled.span<{ $isCurrent: boolean }>`
-    font-size: ${props => props.$isCurrent ? '1.5rem' : '1.1rem'};
+    font-size: ${props => props.$isCurrent ? '1.25rem' : '1rem'};
     font-weight: 700;
-    color: ${props => props.$isCurrent ? 'white' : '#A558A0'};
+    color: ${props => props.$isCurrent ? 'white' : 'var(--text-action-high-blue-france)'};
     line-height: 1;
 `;
 
 const ObjectifLabel = styled.span<{ $isCurrent: boolean }>`
-    font-size: 0.7rem;
-    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.7)' : '#888'};
+    font-size: 0.625rem;
+    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.8)' : 'var(--text-mention-grey)'};
     margin-top: 0.25rem;
 `;
 
@@ -174,52 +123,43 @@ const ChildrenCard = styled.div<{ $isExpanded: boolean }>`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0.75rem 1.25rem;
-    background: ${props => props.$isExpanded ? 'rgba(165, 88, 160, 0.08)' : 'white'};
-    border: 1px dashed ${props => props.$isExpanded ? '#A558A0' : '#ccc'};
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 0.75rem 1rem;
+    background: ${props => props.$isExpanded ? 'var(--background-contrast-grey)' : 'var(--background-default-grey)'};
+    border: 1px dashed var(--border-default-grey);
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 150px;
+    min-width: 180px;
     align-self: stretch;
 
     &:hover {
-        background: rgba(165, 88, 160, 0.08);
-        border-color: #A558A0;
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        background: var(--background-contrast-grey);
+        border-color: var(--border-action-high-blue-france);
     }
 `;
 
 const ChildrenIcon = styled.div`
     font-size: 1.25rem;
+    color: var(--text-action-high-blue-france);
     margin-bottom: 0.25rem;
 `;
 
 const ChildrenLabel = styled.span`
     font-size: 0.75rem;
     font-weight: 500;
-    color: #A558A0;
+    color: var(--text-action-high-blue-france);
     text-align: center;
-`;
-
-const ChildrenAction = styled.span`
-    font-size: 0.65rem;
-    color: #888;
-    margin-top: 0.25rem;
 `;
 
 const MapSection = styled.div<{ $isVisible: boolean }>`
     margin-top: 1.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid rgba(165, 88, 160, 0.15);
+    border-top: 1px solid var(--border-default-grey);
     display: ${props => props.$isVisible ? 'block' : 'none'};
 `;
 
 const MapDescription = styled.p`
-    font-size: 0.85rem;
-    color: #666;
+    font-size: 0.875rem;
+    color: var(--text-mention-grey);
     margin: 0 0 1rem 0;
 `;
 
@@ -255,9 +195,7 @@ const TerritorialisationHierarchy = ({
     return (
         <Container>
             <Header>
-                <IconWrapper>
-                    <Icon className="bi bi-diagram-3" />
-                </IconWrapper>
+                <i className="bi bi-diagram-3 fr-text-action-high--blue-france" style={{ fontSize: '1.25rem' }} />
                 <Title>Chaîne de territorialisation</Title>
             </Header>
             <Subtitle>
@@ -298,9 +236,9 @@ const TerritorialisationHierarchy = ({
                                 <i className={`bi bi-diagram-3${showMap ? '-fill' : ''}`} />
                             </ChildrenIcon>
                             <ChildrenLabel>Membres</ChildrenLabel>
-                            <ChildrenAction>
-                                {showMap ? 'Masquer' : 'Voir la carte'}
-                            </ChildrenAction>
+                            <button className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-1v">
+                                {showMap ? 'Masquer la carte' : 'Voir la carte'}
+                            </button>
                         </ChildrenCard>
                     </TimelineItem>
                 )}
