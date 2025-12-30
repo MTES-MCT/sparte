@@ -1,6 +1,6 @@
 {
     "name": "MonDiagArtif",
-    "stack": "scalingo-22",
+    "stack": "scalingo-24",
     "description": "Tableau de bord pour mesurer l'artificialisation des sols des collectivités",
     "logo": "https://mondiagartif.beta.gouv.fr/static/img/logo-mon-diagnostic-artificialisation.svg",
     "repository": "https://github.com/MTES-MCT/sparte",
