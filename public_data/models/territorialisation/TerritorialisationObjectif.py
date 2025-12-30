@@ -8,6 +8,7 @@ class TerritorialisationObjectif(models.Model):
     land = models.ForeignKey(
         LandModel,
         on_delete=models.DO_NOTHING,
+        to_field="key",
         verbose_name="Territoire",
         related_name="territorialisation_objectifs",
         help_text="Territoire qui reçoit l'objectif",
@@ -15,6 +16,7 @@ class TerritorialisationObjectif(models.Model):
     parent = models.ForeignKey(
         LandModel,
         on_delete=models.DO_NOTHING,
+        to_field="key",
         verbose_name="Parent",
         related_name="territorialisation_objectifs_as_parent",
         help_text="Territoire qui donne l'objectif",

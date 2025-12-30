@@ -14,7 +14,7 @@ class LandModelManager(models.Manager):
 
 class LandModel(models.Model):
     objects = LandModelManager()
-    id = models.TextField(primary_key=True)
+    key = models.TextField(unique=True)
 
     class OcsgeCoverageStatus(models.TextChoices):
         COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complet et uniforme"
