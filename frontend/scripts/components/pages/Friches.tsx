@@ -4,7 +4,7 @@ import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
-import { FrichesMap, FrichesImpermeableMap, FrichesArtificialMap, FrichesOcsgeCouvertureMap, FrichesOcsgeUsageMap, useMapSync } from "@components/map";
+import { FrichesMap, FrichesImpermeableMap, FrichesArtificialMap, FrichesOcsgeCouvertureMap, useMapSync } from "@components/map";
 import { STATUT_BADGE_CONFIG, STATUT_ORDER } from "@components/features/friches/constants";
 import { LandFriche } from "@services/types/land_friches";
 import { useDataTable } from "@hooks/useDataTable";
@@ -460,15 +460,6 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     <div>
                         <h2>Couverture des friches</h2>
                         <FrichesOcsgeCouvertureMap
-                            landData={landData}
-                            frichesData={frichesData}
-                            center={selectedFriche}
-                            onMapLoad={handleMapLoad}
-                        />
-                    </div>
-                    <div>
-                        <h2>Usage des friches</h2>
-                        <FrichesOcsgeUsageMap
                             landData={landData}
                             frichesData={frichesData}
                             center={selectedFriche}
