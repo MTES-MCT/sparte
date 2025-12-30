@@ -63,10 +63,10 @@ const SortableHeader = styled.th<{ $isSortable?: boolean; $sortDirection?: 'asc'
 `;
 
 const TableCell = styled.td`
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    max-width: 200px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
     font-size: 0.75rem !important;
 `;
 

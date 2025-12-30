@@ -208,8 +208,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 <button
                     className="fr-btn fr-btn--sm fr-btn--secondary"
                     onClick={() => handleFricheClick(friche.point_on_surface)}
+                    title="Voir sur la carte"
                 >
-                    <i className="bi bi-map"></i>&nbsp;Voir sur la carte
+                    <i className="bi bi-geo-alt"></i>
                 </button>
             )
         },
@@ -233,7 +234,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             label: 'Statut',
             sortable: true,
             render: (value: any) => (
-                <span className={`fr-badge fr-badge--no-icon text-lowercase ${STATUT_BADGE_CONFIG[value as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
+                <span className={`fr-badge fr-badge--no-icon fr-badge--sm text-lowercase ${STATUT_BADGE_CONFIG[value as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
                     {value}
                 </span>
             )
@@ -253,9 +254,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             key: 'friche_is_in_zone_activite' as keyof LandFriche,
             label: 'Zone d\'activité',
             sortable: false,
-            render: (value: boolean) => (
-                <IconZoneActivite className={`bi ${value ? 'bi-check text-success' : 'bi-x text-danger'}`}/>
-            )
+            render: (value: boolean) => value ? 'Oui' : 'Non'
         },
         {
             key: 'friche_zonage_environnemental' as keyof LandFriche,
