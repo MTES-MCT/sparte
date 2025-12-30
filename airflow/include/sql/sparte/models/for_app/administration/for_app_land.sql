@@ -15,6 +15,7 @@ WITH land_with_transformed_geoms AS (
 )
 
 SELECT
+    land_type || '_' || land_id as id,
     land_id,
     land_type,
     name,

@@ -80,7 +80,7 @@ export const TargetModal: React.FC<TargetModalProps> = ({
 
                 <Input
                     label="Objectif de réduction personnalisé (%)"
-                    hintText="Entrez le pourcentage de réduction de la consommation d'espaces NAF que vous souhaitez atteindre entre 2021 et 2031 par rapport à la période 2011-2021."
+                    hintText="Entrez le pourcentage de réduction de la consommation d'espaces NAF que vous souhaitez atteindre entre 2021 et 2031 par rapport à la période 2011-2020."
                     nativeInputProps={{
                         type: "number",
                         min: 0,

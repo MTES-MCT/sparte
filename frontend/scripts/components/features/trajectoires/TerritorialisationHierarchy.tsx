@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { TerritorialisationHierarchyItem } from '@services/types/land';
 import GenericChart from '@components/charts/GenericChart';
+import GuideContent from '@components/ui/GuideContent';
 
 type TerritorialisationHierarchyProps = {
     hierarchy: TerritorialisationHierarchyItem[];
@@ -154,13 +155,20 @@ const MapSection = styled.div<{ $isVisible: boolean }>`
     margin-top: 1.5rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-default-grey);
-    display: ${props => props.$isVisible ? 'block' : 'none'};
+    display: ${props => props.$isVisible ? 'flex' : 'none'};
+    flex-direction: row;
+    gap: 1.5rem;
+    align-items: flex-start;
 `;
 
-const MapDescription = styled.p`
-    font-size: 0.875rem;
-    color: var(--text-mention-grey);
-    margin: 0 0 1rem 0;
+const MapContainer = styled.div`
+    flex: 2;
+    min-width: 0;
+`;
+
+const GuideContainer = styled.div`
+    flex: 1;
+    min-width: 280px;
 `;
 
 const FRANCE_ITEM: TerritorialisationHierarchyItem = {
@@ -178,7 +186,6 @@ const TerritorialisationHierarchy = ({
     hierarchy,
     land_id,
     land_type,
-    land_name,
     has_children
 }: TerritorialisationHierarchyProps) => {
     const [showMap, setShowMap] = useState(false);
@@ -246,18 +253,24 @@ const TerritorialisationHierarchy = ({
 
             {has_children && (
                 <MapSection $isVisible={showMap}>
-                    <MapDescription>
-                        Objectifs de réduction assignés à chaque membre de {land_name}.
-                    </MapDescription>
-                    <div className="bg-white fr-p-2w rounded">
-                        <GenericChart
-                            id="territorialisation_map"
-                            isMap
-                            land_id={land_id}
-                            land_type={land_type}
-                            showDataTable
-                        />
-                    </div>
+                    <MapContainer>
+                        <div className="bg-white fr-p-2w rounded">
+                            <GenericChart
+                                id="territorialisation_map"
+                                isMap
+                                land_id={land_id}
+                                land_type={land_type}
+                                showDataTable
+                            />
+                        </div>
+                    </MapContainer>
+                    <GuideContainer>
+                        <GuideContent title="Lecture de la carte" column>
+                            <p>Chaque territoire est coloré selon son objectif de réduction de consommation d'espaces.</p>
+                            <p>Plus la couleur est foncée, plus l'objectif de réduction est ambitieux.</p>
+                            <p>Cliquez sur un territoire pour voir le détail de son objectif.</p>
+                        </GuideContent>
+                    </GuideContainer>
                 </MapSection>
             )}
         </Container>

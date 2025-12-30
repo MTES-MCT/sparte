@@ -69,7 +69,6 @@ class TerritorialisationMap(DiagnosticChart):
             "Conso. 2011-2020 (ha)",
             "Conso. depuis 2021 (ha)",
             "Conso. max 2021-2030 (ha)",
-            "Document",
         ]
 
         return {
@@ -84,7 +83,6 @@ class TerritorialisationMap(DiagnosticChart):
                         d["conso_2011_2020"],
                         d["conso_since_2021"],
                         d["conso_max_2021_2030"],
-                        d["nom_document"],
                     ],
                 }
                 for d in self.data
@@ -116,28 +114,17 @@ class TerritorialisationMap(DiagnosticChart):
         min_val = min([d["objectif"] for d in data_with_values]) if data_with_values else 0
         max_val = max([d["objectif"] for d in data_with_values]) if data_with_values else 100
 
-        nb_territoires = len(data_with_values)
-
-        if min_val == max_val:
-            objectif_text = f"Objectif uniforme de -{min_val}%"
-        else:
-            objectif_text = f"Objectifs de -{min_val}% à -{max_val}%"
-
         return super().param | {
             "chart": {
                 "map": json.loads(geojson),
             },
             "title": {
-                "text": f"Objectifs des membres de {self.land.name}",
+                "text": f"Objectifs territorialisés de réduction de la consommation d'espaces NAF des territoires de {self.land.name}",  # noqa
                 "style": {"fontSize": "16px", "fontWeight": "600"},
             },
             "subtitle": {
-                "text": f"{nb_territoires} membre{'s' if nb_territoires > 1 else ''} · {objectif_text}",
+                "text": "Réduction pour la période 2021-2031 par rapport à la période 2011-2020",
                 "style": {"fontSize": "12px", "color": "#666"},
-            },
-            "caption": {
-                "text": "Réduction de la consommation d'espaces NAF 2021-2031 vs 2011-2021",
-                "style": {"fontSize": "10px", "color": "#888"},
             },
             "mapNavigation": {"enabled": True},
             "legend": {

@@ -7,7 +7,15 @@ from rest_framework import serializers, viewsets
 from rest_framework.response import Response
 
 
+class LandModelManager(models.Manager):
+    def get_by_natural_key(self, land_id, land_type):
+        return self.get(land_id=land_id, land_type=land_type)
+
+
 class LandModel(models.Model):
+    objects = LandModelManager()
+    id = models.TextField(primary_key=True)
+
     class OcsgeCoverageStatus(models.TextChoices):
         COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complet et uniforme"
         """
@@ -98,6 +106,9 @@ class LandModel(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.land_id} - {self.land_type})"
+
+    def natural_key(self):
+        return (self.land_id, self.land_type)
 
     @property
     def territorialisation(self):
