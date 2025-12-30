@@ -1,0 +1,600 @@
+[
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 8,
+  "fields": {
+    "land": 36179,
+    "parent": 36300,
+    "objectif_de_reduction": "61.10",
+    "nom_document": "PLUI",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 9,
+  "fields": {
+    "land": 36300,
+    "parent": null,
+    "objectif_de_reduction": "54.47",
+    "nom_document": "SRADDET",
+    "is_in_document": true,
+    "document_url": "https://www.hautsdefrance.fr/la-region-adopte-son-sraddet-modifie/",
+    "document_comment": "Objectifs consultables dans le fascicule version approuvée (p153-154)"
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 10,
+  "fields": {
+    "land": 36287,
+    "parent": 36300,
+    "objectif_de_reduction": "82.20",
+    "nom_document": "PLUi",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 11,
+  "fields": {
+    "land": 36200,
+    "parent": 36300,
+    "objectif_de_reduction": "57.30",
+    "nom_document": "PLUI",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 12,
+  "fields": {
+    "land": 36390,
+    "parent": 36300,
+    "objectif_de_reduction": "68.60",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 13,
+  "fields": {
+    "land": 36666,
+    "parent": 36300,
+    "objectif_de_reduction": "63.40",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 14,
+  "fields": {
+    "land": 36330,
+    "parent": 36300,
+    "objectif_de_reduction": "64.60",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 15,
+  "fields": {
+    "land": 36433,
+    "parent": 36300,
+    "objectif_de_reduction": "25.70",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 16,
+  "fields": {
+    "land": 36632,
+    "parent": 36300,
+    "objectif_de_reduction": "64.60",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 17,
+  "fields": {
+    "land": 35552,
+    "parent": 36300,
+    "objectif_de_reduction": "62.00",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 18,
+  "fields": {
+    "land": 36728,
+    "parent": 36300,
+    "objectif_de_reduction": "69.20",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 19,
+  "fields": {
+    "land": 36585,
+    "parent": 36300,
+    "objectif_de_reduction": "65.40",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 20,
+  "fields": {
+    "land": 36474,
+    "parent": 36300,
+    "objectif_de_reduction": "64.00",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 21,
+  "fields": {
+    "land": 36708,
+    "parent": 36300,
+    "objectif_de_reduction": "65.10",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 22,
+  "fields": {
+    "land": 36522,
+    "parent": 36300,
+    "objectif_de_reduction": "67.50",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 23,
+  "fields": {
+    "land": 36606,
+    "parent": 36300,
+    "objectif_de_reduction": "67.50",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 24,
+  "fields": {
+    "land": 36642,
+    "parent": 36300,
+    "objectif_de_reduction": "47.60",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 25,
+  "fields": {
+    "land": 36623,
+    "parent": 36300,
+    "objectif_de_reduction": "69.80",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 26,
+  "fields": {
+    "land": 35413,
+    "parent": 36300,
+    "objectif_de_reduction": "66.20",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 27,
+  "fields": {
+    "land": 36631,
+    "parent": 36300,
+    "objectif_de_reduction": "15.20",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 28,
+  "fields": {
+    "land": 36692,
+    "parent": 36300,
+    "objectif_de_reduction": "61.80",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 29,
+  "fields": {
+    "land": 36584,
+    "parent": 36300,
+    "objectif_de_reduction": "68.40",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 30,
+  "fields": {
+    "land": 36551,
+    "parent": 36300,
+    "objectif_de_reduction": "69.30",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 31,
+  "fields": {
+    "land": 36731,
+    "parent": 36300,
+    "objectif_de_reduction": "56.90",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 32,
+  "fields": {
+    "land": 36318,
+    "parent": 36300,
+    "objectif_de_reduction": "64.60",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 33,
+  "fields": {
+    "land": 36598,
+    "parent": 36300,
+    "objectif_de_reduction": "67.40",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 34,
+  "fields": {
+    "land": 36434,
+    "parent": 36300,
+    "objectif_de_reduction": "12.90",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 35,
+  "fields": {
+    "land": 36415,
+    "parent": 36300,
+    "objectif_de_reduction": "55.70",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 36,
+  "fields": {
+    "land": 36523,
+    "parent": 36300,
+    "objectif_de_reduction": "69.10",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 37,
+  "fields": {
+    "land": 36344,
+    "parent": 36300,
+    "objectif_de_reduction": "28.20",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 38,
+  "fields": {
+    "land": 36582,
+    "parent": 36300,
+    "objectif_de_reduction": "67.40",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 39,
+  "fields": {
+    "land": 36586,
+    "parent": 36300,
+    "objectif_de_reduction": "63.70",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 40,
+  "fields": {
+    "land": 36555,
+    "parent": 36300,
+    "objectif_de_reduction": "67.00",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 41,
+  "fields": {
+    "land": 36665,
+    "parent": 36300,
+    "objectif_de_reduction": "59.00",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 42,
+  "fields": {
+    "land": 36745,
+    "parent": 36300,
+    "objectif_de_reduction": "49.20",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 43,
+  "fields": {
+    "land": 36554,
+    "parent": 36300,
+    "objectif_de_reduction": "60.00",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 44,
+  "fields": {
+    "land": 36761,
+    "parent": 36300,
+    "objectif_de_reduction": "71.30",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 45,
+  "fields": {
+    "land": 36683,
+    "parent": 36300,
+    "objectif_de_reduction": "70.10",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 46,
+  "fields": {
+    "land": 36624,
+    "parent": 36300,
+    "objectif_de_reduction": "43.90",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 47,
+  "fields": {
+    "land": 36531,
+    "parent": 36300,
+    "objectif_de_reduction": "65.30",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 48,
+  "fields": {
+    "land": 36552,
+    "parent": 36300,
+    "objectif_de_reduction": "66.10",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 49,
+  "fields": {
+    "land": 36691,
+    "parent": 36300,
+    "objectif_de_reduction": "64.50",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 50,
+  "fields": {
+    "land": 36475,
+    "parent": 36300,
+    "objectif_de_reduction": "65.30",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 51,
+  "fields": {
+    "land": 36583,
+    "parent": 36300,
+    "objectif_de_reduction": "65.20",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 52,
+  "fields": {
+    "land": 36725,
+    "parent": 36300,
+    "objectif_de_reduction": "41.10",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+},
+{
+  "model": "public_data.territorialisationobjectif",
+  "pk": 53,
+  "fields": {
+    "land": 36700,
+    "parent": 36300,
+    "objectif_de_reduction": "55.80",
+    "nom_document": "SCOT",
+    "is_in_document": false,
+    "document_url": null,
+    "document_comment": ""
+  }
+}
+]
