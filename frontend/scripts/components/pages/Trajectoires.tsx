@@ -136,6 +136,10 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
 
     // Document source de l'objectif (renvoyé par le backend)
     const sourceDocument = territorialisation?.source_document ?? null;
+    // Document du territoire actuel (dernier élément de la hiérarchie) - utilisé pour les régions
+    const currentDocument = territorialisation?.hierarchy?.at(-1) ?? null;
+    // Document parent (avant-dernier élément) pour récupérer l'URL
+    const parentDocument = territorialisation?.hierarchy?.at(-2) ?? null;
     const allowed_conso_2021_2030 = conso_2011_2020 * (1 - objectif_reduction / 100);
     const allowed_conso_2021_2030_per_year = allowed_conso_2021_2030 / 10;
 
@@ -294,18 +298,34 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             {has_territorialisation ? (
                                 <>
                                     <p>
-                                        Cet objectif de <strong>-{objectif_reduction}%</strong> est issu
+                                        Cet objectif de <strong>-{objectif_reduction}%</strong> est issu du{' '}
                                         {sourceDocument ? (
-                                            <> du <strong>{sourceDocument.nom_document}</strong> de {sourceDocument.land_name}</>
-                                        ) : (
-                                            <> des documents de planification (SRADDET, SCoT, PLU)</>
-                                        )}
-                                        , qui décline la trajectoire nationale vers votre territoire.
+                                            <>
+                                                {parentDocument?.document_url ? (
+                                                    <a href={parentDocument.document_url} target="_blank" rel="noopener noreferrer">
+                                                        <strong>{sourceDocument.nom_document}</strong>
+                                                    </a>
+                                                ) : (
+                                                    <strong>{sourceDocument.nom_document}</strong>
+                                                )}
+                                                {' '}de {sourceDocument.land_name}
+                                            </>
+                                        ) : currentDocument ? (
+                                            currentDocument.document_url ? (
+                                                <a href={currentDocument.document_url} target="_blank" rel="noopener noreferrer">
+                                                    <strong>{currentDocument.nom_document}</strong>
+                                                </a>
+                                            ) : (
+                                                <strong>{currentDocument.nom_document}</strong>
+                                            )
+                                        ) : null}, qui décline la trajectoire nationale vers votre territoire.
                                     </p>
-                                    <p>
-                                        C'est un <strong>objectif réglementaire</strong> qui s'applique légalement et doit être inscrit
-                                        dans vos documents d'urbanisme.
-                                    </p>
+                                    {land_type !== "REGION" && (
+                                        <p>
+                                            C'est un <strong>objectif réglementaire</strong> qui s'applique légalement et doit être inscrit
+                                            dans vos documents d'urbanisme.
+                                        </p>
+                                    )}
                                     <p>
                                         <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#A558A0', marginRight: '6px', verticalAlign: 'middle' }}></span>
                                         Cette couleur représente l'objectif territorialisé dans le graphique ci-dessous.
