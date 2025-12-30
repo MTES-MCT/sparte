@@ -115,11 +115,6 @@ const Card: React.FC<CardProps> = ({
     children,
     empty = false
 }) => {
-    // Detect if value has more than 4 digits (excluding spaces, commas, and unit)
-    const valueStr = typeof value === 'string' ? value : String(value);
-    const digitsOnly = valueStr.replace(/[^\d]/g, '');
-    const isLongValue = digitsOnly.length > 4;
-
     return (
         <CardContainer $isHighlighted={isHighlighted} className={className}>
             {highlightBadge && (
@@ -135,7 +130,7 @@ const Card: React.FC<CardProps> = ({
                     </CardBadge>
                 </CardHeader>
             )}
-            {!empty && value && label && (
+            {!empty && (
                 <CardContent>
                     <CardValue $isHighlighted={isHighlighted}>{value}</CardValue>
                     <CardLabel>{label}</CardLabel>
