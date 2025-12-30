@@ -3,10 +3,12 @@ import uuid
 from django.conf import settings
 from django.db import models
 
+from config.storages import ExportStorage
+
 
 def export_pdf_path(instance, _filename):
     """Génère le chemin de stockage pour les PDFs exportés."""
-    return f"exports/{instance.job_id}.pdf"
+    return f"{instance.job_id}.pdf"
 
 
 class ExportJob(models.Model):
@@ -30,7 +32,7 @@ class ExportJob(models.Model):
         choices=ReportType.choices,
         blank=True,
     )
-    pdf_file = models.FileField(upload_to=export_pdf_path, blank=True)
+    pdf_file = models.FileField(upload_to=export_pdf_path, storage=ExportStorage(), blank=True)
     error = models.TextField(blank=True, null=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
