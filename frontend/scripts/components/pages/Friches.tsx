@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { useGetLandFrichesQuery } from "@services/api";
@@ -19,10 +19,6 @@ import type maplibregl from "maplibre-gl";
 interface FrichesProps {
     landData: LandDetailResultType;
 }
-
-const IconZoneActivite = styled.i`
-    font-size: 1.5rem;
-`;
 
 const DisplayPaginationInfo = styled.div`
     margin-top: 0.8rem;
@@ -119,9 +115,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const { land_id, land_type, friche_status } = landData;
     const { data: frichesData } = useGetLandFrichesQuery({ land_type, land_id });
 
-    const handleMapLoad = (map: maplibregl.Map) => {
+    const handleMapLoad = useCallback((map: maplibregl.Map) => {
         addMap(map);
-    };
+    }, [addMap]);
 
     const {
         paginatedData,
@@ -202,7 +198,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const columns = [
         {
             key: 'actions' as keyof LandFriche,
-            label: 'Actions',
+            label: '',
             sortable: false,
             render: (_: any, friche: LandFriche) => (
                 <button
@@ -279,6 +275,21 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             sortable: true,
             render: (value: number, friche: LandFriche) => `${formatNumber({ number: value })} ha (${formatNumber({ number: friche.percent_imper })} %)`
         },
+        {
+            key: 'cartofriches' as keyof LandFriche,
+            label: 'Lien cartofriches',
+            sortable: false,
+            render: (_: any, friche: LandFriche) => (
+                <a
+                    href={`https://cartofriches.cerema.fr/cartofriches/?site=${friche.site_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="fr-text--xs"
+                >
+                    Plus de détails sur cette friche
+                </a>
+            )
+        }
     ];
 
 	return (
