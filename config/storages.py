@@ -11,3 +11,10 @@ class PublicMediaStorage(S3Boto3Storage):
     location = "media"
     default_acl = "public-read"
     querystring_auth = False
+
+
+class ExportStorage(S3Boto3Storage):
+    """Storage pour les exports PDF."""
+
+    location = "exports"
+    file_overwrite = True

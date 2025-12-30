@@ -3,7 +3,14 @@ from django.urls import exceptions, reverse
 from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
-from project.models import ExportJob, Project, Request, RNUPackage, RNUPackageRequest
+from project.models import (
+    ExportJob,
+    Project,
+    ReportDraft,
+    Request,
+    RNUPackage,
+    RNUPackageRequest,
+)
 
 
 @admin.register(ExportJob)
@@ -33,6 +40,25 @@ class ExportJobAdmin(admin.ModelAdmin):
         return "-"
 
     link_to_pdf.short_description = "Fichier PDF"
+
+
+@admin.register(ReportDraft)
+class ReportDraftAdmin(admin.ModelAdmin):
+    model = ReportDraft
+    list_display = (
+        "name",
+        "user",
+        "project",
+        "report_type",
+        "land_type",
+        "land_id",
+        "created_at",
+        "updated_at",
+    )
+    list_filter = ("report_type", "land_type", "created_at")
+    search_fields = ("name", "user__email", "land_id")
+    readonly_fields = ("id", "created_at", "updated_at")
+    list_select_related = ("user", "project")
 
 
 @admin.register(Project)
