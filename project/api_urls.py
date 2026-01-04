@@ -1,5 +1,7 @@
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import include, path
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 
 from project.api_views import (
@@ -16,8 +18,14 @@ from project.charts import (
     ConsoByDeterminantPieChartExport,
     ObjectiveChart,
     ObjectiveChartExport,
+    TerritorialisationAnneesRestantesMap,
+    TerritorialisationConsoMap,
+    TerritorialisationEffortMap,
     TerritorialisationMap,
+    TerritorialisationObjectifMap,
     TerritorialisationProgressMap,
+    TerritorialisationRestanteMap,
+    TerritorialisationRythmeMap,
 )
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
@@ -137,6 +145,31 @@ router = DefaultRouter()
 router.register(r"report-drafts", ReportDraftViewSet, basename="report-draft")
 
 
+@api_view(["GET"])
+def me_view(request):
+    """Retourne les informations de l'utilisateur connecté."""
+    user = request.user
+    if user.is_authenticated:
+        return Response(
+            {
+                "is_authenticated": True,
+                "id": user.id,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "organism": getattr(user, "organism", None),
+                "function": getattr(user, "function", None),
+                "groups": list(user.groups.values_list("name", flat=True)),
+            }
+        )
+    return Response(
+        {
+            "is_authenticated": False,
+            "groups": [],
+        }
+    )
+
+
 def get_chart_klass_or_404(chart_id):
     charts = {
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
@@ -202,6 +235,12 @@ def get_chart_klass_or_404(chart_id):
         # Territorialisation
         "territorialisation_map": TerritorialisationMap,
         "territorialisation_progress_map": TerritorialisationProgressMap,
+        "territorialisation_conso_map": TerritorialisationConsoMap,
+        "territorialisation_objectif_map": TerritorialisationObjectifMap,
+        "territorialisation_restante_map": TerritorialisationRestanteMap,
+        "territorialisation_annees_restantes_map": TerritorialisationAnneesRestantesMap,
+        "territorialisation_effort_map": TerritorialisationEffortMap,
+        "territorialisation_rythme_map": TerritorialisationRythmeMap,
         # Logement vacant charts
         "logement_vacant_progression_chart": LogementVacantProgressionChart,
         "logement_vacant_ratio_progression_chart": LogementVacantRatioProgressionChart,
@@ -248,6 +287,7 @@ def chart_view(request, id, land_type, land_id):
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("me/", me_view, name="me"),
     path("project/<int:pk>/target-2031/", UpdateProjectTarget2031APIView.as_view(), name="update-target-2031"),
     path(
         "project/<int:pk>/comparison-lands/",

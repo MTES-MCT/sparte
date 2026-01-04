@@ -97,6 +97,7 @@ export type TerritorialisationHierarchyItem = {
     nom_document: string;
     document_url: string | null;
     document_comment: string;
+    is_in_document: boolean;
     hierarchy?: TerritorialisationHierarchyItem[];
 };
 
@@ -129,6 +130,17 @@ export type LandDetailResultType = {
             land_name: string;
             nom_document: string;
         } | null;
+        children_stats: {
+            total_membres: number;
+            en_depassement: number;
+            en_bonne_voie: number;
+            total_conso_since_2021: number;
+            total_conso_max: number;
+            progression_moyenne: number;
+            progression_globale: number;
+        } | null;
+        is_from_parent: boolean;
+        parent_land_name: string | null;
     };
     ocsge_status: OcsgeStatusEnum;
     friche_status: FricheStatusEnum;

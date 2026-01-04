@@ -115,10 +115,35 @@ class LandModel(models.Model):
         from public_data.models.territorialisation import TerritorialisationObjectif
 
         objectif = self.territorialisation_objectifs.first()
-        has_children = TerritorialisationObjectif.objects.filter(
+        children_objectifs = TerritorialisationObjectif.objects.filter(
             parent__land_id=self.land_id,
             parent__land_type=self.land_type,
-        ).exists()
+        ).select_related("land")
+        has_children = children_objectifs.exists()
+
+        # Calculer les statistiques des membres si présents
+        children_stats = None
+        if has_children:
+            children_stats = self._compute_children_stats(children_objectifs)
+
+        # Si pas d'objectif propre, chercher dans les parents
+        is_from_parent = False
+        parent_land_name = None
+        if not objectif and self.parent_keys:
+            # Récupérer tous les parents triés par surface croissante (le plus petit en premier)
+            parent_lands = (
+                LandModel.objects.filter(key__in=self.parent_keys)
+                .prefetch_related("territorialisation_objectifs")
+                .order_by("surface")
+            )
+            # Prendre le plus petit parent qui a un objectif
+            for parent_land in parent_lands:
+                parent_objectif = parent_land.territorialisation_objectifs.first()
+                if parent_objectif:
+                    objectif = parent_objectif
+                    is_from_parent = True
+                    parent_land_name = parent_land.name
+                    break
 
         if not objectif:
             return {
@@ -126,6 +151,9 @@ class LandModel(models.Model):
                 "objectif": None,
                 "hierarchy": [],
                 "has_children": has_children,
+                "children_stats": children_stats,
+                "is_from_parent": False,
+                "parent_land_name": None,
             }
 
         # Construire la hiérarchie en remontant les parents
@@ -143,6 +171,7 @@ class LandModel(models.Model):
                     "nom_document": current.nom_document,
                     "document_url": current.document_url,
                     "document_comment": current.document_comment,
+                    "is_in_document": current.is_in_document,
                 }
             )
 
@@ -169,7 +198,55 @@ class LandModel(models.Model):
             "objectif": float(objectif.objectif_de_reduction),
             "hierarchy": hierarchy_ordered,
             "has_children": has_children,
+            "children_stats": children_stats,
             "source_document": source_document,
+            "is_from_parent": is_from_parent,
+            "parent_land_name": parent_land_name,
+        }
+
+    def _compute_children_stats(self, children_objectifs):
+        """Calcule les statistiques agrégées des territoires enfants."""
+        total_membres = 0
+        en_depassement = 0
+        en_bonne_voie = 0
+        total_conso_since_2021 = 0
+        total_conso_max = 0
+        progressions = []
+
+        for obj in children_objectifs:
+            land = obj.land
+            conso_details = land.conso_details or {}
+            conso_2011_2020 = conso_details.get("conso_2011_2020", 0) or 0
+            conso_since_2021 = conso_details.get("conso_since_2021", 0) or 0
+            objectif_reduction = float(obj.objectif_de_reduction)
+            conso_max = conso_2011_2020 * (1 - objectif_reduction / 100)
+
+            if conso_max > 0:
+                progress = (conso_since_2021 / conso_max) * 100
+            else:
+                progress = 100 if conso_since_2021 > 0 else 0
+
+            total_membres += 1
+            total_conso_since_2021 += conso_since_2021
+            total_conso_max += conso_max
+            progressions.append(progress)
+
+            if progress >= 100:
+                en_depassement += 1
+            else:
+                en_bonne_voie += 1
+
+        progression_moyenne = sum(progressions) / len(progressions) if progressions else 0
+        progression_globale = (total_conso_since_2021 / total_conso_max * 100) if total_conso_max > 0 else 0
+
+        return {
+            "total_membres": total_membres,
+            "en_depassement": en_depassement,
+            "en_bonne_voie": en_bonne_voie,
+            "total_conso_since_2021": round(total_conso_since_2021, 2),
+            "total_conso_max": round(total_conso_max, 2),
+            "progression_moyenne": round(progression_moyenne, 1),
+            "progression_globale": round(progression_globale, 1),
         }
 
 

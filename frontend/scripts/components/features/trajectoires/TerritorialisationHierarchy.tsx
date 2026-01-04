@@ -10,6 +10,9 @@ type TerritorialisationHierarchyProps = {
     land_type: string;
     land_name: string;
     has_children: boolean;
+    is_from_parent: boolean;
+    parent_land_name: string | null;
+    objectif: number | null;
 };
 
 const Container = styled.div`
@@ -86,6 +89,25 @@ const Card = styled.div<{ $isCurrent: boolean }>`
     border: 1px solid ${props => props.$isCurrent ? 'transparent' : 'var(--border-default-grey)'};
 `;
 
+const EmptyCard = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    background: var(--background-alt-grey);
+    border-radius: 4px;
+    border: 2px dashed var(--border-default-grey);
+    min-width: 120px;
+    align-self: stretch;
+`;
+
+const EmptyCardLabel = styled.span`
+    font-size: 0.75rem;
+    color: var(--text-mention-grey);
+    text-align: center;
+`;
+
 const TerritoryName = styled.span<{ $isCurrent: boolean }>`
     font-size: 0.875rem;
     font-weight: ${props => props.$isCurrent ? '700' : '600'};
@@ -104,6 +126,27 @@ const DocumentBadge = styled.span<{ $isCurrent: boolean }>`
     background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'var(--background-contrast-grey)'};
     color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.9)' : 'var(--text-mention-grey)'};
     width: fit-content;
+`;
+
+const DocumentLink = styled.a<{ $isCurrent: boolean }>`
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.625rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-bottom: 0.5rem;
+    background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'var(--background-contrast-grey)'};
+    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.9)' : 'var(--text-action-high-blue-france)'};
+    width: fit-content;
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+        background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.3)' : 'var(--background-alt-grey)'};
+    }
 `;
 
 const ObjectifValue = styled.span<{ $isCurrent: boolean }>`
@@ -171,6 +214,52 @@ const GuideContainer = styled.div`
     min-width: 280px;
 `;
 
+const InheritedNotice = styled.div`
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--background-contrast-info);
+    border-left: 3px solid var(--border-plain-info);
+    border-radius: 0 4px 4px 0;
+    margin-bottom: 1rem;
+
+    i {
+        color: var(--text-default-info);
+        font-size: 1rem;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+`;
+
+const NoticeText = styled.p`
+    font-size: 0.875rem;
+    color: var(--text-default-grey);
+    margin: 0;
+    line-height: 1.5;
+
+    strong {
+        color: var(--text-title-grey);
+    }
+`;
+
+const StatusText = styled.span<{ $status: 'success' | 'pending' | 'error'; $isCurrent?: boolean }>`
+    font-size: 0.625rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'var(--border-default-grey)'};
+    color: ${props => {
+        if (props.$isCurrent) {
+            return 'rgba(255,255,255,0.8)';
+        }
+        switch (props.$status) {
+            case 'success': return 'var(--text-default-success)';
+            case 'pending': return 'var(--text-default-warning)';
+            case 'error': return 'var(--text-default-error)';
+        }
+    }};
+`;
+
 const FRANCE_ITEM: TerritorialisationHierarchyItem = {
     land_id: 'NATION',
     land_type: 'NATION',
@@ -180,13 +269,18 @@ const FRANCE_ITEM: TerritorialisationHierarchyItem = {
     nom_document: 'Loi Climat et Résilience',
     document_url: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924',
     document_comment: 'Article 194 de la loi n° 2021-1104 du 22 août 2021',
+    is_in_document: true,
 };
 
 const TerritorialisationHierarchy = ({
     hierarchy,
     land_id,
     land_type,
-    has_children
+    land_name,
+    has_children,
+    is_from_parent,
+    parent_land_name,
+    objectif
 }: TerritorialisationHierarchyProps) => {
     const [showMap, setShowMap] = useState(false);
 
@@ -203,35 +297,81 @@ const TerritorialisationHierarchy = ({
         <Container>
             <Header>
                 <i className="bi bi-diagram-3 fr-text-action-high--blue-france" style={{ fontSize: '1.25rem' }} />
-                <Title>Chaîne de territorialisation</Title>
+                <Title>Territorialisation des objectifs</Title>
             </Header>
             <Subtitle>
-                L'objectif de réduction de votre territoire provient d'une déclinaison progressive depuis l'échelon national.
+                Pour {land_name}, la mise en œuvre des objectifs de réduction de la consommation d'espaces NAF s'appuie sur les documents de planification territoriale suivants :
             </Subtitle>
+            {is_from_parent && parent_land_name && objectif !== null && (
+                <InheritedNotice>
+                    <i className="bi bi-info-circle-fill" />
+                    <NoticeText>
+                        <strong>{land_name}</strong> ne dispose pas d'un objectif de réduction territorialisé propre.
+                        L'objectif affiché (<strong>-{objectif}%</strong>) est celui défini par <strong>{parent_land_name}</strong>,
+                        le territoire de niveau supérieur dans la chaîne de territorialisation.
+                    </NoticeText>
+                </InheritedNotice>
+            )}
             <TimelineContainer>
                 {fullHierarchy.map((item, index) => {
-                    const isCurrent = index === fullHierarchy.length - 1;
+                    // Si objectif suggéré, le dernier de la hiérarchie n'est pas le territoire actuel
+                    const isLastInHierarchy = index === fullHierarchy.length - 1;
+                    const isCurrent = isLastInHierarchy && !is_from_parent;
                     const isFirst = index === 0;
                     return (
-                        <TimelineItem key={item.land_id} $isFirst={isFirst} $isLast={isCurrent}>
+                        <TimelineItem key={item.land_id} $isFirst={isFirst} $isLast={isCurrent && !has_children}>
                             {index > 0 && <Connector />}
                             <Card $isCurrent={isCurrent}>
                                 <TerritoryName $isCurrent={isCurrent}>
                                     {item.land_name}
                                 </TerritoryName>
-                                <DocumentBadge $isCurrent={isCurrent}>
-                                    {item.nom_document}
-                                </DocumentBadge>
+                                {item.document_url ? (
+                                    <DocumentLink
+                                        href={item.document_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        $isCurrent={isCurrent}
+                                    >
+                                        {item.nom_document}
+                                    </DocumentLink>
+                                ) : (
+                                    <DocumentBadge $isCurrent={isCurrent}>
+                                        {item.nom_document}
+                                    </DocumentBadge>
+                                )}
                                 <ObjectifValue $isCurrent={isCurrent}>
                                     -{item.objectif}%
                                 </ObjectifValue>
                                 <ObjectifLabel $isCurrent={isCurrent}>
                                     objectif de réduction
                                 </ObjectifLabel>
+                                <StatusText
+                                    $status={item.is_in_document ? 'success' : 'pending'}
+                                    $isCurrent={isCurrent}
+                                >
+                                    <i className={`bi bi-${item.is_in_document ? 'check-circle-fill' : 'hourglass-split'}`} />{' '}
+                                    {item.is_in_document ? 'Inscrit dans le document' : 'Document en révision'}
+                                </StatusText>
                             </Card>
                         </TimelineItem>
                     );
                 })}
+                {is_from_parent && (
+                    <TimelineItem $isFirst={false} $isLast={!has_children}>
+                        <Connector />
+                        <EmptyCard>
+                            <TerritoryName $isCurrent={false}>
+                                {land_name}
+                            </TerritoryName>
+                            <EmptyCardLabel>
+                                Objectif non défini
+                            </EmptyCardLabel>
+                            <StatusText $status="error">
+                                <i className="bi bi-x-circle-fill" /> Aucun objectif territorialisé
+                            </StatusText>
+                        </EmptyCard>
+                    </TimelineItem>
+                )}
                 {has_children && (
                     <TimelineItem $isFirst={false} $isLast={false}>
                         <Connector />
@@ -268,7 +408,7 @@ const TerritorialisationHierarchy = ({
                         <GuideContent title="Lecture de la carte" column>
                             <p>Chaque territoire est coloré selon son objectif de réduction de consommation d'espaces.</p>
                             <p>Plus la couleur est foncée, plus l'objectif de réduction est ambitieux.</p>
-                            <p>Cliquez sur un territoire pour voir le détail de son objectif.</p>
+                            <p>Survolez un territoire pour voir le détail de son objectif.</p>
                         </GuideContent>
                     </GuideContainer>
                 </MapSection>

@@ -6,7 +6,6 @@ from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
 )
 from public_data.models import LandConso
-from public_data.models.territorialisation import TerritorialisationObjectif
 
 
 class ObjectiveChart(DiagnosticChart):
@@ -38,20 +37,50 @@ class ObjectiveChart(DiagnosticChart):
         return self.validate_target(value)
 
     @property
+    def _territorialisation_data(self) -> dict:
+        """Cache les données de territorialisation pour éviter les appels multiples."""
+        if not hasattr(self, "_cached_territorialisation"):
+            self._cached_territorialisation = self.land.territorialisation
+        return self._cached_territorialisation
+
+    @property
     def target_territorialise(self) -> float | None:
-        """Récupère l'objectif territorialisé depuis la table TerritorialisationObjectif."""
-        objectif = TerritorialisationObjectif.objects.filter(
-            land__land_id=self.land.land_id,
-            land__land_type=self.land.land_type,
-        ).first()
-        if objectif is None:
-            return None
-        return float(objectif.objectif_de_reduction)
+        """Récupère l'objectif territorialisé (propre ou hérité d'un parent)."""
+        return self._territorialisation_data.get("objectif")
 
     @property
     def has_territorialisation(self) -> bool:
-        """Retourne True si un objectif territorialisé est défini."""
-        return self.target_territorialise is not None
+        """Retourne True si un objectif territorialisé ou suggéré est défini."""
+        return self._territorialisation_data.get("has_objectif", False)
+
+    @property
+    def is_from_parent(self) -> bool:
+        """Retourne True si l'objectif est hérité d'un territoire parent (suggéré)."""
+        return self._territorialisation_data.get("is_from_parent", False)
+
+    @property
+    def conso_2011_2020(self) -> float:
+        """Calcule la consommation cumulée 2011-2020 en hectares."""
+        conso_data = LandConso.objects.filter(
+            land_id=self.land.land_id,
+            land_type=self.land.land_type,
+            year__gte=2011,
+            year__lte=2020,
+        )
+        return sum(item.total / 10000 for item in conso_data)
+
+    @property
+    def conso_max_reference(self) -> float:
+        """Calcule la consommation maximale autorisée selon l'objectif de référence."""
+        target = self.target_territorialise if self.has_territorialisation else 50
+        return self.conso_2011_2020 * (1 - target / 100)
+
+    @property
+    def conso_max_custom(self) -> float | None:
+        """Calcule la consommation maximale autorisée selon l'objectif personnalisé."""
+        if self.target_2031_custom is None:
+            return None
+        return self.conso_2011_2020 * (1 - self.target_2031_custom / 100)
 
     @property
     def param(self):
@@ -74,7 +103,8 @@ class ObjectiveChart(DiagnosticChart):
                 "type": "category",
                 "categories": [str(i) for i in range(2021, 2031)],
             },
-            "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+            "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "bottom", "symbolRadius": 0},
+            "plotOptions": {"column": {"borderRadius": 0}, "line": {"marker": {"enabled": False}}},
             "tooltip": {
                 "headerFormat": DEFAULT_HEADER_FORMAT,
                 "pointFormat": DEFAULT_POINT_FORMAT,
@@ -93,7 +123,10 @@ class ObjectiveChart(DiagnosticChart):
 
         # Couleurs et labels selon le type d'objectif
         if self.has_territorialisation:
-            reference_label = f"réglementaire ({target_reference}%)"
+            if self.is_from_parent:
+                reference_label = f"suggéré ({target_reference}%)"
+            else:
+                reference_label = f"réglementaire ({target_reference}%)"
             color_bar = "#A558A0"  # Violet
             color_line = "#8B4789"  # Violet foncé
         else:
@@ -103,28 +136,28 @@ class ObjectiveChart(DiagnosticChart):
 
         series = [
             {
-                "name": "Conso. annuelle réelle",
+                "name": "Consommation annuelle réelle",
                 "yAxis": 1,
                 "data": list(),
                 "color": "#D9D9D9",
                 "zIndex": 3,
             },
             {
-                "name": "Conso. cumulée réelle",
+                "name": "Consommation cumulée réelle",
                 "data": list(),
                 "type": "line",
                 "color": "#b5b5b5",
                 "zIndex": 6,
             },
             {
-                "name": f"Conso. annuelle selon objectif {reference_label}",
+                "name": f"Consommation annuelle selon objectif {reference_label}",
                 "yAxis": 1,
                 "data": list(),
                 "color": color_bar,
                 "zIndex": 2,
             },
             {
-                "name": f"Conso. cumulée selon objectif {reference_label}",
+                "name": f"Consommation cumulée selon objectif {reference_label}",
                 "data": list(),
                 "type": "line",
                 "dashStyle": "ShortDash",
@@ -137,14 +170,14 @@ class ObjectiveChart(DiagnosticChart):
             series.extend(
                 [
                     {
-                        "name": f"Conso. annuelle selon objectif personnalisé ({target_custom}%)",
+                        "name": f"Consommation annuelle selon objectif personnalisé ({target_custom}%)",
                         "yAxis": 1,
                         "data": list(),
                         "color": "#B6DFDE",
                         "zIndex": 1,
                     },
                     {
-                        "name": f"Conso. cumulée selon objectif personnalisé ({target_custom}%)",
+                        "name": f"Consommation cumulée selon objectif personnalisé ({target_custom}%)",
                         "data": list(),
                         "type": "line",
                         "dashStyle": "Dash",
@@ -223,23 +256,26 @@ class ObjectiveChart(DiagnosticChart):
         has_custom_target = target_custom is not None and target_custom != target_reference
 
         if self.has_territorialisation:
-            reference_label = f"réglementaire ({target_reference}%)"
+            if self.is_from_parent:
+                reference_label = f"suggéré ({target_reference}%)"
+            else:
+                reference_label = f"réglementaire ({target_reference}%)"
         else:
             reference_label = "national (50%)"
 
         headers = [
             "Année",
-            "Conso. annuelle réelle (ha)",
-            "Conso. cumulée réelle (ha)",
-            f"Conso. annuelle selon objectif {reference_label} (ha)",
-            f"Conso. cumulée selon objectif {reference_label} (ha)",
+            "Consommation annuelle réelle (ha)",
+            "Consommation cumulée réelle (ha)",
+            f"Consommation annuelle selon objectif {reference_label} (ha)",
+            f"Consommation cumulée selon objectif {reference_label} (ha)",
         ]
 
         if has_custom_target:
             headers.extend(
                 [
-                    f"Conso. annuelle selon objectif personnalisé ({target_custom}%) (ha)",
-                    f"Conso. cumulée selon objectif personnalisé ({target_custom}%) (ha)",
+                    f"Consommation annuelle selon objectif personnalisé ({target_custom}%) (ha)",
+                    f"Consommation cumulée selon objectif personnalisé ({target_custom}%) (ha)",
                 ]
             )
 

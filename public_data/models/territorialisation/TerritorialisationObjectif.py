@@ -1,12 +1,10 @@
 from django.contrib.gis.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from public_data.models.administration import LandModel
-
 
 class TerritorialisationObjectif(models.Model):
     land = models.ForeignKey(
-        LandModel,
+        "public_data.LandModel",
         on_delete=models.DO_NOTHING,
         to_field="key",
         verbose_name="Territoire",
@@ -14,7 +12,7 @@ class TerritorialisationObjectif(models.Model):
         help_text="Territoire qui reçoit l'objectif",
     )
     parent = models.ForeignKey(
-        LandModel,
+        "public_data.LandModel",
         on_delete=models.DO_NOTHING,
         to_field="key",
         verbose_name="Parent",
