@@ -9,6 +9,7 @@ interface CardProps {
     label?: React.ReactNode;
     isHighlighted?: boolean;
     highlightBadge?: string;
+    highlightBadgeIcon?: string;
     className?: string;
     children?: React.ReactNode;
     empty?: boolean;
@@ -23,8 +24,8 @@ const CardContainer = styled.div<{ $isHighlighted?: boolean }>`
     flex-direction: column;
     justify-content: space-between;
     gap: 1rem;
+    position: relative;
     ${({ $isHighlighted }) => $isHighlighted && `
-        position: relative;
         background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
         border-color: var(--artwork-major-blue-france);
         border-width: 3px;
@@ -98,6 +99,7 @@ const CardFooter = styled.div<{ $empty?: boolean }>`
     ${({ $empty }) => $empty && `
         flex: 1;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
     `}
@@ -111,6 +113,7 @@ const Card: React.FC<CardProps> = ({
     label = "",
     isHighlighted = false,
     highlightBadge,
+    highlightBadgeIcon = "bi bi-lightning-charge",
     className = "",
     children,
     empty = false
@@ -119,7 +122,7 @@ const Card: React.FC<CardProps> = ({
         <CardContainer $isHighlighted={isHighlighted} className={className}>
             {highlightBadge && (
                 <HighlightBadge>
-                    <i className="bi bi-lightning-charge"></i> {highlightBadge}
+                    <i className={highlightBadgeIcon}></i> {highlightBadge}
                 </HighlightBadge>
             )}
             {!empty && badgeClass && badgeLabel && (

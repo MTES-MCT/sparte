@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { TerritorialisationHierarchyItem } from '@services/types/land';
 import GenericChart from '@components/charts/GenericChart';
 import GuideContent from '@components/ui/GuideContent';
+import Card from '@components/ui/Card';
 
 type TerritorialisationHierarchyProps = {
     hierarchy: TerritorialisationHierarchyItem[];
@@ -77,29 +78,25 @@ const Connector = styled.div`
     }
 `;
 
-const Card = styled.div<{ $isCurrent: boolean }>`
-    display: flex;
-    flex-direction: column;
+const HierarchyCard = styled(Card)<{ $isCurrent?: boolean }>`
     padding: 0.75rem 1rem;
-    background: ${props => props.$isCurrent
-        ? 'var(--background-action-high-blue-france)'
-        : 'var(--background-default-grey)'};
-    color: ${props => props.$isCurrent ? 'white' : 'var(--text-default-grey)'};
-    border-radius: 4px;
-    border: 1px solid ${props => props.$isCurrent ? 'transparent' : 'var(--border-default-grey)'};
+    background: var(--background-default-grey);
+    border: 1px solid var(--border-default-grey);
+    gap: 0.25rem;
+    ${({ $isCurrent }) => $isCurrent && `
+        border: 2px solid var(--border-action-high-blue-france);
+    `}
 `;
 
-const EmptyCard = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+const EmptyHierarchyCard = styled(Card)`
     padding: 0.75rem 1rem;
     background: var(--background-alt-grey);
-    border-radius: 4px;
     border: 2px dashed var(--border-default-grey);
     min-width: 120px;
     align-self: stretch;
+    gap: 0.25rem;
+    align-items: center;
+    justify-content: center;
 `;
 
 const EmptyCardLabel = styled.span`
@@ -108,14 +105,14 @@ const EmptyCardLabel = styled.span`
     text-align: center;
 `;
 
-const TerritoryName = styled.span<{ $isCurrent: boolean }>`
+const TerritoryName = styled.span`
     font-size: 0.875rem;
-    font-weight: ${props => props.$isCurrent ? '700' : '600'};
+    font-weight: 600;
     margin-bottom: 0.25rem;
     line-height: 1.3;
 `;
 
-const DocumentBadge = styled.span<{ $isCurrent: boolean }>`
+const DocumentBadge = styled.span`
     display: inline-block;
     font-size: 0.625rem;
     font-weight: 500;
@@ -123,12 +120,12 @@ const DocumentBadge = styled.span<{ $isCurrent: boolean }>`
     padding: 2px 6px;
     border-radius: 2px;
     margin-bottom: 0.5rem;
-    background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'var(--background-contrast-grey)'};
-    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.9)' : 'var(--text-mention-grey)'};
+    background: var(--background-contrast-grey);
+    color: var(--text-mention-grey);
     width: fit-content;
 `;
 
-const DocumentLink = styled.a<{ $isCurrent: boolean }>`
+const DocumentLink = styled.a`
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -138,28 +135,54 @@ const DocumentLink = styled.a<{ $isCurrent: boolean }>`
     padding: 2px 6px;
     border-radius: 2px;
     margin-bottom: 0.5rem;
-    background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'var(--background-contrast-grey)'};
-    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.9)' : 'var(--text-action-high-blue-france)'};
+    background: var(--background-contrast-grey);
+    color: var(--text-action-high-blue-france);
     width: fit-content;
     text-decoration: none;
 
     &:hover {
         text-decoration: underline;
-        background: ${props => props.$isCurrent ? 'rgba(255,255,255,0.3)' : 'var(--background-alt-grey)'};
+        background: var(--background-alt-grey);
     }
 `;
 
-const ObjectifValue = styled.span<{ $isCurrent: boolean }>`
-    font-size: ${props => props.$isCurrent ? '1.25rem' : '1rem'};
+const ObjectifValue = styled.span`
+    font-size: 1rem;
     font-weight: 700;
-    color: ${props => props.$isCurrent ? 'white' : 'var(--text-action-high-blue-france)'};
+    color: var(--text-action-high-blue-france);
     line-height: 1;
 `;
 
-const ObjectifLabel = styled.span<{ $isCurrent: boolean }>`
+const ObjectifLabel = styled.span`
     font-size: 0.625rem;
-    color: ${props => props.$isCurrent ? 'rgba(255,255,255,0.8)' : 'var(--text-mention-grey)'};
+    color: var(--text-mention-grey);
     margin-top: 0.25rem;
+`;
+
+const StatusBadge = styled.span<{ $status: 'success' | 'pending' | 'waiting' }>`
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.625rem;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    background: ${props => {
+        switch (props.$status) {
+            case 'success': return 'var(--background-contrast-success)';
+            case 'pending': return 'var(--background-contrast-warning)';
+            case 'waiting': return 'var(--background-contrast-grey)';
+        }
+    }};
+    color: ${props => {
+        switch (props.$status) {
+            case 'success': return 'var(--text-default-success)';
+            case 'pending': return 'var(--text-default-warning)';
+            case 'waiting': return 'var(--text-mention-grey)';
+        }
+    }};
+    width: fit-content;
 `;
 
 const ChildrenCard = styled.div<{ $isExpanded: boolean }>`
@@ -243,23 +266,6 @@ const NoticeText = styled.p`
     }
 `;
 
-const StatusText = styled.span<{ $status: 'success' | 'pending' | 'error'; $isCurrent?: boolean }>`
-    font-size: 0.625rem;
-    margin-top: 0.5rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid ${props => props.$isCurrent ? 'rgba(255,255,255,0.2)' : 'var(--border-default-grey)'};
-    color: ${props => {
-        if (props.$isCurrent) {
-            return 'rgba(255,255,255,0.8)';
-        }
-        switch (props.$status) {
-            case 'success': return 'var(--text-default-success)';
-            case 'pending': return 'var(--text-default-warning)';
-            case 'error': return 'var(--text-default-error)';
-        }
-    }};
-`;
-
 const FRANCE_ITEM: TerritorialisationHierarchyItem = {
     land_id: 'NATION',
     land_type: 'NATION',
@@ -321,8 +327,12 @@ const TerritorialisationHierarchy = ({
                     return (
                         <TimelineItem key={item.land_id} $isFirst={isFirst} $isLast={isCurrent && !has_children}>
                             {index > 0 && <Connector />}
-                            <Card $isCurrent={isCurrent}>
-                                <TerritoryName $isCurrent={isCurrent}>
+                            <HierarchyCard
+                                empty
+                                $isCurrent={isCurrent}
+                                highlightBadgeIcon="bi bi-geo-alt-fill"
+                            >
+                                <TerritoryName>
                                     {item.land_name}
                                 </TerritoryName>
                                 {item.document_url ? (
@@ -330,46 +340,46 @@ const TerritorialisationHierarchy = ({
                                         href={item.document_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        $isCurrent={isCurrent}
                                     >
                                         {item.nom_document}
                                     </DocumentLink>
                                 ) : (
-                                    <DocumentBadge $isCurrent={isCurrent}>
+                                    <DocumentBadge>
                                         {item.nom_document}
                                     </DocumentBadge>
                                 )}
-                                <ObjectifValue $isCurrent={isCurrent}>
+                                <ObjectifValue>
                                     -{item.objectif}%
                                 </ObjectifValue>
-                                <ObjectifLabel $isCurrent={isCurrent}>
+                                <ObjectifLabel>
                                     objectif de réduction
                                 </ObjectifLabel>
-                                <StatusText
-                                    $status={item.is_in_document ? 'success' : 'pending'}
-                                    $isCurrent={isCurrent}
-                                >
-                                    <i className={`bi bi-${item.is_in_document ? 'check-circle-fill' : 'hourglass-split'}`} />{' '}
+                                <StatusBadge $status={item.is_in_document ? 'success' : 'pending'}>
+                                    <i className={`bi bi-${item.is_in_document ? 'check-circle-fill' : 'hourglass-split'}`} />
                                     {item.is_in_document ? 'Inscrit dans le document' : 'Document en révision'}
-                                </StatusText>
-                            </Card>
+                                </StatusBadge>
+                            </HierarchyCard>
                         </TimelineItem>
                     );
                 })}
                 {is_from_parent && (
                     <TimelineItem $isFirst={false} $isLast={!has_children}>
                         <Connector />
-                        <EmptyCard>
-                            <TerritoryName $isCurrent={false}>
+                        <EmptyHierarchyCard
+                            empty
+                            highlightBadgeIcon="bi bi-geo-alt-fill"
+                        >
+                            <TerritoryName>
                                 {land_name}
                             </TerritoryName>
                             <EmptyCardLabel>
                                 Objectif non défini
                             </EmptyCardLabel>
-                            <StatusText $status="error">
-                                <i className="bi bi-x-circle-fill" /> Aucun objectif territorialisé
-                            </StatusText>
-                        </EmptyCard>
+                            <StatusBadge $status="waiting">
+                                <i className="bi bi-clock" />
+                                En attente
+                            </StatusBadge>
+                        </EmptyHierarchyCard>
                     </TimelineItem>
                 )}
                 {has_children && (

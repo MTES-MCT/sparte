@@ -346,7 +346,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                         onChange={(e) => handleCustomTargetChange(e.target.value)}
                                         disabled={isUpdating}
                                         className="fr-input"
-                                        style={{ width: '80px', textAlign: 'center' }}
+                                        style={{ width: '100px', textAlign: 'center' }}
                                     />
                                     <span className="fr-text--sm">%</span>
                                 </div>
