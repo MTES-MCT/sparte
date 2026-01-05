@@ -87,7 +87,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				<div className="fr-grid-row fr-grid-row--gutters">
 					<div className="fr-col-12 fr-col-md-6">
 						<Card
-							icon="bi-droplet"
+							icon="bi-buildings"
 							badgeClass="fr-badge--error"
 							badgeLabel="Artificialisation nette"
 							value={`${formatNumber({ number: landArtifStockIndex.flux_surface, addSymbol: true })} ha`}
@@ -104,7 +104,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					</div>
 					<div className="fr-col-12 fr-col-md-6">
 						<Card
-							icon="bi-droplet"
+							icon="bi-buildings"
 							badgeClass="fr-badge--info"
 							badgeLabel="Surfaces artificialisées"
 							value={`${formatNumber({ number: landArtifStockIndex.surface })} ha`}
