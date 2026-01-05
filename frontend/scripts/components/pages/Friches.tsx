@@ -15,7 +15,7 @@ import { FricheStatusEnum, LandDetailResultType, LandType } from "@services/type
 import { FricheOverview, FricheAbstract } from "@components/features/friches";
 import useWindowSize from "@hooks/useWindowSize";
 import type maplibregl from "maplibre-gl";
-import Tile from "@codegouvfr/react-dsfr/Tile";
+import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
 import benefrichesImage from "@images/logo-benefriches.png";
 import urbanvitalizImage from "@images/logo-urbanvitaliz.png";
 interface FrichesProps {
@@ -70,31 +70,6 @@ const ScrollableMapsColumn = styled.div`
     }
 `;
 
-const TileCustomImage = styled(Tile)`
-    .fr-tile__header {
-        min-height: 30%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .fr-tile__img {
-        margin: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-    img {
-        height: 30% !important;
-        width: auto !important;
-    }
-
-    .fr-tile__desc {
-        font-size: 0.8rem;
-        line-height: 1.2rem;
-        margin-top: 0.8rem;
-    }
-`;
 
 const FRICHES_ANALYSIS_CHARTS: Array<{ id: string; sources: string[] }> = [
     { id: 'friche_pollution', sources: ['cartofriches'] },
@@ -479,35 +454,21 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             <h2 className="fr-mt-10w">Pour aller plus loin dans votre démarche de réhabilitation de friches </h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
                 <div className="fr-col-12 fr-col-lg-6">
-                    <TileCustomImage
-                        enlargeLinkOrButton
+                    <ExternalServiceTile
                         imageUrl={benefrichesImage}
-                        linkProps={{
-                            href: 'https://benefriches.ademe.fr/',
-                            target: '_blank',
-                            rel: 'noopener noreferrer external'
-                        }}
-                        title="Estimez les impacts environnementaux, sociaux et économiques de votre projet de réhabilitation grâce à Bénéfriches"
-                        desc="Vous avez un projet d'aménagement urbain ou un projet photovoltaïque sur une friche ? Calculez les impacts de votre projet grâce à la plateforme Bénéfriches !"
-                        titleAs="h4"
-                        small
                         imageAlt="Logo de l'ADEME et de Bénéfriches"
+                        title="Estimez les impacts environnementaux, sociaux et économiques de votre projet de réhabilitation grâce à Bénéfriches"
+                        description="Vous avez un projet d'aménagement urbain ou un projet photovoltaïque sur une friche ? Calculez les impacts de votre projet grâce à la plateforme Bénéfriches !"
+                        href="https://benefriches.ademe.fr/"
                     />
                 </div>
                 <div className="fr-col-12 fr-col-lg-6">
-                    <TileCustomImage
-                        enlargeLinkOrButton
+                    <ExternalServiceTile
                         imageUrl={urbanvitalizImage}
-                        linkProps={{
-                            href: 'https://urbanvitaliz.fr/',
-                            target: '_blank',
-                            rel: 'noopener noreferrer external'
-                        }}
-                        title="Faites-vous accompagner gratuitement dans la réhabilitation des friches de votre territoire grâce à UrbanVitaliz"
-                        desc="UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que les conseillers publics (selon les territoires : DDT, DREAL, EPF...)"
-                        titleAs="h4"
-                        small
                         imageAlt="Logo de UrbanVitaliz"
+                        title="Faites-vous accompagner gratuitement dans la réhabilitation des friches de votre territoire grâce à UrbanVitaliz"
+                        description="UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que les conseillers publics (selon les territoires : DDT, DREAL, EPF...)"
+                        href="https://urbanvitaliz.fr/"
                     />
                 </div>
             </div>
