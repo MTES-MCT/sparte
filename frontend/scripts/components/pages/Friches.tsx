@@ -368,6 +368,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         <p className="fr-text--sm">
                             Les données relatives à l'artificialisation et l'imperméabilisation des friches sont issues des données OCS GE.
                         </p>
+                        <a className="fr-link fr-text--sm" href="https://cartofriches.cerema.fr/cartofriches/" target="_blank" rel="noopener noreferrer">Contribuer à la donnée sur les friches</a>
 					</div>
 				</div>
 			</div>
