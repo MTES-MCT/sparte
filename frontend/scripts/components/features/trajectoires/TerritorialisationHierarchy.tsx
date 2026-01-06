@@ -88,7 +88,7 @@ const HierarchyCard = styled(Card)<{ $isCurrent?: boolean }>`
     `}
 `;
 
-const EmptyHierarchyCard = styled(Card)`
+const EmptyHierarchyCard = styled(Card)<{ $isCurrent?: boolean }>`
     padding: 0.75rem 1rem;
     background: var(--background-alt-grey);
     border: 2px dashed var(--border-default-grey);
@@ -97,6 +97,9 @@ const EmptyHierarchyCard = styled(Card)`
     gap: 0.25rem;
     align-items: center;
     justify-content: center;
+    ${({ $isCurrent }) => $isCurrent && `
+        border: 2px solid var(--border-action-high-blue-france);
+    `}
 `;
 
 const EmptyCardLabel = styled.span`
@@ -112,40 +115,6 @@ const TerritoryName = styled.span`
     line-height: 1.3;
 `;
 
-const DocumentBadge = styled.span`
-    display: inline-block;
-    font-size: 0.625rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 2px;
-    margin-bottom: 0.5rem;
-    background: var(--background-contrast-grey);
-    color: var(--text-mention-grey);
-    width: fit-content;
-`;
-
-const DocumentLink = styled.a`
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.625rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 2px;
-    margin-bottom: 0.5rem;
-    background: var(--background-contrast-grey);
-    color: var(--text-action-high-blue-france);
-    width: fit-content;
-    text-decoration: none;
-
-    &:hover {
-        text-decoration: underline;
-        background: var(--background-alt-grey);
-    }
-`;
-
 const ObjectifValue = styled.span`
     font-size: 1rem;
     font-weight: 700;
@@ -157,6 +126,7 @@ const ObjectifLabel = styled.span`
     font-size: 0.625rem;
     color: var(--text-mention-grey);
     margin-top: 0.25rem;
+    text-align: center;
 `;
 
 const StatusBadge = styled.span<{ $status: 'success' | 'pending' | 'waiting' }>`
@@ -266,15 +236,28 @@ const NoticeText = styled.p`
     }
 `;
 
+// Item parent fictif pour la source du document de France (non affiché)
+const LOI_CLIMAT_ITEM: TerritorialisationHierarchyItem = {
+    land_id: 'LOI_CLIMAT',
+    land_type: 'LOI',
+    land_name: 'Loi Climat et Résilience',
+    objectif: 50,
+    parent_name: null,
+    nom_document: 'Loi Climat et Résilience',
+    document_url: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924',
+    document_comment: 'Article 194 de la loi n° 2021-1104 du 22 août 2021',
+    is_in_document: true,
+};
+
 const FRANCE_ITEM: TerritorialisationHierarchyItem = {
     land_id: 'NATION',
     land_type: 'NATION',
     land_name: 'France',
     objectif: 50,
     parent_name: null,
-    nom_document: 'Loi Climat et Résilience',
-    document_url: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924',
-    document_comment: 'Article 194 de la loi n° 2021-1104 du 22 août 2021',
+    nom_document: 'Arrêté du 31 mai 2024',
+    document_url: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049676333#:~:text=Pour%20tenir%20compte,p%C3%A9riode%202011%2D2021.',
+    document_comment: null,
     is_in_document: true,
 };
 
@@ -294,10 +277,10 @@ const TerritorialisationHierarchy = ({
         return null;
     }
 
-    // Ajouter France en premier si pas déjà présent
+    // Ajouter LOI_CLIMAT (non affiché) et France en premier si pas déjà présent
     const fullHierarchy = hierarchy[0]?.land_type === 'NATION'
-        ? hierarchy
-        : [FRANCE_ITEM, ...hierarchy];
+        ? [LOI_CLIMAT_ITEM, ...hierarchy]
+        : [LOI_CLIMAT_ITEM, FRANCE_ITEM, ...hierarchy];
 
     return (
         <Container>
@@ -313,20 +296,23 @@ const TerritorialisationHierarchy = ({
                     <i className="bi bi-info-circle-fill" />
                     <NoticeText>
                         <strong>{land_name}</strong> ne dispose pas d'un objectif de réduction territorialisé propre.
-                        L'objectif affiché (<strong>-{objectif}%</strong>) est celui défini par <strong>{parent_land_name}</strong>,
+                        L'objectif affiché (<strong>-{objectif}%</strong>) est celui défini pour <strong>{parent_land_name}</strong>,
                         le territoire de niveau supérieur dans la chaîne de territorialisation.
                     </NoticeText>
                 </InheritedNotice>
             )}
             <TimelineContainer>
                 {fullHierarchy.map((item, index) => {
+                    // Ne pas afficher le premier élément (LOI_CLIMAT)
+                    if (index === 0) return null;
                     // Si objectif suggéré, le dernier de la hiérarchie n'est pas le territoire actuel
                     const isLastInHierarchy = index === fullHierarchy.length - 1;
                     const isCurrent = isLastInHierarchy && !is_from_parent;
-                    const isFirst = index === 0;
+                    const isFirst = index === 1;
+                    const parentItem = fullHierarchy[index - 1];
                     return (
                         <TimelineItem key={item.land_id} $isFirst={isFirst} $isLast={isCurrent && !has_children}>
-                            {index > 0 && <Connector />}
+                            {index > 1 && <Connector />}
                             <HierarchyCard
                                 empty
                                 $isCurrent={isCurrent}
@@ -335,29 +321,17 @@ const TerritorialisationHierarchy = ({
                                 <TerritoryName>
                                     {item.land_name}
                                 </TerritoryName>
-                                {item.document_url ? (
-                                    <DocumentLink
-                                        href={item.document_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        {item.nom_document}
-                                    </DocumentLink>
-                                ) : (
-                                    <DocumentBadge>
-                                        {item.nom_document}
-                                    </DocumentBadge>
-                                )}
                                 <ObjectifValue>
                                     -{item.objectif}%
                                 </ObjectifValue>
                                 <ObjectifLabel>
-                                    objectif de réduction
+                                    objectif fixé par<br />
+                                    {parentItem.document_url ? (
+                                        <a href={parentItem.document_url} target="_blank" rel="noopener noreferrer">
+                                            {parentItem.nom_document}
+                                        </a>
+                                    ) : parentItem.nom_document}
                                 </ObjectifLabel>
-                                <StatusBadge $status={item.is_in_document ? 'success' : 'pending'}>
-                                    <i className={`bi bi-${item.is_in_document ? 'check-circle-fill' : 'hourglass-split'}`} />
-                                    {item.is_in_document ? 'Inscrit dans le document' : 'Document en révision'}
-                                </StatusBadge>
                             </HierarchyCard>
                         </TimelineItem>
                     );
@@ -367,6 +341,7 @@ const TerritorialisationHierarchy = ({
                         <Connector />
                         <EmptyHierarchyCard
                             empty
+                            $isCurrent
                             highlightBadgeIcon="bi bi-geo-alt-fill"
                         >
                             <TerritoryName>
