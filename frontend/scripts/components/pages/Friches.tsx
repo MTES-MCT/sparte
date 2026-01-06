@@ -332,8 +332,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 					</h6>
 					<div className="fr-highlight fr-highlight--no-margin">
 						<p className="fr-text--sm">
-                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches.<br />
-                            On distingue deux sources de données : les friches pré-identifiées au niveau national par le Cerema, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études. Ces contributeurs locaux à Cartofriches sont listés ici : <a href="https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux</a><br />
+                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches, et correspondent exclusivement à des friches qualifiées par le CEREMA.
+                            On distingue deux sources de données : les friches pré-identifiées au niveau national par le CEREMA, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études.<br />
+                            La liste des observatoires et contributeurs locaux à Cartofriches est disponible ici : <a href="https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux</a>
 						</p>
                         <p className="fr-text--sm">
                             <strong>
