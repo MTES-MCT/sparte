@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
                 related_name="territorialisation_objectifs",
                 to="public_data.landmodel",
                 verbose_name="Territoire",
+                db_constraint=False,
             ),
         ),
         migrations.AlterField(
@@ -39,6 +40,7 @@ class Migration(migrations.Migration):
                 related_name="territorialisation_objectifs_as_parent",
                 to="public_data.landmodel",
                 verbose_name="Parent",
+                db_constraint=False,
             ),
         ),
     ]

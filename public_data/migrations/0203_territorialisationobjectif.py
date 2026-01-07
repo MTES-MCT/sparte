@@ -6,7 +6,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("public_data", "0202_delete_similarterritories"),
+        ("public_data", "0202b_create_land_table_if_not_exists"),
     ]
 
     operations = [
@@ -25,6 +25,7 @@ class Migration(migrations.Migration):
                         related_name="territorialisation_objectifs",
                         to="public_data.landmodel",
                         verbose_name="Territoire",
+                        db_constraint=False,
                     ),
                 ),
                 (
@@ -34,6 +35,7 @@ class Migration(migrations.Migration):
                         related_name="territorialisation_objectifs_as_parent",
                         to="public_data.landmodel",
                         verbose_name="Parent",
+                        db_constraint=False,
                     ),
                 ),
             ],
