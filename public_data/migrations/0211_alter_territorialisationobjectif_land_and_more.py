@@ -11,16 +11,6 @@ class Migration(migrations.Migration):
 
     operations = [
         # Add key field to LandModel state (already exists in DB since managed=False)
-        migrations.SeparateDatabaseAndState(
-            state_operations=[
-                migrations.AddField(
-                    model_name="landmodel",
-                    name="key",
-                    field=models.TextField(unique=True),
-                ),
-            ],
-            database_operations=[],
-        ),
         migrations.AlterField(
             model_name="territorialisationobjectif",
             name="land",
