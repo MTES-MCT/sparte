@@ -11,7 +11,6 @@ from project.charts import (
     ConsoByDeterminantPieChart,
     PopulationConsoComparisonChart,
     PopulationConsoProgressionChart,
-    PopulationDensityChart,
 )
 from public_data.models import LandModel
 from utils.schema import init_unmanaged_schema_for_tests
@@ -269,29 +268,6 @@ class AnnualConsoProportionalComparisonChartTest(BaseChartTestCase):
         self.assertIn("comparison_lands", chart.params)
 
 
-class PopulationDensityChartTest(BaseChartTestCase):
-    """Tests for PopulationDensityChart."""
-
-    @patch("public_data.domain.containers.PublicDataContainer.population_progression_service")
-    def test_chart_initialization(self, mock_service):
-        """Test that population density chart initializes."""
-        # Create mock population data with at least one year
-        mock_pop_item = Mock()
-        mock_pop_item.year = 2021
-        mock_pop_item.population = 10000
-
-        mock_progression = Mock()
-        mock_progression.population = [mock_pop_item]
-        mock_service.return_value.get_by_land.return_value = mock_progression
-
-        # Add surface/area to the mock land for density calculation
-        self.mock_land.surface = 100  # hectares
-
-        chart = PopulationDensityChart(land=self.mock_land, params=self.params)
-
-        self.assertEqual(chart.land, self.mock_land)
-
-
 class PopulationConsoProgressionChartTest(BaseChartTestCase):
     """Tests for PopulationConsoProgressionChart."""
 
@@ -469,7 +445,6 @@ class ChartIntegrationTest(BaseChartTestCase):
             (ConsoByDeterminantPieChart, self.params),
             (AnnualConsoComparisonChart, params_with_comparison),
             (AnnualConsoProportionalComparisonChart, params_with_comparison),
-            (PopulationDensityChart, self.params),
             (PopulationConsoProgressionChart, self.params),
             (PopulationConsoComparisonChart, params_with_comparison),
         ]
