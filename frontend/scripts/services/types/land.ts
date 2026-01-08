@@ -132,7 +132,8 @@ export type LandDetailResultType = {
         } | null;
         children_stats: {
             total_membres: number;
-            en_depassement: number;
+            deja_depasse: number;
+            vont_depasser: number;
             en_bonne_voie: number;
             total_conso_since_2021: number;
             total_conso_max: number;

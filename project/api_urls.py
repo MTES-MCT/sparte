@@ -20,12 +20,15 @@ from project.charts import (
     ObjectiveChartExport,
     TerritorialisationAnneesRestantesMap,
     TerritorialisationConsoMap,
+    TerritorialisationDepassement2031Map,
     TerritorialisationEffortMap,
     TerritorialisationMap,
     TerritorialisationObjectifMap,
     TerritorialisationProgressMap,
+    TerritorialisationProjection2031Map,
     TerritorialisationRestanteMap,
     TerritorialisationRythmeMap,
+    TerritorialisationTauxAtteinte2031Map,
 )
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
@@ -241,6 +244,9 @@ def get_chart_klass_or_404(chart_id):
         "territorialisation_annees_restantes_map": TerritorialisationAnneesRestantesMap,
         "territorialisation_effort_map": TerritorialisationEffortMap,
         "territorialisation_rythme_map": TerritorialisationRythmeMap,
+        "territorialisation_projection_2031_map": TerritorialisationProjection2031Map,
+        "territorialisation_depassement_2031_map": TerritorialisationDepassement2031Map,
+        "territorialisation_taux_atteinte_2031_map": TerritorialisationTauxAtteinte2031Map,
         # Logement vacant charts
         "logement_vacant_progression_chart": LogementVacantProgressionChart,
         "logement_vacant_ratio_progression_chart": LogementVacantRatioProgressionChart,

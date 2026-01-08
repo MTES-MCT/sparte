@@ -206,8 +206,12 @@ class LandModel(models.Model):
 
     def _compute_children_stats(self, children_objectifs):
         """Calcule les statistiques agrégées des territoires enfants."""
+        ANNEES_ECOULEES = 3
+        ANNEES_TOTALES = 10
+
         total_membres = 0
-        en_depassement = 0
+        deja_depasse = 0
+        vont_depasser = 0
         en_bonne_voie = 0
         total_conso_since_2021 = 0
         total_conso_max = 0
@@ -226,13 +230,20 @@ class LandModel(models.Model):
             else:
                 progress = 100 if conso_since_2021 > 0 else 0
 
+            # Calculer la projection 2031
+            rythme_annuel = conso_since_2021 / ANNEES_ECOULEES if ANNEES_ECOULEES > 0 else 0
+            conso_projetee_2031 = rythme_annuel * ANNEES_TOTALES
+
             total_membres += 1
             total_conso_since_2021 += conso_since_2021
             total_conso_max += conso_max
             progressions.append(progress)
 
+            # Catégoriser le territoire
             if progress >= 100:
-                en_depassement += 1
+                deja_depasse += 1
+            elif conso_projetee_2031 > conso_max:
+                vont_depasser += 1
             else:
                 en_bonne_voie += 1
 
@@ -241,7 +252,8 @@ class LandModel(models.Model):
 
         return {
             "total_membres": total_membres,
-            "en_depassement": en_depassement,
+            "deja_depasse": deja_depasse,
+            "vont_depasser": vont_depasser,
             "en_bonne_voie": en_bonne_voie,
             "total_conso_since_2021": round(total_conso_since_2021, 2),
             "total_conso_max": round(total_conso_max, 2),

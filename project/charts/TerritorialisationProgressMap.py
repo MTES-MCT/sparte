@@ -25,6 +25,9 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
     def lands(self):
         return LandModel.objects.filter(pk__in=self.children_objectifs.values_list("land__pk", flat=True))
 
+    # Nombre d'années depuis 2021 (données jusqu'à fin 2023 = 3 ans)
+    ANNEES_ECOULEES = 3
+
     @property
     def base_data(self):
         data = []
@@ -42,6 +45,15 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
             else:
                 progress = 100 if conso_since_2021 > 0 else 0
 
+            # Calcul du rythme annuel moyen et années restantes
+            rythme_annuel = conso_since_2021 / self.ANNEES_ECOULEES if self.ANNEES_ECOULEES > 0 else 0
+            if rythme_annuel > 0 and conso_restante > 0:
+                annees_restantes = round(conso_restante / rythme_annuel, 1)
+            elif conso_restante <= 0:
+                annees_restantes = 0  # Déjà en dépassement
+            else:
+                annees_restantes = 99  # Pas de consommation = infini (plafonné)
+
             data.append(
                 {
                     "land_id": land.land_id,
@@ -51,6 +63,8 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
                     "conso_max_2021_2030": round(conso_max_2021_2030, 2),
                     "conso_restante": round(conso_restante, 2),
                     "progress": progress,
+                    "annees_restantes": annees_restantes,
+                    "rythme_annuel": round(rythme_annuel, 2),
                 }
             )
         return data
@@ -72,19 +86,41 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
 
     name = "carte de progression territorialisation"
 
+    ANNEES_TOTALES = 10
+
     @property
     def data(self):
-        return self.base_data
+        base = self.base_data
+        # Ajouter la catégorie de statut
+        for d in base:
+            rythme_annuel = d["rythme_annuel"]
+            conso_projetee_2031 = rythme_annuel * self.ANNEES_TOTALES
+            conso_max = d["conso_max_2021_2030"]
+            progress = d["progress"]
+
+            if progress >= 100:
+                d["status"] = "deja_depasse"
+                d["status_label"] = "Déjà dépassé"
+                d["status_color"] = 2  # Rouge
+            elif conso_projetee_2031 > conso_max:
+                d["status"] = "vont_depasser"
+                d["status_label"] = "Va dépasser"
+                d["status_color"] = 1  # Orange
+            else:
+                d["status"] = "en_bonne_voie"
+                d["status_label"] = "En bonne voie"
+                d["status_color"] = 0  # Vert
+        return base
 
     @property
     def data_table(self):
         return {
-            "headers": ["Territoire", "Conso. depuis 2021 (ha)", "Conso. max (ha)", "Progression (%)"],
+            "headers": ["Territoire", "Statut", "Conso. depuis 2021 (ha)", "Conso. max (ha)"],
             "boldFirstColumn": True,
             "rows": [
                 {
                     "name": d["name"],
-                    "data": [d["name"], d["conso_since_2021"], d["conso_max_2021_2030"], f"{d['progress']}%"],
+                    "data": [d["name"], d["status_label"], d["conso_since_2021"], d["conso_max_2021_2030"]],
                 }
                 for d in self.data
             ],
@@ -100,35 +136,34 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
             }
 
         data = self.data
-        en_depassement = len([d for d in data if d["progress"] >= 100])
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Progression vers l'objectif", "style": {"fontSize": "14px", "fontWeight": "600"}},
-            "subtitle": {
-                "text": f"{en_depassement} en dépassement" if en_depassement else "Tous en bonne voie",
-                "style": {"fontSize": "11px", "color": "#666"},
+            "title": {
+                "text": f"Membres de {self.land.name} : projection en 2031",
+                "style": {"fontSize": "14px", "fontWeight": "600"},
             },
             "mapNavigation": {"enabled": True},
             "legend": {
-                "title": {"text": "Consommé (%)", "style": {"fontSize": "10px", "fontWeight": "500"}},
+                "title": {"text": "Statut", "style": {"fontSize": "10px", "fontWeight": "500"}},
                 "backgroundColor": "#ffffff",
                 "align": "right",
                 "verticalAlign": "middle",
                 "layout": "vertical",
             },
             "colorAxis": {
-                "min": 0,
-                "max": 100,
-                "stops": [[0, "#4CAF50"], [0.5, "#FFC107"], [0.8, "#FF9800"], [1, "#F44336"]],
-                "labels": {"format": "{value}%"},
+                "dataClasses": [
+                    {"from": -0.5, "to": 0.5, "color": "#34D399", "name": "En bonne voie"},
+                    {"from": 0.5, "to": 1.5, "color": "#FBBF24", "name": "Vont dépasser"},
+                    {"from": 1.5, "to": 2.5, "color": "#F87171", "name": "Déjà dépassé"},
+                ],
             },
             "series": [
                 {
-                    "name": "Progression",
+                    "name": "Statut",
                     "data": data,
                     "joinBy": ["land_id"],
-                    "colorKey": "progress",
+                    "colorKey": "status_color",
                     "opacity": 1,
                     "showInLegend": False,
                     "borderColor": "#888888",
@@ -136,7 +171,7 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
                     "dataLabels": {"enabled": False},
                     "tooltip": {
                         "headerFormat": "",
-                        "pointFormat": "<b>{point.name}</b><br/>Consommé : <b>{point.conso_since_2021} ha</b> / {point.conso_max_2021_2030} ha<br/>Progression : <b>{point.progress}%</b>",  # noqa: E501
+                        "pointFormat": "<b>{point.name}</b><br/>Statut : <b>{point.status_label}</b><br/>Consommé : {point.conso_since_2021} ha / {point.conso_max_2021_2030} ha<br/>Progression : {point.progress}%<br/>Années restantes : {point.annees_restantes} ans",  # noqa: E501
                     },
                 }
             ],
@@ -288,7 +323,7 @@ class TerritorialisationRestanteMap(TerritorialisationProgressMapBase):
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Consommation restante", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "title": {"text": "Part de l'enveloppe restante", "style": {"fontSize": "14px", "fontWeight": "600"}},
             "subtitle": {"text": "Hectares disponibles jusqu'en 2030", "style": {"fontSize": "11px", "color": "#666"}},
             "mapNavigation": {"enabled": True},
             "legend": {
@@ -579,16 +614,12 @@ class TerritorialisationRythmeMap(TerritorialisationProgressMapBase):
             }
 
         data = self.data
-        au_dessus = len([d for d in data if d["ecart_rythme"] > 0])
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Écart au rythme autorisé", "style": {"fontSize": "14px", "fontWeight": "600"}},
-            "subtitle": {
-                "text": f"{au_dessus} territoires au-dessus du rythme"
-                if au_dessus
-                else "Tous sous le rythme autorisé",
-                "style": {"fontSize": "11px", "color": "#666"},
+            "title": {
+                "text": f"Écart au rythme autorisé des membres de {self.land.name}",
+                "style": {"fontSize": "14px", "fontWeight": "600"},
             },
             "mapNavigation": {"enabled": True},
             "legend": {
@@ -601,7 +632,7 @@ class TerritorialisationRythmeMap(TerritorialisationProgressMapBase):
             "colorAxis": {
                 "min": -50,
                 "max": 100,
-                "stops": [[0, "#1B5E20"], [0.33, "#81C784"], [0.5, "#FFF9C4"], [0.75, "#FF8A65"], [1, "#B71C1C"]],
+                "stops": [[0, "#1B5E20"], [0.25, "#34D399"], [0.33, "#FEE2E2"], [0.6, "#F87171"], [1, "#B71C1C"]],
                 "labels": {"format": "{value}%"},
             },
             "series": [
@@ -618,6 +649,325 @@ class TerritorialisationRythmeMap(TerritorialisationProgressMapBase):
                     "tooltip": {
                         "headerFormat": "",
                         "pointFormat": "<b>{point.name}</b><br/>Écart : <b>{point.ecart_rythme}%</b><br/>Rythme actuel : {point.rythme_actuel} ha/an<br/>Rythme autorisé : {point.rythme_autorise} ha/an",  # noqa: E501
+                    },
+                }
+            ],
+        }
+
+
+class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
+    """Carte de la consommation projetée en 2031 si le rythme actuel se maintient."""
+
+    name = "carte projection 2031 territorialisation"
+
+    ANNEES_ECOULEES = 3
+    ANNEES_TOTALES = 10  # 2021-2030
+
+    @property
+    def data(self):
+        data = []
+        for objectif in self.children_objectifs:
+            land = objectif.land
+            conso_details = land.conso_details or {}
+            conso_2011_2020 = conso_details.get("conso_2011_2020", 0) or 0
+            conso_since_2021 = conso_details.get("conso_since_2021", 0) or 0
+            objectif_reduction = float(objectif.objectif_de_reduction)
+            conso_max_2021_2030 = conso_2011_2020 * (1 - objectif_reduction / 100)
+
+            # Rythme actuel et projection
+            rythme_actuel = conso_since_2021 / self.ANNEES_ECOULEES if self.ANNEES_ECOULEES > 0 else 0
+            conso_projetee_2031 = rythme_actuel * self.ANNEES_TOTALES
+
+            data.append(
+                {
+                    "land_id": land.land_id,
+                    "name": land.name,
+                    "conso_projetee_2031": round(conso_projetee_2031, 2),
+                    "conso_max_2021_2030": round(conso_max_2021_2030, 2),
+                    "conso_since_2021": round(conso_since_2021, 2),
+                    "rythme_actuel": round(rythme_actuel, 2),
+                }
+            )
+        return data
+
+    @property
+    def data_table(self):
+        return {
+            "headers": ["Territoire", "Conso. projetée 2031 (ha)", "Conso. max (ha)", "Rythme actuel (ha/an)"],
+            "boldFirstColumn": True,
+            "rows": [
+                {
+                    "name": d["name"],
+                    "data": [d["name"], d["conso_projetee_2031"], d["conso_max_2021_2030"], d["rythme_actuel"]],
+                }
+                for d in self.data
+            ],
+        }
+
+    @property
+    def param(self):
+        if not self.has_children:
+            return super().param | {
+                "chart": {"map": None},
+                "title": {"text": "Aucun objectif territorialisé"},
+                "series": [],
+            }
+
+        data = self.data
+        max_conso = max((d["conso_projetee_2031"] for d in data), default=1)
+        en_depassement = len([d for d in data if d["conso_projetee_2031"] > d["conso_max_2021_2030"]])
+
+        return super().param | {
+            "chart": {"map": self.get_geojson()},
+            "title": {"text": "Consommation projetée 2021-2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "subtitle": {
+                "text": f"{en_depassement} territoires en dépassement projeté"
+                if en_depassement
+                else "Tous sous l'objectif en projection",
+                "style": {"fontSize": "11px", "color": "#666"},
+            },
+            "mapNavigation": {"enabled": True},
+            "legend": {
+                "title": {"text": "Hectares", "style": {"fontSize": "10px", "fontWeight": "500"}},
+                "backgroundColor": "#ffffff",
+                "align": "right",
+                "verticalAlign": "middle",
+                "layout": "vertical",
+            },
+            "colorAxis": {
+                "min": 0,
+                "max": max_conso,
+                "stops": [[0, "#E8F5E9"], [0.5, "#FFF3E0"], [0.8, "#FFCCBC"], [1, "#EF5350"]],
+                "labels": {"format": "{value} ha"},
+            },
+            "series": [
+                {
+                    "name": "Projection 2031",
+                    "data": data,
+                    "joinBy": ["land_id"],
+                    "colorKey": "conso_projetee_2031",
+                    "opacity": 1,
+                    "showInLegend": False,
+                    "borderColor": "#888888",
+                    "borderWidth": 1,
+                    "dataLabels": {"enabled": False},
+                    "tooltip": {
+                        "headerFormat": "",
+                        "pointFormat": "<b>{point.name}</b><br/>Projection 2031 : <b>{point.conso_projetee_2031} ha</b><br/>Objectif max : {point.conso_max_2021_2030} ha<br/>Rythme actuel : {point.rythme_actuel} ha/an",  # noqa: E501
+                    },
+                }
+            ],
+        }
+
+
+class TerritorialisationDepassement2031Map(TerritorialisationProgressMapBase):
+    """Carte du dépassement projeté en 2031 (écart en hectares)."""
+
+    name = "carte dépassement 2031 territorialisation"
+
+    ANNEES_ECOULEES = 3
+    ANNEES_TOTALES = 10
+
+    @property
+    def data(self):
+        data = []
+        for objectif in self.children_objectifs:
+            land = objectif.land
+            conso_details = land.conso_details or {}
+            conso_2011_2020 = conso_details.get("conso_2011_2020", 0) or 0
+            conso_since_2021 = conso_details.get("conso_since_2021", 0) or 0
+            objectif_reduction = float(objectif.objectif_de_reduction)
+            conso_max_2021_2030 = conso_2011_2020 * (1 - objectif_reduction / 100)
+
+            # Projection et dépassement
+            rythme_actuel = conso_since_2021 / self.ANNEES_ECOULEES if self.ANNEES_ECOULEES > 0 else 0
+            conso_projetee_2031 = rythme_actuel * self.ANNEES_TOTALES
+            depassement_2031 = conso_projetee_2031 - conso_max_2021_2030  # Positif = dépassement
+
+            data.append(
+                {
+                    "land_id": land.land_id,
+                    "name": land.name,
+                    "depassement_2031": round(depassement_2031, 2),
+                    "conso_projetee_2031": round(conso_projetee_2031, 2),
+                    "conso_max_2021_2030": round(conso_max_2021_2030, 2),
+                }
+            )
+        return data
+
+    @property
+    def data_table(self):
+        return {
+            "headers": ["Territoire", "Dépassement projeté (ha)", "Conso. projetée (ha)", "Conso. max (ha)"],
+            "boldFirstColumn": True,
+            "rows": [
+                {
+                    "name": d["name"],
+                    "data": [d["name"], d["depassement_2031"], d["conso_projetee_2031"], d["conso_max_2021_2030"]],
+                }
+                for d in self.data
+            ],
+        }
+
+    @property
+    def param(self):
+        if not self.has_children:
+            return super().param | {
+                "chart": {"map": None},
+                "title": {"text": "Aucun objectif territorialisé"},
+                "series": [],
+            }
+
+        data = self.data
+        max_depassement = max((d["depassement_2031"] for d in data), default=1)
+        min_depassement = min((d["depassement_2031"] for d in data), default=0)
+        en_depassement = len([d for d in data if d["depassement_2031"] > 0])
+
+        return super().param | {
+            "chart": {"map": self.get_geojson()},
+            "title": {"text": "Dépassement projeté en 2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "subtitle": {
+                "text": f"{en_depassement} territoires en dépassement"
+                if en_depassement
+                else "Aucun dépassement projeté",
+                "style": {"fontSize": "11px", "color": "#666"},
+            },
+            "mapNavigation": {"enabled": True},
+            "legend": {
+                "title": {"text": "Hectares", "style": {"fontSize": "10px", "fontWeight": "500"}},
+                "backgroundColor": "#ffffff",
+                "align": "right",
+                "verticalAlign": "middle",
+                "layout": "vertical",
+            },
+            "colorAxis": {
+                "min": min(min_depassement, -10),
+                "max": max(max_depassement, 10),
+                "stops": [[0, "#1B5E20"], [0.4, "#81C784"], [0.5, "#FFF9C4"], [0.7, "#FF8A65"], [1, "#B71C1C"]],
+                "labels": {"format": "{value} ha"},
+            },
+            "series": [
+                {
+                    "name": "Dépassement",
+                    "data": data,
+                    "joinBy": ["land_id"],
+                    "colorKey": "depassement_2031",
+                    "opacity": 1,
+                    "showInLegend": False,
+                    "borderColor": "#888888",
+                    "borderWidth": 1,
+                    "dataLabels": {"enabled": False},
+                    "tooltip": {
+                        "headerFormat": "",
+                        "pointFormat": "<b>{point.name}</b><br/>Dépassement : <b>{point.depassement_2031} ha</b><br/>Projection : {point.conso_projetee_2031} ha<br/>Objectif max : {point.conso_max_2021_2030} ha",  # noqa: E501
+                    },
+                }
+            ],
+        }
+
+
+class TerritorialisationTauxAtteinte2031Map(TerritorialisationProgressMapBase):
+    """Carte du taux d'atteinte de l'objectif projeté en 2031."""
+
+    name = "carte taux atteinte 2031 territorialisation"
+
+    ANNEES_ECOULEES = 3
+    ANNEES_TOTALES = 10
+
+    @property
+    def data(self):
+        data = []
+        for objectif in self.children_objectifs:
+            land = objectif.land
+            conso_details = land.conso_details or {}
+            conso_2011_2020 = conso_details.get("conso_2011_2020", 0) or 0
+            conso_since_2021 = conso_details.get("conso_since_2021", 0) or 0
+            objectif_reduction = float(objectif.objectif_de_reduction)
+            conso_max_2021_2030 = conso_2011_2020 * (1 - objectif_reduction / 100)
+
+            # Projection et taux d'atteinte
+            rythme_actuel = conso_since_2021 / self.ANNEES_ECOULEES if self.ANNEES_ECOULEES > 0 else 0
+            conso_projetee_2031 = rythme_actuel * self.ANNEES_TOTALES
+
+            if conso_max_2021_2030 > 0:
+                taux_atteinte = round((conso_projetee_2031 / conso_max_2021_2030) * 100, 1)
+            else:
+                taux_atteinte = 100 if conso_projetee_2031 > 0 else 0
+
+            data.append(
+                {
+                    "land_id": land.land_id,
+                    "name": land.name,
+                    "taux_atteinte": taux_atteinte,
+                    "conso_projetee_2031": round(conso_projetee_2031, 2),
+                    "conso_max_2021_2030": round(conso_max_2021_2030, 2),
+                }
+            )
+        return data
+
+    @property
+    def data_table(self):
+        return {
+            "headers": ["Territoire", "Taux d'atteinte (%)", "Conso. projetée (ha)", "Conso. max (ha)"],
+            "boldFirstColumn": True,
+            "rows": [
+                {
+                    "name": d["name"],
+                    "data": [d["name"], f"{d['taux_atteinte']}%", d["conso_projetee_2031"], d["conso_max_2021_2030"]],
+                }
+                for d in self.data
+            ],
+        }
+
+    @property
+    def param(self):
+        if not self.has_children:
+            return super().param | {
+                "chart": {"map": None},
+                "title": {"text": "Aucun objectif territorialisé"},
+                "series": [],
+            }
+
+        data = self.data
+        en_depassement = len([d for d in data if d["taux_atteinte"] > 100])
+
+        return super().param | {
+            "chart": {"map": self.get_geojson()},
+            "title": {"text": "Taux d'atteinte en 2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "subtitle": {
+                "text": f"{en_depassement} territoires dépasseront 100%"
+                if en_depassement
+                else "Tous sous 100% de l'enveloppe",
+                "style": {"fontSize": "11px", "color": "#666"},
+            },
+            "mapNavigation": {"enabled": True},
+            "legend": {
+                "title": {"text": "Atteinte (%)", "style": {"fontSize": "10px", "fontWeight": "500"}},
+                "backgroundColor": "#ffffff",
+                "align": "right",
+                "verticalAlign": "middle",
+                "layout": "vertical",
+            },
+            "colorAxis": {
+                "min": 0,
+                "max": 150,
+                "stops": [[0, "#1B5E20"], [0.33, "#81C784"], [0.53, "#FFF9C4"], [0.67, "#FF8A65"], [1, "#B71C1C"]],
+                "labels": {"format": "{value}%"},
+            },
+            "series": [
+                {
+                    "name": "Taux d'atteinte",
+                    "data": data,
+                    "joinBy": ["land_id"],
+                    "colorKey": "taux_atteinte",
+                    "opacity": 1,
+                    "showInLegend": False,
+                    "borderColor": "#888888",
+                    "borderWidth": 1,
+                    "dataLabels": {"enabled": False},
+                    "tooltip": {
+                        "headerFormat": "",
+                        "pointFormat": "<b>{point.name}</b><br/>Taux d'atteinte : <b>{point.taux_atteinte}%</b><br/>Projection : {point.conso_projetee_2031} ha<br/>Objectif max : {point.conso_max_2021_2030} ha",  # noqa: E501
                     },
                 }
             ],

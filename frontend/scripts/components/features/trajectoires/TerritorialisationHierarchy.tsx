@@ -47,6 +47,7 @@ const Subtitle = styled.p`
 const TimelineContainer = styled.div`
     display: flex;
     align-items: stretch;
+    justify-content: flex-start;
     gap: 0;
     padding: 0.5rem 0;
     overflow-x: auto;
@@ -58,11 +59,13 @@ const TimelineItem = styled.div<{ $isFirst: boolean; $isLast: boolean }>`
     flex-shrink: 0;
 `;
 
-const Connector = styled.div`
+const Connector = styled.div<{ $invisible?: boolean }>`
     width: 32px;
     height: 2px;
-    background: var(--border-default-grey);
+    background: ${props => props.$invisible ? 'transparent' : 'var(--border-default-grey)'};
     position: relative;
+    align-self: center;
+    flex-shrink: 0;
 
     &::after {
         content: '';
@@ -72,84 +75,108 @@ const Connector = styled.div`
         transform: translateY(-50%);
         width: 0;
         height: 0;
-        border-left: 6px solid var(--border-default-grey);
+        border-left: 6px solid ${props => props.$invisible ? 'transparent' : 'var(--border-default-grey)'};
         border-top: 4px solid transparent;
         border-bottom: 4px solid transparent;
     }
 `;
 
 const HierarchyCard = styled(Card)<{ $isCurrent?: boolean }>`
-    padding: 0.75rem 1rem;
+    padding: 1rem 0.75rem;
     background: var(--background-default-grey);
     border: 1px solid var(--border-default-grey);
-    gap: 0.25rem;
+    gap: 0.35rem;
+    width: 195px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
     ${({ $isCurrent }) => $isCurrent && `
         border: 2px solid var(--border-action-high-blue-france);
     `}
 `;
 
 const EmptyHierarchyCard = styled(Card)<{ $isCurrent?: boolean }>`
-    padding: 0.75rem 1rem;
+    padding: 1rem 0.75rem;
     background: var(--background-alt-grey);
     border: 2px dashed var(--border-default-grey);
-    min-width: 120px;
+    width: 195px;
     align-self: stretch;
-    gap: 0.25rem;
+    gap: 0.35rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
     ${({ $isCurrent }) => $isCurrent && `
         border: 2px solid var(--border-action-high-blue-france);
     `}
 `;
 
 const EmptyCardLabel = styled.span`
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     color: var(--text-mention-grey);
     text-align: center;
 `;
 
 const TerritoryName = styled.span`
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.25rem;
     line-height: 1.3;
+    word-wrap: break-word;
+    text-align: center;
 `;
 
 const ObjectifValue = styled.span`
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-action-high-blue-france);
     line-height: 1;
 `;
 
 const ObjectifLabel = styled.span`
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     color: var(--text-mention-grey);
-    margin-top: 0.25rem;
+    margin-top: auto;
     text-align: center;
+    word-wrap: break-word;
+`;
+
+const SourceText = styled.span`
+    font-size: 0.7rem;
+    color: var(--text-mention-grey);
+`;
+
+const ObjectifFooter = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
 `;
 
 const StatusBadge = styled.span<{ $status: 'success' | 'pending' | 'waiting' }>`
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     font-weight: 500;
-    padding: 2px 6px;
-    border-radius: 2px;
-    margin-top: 0.5rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 0.5rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
     background: ${props => {
         switch (props.$status) {
             case 'success': return 'var(--background-contrast-success)';
             case 'pending': return 'var(--background-contrast-warning)';
-            case 'waiting': return 'var(--background-contrast-grey)';
+            case 'waiting': return 'var(--background-contrast-warning)';
         }
     }};
     color: ${props => {
         switch (props.$status) {
             case 'success': return 'var(--text-default-success)';
             case 'pending': return 'var(--text-default-warning)';
-            case 'waiting': return 'var(--text-mention-grey)';
+            case 'waiting': return 'var(--text-default-warning)';
         }
     }};
     width: fit-content;
@@ -212,13 +239,13 @@ const InheritedNotice = styled.div`
     align-items: flex-start;
     gap: 0.75rem;
     padding: 1rem;
-    background: var(--background-contrast-info);
-    border-left: 3px solid var(--border-plain-info);
+    background: var(--background-contrast-error);
+    border-left: 3px solid var(--border-plain-error);
     border-radius: 0 4px 4px 0;
     margin-bottom: 1rem;
 
     i {
-        color: var(--text-default-info);
+        color: var(--text-default-error);
         font-size: 1rem;
         flex-shrink: 0;
         margin-top: 2px;
@@ -255,7 +282,7 @@ const FRANCE_ITEM: TerritorialisationHierarchyItem = {
     land_name: 'France',
     objectif: 50,
     parent_name: null,
-    nom_document: 'Arrêté du 31 mai 2024',
+    nom_document: 'Arrêté du 31/05/2024',
     document_url: 'https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049676333#:~:text=Pour%20tenir%20compte,p%C3%A9riode%202011%2D2021.',
     document_comment: null,
     is_in_document: true,
@@ -311,9 +338,10 @@ const TerritorialisationHierarchy = ({
                     const isFirst = index === 1;
                     const parentItem = fullHierarchy[index - 1];
                     return (
-                        <TimelineItem key={item.land_id} $isFirst={isFirst} $isLast={isCurrent && !has_children}>
+                        <React.Fragment key={item.land_id}>
                             {index > 1 && <Connector />}
-                            <HierarchyCard
+                            <TimelineItem $isFirst={isFirst} $isLast={isCurrent && !has_children}>
+                                <HierarchyCard
                                 empty
                                 $isCurrent={isCurrent}
                                 highlightBadgeIcon="bi bi-geo-alt-fill"
@@ -325,21 +353,28 @@ const TerritorialisationHierarchy = ({
                                     -{item.objectif}%
                                 </ObjectifValue>
                                 <ObjectifLabel>
-                                    objectif fixé par<br />
-                                    {parentItem.document_url ? (
-                                        <a href={parentItem.document_url} target="_blank" rel="noopener noreferrer">
-                                            {parentItem.nom_document}
-                                        </a>
-                                    ) : parentItem.nom_document}
+                                    <StatusBadge $status="success">
+                                        <i className="bi bi-check-circle-fill" /> objectif fixé
+                                    </StatusBadge>
+                                    <br />
+                                    <SourceText>
+                                        par {parentItem.document_url ? (
+                                            <a href={parentItem.document_url} target="_blank" rel="noopener noreferrer">
+                                                {parentItem.nom_document}
+                                            </a>
+                                        ) : parentItem.nom_document}
+                                    </SourceText>
                                 </ObjectifLabel>
                             </HierarchyCard>
-                        </TimelineItem>
+                            </TimelineItem>
+                        </React.Fragment>
                     );
                 })}
                 {is_from_parent && (
-                    <TimelineItem $isFirst={false} $isLast={!has_children}>
+                    <>
                         <Connector />
-                        <EmptyHierarchyCard
+                        <TimelineItem $isFirst={false} $isLast={!has_children}>
+                            <EmptyHierarchyCard
                             empty
                             $isCurrent
                             highlightBadgeIcon="bi bi-geo-alt-fill"
@@ -347,32 +382,33 @@ const TerritorialisationHierarchy = ({
                             <TerritoryName>
                                 {land_name}
                             </TerritoryName>
-                            <EmptyCardLabel>
-                                Objectif non défini
-                            </EmptyCardLabel>
-                            <StatusBadge $status="waiting">
-                                <i className="bi bi-clock" />
-                                En attente
-                            </StatusBadge>
-                        </EmptyHierarchyCard>
-                    </TimelineItem>
+                            <ObjectifLabel>
+                                <StatusBadge $status="waiting">
+                                    <i className="bi bi-clock" /> en attente
+                                </StatusBadge>
+                            </ObjectifLabel>
+                            </EmptyHierarchyCard>
+                        </TimelineItem>
+                    </>
                 )}
                 {has_children && (
-                    <TimelineItem $isFirst={false} $isLast={false}>
+                    <>
                         <Connector />
-                        <ChildrenCard
-                            $isExpanded={showMap}
-                            onClick={() => setShowMap(!showMap)}
-                        >
-                            <ChildrenIcon>
-                                <i className={`bi bi-diagram-3${showMap ? '-fill' : ''}`} />
-                            </ChildrenIcon>
-                            <ChildrenLabel>Membres</ChildrenLabel>
-                            <button className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-1v">
-                                {showMap ? 'Masquer la carte' : 'Voir la carte'}
-                            </button>
-                        </ChildrenCard>
-                    </TimelineItem>
+                        <TimelineItem $isFirst={false} $isLast={false}>
+                            <ChildrenCard
+                                $isExpanded={showMap}
+                                onClick={() => setShowMap(!showMap)}
+                            >
+                                <ChildrenIcon>
+                                    <i className={`bi bi-diagram-3${showMap ? '-fill' : ''}`} />
+                                </ChildrenIcon>
+                                <ChildrenLabel>Membres</ChildrenLabel>
+                                <button className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-1v">
+                                    {showMap ? 'Masquer la carte' : 'Voir la carte'}
+                                </button>
+                            </ChildrenCard>
+                        </TimelineItem>
+                    </>
                 )}
             </TimelineContainer>
 
