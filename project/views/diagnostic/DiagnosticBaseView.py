@@ -2,10 +2,9 @@ from django.conf import settings
 from django.views.generic import DetailView
 
 from project.models import Project
-from project.views.mixins import ReactMixin
 
 
-class DiagnosticBaseView(ReactMixin, DetailView):
+class DiagnosticBaseView(DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
 

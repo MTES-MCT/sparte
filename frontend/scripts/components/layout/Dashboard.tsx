@@ -212,7 +212,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <RapportLocal endpoint={urls.rapportLocal} projectData={projectData} />
+                                                <RapportLocal projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />
