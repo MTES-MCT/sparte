@@ -61,7 +61,6 @@ export type ProjectDetailResultType = {
     trajectoires: string;
     consommation: string;
     logementVacant: string;
-    update: string;
     dowloadConsoReport: string;
     downloadFullReport: string;
     dowloadLocalReport: string;
