@@ -242,6 +242,7 @@ const InheritedNotice = styled.div`
     background: var(--background-contrast-error);
     border-left: 3px solid var(--border-plain-error);
     border-radius: 0 4px 4px 0;
+    margin-top: 1rem;
     margin-bottom: 1rem;
 
     i {
@@ -318,16 +319,6 @@ const TerritorialisationHierarchy = ({
             <Subtitle>
                 Pour {land_name}, la mise en œuvre des objectifs de réduction de la consommation d'espaces NAF s'appuie sur les documents de planification territoriale suivants :
             </Subtitle>
-            {is_from_parent && parent_land_name && objectif !== null && (
-                <InheritedNotice>
-                    <i className="bi bi-info-circle-fill" />
-                    <NoticeText>
-                        <strong>{land_name}</strong> ne dispose pas d'un objectif de réduction territorialisé propre.
-                        L'objectif affiché (<strong>-{objectif}%</strong>) est celui défini pour <strong>{parent_land_name}</strong>,
-                        le territoire de niveau supérieur dans la chaîne de territorialisation.
-                    </NoticeText>
-                </InheritedNotice>
-            )}
             <TimelineContainer>
                 {fullHierarchy.map((item, index) => {
                     // Ne pas afficher le premier élément (LOI_CLIMAT)
@@ -411,6 +402,17 @@ const TerritorialisationHierarchy = ({
                     </>
                 )}
             </TimelineContainer>
+
+            {is_from_parent && parent_land_name && objectif !== null && (
+                <InheritedNotice>
+                    <i className="bi bi-info-circle-fill" />
+                    <NoticeText>
+                        <strong>{land_name}</strong> ne dispose pas d'un objectif de réduction territorialisé propre.
+                        L'objectif affiché (<strong>-{objectif}%</strong>) est celui défini pour <strong>{parent_land_name}</strong>,
+                        le territoire de niveau supérieur dans la chaîne de territorialisation.
+                    </NoticeText>
+                </InheritedNotice>
+            )}
 
             {has_children && (
                 <MapSection $isVisible={showMap}>

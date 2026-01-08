@@ -319,17 +319,6 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             </div>
 
                             <PeriodTitle>Période de réduction : 2021 - 2031</PeriodTitle>
-                            <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
-                                {has_territorialisation ? (
-                                    <>
-                                        Votre territoire doit réduire sa consommation d'espaces de <strong>{objectif_reduction}%</strong> par rapport à 2011-2020.
-                                    </>
-                                ) : (
-                                    <>
-                                        En l'absence d'objectif territorialisé, la trajectoire nationale de <strong>-50%</strong> sert de référence.
-                                    </>
-                                )}
-                            </p>
                             <div className="fr-grid-row fr-grid-row--gutters">
                                 <div className="fr-col-12 fr-col-md-6">
                                     <ObjectifCard
@@ -405,7 +394,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                     <div className="fr-col-12 fr-col-lg-3">
                         <GuideContent title="Comprendre les objectifs" column>
                             <p>
-                                <strong>{objectifLabel}</strong> : c'est l'enveloppe maximale de consommation d'espaces que votre territoire peut utiliser entre 2021 et 2030.
+                                <strong>{objectifLabel}</strong> : c'est l'enveloppe maximale de consommation d'espaces que le territoire peut utiliser entre 2021 et 2030.
                                 Elle est calculée en appliquant une réduction de <strong>{objectif_reduction}%</strong> à la consommation de référence (2011-2020).
                             </p>
                             {has_territorialisation && !is_from_parent && (
@@ -433,8 +422,8 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             )}
                             {has_territorialisation && is_from_parent && (
                                 <p>
-                                    Cet objectif reprend celui du territoire parent <strong>{territorialisation?.parent_land_name}</strong>,
-                                    car {name} ne dispose pas encore d'un objectif territorialisé propre.
+                                    Cet objectif reprend celui de l'échelon supérieur <strong>{territorialisation?.parent_land_name}</strong>,
+                                    car {name} ne dispose pas encore d'un objectif territorialisé propre.  Il est fourni à titre indicatif et n'a donc pas de valeur réglementaire."
                                 </p>
                             )}
                             {!has_territorialisation && (
@@ -445,7 +434,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             )}
                             <p>
                                 <strong>Objectif personnalisé</strong> : permet de simuler différents scénarios de réduction pour anticiper
-                                les besoins de votre territoire. Cette simulation n'a pas de valeur réglementaire.
+                                les besoins du territoire. Cette simulation n'a pas de valeur réglementaire.
                             </p>
                         </GuideContent>
                     </div>
