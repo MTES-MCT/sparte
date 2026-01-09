@@ -36,7 +36,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
     context_object_name = "projects"  # override to add an "s"
 
     def get_queryset(self):
-        return Project.objects.filter(user=self.request.user)
+        return Project.objects.filter(user=self.request.user).prefetch_related("report_drafts")
 
 
 class SplashScreenView(GroupMixin, DetailView):
