@@ -16,13 +16,11 @@ from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
 from project.models.enums import ProjectChangeReason
-from public_data.exceptions import LandException
 from public_data.models import (
     AdminRef,
     ArtifZonage,
     Departement,
     Epci,
-    Land,
     LandModel,
     Region,
     Scot,
@@ -66,7 +64,7 @@ class BaseProject(models.Model):
 
     @cached_property
     def combined_emprise(self) -> MultiPolygon:
-        return self.land.mpoly
+        return self.land_model.geom
 
     def __str__(self):
         return self.name
@@ -144,7 +142,7 @@ class Project(BaseProject):
 
     @property
     def cities(self) -> QuerySet[Commune]:
-        return self.land_proxy.get_cities()
+        return self.land.get_cities()
 
     comparison_lands = models.JSONField(
         "Territoires de comparaison",
@@ -294,13 +292,14 @@ class Project(BaseProject):
         ]
 
     def get_comparison_lands_as_land_objects(self):
-        """Retourne les territoires de comparaison comme objets Land"""
+        """DEPRECATED: Use comparison_land_models_and_self() instead.
+        Retourne les territoires de comparaison comme objets LandModel."""
         lands = []
         for item in self.comparison_lands or []:
             try:
-                public_key = f"{item['land_type']}_{item['land_id']}"
-                lands.append(Land(public_key))
-            except (LandException, KeyError):
+                land = LandModel.objects.get(land_type=item["land_type"], land_id=item["land_id"])
+                lands.append(land)
+            except (LandModel.DoesNotExist, KeyError):
                 continue
         return sorted(lands, key=lambda x: x.name)
 
@@ -376,11 +375,9 @@ class Project(BaseProject):
 
     @cached_property
     def land(self) -> Commune | Departement | Epci | Region | Scot:
-        return Land(self.get_public_key()).land
-
-    @property
-    def land_proxy(self) -> Land:
-        return Land(self.get_public_key())
+        """DEPRECATED: Use land_model instead where possible.
+        Returns the underlying administrative model instance."""
+        return AdminRef.get_class(self.land_type).objects.get_by_natural_key(self.land_id, self.land_type)
 
     @property
     def land_model(self) -> LandModel:
@@ -436,9 +433,10 @@ class Project(BaseProject):
         """
         return (self.get_arbitrary_comparison_lands() or self.get_neighbors()).order_by("name")[:limit]
 
-    def comparison_lands_and_self_land(self) -> list[Land]:
+    def comparison_lands_and_self_land(self) -> list[LandModel]:
+        """DEPRECATED: Use comparison_land_models_and_self() instead."""
         comparison_lands = self.get_comparison_lands_as_land_objects()
-        return [self.land_proxy] + comparison_lands
+        return [self.land_model] + comparison_lands
 
     def comparison_land_models_and_self(self) -> list[LandModel]:
         """Return comparison lands and self land as LandModel objects"""

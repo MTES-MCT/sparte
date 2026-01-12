@@ -12,7 +12,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_gis import filters
 
 from public_data import models, serializers
-from public_data.models.administration import Land
+from public_data.models.administration import LandModel
 from public_data.throttles import SearchLandApiThrottle
 from utils.functions import decimal2float
 
@@ -216,7 +216,7 @@ class SearchLandApiView(GenericViewSet):
         serializer.is_valid(raise_exception=True)
         needle = serializer.validated_data["needle"]
 
-        results = Land.search(needle, search_for="*")
+        results = LandModel.search(needle, search_for="*")
         output = serializers.LandSerializer(results, many=True).data
 
         return Response(data=output)

@@ -1,10 +1,14 @@
 from django.contrib.gis.db.models import MultiPolygonField
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.search import TrigramSimilarity
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control, cache_page
 from rest_framework import serializers, viewsets
 from rest_framework.response import Response
+
+from .AdminRef import AdminRef
 
 
 class LandModelManager(models.Manager):
@@ -260,6 +264,83 @@ class LandModel(models.Model):
             "progression_moyenne": round(progression_moyenne, 1),
             "progression_globale": round(progression_globale, 1),
         }
+
+    @classmethod
+    def search(cls, needle, search_for=None):
+        """
+        Search for territories by name or land_id using trigram similarity.
+
+        Args:
+            needle: The search term
+            search_for: Optional list of land_types to filter by, or "*" for all
+
+        Returns:
+            QuerySet of LandModel instances ordered by similarity
+        """
+        if not needle:
+            return cls.objects.none()
+
+        # Determine which land types to search for
+        valid_land_types = [
+            AdminRef.COMMUNE,
+            AdminRef.EPCI,
+            AdminRef.SCOT,
+            AdminRef.DEPARTEMENT,
+            AdminRef.REGION,
+            AdminRef.NATION,
+            AdminRef.CUSTOM,
+        ]
+
+        if search_for and search_for != "*":
+            if isinstance(search_for, str):
+                search_for = [search_for]
+            valid_land_types = [lt for lt in valid_land_types if lt in search_for]
+
+        # Search by land_id if needle is numeric (INSEE code), otherwise by name
+        if needle.isdigit():
+            qs = cls.objects.annotate(similarity=TrigramSimilarity("land_id", needle))
+            similarity_threshold = 0.2
+        else:
+            qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
+            similarity_threshold = 0.15
+
+        # Filter by land types and similarity threshold
+        qs = qs.filter(
+            land_type__in=valid_land_types,
+            similarity__gt=similarity_threshold,
+        )
+
+        # Order by similarity descending
+        qs = qs.order_by("-similarity")
+
+        # Limit to 20 results
+        return qs[:20]
+
+    # -------------------------------------------------------------------------
+    # DEPRECATED: Compatibility properties for Land search migration
+    # These properties exist to maintain compatibility with LandSerializer
+    # which was originally designed to work with the Land class.
+    # See public_data/models/administration/Land.py for the original implementation.
+    # -------------------------------------------------------------------------
+
+    @property
+    def land_type_label(self):
+        """DEPRECATED: Use AdminRef.get_label(land_type) instead."""
+        return AdminRef.CHOICES_DICT.get(self.land_type, self.land_type)
+
+    @property
+    def public_key(self):
+        """DEPRECATED: Use 'key' field instead."""
+        return self.key
+
+    @property
+    def area(self):
+        """DEPRECATED: Use 'surface' field instead."""
+        return self.surface
+
+    def get_official_id(self):
+        """DEPRECATED: Use 'land_id' field instead."""
+        return self.land_id
 
 
 class LandModelSerializer(serializers.ModelSerializer):

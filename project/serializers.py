@@ -134,7 +134,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
         }
 
     def get_departements(self, obj):
-        return obj.land.get_departements()
+        return obj.land_model.departements
 
     def get_bounds(self, obj):
         return obj.combined_emprise.extent
