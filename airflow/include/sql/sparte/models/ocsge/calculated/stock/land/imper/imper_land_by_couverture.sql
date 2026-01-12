@@ -38,3 +38,7 @@ union all
 select
     code as land_id, '{{ var("SCOT") }}' as land_type, {{ common_fields }}
 from {{ ref("imper_scot_by_couverture") }}
+union all
+select
+    code as land_id, '{{ var("CUSTOM") }}' as land_type, {{ common_fields }}
+from {{ ref("imper_custom_land_by_couverture") }}

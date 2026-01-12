@@ -5,7 +5,7 @@ models:
         description: A unique identifier for the geographical entity being analyzed, such as a commune, EPCI, department, region, or SCOT. This column is used to distinguish between different land areas.
         data_type: text
       - name: land_type
-        description: Specifies the type of geographical entity represented by the land_id. Possible values include 'COMM' for commune, 'EPCI' for intercommunal structure, 'DEPART' for department, 'REGION' for region, and 'SCOT' for territorial coherence scheme.
+        description: Specifies the type of geographical entity represented by the land_id. Possible values include 'COMM' for commune, 'EPCI' for intercommunal structure, 'DEPART' for department, 'REGION' for region, 'SCOT' for territorial coherence scheme, and 'CUSTOM' for custom territory.
         data_type: text
       - name: year
         description: The year for which the data is recorded. This column helps in tracking changes and trends over time for the specified land_id and land_type.

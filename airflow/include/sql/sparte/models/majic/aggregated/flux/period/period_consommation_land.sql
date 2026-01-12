@@ -64,3 +64,10 @@ SELECT
     scot_surface as land_surface,
     {{ common_fields }}
 FROM {{ ref('period_consommation_scot') }}
+UNION ALL
+SELECT
+    custom_land as land_id,
+    '{{ var("CUSTOM") }}' as land_type,
+    custom_land_surface as land_surface,
+    {{ common_fields }}
+FROM {{ ref('period_consommation_custom_land') }}

@@ -126,4 +126,38 @@ LEFT JOIN
     {{ ref('scot') }} as scot
     ON flux.scot = scot.id_scot
 
+UNION ALL
+
+-- CUSTOM density
+SELECT
+    flux.custom_land_code as land_id,
+    '{{ var('CUSTOM') }}' as land_type,
+    flux.year,
+    flux.population,
+    custom_land_surface.surface,
+    CASE
+        WHEN custom_land_surface.surface > 0 THEN ROUND((flux.population::numeric / (custom_land_surface.surface::numeric / 10000)), 2)
+        ELSE 0
+    END as density_ha,
+    CASE
+        WHEN custom_land_surface.surface > 0 THEN ROUND((flux.population::numeric / (custom_land_surface.surface::numeric / 1000000)), 2)
+        ELSE 0
+    END as density_km2
+FROM
+    {{ ref('flux_population_custom_land') }} as flux
+LEFT JOIN
+    (
+        SELECT
+            clc.custom_land_id,
+            SUM(commune.surface) as surface
+        FROM
+            {{ ref('commune_custom_land') }} as clc
+        LEFT JOIN
+            {{ ref('commune') }} as commune
+            ON clc.commune_code = commune.code
+        GROUP BY
+            clc.custom_land_id
+    ) as custom_land_surface
+    ON flux.custom_land_code = custom_land_surface.custom_land_id
+
 ORDER BY density_km2 DESC

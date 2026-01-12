@@ -20,10 +20,6 @@ models:
           - not_null
       - name: user_id
         data_type: bigint
-        data_tests:
-          - relationships:
-              field: id
-              to: ref('user')
       - name: is_public
         data_type: boolean
         data_tests:

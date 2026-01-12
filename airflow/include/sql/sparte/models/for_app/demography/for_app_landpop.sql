@@ -47,3 +47,10 @@ select
     {{ fields_to_query }}
 from
     {{ ref('flux_population_scot') }}
+union
+select
+    custom_land_code as land_id,
+    '{{ var('CUSTOM') }}' as land_type,
+    {{ fields_to_query }}
+from
+    {{ ref('flux_population_custom_land') }}

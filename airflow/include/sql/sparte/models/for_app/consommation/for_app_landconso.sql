@@ -52,3 +52,10 @@ select
     {{ fields_to_query }}
 from
     {{ ref('flux_consommation_scot') }}
+union
+select
+    custom_land as land_id,
+    '{{ var('CUSTOM') }}' as land_type,
+    {{ fields_to_query }}
+from
+    {{ ref('flux_consommation_custom_land') }}

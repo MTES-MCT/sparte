@@ -1,0 +1,15 @@
+models:
+  - name: commune_custom_land
+    columns:
+      - name: custom_land_id
+        data_type: text
+        data_tests:
+          - not_null
+      - name: commune_code
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: custom_land_name
+        data_type: text
+        data_tests:
+          - not_null

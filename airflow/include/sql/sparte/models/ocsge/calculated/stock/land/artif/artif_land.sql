@@ -45,6 +45,13 @@ SELECT
     {{ common_fields }}
 FROM
     {{ ref("artif_region") }}
+UNION ALL
+SELECT
+    code as land_id,
+    '{{ var("CUSTOM") }}' as land_type,
+    {{ common_fields }}
+FROM
+    {{ ref("artif_custom_land") }}
 )
 SELECT
     land_id,
