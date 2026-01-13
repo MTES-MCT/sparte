@@ -58,7 +58,6 @@ from project.charts.demography.PopulationConsoComparisonChart import (
 from project.charts.demography.PopulationConsoProgressionChart import (
     PopulationConsoProgressionChart,
 )
-from project.charts.demography.PopulationDensityChart import PopulationDensityChart
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
     ImperByCouverturePieChartExport,
@@ -193,7 +192,6 @@ def get_chart_klass_or_404(chart_id):
         "comparison_chart_export": AnnualConsoComparisonChartExport,
         "surface_proportional_chart": AnnualConsoProportionalComparisonChart,
         "surface_proportional_chart_export": AnnualConsoProportionalComparisonChartExport,
-        "population_density_chart": PopulationDensityChart,
         "population_conso_progression_chart": PopulationConsoProgressionChart,
         "population_conso_comparison_chart": PopulationConsoComparisonChart,
         # Objective chart

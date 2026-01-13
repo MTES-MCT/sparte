@@ -17,7 +17,6 @@ __all__ = [
     "FricheZoneActiviteChart",
     "ObjectiveChart",
     "ObjectiveChartExport",
-    "PopulationDensityChart",
     "PopulationConsoProgressionChart",
     "PopulationConsoComparisonChart",
     "LogementVacantAutorisationLogementComparisonChart",
@@ -78,7 +77,6 @@ from .consommation.AnnualConsoProportionalComparisonChart import (
 )
 from .demography.PopulationConsoComparisonChart import PopulationConsoComparisonChart
 from .demography.PopulationConsoProgressionChart import PopulationConsoProgressionChart
-from .demography.PopulationDensityChart import PopulationDensityChart
 from .impermeabilisation import (
     ImperByCouverturePieChart,
     ImperByCouverturePieChartExport,

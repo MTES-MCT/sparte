@@ -55,18 +55,6 @@ class GroupMixin(UserQuerysetOrPublicMixin, BreadCrumbMixin):
         return breadcrumbs
 
 
-class ReactMixin:
-    partial_template_name = ""
-    full_template_name = ""
-
-    def get_template_names(self):
-        if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            if not self.partial_template_name:
-                raise ValueError("Partial template name must be defined.")
-            return [self.partial_template_name]
-        return [self.full_template_name]
-
-
 class PeriodValidationMixin:
     def clean(self):
         cleaned_data = super().clean()
