@@ -4,6 +4,7 @@ from django.core.serializers import serialize
 
 from project.charts.base_project_chart import DiagnosticChart
 from public_data.models import LandModel
+from public_data.models.administration import AdminRef
 from public_data.models.territorialisation import TerritorialisationObjectif
 
 
@@ -13,6 +14,33 @@ class TerritorialisationMap(DiagnosticChart):
     """
 
     name = "carte de territorialisation"
+
+    PLURAL_LABELS = {
+        AdminRef.COMMUNE: "Communes",
+        AdminRef.EPCI: "EPCIs",
+        AdminRef.SCOT: "SCoTs",
+        AdminRef.DEPARTEMENT: "Départements",
+        AdminRef.REGION: "Régions",
+    }
+
+    def get_children_land_types_label(self):
+        """Retourne les types de territoires enfants formatés (ex: 'SCoTs et EPCIs')."""
+        land_types = list(
+            set(obj.land.land_type for obj in self.children_objectifs if obj.land.land_type != AdminRef.CUSTOM)
+        )
+        labels = [self.PLURAL_LABELS.get(lt, AdminRef.get_label(lt)) for lt in land_types]
+        if len(labels) == 0:
+            return ""
+        if len(labels) == 1:
+            return labels[0]
+        return " et ".join([", ".join(labels[:-1]), labels[-1]])
+
+    def get_document_name(self):
+        """Retourne le nom du document du territoire parent."""
+        objectif = self.land.territorialisation_objectifs.first()
+        if objectif:
+            return objectif.nom_document
+        return ""
 
     @property
     def children_objectifs(self):
@@ -119,7 +147,7 @@ class TerritorialisationMap(DiagnosticChart):
                 "map": json.loads(geojson),
             },
             "title": {
-                "text": f"Objectifs territorialisés de réduction de la consommation d'espaces NAF des territoires de {self.land.name}",  # noqa
+                "text": f"Objectifs de réduction de la consommation d'espaces NAF des {self.get_children_land_types_label()} territorialisés dans le {self.get_document_name()} de {self.land.name}",  # noqa
                 "style": {"fontSize": "16px", "fontWeight": "600"},
             },
             "subtitle": {

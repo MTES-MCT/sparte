@@ -54,6 +54,17 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
             else:
                 annees_restantes = 99  # Pas de consommation = infini (plafonné)
 
+            # Année de dépassement prévue (2023 = dernière année de données réelles)
+            # Seulement si le dépassement est prévu avant 2031 (fin de la période)
+            if 0 < annees_restantes < 99:
+                annee_depassement = 2023 + int(annees_restantes) + 1
+                if annee_depassement < 2031:
+                    depassement_text = f"(soit un dépassement prévu en {annee_depassement})"
+                else:
+                    depassement_text = ""
+            else:
+                depassement_text = ""
+
             data.append(
                 {
                     "land_id": land.land_id,
@@ -64,6 +75,7 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
                     "conso_restante": round(conso_restante, 2),
                     "progress": progress,
                     "annees_restantes": annees_restantes,
+                    "depassement_text": depassement_text,
                     "rythme_annuel": round(rythme_annuel, 2),
                 }
             )
@@ -154,7 +166,7 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
             "colorAxis": {
                 "dataClasses": [
                     {"from": -0.5, "to": 0.5, "color": "#34D399", "name": "En bonne voie"},
-                    {"from": 0.5, "to": 1.5, "color": "#FBBF24", "name": "Vont dépasser"},
+                    {"from": 0.5, "to": 1.5, "color": "#FBBF24", "name": "Risque de dépassement"},
                     {"from": 1.5, "to": 2.5, "color": "#F87171", "name": "Déjà dépassé"},
                 ],
             },
@@ -171,7 +183,7 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
                     "dataLabels": {"enabled": False},
                     "tooltip": {
                         "headerFormat": "",
-                        "pointFormat": "<b>{point.name}</b><br/>Statut : <b>{point.status_label}</b><br/>Consommé : {point.conso_since_2021} ha / {point.conso_max_2021_2030} ha<br/>Progression : {point.progress}%<br/>Années restantes : {point.annees_restantes} ans",  # noqa: E501
+                        "pointFormat": "<b>{point.name}</b><br/>Statut : <b>{point.status_label}</b><br/>Consommé : {point.conso_since_2021} ha / {point.conso_max_2021_2030} ha<br/>Progression : {point.progress}%<br/>Années restantes : {point.annees_restantes} ans {point.depassement_text}",  # noqa: E501
                     },
                 }
             ],
@@ -336,7 +348,7 @@ class TerritorialisationRestanteMap(TerritorialisationProgressMapBase):
             "colorAxis": {
                 "min": 0,
                 "max": max_restante,
-                "stops": [[0, "#FFEBEE"], [0.3, "#FFCDD2"], [0.6, "#81C784"], [1, "#2E7D32"]],
+                "stops": [[0, "#DC2626"], [0.01, "#FFFFFF"], [1, "#064E3B"]],
                 "labels": {"format": "{value} ha"},
             },
             "series": [
@@ -391,11 +403,23 @@ class TerritorialisationAnneesRestantesMap(TerritorialisationProgressMapBase):
             else:
                 annees_restantes = 99  # Pas de consommation = infini (plafonné)
 
+            # Année de dépassement prévue (2023 = dernière année de données réelles)
+            # Seulement si le dépassement est prévu avant 2031 (fin de la période)
+            if 0 < annees_restantes < 99:
+                annee_depassement = 2023 + int(annees_restantes) + 1
+                if annee_depassement < 2031:
+                    depassement_text = f"(soit un dépassement prévu en {annee_depassement})"
+                else:
+                    depassement_text = ""
+            else:
+                depassement_text = ""
+
             data.append(
                 {
                     "land_id": land.land_id,
                     "name": land.name,
                     "annees_restantes": annees_restantes,
+                    "depassement_text": depassement_text,
                     "rythme_annuel": round(rythme_annuel, 2),
                     "conso_restante": round(conso_restante, 2),
                     "conso_since_2021": round(conso_since_2021, 2),
@@ -451,7 +475,7 @@ class TerritorialisationAnneesRestantesMap(TerritorialisationProgressMapBase):
                     "dataLabels": {"enabled": False},
                     "tooltip": {
                         "headerFormat": "",
-                        "pointFormat": "<b>{point.name}</b><br/>Années restantes : <b>{point.annees_restantes} ans</b><br/>Rythme actuel : {point.rythme_annuel} ha/an<br/>Restant : {point.conso_restante} ha",  # noqa: E501
+                        "pointFormat": "<b>{point.name}</b><br/>Années restantes : <b>{point.annees_restantes} ans</b> {point.depassement_text}<br/>Rythme actuel : {point.rythme_annuel} ha/an<br/>Restant : {point.conso_restante} ha",  # noqa: E501
                     },
                 }
             ],
@@ -615,10 +639,26 @@ class TerritorialisationRythmeMap(TerritorialisationProgressMapBase):
 
         data = self.data
 
+        # Bornes fixes pour un gradient cohérent
+        min_val = -50
+        max_val = 150
+
+        # Position de 0% sur l'échelle normalisée
+        total_range = max_val - min_val
+        pos_0 = (0 - min_val) / total_range
+
+        # Deux gradients: vert en dessous de 0%, rouge au dessus
+        stops = [
+            [0, "#064E3B"],  # min: vert foncé
+            [max(0, pos_0 - 0.001), "#34D399"],  # juste avant 0%: vert clair
+            [pos_0, "#FEE2E2"],  # 0%: rouge pâle
+            [1, "#7F1D1D"],  # max: rouge foncé
+        ]
+
         return super().param | {
             "chart": {"map": self.get_geojson()},
             "title": {
-                "text": f"Écart au rythme autorisé des membres de {self.land.name}",
+                "text": f"Écart au rythme autorisé des territoires de {self.land.name}",
                 "style": {"fontSize": "14px", "fontWeight": "600"},
             },
             "mapNavigation": {"enabled": True},
@@ -630,9 +670,9 @@ class TerritorialisationRythmeMap(TerritorialisationProgressMapBase):
                 "layout": "vertical",
             },
             "colorAxis": {
-                "min": -50,
-                "max": 100,
-                "stops": [[0, "#1B5E20"], [0.25, "#34D399"], [0.33, "#FEE2E2"], [0.6, "#F87171"], [1, "#B71C1C"]],
+                "min": min_val,
+                "max": max_val,
+                "stops": stops,
                 "labels": {"format": "{value}%"},
             },
             "series": [

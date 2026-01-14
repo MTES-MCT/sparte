@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from django.contrib.gis.db.models import MultiPolygonField
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import TrigramSimilarity
@@ -114,7 +116,7 @@ class LandModel(models.Model):
     def natural_key(self):
         return (self.land_id, self.land_type)
 
-    @property
+    @cached_property
     def territorialisation(self):
         from public_data.models.territorialisation import TerritorialisationObjectif
 
@@ -124,6 +126,9 @@ class LandModel(models.Model):
             parent__land_type=self.land_type,
         ).select_related("land")
         has_children = children_objectifs.exists()
+        children_land_types = list(
+            set(obj.land.land_type for obj in children_objectifs if obj.land.land_type != AdminRef.CUSTOM)
+        )
 
         # Calculer les statistiques des membres si présents
         children_stats = None
@@ -155,6 +160,7 @@ class LandModel(models.Model):
                 "objectif": None,
                 "hierarchy": [],
                 "has_children": has_children,
+                "children_land_types": children_land_types,
                 "children_stats": children_stats,
                 "is_from_parent": False,
                 "parent_land_name": None,
@@ -202,6 +208,7 @@ class LandModel(models.Model):
             "objectif": float(objectif.objectif_de_reduction),
             "hierarchy": hierarchy_ordered,
             "has_children": has_children,
+            "children_land_types": children_land_types,
             "children_stats": children_stats,
             "source_document": source_document,
             "is_from_parent": is_from_parent,

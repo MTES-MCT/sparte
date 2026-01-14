@@ -4,6 +4,7 @@ import { TerritorialisationHierarchyItem } from '@services/types/land';
 import GenericChart from '@components/charts/GenericChart';
 import GuideContent from '@components/ui/GuideContent';
 import Card from '@components/ui/Card';
+import { getLandTypeLabel } from '@utils/landUtils';
 
 type TerritorialisationHierarchyProps = {
     hierarchy: TerritorialisationHierarchyItem[];
@@ -14,6 +15,7 @@ type TerritorialisationHierarchyProps = {
     is_from_parent: boolean;
     parent_land_name: string | null;
     objectif: number | null;
+    child_land_types: string[];
 };
 
 const Container = styled.div`
@@ -297,7 +299,8 @@ const TerritorialisationHierarchy = ({
     has_children,
     is_from_parent,
     parent_land_name,
-    objectif
+    objectif,
+    child_land_types
 }: TerritorialisationHierarchyProps) => {
     const [showMap, setShowMap] = useState(false);
 
@@ -317,7 +320,8 @@ const TerritorialisationHierarchy = ({
                 <Title>Territorialisation des objectifs</Title>
             </Header>
             <Subtitle>
-                Pour {land_name}, la mise en œuvre des objectifs de réduction de la consommation d'espaces NAF s'appuie sur les documents de planification territoriale suivants :
+                Pour {land_name}, les objectifs de réduction de la consommation d'espaces NAF
+                sont déclinés de la façon suivantes :
             </Subtitle>
             <TimelineContainer>
                 {fullHierarchy.map((item, index) => {
@@ -393,7 +397,12 @@ const TerritorialisationHierarchy = ({
                                 <ChildrenIcon>
                                     <i className={`bi bi-diagram-3${showMap ? '-fill' : ''}`} />
                                 </ChildrenIcon>
-                                <ChildrenLabel>Membres</ChildrenLabel>
+                                <ChildrenLabel>
+                                    {child_land_types.map((type, index) => {
+                                        const label = getLandTypeLabel(type, true);
+                                        return index === 0 ? label.charAt(0).toUpperCase() + label.slice(1) : label;
+                                    }).join(' / ')}
+                                </ChildrenLabel>
                                 <button className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-1v">
                                     {showMap ? 'Masquer la carte' : 'Voir la carte'}
                                 </button>
@@ -431,7 +440,7 @@ const TerritorialisationHierarchy = ({
                         <GuideContent title="Lecture de la carte" column>
                             <p>Chaque territoire est coloré selon son objectif de réduction de consommation d'espaces.</p>
                             <p>Plus la couleur est foncée, plus l'objectif de réduction est ambitieux.</p>
-                            <p>Survolez un territoire pour voir le détail de son objectif.</p>
+                            <p>Survolez un territoire pour consulter son objectif de réduction.</p>
                         </GuideContent>
                     </GuideContainer>
                 </MapSection>

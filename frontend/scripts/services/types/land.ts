@@ -126,6 +126,7 @@ export type LandDetailResultType = {
         objectif: number | null;
         hierarchy: TerritorialisationHierarchyItem[];
         has_children: boolean;
+        children_land_types: string[];
         source_document: {
             land_name: string;
             nom_document: string;

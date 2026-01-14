@@ -125,7 +125,7 @@ const Card: React.FC<CardProps> = ({
                     <i className={highlightBadgeIcon}></i> {highlightBadge}
                 </HighlightBadge>
             )}
-            {!empty && badgeClass && badgeLabel && (
+            {badgeClass && badgeLabel && (
                 <CardHeader $hasNoIcon={!icon}>
                     {icon && <CardIcon className={icon} $isHighlighted={isHighlighted} />}
                     <CardBadge className={`fr-badge fr-badge--no-icon ${badgeClass}`}>

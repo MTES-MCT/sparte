@@ -94,7 +94,7 @@ class ObjectiveChart(DiagnosticChart):
                     "opposite": True,
                 },
                 {
-                    "title": {"text": "Consommation annuelle"},
+                    "title": {"text": "Consommation annualisée"},
                     "labels": {"format": "{value} Ha"},
                     "min": 0,
                 },
@@ -150,7 +150,7 @@ class ObjectiveChart(DiagnosticChart):
                 "zIndex": 6,
             },
             {
-                "name": f"Consommation annuelle selon objectif {reference_label}",
+                "name": f"Consommation annualisée selon objectif {reference_label}",
                 "yAxis": 1,
                 "data": list(),
                 "color": color_bar,
@@ -170,7 +170,7 @@ class ObjectiveChart(DiagnosticChart):
             series.extend(
                 [
                     {
-                        "name": f"Consommation annuelle selon objectif personnalisé ({target_custom}%)",
+                        "name": f"Consommation annualisée selon objectif personnalisé ({target_custom}%)",
                         "yAxis": 1,
                         "data": list(),
                         "color": "#B6DFDE",
@@ -267,14 +267,14 @@ class ObjectiveChart(DiagnosticChart):
             "Année",
             "Consommation annuelle réelle (ha)",
             "Consommation cumulée réelle (ha)",
-            f"Consommation annuelle selon objectif {reference_label} (ha)",
+            f"Consommation annualisée selon objectif {reference_label} (ha)",
             f"Consommation cumulée selon objectif {reference_label} (ha)",
         ]
 
         if has_custom_target:
             headers.extend(
                 [
-                    f"Consommation annuelle selon objectif personnalisé ({target_custom}%) (ha)",
+                    f"Consommation annualisée selon objectif personnalisé ({target_custom}%) (ha)",
                     f"Consommation cumulée selon objectif personnalisé ({target_custom}%) (ha)",
                 ]
             )

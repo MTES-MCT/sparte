@@ -6,6 +6,7 @@ import { TerritorialisationWarning } from '@components/features/trajectoires/Ter
 import GuideContent from '@components/ui/GuideContent';
 import { useUpdateProjectTarget2031Mutation, useGetCurrentUserQuery } from '@services/api';
 import { formatNumber } from '@utils/formatUtils';
+import { getLandTypeLabel } from '@utils/landUtils';
 import { LandDetailResultType } from '@services/types/land';
 import { ProjectDetailResultType } from '@services/types/project';
 import styled from 'styled-components';
@@ -198,6 +199,8 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
         return "Objectif territorialisé";
     };
     const objectifLabel = getObjectifLabel();
+    const objectifType = is_from_parent ? "suggéré" : "réglementaire";
+    const objectifTypeBadge = is_from_parent ? "Suggestion" : "Réglementaire";
 
     // Document source de l'objectif (renvoyé par le backend)
     const sourceDocument = territorialisation?.source_document ?? null;
@@ -223,6 +226,14 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
     const has_custom_target = target_custom != null;
     const allowed_conso_custom = has_custom_target ? conso_2011_2020 * (1 - target_custom / 100) : 0;
     const allowed_conso_custom_per_year = has_custom_target ? allowed_conso_custom / 10 : 0;
+
+    // Formater les types de territoires enfants pour l'affichage
+    const childrenLandTypesLabel = (territorialisation?.children_land_types ?? [])
+        .map((type, index) => {
+            const label = getLandTypeLabel(type, true);
+            return index === 0 ? label.charAt(0).toUpperCase() + label.slice(1) : label;
+        })
+        .join(' / ');
 
     const handleSaveCustomTarget = () => {
         if (modalTargetInput === '') {
@@ -301,6 +312,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                     is_from_parent={territorialisation?.is_from_parent ?? false}
                     parent_land_name={territorialisation?.parent_land_name ?? null}
                     objectif={territorialisation?.objectif ?? null}
+                    child_land_types={territorialisation?.children_land_types ?? []}
                 />
             )}
 
@@ -315,7 +327,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                         {formatNumber({ number: conso_2011_2020 / 10 })} ha/an en moyenne
                                     </span>
                                 </div>
-                                <p className="fr-text--sm" style={{ color: '#666', margin: '0.5rem 0' }}>Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</p>
+                                <p className="fr-text--sm" style={{ color: '#666', margin: '0.5rem 0' }}>Consommation cumulée de la période du 1er janvier 2011 au 31 décembre 2020 (10 ans)</p>
                             </div>
 
                             <PeriodTitle>Période de réduction : 2021 - 2031</PeriodTitle>
@@ -326,20 +338,20 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                         badgeClass='fr-badge'
                                         badgeLabel={objectifLabel}
                                         value={`${formatNumber({ number: allowed_conso_2021_2030 })} ha`}
-                                        label="Consommation maximale 2021-2030"
+                                        label="Consommation maximale pour la période du 1er janvier 2021 au 31 décembre 2030 (10 ans)"
                                         isHighlighted={true}
-                                        highlightBadge={is_from_parent ? "Suggestion" : "Réglementaire"}
+                                        highlightBadge={objectifTypeBadge}
                                     >
                                         <div className="d-flex flex-column gap-2">
                                             <ReductionRow>
-                                                <span className="fr-text--sm fr-mb-0">Réduction :</span>
+                                                <span className="fr-text--sm fr-mb-0">Taux de réduction :</span>
                                                 <span style={{ fontSize: '1rem', fontWeight: 600 }}>-{objectif_reduction}%</span>
                                             </ReductionRow>
                                             <MiniComparisonChart
                                                 value1={annual_conso_since_2021}
                                                 label1="Consommation annuelle moyenne (depuis 2021)"
                                                 value2={allowed_conso_2021_2030_per_year}
-                                                label2="Consommation annuelle moyenne autorisée"
+                                                label2={`Consommation annuelle moyenne autorisée selon l'objectif ${objectifType}`}
                                                 color1="#6a6a6a"
                                                 color2={has_territorialisation ? "#A558A0" : "#00A95F"}
                                                 textColor1="white"
@@ -348,45 +360,56 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                     </ObjectifCard>
                                 </div>
                                 <div className="fr-col-12 fr-col-md-6">
-                                    <ObjectifCard
-                                        icon="bi-sliders"
-                                        badgeClass={has_custom_target ? 'fr-badge' : 'fr-badge--grey'}
-                                        badgeLabel="Objectif personnalisé"
-                                        value={has_custom_target ? `${formatNumber({ number: allowed_conso_custom })} ha` : '-- ha'}
-                                        label="Consommation maximale 2021-2030"
-                                    >
-                                        <div className="d-flex flex-column gap-2">
-                                            <ReductionRow>
-                                                <span className="fr-text--sm fr-mb-0">Réduction :</span>
-                                                <span style={{ fontSize: '1rem', fontWeight: 600 }}>
-                                                    {has_custom_target ? `-${target_custom}%` : '--%'}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    className="fr-btn fr-btn--sm fr-btn--secondary"
-                                                    onClick={openModal}
-                                                    title="Modifier l'objectif personnalisé"
-                                                >
-                                                    <i className="bi bi-pencil" />&nbsp;Modifier
-                                                </button>
-                                            </ReductionRow>
-                                            {has_custom_target ? (
+                                    {has_custom_target ? (
+                                        <ObjectifCard
+                                            icon="bi-sliders"
+                                            badgeClass="fr-badge"
+                                            badgeLabel="Objectif personnalisé"
+                                            value={`${formatNumber({ number: allowed_conso_custom })} ha`}
+                                            label="Consommation maximale pour la période du 1er janvier 2021 au 31 décembre 2030 (10 ans)"
+                                        >
+                                            <div className="d-flex flex-column gap-2">
+                                                <ReductionRow>
+                                                    <span className="fr-text--sm fr-mb-0">Taux de réduction :</span>
+                                                    <span style={{ fontSize: '1rem', fontWeight: 600 }}>
+                                                        -{target_custom}%
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        className="fr-btn fr-btn--sm fr-btn--secondary"
+                                                        onClick={openModal}
+                                                        title="Modifier l'objectif personnalisé"
+                                                    >
+                                                        Modifier
+                                                    </button>
+                                                </ReductionRow>
                                                 <MiniComparisonChart
                                                     value1={annual_conso_since_2021}
                                                     label1="Consommation annuelle moyenne (depuis 2021)"
                                                     value2={allowed_conso_custom_per_year}
-                                                    label2="Consommation annuelle moyenne personnalisée"
+                                                    label2="Consommation annuelle moyenne selon objectif personnalisé"
                                                     color1="#6a6a6a"
                                                     color2="#98cecc"
                                                     textColor1="white"
                                                 />
-                                            ) : (
-                                                <p className="fr-text--sm fr-text-mention--grey fr-mb-0">
-                                                    Cliquez sur le crayon pour définir un objectif personnalisé.
-                                                </p>
-                                            )}
-                                        </div>
-                                    </ObjectifCard>
+                                            </div>
+                                        </ObjectifCard>
+                                    ) : (
+                                        <ObjectifCard
+                                            icon="bi-sliders"
+                                            badgeClass="fr-badge--grey"
+                                            badgeLabel="Objectif personnalisé"
+                                            empty
+                                        >
+                                            <button
+                                                type="button"
+                                                className="fr-btn fr-btn--secondary"
+                                                onClick={openModal}
+                                            >
+                                                <i className="bi bi-plus-circle" />&nbsp;Définir un objectif personnalisé
+                                            </button>
+                                        </ObjectifCard>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -394,8 +417,8 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                     <div className="fr-col-12 fr-col-lg-3">
                         <GuideContent title="Comprendre les objectifs" column>
                             <p>
-                                <strong>{objectifLabel}</strong> : c'est l'enveloppe maximale de consommation d'espaces que le territoire peut utiliser entre 2021 et 2030.
-                                Elle est calculée en appliquant une réduction de <strong>{objectif_reduction}%</strong> à la consommation de référence (2011-2020).
+                                <strong>{objectifLabel}</strong> : c'est le maximum d'espaces que le territoire peut consommer entre 2021 et 2030.
+                                Il est calculé en appliquant une réduction de <strong>{objectif_reduction}%</strong> à la consommation de référence (2011-2020).
                             </p>
                             {has_territorialisation && !is_from_parent && (
                                 <p>
@@ -433,8 +456,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 </p>
                             )}
                             <p>
-                                <strong>Objectif personnalisé</strong> : permet de simuler différents scénarios de réduction pour anticiper
-                                les besoins du territoire. Cette simulation n'a pas de valeur réglementaire.
+                                <strong>Objectif personnalisé</strong> : définissez votre propre objectif de réduction pour simuler différents scénarios et anticiper les besoins du territoire.
                             </p>
                         </GuideContent>
                     </div>
@@ -467,7 +489,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 le territoire doit ralentir son rythme de consommation afin de respecter l'objectif.
                             </p>
                             <p>
-                                Les lignes montrent le cumul : tant que la <strong>ligne grise</strong> reste en-dessous de la <strong>ligne pointillée</strong>,
+                                Les lignes montrent le cumul : si la <strong>ligne grise</strong> reste en-dessous de la <strong>ligne pointillée</strong>,
                                 le territoire est en bonne voie pour respecter son objectif de réduction.
                             </p>
                         </GuideContent>
@@ -477,7 +499,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
 
             {territorialisation?.has_children && isDGALNMember && territorialisation?.children_stats && (
                 <div className="fr-mt-5w">
-                    <SectionTitle>Avancement des membres de {name}</SectionTitle>
+                    <SectionTitle>Suivi de la territorialisation des {childrenLandTypesLabel} de {name}</SectionTitle>
                     <div className="fr-notice fr-notice--info fr-mb-2w">
                         <div className="fr-container">
                             <div className="fr-notice__body">
@@ -488,7 +510,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                         </div>
                     </div>
                     <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
-                        Suivez la progression de chaque membre vers son objectif.
+                        Suivez la progression de chaque territoire vers son objectif.
                     </p>
 
                     <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
@@ -505,9 +527,9 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             <Card
                                 icon="bi-exclamation-triangle"
                                 badgeClass="fr-badge--warning"
-                                badgeLabel="Vont dépasser"
+                                badgeLabel="Risque de dépassement"
                                 value={`${territorialisation.children_stats.vont_depasser}`}
-                                label={`territoire${territorialisation.children_stats.vont_depasser > 1 ? 's vont' : ' va'} dépasser leur enveloppe au rythme actuel`}
+                                label={`territoire${territorialisation.children_stats.vont_depasser > 1 ? 's risquent' : ' risque'} de dépasser`}
                             />
                         </div>
                         <div className="fr-col-6 fr-col-lg-4">
@@ -516,7 +538,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 badgeClass="fr-badge--error"
                                 badgeLabel="Déjà dépassé"
                                 value={`${territorialisation.children_stats.deja_depasse}`}
-                                label={`territoire${territorialisation.children_stats.deja_depasse > 1 ? 's ont' : ' a'} déjà dépassé l'enveloppe`}
+                                label={`territoire${territorialisation.children_stats.deja_depasse > 1 ? 's ont' : ' a'} déjà dépassé le maximum autorisé`}
                             />
                         </div>
                     </div>
@@ -536,13 +558,13 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                         <div className="fr-col-12 fr-col-lg-3">
                             <GuideContent title="Lecture de la carte" column>
                                 <p>
-                                    <strong style={{ color: '#34D399' }}>{territorialisation.children_stats.en_bonne_voie}</strong> {territorialisation.children_stats.en_bonne_voie > 1 ? 'territoires sont' : 'territoire est'} en bonne voie pour respecter leur enveloppe.
+                                    <strong style={{ color: '#34D399' }}>{territorialisation.children_stats.en_bonne_voie}</strong> {territorialisation.children_stats.en_bonne_voie > 1 ? 'territoires sont' : 'territoire est'} en bonne voie pour respecter leur maximum autorisé.
                                 </p>
                                 <p>
-                                    <strong style={{ color: '#FBBF24' }}>{territorialisation.children_stats.vont_depasser}</strong> {territorialisation.children_stats.vont_depasser > 1 ? 'territoires vont dépasser' : 'territoire va dépasser'} leur enveloppe au rythme actuel.
+                                    <strong style={{ color: '#FBBF24' }}>{territorialisation.children_stats.vont_depasser}</strong> {territorialisation.children_stats.vont_depasser > 1 ? 'territoires risquent' : 'territoire risque'} de dépasser leur objectif de réduction au rythme actuel de consommation d'espace.
                                 </p>
                                 <p>
-                                    <strong style={{ color: '#F87171' }}>{territorialisation.children_stats.deja_depasse}</strong> {territorialisation.children_stats.deja_depasse > 1 ? 'territoires ont' : 'territoire a'} déjà dépassé leur enveloppe.
+                                    <strong style={{ color: '#F87171' }}>{territorialisation.children_stats.deja_depasse}</strong> {territorialisation.children_stats.deja_depasse > 1 ? 'territoires ont' : 'territoire a'} déjà dépassé leur maximum autorisé.
                                 </p>
                                 <p className="fr-text--sm" style={{ color: '#666' }}>Survolez un territoire pour voir les détails.</p>
                             </GuideContent>
@@ -563,7 +585,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                         </div>
                         <div className="fr-col-12 fr-col-lg-3">
                             <GuideContent title="Lecture de la carte" column>
-                                <p>Compare la consommation annuelle actuelle à la consommation annuelle autorisée pour respecter l'enveloppe.</p>
+                                <p>Compare la consommation annuelle actuelle à la consommation annualisée autorisée pour atteindre l'objectif de réduction.</p>
                                 <p>
                                     <strong style={{ color: '#34D399' }}>Vert</strong> : consomme moins que le rythme autorisé.<br />
                                     <strong style={{ color: '#B71C1C' }}>Rouge</strong> : consomme plus que le rythme autorisé.
@@ -598,7 +620,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                         </div>
                     </div>
 
-                    <SectionTitle className="fr-mt-5w">Projection de {name} en 2031 au rythme actuel</SectionTitle>
+                    <SectionTitle className="fr-mt-5w">Projection de {name} à l'horizon 2031 au rythme actuel</SectionTitle>
                     <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
                         Estimation de la situation en 2031 si le rythme de consommation actuel se maintient.
                     </p>
@@ -626,7 +648,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             <Card
                                 icon="bi-percent"
                                 badgeClass={taux_atteinte_2031 > 100 ? 'fr-badge--error' : 'fr-badge--success'}
-                                badgeLabel={taux_atteinte_2031 > 100 ? 'Dépassement' : 'Dans l\'objectif'}
+                                badgeLabel={taux_atteinte_2031 > 100 ? 'Taux de dépassement' : 'Dans l\'objectif'}
                                 value={`${formatNumber({ number: taux_atteinte_2031, decimals: 1 })}%`}
                                 label="de l'objectif atteint en 2031"
                             />
@@ -651,7 +673,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                         <ModalTitle>Définir un objectif personnalisé</ModalTitle>
                         <div className="fr-input-group">
                             <label className="fr-label" htmlFor="custom-target-modal">
-                                Pourcentage de réduction
+                                Taux de réduction
                             </label>
                             <div className="d-flex align-items-center gap-2">
                                 <input
@@ -669,7 +691,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                 <span>%</span>
                             </div>
                             <p className="fr-hint-text">
-                                Entrez un pourcentage entre 0 et 100 pour simuler un objectif de réduction personnalisé.
+                                Entrez un taux entre 0 et 100 pour simuler un objectif de réduction personnalisé.
                             </p>
                         </div>
                         <ModalActions>
