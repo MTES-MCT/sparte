@@ -8,7 +8,6 @@ SELECT
     analyse_end_date,
     user_id,
     is_public,
-    look_a_like,
     created_date,
     updated_date,
     level,

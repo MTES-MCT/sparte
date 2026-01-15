@@ -28,8 +28,6 @@ models:
               values:
                 - "true"
                 - "false"
-      - name: look_a_like
-        data_type: character varying
       - name: created_date
         data_type: timestamp with time zone
         data_tests:
