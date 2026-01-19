@@ -84,6 +84,7 @@ export enum LandType {
     EPCI = "EPCI",
     COMMUNE = "COMM",
     NATION = "NATION",
+    CUSTOM = "CUSTOM"
 }
 
 
