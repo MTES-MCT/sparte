@@ -19,7 +19,6 @@ import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import { Impermeabilisation } from '@components/pages/Impermeabilisation';
-import Update from '@components/pages/Update';
 import Downloads from '@components/pages/Downloads';
 import { Friches } from '@components/pages/Friches';
 import RouteWrapper from '@components/ui/RouteWrapper';
@@ -212,17 +211,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <RapportLocal endpoint={urls.rapportLocal} projectData={projectData} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.update}
-                                        element={
-                                            <RouteWrapper
-                                                title="Paramètres du diagnostic"
-                                            >
-                                                <Update endpoint={urls.update} />
+                                                <RapportLocal projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />

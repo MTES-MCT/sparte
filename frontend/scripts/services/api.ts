@@ -14,6 +14,17 @@ import {
 	ReportTypeOption,
 } from "./types/reportDraft";
 
+export type CurrentUserResponse = {
+	is_authenticated: boolean;
+	id?: number;
+	email?: string;
+	first_name?: string;
+	last_name?: string;
+	organism?: string | null;
+	function?: string | null;
+	groups: string[];
+};
+
 export const djangoApi = createApi({
 	reducerPath: "djangoApi",
 	baseQuery: fetchBaseQuery({ credentials: "include" }),
@@ -258,6 +269,9 @@ export const djangoApi = createApi({
 			},
 			invalidatesTags: [{ type: 'ReportDraft', id: 'LIST' }],
 		}),
+		getCurrentUser: builder.query<CurrentUserResponse, void>({
+			query: () => '/api/me/',
+		}),
 	}),
 	tagTypes: ['Project', 'ReportDraft'],
 });
@@ -293,6 +307,7 @@ const {
 	useCreateReportDraftMutation,
 	useUpdateReportDraftMutation,
 	useDeleteReportDraftMutation,
+	useGetCurrentUserQuery,
 } = djangoApi;
 
 export {
@@ -325,4 +340,5 @@ export {
 	useCreateReportDraftMutation,
 	useUpdateReportDraftMutation,
 	useDeleteReportDraftMutation,
+	useGetCurrentUserQuery,
 };

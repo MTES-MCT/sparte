@@ -1,0 +1,8 @@
+
+version: 2
+
+sources:
+  - name: public
+    tables:
+    - name: docurba_scots
+    - name: docurba_scots_perimetre

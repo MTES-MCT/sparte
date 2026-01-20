@@ -157,10 +157,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
-    const debouncedQuery = useDebounce(query, 500);
     const minimumCharCountForSearch = 2;
-    const shouldQueryBeSkipped = debouncedQuery.length < minimumCharCountForSearch;
-    const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
+    const shouldQueryBeSkipped = query.length < minimumCharCountForSearch;
+    const { data: queryData, isFetching } = useSearchTerritoryQuery(query, {
         skip: shouldQueryBeSkipped,
     });
 
@@ -186,7 +185,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             }
             setData(filteredData);
         }
-    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped, excludeTerritories]);
+    }, [isFetching, queryData, query, shouldQueryBeSkipped, excludeTerritories]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

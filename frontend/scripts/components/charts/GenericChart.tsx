@@ -18,7 +18,6 @@ import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import Loader from '@components/ui/Loader';
 import ChartDetails from './ChartDetails';
 import { useGetChartConfigQuery } from '@services/api';
-import '../../highcharts/lineargauge.js';
 
 // Initialize the modules
 HighchartsMore(Highcharts); // Required for gauge charts

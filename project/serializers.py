@@ -58,6 +58,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                     "label": "Pilotage territorial",
                     "icon": "bi bi-bar-chart",
                     "subMenu": [
+                        {"label": "Consommation d'espaces NAF", "url": reverse("project:report_conso", kwargs=kwargs)},
                         {
                             "label": "Artificialisation",
                             "url": reverse("project:report_artif", kwargs=kwargs),
@@ -67,7 +68,6 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                             "url": reverse("project:report_imper", kwargs=kwargs),
                             "new": True,
                         },
-                        {"label": "Consommation d'espaces NAF", "url": reverse("project:report_conso", kwargs=kwargs)},
                     ],
                 },
                 {
@@ -134,7 +134,7 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
         }
 
     def get_departements(self, obj):
-        return obj.land.get_departements()
+        return obj.land_model.departements
 
     def get_bounds(self, obj):
         return obj.combined_emprise.extent

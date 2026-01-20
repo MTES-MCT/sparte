@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Guide from "@components/ui/Guide";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import styled from "styled-components";
-import { FrichesMap, FrichesImpermeableMap, FrichesArtificialMap, FrichesOcsgeCouvertureMap, FrichesOcsgeUsageMap, useMapSync } from "@components/map";
+import { FrichesMap, FrichesImpermeableMap, FrichesArtificialMap, FrichesOcsgeCouvertureMap, useMapSync } from "@components/map";
 import { STATUT_BADGE_CONFIG, STATUT_ORDER } from "@components/features/friches/constants";
 import { LandFriche } from "@services/types/land_friches";
 import { useDataTable } from "@hooks/useDataTable";
@@ -15,14 +15,12 @@ import { FricheStatusEnum, LandDetailResultType, LandType } from "@services/type
 import { FricheOverview, FricheAbstract } from "@components/features/friches";
 import useWindowSize from "@hooks/useWindowSize";
 import type maplibregl from "maplibre-gl";
-
+import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
+import benefrichesImage from "@images/logo-benefriches.png";
+import urbanvitalizImage from "@images/logo-urbanvitaliz.png";
 interface FrichesProps {
     landData: LandDetailResultType;
 }
-
-const IconZoneActivite = styled.i`
-    font-size: 1.5rem;
-`;
 
 const DisplayPaginationInfo = styled.div`
     margin-top: 0.8rem;
@@ -72,10 +70,6 @@ const ScrollableMapsColumn = styled.div`
     }
 `;
 
-const FRICHES_COMPOSITION_CHARTS: Array<{ id: string; sources: string[] }> = [
-    { id: 'friche_artif_composition', sources: ['cartofriches', 'ocsge'] },
-    { id: 'friche_imper_composition', sources: ['cartofriches', 'ocsge'] },
-];
 
 const FRICHES_ANALYSIS_CHARTS: Array<{ id: string; sources: string[] }> = [
     { id: 'friche_pollution', sources: ['cartofriches'] },
@@ -119,9 +113,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const { land_id, land_type, friche_status } = landData;
     const { data: frichesData } = useGetLandFrichesQuery({ land_type, land_id });
 
-    const handleMapLoad = (map: maplibregl.Map) => {
+    const handleMapLoad = useCallback((map: maplibregl.Map) => {
         addMap(map);
-    };
+    }, [addMap]);
 
     const {
         paginatedData,
@@ -202,14 +196,15 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
     const columns = [
         {
             key: 'actions' as keyof LandFriche,
-            label: 'Actions',
+            label: '',
             sortable: false,
             render: (_: any, friche: LandFriche) => (
                 <button
                     className="fr-btn fr-btn--sm fr-btn--secondary"
                     onClick={() => handleFricheClick(friche.point_on_surface)}
+                    title="Voir sur la carte"
                 >
-                    <i className="bi bi-map"></i>&nbsp;Voir sur la carte
+                    <i className="bi bi-geo-alt"></i>
                 </button>
             )
         },
@@ -233,7 +228,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             label: 'Statut',
             sortable: true,
             render: (value: any) => (
-                <span className={`fr-badge fr-badge--no-icon text-lowercase ${STATUT_BADGE_CONFIG[value as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
+                <span className={`fr-badge fr-badge--no-icon fr-badge--sm text-lowercase ${STATUT_BADGE_CONFIG[value as keyof typeof STATUT_BADGE_CONFIG] || ''}`}>
                     {value}
                 </span>
             )
@@ -253,9 +248,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             key: 'friche_is_in_zone_activite' as keyof LandFriche,
             label: 'Zone d\'activité',
             sortable: false,
-            render: (value: boolean) => (
-                <IconZoneActivite className={`bi ${value ? 'bi-check text-success' : 'bi-x text-danger'}`}/>
-            )
+            render: (value: boolean) => value ? 'Oui' : 'Non'
         },
         {
             key: 'friche_zonage_environnemental' as keyof LandFriche,
@@ -280,6 +273,21 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
             sortable: true,
             render: (value: number, friche: LandFriche) => `${formatNumber({ number: value })} ha (${formatNumber({ number: friche.percent_imper })} %)`
         },
+        {
+            key: 'cartofriches' as keyof LandFriche,
+            label: 'Lien cartofriches',
+            sortable: false,
+            render: (_: any, friche: LandFriche) => (
+                <a
+                    href={`https://cartofriches.cerema.fr/cartofriches/?site=${friche.site_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="fr-text--xs"
+                >
+                    Plus de détails sur cette friche
+                </a>
+            )
+        }
     ];
 
 	return (
@@ -324,8 +332,9 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 					</h6>
 					<div className="fr-highlight fr-highlight--no-margin">
 						<p className="fr-text--sm">
-                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches.<br />
-                            On distingue deux sources de données : les friches pré-identifiées au niveau national par le Cerema, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études. Ces contributeurs locaux à Cartofriches sont listés ici : <a href="https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux</a><br />
+                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches, et correspondent exclusivement à des friches qualifiées par le CEREMA.
+                            On distingue deux sources de données : les friches pré-identifiées au niveau national par le CEREMA, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études.<br />
+                            La liste des observatoires et contributeurs locaux à Cartofriches est disponible ici : <a href="https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux</a>
 						</p>
                         <p className="fr-text--sm">
                             <strong>
@@ -335,62 +344,36 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                         <p className="fr-text--sm">
                             Les données relatives à l'artificialisation et l'imperméabilisation des friches sont issues des données OCS GE.
                         </p>
+                        <a className="fr-link fr-text--sm" href="https://cartofriches.cerema.fr/cartofriches/" target="_blank" rel="noopener noreferrer">Contribuer à la donnée sur les friches</a>
 					</div>
 				</div>
 			</div>
             {[
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,
-            ].includes(friche_status) && (
-                <>
-                    <h2 className="fr-mt-5w">Analyse des friches sans projet</h2>
-                    <div className="fr-callout fr-icon-information-line fr-mb-3w">
-                        <h3 className="fr-callout__title fr-text--md">Pourquoi se concentrer sur les friches sans projet ?</h3>
-                        <p className="fr-callout__text fr-text--sm">
-                            Les friches sans projet représentent des opportunités concrètes pour limiter l'artificialisation des sols. 
-                            Comprendre leurs caractéristiques (type, surface, pollution, zonage, ...) permet d'identifier les opportunités de réhabilitation les plus pertinentes.
-                        </p>
-                    </div>
-                    <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                        {FRICHES_COMPOSITION_CHARTS.map((chart) => (
-                            <div key={chart.id} className="fr-col-12 fr-col-md-6">
-                                <div className="bg-white fr-p-2w rounded">
-                                    <FrichesChart
-                                        id={chart.id}
-                                        land_id={land_id}
-                                        land_type={land_type}
-                                        sources={chart.sources}
-                                        showDataTable={true}
-                                    />
-                                </div>
+            ].includes(friche_status) && [
+                LandType.REGION,
+                LandType.DEPARTEMENT,
+            ].includes(land_type) && (
+                <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+                    {FRICHES_ANALYSIS_CHARTS.map((chart) => (
+                        <div key={chart.id} className="fr-col-12 fr-col-md-6">
+                            <div className="bg-white fr-p-2w rounded">
+                                <FrichesChart
+                                    id={chart.id}
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    sources={chart.sources}
+                                    showDataTable={true}
+                                >
+                                    {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
+                                    {chart.id === 'friche_surface' && <DetailsFricheBySize />}
+                                    {chart.id === 'friche_zonage_type' && <DetailsFricheByZonageType />}
+                                </FrichesChart>
                             </div>
-                        ))}
-                    </div>
-                    {[
-                        LandType.REGION,
-                        LandType.DEPARTEMENT,
-                    ].includes(land_type) && (
-                        <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-                            {FRICHES_ANALYSIS_CHARTS.map((chart) => (
-                                <div key={chart.id} className="fr-col-12 fr-col-md-6">
-                                    <div className="bg-white fr-p-2w rounded">
-                                        <FrichesChart
-                                            id={chart.id}
-                                            land_id={land_id}
-                                            land_type={land_type}
-                                            sources={chart.sources}
-                                            showDataTable={true}
-                                        >
-                                            {chart.id === 'friche_zonage_environnemental' && <DetailsFricheZonageEnvironnemental />}
-                                            {chart.id === 'friche_surface' && <DetailsFricheBySize />}
-                                            {chart.id === 'friche_zonage_type' && <DetailsFricheByZonageType />}
-                                        </FrichesChart>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
-                    )}
-                </>
+                    ))}
+                </div>
             )}
             <h2 className="fr-mt-7w">Détail des friches</h2>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
@@ -466,33 +449,29 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                             onMapLoad={handleMapLoad}
                         />
                     </div>
-                    <div>
-                        <h2>Usage des friches</h2>
-                        <FrichesOcsgeUsageMap
-                            landData={landData}
-                            frichesData={frichesData}
-                            center={selectedFriche}
-                            onMapLoad={handleMapLoad}
-                        />
-                    </div>
                 </ScrollableMapsColumn>
             </MapsContainer>
+
             <h2 className="fr-mt-10w">Pour aller plus loin dans votre démarche de réhabilitation de friches </h2>
-            <div className="fr-callout fr-icon-information-line">
-                <h3 className="fr-callout__title fr-text--md">Estimez les impacts environnementaux, sociaux et économiques de votre projet de réhabilitation grâce à Bénéfriches</h3>
-                <p className="fr-callout__text fr-text--sm">Vous avez un projet d'aménagement urbain ou un projet photovoltaïque sur une friche ? Calculez les impacts de votre projet grâce à la plateforme Bénéfriches !</p>
-                <br />
-                <a target="_blank" rel="noopener noreferrer external" title="" href="https://benefriches.ademe.fr/" className="fr-notice__link fr-link fr-text--sm">
-                    Accéder à Bénéfriches
-                </a>
-            </div>
-            <div className="fr-callout fr-icon-information-line">
-                <h3 className="fr-callout__title fr-text--md">Faites-vous accompagner gratuitement dans la réhabilitation des friches de votre territoire grâce à UrbanVitaliz</h3>
-                <p className="fr-callout__text fr-text--sm">UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que les conseillers publics (selon les territoires : DDT, DREAL, EPF...)</p>
-                <br />
-                <a target="_blank" rel="noopener noreferrer external" title="" href="https://urbanvitaliz.fr/" className="fr-notice__link fr-link fr-text--sm">
-                    Accéder à UrbanVitaliz
-                </a>
+            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
+                <div className="fr-col-12 fr-col-lg-6">
+                    <ExternalServiceTile
+                        imageUrl={benefrichesImage}
+                        imageAlt="Logo de l'ADEME et de Bénéfriches"
+                        title="Estimez les impacts environnementaux, sociaux et économiques de votre projet de réhabilitation grâce à Bénéfriches"
+                        description="Vous avez un projet d'aménagement urbain ou un projet photovoltaïque sur une friche ? Calculez les impacts de votre projet grâce à la plateforme Bénéfriches !"
+                        href="https://benefriches.ademe.fr/"
+                    />
+                </div>
+                <div className="fr-col-12 fr-col-lg-6">
+                    <ExternalServiceTile
+                        imageUrl={urbanvitalizImage}
+                        imageAlt="Logo de UrbanVitaliz"
+                        title="Faites-vous accompagner gratuitement dans la réhabilitation des friches de votre territoire grâce à UrbanVitaliz"
+                        description="UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que les conseillers publics (selon les territoires : DDT, DREAL, EPF...)"
+                        href="https://urbanvitaliz.fr/"
+                    />
+                </div>
             </div>
 		</div>
 	);

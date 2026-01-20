@@ -6,6 +6,8 @@ import { LogementVacantConso } from "./components/LogementVacantConso";
 import { LogementVacantAutorisation } from "./components/LogementVacantAutorisation";
 import Guide from "@components/ui/Guide";
 import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
+import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
+import zeroLogementVacantImage from "@images/logo_ZLV.png";
 
 export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
   const { land_id, land_type, name, logements_vacants_status, logements_vacants_status_details } = landData;
@@ -61,24 +63,17 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
         </div>
 
         <div className="fr-col-12">
-          <div className="fr-callout fr-icon-information-line">
-            <h3 className="fr-callout__title fr-text--md">
-              Réduisez votre consommation d'espaces NAF en mobilisant le parc de logements vacants
-            </h3>
-            <p className="fr-callout__text fr-text--sm">
-              Zéro Logement Vacant est un outil gratuit qui accompagne les territoires dans leur démarche de remise
-              sur le marché des logements vacants.
-            </p>
-            <br />
-            <a
-              target="_blank"
-              rel="noopener noreferrer external"
-              title=""
-              href="https://zerologementvacant.beta.gouv.fr/zero-logement-vacant/la-plateforme/?src=mda"
-              className="fr-notice__link fr-link fr-text--sm"
-            >
-              Accéder à Zéro Logement Vacant
-            </a>
+          <h2 className="fr-h4 fr-mb-3w">Pour aller plus loin dans votre démarche de remobilisation des logements vacants</h2>
+          <div className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-12 fr-col-lg-6">
+              <ExternalServiceTile
+                imageUrl={zeroLogementVacantImage}
+                imageAlt="Logo de Zéro Logement Vacant"
+                title="Réduisez votre consommation d'espaces NAF en mobilisant le parc de logements vacants grâce à Zéro Logement Vacant"
+                description="Zéro Logement Vacant est un outil gratuit qui accompagne les territoires dans leur démarche de remise sur le marché des logements vacants."
+                href="https://zerologementvacant.beta.gouv.fr/zero-logement-vacant/la-plateforme/?src=mda"
+              />
+            </div>
           </div>
         </div>
       </div>

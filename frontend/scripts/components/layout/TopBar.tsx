@@ -1,8 +1,7 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import styled from 'styled-components';
-import useHtmx from '@hooks/useHtmx';
 import { selectIsNavbarOpen } from "@store/navbarSlice";
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 
@@ -59,15 +58,13 @@ const Title = styled.div`
 
 const TopBar: React.FC = () => {
     const projectData = useSelector((state: RootState) => state.project.projectData);
-    const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
-    const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const isOpen = useSelector(selectIsNavbarOpen);
 
     return (
-        <Container ref={htmxRef}>
+        <Container>
             <LeftSection>
                 { !isOpen && <ButtonToggleNavbar /> }
-                <Title>{ memoizedProjectData?.territory_name }</Title>
+                <Title>{ projectData?.territory_name }</Title>
             </LeftSection>
             <RightSection id="topbar-slot">
                 {/* Le contenu sera rendu ici via React Portal */}

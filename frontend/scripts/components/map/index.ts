@@ -4,7 +4,6 @@ export { ImpermeabilisationDiffMap } from './ui/ImpermeabilisationDiffMap';
 export { ArtificialisationMap } from './ui/ArtificialisationMap';
 export { ArtificialisationDiffMap } from './ui/ArtificialisationDiffMap';
 export { FrichesOcsgeCouvertureMap } from './ui/FrichesOcsgeCouvertureMap';
-export { FrichesOcsgeUsageMap } from './ui/FrichesOcsgeUsageMap';
 export { FrichesImpermeableMap } from './ui/FrichesImpermeableMap';
 export { FrichesArtificialMap } from './ui/FrichesArtificialMap';
 export { FrichesMap } from './ui/FrichesMap';

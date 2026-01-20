@@ -38,3 +38,7 @@ union all
 select
     code as land_id, '{{ var("SCOT") }}' as land_type, {{ common_fields }}
 from {{ ref("artif_scot_by_usage") }}
+union all
+select
+    code as land_id, '{{ var("CUSTOM") }}' as land_type, {{ common_fields }}
+from {{ ref("artif_custom_land_by_usage") }}

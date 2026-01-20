@@ -16,11 +16,11 @@ models:
         tests:
           - not_null
       - name: land_type
-        description: Type du territoire (COMM, EPCI, DEPART, REGION, SCOT)
+        description: Type du territoire (COMM, EPCI, DEPART, REGION, SCOT, CUSTOM)
         tests:
           - not_null
           - accepted_values:
-              values: ['COMM', 'EPCI', 'DEPART', 'REGION', 'SCOT']
+              values: ['COMM', 'EPCI', 'DEPART', 'REGION', 'SCOT', 'CUSTOM']
       - name: nearest_land_id
         description: Identifiant du territoire voisin le plus proche
         tests:

@@ -55,7 +55,6 @@ from public_data.models import (
     NearestTerritories,
     Region,
     Scot,
-    SimilarTerritories,
 )
 
 
@@ -105,7 +104,6 @@ def init_unmanaged_schema_for_tests() -> None:
         drop_and_create_model(LandPop, schema_editor)
         drop_and_create_model(LandPopStats, schema_editor)
         drop_and_create_model(NearestTerritories, schema_editor)
-        drop_and_create_model(SimilarTerritories, schema_editor)
 
         # Artificialisation - Stock
         drop_and_create_model(ArtifZonage, schema_editor)

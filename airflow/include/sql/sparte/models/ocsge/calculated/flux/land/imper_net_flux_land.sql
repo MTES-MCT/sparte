@@ -54,3 +54,10 @@ SELECT
    {{ common_fields | join(", ") }}
 FROM
     {{ ref('imper_net_flux_scot')}}
+UNION ALL
+SELECT
+    code as land_id,
+    '{{ var('CUSTOM')}}' AS land_type,
+   {{ common_fields | join(", ") }}
+FROM
+    {{ ref('imper_net_flux_custom_land')}}

@@ -40,6 +40,10 @@ export const getTerritoryFilter = (landData?: LandDetailResultType): FilterSpeci
         return null;
     }
 
+    if (landData.land_type === "CUSTOM") {
+        return ["in", landData.land_id, ["get", "CUSTOM"]] as FilterSpecification;
+    }
+
     return ["==", ["get", landData.land_type], landData.land_id] as FilterSpecification;
 };
 

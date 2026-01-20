@@ -11,6 +11,7 @@ models:
                 - EPCI
                 - REGION
                 - SCOT
+                - CUSTOM
           - not_null
       - name: land_id
         data_type: character varying

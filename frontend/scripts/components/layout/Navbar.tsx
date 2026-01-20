@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
-import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 import { MenuItem, ProjectDetailResultType } from '@services/types/project';
@@ -208,8 +207,6 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
     const location = useLocation();
     const { navbar, urls } = projectData
 
-    const htmxRef = useHtmx([urls]);
-
     const dispatch = useDispatch();
     const isOpen = useSelector(selectIsNavbarOpen);
     const { isMobile } = useWindowSize();
@@ -256,7 +253,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDet
     return (
         <>
             {isMobile && <Overlay $isOpen={isOpen} onClick={() => dispatch(toggleNavbar())} />}
-            <Container aria-label="Sidebar" ref={htmxRef} $isOpen={isOpen} $isMobile={isMobile} $height={navbarHeight}>
+            <Container aria-label="Sidebar" $isOpen={isOpen} $isMobile={isMobile} $height={navbarHeight}>
                 <NavbarHeader>
                     <ButtonToggleNavbar />
                 </NavbarHeader>

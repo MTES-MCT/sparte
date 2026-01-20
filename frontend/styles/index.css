@@ -59,6 +59,17 @@ Custom tag icon
 }
 
 /*
+Custom badge
+*/
+.fr-badge--search {
+    font-size:  0.8em;
+    font-weight: 400;
+    background: #e3e3fd;
+    color: #313178;
+    text-transform: none;
+}
+
+/*
 Fix nav extra margin
 */
 .fr-nav__list {

@@ -106,10 +106,15 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
     const { data: projectData } = useGetProjectQuery(String(projectId));
 
+    // Objectif territorialisé (réglementaire) ou national par défaut (50%)
+    const objectif_reduction = landData.territorialisation?.has_objectif
+        ? landData.territorialisation?.objectif ?? 50
+        : 50;
+
     // Calcul de l'objectif personnalisé (depuis le content ou la valeur du projet par défaut)
     const defaultTarget2031 = projectData?.target_2031 || 50;
     const target_custom = content.target_2031 ? parseFloat(content.target_2031) : defaultTarget2031;
-    const has_custom_target = Number(target_custom) !== 50;
+    const has_custom_target = Number(target_custom) !== objectif_reduction;
 
     // Récupérer le dernier millésime disponible
     const millesimes = landData.millesimes || [];
@@ -265,7 +270,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <TwoColumnLayout>
                     <p>
-                        La France s’est donc fixée <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2021 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
+                        La France s’est donc fixée <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
                     </p>
                     <p>
                         Les dispositions introduites par la loi n° 2021-1104 du 22 août 2021 portant lutte contre le dérèglement climatique et renforcement de la résilience face à ses effets (dite « Loi Climat et résilience ») ont été complétées par la loi n° 2023-630 du 20 juillet 2023 visant à faciliter la mise en œuvre des objectifs de lutte contre l’artificialisation des sols et à renforcer l’accompagnement des élus locaux.
@@ -306,7 +311,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        La loi Climat & Résilience fixe <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2021 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
+                        La loi Climat & Résilience fixe <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
                     </p>
                 </div>
 
@@ -367,7 +372,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     chartId="objective_chart_export"
                     landId={landData.land_id}
                     landType={landData.land_type}
-                    params={{ target_2031_custom: target_custom }}
+                    params={has_custom_target ? { target_2031_custom: target_custom } : {}}
                     sources={["majic"]}
                 />
 

@@ -151,7 +151,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Sur la décennie 2011-2021, 24 000 ha d'espaces naturels, agricoles et forestiers ont été consommés chaque année 
+                        Sur la décennie 2011-2020, 24 000 ha d'espaces naturels, agricoles et forestiers ont été consommés chaque année 
                         en moyenne en France, soit près de 5 terrains de football par heure. Les conséquences sont écologiques mais aussi socio-économiques.
                     </p>
                 </div>

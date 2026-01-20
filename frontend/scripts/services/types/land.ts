@@ -84,9 +84,23 @@ export enum LandType {
     EPCI = "EPCI",
     COMMUNE = "COMM",
     NATION = "NATION",
+    CUSTOM = "CUSTOM"
 }
 
 
+
+export type TerritorialisationHierarchyItem = {
+    land_id: string;
+    land_type: string;
+    land_name: string;
+    objectif: number;
+    parent_name: string | null;
+    nom_document: string;
+    document_url: string | null;
+    document_comment: string;
+    is_in_document: boolean;
+    hierarchy?: TerritorialisationHierarchyItem[];
+};
 
 export type LandDetailResultType = {
     land_id: string;
@@ -108,6 +122,29 @@ export type LandDetailResultType = {
     has_conso: boolean;
     has_friche: boolean;
     has_logements_vacants: boolean;
+    territorialisation: {
+        has_objectif: boolean;
+        objectif: number | null;
+        hierarchy: TerritorialisationHierarchyItem[];
+        has_children: boolean;
+        children_land_types: string[];
+        source_document: {
+            land_name: string;
+            nom_document: string;
+        } | null;
+        children_stats: {
+            total_membres: number;
+            deja_depasse: number;
+            vont_depasser: number;
+            en_bonne_voie: number;
+            total_conso_since_2021: number;
+            total_conso_max: number;
+            progression_moyenne: number;
+            progression_globale: number;
+        } | null;
+        is_from_parent: boolean;
+        parent_land_name: string | null;
+    };
     ocsge_status: OcsgeStatusEnum;
     friche_status: FricheStatusEnum;
     friche_status_details: FricheStatusDetails;

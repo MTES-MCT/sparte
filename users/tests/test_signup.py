@@ -34,30 +34,27 @@ class SignupTest(TestCase):
                 data = {**valid_payload, field: value}
                 response = self.client.post(path=form_url, data=data)
                 self.assertFormError(
-                    response=response,
-                    form="form",
-                    field=field,
-                    errors="Le champ ne doit contenir que des lettres, des espaces ou des tirets.",
+                    response.context["form"],
+                    field,
+                    "Le champ ne doit contenir que des lettres, des espaces ou des tirets.",
                 )
 
     def test_signup_form_with_invalid_email(self) -> None:
         data = {**valid_payload, "email": "john.doe"}
         response = self.client.post(path=form_url, data=data)
         self.assertFormError(
-            response=response,
-            form="form",
-            field="email",
-            errors="Saisissez une adresse e-mail valide.",
+            response.context["form"],
+            "email",
+            "Saisissez une adresse e-mail valide.",
         )
 
     def test_signup_form_with_different_passwords(self) -> None:
         data = {**valid_payload, "password2": "password2"}
         response = self.client.post(path=form_url, data=data)
         self.assertFormError(
-            response=response,
-            form="form",
-            field="password2",
-            errors="Les mots de passe ne sont pas identiques",
+            response.context["form"],
+            "password2",
+            "Les mots de passe ne sont pas identiques",
         )
 
     def test_allowed_characters_are_accepted(self) -> None:
@@ -97,10 +94,9 @@ class SignupTest(TestCase):
         response = self.client.post(path=form_url, data=data)
 
         self.assertFormError(
-            response=response,
-            form="form",
-            field="password1",
-            errors="Ce mot de passe est trop courant.",
+            response.context["form"],
+            "password1",
+            "Ce mot de passe est trop courant.",
         )
 
     def test_password_minimum_length(self):
@@ -112,10 +108,9 @@ class SignupTest(TestCase):
         data = {**valid_payload, **password_payload}
         response = self.client.post(path=form_url, data=data)
         self.assertFormError(
-            response=response,
-            form="form",
-            field="password1",
-            errors="Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères.",
+            response.context["form"],
+            "password1",
+            "Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères.",
         )
 
     def test_password_contains_special_chars(self):
@@ -127,10 +122,9 @@ class SignupTest(TestCase):
         data = {**valid_payload, **password_payload}
         response = self.client.post(path=form_url, data=data)
         self.assertFormError(
-            response=response,
-            form="form",
-            field="password1",
-            errors=MISSING_SPECIAL_CHAR_ERROR,
+            response.context["form"],
+            "password1",
+            MISSING_SPECIAL_CHAR_ERROR,
         )
 
     def test_next_parameter_redirects_to_internal_page(self) -> None:
