@@ -75,3 +75,5 @@ models:
       +schema: matomo
     land:
       +schema: land
+    misc:
+      +schema: misc

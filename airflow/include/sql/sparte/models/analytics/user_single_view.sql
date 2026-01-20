@@ -4,7 +4,6 @@
     )
 }}
 
-
 SELECT
     user_table.id as id,
     user_table.last_login as user_last_login_date,
@@ -17,13 +16,14 @@ SELECT
     user_table.updated_at as user_updated_date,
     user_table.email_checked as user_email_verified,
     user_table.function as user_function,
-    user_table.organism as user_organism,
+    COALESCE(user_table.organism, brevo_organism.organism) as user_organism,
     user_table.service as user_service,
     {{ user_function_display('user_table.function ') }} as user_function_display,
-    {{ user_organism_display('user_table.organism') }} as user_organism_display,
+    {{ user_organism_display('COALESCE(user_table.organism, brevo_organism.organism)') }} as user_organism_display,
     {{ user_service_display('user_table.service') }} as user_service_display,
-    user_table.main_land_id as user_main_land_id,
-    user_table.main_land_type as user_main_land_type,
+    COALESCE(user_table.main_land_id, fallback_land.land_id) as user_main_land_id,
+    COALESCE(user_table.main_land_type, fallback_land.land_type) as user_main_land_type,
+    user_table.main_land_id IS NULL AND fallback_land.land_id IS NOT NULL as user_main_land_from_fallback,
     user_table.siret as user_siret,
     user_table.proconnect as user_proconnect,
     request.request_count as user_download_diagnostic_count,
@@ -48,6 +48,19 @@ SELECT
     satisfaction_form.*
 FROM
     {{ ref('user') }} as user_table
+LEFT JOIN {{ ref('brevo_user_organism') }} as brevo_organism
+    ON user_table.email = brevo_organism.email
+LEFT JOIN LATERAL (
+    SELECT
+        p.land_id,
+        p.land_type
+    FROM {{ ref('request') }} r
+    JOIN {{ ref('project') }} p ON r.project_id = p.id
+    WHERE r.email = user_table.email
+        AND r.requested_document = 'rapport-local'
+    ORDER BY r.created_date DESC
+    LIMIT 1
+) AS fallback_land ON true
 LEFT JOIN LATERAL (
     SELECT count(*) as request_count, max(created_date) as latest_request FROM (
         SELECT * FROM {{ ref('request')}}
@@ -68,9 +81,9 @@ LEFT JOIN LATERAL (
     SELECT * FROM
         {{ ref('land_details') }} as land_details
     WHERE
-        user_table.main_land_id = land_details.land_id
-        AND user_table.main_land_type = land_details.land_type
-    LiMIT 1
+        COALESCE(user_table.main_land_id, fallback_land.land_id) = land_details.land_id
+        AND COALESCE(user_table.main_land_type, fallback_land.land_type) = land_details.land_type
+    LIMIT 1
 ) AS land ON true
 LEFt JOIN LATERAL (
     SELECT
