@@ -7,7 +7,7 @@ from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Centroid
 from django.contrib.gis.geos import MultiPolygon
 from django.core.cache import cache
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.db.models import QuerySet
 from django.urls import reverse
@@ -154,7 +154,7 @@ class Project(BaseProject):
         "Objectif de réduction à 2031 (en %)",
         max_digits=4,
         decimal_places=1,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        validators=[MaxValueValidator(100)],
         null=True,
         blank=True,
         default=None,

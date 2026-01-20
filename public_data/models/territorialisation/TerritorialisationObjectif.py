@@ -1,5 +1,5 @@
 from django.contrib.gis.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator
 
 
 class TerritorialisationObjectif(models.Model):
@@ -25,8 +25,8 @@ class TerritorialisationObjectif(models.Model):
         "Objectif de réduction",
         max_digits=5,
         decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Objectif en pourcentage (0-100)",
+        validators=[MaxValueValidator(100)],
+        help_text="Objectif en pourcentage (max 100)",
     )
     nom_document = models.CharField(
         "Nom du document",
