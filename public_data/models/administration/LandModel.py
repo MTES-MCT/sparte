@@ -120,7 +120,10 @@ class LandModel(models.Model):
     def territorialisation(self):
         from public_data.models.territorialisation import TerritorialisationObjectif
 
-        objectif = self.territorialisation_objectifs.first()
+        objectif = TerritorialisationObjectif.objects.filter(
+            land__land_id=self.land_id,
+            land__land_type=self.land_type,
+        ).first()
         children_objectifs = TerritorialisationObjectif.objects.filter(
             parent__land_id=self.land_id,
             parent__land_type=self.land_type,
@@ -140,14 +143,13 @@ class LandModel(models.Model):
         parent_land_name = None
         if not objectif and self.parent_keys:
             # Récupérer tous les parents triés par surface croissante (le plus petit en premier)
-            parent_lands = (
-                LandModel.objects.filter(key__in=self.parent_keys)
-                .prefetch_related("territorialisation_objectifs")
-                .order_by("surface")
-            )
+            parent_lands = LandModel.objects.filter(key__in=self.parent_keys).order_by("surface")
             # Prendre le plus petit parent qui a un objectif
             for parent_land in parent_lands:
-                parent_objectif = parent_land.territorialisation_objectifs.first()
+                parent_objectif = TerritorialisationObjectif.objects.filter(
+                    land__land_id=parent_land.land_id,
+                    land__land_type=parent_land.land_type,
+                ).first()
                 if parent_objectif:
                     objectif = parent_objectif
                     is_from_parent = True
@@ -187,7 +189,10 @@ class LandModel(models.Model):
 
             # Chercher l'objectif du parent
             if current.parent:
-                parent_objectif = current.parent.territorialisation_objectifs.first()
+                parent_objectif = TerritorialisationObjectif.objects.filter(
+                    land__land_id=current.parent.land_id,
+                    land__land_type=current.parent.land_type,
+                ).first()
                 current = parent_objectif
             else:
                 current = None
