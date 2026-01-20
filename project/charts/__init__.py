@@ -43,6 +43,17 @@ __all__ = [
     "ImperUsagePieChartExport",
     "ImperSyntheseChart",
     "ImperNetFluxChart",
+    "TerritorialisationMap",
+    "TerritorialisationAnneesRestantesMap",
+    "TerritorialisationConsoMap",
+    "TerritorialisationDepassement2031Map",
+    "TerritorialisationEffortMap",
+    "TerritorialisationObjectifMap",
+    "TerritorialisationProgressMap",
+    "TerritorialisationProjection2031Map",
+    "TerritorialisationRestanteMap",
+    "TerritorialisationRythmeMap",
+    "TerritorialisationTauxAtteinte2031Map",
 ]
 
 
