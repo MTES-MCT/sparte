@@ -53,6 +53,7 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.DO_NOTHING,
                         related_name="territorialisation_objectifs",
                         to="public_data.landmodel",
+                        to_field="key",
                         verbose_name="Territoire",
                         db_constraint=False,
                     ),
@@ -60,9 +61,12 @@ class Migration(migrations.Migration):
                 (
                     "parent",
                     models.ForeignKey(
+                        blank=True,
+                        null=True,
                         on_delete=django.db.models.deletion.DO_NOTHING,
                         related_name="territorialisation_objectifs_as_parent",
                         to="public_data.landmodel",
+                        to_field="key",
                         verbose_name="Parent",
                         db_constraint=False,
                     ),
