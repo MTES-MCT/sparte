@@ -11,7 +11,7 @@ models:
         tests:
           - not_null
       - name: land_type
-        description: Type of territory (COMMUNE, EPCI, DEPARTEMENT, REGION, SCOT)
+        description: Type of territory (COMMUNE, EPCI, DEPARTEMENT, REGION, SCOT, CUSTOM)
         tests:
           - not_null
       - name: year

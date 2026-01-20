@@ -11,6 +11,7 @@ class AdminRef:
     COMMUNE = "COMM"
     COMPOSITE = "COMP"
     NATION = "NATION"
+    CUSTOM = "CUSTOM"
 
     CHOICES = (
         (COMMUNE, "Commune"),
@@ -20,6 +21,7 @@ class AdminRef:
         (REGION, "Région"),
         (NATION, "Nation"),
         (COMPOSITE, "Composite"),
+        (CUSTOM, "Personnalisé"),
     )
 
     CHOICES_DICT = {key: value for key, value in CHOICES}
@@ -43,17 +45,7 @@ class AdminRef:
 
     @classmethod
     def get_class(cls, name):
-        if name == cls.REGION:
-            return apps.get_model("public_data.Region")
-        elif name == cls.DEPARTEMENT:
-            return apps.get_model("public_data.Departement")
-        elif name == cls.EPCI:
-            return apps.get_model("public_data.Epci")
-        elif name == cls.COMMUNE:
-            return apps.get_model("public_data.Commune")
-        elif name == cls.SCOT:
-            return apps.get_model("public_data.Scot")
-        raise AttributeError(f"{name} is not an administrative layer")
+        return apps.get_model("public_data.LandModel")
 
     @classmethod
     def get_analysis_default_level(cls, level) -> Literal["COMM", "EPCI", "SCOT", "DEPART", "REGION"]:
@@ -68,6 +60,7 @@ class AdminRef:
             cls.DEPARTEMENT: cls.EPCI,
             cls.REGION: cls.DEPARTEMENT,
             cls.COMPOSITE: cls.COMMUNE,
+            cls.CUSTOM: cls.COMMUNE,
         }[level]
 
     @classmethod
@@ -82,6 +75,7 @@ class AdminRef:
     @classmethod
     def get_available_analysis_level(cls, land_type) -> list[str]:
         return {
+            cls.CUSTOM: [cls.COMMUNE],
             cls.COMMUNE: [cls.COMMUNE],
             cls.EPCI: [cls.COMMUNE],
             cls.SCOT: [

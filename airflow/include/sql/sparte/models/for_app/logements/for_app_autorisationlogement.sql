@@ -59,6 +59,17 @@ SELECT
     surface_de_plancher_commencee
 FROM
     {{ ref('logement_scot')}}
+UNION
+SELECT
+    code_custom_land as land_id,
+    '{{ var('CUSTOM') }}' as land_type,
+    year as year,
+    logements_autorises,
+    logements_commences,
+    surface_de_plancher_autorisee,
+    surface_de_plancher_commencee
+FROM
+    {{ ref('logement_custom_land')}}
 ), with_percentages as (
 SELECT
     autorisations.land_id,

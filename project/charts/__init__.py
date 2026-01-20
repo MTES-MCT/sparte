@@ -43,6 +43,17 @@ __all__ = [
     "ImperUsagePieChartExport",
     "ImperSyntheseChart",
     "ImperNetFluxChart",
+    "TerritorialisationMap",
+    "TerritorialisationAnneesRestantesMap",
+    "TerritorialisationConsoMap",
+    "TerritorialisationDepassement2031Map",
+    "TerritorialisationEffortMap",
+    "TerritorialisationObjectifMap",
+    "TerritorialisationProgressMap",
+    "TerritorialisationProjection2031Map",
+    "TerritorialisationRestanteMap",
+    "TerritorialisationRythmeMap",
+    "TerritorialisationTauxAtteinte2031Map",
 ]
 
 
@@ -88,6 +99,19 @@ from .impermeabilisation import (
     ImperUsagePieChartExport,
 )
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
+from .TerritorialisationMap import TerritorialisationMap
+from .TerritorialisationProgressMap import (
+    TerritorialisationAnneesRestantesMap,
+    TerritorialisationConsoMap,
+    TerritorialisationDepassement2031Map,
+    TerritorialisationEffortMap,
+    TerritorialisationObjectifMap,
+    TerritorialisationProgressMap,
+    TerritorialisationProjection2031Map,
+    TerritorialisationRestanteMap,
+    TerritorialisationRythmeMap,
+    TerritorialisationTauxAtteinte2031Map,
+)
 from .urbanisme.FrichePollutionChart import FrichePollutionChart
 from .urbanisme.FricheSurfaceChart import FricheSurfaceChart
 from .urbanisme.FricheTypeChart import FricheTypeChart

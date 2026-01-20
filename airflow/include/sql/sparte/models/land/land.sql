@@ -19,13 +19,21 @@ SELECT
     {{ common_fields }},
     {{ admin_express_common_fields }},
     array[]::varchar[] as child_land_types,
-    ARRAY[
-        '{{ var("EPCI") }}_' || epci,
-        '{{ var("DEPARTEMENT") }}_' || departement,
-        '{{ var("REGION") }}_' || region,
-        '{{ var("NATION") }}_' || '{{ var("NATION") }}',
-        '{{ var("SCOT") }}_' || scot
-    ] as parent_keys
+    ARRAY_CAT(
+        ARRAY[
+            '{{ var("EPCI") }}_' || epci,
+            '{{ var("DEPARTEMENT") }}_' || departement,
+            '{{ var("REGION") }}_' || region,
+            '{{ var("NATION") }}_' || '{{ var("NATION") }}',
+            '{{ var("SCOT") }}_' || scot
+        ],
+        COALESCE(
+            (SELECT array_agg('{{ var("CUSTOM") }}_' || custom_land_id)
+             FROM {{ ref('commune_custom_land') }}
+             WHERE commune_code = commune.code),
+            array[]::varchar[]
+        )
+    ) as parent_keys
 FROM
     {{ ref('commune') }}
 UNION ALL
@@ -92,6 +100,19 @@ SELECT
     ) as parent_keys
 FROM
     {{ ref('scot') }}
+UNION ALL
+SELECT
+    land_id,
+    land_type,
+    departements,
+    geom,
+    simple_geom,
+    surface,
+    name,
+    child_land_types,
+    parent_keys
+FROM
+    {{ ref('custom_land') }}
 
 ORDER BY land_type
 DESC

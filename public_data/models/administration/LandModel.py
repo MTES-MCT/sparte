@@ -1,13 +1,27 @@
+from functools import cached_property
+
 from django.contrib.gis.db.models import MultiPolygonField
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.search import TrigramSimilarity
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control, cache_page
 from rest_framework import serializers, viewsets
 from rest_framework.response import Response
 
+from .AdminRef import AdminRef
+
+
+class LandModelManager(models.Manager):
+    def get_by_natural_key(self, land_id, land_type):
+        return self.get(land_id=land_id, land_type=land_type)
+
 
 class LandModel(models.Model):
+    objects = LandModelManager()
+    key = models.TextField(unique=True)
+
     class OcsgeCoverageStatus(models.TextChoices):
         COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complet et uniforme"
         """
@@ -97,10 +111,248 @@ class LandModel(models.Model):
         db_table = "public_data_land"
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.land_id} - {self.land_type})"
+
+    def natural_key(self):
+        return (self.land_id, self.land_type)
+
+    @cached_property
+    def territorialisation(self):
+        from public_data.models.territorialisation import TerritorialisationObjectif
+
+        objectif = self.territorialisation_objectifs.first()
+        children_objectifs = TerritorialisationObjectif.objects.filter(
+            parent__land_id=self.land_id,
+            parent__land_type=self.land_type,
+        ).select_related("land")
+        has_children = children_objectifs.exists()
+        children_land_types = list(
+            set(obj.land.land_type for obj in children_objectifs if obj.land.land_type != AdminRef.CUSTOM)
+        )
+
+        # Calculer les statistiques des membres si présents
+        children_stats = None
+        if has_children:
+            children_stats = self._compute_children_stats(children_objectifs)
+
+        # Si pas d'objectif propre, chercher dans les parents
+        is_from_parent = False
+        parent_land_name = None
+        if not objectif and self.parent_keys:
+            # Récupérer tous les parents triés par surface croissante (le plus petit en premier)
+            parent_lands = (
+                LandModel.objects.filter(key__in=self.parent_keys)
+                .prefetch_related("territorialisation_objectifs")
+                .order_by("surface")
+            )
+            # Prendre le plus petit parent qui a un objectif
+            for parent_land in parent_lands:
+                parent_objectif = parent_land.territorialisation_objectifs.first()
+                if parent_objectif:
+                    objectif = parent_objectif
+                    is_from_parent = True
+                    parent_land_name = parent_land.name
+                    break
+
+        if not objectif:
+            return {
+                "has_objectif": False,
+                "objectif": None,
+                "hierarchy": [],
+                "has_children": has_children,
+                "children_land_types": children_land_types,
+                "children_stats": children_stats,
+                "is_from_parent": False,
+                "parent_land_name": None,
+            }
+
+        # Construire la hiérarchie en remontant les parents
+        hierarchy = []
+        current = objectif
+
+        while current:
+            hierarchy.append(
+                {
+                    "land_id": current.land.land_id,
+                    "land_type": current.land.land_type,
+                    "land_name": current.land.name,
+                    "objectif": float(current.objectif_de_reduction),
+                    "parent_name": current.parent.name if current.parent else None,
+                    "nom_document": current.nom_document,
+                    "document_url": current.document_url,
+                    "document_comment": current.document_comment,
+                    "is_in_document": current.is_in_document,
+                }
+            )
+
+            # Chercher l'objectif du parent
+            if current.parent:
+                parent_objectif = current.parent.territorialisation_objectifs.first()
+                current = parent_objectif
+            else:
+                current = None
+
+        hierarchy_ordered = list(reversed(hierarchy))
+
+        # Document source = avant-dernier de la hiérarchie (le parent qui définit l'objectif)
+        source_document = None
+        if len(hierarchy_ordered) >= 2:
+            parent_item = hierarchy_ordered[-2]
+            source_document = {
+                "land_name": parent_item["land_name"],
+                "nom_document": parent_item["nom_document"],
+            }
+
+        return {
+            "has_objectif": True,
+            "objectif": float(objectif.objectif_de_reduction),
+            "hierarchy": hierarchy_ordered,
+            "has_children": has_children,
+            "children_land_types": children_land_types,
+            "children_stats": children_stats,
+            "source_document": source_document,
+            "is_from_parent": is_from_parent,
+            "parent_land_name": parent_land_name,
+        }
+
+    def _compute_children_stats(self, children_objectifs):
+        """Calcule les statistiques agrégées des territoires enfants."""
+        ANNEES_ECOULEES = 3
+        ANNEES_TOTALES = 10
+
+        total_membres = 0
+        deja_depasse = 0
+        vont_depasser = 0
+        en_bonne_voie = 0
+        total_conso_since_2021 = 0
+        total_conso_max = 0
+        progressions = []
+
+        for obj in children_objectifs:
+            land = obj.land
+            conso_details = land.conso_details or {}
+            conso_2011_2020 = conso_details.get("conso_2011_2020", 0) or 0
+            conso_since_2021 = conso_details.get("conso_since_2021", 0) or 0
+            objectif_reduction = float(obj.objectif_de_reduction)
+            conso_max = conso_2011_2020 * (1 - objectif_reduction / 100)
+
+            if conso_max > 0:
+                progress = (conso_since_2021 / conso_max) * 100
+            else:
+                progress = 100 if conso_since_2021 > 0 else 0
+
+            # Calculer la projection 2031
+            rythme_annuel = conso_since_2021 / ANNEES_ECOULEES if ANNEES_ECOULEES > 0 else 0
+            conso_projetee_2031 = rythme_annuel * ANNEES_TOTALES
+
+            total_membres += 1
+            total_conso_since_2021 += conso_since_2021
+            total_conso_max += conso_max
+            progressions.append(progress)
+
+            # Catégoriser le territoire
+            if progress >= 100:
+                deja_depasse += 1
+            elif conso_projetee_2031 > conso_max:
+                vont_depasser += 1
+            else:
+                en_bonne_voie += 1
+
+        progression_moyenne = sum(progressions) / len(progressions) if progressions else 0
+        progression_globale = (total_conso_since_2021 / total_conso_max * 100) if total_conso_max > 0 else 0
+
+        return {
+            "total_membres": total_membres,
+            "deja_depasse": deja_depasse,
+            "vont_depasser": vont_depasser,
+            "en_bonne_voie": en_bonne_voie,
+            "total_conso_since_2021": round(total_conso_since_2021, 2),
+            "total_conso_max": round(total_conso_max, 2),
+            "progression_moyenne": round(progression_moyenne, 1),
+            "progression_globale": round(progression_globale, 1),
+        }
+
+    @classmethod
+    def search(cls, needle, search_for=None):
+        """
+        Search for territories by name or land_id using trigram similarity.
+
+        Args:
+            needle: The search term
+            search_for: Optional list of land_types to filter by, or "*" for all
+
+        Returns:
+            QuerySet of LandModel instances ordered by similarity
+        """
+        if not needle:
+            return cls.objects.none()
+
+        # Determine which land types to search for
+        valid_land_types = [
+            AdminRef.COMMUNE,
+            AdminRef.EPCI,
+            AdminRef.SCOT,
+            AdminRef.DEPARTEMENT,
+            AdminRef.REGION,
+            AdminRef.NATION,
+            AdminRef.CUSTOM,
+        ]
+
+        if search_for and search_for != "*":
+            if isinstance(search_for, str):
+                search_for = [search_for]
+            valid_land_types = [lt for lt in valid_land_types if lt in search_for]
+
+        # Search by land_id if needle is numeric (INSEE code), otherwise by name
+        if needle.isdigit():
+            qs = cls.objects.annotate(similarity=TrigramSimilarity("land_id", needle))
+            similarity_threshold = 0.2
+        else:
+            qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
+            similarity_threshold = 0.15
+
+        # Filter by land types and similarity threshold
+        qs = qs.filter(
+            land_type__in=valid_land_types,
+            similarity__gt=similarity_threshold,
+        )
+
+        # Order by similarity descending
+        qs = qs.order_by("-similarity")
+
+        # Limit to 20 results
+        return qs[:20]
+
+    # -------------------------------------------------------------------------
+    # DEPRECATED: Compatibility properties for Land search migration
+    # These properties exist to maintain compatibility with LandSerializer
+    # which was originally designed to work with the Land class.
+    # See public_data/models/administration/Land.py for the original implementation.
+    # -------------------------------------------------------------------------
+
+    @property
+    def land_type_label(self):
+        """DEPRECATED: Use AdminRef.get_label(land_type) instead."""
+        return AdminRef.CHOICES_DICT.get(self.land_type, self.land_type)
+
+    @property
+    def public_key(self):
+        """DEPRECATED: Use 'key' field instead."""
+        return self.key
+
+    @property
+    def area(self):
+        """DEPRECATED: Use 'surface' field instead."""
+        return self.surface
+
+    def get_official_id(self):
+        """DEPRECATED: Use 'land_id' field instead."""
+        return self.land_id
 
 
 class LandModelSerializer(serializers.ModelSerializer):
+    territorialisation = serializers.DictField(read_only=True)
+
     class Meta:
         model = LandModel
         exclude = (

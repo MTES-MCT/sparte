@@ -20,13 +20,21 @@ SELECT
     commune.epci as "{{ var('EPCI')}}",
     commune.departement as "{{ var('DEPARTEMENT')}}",
     commune.region as "{{ var('REGION')}}",
-    commune.scot as "{{ var('SCOT')}}"
+    commune.scot as "{{ var('SCOT')}}",
+    custom_land.custom_lands as "{{ var('CUSTOM')}}"
 FROM
     {{ ref("occupation_du_sol_commune")}}
- LEFT JOIN LATERAL (
+LEFT JOIN LATERAL (
     SELECT *
     FROM
         {{ ref('commune') }} as commune
     WHERE
         commune.code = occupation_du_sol_commune.commune_code
 ) commune ON TRUE
+LEFT JOIN LATERAL (
+    SELECT array_agg(custom_land_id) as custom_lands
+    FROM
+        {{ ref('commune_custom_land') }} as ccl
+    WHERE
+        ccl.commune_code = occupation_du_sol_commune.commune_code
+) custom_land ON TRUE

@@ -22,13 +22,20 @@ vars:
     EPCI: "EPCI"
     COMMUNE: "COMM"
     COMPOSITE: "COMP"
+    CUSTOM: "CUSTOM"
     NATION: "NATION"
+
+seeds:
+  sparte:
+    seed_custom_land_commune:
+      +column_types:
+        commune_code: varchar(5)
 
 models:
   +grants:
-    select: ["alexis", "sofian", "metabase", "scaleway_server", "matomo"]
-    insert: ["alexis", "sofian", "scaleway_server"]
-    update: ["alexis", "sofian", "scaleway_server"]
+    select: ["alexis","production"]
+    insert: ["alexis", "production"]
+    update: ["alexis","production"]
   sparte:
     docurba:
       +schema: docurba

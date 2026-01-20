@@ -52,7 +52,7 @@ const ConsoCorrectionStatus: React.FC<ConsoCorrectionStatusProps> = ({ status })
 
     const title = consoCorrectionStatusMessages[status].title;
     const message = consoCorrectionStatusMessages[status].message;
-    
+
     return (
         <div className="fr-notice fr-notice--info fr-my-3w">
             <div className="fr-container--fluid fr-p-3w">

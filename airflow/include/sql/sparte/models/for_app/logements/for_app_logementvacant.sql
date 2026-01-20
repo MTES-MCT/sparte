@@ -99,6 +99,25 @@ ON
     logements_vacants_scot.code_scot = rpls_scot.scot_code
 AND
     logements_vacants_scot.year = rpls_scot.year
+
+-- CUSTOM
+UNION
+SELECT
+    code_custom_land as land_id,
+    '{{ var('CUSTOM') }}' as land_type,
+    logements_vacants_custom_land.year as year,
+    logements_parc_prive,
+    logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
+    coalesce(rpls_custom_land.total, 0) as logements_parc_social,
+    coalesce(rpls_custom_land.vacants, 0) as logements_vacants_parc_social
+FROM
+    {{ ref('logements_vacants_custom_land') }} as logements_vacants_custom_land
+LEFT JOIN
+    {{ ref('rpls_custom_land') }} as rpls_custom_land
+ON
+    logements_vacants_custom_land.code_custom_land = rpls_custom_land.custom_land_code
+AND
+    logements_vacants_custom_land.year = rpls_custom_land.year
 ), with_parc_general as (
 SELECT
     *,

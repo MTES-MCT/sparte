@@ -49,3 +49,8 @@ select
     '{{ var("SCOT") }}' as land_type,
     {{ common_fields }}
 from {{ ref("artif_zonage_scot") }}
+union all
+select
+    '{{ var("CUSTOM") }}' as land_type,
+    {{ common_fields }}
+from {{ ref("artif_zonage_custom_land") }}

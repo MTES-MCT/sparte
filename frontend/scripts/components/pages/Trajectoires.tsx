@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Guide from '@components/ui/Guide';
 import Card from '@components/ui/Card';
-import { TargetModal, useTargetModal } from '@components/features/trajectoires/TargetModal';
-import { useUpdateProjectTarget2031Mutation } from '@services/api';
+import { TerritorialisationHierarchy } from '@components/features/trajectoires/TerritorialisationHierarchy';
+import { TerritorialisationWarning } from '@components/features/trajectoires/TerritorialisationWarning';
+import GuideContent from '@components/ui/GuideContent';
+import { useUpdateProjectTarget2031Mutation, useGetCurrentUserQuery } from '@services/api';
 import { formatNumber } from '@utils/formatUtils';
+import { getLandTypeLabel } from '@utils/landUtils';
 import { LandDetailResultType } from '@services/types/land';
 import { ProjectDetailResultType } from '@services/types/project';
 import styled from 'styled-components';
@@ -14,33 +17,17 @@ interface TrajectoiresProps {
     projectData: ProjectDetailResultType;
 }
 
-const Container = styled.div`
-    background: linear-gradient(180deg,rgb(236, 236, 248) 0%, rgba(236, 236, 248, 0) 100%);
-    border-radius: 4px; 
-    padding: 1.5rem;
-`;
-
 const PeriodTitle = styled.h4`
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 0.8rem;
 `;
 
-const PeriodReferenceValue = styled.span`
-    font-size: 2.8rem;
-    font-weight: 600;
-`;
-
-const PeriodReferenceLabel = styled.p`
-    font-size: 0.85rem;
-    margin-top: 1rem;
-`;
-
 const MiniChartContainer = styled.div`
     margin-top: 0.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.2rem;
 `;
 
 const MiniChartBar = styled.div<{ $value: number; $maxValue: number; $color: string }>`
@@ -56,7 +43,6 @@ const MiniChartLabel = styled.div`
     justify-content: space-between;
     align-items: center;
     font-size: 0.75rem;
-    margin-bottom: 0.25rem;
 `;
 
 const MiniChartBarContainer = styled.div`
@@ -70,21 +56,75 @@ const MiniChartBarContainer = styled.div`
     align-items: center;
 `;
 
-const MiniChartBarText = styled.span`
+const MiniChartBarText = styled.span<{ $color?: string }>`
     position: absolute;
     right: 0.5rem;
     font-size: 0.75rem;
     z-index: 1;
     pointer-events: none;
+    color: ${props => props.$color || 'inherit'};
+`;
+
+const SectionTitle = styled.h3`
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: #161616;
+`;
+
+const ObjectifCard = styled(Card)`
+    justify-content: flex-start;
+`;
+
+const ReductionRow = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 40px;
+`;
+
+const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+`;
+
+const ModalTitle = styled.h4`
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+`;
+
+const ModalActions = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
 `;
 
 interface MiniComparisonChartProps {
     value1: number;
     label1: string;
-    value2: number;
-    label2: string;
+    value2?: number;
+    label2?: string;
     color1?: string;
     color2?: string;
+    textColor1?: string;
+    textColor2?: string;
 }
 
 const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
@@ -93,11 +133,12 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
     value2,
     label2,
     color1 = '#0063CB',
-    color2 = '#00A95F'
+    color2 = '#00A95F',
+    textColor1,
+    textColor2
 }) => {
-    // Utiliser la valeur maximale réelle, avec un minimum très petit pour éviter la division par zéro
-    const maxValue = Math.max(value1, value2, 0.001);
-    
+    const maxValue = Math.max(value1, value2 ?? 0, 0.001);
+
     return (
         <MiniChartContainer>
             <MiniChartLabel>
@@ -105,46 +146,105 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
             </MiniChartLabel>
             <MiniChartBarContainer>
                 <MiniChartBar $value={value1} $maxValue={maxValue} $color={color1} />
-                <MiniChartBarText>
+                <MiniChartBarText $color={textColor1}>
                     {formatNumber({ number: value1 })} ha
                 </MiniChartBarText>
             </MiniChartBarContainer>
-            <MiniChartLabel>
-                <span>{label2}</span>
-            </MiniChartLabel>
-            <MiniChartBarContainer>
-                <MiniChartBar $value={value2} $maxValue={maxValue} $color={color2} />
-                <MiniChartBarText>
-                    {formatNumber({ number: value2 })} ha
-                </MiniChartBarText>
-            </MiniChartBarContainer>
+            {value2 !== undefined && label2 && (
+                <>
+                    <MiniChartLabel>
+                        <span>{label2}</span>
+                    </MiniChartLabel>
+                    <MiniChartBarContainer>
+                        <MiniChartBar $value={value2} $maxValue={maxValue} $color={color2} />
+                        <MiniChartBarText $color={textColor2}>
+                            {formatNumber({ number: value2 })} ha
+                        </MiniChartBarText>
+                    </MiniChartBarContainer>
+                </>
+            )}
         </MiniChartContainer>
     );
 };
 
+
 const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) => {
-    const { land_id, land_type, conso_details } = landData;
-    const modal = useTargetModal();
+    const { land_id, land_type, name, conso_details, territorialisation } = landData;
     const [updateTarget2031, { isLoading: isUpdating }] = useUpdateProjectTarget2031Mutation();
+    const [showCustomTargetModal, setShowCustomTargetModal] = useState(false);
+    const [modalTargetInput, setModalTargetInput] = useState<string>('');
+
+    const { data: currentUser } = useGetCurrentUserQuery();
+    const isDGALNMember = currentUser?.groups?.includes('DGALN') ?? false;
+
+    const openModal = () => {
+        setModalTargetInput(projectData.target_2031?.toString() ?? '');
+        setShowCustomTargetModal(true);
+    };
 
     const conso_2011_2020 = conso_details?.conso_2011_2020;
-    const conso_2011_2020_per_year = conso_2011_2020 / 10;
-    const allowed_conso_2021_2030 = conso_details?.allowed_conso_2021_2030;
-    const allowed_conso_2021_2030_per_year = allowed_conso_2021_2030 / 10;
     const annual_conso_since_2021 = conso_details?.annual_conso_since_2021;
+
+    // Objectif territorialisé, suggéré (hérité d'un parent), ou national par défaut (50%)
+    const has_territorialisation = territorialisation?.has_objectif ?? false;
+    const is_from_parent = territorialisation?.is_from_parent ?? false;
+    const objectif_reduction = has_territorialisation
+        ? territorialisation?.objectif ?? 50
+        : 50;
+
+    // Déterminer le type d'objectif pour l'affichage
+    const getObjectifLabel = () => {
+        if (!has_territorialisation) return "Objectif national";
+        if (is_from_parent) return "Objectif suggéré";
+        return "Objectif territorialisé";
+    };
+    const objectifLabel = getObjectifLabel();
+    const objectifType = is_from_parent ? "suggéré" : "réglementaire";
+    const objectifTypeBadge = is_from_parent ? "Suggestion" : "Réglementaire";
+
+    // Document source de l'objectif (renvoyé par le backend)
+    const sourceDocument = territorialisation?.source_document ?? null;
+    // Document du territoire actuel (dernier élément de la hiérarchie) - utilisé pour les régions
+    const currentDocument = territorialisation?.hierarchy?.at(-1) ?? null;
+    // Document parent (avant-dernier élément) pour récupérer l'URL
+    const parentDocument = territorialisation?.hierarchy?.at(-2) ?? null;
+    const allowed_conso_2021_2030 = conso_2011_2020 * (1 - objectif_reduction / 100);
+    const allowed_conso_2021_2030_per_year = allowed_conso_2021_2030 / 10;
+
+    // Projections 2031 du territoire
+    const ANNEES_ECOULEES = 3;
+    const ANNEES_TOTALES = 10;
+    const conso_since_2021 = annual_conso_since_2021 * ANNEES_ECOULEES;
+    const conso_projetee_2031 = annual_conso_since_2021 * ANNEES_TOTALES;
+    const taux_atteinte_2031 = allowed_conso_2021_2030 > 0
+        ? (conso_projetee_2031 / allowed_conso_2021_2030) * 100
+        : 0;
+    const depassement_2031 = conso_projetee_2031 - allowed_conso_2021_2030;
 
     // Calcul de l'objectif personnalisé
     const target_custom = projectData.target_2031;
-    const has_custom_target = Number(target_custom) !== 50;
-    
-    const annual_2020 = conso_2011_2020 / 10;
-    const annual_custom_objective = has_custom_target 
-        ? annual_2020 - (annual_2020 * ((target_custom || 50) / 100))
-        : annual_2020 - (annual_2020 * 0.5);
-    const allowed_conso_custom = annual_custom_objective * 10;
+    const has_custom_target = target_custom != null;
+    const allowed_conso_custom = has_custom_target ? conso_2011_2020 * (1 - target_custom / 100) : 0;
+    const allowed_conso_custom_per_year = has_custom_target ? allowed_conso_custom / 10 : 0;
 
-    const handleUpdateTarget = async (newTarget: number) => {
-        await updateTarget2031({ projectId: projectData.id, target_2031: newTarget }).unwrap();
+    // Formater les types de territoires enfants pour l'affichage
+    const childrenLandTypesLabel = (territorialisation?.children_land_types ?? [])
+        .map((type, index) => {
+            const label = getLandTypeLabel(type, true);
+            return index === 0 ? label.charAt(0).toUpperCase() + label.slice(1) : label;
+        })
+        .join(' / ');
+
+    const handleSaveCustomTarget = () => {
+        if (modalTargetInput === '') {
+            updateTarget2031({ projectId: projectData.id, target_2031: null });
+        } else {
+            const numValue = Number.parseFloat(modalTargetInput);
+            if (!Number.isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+                updateTarget2031({ projectId: projectData.id, target_2031: numValue });
+            }
+        }
+        setShowCustomTargetModal(false);
     };
 
     return (
@@ -160,7 +260,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                                     La loi Climat & Résilience fixe<strong> l'objectif d'atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire
                                     de réduction de moitié de la consommation d'espaces</strong>
                                     naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030)
-                                    par rapport à la décennie précédente 2011-2021 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
+                                    par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
                                 </p>
                                 <p className="fr-text--sm mb-3">
                                     Cette <strong>trajectoire nationale progressive</strong> est à décliner dans les documents de planification et d'urbanisme (avant le 22 novembre 2024 pour les SRADDET,
@@ -193,139 +293,427 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                             </>
                         }
                     >
-                        <p className="fr-text--sm fr-mb-2w">La loi n° 2021-1104 du 22 août 2021 dite “Climat et Résilience” fixe pour la France l’objectif de parvenir au Zéro Artificialisation Nette (ZAN) à l’horizon 2050 (article L.101-2-1 du Code de l’urbanisme). 
-                        À titre intermédiaire, les collectivités doivent inscrire leurs documents d’urbanisme dans une trajectoire visant nationalement à <strong>réduire de moitié la consommation d’espaces naturels, agricoles et forestiers (ENAF) sur la période 2021-2031, par rapport à la décennie 2011-2021.</strong></p>
-                        <p className="fr-text--sm"> Les données affichées sur cette plateforme proviennent du <strong>Portail national de l’artificialisation</strong> et sont produites par le CEREMA à partir des Fichiers Fonciers. Elles constituent une donnée <strong>de référence</strong> pour la mesure de la consommation d’ENAF. Ces données peuvent être complétées par des données locales (ex. MOS, bases communales, etc.) dès lors que celles-ci sont cohérentes avec les définitions légales et justifiées méthodologiquement. </p>
+                        <p className="fr-text--sm fr-mb-2w">La loi n° 2021-1104 du 22 août 2021 dite "Climat et Résilience" fixe pour la France l'objectif de parvenir au Zéro Artificialisation Nette (ZAN) à l'horizon 2050 (article L.101-2-1 du Code de l'urbanisme).
+                        À titre intermédiaire, les collectivités doivent inscrire leurs documents d'urbanisme dans une trajectoire visant nationalement à <strong>réduire de moitié la consommation d'Espaces NAF (naturels, agricoles et forestiers) sur la période 2021-2031, par rapport à la décennie 2011-2020.</strong></p>
+                        <p className="fr-text--sm"> Les données affichées sur cette plateforme proviennent du <strong>Portail national de l'artificialisation</strong> et sont produites par le CEREMA à partir des Fichiers Fonciers. Elles constituent une donnée <strong>de référence</strong> pour la mesure de la consommation d'Espaces NAF. Ces données peuvent être complétées par des données locales (ex. MOS, bases communales, etc.) dès lors que celles-ci sont cohérentes avec les définitions légales et justifiées méthodologiquement. </p>
                     </Guide>
                 </div>
             </div>
 
-            <div className="fr-notice fr-notice--warning fr-mb-5w">
-                <div className="fr-px-2w">
-                    <div className="fr-notice__body">
-                        <p>
-                            <span className="fr-notice__title fr-text--sm">
-                                L'équipe travaille à l'intégration des objectifs déjà
-                                territorialisés de réduction de la consommation d'espaces
-                                NAF.{" "}
-                            </span>
-                            <span className="fr-notice__desc fr-text--sm">
-                                Dans l'attente de cette mise à jour, vous pouvez modifier
-                                l'objectif du territoire dans le graphique ci-dessous. Par
-                                défaut, en attendant cette territorisalisation, l'outil
-                                affiche l'objectif national de réduction de 50%.
-                                <br />
-                                <br />
-                                <strong>Cet objectif est fourni à titre indicatif et n’a pas de valeur réglementaire.</strong>
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
+            {!territorialisation?.has_objectif && <TerritorialisationWarning />}
 
-            <Container>
-                <PeriodTitle>Période de référence: 2011 - 2021</PeriodTitle>
-                <PeriodReferenceValue>
-                    <span>{formatNumber({ number: conso_2011_2020 })} ha</span>
-                    <span className="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w">{formatNumber({ number: conso_2011_2020_per_year })} ha/an</span>
-                </PeriodReferenceValue>
-                <PeriodReferenceLabel className="fr-mb-5w">Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</PeriodReferenceLabel>
-                
-                <div className="d-flex justify-content-between align-items-center fr-mb-2w">
-                    <PeriodTitle>Période de réduction : 2021 - 2031 </PeriodTitle>
-                    {has_custom_target && (
-                        <button
-                            className="fr-btn fr-btn--secondary fr-btn--sm"
-                            onClick={() => modal.open()}
-                        >
-                            Modifier l'objectif personnalisé
-                        </button>
-                    )}
-                </div>
-                <div className="fr-grid-row fr-grid-row--gutters">
-                    <div className="fr-col-12 fr-col-md-6">
-                        <Card
-                            badgeClass="fr-badge--blue-ecume"
-                            badgeLabel="Objectif de réduction (non-réglementaire) : 50%"
-                            value={`${formatNumber({ number: allowed_conso_2021_2030 })} ha`}
-                            label="Consommation maximale pour la période du 1er jan. 2021 au 31 déc. 2030 (10 ans)"
-                            isHighlighted={true}
-                            highlightBadge="trajectoire selon objectif national"
-                        >
-                            <MiniComparisonChart
-                                value1={annual_conso_since_2021}
-                                label1="Consommation annuelle moyenne depuis 2021"
-                                value2={allowed_conso_2021_2030_per_year}
-                                label2="Consommation annuelle moyenne selon objectif national"
-                                color1="#D9D9D9"
-                                color2="#b6c1ea"
-                            />
-                        </Card>
-                    </div>
-                    <div className="fr-col-12 fr-col-md-6">
-                        {has_custom_target ? (
-                            <Card
-                                badgeClass="fr-badge--green-archipel"
-                                badgeLabel={`Objectif de réduction (personnalisé) : ${target_custom}%`}
-                                value={`${formatNumber({ number: allowed_conso_custom })} ha`}
-                                label="Consommation maximale pour la période du 1er jan. 2021 au 31 déc. 2030 (10 ans)"
-                                isHighlighted={true}
-                                highlightBadge="Trajectoire selon objectif personnalisé"
-                            >
-                                <MiniComparisonChart
-                                    value1={annual_conso_since_2021}
-                                    label1="Consommation annuelle moyenne depuis 2021"
-                                    value2={annual_custom_objective}
-                                    label2="Consommation annuelle moyenne selon objectif personnalisé"
-                                    color1="#D9D9D9"
-                                    color2="#B6DFDE"
-                                />
-                            </Card>
-                        ) : (
-                            <Card
-                                isHighlighted={true}
-                                highlightBadge="Trajectoire selon objectif personnalisé"
-                                empty={true}
-                            >
-                                <div className="d-flex flex-column align-items-center gap-2 justify-content-center">
-                                    <p className="fr-text--sm">Simuler une trajectoire personnalisée en ajustant l'objectif de réduction.</p>
-                                    <button
-                                        className="fr-btn fr-btn--secondary fr-btn--sm"
-                                        onClick={() => modal.open()}
-                                    >
-                                        Définir un objectif personnalisé
-                                    </button>
+            {territorialisation?.has_objectif && territorialisation?.hierarchy?.length > 0 && (
+                <TerritorialisationHierarchy
+                    hierarchy={territorialisation.hierarchy}
+                    land_id={land_id}
+                    land_type={land_type}
+                    land_name={name}
+                    has_children={territorialisation?.has_children ?? false}
+                    is_from_parent={territorialisation?.is_from_parent ?? false}
+                    parent_land_name={territorialisation?.parent_land_name ?? null}
+                    objectif={territorialisation?.objectif ?? null}
+                    child_land_types={territorialisation?.children_land_types ?? []}
+                />
+            )}
+
+                <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+                    <div className="fr-col-12 fr-col-lg-9">
+                        <div style={{ background: 'var(--background-alt-grey)', borderRadius: '8px', padding: '1.5rem' }}>
+                            <PeriodTitle>Période de référence : 2011 - 2020</PeriodTitle>
+                            <div className="fr-mb-3w">
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                                    <span style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.2 }}>{formatNumber({ number: conso_2011_2020 })} ha</span>
+                                    <span className="fr-tag fr-tag--blue" style={{ fontWeight: 700 }}>
+                                        {formatNumber({ number: conso_2011_2020 / 10 })} ha/an en moyenne
+                                    </span>
                                 </div>
-                            </Card>
-                        )}
+                                <p className="fr-text--sm" style={{ color: '#666', margin: '0.5rem 0' }}>Consommation cumulée de la période du 1er janvier 2011 au 31 décembre 2020 (10 ans)</p>
+                            </div>
+
+                            <PeriodTitle>Période de réduction : 2021 - 2031</PeriodTitle>
+                            <div className="fr-grid-row fr-grid-row--gutters">
+                                <div className="fr-col-12 fr-col-md-6">
+                                    <ObjectifCard
+                                        icon="bi-bullseye"
+                                        badgeClass='fr-badge'
+                                        badgeLabel={objectifLabel}
+                                        value={`${formatNumber({ number: allowed_conso_2021_2030 })} ha`}
+                                        label="Consommation maximale pour la période du 1er janvier 2021 au 31 décembre 2030 (10 ans)"
+                                        isHighlighted={true}
+                                        highlightBadge={objectifTypeBadge}
+                                    >
+                                        <div className="d-flex flex-column gap-2">
+                                            <ReductionRow>
+                                                <span className="fr-text--sm fr-mb-0">Taux de réduction :</span>
+                                                <span style={{ fontSize: '1rem', fontWeight: 600 }}>-{objectif_reduction}%</span>
+                                            </ReductionRow>
+                                            <MiniComparisonChart
+                                                value1={annual_conso_since_2021}
+                                                label1="Consommation annuelle moyenne (depuis 2021)"
+                                                value2={allowed_conso_2021_2030_per_year}
+                                                label2={`Consommation annuelle moyenne autorisée selon l'objectif ${objectifType}`}
+                                                color1="#6a6a6a"
+                                                color2={has_territorialisation ? "#A558A0" : "#00A95F"}
+                                                textColor1="white"
+                                            />
+                                        </div>
+                                    </ObjectifCard>
+                                </div>
+                                <div className="fr-col-12 fr-col-md-6">
+                                    {has_custom_target ? (
+                                        <ObjectifCard
+                                            icon="bi-sliders"
+                                            badgeClass="fr-badge"
+                                            badgeLabel="Objectif personnalisé"
+                                            value={`${formatNumber({ number: allowed_conso_custom })} ha`}
+                                            label="Consommation maximale pour la période du 1er janvier 2021 au 31 décembre 2030 (10 ans)"
+                                        >
+                                            <div className="d-flex flex-column gap-2">
+                                                <ReductionRow>
+                                                    <span className="fr-text--sm fr-mb-0">Taux de réduction :</span>
+                                                    <span style={{ fontSize: '1rem', fontWeight: 600 }}>
+                                                        -{target_custom}%
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        className="fr-btn fr-btn--sm fr-btn--secondary"
+                                                        onClick={openModal}
+                                                        title="Modifier l'objectif personnalisé"
+                                                    >
+                                                        Modifier
+                                                    </button>
+                                                </ReductionRow>
+                                                <MiniComparisonChart
+                                                    value1={annual_conso_since_2021}
+                                                    label1="Consommation annuelle moyenne (depuis 2021)"
+                                                    value2={allowed_conso_custom_per_year}
+                                                    label2="Consommation annuelle moyenne selon objectif personnalisé"
+                                                    color1="#6a6a6a"
+                                                    color2="#98cecc"
+                                                    textColor1="white"
+                                                />
+                                            </div>
+                                        </ObjectifCard>
+                                    ) : (
+                                        <ObjectifCard
+                                            icon="bi-sliders"
+                                            badgeClass="fr-badge--grey"
+                                            badgeLabel="Objectif personnalisé"
+                                            empty
+                                        >
+                                            <button
+                                                type="button"
+                                                className="fr-btn fr-btn--secondary"
+                                                onClick={openModal}
+                                            >
+                                                <i className="bi bi-plus-circle" />&nbsp;Définir un objectif personnalisé
+                                            </button>
+                                        </ObjectifCard>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="fr-col-12 fr-col-lg-3">
+                        <GuideContent title="Comprendre les objectifs" column>
+                            <p>
+                                <strong>{objectifLabel}</strong> : c'est le maximum d'espaces que le territoire peut consommer entre 2021 et 2030.
+                                Il est calculé en appliquant une réduction de <strong>{objectif_reduction}%</strong> à la consommation de référence (2011-2020).
+                            </p>
+                            {has_territorialisation && !is_from_parent && (
+                                <p>
+                                    Cet objectif est issu du{' '}
+                                    {sourceDocument ? (
+                                        parentDocument?.document_url ? (
+                                            <a href={parentDocument.document_url} target="_blank" rel="noopener noreferrer">
+                                                {sourceDocument.nom_document}
+                                            </a>
+                                        ) : (
+                                            sourceDocument.nom_document
+                                        )
+                                    ) : currentDocument ? (
+                                        currentDocument.document_url ? (
+                                            <a href={currentDocument.document_url} target="_blank" rel="noopener noreferrer">
+                                                {currentDocument.nom_document}
+                                            </a>
+                                        ) : (
+                                            currentDocument.nom_document
+                                        )
+                                    ) : null}
+                                    {land_type !== "REGION" && " et doit être inscrit dans vos documents d'urbanisme"}.
+                                </p>
+                            )}
+                            {has_territorialisation && is_from_parent && (
+                                <p>
+                                    Cet objectif reprend celui de l'échelon supérieur <strong>{territorialisation?.parent_land_name}</strong>,
+                                    car {name} ne dispose pas encore d'un objectif territorialisé propre.  Il est fourni à titre indicatif et n'a donc pas de valeur réglementaire."
+                                </p>
+                            )}
+                            {!has_territorialisation && (
+                                <p>
+                                    En l'absence d'objectif territorialisé, la trajectoire nationale de <strong>-50%</strong> s'applique par défaut.
+                                    Les documents de planification (SRADDET, SCoT, PLU) pourront définir un objectif spécifique.
+                                </p>
+                            )}
+                            <p>
+                                <strong>Objectif personnalisé</strong> : définissez votre propre objectif de réduction pour simuler différents scénarios et anticiper les besoins du territoire.
+                            </p>
+                        </GuideContent>
                     </div>
                 </div>
-            </Container>
 
-            <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                <div className="fr-col-12">
-                    <div className="bg-white fr-p-2w rounded">
-                      {land_id && land_type && (
+            <div className="fr-mt-5w">
+                <SectionTitle>Projection jusqu'en 2030</SectionTitle>
+                <div className="fr-grid-row fr-grid-row--gutters">
+                    <div className="fr-col-12 fr-col-lg-9">
+                        <div className="bg-white fr-p-2w rounded">
+                            {land_id && land_type && (
                                 <GenericChart
                                     id="objective_chart"
                                     land_id={land_id}
                                     land_type={land_type}
                                     sources={['majic']}
                                     showDataTable
-                                    params={{
-                                        target_2031_custom: target_custom || 50
-                                    }}
+                                    params={has_custom_target ? { target_2031_custom: target_custom } : {}}
                                 />
-                          )}
+                            )}
+                        </div>
+                    </div>
+                    <div className="fr-col-12 fr-col-lg-3">
+                        <GuideContent title="Comment lire ce graphique ?" column>
+                            <p>
+                                Ce graphique compare la <strong>consommation réelle</strong> d'espaces avec la <strong>trajectoire théorique</strong> permettant d'atteindre l'objectif de réduction en 2030.
+                            </p>
+                            <p>
+                                Si les <strong>barres grises</strong> (réel) sont plus hautes que les <strong>barres colorées</strong> (objectif),
+                                le territoire doit ralentir son rythme de consommation afin de respecter l'objectif.
+                            </p>
+                            <p>
+                                Les lignes montrent le cumul : si la <strong>ligne grise</strong> reste en-dessous de la <strong>ligne pointillée</strong>,
+                                le territoire est en bonne voie pour respecter son objectif de réduction.
+                            </p>
+                        </GuideContent>
                     </div>
                 </div>
             </div>
 
-            <TargetModal
-                currentTarget={target_custom}
-                onSubmit={handleUpdateTarget}
-                isLoading={isUpdating}
-            />
+            {territorialisation?.has_children && isDGALNMember && territorialisation?.children_stats && (
+                <div className="fr-mt-5w">
+                    <SectionTitle>Suivi de la territorialisation des {childrenLandTypesLabel} de {name}</SectionTitle>
+                    <div className="fr-notice fr-notice--info fr-mb-2w">
+                        <div className="fr-container">
+                            <div className="fr-notice__body">
+                                <p className="fr-notice__title">
+                                    Cette section est réservée aux agents de la DGALN et n'est pas visible par les autres utilisateurs.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
+                        Suivez la progression de chaque territoire vers son objectif.
+                    </p>
+
+                    <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+                        <div className="fr-col-6 fr-col-lg-4">
+                            <Card
+                                icon="bi-check-circle"
+                                badgeClass="fr-badge--success"
+                                badgeLabel="En bonne voie"
+                                value={`${territorialisation.children_stats.en_bonne_voie}`}
+                                label={`territoire${territorialisation.children_stats.en_bonne_voie > 1 ? 's' : ''} en bonne voie`}
+                            />
+                        </div>
+                        <div className="fr-col-6 fr-col-lg-4">
+                            <Card
+                                icon="bi-exclamation-triangle"
+                                badgeClass="fr-badge--warning"
+                                badgeLabel="Risque de dépassement"
+                                value={`${territorialisation.children_stats.vont_depasser}`}
+                                label={`territoire${territorialisation.children_stats.vont_depasser > 1 ? 's risquent' : ' risque'} de dépasser`}
+                            />
+                        </div>
+                        <div className="fr-col-6 fr-col-lg-4">
+                            <Card
+                                icon="bi-x-circle"
+                                badgeClass="fr-badge--error"
+                                badgeLabel="Déjà dépassé"
+                                value={`${territorialisation.children_stats.deja_depasse}`}
+                                label={`territoire${territorialisation.children_stats.deja_depasse > 1 ? 's ont' : ' a'} déjà dépassé le maximum autorisé`}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+                        <div className="fr-col-12 fr-col-lg-9">
+                            <div className="bg-white fr-p-2w rounded h-100">
+                                <GenericChart
+                                    id="territorialisation_progress_map"
+                                    isMap
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    showDataTable
+                                />
+                            </div>
+                        </div>
+                        <div className="fr-col-12 fr-col-lg-3">
+                            <GuideContent title="Lecture de la carte" column>
+                                <p>
+                                    <strong style={{ color: '#34D399' }}>{territorialisation.children_stats.en_bonne_voie}</strong> {territorialisation.children_stats.en_bonne_voie > 1 ? 'territoires sont' : 'territoire est'} en bonne voie pour respecter leur maximum autorisé.
+                                </p>
+                                <p>
+                                    <strong style={{ color: '#FBBF24' }}>{territorialisation.children_stats.vont_depasser}</strong> {territorialisation.children_stats.vont_depasser > 1 ? 'territoires risquent' : 'territoire risque'} de dépasser leur objectif de réduction au rythme actuel de consommation d'espace.
+                                </p>
+                                <p>
+                                    <strong style={{ color: '#F87171' }}>{territorialisation.children_stats.deja_depasse}</strong> {territorialisation.children_stats.deja_depasse > 1 ? 'territoires ont' : 'territoire a'} déjà dépassé leur maximum autorisé.
+                                </p>
+                                <p className="fr-text--sm" style={{ color: '#666' }}>Survolez un territoire pour voir les détails.</p>
+                            </GuideContent>
+                        </div>
+                    </div>
+
+                    <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+                        <div className="fr-col-12 fr-col-lg-9">
+                            <div className="bg-white fr-p-2w rounded h-100">
+                                <GenericChart
+                                    id="territorialisation_rythme_map"
+                                    isMap
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    showDataTable
+                                />
+                            </div>
+                        </div>
+                        <div className="fr-col-12 fr-col-lg-3">
+                            <GuideContent title="Lecture de la carte" column>
+                                <p>Compare la consommation annuelle actuelle à la consommation annualisée autorisée pour atteindre l'objectif de réduction.</p>
+                                <p>
+                                    <strong style={{ color: '#34D399' }}>Vert</strong> : consomme moins que le rythme autorisé.<br />
+                                    <strong style={{ color: '#B71C1C' }}>Rouge</strong> : consomme plus que le rythme autorisé.
+                                </p>
+                                <p className="fr-text--sm" style={{ color: '#666' }}>Survolez un territoire pour voir les détails.</p>
+                            </GuideContent>
+                        </div>
+                    </div>
+
+                    <div className="fr-grid-row fr-grid-row--gutters">
+                        <div className="fr-col-12 fr-col-lg-6">
+                            <div className="bg-white fr-p-2w rounded h-100">
+                                <GenericChart
+                                    id="territorialisation_conso_map"
+                                    isMap
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    showDataTable
+                                />
+                            </div>
+                        </div>
+                        <div className="fr-col-12 fr-col-lg-6">
+                            <div className="bg-white fr-p-2w rounded h-100">
+                                <GenericChart
+                                    id="territorialisation_restante_map"
+                                    isMap
+                                    land_id={land_id}
+                                    land_type={land_type}
+                                    showDataTable
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <SectionTitle className="fr-mt-5w">Projection de {name} à l'horizon 2031 au rythme actuel</SectionTitle>
+                    <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
+                        Estimation de la situation en 2031 si le rythme de consommation actuel se maintient.
+                    </p>
+
+                    <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+                        <div className="fr-col-6 fr-col-md-3">
+                            <Card
+                                icon="bi-graph-up-arrow"
+                                badgeClass="fr-badge--grey"
+                                badgeLabel="Projection"
+                                value={`${formatNumber({ number: conso_projetee_2031 })} ha`}
+                                label="Consommation projetée en 2031"
+                            />
+                        </div>
+                        <div className="fr-col-6 fr-col-md-3">
+                            <Card
+                                icon="bi-bullseye"
+                                badgeClass="fr-badge--grey"
+                                badgeLabel="Objectif"
+                                value={`${formatNumber({ number: allowed_conso_2021_2030 })} ha`}
+                                label="Consommation max autorisée"
+                            />
+                        </div>
+                        <div className="fr-col-6 fr-col-md-3">
+                            <Card
+                                icon="bi-percent"
+                                badgeClass={taux_atteinte_2031 > 100 ? 'fr-badge--error' : 'fr-badge--success'}
+                                badgeLabel={taux_atteinte_2031 > 100 ? 'Taux de dépassement' : 'Dans l\'objectif'}
+                                value={`${formatNumber({ number: taux_atteinte_2031, decimals: 1 })}%`}
+                                label="de l'objectif atteint en 2031"
+                            />
+                        </div>
+                        <div className="fr-col-6 fr-col-md-3">
+                            <Card
+                                icon={depassement_2031 > 0 ? 'bi-exclamation-triangle' : 'bi-check-circle'}
+                                badgeClass={depassement_2031 > 0 ? 'fr-badge--error' : 'fr-badge--success'}
+                                badgeLabel={depassement_2031 > 0 ? 'Dépassement' : 'Marge'}
+                                value={`${depassement_2031 > 0 ? '+' : ''}${formatNumber({ number: depassement_2031 })} ha`}
+                                label={depassement_2031 > 0 ? 'de dépassement projeté' : 'de marge disponible'}
+                            />
+                        </div>
+                    </div>
+
+                </div>
+            )}
+
+            {showCustomTargetModal && (
+                <ModalOverlay onClick={() => setShowCustomTargetModal(false)}>
+                    <ModalContent onClick={(e) => e.stopPropagation()}>
+                        <ModalTitle>Définir un objectif personnalisé</ModalTitle>
+                        <div className="fr-input-group">
+                            <label className="fr-label" htmlFor="custom-target-modal">
+                                Taux de réduction
+                            </label>
+                            <div className="d-flex align-items-center gap-2">
+                                <input
+                                    id="custom-target-modal"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    value={modalTargetInput}
+                                    onChange={(e) => setModalTargetInput(e.target.value)}
+                                    disabled={isUpdating}
+                                    className="fr-input"
+                                    style={{ width: '120px', textAlign: 'center' }}
+                                />
+                                <span>%</span>
+                            </div>
+                            <p className="fr-hint-text">
+                                Entrez un taux entre 0 et 100 pour simuler un objectif de réduction personnalisé.
+                            </p>
+                        </div>
+                        <ModalActions>
+                            <button
+                                type="button"
+                                className="fr-btn fr-btn--tertiary-no-outline"
+                                onClick={() => setShowCustomTargetModal(false)}
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                type="button"
+                                className="fr-btn"
+                                onClick={handleSaveCustomTarget}
+                                disabled={isUpdating}
+                            >
+                                Enregistrer
+                            </button>
+                        </ModalActions>
+                    </ModalContent>
+                </ModalOverlay>
+            )}
         </div>
   );
 };

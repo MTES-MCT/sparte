@@ -1,0 +1,41 @@
+models:
+  - name: custom_land
+    columns:
+      - name: land_id
+        data_type: text
+        data_tests:
+          - not_null
+      - name: land_type
+        data_type: text
+        data_tests:
+          - accepted_values:
+              values:
+                - CUSTOM
+      - name: name
+        data_type: text
+        data_tests:
+          - not_null
+      - name: geom
+        data_type: user-defined
+        data_tests:
+          - not_null
+      - name: simple_geom
+        data_type: user-defined
+        data_tests:
+          - not_null
+      - name: surface
+        data_type: double precision
+        data_tests:
+          - not_null
+      - name: departements
+        data_type: array
+        data_tests:
+          - not_null
+      - name: child_land_types
+        data_type: array
+        data_tests:
+          - not_null
+      - name: parent_keys
+        data_type: array
+        data_tests:
+          - not_null

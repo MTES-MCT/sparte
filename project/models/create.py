@@ -4,21 +4,20 @@ from rest_framework.request import Request as DRFRequest
 
 from project.models import Project
 from project.models.enums import ProjectChangeReason
-from public_data.models import AdminRef, Land
+from public_data.models import AdminRef, LandModel
 
 
 @api_view(http_method_names=["POST"])
 def create_project_api_view(request: DRFRequest) -> JsonResponse:
     land_id = request.data.get("land_id")
     land_type = request.data.get("land_type")
-    public_key = f"{land_type}_{land_id}"
-    land = Land(public_key)
-    level = AdminRef.get_analysis_default_level(public_key.split("_")[0])
+    land = LandModel.objects.get(land_id=land_id, land_type=land_type)
+    level = AdminRef.get_analysis_default_level(land_type)
     project = Project(
         name=f"Diagnostic de {land.name}",
         is_public=True,
         level=level,
-        land_id=str(land.official_id),
+        land_id=land.land_id,
         land_type=land.land_type,
         territory_name=land.name,
         user=request.user if request.user and request.user.is_authenticated else None,

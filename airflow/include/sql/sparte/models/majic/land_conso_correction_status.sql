@@ -62,6 +62,17 @@ FROM status_with_collectivite_fields
 WHERE
     scot IS NOT NULL
 GROUP BY scot
+UNION
+SELECT
+    '{{ var('CUSTOM') }}' as land_type,
+    clc.custom_land_id as land_id,
+    array_agg(distinct correction_status) as correction_status
+FROM status_with_collectivite_fields
+INNER JOIN {{ ref('commune_custom_land') }} as clc
+    ON clc.commune_code = status_with_collectivite_fields.commune_code
+WHERE
+    clc.custom_land_id IS NOT NULL
+GROUP BY clc.custom_land_id
 )
 SELECT
     land_type,

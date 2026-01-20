@@ -24,8 +24,6 @@ from two_factor.urls import urlpatterns as tf_urls
 from two_factor.views import LoginView
 
 from config.views import EnvironmentView, WebpackProxyView
-from public_data.views import PdfFooterView, PdfHeaderView, RapportCompletView
-from config.views import EnvironmentView
 from public_data.views import (
     PdfFooterView,
     PdfHeaderView,
