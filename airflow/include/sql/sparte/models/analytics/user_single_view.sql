@@ -45,6 +45,7 @@ SELECT
     newsletter.created_date is not null and newsletter.confirmation_date is not null as newsletter_fully_opted_in,
     matomo_log_visit.*,
     visited_pages.*,
+    outlink_clicks.*,
     satisfaction_form.*
 FROM
     {{ ref('user') }} as user_table
@@ -131,6 +132,18 @@ LEFT JOIN LATERAL (
         coalesce('trajectoires' = any(raw_visited_pages.pages), false) as visited_page_trajectoires,
         coalesce('vacance-des-logements	' = any(raw_visited_pages.pages), false) as visited_page_vacance_des_logements
 ) AS visited_pages ON true
+LEFT JOIN LATERAL (
+    SELECT
+        array_agg(outlink_url) as outlinks
+    FROM {{ ref('user_outlinks') }} as user_outlinks
+    WHERE user_table.email = user_outlinks.user_id
+) AS raw_outlinks ON true
+LEFT JOIN LATERAL (
+    SELECT
+        coalesce(exists(SELECT 1 FROM unnest(raw_outlinks.outlinks) u WHERE u ILIKE '%benefriches.ademe.fr%'), false) as clicked_cta_benefriches,
+        coalesce(exists(SELECT 1 FROM unnest(raw_outlinks.outlinks) u WHERE u ILIKE '%urbanvitaliz.fr%'), false) as clicked_cta_urbanvitaliz,
+        coalesce(exists(SELECT 1 FROM unnest(raw_outlinks.outlinks) u WHERE u ILIKE '%zerologementvacant.beta.gouv.fr%'), false) as clicked_cta_zerologementvacant
+) AS outlink_clicks ON true
 LEFT JOIN LATERAL (
     SELECT
         nps,
