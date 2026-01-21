@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: for_export_imper_region
+    columns:
+      - name: region_code
+        data_tests:
+          - not_null
+      - name: nom
+        data_tests:
+          - not_null
+      - name: pourcent_imper
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100
+      - name: surface_imper
+        data_tests:
+          - not_null
+      - name: flux_imper
+        data_tests:
+          - not_null
+      - name: flux_desimper
+        data_tests:
+          - not_null
+      - name: flux_imper_net
+        data_tests:
+          - not_null
+      - name: millesime_debut
+        data_tests:
+          - not_null
+      - name: millesime_fin
+        data_tests:
+          - not_null
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom

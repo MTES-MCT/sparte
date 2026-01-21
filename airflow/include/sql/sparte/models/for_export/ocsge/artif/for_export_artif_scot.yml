@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: for_export_artif_scot
+    columns:
+      - name: scot_code
+        data_tests:
+          - not_null
+      - name: nom
+        data_tests:
+          - not_null
+      - name: pourcent_artif
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100
+      - name: surface_artif
+        data_tests:
+          - not_null
+      - name: flux_artif
+        data_tests:
+          - not_null
+      - name: flux_desartif
+        data_tests:
+          - not_null
+      - name: flux_artif_net
+        data_tests:
+          - not_null
+      - name: millesime_debut
+        data_tests:
+          - not_null
+      - name: millesime_fin
+        data_tests:
+          - not_null
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom

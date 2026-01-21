@@ -286,7 +286,8 @@ class DomainContainer(containers.DeclarativeContainer):
     data_gouv = providers.Factory(
         provides=DataGouvHandler,
         key=os.getenv("DATA_GOUV_API_KEY"),
-        endpoint="https://www.data.gouv.fr/api/1",
+        endpoint=os.getenv("DATA_GOUV_API_ENDPOINT", "https://www.data.gouv.fr/api/1"),
+        organization_id=os.getenv("DATA_GOUV_ORGANIZATION_ID"),
     )
 
     s3_to_data_gouv = providers.Factory(
