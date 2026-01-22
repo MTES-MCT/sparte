@@ -284,7 +284,8 @@ def chart_view(request, id, land_type, land_id):
 
     chart_klass = get_chart_klass_or_404(id)
     chart_params = request.GET.dict()
-    chart = chart_klass(land=land, params=chart_params)
+    user = request.user if request.user.is_authenticated else None
+    chart = chart_klass(land=land, params=chart_params, user=user)
 
     if "format" in chart_params and chart_params["format"] == "png":
         return chart_view_file_response(chart=chart, id=id, land_type=land_type, land_id=land_id)

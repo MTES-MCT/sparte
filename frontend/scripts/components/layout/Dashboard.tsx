@@ -129,7 +129,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Trajectoire de sobriété foncière"
                                                 showPage={has_conso}
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
+                                                showStatus={![
+                                                    ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
+                                                    ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES
+                                                ].includes(consommation_correction_status)}
                                                 status={
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
