@@ -22,11 +22,13 @@ from .file_handling import (
     S3GeoJsonFileToDBTableHandler,
     S3Handler,
     S3ToDataGouvHandler,
+    S3XLSXFileToDBTableHandler,
     SQLToCSVOnS3Handler,
     SQLToGeoJsonOnS3Handler,
     SQLToGeojsonSeqOnS3Handler,
     SQLToGeopackageOnS3Handler,
     TmpPathGenerator,
+    XLSXFileIngestor,
 )
 from .notification import MattermostNotificationService
 
@@ -236,6 +238,16 @@ class DomainContainer(containers.DeclarativeContainer):
         tmp_path_generator=tmp_path_generator,
         csv_file_ingestor=providers.Factory(
             provides=CSVFileIngestor,
+            db_sqlalchemy_conn=InfraContainer().sqlalchemy_dbt_conn,
+        ),
+    )
+
+    s3_xlsx_file_to_db_table_handler = providers.Factory(
+        provides=S3XLSXFileToDBTableHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        xlsx_file_ingestor=providers.Factory(
+            provides=XLSXFileIngestor,
             db_sqlalchemy_conn=InfraContainer().sqlalchemy_dbt_conn,
         ),
     )
