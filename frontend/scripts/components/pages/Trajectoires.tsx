@@ -186,7 +186,8 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
     const annual_conso_since_2021 = conso_details?.annual_conso_since_2021;
 
     // Objectif territorialisé, suggéré (hérité d'un parent), ou national par défaut (50%)
-    const has_territorialisation = territorialisation?.has_objectif ?? false;
+    // Les objectifs territorialisés ne sont visibles que pour les membres DGALN
+    const has_territorialisation = isDGALNMember && (territorialisation?.has_objectif ?? false);
     const is_from_parent = territorialisation?.is_from_parent ?? false;
     const objectif_reduction = has_territorialisation
         ? territorialisation?.objectif ?? 50
@@ -300,16 +301,16 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
                 </div>
             </div>
 
-            {!territorialisation?.has_objectif && <TerritorialisationWarning />}
+            {!has_territorialisation && <TerritorialisationWarning />}
 
-            {territorialisation?.has_objectif && territorialisation?.hierarchy?.length > 0 && (
+            {has_territorialisation && territorialisation?.hierarchy?.length > 0 && (
                 <TerritorialisationHierarchy
                     hierarchy={territorialisation.hierarchy}
                     land_id={land_id}
                     land_type={land_type}
                     land_name={name}
                     has_children={territorialisation?.has_children ?? false}
-                    is_from_parent={territorialisation?.is_from_parent ?? false}
+                    is_from_parent={is_from_parent}
                     parent_land_name={territorialisation?.parent_land_name ?? null}
                     objectif={territorialisation?.objectif ?? null}
                     child_land_types={territorialisation?.children_land_types ?? []}
