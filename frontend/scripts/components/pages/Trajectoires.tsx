@@ -200,8 +200,8 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
         return "Objectif territorialisé";
     };
     const objectifLabel = getObjectifLabel();
-    const objectifType = is_from_parent ? "suggéré" : "réglementaire";
-    const objectifTypeBadge = is_from_parent ? "Suggestion" : "Réglementaire";
+    const objectifType = is_from_parent || !has_territorialisation ? "suggéré" : "réglementaire";
+    const objectifTypeBadge = is_from_parent || !has_territorialisation ? "Suggestion" : "Réglementaire";
 
     // Document source de l'objectif (renvoyé par le backend)
     const sourceDocument = territorialisation?.source_document ?? null;
@@ -213,9 +213,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
     const allowed_conso_2021_2030_per_year = allowed_conso_2021_2030 / 10;
 
     // Projections 2031 du territoire
-    const ANNEES_ECOULEES = 3;
     const ANNEES_TOTALES = 10;
-    const conso_since_2021 = annual_conso_since_2021 * ANNEES_ECOULEES;
     const conso_projetee_2031 = annual_conso_since_2021 * ANNEES_TOTALES;
     const taux_atteinte_2031 = allowed_conso_2021_2030 > 0
         ? (conso_projetee_2031 / allowed_conso_2021_2030) * 100

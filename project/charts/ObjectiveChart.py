@@ -44,14 +44,21 @@ class ObjectiveChart(DiagnosticChart):
         return self._cached_territorialisation
 
     @property
+    def is_dgaln_member(self) -> bool:
+        """Vérifie si l'utilisateur est membre du groupe DGALN."""
+        if self.user is None:
+            return False
+        return self.user.groups.filter(name="DGALN").exists()
+
+    @property
     def target_territorialise(self) -> float | None:
         """Récupère l'objectif territorialisé (propre ou hérité d'un parent)."""
         return self._territorialisation_data.get("objectif")
 
     @property
     def has_territorialisation(self) -> bool:
-        """Retourne True si un objectif territorialisé ou suggéré est défini."""
-        return self._territorialisation_data.get("has_objectif", False)
+        """Retourne True si un objectif territorialisé ou suggéré est défini et si l'utilisateur est DGALN."""
+        return self.is_dgaln_member and self._territorialisation_data.get("has_objectif", False)
 
     @property
     def is_from_parent(self) -> bool:

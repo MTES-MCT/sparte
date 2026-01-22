@@ -58,6 +58,7 @@ class DiagnosticChart(charts.Chart):
         self,
         land: LandModel,
         params: dict,
+        user=None,
     ):
         # Validate required params
         if self.required_params:
@@ -69,4 +70,5 @@ class DiagnosticChart(charts.Chart):
 
         self.params = params
         self.land = land
+        self.user = user
         super().__init__(add_series=False)
