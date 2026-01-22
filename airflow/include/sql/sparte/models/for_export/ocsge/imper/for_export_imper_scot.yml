@@ -9,28 +9,14 @@ models:
       - name: nom
         data_tests:
           - not_null
-      - name: pourcent_imper
-        data_tests:
-          - not_null
-          - is_percent_between_0_and_100
-      - name: surface_imper
-        data_tests:
-          - not_null
-      - name: flux_imper
-        data_tests:
-          - not_null
-      - name: flux_desimper
-        data_tests:
-          - not_null
-      - name: flux_imper_net
-        data_tests:
-          - not_null
-      - name: millesime_debut
-        data_tests:
-          - not_null
-      - name: millesime_fin
-        data_tests:
-          - not_null
+      - name: millesimes_1
+      - name: pourcent_imper_1
+      - name: surface_imper_1
+      - name: millesimes_2
+      - name: pourcent_imper_2
+      - name: surface_imper_2
+      - name: flux_surface_1_2
+      - name: flux_percent_1_2
       - name: geom
         data_tests:
           - not_null

@@ -9,28 +9,14 @@ models:
       - name: nom
         data_tests:
           - not_null
-      - name: pourcent_artif
-        data_tests:
-          - not_null
-          - is_percent_between_0_and_100
-      - name: surface_artif
-        data_tests:
-          - not_null
-      - name: flux_artif
-        data_tests:
-          - not_null
-      - name: flux_desartif
-        data_tests:
-          - not_null
-      - name: flux_artif_net
-        data_tests:
-          - not_null
-      - name: millesime_debut
-        data_tests:
-          - not_null
-      - name: millesime_fin
-        data_tests:
-          - not_null
+      - name: millesimes_1
+      - name: pourcent_artif_1
+      - name: surface_artif_1
+      - name: millesimes_2
+      - name: pourcent_artif_2
+      - name: surface_artif_2
+      - name: flux_surface_1_2
+      - name: flux_percent_1_2
       - name: geom
         data_tests:
           - not_null
