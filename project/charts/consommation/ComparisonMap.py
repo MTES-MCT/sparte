@@ -14,7 +14,7 @@ from public_data.models import AdminRef, LandConsoStats
 
 
 class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
-    def __init__(self, land, params):
+    def __init__(self, land, params, user=None):
         """
         Initialise la carte de comparaison des territoires.
 
@@ -22,6 +22,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
             land: Instance de LandModel représentant le territoire principal
             params: Dictionnaire de paramètres devant contenir 'start_date', 'end_date',
                    et optionnellement 'comparison_lands' pour afficher les territoires de comparaison
+            user: Utilisateur connecté (optionnel)
 
         Raises:
             ValueError: Si les paramètres requis ne sont pas présents
@@ -32,7 +33,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
         if "end_date" not in params:
             raise ValueError("Le paramètre 'end_date' est obligatoire")
 
-        super().__init__(land=land, params=params)
+        super().__init__(land=land, params=params, user=user)
 
     @property
     def lands(self):

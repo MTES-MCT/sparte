@@ -17,8 +17,8 @@ class ArtifByCouverturePieChart(DiagnosticChart):
     by_departement_klass = LandArtifStockCouvertureComposition
     by_index_klass = LandArtifStockCouvertureCompositionIndex
 
-    def __init__(self, land, params):
-        super().__init__(land=land, params=params)
+    def __init__(self, land, params, user=None):
+        super().__init__(land=land, params=params, user=user)
 
     @cached_property
     def data(self):
