@@ -13,13 +13,14 @@ from public_data.models import AdminRef, LandConsoStats, LandModel
 
 
 class ConsoMap(DiagnosticChart):
-    def __init__(self, land, params):
+    def __init__(self, land, params, user=None):
         """
         Initialise la carte de consommation d'espaces.
 
         Args:
             land: Instance de LandModel représentant le territoire
             params: Dictionnaire de paramètres devant contenir 'child_land_type', 'start_date', et 'end_date'
+            user: Utilisateur connecté (optionnel)
 
         Raises:
             ValueError: Si les paramètres requis ne sont pas présents
@@ -33,7 +34,7 @@ class ConsoMap(DiagnosticChart):
         if "end_date" not in params:
             raise ValueError("Le paramètre 'end_date' est obligatoire")
 
-        super().__init__(land=land, params=params)
+        super().__init__(land=land, params=params, user=user)
 
     @property
     def lands(self):

@@ -16,8 +16,8 @@ class ArtifNetFluxChart(DiagnosticChart):
     name = "Artificialisation"
     required_params = ["millesime_new_index", "millesime_old_index"]
 
-    def __init__(self, land, params):
-        super().__init__(land=land, params=params)
+    def __init__(self, land, params, user=None):
+        super().__init__(land=land, params=params, user=user)
 
     @property
     def data(self) -> LandArtifFluxIndex | LandArtifFlux | None:
