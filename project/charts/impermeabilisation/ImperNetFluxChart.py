@@ -14,7 +14,7 @@ class ImperNetFluxChart(DiagnosticChart):
     name = "Imperméabilisation"
     required_params = ["millesime_new_index", "millesime_old_index"]
 
-    def __init__(self, land, params):
+    def __init__(self, land, params, user=None):
         """
         Initialise le graphique de flux net d'imperméabilisation.
 
@@ -25,11 +25,12 @@ class ImperNetFluxChart(DiagnosticChart):
         Args:
             land: Instance de LandModel représentant le territoire
             params: Dictionnaire de paramètres avec les clés requises
+            user: Utilisateur connecté (optionnel)
 
         Raises:
             ValueError: Si les paramètres requis ne sont pas présents
         """
-        super().__init__(land=land, params=params)
+        super().__init__(land=land, params=params, user=user)
 
     @property
     def data(self) -> LandImperFluxIndex | LandImperFlux | None:

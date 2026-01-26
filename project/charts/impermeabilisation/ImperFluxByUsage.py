@@ -21,8 +21,8 @@ class ImperFluxByUsage(DiagnosticChart):
     model = LandImperFluxUsageCompositionIndex
     required_params = ["millesime_new_index"]
 
-    def __init__(self, land, params):
-        super().__init__(land=land, params=params)
+    def __init__(self, land, params, user=None):
+        super().__init__(land=land, params=params, user=user)
 
     @property
     def data(self):
