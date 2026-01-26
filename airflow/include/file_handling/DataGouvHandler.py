@@ -230,3 +230,17 @@ class DataGouvHandler:
             resource_slug,
             resource_title,
         )
+
+    def delete_resource(self, dataset_id: str, resource_id: str) -> None:
+        """Supprime une resource d'un dataset."""
+        url = f"{self.endpoint}/datasets/{dataset_id}/resources/{resource_id}/"
+        response = requests.delete(url, headers=self._headers())
+        if not response.ok:
+            raise DataGouvException(response.text)
+
+    def delete_dataset(self, dataset_id: str) -> None:
+        """Supprime un dataset."""
+        url = f"{self.endpoint}/datasets/{dataset_id}/"
+        response = requests.delete(url, headers=self._headers())
+        if not response.ok:
+            raise DataGouvException(response.text)

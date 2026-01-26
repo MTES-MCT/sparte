@@ -1,6 +1,6 @@
 configs = [
     {
-        "dataset_slug": "ocsge-coverage",
+        "dataset_slug": "ocsge-coverage-2026",
         "dataset_title": "Part du territoire Francais couvert par OCS GE",
         "frequency": "@weekly",
         "resources": [
@@ -8,13 +8,13 @@ configs = [
                 "format": "csv",
                 "filename": "part_territoire_francais_couvert_par_ocsge.csv",
                 "sql": "SELECT * FROM public_for_export.ocsge_surface_cover_percent",
-                "resource_slug": "ocsge-coverage-csv",
+                "resource_slug": "ocsge-coverage-csv-2026",
                 "resource_title": "part_territoire_francais_couvert_par_ocsge.csv",
             },
         ],
     },
     {
-        "dataset_slug": "trajectoires-zan-2031",
+        "dataset_slug": "trajectoires-zan-2031-2026",
         "dataset_title": "Etat des lieux national de la trajectoire de consommation d'espaces NAF (naturels, agricoles et forestiers) à horizon 2031",  # noqa: E501
         "frequency": "@once",
         "resources": [
@@ -22,14 +22,14 @@ configs = [
                 "format": "csv",
                 "filename": "trajectoires_communes.csv",
                 "sql": "SELECT * FROM public_for_export.trajectoires_communes",
-                "resource_slug": "trajectoires-communes-csv",
+                "resource_slug": "trajectoires-communes-csv-2026",
                 "resource_title": "trajectoires_communes.csv",
             },
         ],
     },
     # === ARTIFICIALISATION ===
     {
-        "dataset_slug": "artificialisation-collectivites",
+        "dataset_slug": "artificialisation-collectivites-2026",
         "dataset_title": "Artificialisation des collectivites de France",
         "resources": [
             # Commune
@@ -37,7 +37,7 @@ configs = [
                 "format": "csv",
                 "filename": "artif_commune.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_artif_commune",
-                "resource_slug": "artif-commune-csv",
+                "resource_slug": "artif-commune-csv-2026",
                 "resource_title": "Artificialisation par commune (CSV)",
             },
             {
@@ -46,7 +46,7 @@ configs = [
                 "sql_to_layer_name_mapping": {
                     "artif_commune": "SELECT * FROM public_for_export.for_export_artif_commune"
                 },
-                "resource_slug": "artif-commune-gpkg",
+                "resource_slug": "artif-commune-gpkg-2026",
                 "resource_title": "Artificialisation par commune (GeoPackage)",
             },
             # EPCI
@@ -54,14 +54,14 @@ configs = [
                 "format": "csv",
                 "filename": "artif_epci.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_artif_epci",
-                "resource_slug": "artif-epci-csv",
+                "resource_slug": "artif-epci-csv-2026",
                 "resource_title": "Artificialisation par EPCI (CSV)",
             },
             {
                 "format": "gpkg",
                 "filename": "artif_epci.gpkg",
                 "sql_to_layer_name_mapping": {"artif_epci": "SELECT * FROM public_for_export.for_export_artif_epci"},
-                "resource_slug": "artif-epci-gpkg",
+                "resource_slug": "artif-epci-gpkg-2026",
                 "resource_title": "Artificialisation par EPCI (GeoPackage)",
             },
             # SCOT
@@ -69,14 +69,14 @@ configs = [
                 "format": "csv",
                 "filename": "artif_scot.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_artif_scot",
-                "resource_slug": "artif-scot-csv",
+                "resource_slug": "artif-scot-csv-2026",
                 "resource_title": "Artificialisation par SCOT (CSV)",
             },
             {
                 "format": "gpkg",
                 "filename": "artif_scot.gpkg",
                 "sql_to_layer_name_mapping": {"artif_scot": "SELECT * FROM public_for_export.for_export_artif_scot"},
-                "resource_slug": "artif-scot-gpkg",
+                "resource_slug": "artif-scot-gpkg-2026",
                 "resource_title": "Artificialisation par SCOT (GeoPackage)",
             },
             # Departement
@@ -84,7 +84,7 @@ configs = [
                 "format": "csv",
                 "filename": "artif_departement.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_artif_departement",
-                "resource_slug": "artif-departement-csv",
+                "resource_slug": "artif-departement-csv-2026",
                 "resource_title": "Artificialisation par departement (CSV)",
             },
             {
@@ -93,7 +93,7 @@ configs = [
                 "sql_to_layer_name_mapping": {
                     "artif_departement": "SELECT * FROM public_for_export.for_export_artif_departement"
                 },
-                "resource_slug": "artif-departement-gpkg",
+                "resource_slug": "artif-departement-gpkg-2026",
                 "resource_title": "Artificialisation par departement (GeoPackage)",
             },
             # Region
@@ -101,7 +101,7 @@ configs = [
                 "format": "csv",
                 "filename": "artif_region.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_artif_region",
-                "resource_slug": "artif-region-csv",
+                "resource_slug": "artif-region-csv-2026",
                 "resource_title": "Artificialisation par region (CSV)",
             },
             {
@@ -110,14 +110,14 @@ configs = [
                 "sql_to_layer_name_mapping": {
                     "artif_region": "SELECT * FROM public_for_export.for_export_artif_region"
                 },
-                "resource_slug": "artif-region-gpkg",
+                "resource_slug": "artif-region-gpkg-2026",
                 "resource_title": "Artificialisation par region (GeoPackage)",
             },
         ],
     },
     # === IMPERMEABILISATION ===
     {
-        "dataset_slug": "impermeabilisation-collectivites",
+        "dataset_slug": "impermeabilisation-collectivites-2026",
         "dataset_title": "Impermeabilisation des collectivites de France",
         "resources": [
             # Commune
@@ -125,7 +125,7 @@ configs = [
                 "format": "csv",
                 "filename": "imper_commune.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_imper_commune",
-                "resource_slug": "imper-commune-csv",
+                "resource_slug": "imper-commune-csv-2026",
                 "resource_title": "Impermeabilisation par commune (CSV)",
             },
             {
@@ -134,7 +134,7 @@ configs = [
                 "sql_to_layer_name_mapping": {
                     "imper_commune": "SELECT * FROM public_for_export.for_export_imper_commune"
                 },
-                "resource_slug": "imper-commune-gpkg",
+                "resource_slug": "imper-commune-gpkg-2026",
                 "resource_title": "Impermeabilisation par commune (GeoPackage)",
             },
             # EPCI
@@ -142,14 +142,14 @@ configs = [
                 "format": "csv",
                 "filename": "imper_epci.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_imper_epci",
-                "resource_slug": "imper-epci-csv",
+                "resource_slug": "imper-epci-csv-2026",
                 "resource_title": "Impermeabilisation par EPCI (CSV)",
             },
             {
                 "format": "gpkg",
                 "filename": "imper_epci.gpkg",
                 "sql_to_layer_name_mapping": {"imper_epci": "SELECT * FROM public_for_export.for_export_imper_epci"},
-                "resource_slug": "imper-epci-gpkg",
+                "resource_slug": "imper-epci-gpkg-2026",
                 "resource_title": "Impermeabilisation par EPCI (GeoPackage)",
             },
             # SCOT
@@ -157,14 +157,14 @@ configs = [
                 "format": "csv",
                 "filename": "imper_scot.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_imper_scot",
-                "resource_slug": "imper-scot-csv",
+                "resource_slug": "imper-scot-csv-2026",
                 "resource_title": "Impermeabilisation par SCOT (CSV)",
             },
             {
                 "format": "gpkg",
                 "filename": "imper_scot.gpkg",
                 "sql_to_layer_name_mapping": {"imper_scot": "SELECT * FROM public_for_export.for_export_imper_scot"},
-                "resource_slug": "imper-scot-gpkg",
+                "resource_slug": "imper-scot-gpkg-2026",
                 "resource_title": "Impermeabilisation par SCOT (GeoPackage)",
             },
             # Departement
@@ -172,7 +172,7 @@ configs = [
                 "format": "csv",
                 "filename": "imper_departement.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_imper_departement",
-                "resource_slug": "imper-departement-csv",
+                "resource_slug": "imper-departement-csv-2026",
                 "resource_title": "Impermeabilisation par departement (CSV)",
             },
             {
@@ -181,7 +181,7 @@ configs = [
                 "sql_to_layer_name_mapping": {
                     "imper_departement": "SELECT * FROM public_for_export.for_export_imper_departement"
                 },
-                "resource_slug": "imper-departement-gpkg",
+                "resource_slug": "imper-departement-gpkg-2026",
                 "resource_title": "Impermeabilisation par departement (GeoPackage)",
             },
             # Region
@@ -189,7 +189,7 @@ configs = [
                 "format": "csv",
                 "filename": "imper_region.csv",
                 "sql": "SELECT * FROM public_for_export.for_export_imper_region",
-                "resource_slug": "imper-region-csv",
+                "resource_slug": "imper-region-csv-2026",
                 "resource_title": "Impermeabilisation par region (CSV)",
             },
             {
@@ -198,7 +198,7 @@ configs = [
                 "sql_to_layer_name_mapping": {
                     "imper_region": "SELECT * FROM public_for_export.for_export_imper_region"
                 },
-                "resource_slug": "imper-region-gpkg",
+                "resource_slug": "imper-region-gpkg-2026",
                 "resource_title": "Impermeabilisation par region (GeoPackage)",
             },
         ],
