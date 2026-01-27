@@ -332,19 +332,20 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 					</h6>
 					<div className="fr-highlight fr-highlight--no-margin">
 						<p className="fr-text--sm">
-                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches, et correspondent exclusivement à des friches qualifiées par le CEREMA.
-                            On distingue deux sources de données : les friches pré-identifiées au niveau national par le CEREMA, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études.<br />
-                            La liste des observatoires et contributeurs locaux à Cartofriches est disponible ici : <a href="https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux</a>
+                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches, et correspondent exclusivement à des friches qualifiées par le CEREMA. On distingue deux sources de données : les friches pré-identifiées au niveau national par le CEREMA, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études. <br />
+                            La liste des observatoires et contributeurs locaux à Cartofriches est disponible ici :&nbsp;<a href="https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux</a>
 						</p>
                         <p className="fr-text--sm">
                             <strong>
                             <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
                             </strong>
                         </p>
+                        <p className="fr-text--sm fr-mb-0">
+                            <a className="fr-link" href="https://cartofriches.cerema.fr/cartofriches/" target="_blank" rel="noopener noreferrer">Contribuer à la donnée sur les friches</a>
+                        </p>
                         <p className="fr-text--sm">
                             Les données relatives à l'artificialisation et l'imperméabilisation des friches sont issues des données OCS GE.
                         </p>
-                        <a className="fr-link fr-text--sm" href="https://cartofriches.cerema.fr/cartofriches/" target="_blank" rel="noopener noreferrer">Contribuer à la donnée sur les friches</a>
 					</div>
 				</div>
 			</div>
