@@ -352,7 +352,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ projectData }) => {
               encore disponibles : pour le premier rapport triennal à produire
               d'ici août 2024 il est possible d'utiliser les fichiers fonciers
               au 1er janvier 2024, couvrant la consommation d'espaces NAF
-              (Naturels, Agricoles et Forestiers) au titre de l'année 2023.
+              (Naturels, Agricoles et Forestiers) de l'année 2023.
             </p>
             <p className="fr-text--sm mb-3">
               Il est également possible d'utiliser les données locales,
