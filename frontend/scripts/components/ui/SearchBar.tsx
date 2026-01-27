@@ -186,7 +186,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             }
             setData(filteredData);
         }
-    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped, shouldExcludeTerritoryFromResults]);
+    }, [isFetching, queryData, shouldQueryBeSkipped, shouldExcludeTerritoryFromResults]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
