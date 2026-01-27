@@ -1,4 +1,4 @@
-import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
+import React, { useEffect, ChangeEvent, useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
@@ -158,12 +158,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
     const minimumCharCountForSearch = 2;
-    const shouldQueryBeSkipped = query.length < minimumCharCountForSearch;
-    const { data: queryData, isFetching } = useSearchTerritoryQuery(query, {
+    const debouncedQuery = useDebounce(query, 300);
+    const shouldQueryBeSkipped = debouncedQuery.length < minimumCharCountForSearch;
+    const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
         skip: shouldQueryBeSkipped,
     });
 
-    const shouldExcludeTerritoryFromResults = (territory: Territory): boolean => {
+    const shouldExcludeTerritoryFromResults = useCallback((territory: Territory): boolean => {
         if (excludeTerritories.length === 0) {
             return false;
         }
@@ -172,7 +173,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 territory.source_id === excludedTerritory.source_id &&
                 territory.land_type === excludedTerritory.land_type
         );
-    };
+    }, [excludeTerritories]);
 
     useEffect(() => {
         if (shouldQueryBeSkipped || isFetching) {
@@ -185,7 +186,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             }
             setData(filteredData);
         }
-    }, [isFetching, queryData, query, shouldQueryBeSkipped, excludeTerritories]);
+    }, [isFetching, queryData, shouldQueryBeSkipped, shouldExcludeTerritoryFromResults]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
