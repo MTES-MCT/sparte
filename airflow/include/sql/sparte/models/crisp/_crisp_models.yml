@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: crisp_people
+    config:
+      tags: ['crisp']
+
+  - name: crisp_people_stats
+    config:
+      tags: ['crisp']
+
+  - name: crisp_conversations
+    config:
+      tags: ['crisp']
+
+  - name: crisp_conversation_messages
+    config:
+      tags: ['crisp']
+
+  - name: crisp_conversation_pages
+    config:
+      tags: ['crisp']
+
+  - name: crisp_conversation_events
+    config:
+      tags: ['crisp']
