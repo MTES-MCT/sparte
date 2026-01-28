@@ -13,6 +13,7 @@ import { ConsommationControlsProvider, useConsommationControls } from "./context
 import { TopBarContent } from "@components/layout/TopBarContent";
 import Loader from "@components/ui/Loader";
 import Guide from "@components/ui/Guide";
+import { CarroyageLeaMap } from "@components/map";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
@@ -260,8 +261,16 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, projectDat
               </div>
             </div>
           </div>
+
         </div>
       )}
+
+      <div className="fr-mb-7w fr-mt-5w">
+        <h3 id="conso-carroyage">Carroyage de la consommation d'espaces</h3>
+        <div className="bg-white fr-p-2w rounded" style={{ height: "500px" }}>
+          <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} />
+        </div>
+      </div>
 
       <ConsoDemography
         landId={land_id}

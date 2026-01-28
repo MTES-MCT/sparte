@@ -6,7 +6,7 @@ const PanelContainer = styled.div`
     position: absolute;
     bottom: 10px;
     right: 10px;
-    max-height: 66%;
+    max-height: calc(100% - 20px);
     max-width: 320px;
     overflow-y: auto;
     z-index: 1000;
