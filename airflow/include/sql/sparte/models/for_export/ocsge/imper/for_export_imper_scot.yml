@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: for_export_imper_scot
+    columns:
+      - name: scot_code
+        data_tests:
+          - not_null
+      - name: nom
+        data_tests:
+          - not_null
+      - name: millesimes_1
+      - name: pourcent_imper_1
+      - name: surface_imper_1
+      - name: millesimes_2
+      - name: pourcent_imper_2
+      - name: surface_imper_2
+      - name: flux_surface_1_2
+      - name: flux_percent_1_2
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom

@@ -38,7 +38,7 @@ select
     commune.surface / 10000 as area,
     ST_Transform(commune.geom, 4326) as mpoly,
     consommation.correction_status as consommation_correction_status,
-    competence.competence_planification,
+    COALESCE(competence.competence_planification, False) as competence_planification,
     commune.code in (
         select land_id
         from autorisation_logement_summary

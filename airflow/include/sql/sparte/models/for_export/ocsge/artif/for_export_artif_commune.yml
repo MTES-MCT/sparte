@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: for_export_artif_commune
+    columns:
+      - name: commune_code
+        data_tests:
+          - not_null
+      - name: nom
+        data_tests:
+          - not_null
+      - name: millesimes_1
+      - name: pourcent_artif_1
+      - name: surface_artif_1
+      - name: millesimes_2
+      - name: pourcent_artif_2
+      - name: surface_artif_2
+      - name: flux_surface_1_2
+      - name: flux_percent_1_2
+      - name: departement_code
+      - name: region_code
+      - name: epci_code
+      - name: scot_code
+      - name: commune_surface
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom
