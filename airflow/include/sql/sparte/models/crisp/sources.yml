@@ -1,0 +1,10 @@
+version: 2
+sources:
+  - name: public
+    tables:
+      - name: crisp_people
+      - name: crisp_people_stats
+      - name: crisp_conversations
+      - name: crisp_conversation_messages
+      - name: crisp_conversation_pages
+      - name: crisp_conversation_events
