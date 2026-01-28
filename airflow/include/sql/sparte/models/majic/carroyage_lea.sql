@@ -1,0 +1,121 @@
+{{
+    config(
+        materialized='table',
+    )
+}}
+
+SELECT
+    idcarreau,
+    -- 2011
+    naf11art12::int as conso_2011,
+    art11hab12::int as conso_2011_habitat,
+    art11act12::int as conso_2011_activite,
+    art11mix12::int as conso_2011_mixte,
+    art11rou12::int as conso_2011_route,
+    art11fer12::int as conso_2011_ferroviaire,
+    art11inc12::int as conso_2011_inconnu,
+    -- 2012
+    naf12art13::int as conso_2012,
+    art12hab13::int as conso_2012_habitat,
+    art12act13::int as conso_2012_activite,
+    art12mix13::int as conso_2012_mixte,
+    art12rou13::int as conso_2012_route,
+    art12fer13::int as conso_2012_ferroviaire,
+    art12inc13::int as conso_2012_inconnu,
+    -- 2013
+    naf13art14::int as conso_2013,
+    art13hab14::int as conso_2013_habitat,
+    art13act14::int as conso_2013_activite,
+    art13mix14::int as conso_2013_mixte,
+    art13rou14::int as conso_2013_route,
+    art13fer14::int as conso_2013_ferroviaire,
+    art13inc14::int as conso_2013_inconnu,
+    -- 2014
+    naf14art15::int as conso_2014,
+    art14hab15::int as conso_2014_habitat,
+    art14act15::int as conso_2014_activite,
+    art14mix15::int as conso_2014_mixte,
+    art14rou15::int as conso_2014_route,
+    art14fer15::int as conso_2014_ferroviaire,
+    art14inc15::int as conso_2014_inconnu,
+    -- 2015
+    naf15art16::int as conso_2015,
+    art15hab16::int as conso_2015_habitat,
+    art15act16::int as conso_2015_activite,
+    art15mix16::int as conso_2015_mixte,
+    art15rou16::int as conso_2015_route,
+    art15fer16::int as conso_2015_ferroviaire,
+    art15inc16::int as conso_2015_inconnu,
+    -- 2016
+    naf16art17::int as conso_2016,
+    art16hab17::int as conso_2016_habitat,
+    art16act17::int as conso_2016_activite,
+    art16mix17::int as conso_2016_mixte,
+    art16rou17::int as conso_2016_route,
+    art16fer17::int as conso_2016_ferroviaire,
+    art16inc17::int as conso_2016_inconnu,
+    -- 2017
+    naf17art18::int as conso_2017,
+    art17hab18::int as conso_2017_habitat,
+    art17act18::int as conso_2017_activite,
+    art17mix18::int as conso_2017_mixte,
+    art17rou18::int as conso_2017_route,
+    art17fer18::int as conso_2017_ferroviaire,
+    art17inc18::int as conso_2017_inconnu,
+    -- 2018
+    naf18art19::int as conso_2018,
+    art18hab19::int as conso_2018_habitat,
+    art18act19::int as conso_2018_activite,
+    art18mix19::int as conso_2018_mixte,
+    art18rou19::int as conso_2018_route,
+    art18fer19::int as conso_2018_ferroviaire,
+    art18inc19::int as conso_2018_inconnu,
+    -- 2019
+    naf19art20::int as conso_2019,
+    art19hab20::int as conso_2019_habitat,
+    art19act20::int as conso_2019_activite,
+    art19mix20::int as conso_2019_mixte,
+    art19rou20::int as conso_2019_route,
+    art19fer20::int as conso_2019_ferroviaire,
+    art19inc20::int as conso_2019_inconnu,
+    -- 2020
+    naf20art21::int as conso_2020,
+    art20hab21::int as conso_2020_habitat,
+    art20act21::int as conso_2020_activite,
+    art20mix21::int as conso_2020_mixte,
+    art20rou21::int as conso_2020_route,
+    art20fer21::int as conso_2020_ferroviaire,
+    art20inc21::int as conso_2020_inconnu,
+    -- 2021
+    naf21art22::int as conso_2021,
+    art21hab22::int as conso_2021_habitat,
+    art21act22::int as conso_2021_activite,
+    art21mix22::int as conso_2021_mixte,
+    art21rou22::int as conso_2021_route,
+    art21fer22::int as conso_2021_ferroviaire,
+    art21inc22::int as conso_2021_inconnu,
+    -- 2022
+    naf22art23::int as conso_2022,
+    art22hab23::int as conso_2022_habitat,
+    art22act23::int as conso_2022_activite,
+    art22mix23::int as conso_2022_mixte,
+    art22rou23::int as conso_2022_route,
+    art22fer23::int as conso_2022_ferroviaire,
+    art22inc23::int as conso_2022_inconnu,
+    -- 2023
+    naf23art24::int as conso_2023,
+    art23hab24::int as conso_2023_habitat,
+    art23act24::int as conso_2023_activite,
+    art23mix24::int as conso_2023_mixte,
+    art23rou24::int as conso_2023_route,
+    art23fer24::int as conso_2023_ferroviaire,
+    art23inc24::int as conso_2023_inconnu,
+    -- Cumuls 2009-2024
+    naf09art24::int as conso_2009_2024,
+    art09hab24::int as conso_2009_2024_habitat,
+    art09act24::int as conso_2009_2024_activite,
+    art09mix24::int as conso_2009_2024_mixte,
+    art09inc24::int as conso_2009_2024_inconnu,
+    -- Géométrie
+    geom
+FROM {{ source('public', 'majic_carroyage_lea') }}
