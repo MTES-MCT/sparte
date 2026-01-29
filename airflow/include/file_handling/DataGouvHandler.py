@@ -79,6 +79,7 @@ class DataGouvHandler:
 
         logger.info(f"Création dataset: POST {url}")
         response = requests.post(url, headers=self._headers(), json=payload)
+        logger.info(response.text)
         logger.info(f"Réponse création dataset: status={response.status_code}")
 
         if not response.ok:
@@ -92,6 +93,8 @@ class DataGouvHandler:
         """Met à jour un dataset existant."""
         url = f"{self.endpoint}/datasets/{dataset_id}/"
         response = requests.put(url, headers=self._headers(), json=kwargs)
+        logger.info(response.text)
+        logger.info(f"Réponse mise à jour dataset: status={response.status_code}")
         if not response.ok:
             raise DataGouvException(response.text)
         return response.json()
