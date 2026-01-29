@@ -69,7 +69,9 @@ class DataGouvHandler:
         payload = {
             "title": title,
             "description": description,
-            "organization": self.organization_id,
+            "organization": {
+                "id": self.organization_id,
+            },
             "private": True,
             "license": "lov2",
             "extras": {SPARTE_SLUG_KEY: slug},
