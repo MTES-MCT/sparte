@@ -1,4 +1,8 @@
+import logging
+
 import requests
+
+logger = logging.getLogger(__name__)
 
 SPARTE_SLUG_KEY = "sparte_slug"
 
@@ -71,11 +75,16 @@ class DataGouvHandler:
             "extras": {SPARTE_SLUG_KEY: slug},
         }
 
+        logger.info(f"Création dataset: POST {url}")
         response = requests.post(url, headers=self._headers(), json=payload)
+        logger.info(f"Réponse création dataset: status={response.status_code}")
+
         if not response.ok:
             raise DataGouvException(response.text)
 
-        return response.json()
+        result = response.json()
+        logger.debug(f"Réponse JSON: {result}")
+        return result
 
     def update_dataset(self, dataset_id: str, **kwargs) -> dict:
         """Met à jour un dataset existant."""
@@ -152,11 +161,18 @@ class DataGouvHandler:
         """
         dataset = self.find_dataset_by_slug(slug)
         if dataset:
+            logger.info(f"Dataset trouvé pour slug '{slug}': id={dataset.get('id')}")
             # Met à jour le titre si nécessaire
             if dataset.get("title") != title:
                 dataset = self.update_dataset(dataset["id"], title=title)
         else:
+            logger.info(f"Dataset non trouvé pour slug '{slug}', création en cours...")
             dataset = self.create_dataset(slug=slug, title=title)
+            logger.info(f"Dataset créé: {dataset}")
+
+        if "id" not in dataset:
+            raise DataGouvException(f"Dataset retourné sans 'id'. Slug: {slug}, Réponse: {dataset}")
+
         return dataset
 
     def get_dataset_by_id(self, dataset_id: str) -> dict:
