@@ -52,11 +52,3 @@ models:
         data_type: character varying
       - name: territory_name
         data_type: character varying
-      - name: target_2031
-        data_type: numeric
-        data_tests:
-          - not_null
-      - name: target_2031_modified
-        data_type: boolean
-        data_tests:
-          - not_null
