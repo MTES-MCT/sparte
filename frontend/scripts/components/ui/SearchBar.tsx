@@ -256,7 +256,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                                                 <Badge className="fr-badge">{territory.land_type_label}</Badge>
                                             </TerritoryTitle>
                                             <TerritoryDetails>
-                                                <div>Code INSEE: {territory.source_id}</div>
+                                                {territory.land_type !== 'SCOT' && <div>Code INSEE: {territory.source_id}</div>}
                                                 {isDisabled && 
                                                     <div><i className="bi bi-info-circle fr-mr-1w"></i>Données indisponibles: Territoire supprimé en 2024</div>
                                                 }
