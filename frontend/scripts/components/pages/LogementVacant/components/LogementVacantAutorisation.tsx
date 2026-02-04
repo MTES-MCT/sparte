@@ -5,7 +5,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { useGetLogementVacantAutorisationStatsQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 
-const GaugeExplanationText: React.FC<{
+const ComprendreLesDonnees: React.FC<{
   landId: string;
   landType: string;
   endYear: number;
@@ -100,64 +100,31 @@ export const LogementVacantAutorisation: React.FC<LogementVacantAutorisationProp
   return (
     <>
       {hasAutorisationLogement ? (
-        <>
-          {/* Chart 1: Comparison */}
-          <div className="fr-mb-3w bg-white fr-p-2w rounded">
-            <GenericChart
-              id="logement_vacant_autorisation_comparison_chart"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                start_date: String(startYear),
-                end_date: String(endYear),
-              }}
-              sources={["sitadel", "lovac", "rpls"]}
-              showDataTable={true}
-            />
-          </div>
-
-          {/* Chart 2: Gauge + descriptive text */}
-          <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-            <div className="fr-col-12 fr-col-lg-6">
-              <div className="bg-white fr-p-2w h-100">
-                <GenericChart
-                  id="logement_vacant_autorisation_ratio_gauge_chart"
-                  land_id={landId}
-                  land_type={landType}
-                  params={{
-                    start_date: String(startYear),
-                    end_date: String(endYear),
-                  }}
-                  sources={["sitadel", "lovac", "rpls"]}
-                  showDataTable={false}
-                />
-              </div>
-            </div>
-            <div className="fr-col-12 fr-col-lg-6">
-              <GaugeExplanationText
-                landId={landId}
-                landType={landType}
-                endYear={endYear}
-                territoryName={territoryName}
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-lg-8">
+            <div className="bg-white fr-p-2w rounded h-100">
+              <GenericChart
+                id="logement_vacant_autorisation_ratio_progression_chart"
+                land_id={landId}
+                land_type={landType}
+                params={{
+                  start_date: String(startYear),
+                  end_date: String(endYear),
+                }}
+                sources={["sitadel", "lovac", "rpls"]}
+                showDataTable={true}
               />
             </div>
           </div>
-
-          {/* Chart 3: Ratio Progression */}
-          <div className="bg-white fr-p-2w rounded">
-            <GenericChart
-              id="logement_vacant_autorisation_ratio_progression_chart"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                start_date: String(startYear),
-                end_date: String(endYear),
-              }}
-              sources={["sitadel", "lovac", "rpls"]}
-              showDataTable={true}
+          <div className="fr-col-12 fr-col-lg-4">
+            <ComprendreLesDonnees
+              landId={landId}
+              landType={landType}
+              endYear={endYear}
+              territoryName={territoryName}
             />
           </div>
-        </>
+        </div>
       ) : (
         <div className="bg-white fr-p-3w rounded">
           <Alert

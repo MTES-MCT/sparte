@@ -25,6 +25,7 @@ import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
 import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
+import { LogementVacantStatusEnum } from '@services/types/land';
 import FricheStatus from '@components/features/status/FricheStatus';
 
 interface DashboardProps {
@@ -67,9 +68,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     );
     const { data: env } = useGetEnvironmentQuery(null);
 
-    const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status } = landData || {};
+    const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status, has_logements_vacants_prive, logements_vacants_status } = landData || {};
 
-    const { urls, logements_vacants_available } = projectData || {};
+    const { urls } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
     const { isMobile } = useWindowSize();
@@ -178,10 +179,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Vacance des logements"
-                                                showPage={logements_vacants_available}
-                                                showStatus={!logements_vacants_available}
+                                                showPage={has_logements_vacants_prive}
+                                                showStatus={!has_logements_vacants_prive || logements_vacants_status?.includes('secretise')}
                                                 status={
-                                                    <LogementVacantStatus />
+                                                    <LogementVacantStatus status={logements_vacants_status} />
                                                 }
                                             >
                                                 <LogementVacant landData={landData} />

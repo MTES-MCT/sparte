@@ -24,10 +24,15 @@ export enum FricheStatusEnum {
 }
 
 export enum LogementVacantStatusEnum {
+    DONNEES_INDISPONIBLES = 'données indisponibles (secretisation)',
     GISEMENT_NUL = 'gisement nul',
+    GISEMENT_NUL_PARTIELLEMENT_SECRETISE = 'gisement nul (partiellement secretise)',
     GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE = 'gisement potentiel dans le social et le privé',
+    GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE_PARTIELLEMENT_SECRETISE = 'gisement potentiel dans le social et le privé (partiellement secretise)',
     GISEMENT_POTENTIEL_DANS_LE_SOCIAL = 'gisement potentiel dans le social',
-    GISEMENT_POTENTIEL_DANS_LE_PRIVE = 'gisement potentiel dans le privé'
+    GISEMENT_POTENTIEL_DANS_LE_SOCIAL_PARTIELLEMENT_SECRETISE = 'gisement potentiel dans le social (partiellement secretise)',
+    GISEMENT_POTENTIEL_DANS_LE_PRIVE = 'gisement potentiel dans le privé',
+    GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE = 'gisement potentiel dans le privé (partiellement secretise)'
 }
 
 export type FricheStatusDetails = {
@@ -121,7 +126,8 @@ export type LandDetailResultType = {
     has_ocsge: boolean;
     has_conso: boolean;
     has_friche: boolean;
-    has_logements_vacants: boolean;
+    has_logements_vacants_prive: boolean;
+    has_logements_vacants_social: boolean;
     territorialisation: {
         has_objectif: boolean;
         objectif: number | null;

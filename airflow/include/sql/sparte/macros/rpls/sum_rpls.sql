@@ -1,6 +1,7 @@
 {% macro sum_rpls() %}
-
-    sum(total_2023) 		as total_2023,
+	sum(total_2025) 		as total_2025,
+	sum(total_2024) 		as total_2024,
+	sum(total_2023) 		as total_2023,
 	sum(total_2022)			as total_2022,
 	sum(total_2021) 		as total_2021,
 	sum(total_2020) 		as total_2020,
@@ -11,6 +12,8 @@
 	sum(total_2015) 		as total_2015,
 	sum(total_2014) 		as total_2014,
 	sum(total_2013) 		as total_2013,
+	sum(taux_vacants_2025) 	as taux_vacants_2025,
+	sum(taux_vacants_2024) 	as taux_vacants_2024,
 	sum(taux_vacants_2023) 	as taux_vacants_2023,
 	sum(taux_vacants_2022) 	as taux_vacants_2022,
 	sum(taux_vacants_2021) 	as taux_vacants_2021,

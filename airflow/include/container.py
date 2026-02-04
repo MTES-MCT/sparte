@@ -18,6 +18,7 @@ from .file_handling import (
     HTTPFileHandler,
     PaginatedJsonToS3Handler,
     RemoteToS3FileHandler,
+    RemoteZipToS3FileHandler,
     S3CSVFileToDBTableHandler,
     S3GeoJsonFileToDBTableHandler,
     S3Handler,
@@ -221,6 +222,13 @@ class DomainContainer(containers.DeclarativeContainer):
 
     remote_to_s3_file_handler = providers.Factory(
         provides=RemoteToS3FileHandler,
+        http_file_handler=htto_file_handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+    )
+
+    remote_zip_to_s3_file_handler = providers.Factory(
+        provides=RemoteZipToS3FileHandler,
         http_file_handler=htto_file_handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,

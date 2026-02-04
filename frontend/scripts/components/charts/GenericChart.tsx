@@ -7,6 +7,7 @@ import * as Highcharts from 'highcharts';
 import HighchartsMore from 'highcharts/highcharts-more';
 import HCSoldGauge from 'highcharts/modules/solid-gauge';
 
+import HighchartsMap from 'highcharts/modules/map';
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
 import HighchartsTreemap from 'highcharts/modules/treemap';
@@ -21,6 +22,7 @@ import { useGetChartConfigQuery } from '@services/api';
 
 // Initialize the modules
 HighchartsMore(Highcharts); // Required for gauge charts
+HighchartsMap(Highcharts);
 HighchartsHeatmap(Highcharts);
 HighchartsTilemap(Highcharts);
 HighchartsTreemap(Highcharts);

@@ -1,6 +1,8 @@
 {% macro coalesce_rpls() %}
 
-    COALESCE(nb_ls, 0) 				as total_2023,
+    COALESCE(nb_loues, 0) 				as total_2025,
+	COALESCE(nb_ls2024, 0) 			as total_2024,
+	COALESCE(nb_ls2023, 0) 			as total_2023,
 	COALESCE(nb_ls2022, 0) 				as total_2022,
 	COALESCE(nb_ls2021, 0) 				as total_2021,
 	COALESCE(nb_ls2020, 0) 				as total_2020,
@@ -12,7 +14,9 @@
 	COALESCE(nb_ls2014, 0) 				as total_2014,
 	COALESCE(nb_ls2013, 0) 				as total_2013,
 
-	COALESCE(tx_vac3, 0) 				as taux_vacants_2023,
+	COALESCE(tx_vac, 0) 				as taux_vacants_2025,
+	COALESCE(tx_vac_3_2024, 0) 		as taux_vacants_2024,
+	COALESCE(tx_vac_3_2023, 0) 		as taux_vacants_2023,
 	COALESCE(tx_vac_3_2022, 0) 			as taux_vacants_2022,
 	COALESCE(tx_vac_3_2021, 0) 			as taux_vacants_2021,
 	COALESCE(tx_vac_3_2020, 0) 			as taux_vacants_2020,

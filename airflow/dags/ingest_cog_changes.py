@@ -4,7 +4,7 @@ from pendulum import datetime
 
 from airflow.decorators import dag, task
 
-URL = "https://www.insee.fr/fr/statistiques/fichier/7766585/v_mvt_commune_2024.csv"
+URL = "https://www.insee.fr/fr/statistiques/fichier/8377162/v_mvt_commune_2025.csv"
 
 
 @dag(
@@ -18,7 +18,7 @@ URL = "https://www.insee.fr/fr/statistiques/fichier/7766585/v_mvt_commune_2024.c
 )
 def ingest_cog_changes():
     bucket_name = InfraContainer().bucket_name()
-    filename = "v_mvt_commune_2024.csv"
+    filename = "v_mvt_commune_2025.csv"
 
     @task.python
     def download_change_file() -> str:
@@ -40,7 +40,7 @@ def ingest_cog_changes():
             .ingest_s3_csv_file_to_db_table(
                 s3_bucket=bucket_name,
                 s3_key=filename,
-                table_name="insee_cog_changes_2024",
+                table_name="insee_cog_changes_2025",
                 separator=",",
             )
         )

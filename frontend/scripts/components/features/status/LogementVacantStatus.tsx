@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { LogementVacantStatusEnum } from '@services/types/land';
 
 const NoticeBody = styled.div`
     flex-direction: column;
@@ -7,8 +8,28 @@ const NoticeBody = styled.div`
     gap: 0.5rem;
 `;
 
+interface LogementVacantStatusProps {
+    status?: LogementVacantStatusEnum;
+}
 
-const LogementVacantStatus: React.FC = () => {
+const LogementVacantStatus: React.FC<LogementVacantStatusProps> = ({ status }) => {
+    const isPartiallySecretised = status?.includes('secretise');
+
+    if (isPartiallySecretised) {
+        return (
+            <div className="fr-notice fr-notice--info fr-my-3w">
+                <div className="fr-container--fluid fr-p-3w">
+                    <NoticeBody className="fr-notice__body flex-column">
+                        <p className="fr-notice__title">Données partiellement indisponibles.</p>
+                        <p className="fr-notice__desc fr-text--sm">
+                            Les données du parc privé sont partiellement indisponibles en raison du secret statistique.
+                        </p>
+                    </NoticeBody>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="fr-notice fr-notice--info fr-my-3w">
             <div className="fr-container--fluid fr-p-3w">

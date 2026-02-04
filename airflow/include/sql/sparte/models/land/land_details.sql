@@ -30,7 +30,10 @@ SELECT
     land.child_land_types,
     land.parent_keys,
     land.departements,
-    logements_vacants.has_logements_vacants,
+    logements_vacants.has_logements_vacants_prive,
+    logements_vacants.has_logements_vacants_social,
+    logements_vacants.logements_vacants_status,
+    logements_vacants.logements_vacants_secretisation_status_prive,
     coalesce(sudocuh.competence_planification, false) as competence_planification,
     CASE
         WHEN array_length(land.departements, 1) = 1
@@ -41,6 +44,7 @@ SELECT
     conso_correction_status.consommation_correction_status
 FROM
     {{ ref('land') }}
+
 LEFT JOIN LATERAL (
     SELECT surface, percent, years
     FROM {{ ref('imper_land_by_index') }}
@@ -95,7 +99,10 @@ LEFT JOIN LATERAL (
 )  sudocuh ON true
 LEFT JOIN LATERAL (
     SELECT
-        has_logements_vacants
+        has_logements_vacants_prive,
+        has_logements_vacants_social,
+        status as logements_vacants_status,
+        secretisation_status_prive as logements_vacants_secretisation_status_prive
     FROM
         {{ ref('land_logements_vacants_status') }}
     WHERE

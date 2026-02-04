@@ -324,7 +324,7 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
 const SyntheseLogementVacant = ({ landData, projectData }: SyntheseProps) => {
   return (
     <div className="fr-mt-5w">
-      {landData.has_logements_vacants ? (
+      {(landData.has_logements_vacants_prive || landData.has_logements_vacants_social) ? (
         <>
           <LogementVacantOverview
             logements_vacants_status_details={

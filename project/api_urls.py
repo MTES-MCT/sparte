@@ -95,12 +95,10 @@ from project.charts.urbanisme import (
     FricheZonageEnvironnementalChart,
     FricheZonageTypeChart,
     FricheZoneActiviteChart,
-    LogementVacantAutorisationLogementComparisonChart,
-    LogementVacantAutorisationLogementRatioGaugeChart,
     LogementVacantAutorisationLogementRatioProgressionChart,
     LogementVacantConsoProgressionChart,
-    LogementVacantProgressionChart,
-    LogementVacantRatioProgressionChart,
+    LogementVacantMapAbsolute,
+    LogementVacantMapPercent,
 )
 from public_data.models import (
     ArtifZonageIndexViewset,
@@ -248,12 +246,10 @@ def get_chart_klass_or_404(chart_id):
         "territorialisation_depassement_2031_map": TerritorialisationDepassement2031Map,
         "territorialisation_taux_atteinte_2031_map": TerritorialisationTauxAtteinte2031Map,
         # Logement vacant charts
-        "logement_vacant_progression_chart": LogementVacantProgressionChart,
-        "logement_vacant_ratio_progression_chart": LogementVacantRatioProgressionChart,
         "logement_vacant_conso_progression_chart": LogementVacantConsoProgressionChart,
-        "logement_vacant_autorisation_comparison_chart": LogementVacantAutorisationLogementComparisonChart,
-        "logement_vacant_autorisation_ratio_gauge_chart": LogementVacantAutorisationLogementRatioGaugeChart,
         "logement_vacant_autorisation_ratio_progression_chart": LogementVacantAutorisationLogementRatioProgressionChart,  # noqa E501
+        "logement_vacant_map_percent": LogementVacantMapPercent,
+        "logement_vacant_map_absolute": LogementVacantMapAbsolute,
     }
 
     if chart_id not in charts:

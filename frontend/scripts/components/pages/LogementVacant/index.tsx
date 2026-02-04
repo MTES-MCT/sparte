@@ -1,19 +1,27 @@
 import React from "react";
 import { LogementVacantProps } from "./types";
-import { LogementVacantProgression } from "./components/LogementVacantProgression";
-import { LogementVacantRatio } from "./components/LogementVacantRatio";
 import { LogementVacantConso } from "./components/LogementVacantConso";
 import { LogementVacantAutorisation } from "./components/LogementVacantAutorisation";
 import Guide from "@components/ui/Guide";
+import GenericChart from "@components/charts/GenericChart";
 import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
 import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
 import zeroLogementVacantImage from "@images/logo_ZLV.png";
 
+const LAND_TYPE_LABELS: Record<string, string> = {
+  COMM: "Commune",
+  EPCI: "EPCI",
+  DEPART: "Département",
+  SCOT: "SCoT",
+  REGION: "Région",
+};
+
 export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
-  const { land_id, land_type, name, logements_vacants_status, logements_vacants_status_details } = landData;
-  const startYear = 2019;
-  const endYear = 2023;
+  const { land_id, land_type, name, child_land_types, logements_vacants_status, logements_vacants_status_details } = landData;
+  const startYear = 2020;
+  const endYear = 2024;
   const hasAutorisationLogement = true;
+  const [childType, setChildType] = React.useState<string>(child_land_types?.[0] || "");
 
   return (
     <div className="fr-container--fluid fr-p-3w">
@@ -40,18 +48,12 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
         </div>
 
         <div className="fr-col-12 fr-mb-7w">
-          <h2 className="fr-h4 fr-mb-3w">Évolution de la vacance des logements</h2>
-          <LogementVacantProgression landId={land_id} landType={land_type} startYear={startYear} endYear={endYear} />
-          <LogementVacantRatio landId={land_id} landType={land_type} startYear={startYear} endYear={endYear} />
-        </div>
-
-        <div className="fr-col-12 fr-mb-7w">
           <h2 className="fr-h4 fr-mb-3w">Logements vacants et consommation d'espaces NAF</h2>
           <LogementVacantConso landId={land_id} landType={land_type} startYear={startYear} endYear={endYear} />
         </div>
 
         <div className="fr-col-12 fr-mb-7w">
-          <h2 className="fr-h4 fr-mb-3w">Logements vacants et autorisations de construction de logements</h2>
+          <h2 className="fr-h4 fr-mb-3w">Évolution du nombre de logements vacants et du nombre d'autorisations de construction de logements</h2>
           <LogementVacantAutorisation
             landId={land_id}
             landType={land_type}
@@ -61,6 +63,63 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
             territoryName={name}
           />
         </div>
+
+        {child_land_types && child_land_types.length > 0 && (
+          <div className="fr-col-12 fr-mb-7w">
+            <h2 className="fr-h4 fr-mb-3w">Cartes de la vacance structurelle des logements</h2>
+
+            {child_land_types.length > 1 && (
+              <div className="fr-mb-3w">
+                {child_land_types.map((clt) => (
+                  <button
+                    key={clt}
+                    className={`fr-btn ${
+                      childType === clt ? "fr-btn--primary" : "fr-btn--tertiary"
+                    } fr-btn--sm fr-mr-1w`}
+                    onClick={() => setChildType(clt)}
+                  >
+                    {LAND_TYPE_LABELS[clt] || clt}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div className="fr-grid-row fr-grid-row--gutters">
+              <div className="fr-col-12 fr-col-lg-6">
+                <div className="bg-white fr-p-2w rounded h-100">
+                  <GenericChart
+                    key={`logement_vacant_map_percent-${childType}-${endYear}`}
+                    id="logement_vacant_map_percent"
+                    land_id={land_id}
+                    land_type={land_type}
+                    params={{
+                      end_date: String(endYear),
+                      child_land_type: childType,
+                    }}
+                    showDataTable={true}
+                    isMap={true}
+                  />
+                </div>
+              </div>
+              <div className="fr-col-12 fr-col-lg-6">
+                <div className="bg-white fr-p-2w rounded h-100">
+                  <GenericChart
+                    key={`logement_vacant_map_absolute-${childType}-${endYear}`}
+                    id="logement_vacant_map_absolute"
+                    land_id={land_id}
+                    land_type={land_type}
+                    params={{
+                      end_date: String(endYear),
+                      child_land_type: childType,
+                    }}
+                    showDataTable={true}
+                    isMap={true}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="fr-col-12">
           <h2 className="fr-h4 fr-mb-3w">Pour aller plus loin dans votre démarche de remobilisation des logements vacants</h2>

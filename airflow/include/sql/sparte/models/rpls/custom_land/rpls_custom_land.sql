@@ -30,8 +30,3 @@ SELECT
     vacants,
     taux_vacants
 FROM unfiltered_custom_land
-WHERE commune_count = (
-    SELECT count(*)
-    FROM {{ ref('commune_custom_land') }}
-    WHERE custom_land_id = custom_land_code
-)

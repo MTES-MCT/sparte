@@ -1,4 +1,9 @@
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+        indexes=[{"columns": ["land_id", "land_type"], "type": "btree"}]
+    )
+}}
 
 SELECT
 commune_code as land_id,

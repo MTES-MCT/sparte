@@ -101,18 +101,20 @@ models:
         data_tests:
           - accepted_values:
               values:
+                - données indisponibles (secretisation)
                 - gisement nul
+                - gisement nul (partiellement secretise)
                 - gisement potentiel dans le social et le privé
+                - gisement potentiel dans le social et le privé (partiellement secretise)
+                - gisement potentiel dans le social
+                - gisement potentiel dans le social (partiellement secretise)
                 - gisement potentiel dans le privé
+                - gisement potentiel dans le privé (partiellement secretise)
           - not_null
-      - name: has_logements_vacants
+      - name: has_logements_vacants_prive
         data_type: boolean
-        data_tests:
-          - accepted_values:
-              values:
-                - "true"
-                - "false"
-          - not_null
+      - name: has_logements_vacants_social
+        data_type: boolean
       - name: logements_vacants_status_details
         data_type: jsonb
         data_tests:

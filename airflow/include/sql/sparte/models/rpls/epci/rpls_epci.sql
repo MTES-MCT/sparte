@@ -37,4 +37,4 @@ SELECT
     vacants,
     taux_vacants
 FROM unfiltered_epci
-WHERE commune_count = (SELECT count(*) FROM {{ ref('commune') }} WHERE epci = epci_code)
+where epci_code is not null

@@ -50,7 +50,8 @@ SELECT
     friche_status.status as friche_status,
     friche_status.status_details as friche_status_details,
     logements_vacants.status as logements_vacants_status,
-    logements_vacants.has_logements_vacants,
+    logements_vacants.has_logements_vacants_prive,
+    logements_vacants.has_logements_vacants_social,
     logements_vacants.status_details as logements_vacants_status_details,
     land_millesimes.millesimes as millesimes,
     land_millesimes_by_index.millesimes_by_index as millesimes_by_index,
@@ -148,7 +149,8 @@ LEFT JOIN LATERAL (
 LEFt JOIN LATERAL (
         SELECT
             status,
-            has_logements_vacants,
+            has_logements_vacants_prive,
+            has_logements_vacants_social,
             jsonb_build_object(
                 'logements_parc_prive', logements_parc_prive,
                 'logements_vacants_parc_prive', logements_vacants_parc_prive,

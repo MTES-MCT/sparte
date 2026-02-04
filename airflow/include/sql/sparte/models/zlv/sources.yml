@@ -7,3 +7,6 @@ sources:
     - name: zlv_parcs_2022
     - name: zlv_parcs_2023
     - name: zlv_parcs_2024
+    - name: zlv_commune_opendata
+    - name: zlv_departement_opendata
+    - name: zlv_region_opendata
