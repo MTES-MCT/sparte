@@ -144,7 +144,7 @@ with_status as (
             -- ===========================================
             when coalesce(secretisation_status, 'non_secretise') = 'totalement_secretise'
                  and logements_vacants_parc_social IS NULL
-                THEN 'Données non diffusables pour raison de secret statistique'
+                THEN 'données indisponibles (secretisation)'
 
             -- ===========================================
             -- CAS 2 : GISEMENT NUL AVEC DONNÉES PARTIELLES
@@ -152,10 +152,10 @@ with_status as (
             -- ===========================================
             when logements_vacants_parc_social = 0
                  and logements_vacants_parc_prive IS NULL
-                THEN 'Aucun logement vacant chez les bailleurs sociaux. Parc privé non couvert par les données.'
+                THEN 'gisement nul dans le social (données privées indisponibles)'
             when logements_vacants_parc_prive = 0
                  and logements_vacants_parc_social IS NULL
-                THEN 'Aucun logement vacant dans le parc privé. Parc social non couvert par les données.'
+                THEN 'gisement nul dans le privé (données sociales indisponibles)'
 
             -- ===========================================
             -- CAS 3 : GISEMENT NUL
@@ -163,9 +163,9 @@ with_status as (
             -- ===========================================
             when coalesce(logements_vacants_parc_prive, 0) + coalesce(logements_vacants_parc_social, 0) = 0
                  and coalesce(secretisation_status, 'non_secretise') = 'partiellement_secretise'
-                THEN 'Aucun logement vacant identifié. Certaines données sont masquées (secret statistique).'
+                THEN 'gisement nul (partiellement secretise)'
             when coalesce(logements_vacants_parc_prive, 0) + coalesce(logements_vacants_parc_social, 0) = 0
-                THEN 'Aucun logement vacant identifié sur ce territoire'
+                THEN 'gisement nul'
 
             -- ===========================================
             -- CAS 4 : GISEMENT DANS LES DEUX PARCS
@@ -174,10 +174,10 @@ with_status as (
             when coalesce(logements_vacants_parc_social, 0) > 0
                  and coalesce(logements_vacants_parc_prive, 0) > 0
                  and coalesce(secretisation_status, 'non_secretise') = 'partiellement_secretise'
-                THEN 'Logements vacants dans le parc privé et chez les bailleurs sociaux. Données partiellement masquées.'
+                THEN 'gisement potentiel dans le social et le privé (partiellement secretise)'
             when coalesce(logements_vacants_parc_social, 0) > 0
                  and coalesce(logements_vacants_parc_prive, 0) > 0
-                THEN 'Logements vacants dans le parc privé et chez les bailleurs sociaux'
+                THEN 'gisement potentiel dans le social et le privé'
 
             -- ===========================================
             -- CAS 5 : GISEMENT SOCIAL AVEC DONNÉES PRIVÉES INDISPONIBLES
@@ -185,7 +185,7 @@ with_status as (
             -- ===========================================
             when coalesce(logements_vacants_parc_social, 0) > 0
                  and logements_vacants_parc_prive IS NULL
-                THEN 'Logements vacants chez les bailleurs sociaux. Parc privé non couvert par les données.'
+                THEN 'gisement potentiel dans le social (données privées indisponibles)'
 
             -- ===========================================
             -- CAS 6 : GISEMENT PRIVÉ AVEC DONNÉES SOCIALES INDISPONIBLES
@@ -193,7 +193,7 @@ with_status as (
             -- ===========================================
             when coalesce(logements_vacants_parc_prive, 0) > 0
                  and logements_vacants_parc_social IS NULL
-                THEN 'Logements vacants dans le parc privé. Parc social non couvert par les données.'
+                THEN 'gisement potentiel dans le privé (données sociales indisponibles)'
 
             -- ===========================================
             -- CAS 7 : GISEMENT UNIQUEMENT DANS LE SOCIAL
@@ -202,10 +202,10 @@ with_status as (
             when coalesce(logements_vacants_parc_social, 0) > 0
                  and logements_vacants_parc_prive = 0
                  and coalesce(secretisation_status, 'non_secretise') = 'partiellement_secretise'
-                THEN 'Logements vacants uniquement chez les bailleurs sociaux. Données du parc privé partiellement masquées.'
+                THEN 'gisement potentiel dans le social (partiellement secretise)'
             when coalesce(logements_vacants_parc_social, 0) > 0
                  and logements_vacants_parc_prive = 0
-                THEN 'Logements vacants uniquement chez les bailleurs sociaux. Aucun dans le parc privé.'
+                THEN 'gisement potentiel dans le social'
 
             -- ===========================================
             -- CAS 8 : GISEMENT UNIQUEMENT DANS LE PRIVÉ
@@ -214,10 +214,10 @@ with_status as (
             when coalesce(logements_vacants_parc_prive, 0) > 0
                  and logements_vacants_parc_social = 0
                  and coalesce(secretisation_status, 'non_secretise') = 'partiellement_secretise'
-                THEN 'Logements vacants uniquement dans le parc privé. Données partiellement masquées (secret statistique).'
+                THEN 'gisement potentiel dans le privé (partiellement secretise)'
             when coalesce(logements_vacants_parc_prive, 0) > 0
                  and logements_vacants_parc_social = 0
-                THEN 'Logements vacants uniquement dans le parc privé. Aucun chez les bailleurs sociaux.'
+                THEN 'gisement potentiel dans le privé'
         END as status,
 
         -- ============================================
