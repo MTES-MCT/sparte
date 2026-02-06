@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 const Container = styled.div`
     background: white;
-    border-radius: 4px;
     display: flex;
     height: 180px;
     overflow: hidden;
@@ -47,7 +46,7 @@ const TabContent = styled.div`
     flex: 1;
     padding: 1rem 1.25rem;
     overflow-y: auto;
-    border-left: 1px solid var(--border-default-grey);
+    border-left: 1px solid #EBEBEC;
     font-size: 0.85rem;
     line-height: 1.5;
     color: var(--text-default-grey);
@@ -73,7 +72,6 @@ const TabContent = styled.div`
 
 export interface TriptychSection {
     content: ReactNode;
-    summary: string;
 }
 
 interface TriptychProps {
