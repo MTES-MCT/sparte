@@ -116,7 +116,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 				<Triptych
 					className="fr-mb-5w"
 					definition={{
-						summary: "L'imperméabilisation est la couverture des sols par du bâti ou un revêtement empêchant l'infiltration de l'eau.",
 						content: (
 							<>
 								<p>L'imperméabilisation des sols est définie comme :</p>
@@ -128,7 +127,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 						),
 					}}
 					donnees={{
-						summary: "Donnée OCS GE (Occupation du Sol à Grande Échelle) produite par l'IGN tous les 3 ans par département.",
 						content: (
 							<>
 								<p>La mesure de l'imperméabilisation d'un territoire repose sur la donnée <strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>, base de données de référence pour la description de l'occupation du sol.</p>

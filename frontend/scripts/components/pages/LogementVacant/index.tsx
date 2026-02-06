@@ -59,7 +59,6 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
           <Triptych
             className="fr-mb-5w"
             definition={{
-              summary: "On distingue vacance conjoncturelle (courte durée) et structurelle, qui pourrait se substituer à la construction neuve.",
               content: (
                 <>
                   <p>On distingue deux formes principales de vacance des logements : <strong>la vacance conjoncturelle</strong>, qui est de courte durée et nécessaire à la fluidité du marché du logement, et <strong>la vacance structurelle</strong>, qui pourrait se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols et contre laquelle il est légitime de lutter.</p>
@@ -68,7 +67,6 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
               ),
             }}
             donnees={{
-              summary: "Base LOVAC (CEREMA) pour le parc privé et base RPLS (MTE) pour le parc des bailleurs sociaux.",
               content: (
                 <>
                   <p>Les données sur la vacance des logements affichées sur cette page proviennent de la <strong>base LOVAC</strong> produite par le CEREMA pour le parc privé, ainsi que de la <strong>base RPLS</strong> produite par le Ministère de la Transition Écologique (MTE), pour ce qui concerne le parc des bailleurs sociaux.</p>

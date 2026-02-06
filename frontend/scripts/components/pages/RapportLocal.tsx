@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { LandDetailResultType } from "@services/types/land";
 import { buildUrls } from "@utils/projectUrls";
 import CallToAction from "@components/ui/CallToAction";
-import Triptych from "@components/ui/Triptych";
 
 // Images statiques
 import ecoleIcon from "@images/ecole_icon.png";
@@ -101,37 +100,6 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
   const urls = buildUrls(landData.land_type, landData.land_id);
   return (
     <div className="fr-container--fluid fr-p-3w">
-      <Triptych
-        className="fr-mb-5w"
-        definition={{
-          summary: "Un outil de suivi et de mise en cohérence des politiques d'aménagement au regard de la sobriété foncière.",
-          content: (
-            <>
-              <p>Ce rapport constitue un <strong>outil de suivi et de mise en cohérence des politiques d'aménagement</strong> au regard des objectifs de sobriété foncière.</p>
-              <p>Il s'adresse aux <strong>collectivités territoriales et à leurs partenaires</strong>, en appui à la compréhension, au pilotage et à la justification des choix d'aménagement.</p>
-              <p>Le document disponible au téléchargement ici propose une <strong>trame de rapport à compléter</strong>, structurée autour des attendus réglementaires, afin de faciliter son élaboration et d'en garantir la lisibilité et la comparabilité dans le temps.</p>
-            </>
-          ),
-        }}
-        donnees={{
-          summary: "Données nationales produites par le Cerema, complétables par les collectivités avec des informations locales.",
-          content: (
-            <>
-              <p>Le rapport s'appuie sur les <strong>mêmes données que celles mobilisées dans la plateforme</strong>, issues notamment des sources nationales produites par le <strong>Cerema</strong>, qui constituent le socle de référence pour le suivi de la consommation d'espaces.</p>
-              <p>Ces données peuvent toutefois être <strong>complétées ou ajustées par les collectivités</strong> lors de l'élaboration du rapport, afin d'intégrer des informations locales, tant qu'elles sont cohérentes avec les définitions légales et justifiées méthodologiquement.</p>
-            </>
-          ),
-        }}
-        cadreReglementaire={{
-          summary: "Loi Climat et Résilience (2021) : rapport à produire tous les trois ans pour suivre la consommation d'espaces NAF.",
-          content: (
-            <>
-              <p>Ce rapport s'inscrit dans le cadre fixé par la <strong>loi Climat et Résilience (2021)</strong>, qui impose aux collectivités un <strong>suivi régulier de la consommation d'espaces naturels, agricoles et forestiers</strong>.</p>
-              <p>Il doit être produit <strong>tous les trois ans</strong>, à compter de l'entrée en vigueur de cette obligation, afin de rendre compte de l'évolution de l'artificialisation des sols et des actions engagées au regard des objectifs de sobriété foncière et de Zéro Artificialisation Nette (ZAN).</p>
-            </>
-          ),
-        }}
-      />
       <div className="fr-grid-row">
         <div className="fr-col-12">
           <CallToAction

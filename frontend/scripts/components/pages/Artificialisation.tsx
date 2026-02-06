@@ -119,7 +119,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				<Triptych
 					className="fr-mb-5w"
 					definition={{
-						summary: "L'artificialisation est l'altération durable des fonctions écologiques d'un sol par son occupation ou son usage.",
 						content: (
 							<>
 								<p>L'artificialisation est définie dans l'<a href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221" target="_blank" rel="noopener noreferrer">article 192 de la loi Climat et Résilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol</strong>, en particulier de ses fonctions biologiques, hydriques et climatiques, ainsi que de son potentiel agronomique par son occupation ou son usage.»</p>
@@ -128,7 +127,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						),
 					}}
 					donnees={{
-						summary: "Donnée OCS GE (Occupation du Sol à Grande Échelle) produite par l'IGN tous les 3 ans par département.",
 						content: (
 							<>
 								<p>La mesure de l'artificialisation d'un territoire repose sur la donnée <strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>, base de données de référence pour la description de l'occupation du sol.</p>
@@ -139,7 +137,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						),
 					}}
 					cadreReglementaire={{
-						summary: "Loi Climat et Résilience : atteindre le « zéro artificialisation nette » des sols à horizon 2050.",
 						content: (
 							<>
 								<p>Afin de préserver les sols naturels, agricoles et forestiers, la loi Climat et Résilience fixe à partir de 2031 un cap clair : <strong>atteindre l'équilibre entre les surfaces artificialisées et désartificialisées</strong>, c'est-à-dire un objectif de « zéro artificialisation nette » des sols, à horizon 2050.</p>

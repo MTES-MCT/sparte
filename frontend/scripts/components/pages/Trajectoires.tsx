@@ -293,17 +293,15 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
             <Triptych
                 className="fr-mb-5w"
                 definition={{
-                    summary: "La trajectoire de sobriété foncière décrit la réduction progressive de la consommation d'espaces NAF sur un territoire.",
                     content: (
                         <>
-                            <p>La trajectoire de sobriété foncière décrit la <strong>réduction progressive de la consommation d'espaces naturels, agricoles et forestiers (NAF)</strong> sur un territoire.</p>
-                            <p>Elle montre la répartition dans le temps de la <strong>consommation maximale d'espaces NAF autorisée</strong>, en cohérence avec les objectifs de sobriété foncière fixés à l'échelle nationale ou territorialisés.</p>
+                            <p className="fr-mb-2w">La trajectoire de sobriété foncière décrit la <strong>réduction progressive de la consommation d'espaces naturels, agricoles et forestiers (NAF)</strong> sur un territoire.</p>
+                            <p className="fr-mb-2w">Elle montre la répartition dans le temps de la <strong>consommation maximale d'espaces NAF autorisée</strong>, en cohérence avec les objectifs de sobriété foncière fixés à l'échelle nationale ou territorialisés.</p>
                             <p>Elle constitue un <strong>outil d'aide à la décision</strong> permettant de suivre, d'ajuster et de justifier les choix d'aménagement, sans préjuger des projets à venir, mais en fixant un <strong>cadre quantitatif et temporel</strong> pour en maîtriser les impacts fonciers.</p>
                         </>
                     ),
                 }}
                 donnees={{
-                    summary: "Données du Portail national de l'artificialisation, produites par le CEREMA à partir des Fichiers Fonciers.",
                     content: (
                         <>
                             <p>Les données affichées sur cette plateforme proviennent du Portail national de l'artificialisation et sont produites par le CEREMA à partir des Fichiers Fonciers. Elles constituent une <strong>donnée de référence</strong> pour la mesure de la consommation d'Espaces NAF.</p>
@@ -312,7 +310,6 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                     ),
                 }}
                 cadreReglementaire={{
-                    summary: "Loi Climat et Résilience : réduire de moitié la consommation d'espaces NAF sur 2021-2031 par rapport à 2011-2020.",
                     content: (
                         <>
                             <p>La loi n° 2021-1104 du 22 août 2021 dite "Climat et Résilience" fixe pour la France l'objectif de parvenir au Zéro Artificialisation Nette (ZAN) à l'horizon 2050 (article L.101-2-1 du Code de l'urbanisme).</p>

@@ -295,7 +295,6 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 			<Triptych
 				className="fr-mb-5w"
 				definition={{
-					summary: "Une friche est un bien immobilier inutilisé dont l'état ne permet pas un réemploi sans aménagement préalable.",
 					content: (
 						<>
 							<p>La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "<strong>tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables</strong>".</p>
@@ -304,7 +303,6 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 					),
 				}}
 				donnees={{
-					summary: "Recensement des friches par le CEREMA (dispositif Cartofriches) : données ni exhaustives ni homogènes sur tout le territoire.",
 					content: (
 						<>
 							<p>Les données utilisées proviennent du recensement des friches réalisé par le <strong>CEREMA</strong> dans le cadre du dispositif <strong>Cartofriches</strong>.</p>
