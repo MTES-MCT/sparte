@@ -104,21 +104,22 @@ models:
                 - données indisponibles (secretisation)
                 - gisement nul
                 - gisement nul (partiellement secretise)
+                - gisement nul dans le social (données privées indisponibles)
+                - gisement nul dans le privé (données sociales indisponibles)
                 - gisement potentiel dans le social et le privé
                 - gisement potentiel dans le social et le privé (partiellement secretise)
                 - gisement potentiel dans le social
                 - gisement potentiel dans le social (partiellement secretise)
+                - gisement potentiel dans le social (données privées indisponibles)
                 - gisement potentiel dans le privé
                 - gisement potentiel dans le privé (partiellement secretise)
-          - not_null
+                - gisement potentiel dans le privé (données sociales indisponibles)
       - name: has_logements_vacants_prive
         data_type: boolean
       - name: has_logements_vacants_social
         data_type: boolean
       - name: logements_vacants_status_details
         data_type: jsonb
-        data_tests:
-          - not_null
       - name: millesimes
         data_type: array
       - name: millesimes_by_index

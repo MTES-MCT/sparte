@@ -1,8 +1,9 @@
 type FormatNumberOptions = {
-  number: number;
+  number: number | null | undefined;
   decimals?: number | null;
   useGrouping?: boolean;
   addSymbol?: boolean;
+  nullValue?: string;
 }
 
 const formatNumber = ({
@@ -10,9 +11,10 @@ const formatNumber = ({
   decimals = null,
   useGrouping = true,
   addSymbol = false,
+  nullValue = '-',
 }: FormatNumberOptions): string => {
   if (number === undefined || number === null || Number.isNaN(number)) {
-    return '0';
+    return nullValue;
   }
 
   if (decimals === null) {

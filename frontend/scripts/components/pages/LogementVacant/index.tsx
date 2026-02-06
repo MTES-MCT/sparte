@@ -1,27 +1,31 @@
-import React from "react";
-import { LogementVacantProps } from "./types";
-import { LogementVacantConso } from "./components/LogementVacantConso";
-import { LogementVacantAutorisation } from "./components/LogementVacantAutorisation";
-import Guide from "@components/ui/Guide";
-import GenericChart from "@components/charts/GenericChart";
-import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
-import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
-import zeroLogementVacantImage from "@images/logo_ZLV.png";
+import React from 'react'
+import Guide from '@components/ui/Guide'
+import GenericChart from '@components/charts/GenericChart'
+import { LogementVacantOverview, LogementVacantAbstract } from '@components/features/logementVacant'
+import { ExternalServiceTile } from '@components/ui/ExternalServiceTile'
+import zeroLogementVacantImage from '@images/logo_ZLV.png'
+import { LogementVacantTaux } from './components/LogementVacantTaux'
+import { LogementVacantConso } from './components/LogementVacantConso'
+import { LogementVacantAutorisation } from './components/LogementVacantAutorisation'
+import { LogementVacantProps } from './types'
 
 const LAND_TYPE_LABELS: Record<string, string> = {
-  COMM: "Commune",
-  EPCI: "EPCI",
-  DEPART: "Département",
-  SCOT: "SCoT",
-  REGION: "Région",
-};
+  COMM: 'Commune',
+  EPCI: 'EPCI',
+  DEPART: 'Département',
+  SCOT: 'SCoT',
+  REGION: 'Région',
+}
 
-export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
-  const { land_id, land_type, name, child_land_types, logements_vacants_status, logements_vacants_status_details } = landData;
-  const startYear = 2020;
-  const endYear = 2024;
-  const hasAutorisationLogement = true;
-  const [childType, setChildType] = React.useState<string>(child_land_types?.[0] || "");
+export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
+{
+  const {
+    land_id, land_type, name, child_land_types, logements_vacants_status, logements_vacants_status_details,
+  } = landData
+  const startYear = 2020
+  const endYear = 2024
+  const hasAutorisationLogement = true
+  const [childType, setChildType] = React.useState<string>(child_land_types?.[0] || '')
 
   return (
     <div className="fr-container--fluid fr-p-3w">
@@ -45,6 +49,11 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
             logements_vacants_status_details={logements_vacants_status_details}
             name={name}
           />
+        </div>
+
+        <div className="fr-col-12 fr-mb-7w">
+          <h2 className="fr-h4 fr-mb-3w">Évolution du taux de vacance des logements sur le territoire</h2>
+          <LogementVacantTaux landId={land_id} landType={land_type} startYear={startYear} endYear={endYear} />
         </div>
 
         <div className="fr-col-12 fr-mb-7w">
@@ -74,7 +83,7 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
                   <button
                     key={clt}
                     className={`fr-btn ${
-                      childType === clt ? "fr-btn--primary" : "fr-btn--tertiary"
+                      childType === clt ? 'fr-btn--primary' : 'fr-btn--tertiary'
                     } fr-btn--sm fr-mr-1w`}
                     onClick={() => setChildType(clt)}
                   >
@@ -137,7 +146,7 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LogementVacant;
+export default LogementVacant

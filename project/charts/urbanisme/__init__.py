@@ -17,6 +17,7 @@ from .LogementVacantAutorisationLogementRatioProgressionChart import (
 )
 from .LogementVacantConsoProgressionChart import LogementVacantConsoProgressionChart
 from .LogementVacantMap import LogementVacantMapAbsolute, LogementVacantMapPercent
+from .LogementVacantTauxProgressionChart import LogementVacantTauxProgressionChart
 
 __all__ = [
     "FricheArtifCompositionChart",
@@ -33,4 +34,5 @@ __all__ = [
     "LogementVacantConsoProgressionChart",
     "LogementVacantMapPercent",
     "LogementVacantMapAbsolute",
+    "LogementVacantTauxProgressionChart",
 ]

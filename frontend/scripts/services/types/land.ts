@@ -27,12 +27,16 @@ export enum LogementVacantStatusEnum {
     DONNEES_INDISPONIBLES = 'données indisponibles (secretisation)',
     GISEMENT_NUL = 'gisement nul',
     GISEMENT_NUL_PARTIELLEMENT_SECRETISE = 'gisement nul (partiellement secretise)',
+    GISEMENT_NUL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES = 'gisement nul dans le social (données privées indisponibles)',
+    GISEMENT_NUL_DANS_LE_PRIVE_DONNEES_SOCIALES_INDISPONIBLES = 'gisement nul dans le privé (données sociales indisponibles)',
     GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE = 'gisement potentiel dans le social et le privé',
     GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE_PARTIELLEMENT_SECRETISE = 'gisement potentiel dans le social et le privé (partiellement secretise)',
     GISEMENT_POTENTIEL_DANS_LE_SOCIAL = 'gisement potentiel dans le social',
     GISEMENT_POTENTIEL_DANS_LE_SOCIAL_PARTIELLEMENT_SECRETISE = 'gisement potentiel dans le social (partiellement secretise)',
+    GISEMENT_POTENTIEL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES = 'gisement potentiel dans le social (données privées indisponibles)',
     GISEMENT_POTENTIEL_DANS_LE_PRIVE = 'gisement potentiel dans le privé',
-    GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE = 'gisement potentiel dans le privé (partiellement secretise)'
+    GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE = 'gisement potentiel dans le privé (partiellement secretise)',
+    GISEMENT_POTENTIEL_DANS_LE_PRIVE_DONNEES_SOCIALES_INDISPONIBLES = 'gisement potentiel dans le privé (données sociales indisponibles)'
 }
 
 export type FricheStatusDetails = {
@@ -55,17 +59,17 @@ export type FricheStatusDetails = {
 }
 
 export type LogementsVacantsStatusDetails = {
-    logements_parc_prive: number;
-    logements_vacants_parc_prive: number;
-    logements_parc_social: number;
-    logements_vacants_parc_social: number;
+    logements_parc_prive: number | null;
+    logements_vacants_parc_prive: number | null;
+    logements_parc_social: number | null;
+    logements_vacants_parc_social: number | null;
     logements_parc_general: number;
     logements_vacants_parc_general: number;
-    logements_vacants_parc_general_percent: number;
-    logements_vacants_parc_prive_percent: number;
-    logements_vacants_parc_social_percent: number;
-    logements_vacants_parc_prive_on_parc_general_percent: number;
-    logements_vacants_parc_social_on_parc_general_percent: number;
+    logements_vacants_parc_general_percent: number | null;
+    logements_vacants_parc_prive_percent: number | null;
+    logements_vacants_parc_social_percent: number | null;
+    logements_vacants_parc_prive_on_parc_general_percent: number | null;
+    logements_vacants_parc_social_on_parc_general_percent: number | null;
 }
 
 export type ConsoDetails = {

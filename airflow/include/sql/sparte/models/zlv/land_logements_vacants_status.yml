@@ -61,12 +61,16 @@ models:
                 - 'données indisponibles (secretisation)'
                 - 'gisement nul'
                 - 'gisement nul (partiellement secretise)'
+                - 'gisement nul dans le social (données privées indisponibles)'
+                - 'gisement nul dans le privé (données sociales indisponibles)'
                 - 'gisement potentiel dans le social et le privé'
                 - 'gisement potentiel dans le social et le privé (partiellement secretise)'
                 - 'gisement potentiel dans le social'
                 - 'gisement potentiel dans le social (partiellement secretise)'
+                - 'gisement potentiel dans le social (données privées indisponibles)'
                 - 'gisement potentiel dans le privé'
                 - 'gisement potentiel dans le privé (partiellement secretise)'
+                - 'gisement potentiel dans le privé (données sociales indisponibles)'
       - name: has_logements_vacants_prive
         description: A boolean indicator that specifies whether the land has available data for vacant private housing (logements_vacants_parc_prive and logements_parc_prive are not NULL).
         data_type: boolean

@@ -99,6 +99,7 @@ from project.charts.urbanisme import (
     LogementVacantConsoProgressionChart,
     LogementVacantMapAbsolute,
     LogementVacantMapPercent,
+    LogementVacantTauxProgressionChart,
 )
 from public_data.models import (
     ArtifZonageIndexViewset,
@@ -248,6 +249,7 @@ def get_chart_klass_or_404(chart_id):
         # Logement vacant charts
         "logement_vacant_conso_progression_chart": LogementVacantConsoProgressionChart,
         "logement_vacant_autorisation_ratio_progression_chart": LogementVacantAutorisationLogementRatioProgressionChart,  # noqa E501
+        "logement_vacant_taux_progression_chart": LogementVacantTauxProgressionChart,
         "logement_vacant_map_percent": LogementVacantMapPercent,
         "logement_vacant_map_absolute": LogementVacantMapAbsolute,
     }

@@ -39,7 +39,17 @@ class LogementVacantAutorisationLogementRatioProgressionChart(DiagnosticChart):
             )
         )
 
-        data_vacants = [d.logements_vacants_parc_general for d in logement_vacant_progression.logement_vacant]
+        # Utilise le parc général (privé + social) ou uniquement le privé si pas de données sociales
+        if self.land.has_logements_vacants_social:
+            data_vacants = [
+                d.logements_vacants_parc_general if d.logements_vacants_parc_general is not None else 0
+                for d in logement_vacant_progression.logement_vacant
+            ]
+        else:
+            data_vacants = [
+                d.logements_vacants_parc_prive if d.logements_vacants_parc_prive is not None else 0
+                for d in logement_vacant_progression.logement_vacant
+            ]
 
         data_autorisations = [d.logements_autorises for d in autorisation_logement_progression.autorisation_logement]
 
@@ -78,7 +88,18 @@ class LogementVacantAutorisationLogementRatioProgressionChart(DiagnosticChart):
         years = list(range(start_date, end_date + 1))
         headers = ["Année"] + [str(year) for year in years]
 
-        data_vacants = [d.logements_vacants_parc_general for d in logement_vacant_progression.logement_vacant]
+        # Utilise le parc général (privé + social) ou uniquement le privé si pas de données sociales
+        if self.land.has_logements_vacants_social:
+            data_vacants = [
+                d.logements_vacants_parc_general if d.logements_vacants_parc_general is not None else 0
+                for d in logement_vacant_progression.logement_vacant
+            ]
+        else:
+            data_vacants = [
+                d.logements_vacants_parc_prive if d.logements_vacants_parc_prive is not None else 0
+                for d in logement_vacant_progression.logement_vacant
+            ]
+
         data_autorisations = [d.logements_autorises for d in autorisation_logement_progression.autorisation_logement]
 
         rows = [

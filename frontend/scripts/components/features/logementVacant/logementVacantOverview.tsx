@@ -9,7 +9,7 @@ interface LogementVacantOverviewProps {
     className?: string;
 }
 
-const LogementVacantOverview: React.FC<LogementVacantOverviewProps> = ({ 
+const LogementVacantOverview: React.FC<LogementVacantOverviewProps> = ({
     logements_vacants_status_details,
     className,
 }) => {
@@ -20,31 +20,39 @@ const LogementVacantOverview: React.FC<LogementVacantOverviewProps> = ({
         logements_vacants_parc_social_percent,
     } = logements_vacants_status_details;
 
+    // Vérifie si les données sont disponibles pour chaque parc
+    const hasPriveData = logements_vacants_parc_prive !== null;
+    const hasSocialData = logements_vacants_parc_social !== null;
+
     return (
         <div className={className}>
             <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-                <div className="fr-col-12 fr-col-lg-6">
-                    <Card
-                        icon={LOGEMENT_VACANT_ICON_CONFIG['parc privé']?.icon}
-                        badgeClass={LOGEMENT_VACANT_BADGE_CONFIG['parc privé']}
-                        badgeLabel={'logements vacants dans le parc privé'}
-                        value={logements_vacants_parc_prive}
-                        label={`Soit ${formatNumber({ number: logements_vacants_parc_prive_percent })} % du parc privé total`}
-                        isHighlighted={true}
-                        highlightBadge="Actionnable"
-                    />
-                </div>
-                <div className="fr-col-12 fr-col-lg-6">
-                    <Card
-                        icon={LOGEMENT_VACANT_ICON_CONFIG['bailleurs sociaux']?.icon}
-                        badgeClass={LOGEMENT_VACANT_BADGE_CONFIG['bailleurs sociaux']}
-                        badgeLabel={'logements vacants dans le parc des bailleurs sociaux'}
-                        value={logements_vacants_parc_social}
-                        label={`Soit ${formatNumber({ number: logements_vacants_parc_social_percent })} % du parc bailleurs sociaux total`}
-                        isHighlighted={true}
-                        highlightBadge="Actionnable"
-                    />
-                </div>
+                {hasPriveData && (
+                    <div className={`fr-col-12 ${hasSocialData ? 'fr-col-lg-6' : ''}`}>
+                        <Card
+                            icon={LOGEMENT_VACANT_ICON_CONFIG['parc privé']?.icon}
+                            badgeClass={LOGEMENT_VACANT_BADGE_CONFIG['parc privé']}
+                            badgeLabel={'logements vacants dans le parc privé'}
+                            value={formatNumber({ number: logements_vacants_parc_prive })}
+                            label={`Soit ${formatNumber({ number: logements_vacants_parc_prive_percent })} % du parc privé total`}
+                            isHighlighted={true}
+                            highlightBadge="Actionnable"
+                        />
+                    </div>
+                )}
+                {hasSocialData && (
+                    <div className={`fr-col-12 ${hasPriveData ? 'fr-col-lg-6' : ''}`}>
+                        <Card
+                            icon={LOGEMENT_VACANT_ICON_CONFIG['bailleurs sociaux']?.icon}
+                            badgeClass={LOGEMENT_VACANT_BADGE_CONFIG['bailleurs sociaux']}
+                            badgeLabel={'logements vacants dans le parc des bailleurs sociaux'}
+                            value={formatNumber({ number: logements_vacants_parc_social })}
+                            label={`Soit ${formatNumber({ number: logements_vacants_parc_social_percent })} % du parc bailleurs sociaux total`}
+                            isHighlighted={true}
+                            highlightBadge="Actionnable"
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
