@@ -17,6 +17,12 @@ interface TrajectoiresProps {
     preference?: UserLandPreferenceResultType;
 }
 
+const Container = styled.div`
+    background: linear-gradient(180deg,rgb(236, 236, 248) 0%, rgba(236, 236, 248, 0) 100%);
+    border-radius: 4px; 
+    padding: 1.5rem;
+`;
+
 const PeriodTitle = styled.h4`
     font-size: 1rem;
     font-weight: 600;
@@ -81,6 +87,42 @@ const ReductionRow = styled.div`
     align-items: center;
     gap: 0.5rem;
     min-height: 40px;
+`;
+
+const ReferenceHeaderRow = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+`;
+
+const ReferenceBigValue = styled.span`
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+`;
+
+const AvgTag = styled.span`
+    font-weight: 700;
+`;
+
+const MutedText = styled.p<{ $margin?: string }>`
+    color: #666;
+    margin: ${({ $margin }) => $margin ?? '0'};
+`;
+
+const PercentValue = styled.span`
+    font-size: 1rem;
+    font-weight: 600;
+`;
+
+const ColoredStrong = styled.strong<{ $color: string }>`
+    color: ${({ $color }) => $color};
+`;
+
+const CustomTargetInput = styled.input`
+    width: 120px;
+    text-align: center;
 `;
 
 const ModalOverlay = styled.div`
@@ -298,16 +340,18 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
 
                 <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
                     <div className="fr-col-12 fr-col-lg-9">
-                        <div style={{ background: 'var(--background-alt-grey)', borderRadius: '8px', padding: '1.5rem' }}>
+                        <Container>
                             <PeriodTitle>Période de référence : 2011 - 2020</PeriodTitle>
                             <div className="fr-mb-3w">
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                                    <span style={{ fontSize: '2.5rem', fontWeight: 700, lineHeight: 1.2 }}>{formatNumber({ number: conso_2011_2020 })} ha</span>
-                                    <span className="fr-tag fr-tag--blue" style={{ fontWeight: 700 }}>
+                                <ReferenceHeaderRow>
+                                    <ReferenceBigValue>{formatNumber({ number: conso_2011_2020 })} ha</ReferenceBigValue>
+                                    <AvgTag className="fr-tag fr-tag--blue">
                                         {formatNumber({ number: conso_2011_2020 / 10 })} ha/an en moyenne
-                                    </span>
-                                </div>
-                                <p className="fr-text--sm" style={{ color: '#666', margin: '0.5rem 0' }}>Consommation cumulée de la période du 1er janvier 2011 au 31 décembre 2020 (10 ans)</p>
+                                    </AvgTag>
+                                </ReferenceHeaderRow>
+                                <MutedText className="fr-text--sm" $margin="0.5rem 0">
+                                    Consommation cumulée de la période du 1er janvier 2011 au 31 décembre 2020 (10 ans)
+                                </MutedText>
                             </div>
 
                             <PeriodTitle>Période de réduction : 2021 - 2031</PeriodTitle>
@@ -325,15 +369,15 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                                         <div className="d-flex flex-column gap-2">
                                             <ReductionRow>
                                                 <span className="fr-text--sm fr-mb-0">Taux de réduction :</span>
-                                                <span style={{ fontSize: '1rem', fontWeight: 600 }}>-{objectif_reduction}%</span>
+                                                <PercentValue>-{objectif_reduction}%</PercentValue>
                                             </ReductionRow>
                                             <MiniComparisonChart
                                                 value1={annual_conso_since_2021}
                                                 label1="Consommation annuelle moyenne (depuis 2021)"
                                                 value2={allowed_conso_2021_2030_per_year}
                                                 label2={`Consommation annuelle moyenne autorisée selon l'objectif ${objectifType}`}
-                                                color1="#6a6a6a"
-                                                color2={has_territorialisation ? "#A558A0" : "#00A95F"}
+                                                color1="#858585"
+                                                color2={has_territorialisation ? "#BC8CB9" : "#3ECD8E"}
                                                 textColor1="white"
                                             />
                                         </div>
@@ -351,9 +395,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                                             <div className="d-flex flex-column gap-2">
                                                 <ReductionRow>
                                                     <span className="fr-text--sm fr-mb-0">Taux de réduction :</span>
-                                                    <span style={{ fontSize: '1rem', fontWeight: 600 }}>
-                                                        -{target_custom}%
-                                                    </span>
+                                                    <PercentValue>-{target_custom}%</PercentValue>
                                                     <button
                                                         type="button"
                                                         className="fr-btn fr-btn--sm fr-btn--secondary"
@@ -368,7 +410,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                                                     label1="Consommation annuelle moyenne (depuis 2021)"
                                                     value2={allowed_conso_custom_per_year}
                                                     label2="Consommation annuelle moyenne selon objectif personnalisé"
-                                                    color1="#6a6a6a"
+                                                    color1="#858585"
                                                     color2="#98cecc"
                                                     textColor1="white"
                                                 />
@@ -392,7 +434,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                                     )}
                                 </div>
                             </div>
-                        </div>
+                        </Container>
                     </div>
                     <div className="fr-col-12 fr-col-lg-3">
                         <GuideContent title="Comprendre les objectifs" column>
@@ -489,9 +531,9 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                             </div>
                         </div>
                     </div>
-                    <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
+                    <MutedText className="fr-text--sm fr-mb-2w">
                         Suivez la progression de chaque territoire vers son objectif.
-                    </p>
+                    </MutedText>
 
                     <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
                         <div className="fr-col-6 fr-col-lg-4">
@@ -538,15 +580,15 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                         <div className="fr-col-12 fr-col-lg-3">
                             <GuideContent title="Lecture de la carte" column>
                                 <p>
-                                    <strong style={{ color: '#34D399' }}>{territorialisation.children_stats.en_bonne_voie}</strong> {territorialisation.children_stats.en_bonne_voie > 1 ? 'territoires sont' : 'territoire est'} en bonne voie pour respecter leur maximum autorisé.
+                                    <ColoredStrong $color="#34D399">{territorialisation.children_stats.en_bonne_voie}</ColoredStrong> {territorialisation.children_stats.en_bonne_voie > 1 ? 'territoires sont' : 'territoire est'} en bonne voie pour respecter leur maximum autorisé.
                                 </p>
                                 <p>
-                                    <strong style={{ color: '#FBBF24' }}>{territorialisation.children_stats.vont_depasser}</strong> {territorialisation.children_stats.vont_depasser > 1 ? 'territoires risquent' : 'territoire risque'} de dépasser leur objectif de réduction au rythme actuel de consommation d'espace.
+                                    <ColoredStrong $color="#FBBF24">{territorialisation.children_stats.vont_depasser}</ColoredStrong> {territorialisation.children_stats.vont_depasser > 1 ? 'territoires risquent' : 'territoire risque'} de dépasser leur objectif de réduction au rythme actuel de consommation d'espace.
                                 </p>
                                 <p>
-                                    <strong style={{ color: '#F87171' }}>{territorialisation.children_stats.deja_depasse}</strong> {territorialisation.children_stats.deja_depasse > 1 ? 'territoires ont' : 'territoire a'} déjà dépassé leur maximum autorisé.
+                                    <ColoredStrong $color="#F87171">{territorialisation.children_stats.deja_depasse}</ColoredStrong> {territorialisation.children_stats.deja_depasse > 1 ? 'territoires ont' : 'territoire a'} déjà dépassé leur maximum autorisé.
                                 </p>
-                                <p className="fr-text--sm" style={{ color: '#666' }}>Survolez un territoire pour voir les détails.</p>
+                                <MutedText className="fr-text--sm">Survolez un territoire pour voir les détails.</MutedText>
                             </GuideContent>
                         </div>
                     </div>
@@ -567,10 +609,10 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                             <GuideContent title="Lecture de la carte" column>
                                 <p>Compare la consommation annuelle actuelle à la consommation annualisée autorisée pour atteindre l'objectif de réduction.</p>
                                 <p>
-                                    <strong style={{ color: '#34D399' }}>Vert</strong> : consomme moins que le rythme autorisé.<br />
-                                    <strong style={{ color: '#B71C1C' }}>Rouge</strong> : consomme plus que le rythme autorisé.
+                                    <ColoredStrong $color="#34D399">Vert</ColoredStrong> : consomme moins que le rythme autorisé.<br />
+                                    <ColoredStrong $color="#B71C1C">Rouge</ColoredStrong> : consomme plus que le rythme autorisé.
                                 </p>
-                                <p className="fr-text--sm" style={{ color: '#666' }}>Survolez un territoire pour voir les détails.</p>
+                                <MutedText className="fr-text--sm">Survolez un territoire pour voir les détails.</MutedText>
                             </GuideContent>
                         </div>
                     </div>
@@ -601,9 +643,9 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                     </div>
 
                     <SectionTitle className="fr-mt-5w">Projection de {name} à l'horizon 2031 au rythme actuel</SectionTitle>
-                    <p className="fr-text--sm fr-mb-2w" style={{ color: '#666' }}>
+                    <MutedText className="fr-text--sm fr-mb-2w">
                         Estimation de la situation en 2031 si le rythme de consommation actuel se maintient.
-                    </p>
+                    </MutedText>
 
                     <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
                         <div className="fr-col-6 fr-col-md-3">
@@ -656,7 +698,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                                 Taux de réduction
                             </label>
                             <div className="d-flex align-items-center gap-2">
-                                <input
+                                <CustomTargetInput
                                     id="custom-target-modal"
                                     type="number"
                                     min="0"
@@ -666,7 +708,6 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                                     onChange={(e) => setModalTargetInput(e.target.value)}
                                     disabled={isUpdating}
                                     className="fr-input"
-                                    style={{ width: '120px', textAlign: 'center' }}
                                 />
                                 <span>%</span>
                             </div>

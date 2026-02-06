@@ -7,7 +7,6 @@ const Container = styled.div`
     display: flex;
     height: 180px;
     overflow: hidden;
-    border: 1px solid #EBEBEC;
 `;
 
 const TabsList = styled.div`
@@ -28,7 +27,7 @@ const Tab = styled.button`
     font-size: 0.8rem;
     flex: 1;
     width: 100%;
-    background-color: #F5F5FE;
+    background-color: #EDEDF8;
     border-left: 3px solid transparent;
     font-weight: 700;
     transition: all 0.3s ease;
