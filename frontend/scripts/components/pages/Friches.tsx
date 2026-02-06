@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import Guide from "@components/ui/Guide";
+import Triptych from "@components/ui/Triptych";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
 import { useGetLandFrichesQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
@@ -292,29 +292,31 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
 
 	return (
 		<div className="fr-p-3w">
-			<div className="fr-grid-row fr-grid-row--gutters">
-				<div className="fr-col-12">
-                    <Guide
-                        title="Qu'est-ce qu'une friche ?"
-                        DrawerTitle="Qu'est-ce qu'une friche ?"
-                        drawerChildren={
-                            <>
-                                <p className="fr-text--sm mb-3">
-                                    La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables".
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    Une friche est donc une zone désaffectée après avoir connu une activité économique (industrielle ou commerciale), des usages résidentiels ou des équipements. On estime que ces sites pourraient représenter en France entre 90 000 et 150 000 hectares d'espaces inemployés, l'équivalent de plus de six ans d'artificialisation.
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    Recycler des friches peut être un moyen non seulement de limiter l'artificialisation des sols, mais aussi de redynamiser des territoires et de réhabiliter des sites pollués.
-                                </p>
-                            </>
-                        }
-                    >
-                        La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables".
-                    </Guide>
-				</div>
-			</div>
+			<Triptych
+				className="fr-mb-5w"
+				definition={{
+					summary: "Une friche est un bien immobilier inutilisé dont l'état ne permet pas un réemploi sans aménagement préalable.",
+					content: (
+						<>
+							<p>La loi Climat et Résilience du 22 août 2021 définit ce qu'est une friche au sens du code de l'urbanisme : "<strong>tout bien ou droit immobilier, bâti ou non bâti, inutilisé et dont l'état, la configuration ou l'occupation totale ou partielle ne permet pas un réemploi sans un aménagement ou des travaux préalables</strong>".</p>
+							<p>Une friche est donc une zone désaffectée après avoir connu une activité économique (industrielle ou commerciale), des usages résidentiels ou des équipements. On estime que ces sites pourraient représenter en France entre 90 000 et 150 000 hectares d'espaces inemployés.</p>
+						</>
+					),
+				}}
+				donnees={{
+					summary: "Recensement des friches par le CEREMA (dispositif Cartofriches) : données ni exhaustives ni homogènes sur tout le territoire.",
+					content: (
+						<>
+							<p>Les données utilisées proviennent du recensement des friches réalisé par le <strong>CEREMA</strong> dans le cadre du dispositif <strong>Cartofriches</strong>.</p>
+							<p>On distingue deux sources de données : les friches pré-identifiées au niveau national par le Cerema, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études.</p>
+							<p>Ces contributeurs locaux à Cartofriches sont listés ici : <a href="https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">observatoires locaux</a>. <a href="https://cartofriches.cerema.fr/cartofriches/" target="_blank" rel="noopener noreferrer">Contribuer à la donnée sur les friches</a></p>
+							<p><strong>Il est important de noter que ces données ne sont ni exhaustives ni homogènes</strong> sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.</p>
+							<p>Les données relatives à l'artificialisation et l'imperméabilisation des friches sont issues des données OCS GE.</p>
+						</>
+					),
+				}}
+			/>
+            <h2 className="fr-mt-5w">Vue d'ensemble</h2>
             <FricheOverview 
                 friche_status_details={landData.friche_status_details} 
             />
@@ -324,29 +326,7 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                 name={landData.name}
                 className="fr-mt-2w"
             />
-            <div className="fr-mb-7w fr-mt-5w">
-				<div className="bg-white fr-p-4w rounded">
-					<h6>
-                        D'où proviennent ces données ? 
-					</h6>
-					<div className="fr-highlight fr-highlight--no-margin">
-						<p className="fr-text--sm">
-                            Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches, et correspondent exclusivement à des friches qualifiées par le CEREMA.
-                            On distingue deux sources de données : les friches pré-identifiées au niveau national par le CEREMA, et les friches consolidées par des acteurs des territoires qui possèdent un observatoire ou réalisent des études.<br />
-                            La liste des observatoires et contributeurs locaux à Cartofriches est disponible ici : <a href="https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux" target="_blank" rel="noopener noreferrer">https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux</a>
-						</p>
-                        <p className="fr-text--sm">
-                            <strong>
-                            <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" /> Il est important de noter que ces données ne sont ni exhaustives ni homogènes sur l'ensemble du territoire national, et dépendent notamment de la présence ou non d'un observatoire local.
-                            </strong>
-                        </p>
-                        <p className="fr-text--sm">
-                            Les données relatives à l'artificialisation et l'imperméabilisation des friches sont issues des données OCS GE.
-                        </p>
-                        <a className="fr-link fr-text--sm" href="https://cartofriches.cerema.fr/cartofriches/" target="_blank" rel="noopener noreferrer">Contribuer à la donnée sur les friches</a>
-					</div>
-				</div>
-			</div>
+            
             {[
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_EN_COURS_EXPLOITATION,
                 FricheStatusEnum.GISEMENT_POTENTIEL_ET_NON_EXPLOITE,

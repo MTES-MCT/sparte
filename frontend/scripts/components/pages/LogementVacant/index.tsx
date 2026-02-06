@@ -8,6 +8,16 @@ import { LogementVacantTaux } from './components/LogementVacantTaux'
 import { LogementVacantConso } from './components/LogementVacantConso'
 import { LogementVacantAutorisation } from './components/LogementVacantAutorisation'
 import { LogementVacantProps } from './types'
+import React from "react";
+import { LogementVacantProps } from "./types";
+import { LogementVacantProgression } from "./components/LogementVacantProgression";
+import { LogementVacantRatio } from "./components/LogementVacantRatio";
+import { LogementVacantConso } from "./components/LogementVacantConso";
+import { LogementVacantAutorisation } from "./components/LogementVacantAutorisation";
+import Triptych from "@components/ui/Triptych";
+import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
+import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
+import zeroLogementVacantImage from "@images/logo_ZLV.png";
 
 const LAND_TYPE_LABELS: Record<string, string> = {
   COMM: 'Commune',
@@ -46,6 +56,28 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
               et ceux inoccupés depuis plus de 3 mois dans le parc social (source : RPLS).
             </p>
           </Guide>
+          <Triptych
+            className="fr-mb-5w"
+            definition={{
+              summary: "On distingue vacance conjoncturelle (courte durée) et structurelle, qui pourrait se substituer à la construction neuve.",
+              content: (
+                <>
+                  <p>On distingue deux formes principales de vacance des logements : <strong>la vacance conjoncturelle</strong>, qui est de courte durée et nécessaire à la fluidité du marché du logement, et <strong>la vacance structurelle</strong>, qui pourrait se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols et contre laquelle il est légitime de lutter.</p>
+                  <p>Dans cette perspective, l'analyse proposée s'appuie sur une définition différenciée selon le type de parc : sont ainsi pris en compte les logements vacants depuis plus de deux ans dans le parc privé et ceux inoccupés depuis plus de 3 mois dans le parc des bailleurs sociaux.</p>
+                </>
+              ),
+            }}
+            donnees={{
+              summary: "Base LOVAC (CEREMA) pour le parc privé et base RPLS (MTE) pour le parc des bailleurs sociaux.",
+              content: (
+                <>
+                  <p>Les données sur la vacance des logements affichées sur cette page proviennent de la <strong>base LOVAC</strong> produite par le CEREMA pour le parc privé, ainsi que de la <strong>base RPLS</strong> produite par le Ministère de la Transition Écologique (MTE), pour ce qui concerne le parc des bailleurs sociaux.</p>
+                  <p>Ces données sont disponibles à l'échelle de la commune.</p>
+                  <p>Les données de consommation d'espaces NAF (CEREMA) et de la base SITADEL (MTE) sont également utilisées pour certains indicateurs.</p>
+                </>
+              ),
+            }}
+          />
         </div>
 
         <div className="fr-col-12 fr-mb-7w">

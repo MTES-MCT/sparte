@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Guide from '@components/ui/Guide';
 import Card from '@components/ui/Card';
 import { TerritorialisationHierarchy } from '@components/features/trajectoires/TerritorialisationHierarchy';
 import { TerritorialisationWarning } from '@components/features/trajectoires/TerritorialisationWarning';
@@ -11,6 +10,7 @@ import { LandDetailResultType } from '@services/types/land';
 import { UserLandPreferenceResultType } from '@services/types/project';
 import styled from 'styled-components';
 import GenericChart from '@components/charts/GenericChart';
+import Triptych from '@components/ui/Triptych';
 
 interface TrajectoiresProps {
     landData: LandDetailResultType;
@@ -248,56 +248,37 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
 
     return (
         <div className="fr-p-3w">
-            <div className="fr-grid-row fr-grid-row--gutters">
-                <div className="fr-col-12">
-                    <Guide
-                        title="Cadre réglementaire et données"
-                        DrawerTitle="Cadre réglementaire et données"
-                        drawerChildren={
-                            <>
-                                <p className="fr-text--sm mb-3">
-                                    La loi Climat & Résilience fixe<strong> l'objectif d'atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire
-                                    de réduction de moitié de la consommation d'espaces</strong>
-                                    naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030)
-                                    par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    Cette <strong>trajectoire nationale progressive</strong> est à décliner dans les documents de planification et d'urbanisme (avant le 22 novembre 2024 pour les SRADDET,
-                                    avant le 22 février 2027 pour les SCoT et avant le 22 février 2028 pour les PLU(i) et cartes communales).
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    Elle doit être conciliée avec <strong>l'objectif de soutien de la construction durable</strong>, en particulier dans les territoires où l'offre de logements et de surfaces économiques
-                                    est insuffisante au regard de la demande.
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    La loi prévoit également que <strong>la consommation foncière des projets d'envergure nationale ou européenne et d'intérêt général majeur sera comptabilisée au niveau national</strong>, et
-                                    non au niveau régional ou local. Ces projets seront énumérés par arrêté du ministre chargé de l'urbanisme, en fonction de catégories définies dans la loi,
-                                    après consultation des régions, de la conférence régionale et du public. Un forfait de 12 500 hectares est déterminé pour la période 2021-2031, dont 10 000
-                                    hectares font l'objet d'une péréquation entre les régions couvertes par un SRADDET.
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    Cette loi précise également l'exercice de territorialisation de la trajectoire. Afin de tenir compte des besoins de l'ensemble des territoires,
-                                    <strong> une surface minimale d'un hectare de consommation est garantie à toutes les communes couvertes par un document d'urbanisme prescrit</strong>, arrêté ou approuvé avant le 22 août 2026,
-                                    pour la période 2021-2031. Cette « garantie communale » peut être mutualisée au niveau intercommunal à la demande des communes. Quant aux communes littorales soumises au recul
-                                    du trait de côte, qui sont listées par décret et qui ont mis en place un projet de recomposition spatiale, elles peuvent considérer, avant même que la désartificialisation soit
-                                    effective, comme « désartificialisées » les surfaces situées dans la zone menacée à horizon 30 ans et qui seront ensuite désartificialisées.
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    Dès aujourd'hui, <strong>Mon Diagnostic Artificialisation</strong> vous permet de vous projeter dans cet objectif de réduction de la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) d'ici à 2031 et de simuler divers scénarios.
-                                </p>
-                                <p className="fr-text--sm mb-3">
-                                    La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est mesurée avec les données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC de la DGFIP.
-                                    Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2024, intégrant les évolutions réalisées au cours de l'année 2023.
-                                </p>
-                            </>
-                        }
-                    >
-                        <p className="fr-text--sm fr-mb-2w">La loi n° 2021-1104 du 22 août 2021 dite "Climat et Résilience" fixe pour la France l'objectif de parvenir au Zéro Artificialisation Nette (ZAN) à l'horizon 2050 (article L.101-2-1 du Code de l'urbanisme).
-                        À titre intermédiaire, les collectivités doivent inscrire leurs documents d'urbanisme dans une trajectoire visant nationalement à <strong>réduire de moitié la consommation d'Espaces NAF (naturels, agricoles et forestiers) sur la période 2021-2031, par rapport à la décennie 2011-2020.</strong></p>
-                        <p className="fr-text--sm"> Les données affichées sur cette plateforme proviennent du <strong>Portail national de l'artificialisation</strong> et sont produites par le CEREMA à partir des Fichiers Fonciers. Elles constituent une donnée <strong>de référence</strong> pour la mesure de la consommation d'Espaces NAF. Ces données peuvent être complétées par des données locales (ex. MOS, bases communales, etc.) dès lors que celles-ci sont cohérentes avec les définitions légales et justifiées méthodologiquement. </p>
-                    </Guide>
-                </div>
-            </div>
+            <Triptych
+                className="fr-mb-5w"
+                definition={{
+                    summary: "La trajectoire de sobriété foncière décrit la réduction progressive de la consommation d'espaces NAF sur un territoire.",
+                    content: (
+                        <>
+                            <p>La trajectoire de sobriété foncière décrit la <strong>réduction progressive de la consommation d'espaces naturels, agricoles et forestiers (NAF)</strong> sur un territoire.</p>
+                            <p>Elle montre la répartition dans le temps de la <strong>consommation maximale d'espaces NAF autorisée</strong>, en cohérence avec les objectifs de sobriété foncière fixés à l'échelle nationale ou territorialisés.</p>
+                            <p>Elle constitue un <strong>outil d'aide à la décision</strong> permettant de suivre, d'ajuster et de justifier les choix d'aménagement, sans préjuger des projets à venir, mais en fixant un <strong>cadre quantitatif et temporel</strong> pour en maîtriser les impacts fonciers.</p>
+                        </>
+                    ),
+                }}
+                donnees={{
+                    summary: "Données du Portail national de l'artificialisation, produites par le CEREMA à partir des Fichiers Fonciers.",
+                    content: (
+                        <>
+                            <p>Les données affichées sur cette plateforme proviennent du Portail national de l'artificialisation et sont produites par le CEREMA à partir des Fichiers Fonciers. Elles constituent une <strong>donnée de référence</strong> pour la mesure de la consommation d'Espaces NAF.</p>
+                            <p>Ces données peuvent être complétées par des données locales (ex. MOS, bases communales, etc.) dès lors que celles-ci sont cohérentes avec les définitions légales et justifiées méthodologiquement.</p>
+                        </>
+                    ),
+                }}
+                cadreReglementaire={{
+                    summary: "Loi Climat et Résilience : réduire de moitié la consommation d'espaces NAF sur 2021-2031 par rapport à 2011-2020.",
+                    content: (
+                        <>
+                            <p>La loi n° 2021-1104 du 22 août 2021 dite "Climat et Résilience" fixe pour la France l'objectif de parvenir au Zéro Artificialisation Nette (ZAN) à l'horizon 2050 (article L.101-2-1 du Code de l'urbanisme).</p>
+                            <p>À titre intermédiaire, les collectivités doivent inscrire leurs documents d'urbanisme dans <strong>une trajectoire visant nationalement à réduire de moitié la consommation d'Espaces NAF (naturels, agricoles et forestiers) sur la période 2021-2031, par rapport à la décennie 2011-2020.</strong></p>
+                        </>
+                    ),
+                }}
+            />
 
             {!has_territorialisation && <TerritorialisationWarning />}
 

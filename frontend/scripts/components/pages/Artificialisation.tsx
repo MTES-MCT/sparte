@@ -5,6 +5,7 @@ import { LandDetailResultType, LandType } from "@services/types/land";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { getLandTypeLabel } from "@utils/landUtils";
+
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
@@ -15,8 +16,8 @@ import { useArtificialisation } from "@hooks/useArtificialisation";
 import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
 import OcsgeMatricePNG from '@images/ocsge_matrice_passage.png';
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
-import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
+import Triptych from "@components/ui/Triptych";
 import Card from "@components/ui/Card";
 import { ArtificialisationDiffMap } from "@components/map/ui/ArtificialisationDiffMap";
 import { OcsgeObjectMap } from "@components/map/ui/OcsgeObjectMap";
@@ -115,15 +116,37 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	return (
 		<div className="fr-container--fluid fr-p-3w">
 			<div className="fr-mb-5w">
-				<Guide
-                    title="Qu'est-ce que l'artificialisation des sols ?"
-                >
-                    <p className="fr-text--sm">
-						L'artificialisation est définie dans l'<a href='https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221' target='_blank' rel="noopener noreferrer">
-						article 192 de la loi Climat et Resilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol, en particulier de ses fonctions biologiques, hydriques et climatiques</strong>, ainsi que de son potentiel agronomique par son occupation ou son usage.»
-						Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.
-					</p>
-                </Guide>
+				<Triptych
+					className="fr-mb-5w"
+					definition={{
+						summary: "L'artificialisation est l'altération durable des fonctions écologiques d'un sol par son occupation ou son usage.",
+						content: (
+							<>
+								<p>L'artificialisation est définie dans l'<a href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221" target="_blank" rel="noopener noreferrer">article 192 de la loi Climat et Résilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol</strong>, en particulier de ses fonctions biologiques, hydriques et climatiques, ainsi que de son potentiel agronomique par son occupation ou son usage.»</p>
+								<p>Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.</p>
+							</>
+						),
+					}}
+					donnees={{
+						summary: "Donnée OCS GE (Occupation du Sol à Grande Échelle) produite par l'IGN tous les 3 ans par département.",
+						content: (
+							<>
+								<p>La mesure de l'artificialisation d'un territoire repose sur la donnée <strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>, base de données de référence pour la description de l'occupation du sol.</p>
+								<p>Cette donnée est produite par l'IGN tous les 3 ans pour chaque département. Chaque production est appelée un millésime.</p>
+								<LandMillesimeTable millesimes={millesimes} territory_name={name} is_interdepartemental={is_interdepartemental} compact />
+								<p>Ces données sont disponibles en téléchargement sur le site de l'IGN : <a href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement" target="_blank" rel="noopener noreferrer">geoservices.ign.fr</a></p>
+							</>
+						),
+					}}
+					cadreReglementaire={{
+						summary: "Loi Climat et Résilience : atteindre le « zéro artificialisation nette » des sols à horizon 2050.",
+						content: (
+							<>
+								<p>Afin de préserver les sols naturels, agricoles et forestiers, la loi Climat et Résilience fixe à partir de 2031 un cap clair : <strong>atteindre l'équilibre entre les surfaces artificialisées et désartificialisées</strong>, c'est-à-dire un objectif de « zéro artificialisation nette » des sols, à horizon 2050.</p>
+							</>
+						),
+					}}
+				/>
 				<div className="fr-grid-row fr-grid-row--gutters">
 					<div className="fr-col-12 fr-col-md-6">
 						<Card
@@ -159,38 +182,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 							}
 							isHighlighted={false}
 						/>
-					</div>
-				</div>
-				<div className="fr-grid-row fr-mt-4w">
-					<div className="fr-col-12">
-						<div className="bg-white fr-p-3w rounded">
-							<h2>D'où proviennent ces données&nbsp;?</h2>
-							<p className="fr-text--sm fr-mb-2w">
-								La mesure de l'artificialisation d'un territoire repose sur la
-								donnée{" "}
-								<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
-								actuellement en cours de production par l'IGN. Cette donnée est
-								produite tous les 3 ans par département. Chaque production est
-								appelée un <strong>millésime</strong>.
-							</p>
-							<LandMillesimeTable
-								millesimes={millesimes}
-								territory_name={name}
-								is_interdepartemental={is_interdepartemental}
-							/>
-							<p className="fr-text--xs fr-mt-1w fr-mb-0">
-								Ces données sont disponibles en téléchargement sur le site de l'IGN
-								:&nbsp;<a
-									className="fr-link fr-text--sm"
-									href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
-									target="_blank"
-									rel="noopener noreferrer"
-									aria-label="Télécharger les données OCS GE sur le site de l'IGN (ouvre dans un nouvel onglet)"
-								>
-									https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
-								</a>
-							</p>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -261,20 +252,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 						)}
 					</div>
 				</div>
-				<div className="bg-white fr-p-4w rounded fr-mt-5w">
-					<h3>
-						Quels sont les objectifs nationaux de réduction de
-						l'artificialisation ?
-					</h3>
-					<div className="fr-highlight fr-highlight--no-margin">
-						<p className="fr-text--sm">
-							Afin de préserver les sols naturels, agricoles et forestiers, la
-							loi Climat et Résilience fixe à partir de 2031 un cap clair
-							:&nbsp;<strong>atteindre l'équilibre entre les surfaces artificialisées et désartificialisées</strong>, c'est-à-dire un objectif de <strong>« zéro artificialisation nette »</strong> des
-							sols, à horizon 2050.
-						</p>
-					</div>
-				</div>
+				
 			</div>
 
 			<div className="fr-mb-7w">

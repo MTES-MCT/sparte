@@ -14,6 +14,7 @@ import { TopBarContent } from "@components/layout/TopBarContent";
 import Loader from "@components/ui/Loader";
 import Guide from "@components/ui/Guide";
 import { CarroyageLeaMap } from "@components/map";
+import Triptych from "@components/ui/Triptych";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
@@ -88,6 +89,38 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
       </TopBarContent>
 
       <div className="fr-container--fluid fr-p-3w">
+        <Triptych
+          className="fr-mb-5w"
+          definition={{
+            summary: "La consommation d'espaces NAF est la création ou l'extension effective d'espaces urbanisés sur le territoire.",
+            content: (
+              <>
+                <p>La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme <strong>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</strong> (article 194 de la loi Climat et résilience).</p>
+                <p>Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait. Un espace urbanisé n'est plus un espace d'usage NAF (Naturel, Agricole et Forestier).</p>
+                <p>Si l'artificialisation des sols traduit globalement un changement de couverture physique, la consommation traduit un changement d'usage. À titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.</p>
+              </>
+            ),
+          }}
+          donnees={{
+            summary: "Données produites par le CEREMA à partir des Fichiers Fonciers, disponibles à l'échelle de la commune.",
+            content: (
+              <>
+                <p>Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le <strong>CEREMA</strong> à partir des données d'évolution des <strong>fichiers fonciers</strong>.</p>
+                <p>Ces données sont disponibles à l'échelle de la commune.</p>
+                <p>Le dernier millésime (2023) correspond à la photographie du territoire au 1er janvier 2024, et intègre les évolutions réalisées au cours de l'année 2023.</p>
+              </>
+            ),
+          }}
+          cadreReglementaire={{
+            summary: "Loi Climat et Résilience : réduire de moitié la consommation d'espaces NAF sur 2021-2031 par rapport à 2011-2021.",
+            content: (
+              <>
+                <p>La loi Climat et Résilience, adoptée en 2021, engage la France à <strong>limiter la consommation d'espaces naturels, agricoles et forestiers</strong> (NAF), entendue comme leur transformation en espaces urbanisés.</p>
+                <p>Plus précisément, elle fixe à l'échelle nationale l'objectif de <strong>réduire de moitié cette consommation sur la période 2021-2031</strong>, par rapport à la décennie 2011-2021.</p>
+              </>
+            ),
+          }}
+        />
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
           <div className="fr-col-12 fr-col-lg-4" ref={consoCardRef}>
             <Card
@@ -101,19 +134,6 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
               isHighlighted={true}
               highlightBadge="Donnée clé"
             />
-          </div>
-          <div className="fr-col-12 fr-col-lg-8">
-            <Guide
-              title="Qu'est-ce que la consommation d'espaces ?"
-              className="h-100"
-            >
-              <p className="fr-text--sm">
-                La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme <strong>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</strong> (article 194 de la loi Climat et résilience).
-              </p>
-              <p className="fr-text--sm">
-                Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait. Un espace urbanisé n'est plus un espace d'usage NAF (Naturel, Agricole et Forestier). Si l'artificialisation des sols traduit globalement un changement de couverture physique, la consommation traduit un changement d'usage. A titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.
-              </p>
-            </Guide>
           </div>
         </div>
 

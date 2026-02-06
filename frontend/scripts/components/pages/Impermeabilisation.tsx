@@ -5,6 +5,7 @@ import { LandDetailResultType, LandType } from "@services/types/land";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { getLandTypeLabel } from "@utils/landUtils";
+
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ImpermeabilisationZonage } from "@components/features/ocsge/ImpermeabilisationZonage";
@@ -17,9 +18,9 @@ import { ImpermeabilisationDiffMap } from "@components/map/ui/Impermeabilisation
 import { OcsgeObjectMap } from "@components/map/ui/OcsgeObjectMap";
 import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
-import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
 import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
+import Triptych from "@components/ui/Triptych";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -112,17 +113,31 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	return (
 		<div className="fr-container--fluid fr-p-3w">
 			<div className="fr-mb-5w">
-				<Guide
-                    title="Qu'est-ce que l'imperméabilisation des sols ?"
-                >
-                    <p className="fr-text--sm">
-						L'imperméabilisation des sols est définie comme :
-					</p>
-					<ul className="fr-text--sm">
-						<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
-						<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (artificiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
-					</ul>
-                </Guide>
+				<Triptych
+					className="fr-mb-5w"
+					definition={{
+						summary: "L'imperméabilisation est la couverture des sols par du bâti ou un revêtement empêchant l'infiltration de l'eau.",
+						content: (
+							<>
+								<p>L'imperméabilisation des sols est définie comme :</p>
+								<ul>
+									<li>1° Surfaces dont les sols sont imperméabilisés en <strong>raison du bâti</strong> (constructions, aménagements, ouvrages ou installations).</li>
+									<li>2° Surfaces dont les sols sont imperméabilisés en <strong>raison d'un revêtement</strong> (artificiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+								</ul>
+							</>
+						),
+					}}
+					donnees={{
+						summary: "Donnée OCS GE (Occupation du Sol à Grande Échelle) produite par l'IGN tous les 3 ans par département.",
+						content: (
+							<>
+								<p>La mesure de l'imperméabilisation d'un territoire repose sur la donnée <strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>, base de données de référence pour la description de l'occupation du sol.</p>
+								<p>Cette donnée est produite par l'IGN tous les 3 ans pour chaque département. Chaque production est appelée un millésime.</p>
+								<LandMillesimeTable millesimes={millesimes} territory_name={name} is_interdepartemental={is_interdepartemental} compact />
+							</>
+						),
+					}}
+				/>
 				<div className="fr-grid-row fr-grid-row--gutters">
 					<div className="fr-col-12 fr-col-md-6">
 						<Card
@@ -158,38 +173,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 							}
 							isHighlighted={false}
 						/>
-					</div>
-				</div>
-				<div className="fr-grid-row fr-mt-4w">
-					<div className="fr-col-12">
-						<div className="bg-white fr-p-3w rounded">
-							<h2>D'où proviennent ces données&nbsp;?</h2>
-							<p className="fr-text--sm fr-mb-2w">
-								La mesure de l'imperméabilisation d'un territoire repose sur la
-								donnée{" "}
-								<strong>OCS GE (Occupation du Sol à Grande Echelle)</strong>,
-								actuellement en cours de production par l'IGN. Cette donnée est
-								produite tous les 3 ans par département. Chaque production est
-								appelée un <strong>millésime</strong>.
-							</p>
-							<LandMillesimeTable
-								millesimes={millesimes}
-								territory_name={name}
-								is_interdepartemental={is_interdepartemental}
-							/>
-							<p className="fr-text--xs fr-mt-1w fr-mb-0">
-								Ces données sont disponibles en téléchargement sur le site de l'IGN
-								:&nbsp;<a
-									className="fr-link fr-text--sm"
-									href="https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement"
-									target="_blank"
-									rel="noopener noreferrer"
-									aria-label="Télécharger les données OCS GE sur le site de l'IGN (ouvre dans un nouvel onglet)"
-								>
-									https://geoservices.ign.fr/artificialisation-ocs-ge#telechargement
-								</a>
-							</p>
-						</div>
 					</div>
 				</div>
 			</div>
