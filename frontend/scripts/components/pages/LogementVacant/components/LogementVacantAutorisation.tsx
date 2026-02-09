@@ -33,7 +33,7 @@ const ComprendreLesDonnees: React.FC<{
     percent_vacants_prive: percentVacantsPriv,
     vacants_social: vacantsSocial,
     percent_vacants_social: percentVacantsSocial,
-    ratio: lastRatio,
+    ratio,
   } = stats
 
   const pluralAutorisations = autorisations > 1 ? 's' : ''
@@ -44,19 +44,19 @@ const ComprendreLesDonnees: React.FC<{
   const verbSocial = vacantsSocial > 1 ? 'étaient vacants' : 'était vacant'
 
   let ratioInterpretation = ''
-  if (lastRatio > 100)
+  if (ratio > 100)
   {
-    const times = formatNumber({ number: lastRatio / 100, decimals: 2 })
-    ratioInterpretation = `Autrement dit, il y a ${times} fois plus de logements vacants que d'autorisations de construction de logement.`
+    const times = formatNumber({ number: ratio / 100, decimals: 2 })
+    ratioInterpretation = `il y a ${times} fois plus de logements vacants que d'autorisations de construction de logement.`
   }
-  else if (lastRatio === 100)
+  else if (ratio === 100)
   {
-    ratioInterpretation = "Autrement dit, il y a autant de logements vacants que d'autorisations de construction de logement."
+    ratioInterpretation = "il y a autant de logements vacants que d'autorisations de construction de logement."
   }
-  else if (lastRatio > 0)
+  else if (ratio > 0)
   {
-    const times = formatNumber({ number: 100 / lastRatio, decimals: 2 })
-    ratioInterpretation = `Autrement dit, il y a ${times} fois moins de logements vacants que d'autorisations de construction de logements.`
+    const times = formatNumber({ number: 100 / ratio, decimals: 2 })
+    ratioInterpretation = `il y a ${times} fois moins de logements vacants que d'autorisations de construction de logements.`
   }
 
   return (
@@ -81,13 +81,12 @@ const ComprendreLesDonnees: React.FC<{
         {verbSocial} depuis plus de 3 mois.
       </p>
 
-      <p>
-        Sur le territoire de {territoryName},{' '}
-        <strong>
-          le nombre de logements vacants représente donc, en proportion, {formatNumber({ number: lastRatio, decimals: 2 })}% du nombre d'autorisations de construction de logements.
-        </strong>{' '}
-        {ratioInterpretation}
-      </p>
+      {ratioInterpretation && (
+        <p>
+          Sur le territoire de {territoryName}, en {endYear},{' '}
+          <strong>{ratioInterpretation}</strong>
+        </p>
+      )}
     </GuideContent>
   )
 }

@@ -115,12 +115,16 @@ class LogementVacantConsoProgressionChart(DiagnosticChart):
 
         n = len(values)
         # Point de début à x=-0.5 avec la valeur du premier point (sans tooltip)
-        data = [{"x": -0.5, "y": values[0], "custom": {"skipTooltip": True}}]
+        edge_point = {
+            "custom": {"skipTooltip": True},
+            "marker": {"enabled": False, "states": {"hover": {"enabled": False}}},
+        }
+        data = [{"x": -0.5, "y": values[0], **edge_point}]
         # Points normaux aux positions entières
         for i, val in enumerate(values):
             data.append({"x": i, "y": val})
         # Point de fin à x=n-0.5 avec la valeur du dernier point (sans tooltip)
-        data.append({"x": n - 0.5, "y": values[-1], "custom": {"skipTooltip": True}})
+        data.append({"x": n - 0.5, "y": values[-1], **edge_point})
         return data
 
     def _get_series(self):

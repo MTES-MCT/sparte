@@ -37,7 +37,7 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
           <Guide title="Qu'est-ce que la vacance structurelle des logements ?">
             <p>La vacance des logements se décline en deux formes :</p>
             <ul>
-              <li><strong>Vacance conjoncturelle</strong> : de courte durée, elle est normale et nécessaire à la fluidité du marché immobilier.</li>
+              <li><strong>Vacance frictionnelle</strong> : de courte durée, elle est normale et nécessaire à la fluidité du marché immobilier.</li>
               <li><strong>Vacance structurelle</strong> : de longue durée, elle représente un gisement de logements mobilisables pouvant se substituer à la construction neuve, souvent génératrice d'artificialisation des sols.</li>
             </ul>
             <p>
@@ -68,7 +68,7 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
         </div>
 
         <div className="fr-col-12 fr-mb-7w">
-          <h2 className="fr-h4 fr-mb-3w">Évolution du nombre de logements vacants et du nombre d'autorisations de construction de logements</h2>
+          <h2 className="fr-h4 fr-mb-3w">Logements vacants et autorisations d'urbanisme</h2>
           <LogementVacantAutorisation
             landId={land_id}
             landType={land_type}
