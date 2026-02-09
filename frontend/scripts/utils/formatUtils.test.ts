@@ -96,16 +96,16 @@ describe('formatUtils', () => {
         });
 
         describe('Edge cases and invalid inputs', () => {
-            it('should return "0" for undefined', () => {
-                expect(formatNumber({ number: undefined as any })).toBe('0');
+            it('should return "-" for undefined', () => {
+                expect(formatNumber({ number: undefined as any })).toBe('-');
             });
 
-            it('should return "0" for null', () => {
-                expect(formatNumber({ number: null as any })).toBe('0');
+            it('should return "-" for null', () => {
+                expect(formatNumber({ number: null as any })).toBe('-');
             });
 
-            it('should return "0" for NaN', () => {
-                expect(formatNumber({ number: Number.NaN })).toBe('0');
+            it('should return "-" for NaN', () => {
+                expect(formatNumber({ number: Number.NaN })).toBe('-');
             });
 
             it('should handle Infinity', () => {
