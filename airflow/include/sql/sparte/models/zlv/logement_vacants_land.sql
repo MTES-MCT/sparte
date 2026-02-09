@@ -12,8 +12,10 @@ SELECT
     logements_vacants_commune.year as year,
     logements_parc_prive,
     logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
-    coalesce(rpls_commune.total, 0) as logements_parc_social,
-    coalesce(rpls_commune.vacants, 0) as logements_vacants_parc_social
+    rpls_commune.total as logements_parc_social,
+    rpls_commune.vacants as logements_vacants_parc_social,
+    logements_vacants_commune.is_secretise,
+    logements_vacants_commune.secretisation_status
 FROM
     {{ ref('logements_vacants_commune') }} as logements_vacants_commune
 LEFT JOIN
@@ -32,8 +34,10 @@ SELECT
     logements_vacants_epci.year as year,
     logements_parc_prive,
     logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
-    coalesce(rpls_epci.total, 0) as logements_parc_social,
-    coalesce(rpls_epci.vacants, 0) as logements_vacants_parc_social
+    rpls_epci.total as logements_parc_social,
+    rpls_epci.vacants as logements_vacants_parc_social,
+    logements_vacants_epci.is_secretise,
+    logements_vacants_epci.secretisation_status
 FROM
     {{ ref('logements_vacants_epci') }} as logements_vacants_epci
 LEFT JOIN
@@ -51,8 +55,10 @@ SELECT
     logements_vacants_departement.year as year,
     logements_parc_prive,
     logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
-    coalesce(rpls_departement.total, 0) as logements_parc_social,
-    coalesce(rpls_departement.vacants, 0) as logements_vacants_parc_social
+    rpls_departement.total as logements_parc_social,
+    rpls_departement.vacants as logements_vacants_parc_social,
+    logements_vacants_departement.is_secretise,
+    logements_vacants_departement.secretisation_status
 FROM
     {{ ref('logements_vacants_departement') }} as logements_vacants_departement
 LEFT JOIN
@@ -69,8 +75,10 @@ SELECT
     logements_vacants_region.year as year,
     logements_parc_prive,
     logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
-    coalesce(rpls_region.total, 0) as logements_parc_social,
-    coalesce(rpls_region.vacants, 0) as logements_vacants_parc_social
+    rpls_region.total as logements_parc_social,
+    rpls_region.vacants as logements_vacants_parc_social,
+    logements_vacants_region.is_secretise,
+    logements_vacants_region.secretisation_status
 FROM
     {{ ref('logements_vacants_region') }} as logements_vacants_region
 LEFT JOIN
@@ -88,8 +96,10 @@ SELECT
     logements_vacants_scot.year as year,
     logements_parc_prive,
     logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
-    coalesce(rpls_scot.total, 0) as logements_parc_social,
-    coalesce(rpls_scot.vacants, 0) as logements_vacants_parc_social
+    rpls_scot.total as logements_parc_social,
+    rpls_scot.vacants as logements_vacants_parc_social,
+    logements_vacants_scot.is_secretise,
+    logements_vacants_scot.secretisation_status
 FROM
     {{ ref('logements_vacants_scot') }} as logements_vacants_scot
 LEFT JOIN
@@ -107,8 +117,10 @@ SELECT
     logements_vacants_custom_land.year as year,
     logements_parc_prive,
     logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
-    coalesce(rpls_custom_land.total, 0) as logements_parc_social,
-    coalesce(rpls_custom_land.vacants, 0) as logements_vacants_parc_social
+    rpls_custom_land.total as logements_parc_social,
+    rpls_custom_land.vacants as logements_vacants_parc_social,
+    logements_vacants_custom_land.is_secretise,
+    logements_vacants_custom_land.secretisation_status
 FROM
     {{ ref('logements_vacants_custom_land') }} as logements_vacants_custom_land
 LEFT JOIN
@@ -137,26 +149,13 @@ SELECT
     logements_vacants_parc_social::int,
     logements_parc_general::int,
     logements_vacants_parc_general::int,
-    coalesce(
-        logements_vacants_parc_general * 100.0 / NULLIF(logements_parc_general, 0),
-        0
-    )::double precision as logements_vacants_parc_general_percent,
-    coalesce(
-        logements_vacants_parc_prive * 100.0 / NULLIF(logements_parc_prive, 0),
-        0
-    )::double precision as logements_vacants_parc_prive_percent,
-    coalesce(
-        logements_vacants_parc_social * 100.0 / NULLIF(logements_parc_social, 0),
-        0
-    )::double precision as logements_vacants_parc_social_percent,
-    coalesce(
-        logements_vacants_parc_prive * 100.0 / NULLIF(logements_parc_general, 0),
-        0
-    )::double precision as logements_vacants_parc_prive_on_parc_general_percent,
-    coalesce(
-        logements_vacants_parc_social * 100.0 / NULLIF(logements_parc_general, 0),
-        0
-    )::double precision as logements_vacants_parc_social_on_parc_general_percent
+    is_secretise,
+    secretisation_status,
+    (logements_vacants_parc_general * 100.0 / NULLIF(logements_parc_general, 0))::double precision as logements_vacants_parc_general_percent,
+    (logements_vacants_parc_prive * 100.0 / NULLIF(logements_parc_prive, 0))::double precision as logements_vacants_parc_prive_percent,
+    (logements_vacants_parc_social * 100.0 / NULLIF(logements_parc_social, 0))::double precision as logements_vacants_parc_social_percent,
+    (logements_vacants_parc_prive * 100.0 / NULLIF(logements_parc_general, 0))::double precision as logements_vacants_parc_prive_on_parc_general_percent,
+    (logements_vacants_parc_social * 100.0 / NULLIF(logements_parc_general, 0))::double precision as logements_vacants_parc_social_on_parc_general_percent
 FROM
     with_parc_general
 ), land_id_without_missing_years as (
@@ -168,7 +167,7 @@ group by
     with_percentages.land_id,
     with_percentages.land_type
 HAVING
-    array_agg(with_percentages.year) @> array[2019, 2020, 2021, 2022, 2023]
+    array_agg(with_percentages.year) @> array[2020, 2021, 2022, 2023, 2024]
 )
 SELECT
     *

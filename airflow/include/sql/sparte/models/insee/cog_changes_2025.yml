@@ -27,7 +27,7 @@ type_commune: &type_commune
   ]
 
 models:
-  - name: cog_changes_2024
+  - name: cog_changes_2025
     columns:
       - name: type_de_changement
         data_tests:

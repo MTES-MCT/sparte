@@ -56,8 +56,8 @@
 
 with raw_data as (
 SELECT
-    "Commune (DEP)" as commune_name,
-    "Unnamed: 2" as commune_code,
+    "LIBCOM_DEP" as commune_name,
+    "DEPCOM_ARM" as commune_code,
 	{{ coalesce_rpls() }}
 	FROM
 {{ source('public', 'rpls_rpls_commune') }}

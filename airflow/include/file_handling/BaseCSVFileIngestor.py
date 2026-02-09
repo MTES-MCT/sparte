@@ -13,6 +13,7 @@ class BaseCSVFileIngestor(ABC):
         table_name: str,
         separator: str = ";",
         skiprows=None,
+        encoding: str | None = None,
     ) -> int:
         """
         Retourne le nombre de lignes insérées dans la table

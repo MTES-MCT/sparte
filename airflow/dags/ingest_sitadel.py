@@ -5,27 +5,23 @@ from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
 
 from airflow.decorators import dag, task
+from airflow.models.param import Param
 
 source_to_table = [
     {
-        "source": "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/9c90a880-4ba0-49b4-b99d-d7dd6c810dd0/csv?millesime=2024-11&withColumnName=true&withColumnDescription=true&withColumnUnit=false",  # noqa: E501 (line too long)
+        "source": "https://www.data.gouv.fr/api/1/datasets/r/0debc675-369e-4d32-aec6-8716d48d64e7",  # noqa: E501 (line too long)
         "filename": "donnees_annuelles_communales_logements.csv",
         "table": "sitadel_donnees_annuelles_communales_logements",
     },
     {
-        "source": "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/a0ae7112-5184-4ad7-842d-87b09fd27df1/csv?millesime=2024-12&withColumnName=true&withColumnDescription=true&withColumnUnit=false",  # noqa: E501 (line too long)
+        "source": "https://www.data.gouv.fr/api/1/datasets/r/ae0d7970-0860-4418-a1b7-874eca038c11",  # noqa: E501 (line too long)
         "filename": "donnees_annuelles_departements_logements.csv",
         "table": "sitadel_donnees_annuelles_departements_logements",
     },
     {
-        "source": "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/cb3c0612-e7d9-4a87-91be-cc0fb6448a4f/csv?millesime=2024-12&withColumnName=true&withColumnDescription=true&withColumnUnit=false",  # noqa: E501 (line too long)
+        "source": "https://www.data.gouv.fr/api/1/datasets/r/79c41b99-be89-485c-bf74-170c03111252",  # noqa: E501 (line too long)
         "filename": "donnees_annuelles_epci_logements.csv",
         "table": "sitadel_donnees_annuelles_epci_logements",
-    },
-    {
-        "source": "https://data.statistiques.developpement-durable.gouv.fr/dido/api/v1/datafiles/8b35affb-55fc-4c1f-915b-7750f974446a/csv?millesime=2024-11&withColumnName=true&withColumnDescription=true&withColumnUnit=false",  # noqa: E501 (line too long)
-        "filename": "autorisations_urbanismes_logements.csv",
-        "table": "sitadel_autorisations_urbanismes_logements",
     },
 ]
 
@@ -38,12 +34,17 @@ source_to_table = [
     max_active_runs=1,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["SITADEL"],
+    params={
+        "skip_dbt": Param(default=False, type="boolean", description="Skip dbt build step"),
+        "if_not_exists": Param(default=True, type="boolean", description="Skip download if file already exists on S3"),
+    },
 )
 def ingest_sitadel():
     bucket_name = InfraContainer().bucket_name()
 
     @task.python()
-    def download():
+    def download(**context):
+        if_not_exists = context["params"].get("if_not_exists", True)
         files = []
 
         for source in source_to_table:
@@ -54,7 +55,7 @@ def ingest_sitadel():
                     url=source["source"],
                     s3_key=source["filename"],
                     s3_bucket=bucket_name,
-                    if_not_exists=True,
+                    if_not_exists=if_not_exists,
                 )
             )
 
@@ -72,14 +73,16 @@ def ingest_sitadel():
                     s3_bucket=bucket_name,
                     s3_key=source["filename"],
                     table_name=source["table"],
-                    skiprows=1,
+                    skiprows=0,
                 )
             )
 
         return inserted_rows
 
     @task.bash(pool=DBT_POOL)
-    def dbt_build():
+    def dbt_build(**context):
+        if context["params"].get("skip_dbt"):
+            return "echo 'Skipping dbt build'"
         return get_dbt_command_from_directory(cmd="dbt build -s sitadel+")
 
     download() >> ingest() >> dbt_build()

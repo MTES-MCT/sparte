@@ -16,4 +16,4 @@ SELECT
     "LIBELLE_AP"                      AS libelle_apres,
     TO_DATE("DATE_EFF", 'YYYY-MM-DD') AS date_effet
 FROM
-    {{ source('public', 'insee_cog_changes_2024') }}
+    {{ source('public', 'insee_cog_changes_2025') }}

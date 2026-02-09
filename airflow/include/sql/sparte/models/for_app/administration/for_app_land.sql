@@ -5,36 +5,27 @@
     )
 }}
 
-WITH land_with_transformed_geoms AS (
-    SELECT
-        land.*,
-        ST_Transform(geom, 4326) as geom_4326,
-        ST_Transform(simple_geom, 4326) as simple_geom_4326,
-        ST_Transform(ST_buffer(geom, 500), 4326) as geom_buffered_4326
-    FROM {{ ref('land_details') }} as land
-)
-
 SELECT
-    land_type || '_' || land_id as key,
-    land_id,
-    land_type,
+    land.land_type || '_' || land.land_id as key,
+    land.land_id,
+    land.land_type,
     name,
     {{ m2_to_ha('land.surface') }} as surface,
     'ha' as surface_unit,
     ARRAY[
-        ST_XMin(geom_4326),
-        ST_YMin(geom_4326),
-        ST_XMax(geom_4326),
-        ST_YMax(geom_4326)
+        ST_XMin(land_geom.geom_4326),
+        ST_YMin(land_geom.geom_4326),
+        ST_XMax(land_geom.geom_4326),
+        ST_YMax(land_geom.geom_4326)
     ] as bounds,
     ARRAY[
-        ST_XMin(geom_buffered_4326),
-        ST_YMin(geom_buffered_4326),
-        ST_XMax(geom_buffered_4326),
-        ST_YMax(geom_buffered_4326)
+        ST_XMin(land_geom.geom_buffered_4326),
+        ST_YMin(land_geom.geom_buffered_4326),
+        ST_XMax(land_geom.geom_buffered_4326),
+        ST_YMax(land_geom.geom_buffered_4326)
     ] as max_bounds,
-    geom_4326 as geom,
-    simple_geom_4326 as simple_geom,
+    land_geom.geom_4326 as geom,
+    land_geom.simple_geom_4326 as simple_geom,
 
     {{ m2_to_ha('land.surface_artif') }} as surface_artif,
     land.percent_artif as percent_artif,
@@ -50,7 +41,8 @@ SELECT
     friche_status.status as friche_status,
     friche_status.status_details as friche_status_details,
     logements_vacants.status as logements_vacants_status,
-    logements_vacants.has_logements_vacants,
+    logements_vacants.has_logements_vacants_prive,
+    logements_vacants.has_logements_vacants_social,
     logements_vacants.status_details as logements_vacants_status_details,
     land_millesimes.millesimes as millesimes,
     land_millesimes_by_index.millesimes_by_index as millesimes_by_index,
@@ -73,7 +65,10 @@ SELECT
     ) as conso_details,
     land.consommation_correction_status
 FROM
-    land_with_transformed_geoms as land
+    {{ ref('land_details') }} as land
+JOIN {{ ref('land_geom_4326') }} as land_geom
+    ON land_geom.land_id = land.land_id
+    AND land_geom.land_type = land.land_type
 LEFT JOIN LATERAL (
     SELECt array_agg(jsonb_build_object(
         'departement', land_millesimes.departement,
@@ -148,7 +143,8 @@ LEFT JOIN LATERAL (
 LEFt JOIN LATERAL (
         SELECT
             status,
-            has_logements_vacants,
+            has_logements_vacants_prive,
+            has_logements_vacants_social,
             jsonb_build_object(
                 'logements_parc_prive', logements_parc_prive,
                 'logements_vacants_parc_prive', logements_vacants_parc_prive,

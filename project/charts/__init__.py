@@ -19,12 +19,10 @@ __all__ = [
     "ObjectiveChartExport",
     "PopulationConsoProgressionChart",
     "PopulationConsoComparisonChart",
-    "LogementVacantAutorisationLogementComparisonChart",
-    "LogementVacantAutorisationLogementRatioGaugeChart",
     "LogementVacantAutorisationLogementRatioProgressionChart",
-    "LogementVacantProgressionChart",
-    "LogementVacantRatioProgressionChart",
     "LogementVacantConsoProgressionChart",
+    "LogementVacantMapPercent",
+    "LogementVacantMapAbsolute",
     "ArtifByCouverturePieChart",
     "ArtifByUsagePieChart",
     "ArtifMap",
@@ -118,19 +116,13 @@ from .urbanisme.FricheTypeChart import FricheTypeChart
 from .urbanisme.FricheZonageEnvironnementalChart import FricheZonageEnvironnementalChart
 from .urbanisme.FricheZonageTypeChart import FricheZonageTypeChart
 from .urbanisme.FricheZoneActiviteChart import FricheZoneActiviteChart
-from .urbanisme.LogementVacantAutorisationLogementComparisonChart import (
-    LogementVacantAutorisationLogementComparisonChart,
-)
-from .urbanisme.LogementVacantAutorisationLogementRatioGaugeChart import (
-    LogementVacantAutorisationLogementRatioGaugeChart,
-)
 from .urbanisme.LogementVacantAutorisationLogementRatioProgressionChart import (
     LogementVacantAutorisationLogementRatioProgressionChart,
 )
 from .urbanisme.LogementVacantConsoProgressionChart import (
     LogementVacantConsoProgressionChart,
 )
-from .urbanisme.LogementVacantProgressionChart import LogementVacantProgressionChart
-from .urbanisme.LogementVacantRatioProgressionChart import (
-    LogementVacantRatioProgressionChart,
+from .urbanisme.LogementVacantMap import (
+    LogementVacantMapAbsolute,
+    LogementVacantMapPercent,
 )

@@ -1,6 +1,8 @@
 {{ config(materialized='table') }}
 
 {% set columns = '
+total_2025,
+total_2024,
 total_2023,
 total_2022,
 total_2021,
@@ -12,6 +14,8 @@ total_2016,
 total_2015,
 total_2014,
 total_2013,
+taux_vacants_2025,
+taux_vacants_2024,
 taux_vacants_2023,
 taux_vacants_2022,
 taux_vacants_2021,

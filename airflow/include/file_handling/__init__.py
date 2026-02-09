@@ -8,6 +8,7 @@ from .GeoJsonToGzippedGeoJsonOnS3Handler import GeoJsonToGzippedGeoJsonOnS3Handl
 from .HTTPFileHandler import HTTPFileHandler
 from .PaginatedJsonToS3Handler import PaginatedJsonToS3Handler
 from .RemoteToS3FileHandler import RemoteToS3FileHandler
+from .RemoteZipToS3FileHandler import RemoteZipToS3FileHandler
 from .S3CSVFileToDBTableHandler import S3CSVFileToDBTableHandler
 from .S3GeoJsonFileToDBTableHandler import S3GeoJsonFileToDBTableHandler
 from .S3Handler import S3Handler
@@ -24,6 +25,7 @@ __all__ = [
     "BaseHTTPFileHandler",
     "BaseS3Handler",
     "RemoteToS3FileHandler",
+    "RemoteZipToS3FileHandler",
     "PaginatedJsonToS3Handler",
     "BaseTmpPathGenerator",
     "BaseCSVFileIngestor",

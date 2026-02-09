@@ -57,10 +57,33 @@ class LandModel(models.Model):
         GISEMENT_POTENTIEL_EN_COURS_EXPLOITATION = "gisement potentiel et en cours d’exploitation"
 
     class LogementsVacantsStatus(models.TextChoices):
+        DONNEES_INDISPONIBLES = "données indisponibles (secretisation)"
         GISEMENT_NUL = "gisement nul"
+        GISEMENT_NUL_PARTIELLEMENT_SECRETISE = "gisement nul (partiellement secretise)"
+        GISEMENT_NUL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES = (
+            "gisement nul dans le social (données privées indisponibles)"
+        )
+        GISEMENT_NUL_DANS_LE_PRIVE_DONNEES_SOCIALES_INDISPONIBLES = (
+            "gisement nul dans le privé (données sociales indisponibles)"
+        )
         GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE = "gisement potentiel dans le social et le privé"
+        GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE_PARTIELLEMENT_SECRETISE = (
+            "gisement potentiel dans le social et le privé (partiellement secretise)"
+        )
         GISEMENT_POTENTIEL_DANS_LE_SOCIAL = "gisement potentiel dans le social"
+        GISEMENT_POTENTIEL_DANS_LE_SOCIAL_PARTIELLEMENT_SECRETISE = (
+            "gisement potentiel dans le social (partiellement secretise)"
+        )
+        GISEMENT_POTENTIEL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES = (
+            "gisement potentiel dans le social (données privées indisponibles)"
+        )
         GISEMENT_POTENTIEL_DANS_LE_PRIVE = "gisement potentiel dans le privé"
+        GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE = (
+            "gisement potentiel dans le privé (partiellement secretise)"
+        )
+        GISEMENT_POTENTIEL_DANS_LE_PRIVE_DONNEES_SOCIALES_INDISPONIBLES = (
+            "gisement potentiel dans le privé (données sociales indisponibles)"
+        )
 
     class ConsommationCorrectionStatus(models.TextChoices):
         DONNEES_CORRIGEES = "données_coriggées", "données_coriggées"
@@ -99,7 +122,8 @@ class LandModel(models.Model):
     friche_status = models.TextField(choices=FricheStatus.choices)
     friche_status_details = models.JSONField()
     logements_vacants_status = models.TextField(choices=LogementsVacantsStatus.choices)
-    has_logements_vacants = models.BooleanField()
+    has_logements_vacants_prive = models.BooleanField()
+    has_logements_vacants_social = models.BooleanField()
     logements_vacants_status_details = models.JSONField()
     bounds = ArrayField(base_field=models.FloatField())
     max_bounds = ArrayField(base_field=models.FloatField())

@@ -31,15 +31,25 @@ models:
       - name: logements_vacants_parc_general_percent
         description: Represents the percentage of vacant housing units in the general housing stock (both private and social) for a given land type and year. Calculated as (logements_vacants_parc_general * 100) / logements_parc_general, where logements_parc_general is the total housing stock.
         data_type: double precision
+        data_tests:
+          - is_percent_between_0_and_100
       - name: logements_vacants_parc_prive_percent
         description: Represents the percentage of vacant housing units in the private housing stock for a given land type and year. Calculated as (logements_vacants_parc_prive * 100) / logements_parc_prive, where logements_parc_prive is the total private housing stock.
         data_type: double precision
+        data_tests:
+          - is_percent_between_0_and_100
       - name: logements_vacants_parc_social_percent
         description: Represents the percentage of vacant housing units in the social housing stock for a given land type and year. Calculated as (logements_vacants_parc_social * 100) / logements_parc_social, where logements_parc_social is the total social housing stock.
         data_type: double precision
+        data_tests:
+          - is_percent_between_0_and_100
       - name: logements_vacants_parc_prive_on_parc_general_percent
         description: This column represents the percentage of vacant private housing units relative to the total housing stock (general housing stock) for a given land type and year. It is calculated as (logements_vacants_parc_prive / logements_parc_general) * 100, where logements_parc_general is the sum of private and social housing units.
         data_type: double precision
+        data_tests:
+          - is_percent_between_0_and_100
       - name: logements_vacants_parc_social_on_parc_general_percent
         description: This column represents the percentage of vacant social housing units relative to the total housing stock (general housing stock) for a given land type and year. It is calculated as (logements_vacants_parc_social / logements_parc_general) * 100, where logements_parc_general is the sum of private and social housing units.
         data_type: double precision
+        data_tests:
+          - is_percent_between_0_and_100
