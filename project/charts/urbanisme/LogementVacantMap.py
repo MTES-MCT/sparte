@@ -4,7 +4,11 @@ from django.core.serializers import serialize
 from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import LOGEMENT_VACANT_COLOR_GENERAL
+from project.charts.constants import (
+    LOGEMENT_VACANT_COLOR_GENERAL,
+    LOGEMENT_VACANT_COLOR_PRIVE,
+    LOGEMENT_VACANT_COLOR_SOCIAL,
+)
 from public_data.models import AdminRef, LandModel
 from public_data.models.urbanisme import LogementVacant
 
@@ -123,7 +127,18 @@ class LogementVacantMapPercent(LogementVacantMapBase):
             )
         )
 
-        data_with_values = [d for d in self.logement_vacant_data if not d["secretise"]]
+        # Données avec pourcentage valide (non secrétisées et pourcentage non null)
+        data_with_values = [
+            d
+            for d in self.logement_vacant_data
+            if not d["secretise"] and d["logements_vacants_parc_general_percent"] is not None
+        ]
+        # Données avec pourcentage manquant (non secrétisées mais pourcentage null)
+        data_missing_percent = [
+            d
+            for d in self.logement_vacant_data
+            if not d["secretise"] and d["logements_vacants_parc_general_percent"] is None
+        ]
         percent_values = [d["logements_vacants_parc_general_percent"] for d in data_with_values]
 
         base_param = {
@@ -144,8 +159,8 @@ class LogementVacantMapPercent(LogementVacantMapBase):
                 "layout": "vertical",
             },
             "colorAxis": {
-                "min": min(filter(lambda x: x is not None, percent_values)) if percent_values else 0,
-                "max": max(filter(lambda x: x is not None, percent_values)) if percent_values else 1,
+                "min": min(percent_values) if percent_values else 0,
+                "max": max(percent_values) if percent_values else 1,
                 "minColor": "#FFFFFF",
                 "maxColor": LOGEMENT_VACANT_COLOR_GENERAL,
                 "dataClassColor": "category",
@@ -153,7 +168,7 @@ class LogementVacantMapPercent(LogementVacantMapBase):
             "series": [
                 {
                     "name": "Taux de vacance structurelle",
-                    "data": [d for d in self.logement_vacant_data if not d["secretise"]],
+                    "data": data_with_values,
                     "joinBy": ["land_id"],
                     "allAreas": False,
                     "colorKey": "logements_vacants_parc_general_percent",
@@ -176,8 +191,9 @@ class LogementVacantMapPercent(LogementVacantMapBase):
                     },
                 },
                 {
-                    "name": "Données secrétisées",
-                    "data": [{**d, "color": "#e8e8e8"} for d in self.logement_vacant_data if d["secretise"]],
+                    "name": "Données indisponibles",
+                    "data": [{**d, "color": "#e8e8e8"} for d in self.logement_vacant_data if d["secretise"]]
+                    + [{**d, "color": "#e8e8e8"} for d in data_missing_percent],
                     "joinBy": ["land_id"],
                     "allAreas": False,
                     "color": "#e8e8e8",
@@ -186,7 +202,7 @@ class LogementVacantMapPercent(LogementVacantMapBase):
                     "borderColor": "#999999",
                     "borderWidth": 1,
                     "tooltip": {
-                        "pointFormat": ("<b>{point.name}</b>:<br/>" "Données secrétisées"),
+                        "pointFormat": ("<b>{point.name}</b>:<br/>" "Données indisponibles"),
                     },
                 },
             ],
@@ -202,21 +218,27 @@ class LogementVacantMapAbsolute(LogementVacantMapBase):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
+        geojson = json.loads(
+            serialize(
+                "geojson",
+                self.lands,
+                geometry_field="simple_geom",
+                fields=("land_id", "name"),
+                srid=3857,
+            )
         )
 
+        data_with_values = [
+            d
+            for d in self.logement_vacant_data
+            if not d["secretise"] and d["logements_vacants_parc_general"] is not None
+        ]
+        data_unavailable = [
+            d for d in self.logement_vacant_data if d["secretise"] or d["logements_vacants_parc_general"] is None
+        ]
+
         base_param = {
-            "chart": {
-                "map": json.loads(geojson),
-            },
+            "chart": {"map": geojson},
             "title": {
                 "text": (
                     f"Nombre de logements en vacance structurelle des {self.formatted_child_land_type}s "
@@ -225,85 +247,85 @@ class LogementVacantMapAbsolute(LogementVacantMapBase):
             },
             "mapNavigation": {"enabled": True},
             "legend": {
-                "title": {"text": "Logements en vacance structurelle"},
                 "backgroundColor": "#ffffff",
                 "align": "right",
                 "verticalAlign": "middle",
                 "layout": "vertical",
-                "bubbleLegend": {
-                    "enabled": True,
-                    "borderWidth": 1,
-                    "legendIndex": 100,
-                    "labels": {"format": "{value:.0f}"},
-                    "color": "transparent",
-                    "borderColor": "#000",
-                    "connectorDistance": 40,
-                    "connectorColor": "#000",
-                },
             },
             "series": [
                 {
                     "name": "Territoires",
-                    "data": self.logement_vacant_data,
+                    "data": [{"land_id": d["land_id"], "id": d["land_id"]} for d in data_with_values],
                     "joinBy": ["land_id"],
+                    "color": "transparent",
                     "borderColor": "#999999",
                     "borderWidth": 1,
-                    "color": "transparent",
                     "showInLegend": False,
-                    "dataLabels": {
-                        "enabled": False,
-                    },
-                    "tooltip": {
-                        "enabled": False,
-                    },
                     "enableMouseTracking": False,
                 },
                 {
-                    "name": "Logements en vacance structurelle",
-                    "type": "mapbubble",
-                    "joinBy": ["land_id"],
-                    "showInLegend": True,
-                    "maxSize": "8%",
-                    "marker": {
-                        "fillOpacity": 0.5,
-                    },
-                    "color": LOGEMENT_VACANT_COLOR_GENERAL,
-                    "data": [
-                        {
-                            "land_id": d["land_id"],
-                            "z": d["logements_vacants_parc_general"],
-                            "color": LOGEMENT_VACANT_COLOR_GENERAL,
-                            "logements_vacants_parc_general": d["logements_vacants_parc_general"],
-                            "logements_vacants_parc_prive": d["logements_vacants_parc_prive"],
-                            "logements_vacants_parc_social": d["logements_vacants_parc_social"],
-                        }
-                        for d in self.logement_vacant_data
-                        if not d["secretise"]
-                    ],
-                    "tooltip": {
-                        "valueDecimals": 0,
-                        "pointFormat": (
-                            "<b>{point.name}</b>:<br/>"
-                            "Total: {point.logements_vacants_parc_general:,.0f}<br/>"
-                            "Parc privé: {point.logements_vacants_parc_prive:,.0f}<br/>"
-                            "Parc social: {point.logements_vacants_parc_social:,.0f}"
-                        ),
-                    },
-                },
-                {
-                    "name": "Données secrétisées",
-                    "data": [{**d, "color": "#e8e8e8"} for d in self.logement_vacant_data if d["secretise"]],
+                    "name": "Données indisponibles",
+                    "data": [{"land_id": d["land_id"], "color": "#e8e8e8"} for d in data_unavailable],
                     "joinBy": ["land_id"],
                     "allAreas": False,
                     "color": "#e8e8e8",
-                    "opacity": 1,
                     "showInLegend": True,
                     "borderColor": "#999999",
                     "borderWidth": 1,
-                    "tooltip": {
-                        "pointFormat": ("<b>{point.name}</b>:<br/>" "Données secrétisées"),
-                    },
+                    "tooltip": {"pointFormat": "<b>{point.name}</b>:<br/>Données indisponibles"},
                 },
+                {
+                    "type": "mapbubble",
+                    "name": "Parc privé",
+                    "data": [],
+                    "color": LOGEMENT_VACANT_COLOR_PRIVE,
+                    "showInLegend": True,
+                },
+                {
+                    "type": "mapbubble",
+                    "name": "Parc social",
+                    "data": [],
+                    "color": LOGEMENT_VACANT_COLOR_SOCIAL,
+                    "showInLegend": True,
+                },
+            ],
+            "_pieSeries": [
+                {
+                    "type": "pie",
+                    "name": self.lands.get(land_id=d["land_id"]).name,
+                    "zIndex": 6,
+                    "size": 25,
+                    "onPoint": {
+                        "id": d["land_id"],
+                        "z": d["logements_vacants_parc_general"],
+                    },
+                    "data": [
+                        {
+                            "name": "Parc privé",
+                            "y": d["logements_vacants_parc_prive"] or 0,
+                            "color": LOGEMENT_VACANT_COLOR_PRIVE,
+                        },
+                        {
+                            "name": "Parc social",
+                            "y": d["logements_vacants_parc_social"] or 0,
+                            "color": LOGEMENT_VACANT_COLOR_SOCIAL,
+                        },
+                    ],
+                    "showInLegend": False,
+                    "dataLabels": {"enabled": False},
+                    "tooltip": {
+                        "headerFormat": (
+                            f"<b>{self.lands.get(land_id=d['land_id']).name}</b><br/>"
+                            f"Total: {d['logements_vacants_parc_general']:,}<br/>"
+                        ),
+                        "pointFormat": (
+                            '<span style="color:{point.color}">●</span> '
+                            "{point.name}: <b>{point.y:,.0f}</b> ({point.percentage:.1f}%)"
+                        ),
+                    },
+                }
+                for d in data_with_values
+                if d["logements_vacants_parc_general"] and d["logements_vacants_parc_general"] > 0
             ],
         }
 

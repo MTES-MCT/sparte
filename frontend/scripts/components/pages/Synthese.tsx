@@ -343,7 +343,7 @@ const SyntheseLogementVacant = ({ landData, projectData }: SyntheseProps) => {
           />
         </>
       ) : (
-        <LogementVacantStatus />
+        <LogementVacantStatus status={landData.logements_vacants_status} />
       )}
     </div>
   );

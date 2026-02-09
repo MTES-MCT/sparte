@@ -25,20 +25,26 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
   const startYear = 2020
   const endYear = 2024
   const hasAutorisationLogement = true
-  const [childType, setChildType] = React.useState<string>(child_land_types?.[0] || '')
+  const defaultChildType = land_type === 'REGION' && child_land_types?.includes('DEPART')
+    ? 'DEPART'
+    : child_land_types?.[0] || ''
+  const [childType, setChildType] = React.useState<string>(defaultChildType)
 
   return (
     <div className="fr-container--fluid fr-p-3w">
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          <Guide title="A propos de la vacance des logements">
-            On distingue deux formes principales de vacance des logements : la vacance conjoncturelle, qui est de
-            courte durée et nécessaire à la fluidité du marché du logement, et la vacance structurelle, qui pourrait
-            se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols et
-            contre laquelle il est légitime de lutter. Dans cette perpective, l'analyse proposée s'appuie sur une
-            définition différenciée selon le type de parc : sont ainsi pris en compte les logements vacants depuis
-            plus de deux ans dans le parc privé et ceux inoccupés depuis plus de 3 mois dans le parc des bailleurs
-            sociaux.
+          <Guide title="Qu'est-ce que la vacance structurelle des logements ?">
+            <p>La vacance des logements se décline en deux formes :</p>
+            <ul>
+              <li><strong>Vacance conjoncturelle</strong> : de courte durée, elle est normale et nécessaire à la fluidité du marché immobilier.</li>
+              <li><strong>Vacance structurelle</strong> : de longue durée, elle représente un gisement de logements mobilisables pouvant se substituer à la construction neuve, souvent génératrice d'artificialisation des sols.</li>
+            </ul>
+            <p>
+              C'est cette vacance structurelle qui constitue un levier de sobriété foncière.
+              L'analyse porte sur les logements vacants depuis plus de 2 ans dans le parc privé (source : LOVAC)
+              et ceux inoccupés depuis plus de 3 mois dans le parc social (source : RPLS).
+            </p>
           </Guide>
         </div>
 
@@ -107,6 +113,7 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
                     }}
                     showDataTable={true}
                     isMap={true}
+                    sources={['lovac', 'rpls']}
                   />
                 </div>
               </div>
@@ -123,6 +130,7 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
                     }}
                     showDataTable={true}
                     isMap={true}
+                    sources={['lovac', 'rpls']}
                   />
                 </div>
               </div>

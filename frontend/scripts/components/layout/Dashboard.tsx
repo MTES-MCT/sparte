@@ -66,14 +66,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             skip: !projectData
         }
     );
-    const { data: env } = useGetEnvironmentQuery(null);
 
-    const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status, has_logements_vacants_prive, logements_vacants_status } = landData || {};
+    const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status, has_logements_vacants_prive, has_logements_vacants_social, logements_vacants_status } = landData || {};
 
     const { urls } = projectData || {};
-
-    const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
-    const { isMobile } = useWindowSize();
 
     useEffect(() => {
         if (projectData) {
@@ -179,8 +175,8 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Vacance des logements"
-                                                showPage={has_logements_vacants_prive}
-                                                showStatus={!has_logements_vacants_prive || logements_vacants_status?.includes('secretise')}
+                                                showPage={has_logements_vacants_prive || has_logements_vacants_social}
+                                                showStatus={!has_logements_vacants_prive || !has_logements_vacants_social || logements_vacants_status?.includes('secretise') || logements_vacants_status?.includes('indisponibles')}
                                                 status={
                                                     <LogementVacantStatus status={logements_vacants_status} />
                                                 }

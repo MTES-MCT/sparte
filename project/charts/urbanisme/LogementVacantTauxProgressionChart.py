@@ -119,9 +119,24 @@ class LogementVacantTauxProgressionChart(DiagnosticChart):
                 "labels": {"format": "{value} %"},
             },
             "tooltip": {
-                "headerFormat": "<b>{point.key}</b><br/>",
-                "valueSuffix": " %",
                 "shared": True,
+                "useHTML": True,
+                "formatter": """function() {
+                    var s = '<b>' + this.x + '</b><br/>';
+                    var xIndex = this.point ? this.point.index : this.points[0].point.index;
+                    var chart = this.point ? this.series.chart : this.points[0].series.chart;
+                    chart.series.forEach(function(series) {
+                        var value = series.options.data[xIndex];
+                        if (value === null || value === undefined) {
+                            s += '<span style="color:' + series.color + '">●
+                            </span> ' + series.name + ': <b>Indisponible</b><br/>';
+                        } else {
+                            s += '<span style="color:' + series.color + '">●
+                            </span> ' + series.name + ': <b>' + value + ' %</b><br/>';
+                        }
+                    });
+                    return s;
+                }""",
             },
             "plotOptions": {
                 "column": {

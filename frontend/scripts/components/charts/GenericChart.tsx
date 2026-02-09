@@ -15,6 +15,7 @@ import Drilldown from 'highcharts/modules/drilldown'
 import Exporting from 'highcharts/modules/exporting'
 import Fullscreen from 'highcharts/modules/full-screen'
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display'
+import SeriesOnPoint from 'highcharts/modules/series-on-point'
 
 import Loader from '@components/ui/Loader'
 import { useGetChartConfigQuery } from '@services/api'
@@ -31,6 +32,7 @@ Exporting(Highcharts)
 Fullscreen(Highcharts)
 NoDataToDisplay(Highcharts)
 HCSoldGauge(Highcharts) // Required for solid gauge charts
+SeriesOnPoint(Highcharts) // Required for pie-on-map charts
 
 export type DataSource =
   | 'insee'
@@ -143,6 +145,10 @@ const GenericChart = ({
     */
   const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
 
+  // Extraire les séries pie pour les ajouter après le rendu de la carte
+  const pieSeries = mutableChartOptions._pieSeries
+  delete mutableChartOptions._pieSeries
+
   // Ajoute un formatter pour filtrer les points marqués avec skipTooltip
   if (mutableChartOptions.tooltip?.shared)
   {
@@ -166,6 +172,18 @@ const GenericChart = ({
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-+)|(-+$)/g, '')}`
+
+  const handleChartCallback = (chart: Highcharts.Chart) =>
+  {
+    if (!pieSeries || pieSeries.length === 0) return
+
+    pieSeries.forEach((series: Highcharts.SeriesOptionsType) =>
+    {
+      chart.addSeries(series, false)
+    })
+
+    chart.redraw()
+  }
 
   const shouldRedraw = true
   const oneToOne = true
@@ -215,6 +233,7 @@ const GenericChart = ({
                     updateArgs={[shouldRedraw, oneToOne, animation]}
                     containerProps={{ ...defaultContainerProps, ...containerProps }}
                     constructorType={isMap ? 'mapChart' : 'chart'}
+                    callback={pieSeries ? handleChartCallback : undefined}
                 />
             )}
             {!hideDetails && (

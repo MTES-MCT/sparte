@@ -18,106 +18,117 @@ interface LogementVacantAbstractProps {
     link?: string;
 }
 
-const LogementVacantAbstract: React.FC<LogementVacantAbstractProps> = ({ 
-    logements_vacants_status, 
-    logements_vacants_status_details, 
-    name, 
-    className, 
-    link 
+const LogementVacantAbstract: React.FC<LogementVacantAbstractProps> = ({
+    logements_vacants_status,
+    logements_vacants_status_details,
+    name,
+    className,
+    link
 }) => {
     const abstractContentMap = {
         [LogementVacantStatusEnum.DONNEES_INDISPONIBLES]: (
             <>
-                Les données sur la vacance des logements ne sont pas disponibles pour le territoire de <strong>{name}</strong> en raison du secret statistique.<br />
-                <strong>Il n'est pas possible de déterminer si l'exploitation des logements vacants est un levier de sobriété foncière pour ce territoire.</strong><br />
+                <strong>Il n'est pas possible de déterminer si l'exploitation des logements vacants est un levier de sobriété foncière pour le territoire de {name}.</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_NUL]: (
             <>
-                D'après les données disponibles, il n'y a actuellement <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.<br />
-                <strong>L'exploitation des logements vacants ne semble pas être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il n'y a actuellement <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.<br />
+                <strong>L'exploitation des logements vacants ne semble pas être un levier actionnable pour ce territoire.</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_NUL_PARTIELLEMENT_SECRETISE]: (
             <>
-                D'après les données disponibles, il n'y a actuellement <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.<br />
-                <strong>L'exploitation des logements vacants ne semble pas être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Dans les données disponibles, il n'y a actuellement <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.<br />
+                <strong>L'exploitation des logements vacants ne semble pas être un levier actionnable, sous réserve des données manquantes.</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_NUL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES]: (
             <>
-                D'après les données disponibles, il n'y a actuellement <strong>aucun logement vacant dans le parc des bailleurs sociaux</strong> sur le territoire de <strong>{name}</strong>.<br />
-                Les données du parc privé ne sont pas disponibles pour ce territoire en raison du secret statistique.<br />
-                <strong>Il n'est pas possible de déterminer pleinement si l'exploitation des logements vacants est un levier de sobriété foncière pour ce territoire.</strong><br />
+                Le parc social ne compte <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.<br />
+                <strong>Le gisement est nul dans le parc social. Il n'est pas possible de conclure pour le parc privé (données indisponibles).</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_NUL_DANS_LE_PRIVE_DONNEES_SOCIALES_INDISPONIBLES]: (
             <>
-                D'après les données disponibles, il n'y a actuellement <strong>aucun logement vacant dans le parc privé</strong> sur le territoire de <strong>{name}</strong>.<br />
-                Les données du parc des bailleurs sociaux ne sont pas disponibles pour ce territoire.<br />
-                <strong>Il n'est pas possible de déterminer pleinement si l'exploitation des logements vacants est un levier de sobriété foncière pour ce territoire.</strong><br />
+                Le parc privé ne compte <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.<br />
+                <strong>Le gisement est nul dans le parc privé. Il n'est pas possible de conclure pour le parc social (données indisponibles).</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_general} {pluralize(logements_vacants_status_details.logements_vacants_parc_general, 'logement vacant')}</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_general_percent })}%</strong> du parc total.<br />
-                Parmi eux, <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')}</strong> dans le parc privé
-                et <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')}</strong> dans le parc des bailleurs sociaux.<br />
-                <strong>L'exploitation des logements vacants semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_general} {pluralize(logements_vacants_status_details.logements_vacants_parc_general, 'logement vacant')}</strong> sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_general_percent })}%</strong> du parc total.<br />
+                Parmi eux, <strong>{logements_vacants_status_details.logements_vacants_parc_prive}</strong> dans le parc privé
+                et <strong>{logements_vacants_status_details.logements_vacants_parc_social}</strong> dans le parc social.<br />
+                <strong>L'exploitation des logements vacants semble être un levier actionnable pour ce territoire.</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE_PARTIELLEMENT_SECRETISE]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_general} {pluralize(logements_vacants_status_details.logements_vacants_parc_general, 'logement vacant')}</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_general_percent })}%</strong> du parc total.<br />
-                Parmi eux, <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')}</strong> dans le parc privé
-                et <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')}</strong> dans le parc des bailleurs sociaux.<br />
-                <strong>L'exploitation des logements vacants semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a au moins <strong>{logements_vacants_status_details.logements_vacants_parc_general} {pluralize(logements_vacants_status_details.logements_vacants_parc_general, 'logement vacant')}</strong> sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_general_percent })}%</strong> du parc total.<br />
+                Parmi eux, <strong>{logements_vacants_status_details.logements_vacants_parc_prive}</strong> dans le parc privé
+                et <strong>{logements_vacants_status_details.logements_vacants_parc_social}</strong> dans le parc social.<br />
+                <strong>L'exploitation des logements vacants semble être un levier actionnable pour ce territoire (chiffres potentiellement sous-estimés).</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')} dans le parc des bailleurs sociaux</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_social_percent })}%</strong> du parc des bailleurs sociaux.<br />
-                <strong>L'exploitation des logements vacants du parc des bailleurs sociaux semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')}</strong> dans le parc social sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_social_percent })}%</strong> du parc social.
+                Le parc privé ne compte aucun logement vacant.<br />
+                <strong>L'exploitation des logements vacants du parc social semble être un levier actionnable pour ce territoire.</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_PARTIELLEMENT_SECRETISE]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')} dans le parc des bailleurs sociaux</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_social_percent })}%</strong> du parc des bailleurs sociaux.<br />
-                <strong>L'exploitation des logements vacants du parc des bailleurs sociaux semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')}</strong> dans le parc social sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_social_percent })}%</strong> du parc social.
+                Le parc privé ne compte aucun logement vacant dans les données disponibles.<br />
+                <strong>L'exploitation des logements vacants du parc social semble être un levier actionnable pour ce territoire.</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')} dans le parc des bailleurs sociaux</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_social_percent })}%</strong> du parc des bailleurs sociaux.<br />
-                Les données du parc privé ne sont pas disponibles pour ce territoire.<br />
-                <strong>L'exploitation des logements vacants du parc des bailleurs sociaux semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_social} {pluralize(logements_vacants_status_details.logements_vacants_parc_social ?? 0, 'logement vacant')}</strong> dans le parc social sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_social_percent })}%</strong> du parc social.<br />
+                <strong>L'exploitation des logements vacants du parc social semble être un levier actionnable. Il n'est pas possible de conclure pour le parc privé (données indisponibles).</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_PRIVE]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')} dans le parc privé</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_prive_percent })}%</strong> du parc privé.<br />
-                <strong>L'exploitation des logements vacants du parc privé semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')}</strong> dans le parc privé sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_prive_percent })}%</strong> du parc privé.
+                Le parc social ne compte aucun logement vacant.<br />
+                <strong>L'exploitation des logements vacants du parc privé semble être un levier actionnable pour ce territoire.</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')} dans le parc privé</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_prive_percent })}%</strong> du parc privé.<br />
-                <strong>L'exploitation des logements vacants du parc privé semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a au moins <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')}</strong> dans le parc privé sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_prive_percent })}%</strong> du parc privé.
+                Le parc social ne compte aucun logement vacant.<br />
+                <strong>L'exploitation des logements vacants du parc privé semble être un levier actionnable (chiffres potentiellement sous-estimés).</strong>
             </>
         ),
+
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_PRIVE_DONNEES_SOCIALES_INDISPONIBLES]: (
             <>
-                D'après les données disponibles, il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')} dans le parc privé</strong> sur le territoire de <strong>{name}</strong>,
-                représentant <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_prive_percent })}%</strong> du parc privé.<br />
-                Les données du parc des bailleurs sociaux ne sont pas disponibles pour ce territoire.<br />
-                <strong>L'exploitation des logements vacants du parc privé semble être un levier de sobriété foncière actionnable pour ce territoire.</strong><br />
+                Il y a actuellement <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, 'logement vacant')}</strong> dans le parc privé sur le territoire de <strong>{name}</strong>,
+                soit <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_prive_percent })}%</strong> du parc privé.<br />
+                <strong>L'exploitation des logements vacants du parc privé semble être un levier actionnable. Il n'est pas possible de conclure pour le parc social (données indisponibles).</strong>
             </>
         ),
     };
