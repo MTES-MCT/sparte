@@ -192,7 +192,6 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     const [isUpdating, setIsUpdating] = useState(false);
     const [hoveredValue, setHoveredValue] = useState<number | null>(null);
     const [hoveredFeature, setHoveredFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
-    const [selectedFeature, setSelectedFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
 
     const extendedLandData = useMemo(() => ({
         ...landData,
@@ -253,121 +252,35 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         return total;
     }, [selectedDestination, startYear, endYear]);
 
-    // Écouter les événements de survol et de clic sur la carte
+    // Écouter les événements de survol sur la carte
     useEffect(() => {
         if (!mapRef.current || !isMapLoaded) return;
 
         const map = mapRef.current;
 
         const handleMouseMove = (e: maplibregl.MapLayerMouseEvent) => {
-            if (selectedFeature) return;
             if (e.features && e.features.length > 0) {
                 const feature = e.features[0];
                 const properties = feature.properties || {};
                 const value = calculateCumulativeValue(properties);
                 setHoveredValue(value);
                 setHoveredFeature(feature);
-                map.getCanvas().style.cursor = 'pointer';
             }
         };
 
         const handleMouseLeave = () => {
-            if (selectedFeature) return;
             setHoveredValue(null);
             setHoveredFeature(null);
-            map.getCanvas().style.cursor = '';
-        };
-
-        let clickedOnCell = false;
-
-        const handleCellClick = (e: maplibregl.MapLayerMouseEvent) => {
-            clickedOnCell = true;
-            if (e.features && e.features.length > 0) {
-                const feature = e.features[0];
-                const properties = feature.properties || {};
-                const value = calculateCumulativeValue(properties);
-                setHoveredValue(value);
-                setHoveredFeature(feature);
-                setSelectedFeature(feature);
-            }
-        };
-
-        const handleMapClick = () => {
-            if (clickedOnCell) {
-                clickedOnCell = false;
-                return;
-            }
-            setSelectedFeature(null);
         };
 
         map.on("mousemove", "carroyage-lea-layer", handleMouseMove);
         map.on("mouseleave", "carroyage-lea-layer", handleMouseLeave);
-        map.on("click", "carroyage-lea-layer", handleCellClick);
-        map.on("click", handleMapClick);
 
         return () => {
             map.off("mousemove", "carroyage-lea-layer", handleMouseMove);
             map.off("mouseleave", "carroyage-lea-layer", handleMouseLeave);
-            map.off("click", "carroyage-lea-layer", handleCellClick);
-            map.off("click", handleMapClick);
-            map.getCanvas().style.cursor = '';
         };
-    }, [isMapLoaded, calculateCumulativeValue, selectedFeature]);
-
-    // Ajuster l'opacité et afficher la cellule sélectionnée en surbrillance
-    useEffect(() => {
-        if (!mapRef.current || !isMapLoaded) return;
-        const map = mapRef.current;
-        if (!map.getLayer("carroyage-lea-layer")) return;
-
-        const highlightSourceId = "carroyage-highlight-source";
-        const highlightLayerId = "carroyage-highlight-layer";
-        const highlightOutlineId = "carroyage-highlight-outline";
-
-        if (selectedFeature) {
-            map.setPaintProperty("carroyage-lea-layer", "fill-opacity", 0.15);
-
-            const geojson: GeoJSON.FeatureCollection = {
-                type: "FeatureCollection",
-                features: [{
-                    type: "Feature",
-                    geometry: selectedFeature.geometry,
-                    properties: selectedFeature.properties || {},
-                }],
-            };
-
-            if (map.getSource(highlightSourceId)) {
-                (map.getSource(highlightSourceId) as maplibregl.GeoJSONSource).setData(geojson);
-            } else {
-                map.addSource(highlightSourceId, { type: "geojson", data: geojson });
-                const colorExpression = buildCumulativeColorExpression(startYear, endYear, selectedDestination);
-                map.addLayer({
-                    id: highlightLayerId,
-                    type: "fill",
-                    source: highlightSourceId,
-                    paint: {
-                        "fill-color": colorExpression,
-                        "fill-opacity": 0.7,
-                    },
-                });
-                map.addLayer({
-                    id: highlightOutlineId,
-                    type: "line",
-                    source: highlightSourceId,
-                    paint: {
-                        "line-color": "#333",
-                        "line-width": 2,
-                    },
-                });
-            }
-        } else {
-            map.setPaintProperty("carroyage-lea-layer", "fill-opacity", 0.7);
-
-            if (map.getLayer(highlightOutlineId)) map.removeLayer(highlightOutlineId);
-            if (map.getLayer(highlightLayerId)) map.removeLayer(highlightLayerId);
-            if (map.getSource(highlightSourceId)) map.removeSource(highlightSourceId);
-        }
-    }, [selectedFeature, isMapLoaded, startYear, endYear, selectedDestination]);
+    }, [isMapLoaded, calculateCumulativeValue]);
 
     const handleMapLoad = useCallback((map: maplibregl.Map) => {
         mapRef.current = map;
@@ -483,17 +396,6 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                 </button>
                 </React.Fragment>
             ))}
-            {selectedFeature && (
-                <>
-                <span style={{ display: 'inline-block', width: 1, height: 24, backgroundColor: '#ccc', marginRight: 8, marginLeft: 4, verticalAlign: 'middle' }} />
-                <button
-                    className="fr-btn fr-btn--tertiary fr-btn--sm"
-                    onClick={() => setSelectedFeature(null)}
-                >
-                    Cellule sélectionnée ✕
-                </button>
-                </>
-            )}
         </div>
         <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-12 fr-col-lg-8">
@@ -536,14 +438,12 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             </div>
             <div className="fr-col-12 fr-col-lg-4">
                 <SidePanel>
-                    {(selectedFeature || hoveredFeature) ? (
-                        <>
+                    {hoveredFeature ? (
                         <ChartDataTable
                             title={`Consommation - ${DESTINATION_CONFIG[selectedDestination].label}`}
                             compact
                             data={(() => {
-                                const activeFeature = selectedFeature || hoveredFeature;
-                                const props = activeFeature!.properties || {};
+                                const props = hoveredFeature.properties || {};
                                 const suffix = DESTINATION_CONFIG[selectedDestination].suffix;
                                 const minYear = Math.max(startYear, 2011);
                                 const maxYear = Math.min(endYear, 2023);
@@ -576,10 +476,9 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                                 };
                             })()}
                         />
-                        </>
                     ) : (
                         <SidePanelPlaceholder>
-                            Survolez ou cliquez sur une cellule sur la carte pour afficher le détail de la consommation
+                            Survolez une cellule sur la carte pour afficher le détail de la consommation
                         </SidePanelPlaceholder>
                     )}
                 </SidePanel>

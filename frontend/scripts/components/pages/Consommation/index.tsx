@@ -267,6 +267,12 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, projectDat
 
       <div className="fr-mb-7w fr-mt-5w">
         <h3 id="conso-carroyage">Carroyage de la consommation d'espaces</h3>
+        <p className="fr-text--sm fr-mb-2w">
+          Cette carte utilise un <strong>carroyage de 1 km x 1 km</strong> afin
+          de <strong>respecter le secret statistique</strong> tout en permettant de localiser la consommation d'espaces NAF.
+          Cette représentation ne reflète pas la forme exacte des parcelles consommées et un même carreau peut chevaucher plusieurs communes.
+          Les valeurs affichées sont donc des approximations liées à ce maillage, mais permettent toutefois d'identifier les secteurs les plus consommateurs du territoire.
+        </p>
         <div className="bg-white fr-p-2w rounded">
           <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} />
         </div>
