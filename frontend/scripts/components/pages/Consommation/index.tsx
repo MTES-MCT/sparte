@@ -267,7 +267,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, projectDat
 
       <div className="fr-mb-7w fr-mt-5w">
         <h3 id="conso-carroyage">Carroyage de la consommation d'espaces</h3>
-        <div className="bg-white fr-p-2w rounded" style={{ height: "500px" }}>
+        <div className="bg-white fr-p-2w rounded">
           <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} />
         </div>
       </div>

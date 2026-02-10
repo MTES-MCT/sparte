@@ -151,7 +151,7 @@ def ingest_carroyage_lea():
             "--no-tile-size-limit",
             "--detect-shared-borders",
             "--extra-detail=15",
-            "-zg",
+            "-z16",
         ]
         return " ".join(cmd)
 

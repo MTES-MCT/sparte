@@ -4,7 +4,8 @@ import type maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import { CarroyageLeaInfo } from "./infoPanel";
+import ChartDataTable from "@components/charts/ChartDataTable";
+import { formatNumber } from "@utils/formatUtils";
 import type { ExpressionSpecification } from "maplibre-gl";
 
 type DestinationType = "total" | "habitat" | "activite" | "mixte" | "route" | "ferroviaire" | "inconnu";
@@ -20,48 +21,9 @@ const DESTINATION_CONFIG: Record<DestinationType, { label: string; suffix: strin
     inconnu: { label: "Inconnu", suffix: "_inconnu", color: "#86cdf2" },      // 6ème couleur - bleu clair
 };
 
-const DestinationButtonsContainer = styled.div`
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    max-width: calc(100% - 20px);
-    align-items: center;
-`;
-
-const Loader = styled.div`
-    width: 24px;
-    height: 24px;
-    border: 3px solid #e0e0e0;
-    border-top-color: #6A6AF4;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-left: 8px;
-
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-`;
-
-const DestinationButton = styled.button<{ $active: boolean; $color: string; $lightText?: boolean }>`
-    padding: 4px 8px;
-    font-size: 12px;
-    border: 2px solid ${({ $color }) => $color};
-    border-radius: 4px;
-    cursor: pointer;
-    background-color: ${({ $active, $color }) => ($active ? $color : "white")} !important;
-    color: ${({ $active, $lightText }) => ($active && $lightText ? "white" : "inherit")};
-    font-weight: ${({ $active }) => ($active ? "bold" : "normal")};
-`;
-
 const LegendContainer = styled.div`
     position: absolute;
-    bottom: 50px;
+    top: 10px;
     left: 10px;
     background: white;
     padding: 8px 12px;
@@ -105,6 +67,51 @@ const LegendIndicator = styled.div<{ $position: number }>`
 
 const LegendGradientContainer = styled.div`
     position: relative;
+`;
+
+const MapOverlay = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.6);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+`;
+
+const OverlayLoader = styled.div`
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #6A6AF4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+`;
+
+const SidePanel = styled.div`
+    background: #f6f6f6;
+    border-radius: 4px;
+    padding: 1rem;
+    height: 100%;
+    font-size: 0.85rem;
+    overflow-y: auto;
+`;
+
+const SidePanelPlaceholder = styled.div`
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 1rem;
 `;
 
 function buildCumulativeColorExpression(
@@ -184,6 +191,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [hoveredValue, setHoveredValue] = useState<number | null>(null);
+    const [hoveredFeature, setHoveredFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
+    const [selectedFeature, setSelectedFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
 
     const extendedLandData = useMemo(() => ({
         ...landData,
@@ -244,32 +253,121 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         return total;
     }, [selectedDestination, startYear, endYear]);
 
-    // Écouter les événements de survol sur la carte
+    // Écouter les événements de survol et de clic sur la carte
     useEffect(() => {
         if (!mapRef.current || !isMapLoaded) return;
 
         const map = mapRef.current;
 
         const handleMouseMove = (e: maplibregl.MapLayerMouseEvent) => {
+            if (selectedFeature) return;
             if (e.features && e.features.length > 0) {
-                const properties = e.features[0].properties || {};
+                const feature = e.features[0];
+                const properties = feature.properties || {};
                 const value = calculateCumulativeValue(properties);
                 setHoveredValue(value);
+                setHoveredFeature(feature);
+                map.getCanvas().style.cursor = 'pointer';
             }
         };
 
         const handleMouseLeave = () => {
+            if (selectedFeature) return;
             setHoveredValue(null);
+            setHoveredFeature(null);
+            map.getCanvas().style.cursor = '';
+        };
+
+        let clickedOnCell = false;
+
+        const handleCellClick = (e: maplibregl.MapLayerMouseEvent) => {
+            clickedOnCell = true;
+            if (e.features && e.features.length > 0) {
+                const feature = e.features[0];
+                const properties = feature.properties || {};
+                const value = calculateCumulativeValue(properties);
+                setHoveredValue(value);
+                setHoveredFeature(feature);
+                setSelectedFeature(feature);
+            }
+        };
+
+        const handleMapClick = () => {
+            if (clickedOnCell) {
+                clickedOnCell = false;
+                return;
+            }
+            setSelectedFeature(null);
         };
 
         map.on("mousemove", "carroyage-lea-layer", handleMouseMove);
         map.on("mouseleave", "carroyage-lea-layer", handleMouseLeave);
+        map.on("click", "carroyage-lea-layer", handleCellClick);
+        map.on("click", handleMapClick);
 
         return () => {
             map.off("mousemove", "carroyage-lea-layer", handleMouseMove);
             map.off("mouseleave", "carroyage-lea-layer", handleMouseLeave);
+            map.off("click", "carroyage-lea-layer", handleCellClick);
+            map.off("click", handleMapClick);
+            map.getCanvas().style.cursor = '';
         };
-    }, [isMapLoaded, calculateCumulativeValue]);
+    }, [isMapLoaded, calculateCumulativeValue, selectedFeature]);
+
+    // Ajuster l'opacité et afficher la cellule sélectionnée en surbrillance
+    useEffect(() => {
+        if (!mapRef.current || !isMapLoaded) return;
+        const map = mapRef.current;
+        if (!map.getLayer("carroyage-lea-layer")) return;
+
+        const highlightSourceId = "carroyage-highlight-source";
+        const highlightLayerId = "carroyage-highlight-layer";
+        const highlightOutlineId = "carroyage-highlight-outline";
+
+        if (selectedFeature) {
+            map.setPaintProperty("carroyage-lea-layer", "fill-opacity", 0.15);
+
+            const geojson: GeoJSON.FeatureCollection = {
+                type: "FeatureCollection",
+                features: [{
+                    type: "Feature",
+                    geometry: selectedFeature.geometry,
+                    properties: selectedFeature.properties || {},
+                }],
+            };
+
+            if (map.getSource(highlightSourceId)) {
+                (map.getSource(highlightSourceId) as maplibregl.GeoJSONSource).setData(geojson);
+            } else {
+                map.addSource(highlightSourceId, { type: "geojson", data: geojson });
+                const colorExpression = buildCumulativeColorExpression(startYear, endYear, selectedDestination);
+                map.addLayer({
+                    id: highlightLayerId,
+                    type: "fill",
+                    source: highlightSourceId,
+                    paint: {
+                        "fill-color": colorExpression,
+                        "fill-opacity": 0.7,
+                    },
+                });
+                map.addLayer({
+                    id: highlightOutlineId,
+                    type: "line",
+                    source: highlightSourceId,
+                    paint: {
+                        "line-color": "#333",
+                        "line-width": 2,
+                    },
+                });
+            }
+        } else {
+            map.setPaintProperty("carroyage-lea-layer", "fill-opacity", 0.7);
+
+            if (map.getLayer(highlightOutlineId)) map.removeLayer(highlightOutlineId);
+            if (map.getLayer(highlightLayerId)) map.removeLayer(highlightLayerId);
+            if (map.getSource(highlightSourceId)) map.removeSource(highlightSourceId);
+        }
+    }, [selectedFeature, isMapLoaded, startYear, endYear, selectedDestination]);
 
     const handleMapLoad = useCallback((map: maplibregl.Map) => {
         mapRef.current = map;
@@ -353,69 +451,140 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                 ]
             }
         ],
-        infoPanels: [
-            {
-                layerId: "carroyage-lea-layer",
-                title: "Carroyage consommation",
-                renderContent: (feature: maplibregl.MapGeoJSONFeature) => (
-                    <CarroyageLeaInfo
-                        feature={feature}
-                        startYear={startYear}
-                        endYear={endYear}
-                        selectedDestination={selectedDestination}
-                    />
-                ),
-                // Clé pour forcer la mise à jour quand les paramètres changent
-                _dynamicKey: `${startYear}-${endYear}-${selectedDestination}`,
-            }
-        ]
     }), [startYear, endYear, selectedDestination]);
 
     return (
-        <BaseMap
-            id="carroyage-lea-map"
-            config={config}
-            landData={extendedLandData}
-            center={center}
-            onMapLoad={handleMapLoad}
-        >
-            <DestinationButtonsContainer>
-                {(Object.keys(DESTINATION_CONFIG) as DestinationType[]).map((dest) => (
-                    <DestinationButton
-                        key={dest}
-                        $active={selectedDestination === dest}
-                        $color={DESTINATION_CONFIG[dest].color}
-                        $lightText={DESTINATION_CONFIG[dest].lightText}
-                        onClick={() => setSelectedDestination(dest)}
-                    >
-                        {DESTINATION_CONFIG[dest].label}
-                    </DestinationButton>
-                ))}
-                {(!isMapLoaded || isUpdating) && <Loader />}
-            </DestinationButtonsContainer>
-            <LegendContainer>
-                <LegendTitle>Consommation (ha)</LegendTitle>
-                <LegendGradientContainer>
-                    <LegendGradient
-                        $colors={[
-                            "#ffffff",
-                            adjustColorOpacity(DESTINATION_CONFIG[selectedDestination].color, 0.3),
-                            adjustColorOpacity(DESTINATION_CONFIG[selectedDestination].color, 0.5),
-                            adjustColorOpacity(DESTINATION_CONFIG[selectedDestination].color, 0.7),
-                            DESTINATION_CONFIG[selectedDestination].color,
-                            darkenColor(DESTINATION_CONFIG[selectedDestination].color, 0.3),
-                        ]}
+        <>
+        <div className="fr-mb-2w">
+            {(Object.keys(DESTINATION_CONFIG) as DestinationType[]).map((dest) => (
+                <React.Fragment key={dest}>
+                {dest === 'habitat' && (
+                    <span style={{ display: 'inline-block', width: 1, height: 24, backgroundColor: '#ccc', marginRight: 8, verticalAlign: 'middle' }} />
+                )}
+                <button
+                    className={`fr-btn ${
+                        selectedDestination === dest ? 'fr-btn--primary' : 'fr-btn--tertiary'
+                    } fr-btn--sm fr-mr-1w fr-mb-1w`}
+                    onClick={() => setSelectedDestination(dest)}
+                >
+                    <span
+                        style={{
+                            display: 'inline-block',
+                            width: 10,
+                            height: 10,
+                            borderRadius: '50%',
+                            backgroundColor: DESTINATION_CONFIG[dest].color,
+                            marginRight: 6,
+                            verticalAlign: 'middle',
+                            border: selectedDestination === dest ? '1px solid white' : '1px solid #ccc',
+                        }}
                     />
-                    {hoveredValue !== null && (
-                        <LegendIndicator $position={getIndicatorPosition(hoveredValue)} />
+                    {DESTINATION_CONFIG[dest].label}
+                </button>
+                </React.Fragment>
+            ))}
+            {selectedFeature && (
+                <>
+                <span style={{ display: 'inline-block', width: 1, height: 24, backgroundColor: '#ccc', marginRight: 8, marginLeft: 4, verticalAlign: 'middle' }} />
+                <button
+                    className="fr-btn fr-btn--tertiary fr-btn--sm"
+                    onClick={() => setSelectedFeature(null)}
+                >
+                    Cellule sélectionnée ✕
+                </button>
+                </>
+            )}
+        </div>
+        <div className="fr-grid-row fr-grid-row--gutters">
+            <div className="fr-col-12 fr-col-lg-8">
+                <BaseMap
+                    id="carroyage-lea-map"
+                    config={config}
+                    landData={extendedLandData}
+                    center={center}
+                    onMapLoad={handleMapLoad}
+                >
+                    {(!isMapLoaded || isUpdating) && (
+                        <MapOverlay>
+                            <OverlayLoader />
+                        </MapOverlay>
                     )}
-                </LegendGradientContainer>
-                <LegendLabels>
-                    <span>0</span>
-                    <span>0,1</span>
-                    <span>0,5+</span>
-                </LegendLabels>
-            </LegendContainer>
-        </BaseMap>
+                    <LegendContainer>
+                        <LegendTitle>Consommation (ha)</LegendTitle>
+                        <LegendGradientContainer>
+                            <LegendGradient
+                                $colors={[
+                                    "#ffffff",
+                                    adjustColorOpacity(DESTINATION_CONFIG[selectedDestination].color, 0.3),
+                                    adjustColorOpacity(DESTINATION_CONFIG[selectedDestination].color, 0.5),
+                                    adjustColorOpacity(DESTINATION_CONFIG[selectedDestination].color, 0.7),
+                                    DESTINATION_CONFIG[selectedDestination].color,
+                                    darkenColor(DESTINATION_CONFIG[selectedDestination].color, 0.3),
+                                ]}
+                            />
+                            {hoveredValue !== null && (
+                                <LegendIndicator $position={getIndicatorPosition(hoveredValue)} />
+                            )}
+                        </LegendGradientContainer>
+                        <LegendLabels>
+                            <span>0</span>
+                            <span>0,1</span>
+                            <span>0,5+</span>
+                        </LegendLabels>
+                    </LegendContainer>
+                </BaseMap>
+            </div>
+            <div className="fr-col-12 fr-col-lg-4">
+                <SidePanel>
+                    {(selectedFeature || hoveredFeature) ? (
+                        <>
+                        <ChartDataTable
+                            title={`Consommation - ${DESTINATION_CONFIG[selectedDestination].label}`}
+                            compact
+                            data={(() => {
+                                const activeFeature = selectedFeature || hoveredFeature;
+                                const props = activeFeature!.properties || {};
+                                const suffix = DESTINATION_CONFIG[selectedDestination].suffix;
+                                const minYear = Math.max(startYear, 2011);
+                                const maxYear = Math.min(endYear, 2023);
+                                const yearlyData: { year: number; valueHa: number; raw: number }[] = [];
+                                let total = 0;
+                                for (let year = minYear; year <= maxYear; year++) {
+                                    const key = `conso_${year}${suffix}`;
+                                    const value = typeof props[key] === 'number' ? props[key] : 0;
+                                    const valueHa = Math.round((value / 10000) * 100) / 100;
+                                    total += value;
+                                    yearlyData.push({ year, valueHa, raw: value });
+                                }
+                                const totalHa = Math.round((total / 10000) * 100) / 100;
+                                const fmt = (v: number) => formatNumber({ number: v, decimals: 2, addSymbol: true });
+                                const rows: Array<{ name: string; data: any[] }> = yearlyData.map(({ year, valueHa, raw }) => {
+                                    const isSignificant = total > 0 && (raw / total) * 100 > 10;
+                                    if (isSignificant) {
+                                        return { name: '', data: [
+                                            <strong key={`y-${year}`}>{year}</strong>,
+                                            <strong key={`v-${year}`}>{fmt(valueHa)}</strong>,
+                                        ] };
+                                    }
+                                    return { name: '', data: [String(year), fmt(valueHa)] };
+                                });
+                                rows.push({ name: '', data: ['Total', fmt(totalHa)] });
+                                return {
+                                    headers: ['Année', 'Consommation (ha)'],
+                                    rows,
+                                    boldLastRow: true,
+                                };
+                            })()}
+                        />
+                        </>
+                    ) : (
+                        <SidePanelPlaceholder>
+                            Survolez ou cliquez sur une cellule sur la carte pour afficher le détail de la consommation
+                        </SidePanelPlaceholder>
+                    )}
+                </SidePanel>
+            </div>
+        </div>
+        </>
     );
 };
