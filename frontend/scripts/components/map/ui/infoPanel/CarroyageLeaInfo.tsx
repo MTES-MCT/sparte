@@ -2,24 +2,13 @@ import React, { useMemo } from "react";
 import type maplibregl from "maplibre-gl";
 import { InfoContent, InfoRow, InfoLabel, InfoValue } from ".";
 import { formatNumber } from "@utils/formatUtils";
-
-type DestinationType = "total" | "habitat" | "activite" | "mixte" | "route" | "ferroviaire" | "inconnu";
-
-const DESTINATION_LABELS: Record<DestinationType, string> = {
-    total: "Total",
-    habitat: "Habitat",
-    activite: "Activité",
-    mixte: "Mixte",
-    route: "Route",
-    ferroviaire: "Ferroviaire",
-    inconnu: "Inconnu",
-};
+import { useGetCarroyageDestinationConfigQuery } from "@services/api";
 
 interface CarroyageLeaInfoProps {
     feature: maplibregl.MapGeoJSONFeature;
     startYear: number;
     endYear: number;
-    selectedDestination: DestinationType;
+    selectedDestination: string;
 }
 
 function sumYearsRange(
@@ -67,6 +56,7 @@ export const CarroyageLeaInfo: React.FC<CarroyageLeaInfoProps> = ({
     endYear,
     selectedDestination,
 }) => {
+    const { data: destinationConfig } = useGetCarroyageDestinationConfigQuery(undefined);
     const props = feature.properties || {};
 
     const formatArea = (value: number | null | undefined) => {
@@ -80,8 +70,8 @@ export const CarroyageLeaInfo: React.FC<CarroyageLeaInfoProps> = ({
         return `${percent.toFixed(1)}%`;
     };
 
-    const suffix = selectedDestination === "total" ? "" : `_${selectedDestination}`;
-    const destinationLabel = DESTINATION_LABELS[selectedDestination];
+    const suffix = destinationConfig?.[selectedDestination]?.suffix ?? (selectedDestination === "total" ? "" : `_${selectedDestination}`);
+    const destinationLabel = destinationConfig?.[selectedDestination]?.label ?? selectedDestination;
 
     const cumulativeTotal = useMemo(
         () => sumYearsRange(props, startYear, endYear, suffix),

@@ -1,10 +1,13 @@
+import json
 from functools import cached_property
 
 from django.contrib.gis.db.models import MultiPolygonField
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import TrigramSimilarity
+from django.core.serializers import serialize
 from django.db import models
 from django.db.models.functions import Lower
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control, cache_page
 from rest_framework import serializers, viewsets
@@ -404,6 +407,26 @@ class LandModelGeomViewset(viewsets.ViewSet):
         queryset = LandModel.objects.get(land_id=land_id, land_type=land_type)
         serializer = LandModelGeomSerializer(queryset)
         return Response(serializer.data)
+
+
+class LandChildrenGeomViewset(viewsets.ViewSet):
+    """Retourne les géométries des territoires enfants au format GeoJSON FeatureCollection."""
+
+    def retrieve(self, request, land_type, land_id, child_land_type):
+        land = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        children = LandModel.objects.filter(
+            parent_keys__contains=[land.key],
+            land_type=child_land_type,
+        )
+        geojson = json.loads(
+            serialize(
+                "geojson",
+                children,
+                geometry_field="simple_geom",
+                fields=("land_id", "name"),
+            )
+        )
+        return JsonResponse(geojson)
 
 
 @method_decorator(cache_control(public=True, max_age=3600), name="retrieve")

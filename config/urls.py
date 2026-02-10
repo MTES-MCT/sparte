@@ -23,7 +23,11 @@ from two_factor.admin import AdminSiteOTPRequired
 from two_factor.urls import urlpatterns as tf_urls
 from two_factor.views import LoginView
 
-from config.views import EnvironmentView, WebpackProxyView
+from config.views import (
+    CarroyageDestinationConfigView,
+    EnvironmentView,
+    WebpackProxyView,
+)
 from public_data.views import (
     PdfFooterView,
     PdfHeaderView,
@@ -62,6 +66,11 @@ urlpatterns += [
     path("exports/pdf-header", PdfHeaderView.as_view(), name="pdf_header"),
     path("exports/pdf-footer", PdfFooterView.as_view(), name="pdf_footer"),
     path("env", view=EnvironmentView.as_view(), name="env"),
+    path(
+        "carroyage-destination-config",
+        view=CarroyageDestinationConfigView.as_view(),
+        name="carroyage_destination_config",
+    ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
