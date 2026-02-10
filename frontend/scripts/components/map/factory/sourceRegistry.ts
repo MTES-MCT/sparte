@@ -9,6 +9,8 @@ import { OcsgeArtifDiffCentroidSource } from "../sources/ocsgeArtifDiffCentroidS
 import { FrichesSource } from "../sources/frichesSource";
 import { FrichesCentroidSource } from "../sources/frichesCentroidSource";
 import { OcsgeFrichesSource } from "../sources/ocsgeFrichesSource";
+import { CarroyageLeaSource } from "../sources/carroyageLeaSource";
+import { OsmSource } from "../sources/osmSource";
 import type { SourceConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 
@@ -25,6 +27,8 @@ const sourceRegistry: Record<string, SourceFactory> = {
     "friches": (landData) => new FrichesSource(landData),
     "friches-centroid": (landData) => new FrichesCentroidSource(landData),
     "ocsge-friches": (landData) => new OcsgeFrichesSource(landData),
+    "carroyage-lea": () => new CarroyageLeaSource(),
+    "osm": () => new OsmSource(),
 };
 
 export function createSource(cfg: SourceConfig, landData: LandDetailResultType): BaseSource {

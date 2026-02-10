@@ -7,6 +7,7 @@ export { FrichesOcsgeCouvertureMap } from './ui/FrichesOcsgeCouvertureMap';
 export { FrichesImpermeableMap } from './ui/FrichesImpermeableMap';
 export { FrichesArtificialMap } from './ui/FrichesArtificialMap';
 export { FrichesMap } from './ui/FrichesMap';
+export { CarroyageLeaMap } from './ui/CarroyageLeaMap';
 
 export { ControlsPanel } from './ui/controls/ControlsPanel';
 export { ControlsGroup } from './ui/controls/ControlsGroup';

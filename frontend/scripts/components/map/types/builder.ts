@@ -44,6 +44,14 @@ export interface OcsgeFrichesSourceConfig {
     type: 'ocsge-friches';
 }
 
+export interface OsmSourceConfig {
+    type: 'osm';
+}
+
+export interface CarroyageLeaSourceConfig {
+    type: 'carroyage-lea';
+}
+
 export type SourceConfig =
     | OrthophotoSourceConfig
     | EmpriseSourceConfig
@@ -54,7 +62,9 @@ export type SourceConfig =
     | OcsgeArtifDiffCentroidSourceConfig
     | FrichesSourceConfig
     | FrichesCentroidSourceConfig
-    | OcsgeFrichesSourceConfig;
+    | OcsgeFrichesSourceConfig
+    | OsmSourceConfig
+    | CarroyageLeaSourceConfig;
 
 interface BaseLayerConfig {
     type: LayerCategory;
@@ -122,6 +132,18 @@ export interface OcsgeFrichesArtificialLayerConfig extends BaseLayerConfig {
     type: 'ocsge-friches-artificial';
 }
 
+export interface OsmLayerConfig extends BaseLayerConfig {
+    type: 'osm';
+}
+
+export interface CarroyageLeaLayerConfig extends BaseLayerConfig {
+    type: 'carroyage-lea';
+}
+
+export interface CarroyageLeaOutlineLayerConfig extends BaseLayerConfig {
+    type: 'carroyage-lea-outline';
+}
+
 export type LayerConfig =
     | OrthophotoLayerConfig
     | EmpriseLayerConfig
@@ -136,7 +158,10 @@ export type LayerConfig =
     | FrichesCentroidClusterLayerConfig
     | OcsgeFrichesLayerConfig
     | OcsgeFrichesImpermeableLayerConfig
-    | OcsgeFrichesArtificialLayerConfig;
+    | OcsgeFrichesArtificialLayerConfig
+    | OsmLayerConfig
+    | CarroyageLeaLayerConfig
+    | CarroyageLeaOutlineLayerConfig;
 
 export interface MapConfig {
     sources?: SourceConfig[];

@@ -7,6 +7,8 @@ export interface LayerInfoConfig {
     renderContent: (feature: maplibregl.MapGeoJSONFeature) => React.ReactNode;
     onOpen?: (feature: maplibregl.MapGeoJSONFeature) => void;
     onClose?: () => void;
+    /** Clé pour forcer la mise à jour quand les paramètres dynamiques changent */
+    _dynamicKey?: string;
 }
 
 export interface LayerInfo {
