@@ -19,6 +19,7 @@ import GuideContent from "@components/ui/GuideContent";
 import Card from "@components/ui/Card";
 import { ArtificialisationMap } from "@components/map/ui/ArtificialisationMap";
 import { ArtificialisationDiffMap } from "@components/map/ui/ArtificialisationDiffMap";
+import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -67,6 +68,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	});
 
 	const { has_zonage } = landData;
+	const [highlightedZoneType, setHighlightedZoneType] = useState<string | null>(null);
 
 	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
 	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
@@ -493,11 +495,18 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			)}
 
 			{has_zonage && (
-				<ArtificialisationZonage
-					artifZonageIndex={artifZonageIndex}
-					is_interdepartemental={is_interdepartemental}
-					landArtifStockIndex={landArtifStockIndex}
-				/>
+				<>
+					<div className="fr-mb-7w">
+						<h2>Carte des zonages d'urbanisme — Artificialisation</h2>
+						<ZonageUrbanismeMap landData={landData} mode="artif" highlightedZoneType={highlightedZoneType} />
+					</div>
+					<ArtificialisationZonage
+						artifZonageIndex={artifZonageIndex}
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						onHoverZoneType={setHighlightedZoneType}
+					/>
+				</>
 			)}
 
 			<div className="fr-mb-7w">

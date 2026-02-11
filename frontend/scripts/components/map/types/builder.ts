@@ -52,6 +52,10 @@ export interface CarroyageLeaSourceConfig {
     type: 'carroyage-lea';
 }
 
+export interface ZonageUrbanismeSourceConfig {
+    type: 'zonage-urbanisme';
+}
+
 export type SourceConfig =
     | OrthophotoSourceConfig
     | EmpriseSourceConfig
@@ -64,7 +68,8 @@ export type SourceConfig =
     | FrichesCentroidSourceConfig
     | OcsgeFrichesSourceConfig
     | OsmSourceConfig
-    | CarroyageLeaSourceConfig;
+    | CarroyageLeaSourceConfig
+    | ZonageUrbanismeSourceConfig;
 
 interface BaseLayerConfig {
     type: LayerCategory;
@@ -144,6 +149,11 @@ export interface CarroyageLeaOutlineLayerConfig extends BaseLayerConfig {
     type: 'carroyage-lea-outline';
 }
 
+export interface ZonageUrbanismeLayerConfig extends BaseLayerConfig {
+    type: 'zonage-urbanisme';
+    mode?: 'artif' | 'imper';
+}
+
 export type LayerConfig =
     | OrthophotoLayerConfig
     | EmpriseLayerConfig
@@ -161,7 +171,8 @@ export type LayerConfig =
     | OcsgeFrichesArtificialLayerConfig
     | OsmLayerConfig
     | CarroyageLeaLayerConfig
-    | CarroyageLeaOutlineLayerConfig;
+    | CarroyageLeaOutlineLayerConfig
+    | ZonageUrbanismeLayerConfig;
 
 export interface MapConfig {
     sources?: SourceConfig[];

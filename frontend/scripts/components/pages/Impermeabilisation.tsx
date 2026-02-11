@@ -14,6 +14,7 @@ import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage"
 import Card from "@components/ui/Card";
 import { ImpermeabilisationMap } from "@components/map/ui/ImpermeabilisationMap";
 import { ImpermeabilisationDiffMap } from "@components/map/ui/ImpermeabilisationDiffMap";
+import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
@@ -65,6 +66,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	});
 
 	const { has_zonage } = landData;
+	const [highlightedZoneType, setHighlightedZoneType] = useState<string | null>(null);
 
 	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
 	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
@@ -480,11 +482,18 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			)}
 
 			{has_zonage && (
-				<ImpermeabilisationZonage 
-					imperZonageIndex={imperZonageIndex}
-					is_interdepartemental={is_interdepartemental}
-					landImperStockIndex={landImperStockIndex}
-				/>
+				<>
+					<div className="fr-mb-7w">
+						<h2>Carte des zonages d'urbanisme — Imperméabilisation</h2>
+						<ZonageUrbanismeMap landData={landData} mode="imper" highlightedZoneType={highlightedZoneType} />
+					</div>
+					<ImpermeabilisationZonage
+						imperZonageIndex={imperZonageIndex}
+						is_interdepartemental={is_interdepartemental}
+						landImperStockIndex={landImperStockIndex}
+						onHoverZoneType={setHighlightedZoneType}
+					/>
+				</>
 			)}
 		</div>
 	);

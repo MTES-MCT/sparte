@@ -6,10 +6,41 @@ import ChartDetails from "@components/charts/ChartDetails";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { LandImperStockIndex } from "@services/types/landimperstockindex";
 
-const ProgressBarCell = styled.td`
-	.progress-bar-container {
-		max-width: 100% !important;
-	}
+const ZONE_TYPE_COLORS: Record<string, string> = {
+	U: "#E63946",
+	AU: "#F4A261",
+	N: "#2A9D8F",
+	A: "#E9C46A",
+};
+
+const ZoneTypeBadge = styled.span<{ $color: string }>`
+	display: inline-block;
+	padding: 2px 6px;
+	border-radius: 3px;
+	background-color: ${({ $color }) => $color};
+	color: white;
+	font-weight: 600;
+	font-size: 0.8rem;
+	margin-right: 6px;
+`;
+
+const PercentBarTrack = styled.div`
+	height: 8px;
+	background: #e0e0e0;
+	border-radius: 4px;
+	overflow: hidden;
+`;
+
+const PercentBarFill = styled.div<{ $percent: number; $color: string }>`
+	height: 100%;
+	width: ${({ $percent }) => Math.min($percent, 100)}%;
+	background-color: ${({ $color }) => $color};
+	border-radius: 4px;
+	transition: width 0.3s ease;
+`;
+
+const PercentCell = styled.td`
+	vertical-align: middle;
 `;
 
 interface ZonageData {
@@ -27,12 +58,14 @@ interface ImpermeabilisationZonageProps {
 	imperZonageIndex: ZonageData[];
 	is_interdepartemental: boolean;
 	landImperStockIndex: LandImperStockIndex;
+	onHoverZoneType?: (zoneType: string | null) => void;
 }
 
 export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> = ({
 	imperZonageIndex,
 	is_interdepartemental,
 	landImperStockIndex,
+	onHoverZoneType,
 }) => {
 	return (
 		<div className="fr-mb-7w">
@@ -59,11 +92,17 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 												(a: ZonageData, b: ZonageData) => b.zonage_surface - a.zonage_surface
 											)
 											.map((a: ZonageData) => (
-												<tr key={`${a.zonage_type}_${a.millesime_index}`}>
+												<tr
+													key={`${a.zonage_type}_${a.millesime_index}`}
+													onMouseEnter={() => onHoverZoneType?.(a.zonage_type)}
+													onMouseLeave={() => onHoverZoneType?.(null)}
+													style={{ cursor: "pointer" }}
+												>
 													<td>
-														<b>
-															{ZonageType[a.zonage_type as keyof typeof ZonageType]} ({a.zonage_type})
-														</b>
+														<ZoneTypeBadge $color={ZONE_TYPE_COLORS[a.zonage_type] || "#999"}>
+															{a.zonage_type}
+														</ZoneTypeBadge>
+														<b>{ZonageType[a.zonage_type]}</b>
 													</td>
 													<td>
 														{formatNumber({ number: a.zonage_surface })}
@@ -71,21 +110,15 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 													<td>
 														{formatNumber({ number: a.impermeable_surface })}
 													</td>
-													<ProgressBarCell>
-														<div className="progress-bar-container">
-															<div
-																className={`progress-bar-indicator w-${Math.round(
-																	a.impermeable_percent
-																)}`}
+													<PercentCell>
+														<div>{formatNumber({ number: a.impermeable_percent })}%</div>
+														<PercentBarTrack>
+															<PercentBarFill
+																$percent={a.impermeable_percent}
+																$color="#3A7EC2"
 															/>
-															<div className="progress-bar-value">
-																{formatNumber({
-																	number: a.impermeable_percent,
-																})}
-																%
-															</div>
-														</div>
-													</ProgressBarCell>
+														</PercentBarTrack>
+													</PercentCell>
 													<td>{a.zonage_count}</td>
 												</tr>
 											))}

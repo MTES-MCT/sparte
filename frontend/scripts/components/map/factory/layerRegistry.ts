@@ -16,7 +16,8 @@ import { OcsgeFrichesArtificialLayer } from "../layers/ocsgeFrichesArtificialLay
 import { CarroyageLeaLayer } from "../layers/carroyageLeaLayer";
 import { CarroyageLeaOutlineLayer } from "../layers/carroyageLeaOutlineLayer";
 import { OsmLayer } from "../layers/osmLayer";
-import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
+import { ZonageUrbanismeLayer } from "../layers/zonageUrbanismeLayer";
+import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig, ZonageUrbanismeLayerConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getAvailableMillesimes } from "../utils/ocsge";
 
@@ -102,6 +103,17 @@ const layerRegistry: Record<string, LayerFactory> = {
     "carroyage-lea": (_cfg, landData) => new CarroyageLeaLayer(landData),
     "carroyage-lea-outline": (_cfg, landData) => new CarroyageLeaOutlineLayer(landData),
     "osm": () => new OsmLayer(),
+    "zonage-urbanisme": (cfg, landData) => {
+        const config = cfg as ZonageUrbanismeLayerConfig;
+        const millesimeIndex = getLastMillesimeIndex(landData.millesimes);
+        const departement = getFirstDepartement(landData.departements);
+        return new ZonageUrbanismeLayer(
+            millesimeIndex,
+            departement,
+            config.mode ?? "artif",
+            landData,
+        );
+    },
 };
 
 export function createLayer(cfg: LayerConfig, landData: LandDetailResultType): BaseLayer {

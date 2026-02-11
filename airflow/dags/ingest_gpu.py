@@ -97,7 +97,7 @@ def ingest_gpu():
 
     @task.bash
     def dbt_build() -> str:
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s zonage_urbanisme.sql+'
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s 1_zonage_urbanisme_raw.sql+'
 
     @task.bash
     def cleanup() -> str:
