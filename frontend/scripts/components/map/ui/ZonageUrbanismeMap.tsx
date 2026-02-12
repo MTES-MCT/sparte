@@ -760,12 +760,12 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					</InfoRow>
 
 					<InfoRow>
-						<InfoLabel>Artificialisation</InfoLabel>
+						<InfoLabel>{mode === "artif" ? "Artificialisation" : "Imperméabilisation"}</InfoLabel>
 						<InfoValue style={{ color: "#E63946" }}>+{formatNumber({ number: toUnit(fluxArtif ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
 					</InfoRow>
 
 					<InfoRow>
-						<InfoLabel>Désartificialisation</InfoLabel>
+						<InfoLabel>{mode === "artif" ? "Désartificialisation" : "Désimperméabilisation"}</InfoLabel>
 						<InfoValue style={{ color: "#2A9D8F" }}>-{formatNumber({ number: toUnit(fluxDesartif ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
 					</InfoRow>
 
