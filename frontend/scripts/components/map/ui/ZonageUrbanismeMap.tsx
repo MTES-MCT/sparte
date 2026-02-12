@@ -37,6 +37,7 @@ const SidePanel = styled.div`
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
+	flex: 1;
 `;
 
 const SidePanelPlaceholder = styled.div`
@@ -202,9 +203,10 @@ const PercentBarFill = styled.div<{ $percent: number; $color: string }>`
 	transition: width 0.3s ease;
 `;
 
-const FluxLabel = styled.span`
-	color: #888;
+const FluxLabel = styled.span<{ $positive?: boolean }>`
 	font-size: 0.68rem;
+	font-weight: 700;
+	color: ${({ $positive }) => ($positive ? "#E63946" : "#2A9D8F")};
 `;
 
 type SurfaceUnit = "ha" | "m2";
@@ -337,7 +339,7 @@ function renderPieChart(
 							<span>
 								{formatNumber({ number: item.percent, decimals: 2 })}% {labelFn(item.code)}
 								{fluxItems && fluxVal !== 0 && (
-									<FluxLabel> ({fluxVal > 0 ? "+" : ""}{formatNumber({ number: fluxVal })} {unitLabel})</FluxLabel>
+									<FluxLabel $positive={fluxVal > 0}> {fluxVal > 0 ? "+" : "-"}{formatNumber({ number: Math.abs(fluxVal), decimals: 2 })} {unitLabel}</FluxLabel>
 								)}
 							</span>
 						</LegendItem>
@@ -350,7 +352,7 @@ function renderPieChart(
 							<LegendColor $color={colorMap[item.code] || "#ccc"} />
 							<span>
 								0% {labelFn(item.code)}
-								<FluxLabel> ({fluxVal > 0 ? "+" : ""}{formatNumber({ number: fluxVal })} {unitLabel})</FluxLabel>
+								<FluxLabel $positive={fluxVal > 0}> {fluxVal > 0 ? "+" : "-"}{formatNumber({ number: Math.abs(fluxVal), decimals: 2 })} {unitLabel}</FluxLabel>
 							</span>
 						</LegendItem>
 					);
@@ -382,6 +384,33 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	const lastMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
 	const firstDepartement = getFirstDepartement(landData.departements);
 	const mapRef = useRef<maplibregl.Map | null>(null);
+	const leftColRef = useRef<HTMLDivElement>(null);
+	const rightColRef = useRef<HTMLDivElement>(null);
+
+	const updateSidePanelOffset = useCallback(() => {
+		const leftCol = leftColRef.current;
+		if (!leftCol || !rightColRef.current) return;
+		const mapWrapper = leftCol.querySelector(`[id$="-wrapper"]`);
+		if (!mapWrapper) return;
+		const offset = mapWrapper.getBoundingClientRect().top - leftCol.getBoundingClientRect().top;
+		rightColRef.current.style.paddingTop = `${offset}px`;
+	}, []);
+
+	useEffect(() => {
+		// Use ResizeObserver to detect when the left column changes height (e.g. controls bar renders)
+		const leftCol = leftColRef.current;
+		if (!leftCol) return;
+
+		updateSidePanelOffset();
+
+		const observer = new ResizeObserver(() => {
+			updateSidePanelOffset();
+		});
+		observer.observe(leftCol);
+
+		return () => observer.disconnect();
+	}, [updateSidePanelOffset]);
+
 	const [hoveredFeature, setHoveredFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
 	const [lockedFeature, setLockedFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
 	const lockedChecksumRef = useRef<string | null>(null);
@@ -656,9 +685,6 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		const fluxArtif = properties.flux_artif as number | null;
 		const fluxDesartif = properties.flux_desartif as number | null;
 		const fluxArtifNet = properties.flux_artif_net as number | null;
-		const fluxArtifPercent = properties.flux_artif_percent as number | null;
-		const fluxDesartifPercent = properties.flux_desartif_percent as number | null;
-		const fluxArtifNetPercent = properties.flux_artif_net_percent as number | null;
 		const hasFlux = fluxArtif != null && (fluxArtif !== 0 || fluxDesartif !== 0);
 
 		const fluxCouvertureItems = parseComposition(properties.flux_artif_couverture_composition);
@@ -704,10 +730,8 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					)}
 				</SidePanelHeader>
 
-				<SectionTitle>Stock</SectionTitle>
-
 				<InfoRow>
-					<InfoLabel>Taux d'{modeLabel}</InfoLabel>
+					<InfoLabel><strong>Taux d'{modeLabel}</strong></InfoLabel>
 					<InfoValue>
 						{percent != null ? `${formatNumber({ number: percent })} %` : "—"}
 					</InfoValue>
@@ -728,11 +752,37 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					</InfoValue>
 				</InfoRow>
 
+				{hasFlux && (
+					<>
+					<Separator />
+					<InfoRow>
+						<InfoLabel><strong>Evolution{fluxYearOld && fluxYearNew ? ` entre ${fluxYearOld} et ${fluxYearNew}` : ""}</strong></InfoLabel>
+					</InfoRow>
+
+					<InfoRow>
+						<InfoLabel>Artificialisation</InfoLabel>
+						<InfoValue style={{ color: "#E63946" }}>+{formatNumber({ number: toUnit(fluxArtif ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
+					</InfoRow>
+
+					<InfoRow>
+						<InfoLabel>Désartificialisation</InfoLabel>
+						<InfoValue style={{ color: "#2A9D8F" }}>-{formatNumber({ number: toUnit(fluxDesartif ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
+					</InfoRow>
+
+					<InfoRow style={{ borderTop: "1px solid #999", paddingTop: "3px", marginTop: "2px" }}>
+						<InfoLabel><strong>{mode === "artif" ? "Artificialisation" : "Imperméabilisation"} nette</strong></InfoLabel>
+						<InfoValue style={{ color: (fluxArtifNet ?? 0) > 0 ? "#E63946" : (fluxArtifNet ?? 0) < 0 ? "#2A9D8F" : undefined, fontWeight: 700 }}>
+							{(fluxArtifNet ?? 0) >= 0 ? "+" : ""}{formatNumber({ number: toUnit(fluxArtifNet ?? 0), decimals: 2 })} {unitLabel}
+						</InfoValue>
+					</InfoRow>
+					</>
+				)}
+
 				{nomenclature === "couverture" && couvertureItems.length > 0 && (
 					<>
 					<Separator />
 					<PieSection>
-						<SectionTitle>Surfaces {mode === "artif" ? "artificialisées" : "imperméables"} par couverture{year ? ` (${year})` : ""}</SectionTitle>
+						<SectionTitle>Détail de l'{modeLabel} par couverture{year ? ` (${year})` : ""}</SectionTitle>
 						{renderPieChart(couvertureItems, getCouvertureLabel, COUVERTURE_COLORS as Record<string, string>, hasFlux ? fluxCouvertureItems : undefined, unit)}
 					</PieSection>
 					</>
@@ -742,42 +792,9 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					<>
 					<Separator />
 					<PieSection>
-						<SectionTitle>Surfaces {mode === "artif" ? "artificialisées" : "imperméables"} par usage{year ? ` (${year})` : ""}</SectionTitle>
+						<SectionTitle>Détail de l'{modeLabel} par usage{year ? ` (${year})` : ""}</SectionTitle>
 						{renderPieChart(usageItems, getUsageLabel, USAGE_COLORS as Record<string, string>, hasFlux ? fluxUsageItems : undefined, unit)}
 					</PieSection>
-					</>
-				)}
-
-				{hasFlux && (
-					<>
-					<Separator />
-					<SectionTitle>
-						Flux{fluxYearOld && fluxYearNew ? ` entre ${fluxYearOld} et ${fluxYearNew}` : ""}
-					</SectionTitle>
-
-					<InfoRow>
-						<InfoLabel>Artificialisation</InfoLabel>
-						<InfoValue>
-							+{formatNumber({ number: toUnit(fluxArtif ?? 0) })} {unitLabel}
-							({formatNumber({ number: fluxArtifPercent ?? 0 })} %)
-						</InfoValue>
-					</InfoRow>
-
-					<InfoRow>
-						<InfoLabel>Désartificialisation</InfoLabel>
-						<InfoValue>
-							-{formatNumber({ number: toUnit(fluxDesartif ?? 0) })} {unitLabel}
-							({formatNumber({ number: fluxDesartifPercent ?? 0 })} %)
-						</InfoValue>
-					</InfoRow>
-
-					<InfoRow>
-						<InfoLabel>Artif. nette</InfoLabel>
-						<InfoValue style={{ color: (fluxArtifNet ?? 0) > 0 ? "#E63946" : (fluxArtifNet ?? 0) < 0 ? "#2A9D8F" : undefined }}>
-							{(fluxArtifNet ?? 0) >= 0 ? "+" : ""}{formatNumber({ number: toUnit(fluxArtifNet ?? 0) })} {unitLabel}
-							({(fluxArtifNetPercent ?? 0) >= 0 ? "+" : ""}{formatNumber({ number: fluxArtifNetPercent ?? 0 })} %)
-						</InfoValue>
-					</InfoRow>
 					</>
 				)}
 			</SidePanelContent>
@@ -787,7 +804,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	return (
 		<>
 		<MapRow className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-lg-8">
+			<div className="fr-col-12 fr-col-lg-8" ref={leftColRef}>
 				<BaseMap
 					id={`zonage-urbanisme-${mode}-map`}
 					config={config}
@@ -797,7 +814,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					onControlsReady={handleControlsReady}
 				/>
 			</div>
-			<div className="fr-col-12 fr-col-lg-4">
+			<div className="fr-col-12 fr-col-lg-4" ref={rightColRef} style={{ display: "flex", flexDirection: "column" }}>
 				<SidePanel>
 					{lockedFeature && !noControl && (
 						<CloseButton
