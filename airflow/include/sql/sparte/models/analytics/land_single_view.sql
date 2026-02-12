@@ -13,7 +13,7 @@ SELECT
     land_details.name,
 
     -- Nombre de diagnostics par territoire
-    coalesce(diagnostics.diagnostic_count, 0) as diagnostic_count,
+    diagnostics.diagnostic_count,
 
     -- Nombre de diagnostics par année (JSON)
     diagnostics.diagnostic_count_by_year,
@@ -47,7 +47,7 @@ FROM
 
 LEFT JOIN LATERAL (
     SELECT
-        count(*) as diagnostic_count,
+        coalesce(sum(cnt), 0) as diagnostic_count,
         json_object_agg(year, cnt) as diagnostic_count_by_year
     FROM (
         SELECT
