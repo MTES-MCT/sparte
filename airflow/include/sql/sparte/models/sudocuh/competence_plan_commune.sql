@@ -1,14 +1,14 @@
-{{ config(materialized='table') }}
+{{ config(
+    materialized='table',
+    pre_hook="CREATE INDEX IF NOT EXISTS idx_sudocuh_commune_code_insee ON public.sudocuh_commune (\"Code INSEE \")"
+) }}
 
 SELECT
     commune.code as commune_code,
-    CASE
-        WHEN code_etat_libelle_bcsi LIKE '%Compétence commune' THEN TRUE
-        ELSE FALSE
-    END AS competence_planification
+    CASE WHEN sudocuh_commune."Nom commune" = sudocuh_commune."Collectivite porteuse " THEN True ELSE False END as competence_planification
 FROM
     {{ ref('commune') }} as commune
-LEFT JOIN
-    {{ source('public', 'sudocuh_plan_communal') }} as plan_communal
+INNER JOIN
+    {{ source('public', 'sudocuh_commune') }} as sudocuh_commune
 ON
-    commune.code = plan_communal.code_insee
+    commune.code = sudocuh_commune."Code INSEE "

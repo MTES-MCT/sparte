@@ -1,0 +1,19 @@
+{{ config(materialized="table") }}
+
+SELECT
+    land.land_id as scot_code,
+    scot.nom_scot as nom,
+    max(CASE WHEN land.index = 1 THEN array_to_string(land.years, ', ') END) as millesimes_1,
+    max(CASE WHEN land.index = 1 THEN land.percent END) as pourcent_imper_1,
+    max(CASE WHEN land.index = 1 THEN land.surface END) as surface_imper_1,
+    max(CASE WHEN land.index = 2 THEN array_to_string(land.years, ', ') END) as millesimes_2,
+    max(CASE WHEN land.index = 2 THEN land.percent END) as pourcent_imper_2,
+    max(CASE WHEN land.index = 2 THEN land.surface END) as surface_imper_2,
+    max(CASE WHEN land.index = 2 THEN land.flux_surface END) as flux_surface_1_2,
+    max(CASE WHEN land.index = 2 THEN land.flux_percent END) as flux_percent_1_2,
+    ST_Transform(scot.simple_geom, 4326) as geom
+FROM {{ ref("imper_land_by_index") }} as land
+LEFT JOIN {{ ref("scot") }} as scot ON land.land_id = scot.id_scot
+WHERE land.land_type = '{{ var("SCOT") }}'
+AND {{ exclude_guyane_incomplete_lands("land.land_id", "SCOT") }}
+GROUP BY land.land_id, scot.nom_scot, scot.simple_geom

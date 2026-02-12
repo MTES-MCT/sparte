@@ -1,0 +1,47 @@
+models:
+  - name: land_geom_4326
+    description: >
+      Modèle intermédiaire pour les géométries transformées en EPSG:4326.
+      Pré-calcule les transformations géométriques coûteuses une seule fois
+      pour éviter de les recalculer dans chaque modèle qui en a besoin (ex: for_app_land).
+    columns:
+      - name: land_id
+        description: Identifiant unique du territoire.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
+      - name: land_type
+        description: Type de territoire (commune, EPCI, département, etc.).
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
+      - name: geom_4326
+        description: Géométrie complète transformée en EPSG:4326.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: simple_geom_4326
+        description: Géométrie simplifiée transformée en EPSG:4326.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: geom_buffered_4326
+        description: Géométrie avec buffer de 500m transformée en EPSG:4326. Utilisée pour calculer les max_bounds.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_valid_geom
+
+    data_tests:
+      - unique:
+          column_name: "land_id || '_' || land_type"
+      - dbt_utils.equal_rowcount:
+          compare_model: ref('land')

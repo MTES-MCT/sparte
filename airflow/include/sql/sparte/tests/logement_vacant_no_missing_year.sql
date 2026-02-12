@@ -11,4 +11,4 @@ group by
     logement_vacant.land_id,
     logement_vacant.land_type
 HAVING NOT
-    array_agg(logement_vacant.year) @> array[2019, 2020, 2021, 2022, 2023]
+    array_agg(logement_vacant.year) @> array[2020, 2021, 2022, 2023, 2024]

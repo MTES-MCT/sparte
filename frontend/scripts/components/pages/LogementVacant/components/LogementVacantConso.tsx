@@ -1,14 +1,13 @@
-import React from "react";
-import { LogementVacantProgressionProps } from "../types";
-import GenericChart from "@components/charts/GenericChart";
+import React from 'react'
+import GenericChart from '@components/charts/GenericChart'
+import { LogementVacantProgressionProps } from '../types'
 
 export const LogementVacantConso: React.FC<LogementVacantProgressionProps> = ({
   landId,
   landType,
   startYear,
   endYear,
-}) => {
-  return (
+}) => (
     <div className="bg-white fr-p-2w rounded">
       <GenericChart
         id="logement_vacant_conso_progression_chart"
@@ -18,9 +17,8 @@ export const LogementVacantConso: React.FC<LogementVacantProgressionProps> = ({
           start_date: String(startYear),
           end_date: String(endYear),
         }}
-        sources={["fichiers_fonciers", "lovac", "rpls"]}
+        sources={['fichiers_fonciers', 'lovac', 'rpls']}
         showDataTable={true}
       />
     </div>
-  );
-};
+)

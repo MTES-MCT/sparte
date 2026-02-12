@@ -95,12 +95,11 @@ from project.charts.urbanisme import (
     FricheZonageEnvironnementalChart,
     FricheZonageTypeChart,
     FricheZoneActiviteChart,
-    LogementVacantAutorisationLogementComparisonChart,
-    LogementVacantAutorisationLogementRatioGaugeChart,
     LogementVacantAutorisationLogementRatioProgressionChart,
     LogementVacantConsoProgressionChart,
-    LogementVacantProgressionChart,
-    LogementVacantRatioProgressionChart,
+    LogementVacantMapAbsolute,
+    LogementVacantMapPercent,
+    LogementVacantTauxProgressionChart,
 )
 from public_data.models import (
     ArtifZonageIndexViewset,
@@ -117,6 +116,7 @@ from public_data.models import (
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
+    LandChildrenGeomViewset,
     LandConsoStatsViewset,
     LandFricheCentroidViewset,
     LandFricheGeojsonViewset,
@@ -248,12 +248,11 @@ def get_chart_klass_or_404(chart_id):
         "territorialisation_depassement_2031_map": TerritorialisationDepassement2031Map,
         "territorialisation_taux_atteinte_2031_map": TerritorialisationTauxAtteinte2031Map,
         # Logement vacant charts
-        "logement_vacant_progression_chart": LogementVacantProgressionChart,
-        "logement_vacant_ratio_progression_chart": LogementVacantRatioProgressionChart,
         "logement_vacant_conso_progression_chart": LogementVacantConsoProgressionChart,
-        "logement_vacant_autorisation_comparison_chart": LogementVacantAutorisationLogementComparisonChart,
-        "logement_vacant_autorisation_ratio_gauge_chart": LogementVacantAutorisationLogementRatioGaugeChart,
         "logement_vacant_autorisation_ratio_progression_chart": LogementVacantAutorisationLogementRatioProgressionChart,  # noqa E501
+        "logement_vacant_taux_progression_chart": LogementVacantTauxProgressionChart,
+        "logement_vacant_map_percent": LogementVacantMapPercent,
+        "logement_vacant_map_absolute": LogementVacantMapAbsolute,
     }
 
     if chart_id not in charts:
@@ -404,5 +403,10 @@ urlpatterns = [
     path("lands/<str:land_type>/<str:land_id>", LandModelViewset.as_view({"get": "retrieve"}), name="land"),
     path(
         "landsgeom/<str:land_type>/<str:land_id>", LandModelGeomViewset.as_view({"get": "retrieve"}), name="land_geom"
+    ),
+    path(
+        "landchildrengeom/<str:land_type>/<str:land_id>/<str:child_land_type>",
+        LandChildrenGeomViewset.as_view({"get": "retrieve"}),
+        name="land_children_geom",
     ),
 ]

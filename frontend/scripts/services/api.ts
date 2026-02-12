@@ -140,6 +140,9 @@ export const djangoApi = createApi({
 		getEnvironment: builder.query({
 			query: () => "/env",
 		}),
+		getCarroyageDestinationConfig: builder.query({
+			query: () => "/carroyage-destination-config",
+		}),
 		getDepartementList: builder.query({
 			query: () => "/public/departements/",
 		}),
@@ -148,6 +151,9 @@ export const djangoApi = createApi({
 		}),
 		getLandGeom: builder.query({
 			query: ({ land_type, land_id }) => `/api/landsgeom/${land_type}/${land_id}`,
+		}),
+		getLandChildrenGeom: builder.query({
+			query: ({ land_type, land_id, child_land_type }) => `/api/landchildrengeom/${land_type}/${land_id}/${child_land_type}`,
 		}),
 		getProject: builder.query({
 			query: (id) => `/project/${id}/detail`,
@@ -301,6 +307,8 @@ const {
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
 	useGetLogementVacantAutorisationStatsQuery,
+	useGetCarroyageDestinationConfigQuery,
+	useGetLandChildrenGeomQuery,
 	useGetReportDraftsQuery,
 	useGetReportDraftQuery,
 	useGetReportTypesQuery,
@@ -331,7 +339,9 @@ export {
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,
 	useGetLandGeomQuery,
+	useGetLandChildrenGeomQuery,
 	useGetLogementVacantAutorisationStatsQuery,
+	useGetCarroyageDestinationConfigQuery,
 	useStartExportPdfMutation,
 	useLazyGetExportStatusQuery,
 	useGetReportDraftsQuery,

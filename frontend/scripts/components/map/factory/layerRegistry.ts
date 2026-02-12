@@ -13,6 +13,9 @@ import { FrichesCentroidClusterLayer } from "../layers/frichesCentroidClusterLay
 import { OcsgeFrichesLayer } from "../layers/ocsgeFrichesLayer";
 import { OcsgeFrichesImpermeableLayer } from "../layers/ocsgeFrichesImpermeableLayer";
 import { OcsgeFrichesArtificialLayer } from "../layers/ocsgeFrichesArtificialLayer";
+import { CarroyageLeaLayer } from "../layers/carroyageLeaLayer";
+import { CarroyageLeaOutlineLayer } from "../layers/carroyageLeaOutlineLayer";
+import { OsmLayer } from "../layers/osmLayer";
 import type { LayerConfig, ImpermeabilisationLayerConfig, ArtificialisationLayerConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getFirstDepartement, getAvailableMillesimes } from "../utils/ocsge";
@@ -96,6 +99,9 @@ const layerRegistry: Record<string, LayerFactory> = {
         const fricheSiteIds = extendedLandData.fricheSiteIds;
         return new OcsgeFrichesArtificialLayer(millesimeIndex, fricheSiteIds);
     },
+    "carroyage-lea": (_cfg, landData) => new CarroyageLeaLayer(landData),
+    "carroyage-lea-outline": (_cfg, landData) => new CarroyageLeaOutlineLayer(landData),
+    "osm": () => new OsmLayer(),
 };
 
 export function createLayer(cfg: LayerConfig, landData: LandDetailResultType): BaseLayer {

@@ -116,9 +116,62 @@ ARTIFICIALISATION_NETTE_COLOR = "#6A6AF4"
 NON_ARTIFICIEL_COLOR = DESARTIFICIALISATION_COLOR
 IMPERMEABILISATION_COLOR = "#FA4B42"
 NON_IMPERMEABLE_COLOR = "#00E272"
-AUTORISATION_CONSTRUCTION_COLOR = "#FFCA63"
+AUTORISATION_CONSTRUCTION_COLOR = "#FF8E6E"
 LOGEMENT_VACANT_COLOR_GENERAL = "#D6AE73"
 LOGEMENT_VACANT_COLOR_PRIVE = "#E2D6BD"
 LOGEMENT_VACANT_COLOR_SOCIAL = "#C09F6D"
 CONSOMMATION_TOTALE_COLOR = "#CFD1E5"
 CONSOMMATION_HABITAT_COLOR = "#6A6AF4"
+
+# Couleurs des destinations de consommation (palette Highcharts - voir highcharts/charts.py)
+DESTINATION_HABITAT_COLOR = "#6a6af4"
+DESTINATION_ACTIVITE_COLOR = "#8ecac7"
+DESTINATION_MIXTE_COLOR = "#eeb088"
+DESTINATION_ROUTE_COLOR = "#cab8ee"
+DESTINATION_FERROVIAIRE_COLOR = "#6b8abc"
+DESTINATION_INCONNU_COLOR = "#86cdf2"
+
+CARROYAGE_DESTINATION_CONFIG = {
+    "total": {
+        "label": "Total",
+        "suffix": "",
+        "color": DESTINATION_HABITAT_COLOR,
+        "light_text": True,
+    },
+    "habitat": {
+        "label": "Habitat",
+        "suffix": "_habitat",
+        "color": DESTINATION_HABITAT_COLOR,
+        "light_text": True,
+    },
+    "activite": {
+        "label": "Activité",
+        "suffix": "_activite",
+        "color": DESTINATION_ACTIVITE_COLOR,
+        "light_text": False,
+    },
+    "mixte": {
+        "label": "Mixte",
+        "suffix": "_mixte",
+        "color": DESTINATION_MIXTE_COLOR,
+        "light_text": False,
+    },
+    "route": {
+        "label": "Route",
+        "suffix": "_route",
+        "color": DESTINATION_ROUTE_COLOR,
+        "light_text": False,
+    },
+    "ferroviaire": {
+        "label": "Ferroviaire",
+        "suffix": "_ferroviaire",
+        "color": DESTINATION_FERROVIAIRE_COLOR,
+        "light_text": True,
+    },
+    "inconnu": {
+        "label": "Inconnu",
+        "suffix": "_inconnu",
+        "color": DESTINATION_INCONNU_COLOR,
+        "light_text": False,
+    },
+}

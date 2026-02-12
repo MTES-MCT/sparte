@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-{% for year in range(2013, 2024) %}
+{% for year in range(2013, 2025) %}
 SELECT
     departement_name,
     departement_code,

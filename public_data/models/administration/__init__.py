@@ -4,7 +4,12 @@ from .Departement import Departement
 from .Epci import Epci
 from .Land import Land
 from .LandMixin import LandMixin
-from .LandModel import LandModel, LandModelGeomViewset, LandModelViewset
+from .LandModel import (
+    LandChildrenGeomViewset,
+    LandModel,
+    LandModelGeomViewset,
+    LandModelViewset,
+)
 from .Nation import Nation
 from .Region import Region
 from .Scot import Scot
@@ -19,6 +24,7 @@ __all__ = [
     "LandModel",
     "LandModelViewset",
     "LandModelGeomViewset",
+    "LandChildrenGeomViewset",
     "Region",
     "Scot",
     "Nation",

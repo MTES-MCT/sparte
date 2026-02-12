@@ -8,26 +8,26 @@
 }}
 
 /*
-Sélectionne les lands de Guyane dont l'extent N'EST PAS entièrement
-contenu dans l'extent de artif ET occupation_du_sol pour au moins une année.
+Sélectionne les lands de Guyane dont la géométrie N'EST PAS entièrement
+couverte par les données artif ET occupation_du_sol pour au moins une année.
 */
 
 with ocsge_years as (
     select year from {{ ref('millesimes') }}
     where departement = '973'
 ),
-artif_extent_by_year as (
+artif_coverage_by_year as (
     select
         year,
-        st_extent(geom)::geometry as extent
+        ST_Union(geom) as coverage
     from {{ ref('artif') }}
     where departement = '973'
     group by year
 ),
-occupation_extent_by_year as (
+occupation_coverage_by_year as (
     select
         year,
-        st_extent(geom)::geometry as extent
+        ST_Union(geom) as coverage
     from {{ ref('occupation_du_sol') }}
     where departement = '973'
     group by year
@@ -36,10 +36,10 @@ lands_guyane as (
     select
         land_id,
         land_type,
-        st_extent(geom)::geometry as extent
+        geom
     from {{ ref('land') }}
-    where departements = ARRAY['973']
-    group by land_id, land_type
+    where '973' = ANY(departements)  -- pour EPCI, SCOT, REGION
+       OR departements = string_to_array('973', '')  -- pour COMMUNE, DEPARTEMENT (string_to_array split chaque caractère)
 ),
 nb_years as (
     select count(*) as total from ocsge_years
@@ -48,14 +48,13 @@ lands_covered_per_year as (
     select
         l.land_id,
         l.land_type,
-        l.extent,
         y.year
     from lands_guyane l
     cross join ocsge_years y
-    inner join artif_extent_by_year a on a.year = y.year
-    inner join occupation_extent_by_year o on o.year = y.year
-    where l.extent @ a.extent
-      and l.extent @ o.extent
+    inner join artif_coverage_by_year a on a.year = y.year
+    inner join occupation_coverage_by_year o on o.year = y.year
+    where ST_CoveredBy(l.geom, a.coverage)
+      and ST_CoveredBy(l.geom, o.coverage)
 )
 select
     l.land_id,

@@ -19,14 +19,20 @@ class S3ToDataGouvHandler:
         self.tmp_path_generator = tmp_path_generator
         self.data_gouv_handler = data_gouv_handler
 
-    def store_file_to_data_gouv(
+    def get_or_create_dataset(self, slug: str, title: str) -> dict:
+        """Cherche ou crée un dataset par slug. Retourne le dataset complet."""
+        return self.data_gouv_handler.get_or_create_dataset(slug=slug, title=title)
+
+    def upload_resource_to_dataset(
         self,
         s3_key: str,
         s3_bucket: str,
         data_gouv_filename: str,
-        data_gouv_dataset_id: str,
-        data_gouv_resource_id: str,
-    ) -> str:
+        dataset_id: str,
+        resource_slug: str,
+        resource_title: str,
+    ) -> dict:
+        """Upload un fichier S3 vers un dataset existant."""
         tmp_file = self.tmp_path_generator.get_tmp_path(filename=data_gouv_filename)
 
         self.s3_handler.download_file(
@@ -35,10 +41,41 @@ class S3ToDataGouvHandler:
             local_file_path=tmp_file,
         )
 
-        response = self.data_gouv_handler.upload_file(
+        response = self.data_gouv_handler.upload_resource_to_dataset(
             local_file_path=tmp_file,
-            dataset_id=data_gouv_dataset_id,
-            resource_id=data_gouv_resource_id,
+            dataset_id=dataset_id,
+            resource_slug=resource_slug,
+            resource_title=resource_title,
+        )
+
+        os.remove(tmp_file)
+
+        return response
+
+    def store_file_to_data_gouv(
+        self,
+        s3_key: str,
+        s3_bucket: str,
+        data_gouv_filename: str,
+        dataset_slug: str,
+        dataset_title: str,
+        resource_slug: str,
+        resource_title: str,
+    ) -> dict:
+        tmp_file = self.tmp_path_generator.get_tmp_path(filename=data_gouv_filename)
+
+        self.s3_handler.download_file(
+            s3_key=s3_key,
+            s3_bucket=s3_bucket,
+            local_file_path=tmp_file,
+        )
+
+        response = self.data_gouv_handler.upsert_and_upload(
+            local_file_path=tmp_file,
+            dataset_slug=dataset_slug,
+            dataset_title=dataset_title,
+            resource_slug=resource_slug,
+            resource_title=resource_title,
         )
 
         os.remove(tmp_file)

@@ -2,13 +2,10 @@
 
 SELECT
     epci.code as epci_code,
-    CASE
-        WHEN code_etat_libelle_bcsi LIKE '%Compétence EPCI' THEN TRUE
-        ELSE FALSE
-    END AS competence_planification
+    CASE WHEN sudocuh_epci."COMPETENCE PLAN" = 'Oui' THEN True ELSE False END as competence_planification
 FROM
     {{ ref('epci') }} as epci
-LEFT JOIN
-    {{ source('public', 'sudocuh_plan_communal') }} as plan_communal
+INNER JOIN
+    {{ source('public', 'sudocuh_epci') }} as sudocuh_epci
 ON
-    epci.code = plan_communal.epci_porteuse_siren::varchar
+    epci.code = sudocuh_epci."EPCI_SIREN"::varchar

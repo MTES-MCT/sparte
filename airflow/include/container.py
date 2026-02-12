@@ -18,15 +18,18 @@ from .file_handling import (
     HTTPFileHandler,
     PaginatedJsonToS3Handler,
     RemoteToS3FileHandler,
+    RemoteZipToS3FileHandler,
     S3CSVFileToDBTableHandler,
     S3GeoJsonFileToDBTableHandler,
     S3Handler,
     S3ToDataGouvHandler,
+    S3XLSXFileToDBTableHandler,
     SQLToCSVOnS3Handler,
     SQLToGeoJsonOnS3Handler,
     SQLToGeojsonSeqOnS3Handler,
     SQLToGeopackageOnS3Handler,
     TmpPathGenerator,
+    XLSXFileIngestor,
 )
 from .notification import MattermostNotificationService
 
@@ -224,6 +227,13 @@ class DomainContainer(containers.DeclarativeContainer):
         tmp_path_generator=tmp_path_generator,
     )
 
+    remote_zip_to_s3_file_handler = providers.Factory(
+        provides=RemoteZipToS3FileHandler,
+        http_file_handler=htto_file_handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+    )
+
     paginated_json_to_s3_handler = providers.Factory(
         provides=PaginatedJsonToS3Handler,
         s3_handler=s3_handler,
@@ -236,6 +246,16 @@ class DomainContainer(containers.DeclarativeContainer):
         tmp_path_generator=tmp_path_generator,
         csv_file_ingestor=providers.Factory(
             provides=CSVFileIngestor,
+            db_sqlalchemy_conn=InfraContainer().sqlalchemy_dbt_conn,
+        ),
+    )
+
+    s3_xlsx_file_to_db_table_handler = providers.Factory(
+        provides=S3XLSXFileToDBTableHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        xlsx_file_ingestor=providers.Factory(
+            provides=XLSXFileIngestor,
             db_sqlalchemy_conn=InfraContainer().sqlalchemy_dbt_conn,
         ),
     )
@@ -286,7 +306,8 @@ class DomainContainer(containers.DeclarativeContainer):
     data_gouv = providers.Factory(
         provides=DataGouvHandler,
         key=os.getenv("DATA_GOUV_API_KEY"),
-        endpoint="https://www.data.gouv.fr/api/1",
+        endpoint=os.getenv("DATA_GOUV_API_ENDPOINT", "https://www.data.gouv.fr/api/1"),
+        organization_id=os.getenv("DATA_GOUV_ORGANIZATION_ID"),
     )
 
     s3_to_data_gouv = providers.Factory(

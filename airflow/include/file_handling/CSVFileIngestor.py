@@ -48,16 +48,22 @@ class CSVFileIngestor(BaseCSVFileIngestor):
         table_name: str,
         separator: str = ";",
         skiprows=None,
+        encoding: str | None = None,
+        on_bad_lines: str = "error",
     ) -> int:
         if skiprows is not None and not isinstance(skiprows, int):
             raise ValueError("skiprows must be an integer or None")
 
         panda_read_kwargs = {
             "sep": separator,
+            "on_bad_lines": on_bad_lines,
         }
 
         if skiprows is not None:
             panda_read_kwargs["skiprows"] = skiprows
+
+        if encoding is not None:
+            panda_read_kwargs["encoding"] = encoding
 
         file_over_75mb = os.path.getsize(file_path) > 75 * 1024 * 1024
 

@@ -26,6 +26,8 @@ class S3CSVFileToDBTableHandler:
         table_name: str,
         separator: str = ";",
         skiprows=None,
+        encoding: str | None = None,
+        on_bad_lines: str = "error",
     ) -> int:
         logger.info(f"Ingesting s3://{s3_bucket}/{s3_key} to table {table_name}")
 
@@ -43,6 +45,8 @@ class S3CSVFileToDBTableHandler:
             table_name=table_name,
             separator=separator,
             skiprows=skiprows,
+            encoding=encoding,
+            on_bad_lines=on_bad_lines,
         )
         logger.info(f"Ingested {ingested_rows} rows to table {table_name}")
 
