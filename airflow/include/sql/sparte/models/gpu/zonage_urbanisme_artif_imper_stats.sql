@@ -174,6 +174,78 @@ flux_usage_agg as (
     ) sub
     where net_surface != 0
     group by zonage_checksum, index
+),
+-- Flux d'imperméabilisation entre deux millésimes consécutifs
+imper_flux_totals as (
+    select
+        zonage_checksum,
+        year_new_index as index,
+        round(sum(case when new_is_impermeable then st_area(st_transform(geom, srid_source)) else 0 end)::numeric, 4) as flux_imper,
+        round(sum(case when new_not_impermeable then st_area(st_transform(geom, srid_source)) else 0 end)::numeric, 4) as flux_desimper
+    from {{ ref("imper_difference_zonage_urbanisme") }}
+    group by zonage_checksum, year_new_index
+),
+-- Flux net imper par code couverture : imper (cs_new) - desimper (cs_old)
+imper_flux_couverture_agg as (
+    select
+        zonage_checksum,
+        index,
+        json_agg(
+            json_build_object('code', code, 'surface', net_surface)
+            order by net_surface desc
+        ) as flux_imper_couverture_composition
+    from (
+        select
+            zonage_checksum, index, code,
+            sum(surface) as net_surface
+        from (
+            select zonage_checksum, year_new_index as index, cs_new as code,
+                round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface
+            from {{ ref("imper_difference_zonage_urbanisme") }}
+            where new_is_impermeable
+            group by zonage_checksum, year_new_index, cs_new
+            union all
+            select zonage_checksum, year_new_index as index, cs_old as code,
+                -round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface
+            from {{ ref("imper_difference_zonage_urbanisme") }}
+            where new_not_impermeable
+            group by zonage_checksum, year_new_index, cs_old
+        ) combined
+        group by zonage_checksum, index, code
+    ) sub
+    where net_surface != 0
+    group by zonage_checksum, index
+),
+-- Flux net imper par code usage : imper (us_new) - desimper (us_old)
+imper_flux_usage_agg as (
+    select
+        zonage_checksum,
+        index,
+        json_agg(
+            json_build_object('code', code, 'surface', net_surface)
+            order by net_surface desc
+        ) as flux_imper_usage_composition
+    from (
+        select
+            zonage_checksum, index, code,
+            sum(surface) as net_surface
+        from (
+            select zonage_checksum, year_new_index as index, us_new as code,
+                round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface
+            from {{ ref("imper_difference_zonage_urbanisme") }}
+            where new_is_impermeable
+            group by zonage_checksum, year_new_index, us_new
+            union all
+            select zonage_checksum, year_new_index as index, us_old as code,
+                -round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface
+            from {{ ref("imper_difference_zonage_urbanisme") }}
+            where new_not_impermeable
+            group by zonage_checksum, year_new_index, us_old
+        ) combined
+        group by zonage_checksum, index, code
+    ) sub
+    where net_surface != 0
+    group by zonage_checksum, index
 )
 select
     wp.zonage_checksum,
@@ -197,7 +269,15 @@ select
     ft.flux_desartif / wp.zonage_surface * 100 as flux_desartif_percent,
     (ft.flux_artif - ft.flux_desartif) / wp.zonage_surface * 100 as flux_artif_net_percent,
     fc.flux_artif_couverture_composition,
-    fu.flux_artif_usage_composition
+    fu.flux_artif_usage_composition,
+    ift.flux_imper,
+    ift.flux_desimper,
+    ift.flux_imper - ift.flux_desimper as flux_imper_net,
+    ift.flux_imper / wp.zonage_surface * 100 as flux_imper_percent,
+    ift.flux_desimper / wp.zonage_surface * 100 as flux_desimper_percent,
+    (ift.flux_imper - ift.flux_desimper) / wp.zonage_surface * 100 as flux_imper_net_percent,
+    ifc.flux_imper_couverture_composition,
+    ifu.flux_imper_usage_composition
 from without_percent wp
 left join artif_couverture_agg ac
     on wp.zonage_checksum = ac.zonage_checksum
@@ -224,6 +304,15 @@ left join flux_couverture_agg fc
 left join flux_usage_agg fu
     on wp.zonage_checksum = fu.zonage_checksum
     and wp.index = fu.index
+left join imper_flux_totals ift
+    on wp.zonage_checksum = ift.zonage_checksum
+    and wp.index = ift.index
+left join imper_flux_couverture_agg ifc
+    on wp.zonage_checksum = ifc.zonage_checksum
+    and wp.index = ifc.index
+left join imper_flux_usage_agg ifu
+    on wp.zonage_checksum = ifu.zonage_checksum
+    and wp.index = ifu.index
 -- certains zonages PLU ont une surface nulle (géométrie dégénérée
 -- ou intersection vide avec l'OCS GE), on les ignore
 where wp.zonage_surface > 0

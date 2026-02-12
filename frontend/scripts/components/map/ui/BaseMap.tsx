@@ -269,13 +269,13 @@ export const BaseMap: React.FC<BaseMapProps> = ({
 
     return (
         <>
-        {!noControl && controlsManager && configurableControls.length > 0 && (
-            <ConfigurableControlsBar
-                controls={configurableControls}
-                manager={controlsManager}
-            />
-        )}
         <MapWrapper id={`${id}-wrapper`}>
+            {!noControl && controlsManager && configurableControls.length > 0 && (
+                <ConfigurableControlsBar
+                    controls={configurableControls}
+                    manager={controlsManager}
+                />
+            )}
             <MapContainer
                 id={id}
                 ref={mapDiv}

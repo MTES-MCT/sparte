@@ -4,14 +4,38 @@ import type { Control } from "../../types/controls";
 import type { ControlsManager } from "../../controls/ControlsManager";
 
 const Bar = styled.div`
+	position: absolute;
+	top: 0.5rem;
+	left: 0.5rem;
+	z-index: 2;
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-items: center;
-	gap: 1rem;
-	margin-bottom: 1rem;
+	gap: 0.5rem;
+	padding: 0.25rem 0.6rem;
+	background: rgba(255, 255, 255, 0.9);
+	backdrop-filter: blur(4px);
+	border-radius: 4px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 
 	.fr-select-group {
 		margin-bottom: 0;
+		display: flex;
+		flex-direction: row;
+		align-items: baseline;
+		gap: 0.5rem;
+
+		label {
+			margin-bottom: 0;
+			white-space: nowrap;
+			padding: 0;
+		}
+
+		select {
+			width: auto;
+			padding-top: 0.25rem;
+			padding-bottom: 0.25rem;
+		}
 	}
 `;
 
