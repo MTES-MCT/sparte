@@ -39,6 +39,7 @@ type ChartDetailsProps = {
     dataTableHeader?: React.ReactNode;
     dataTableOnly?: boolean;
     compactDataTable?: boolean;
+    customTable?: React.ReactNode;
 }
 
 const ChartDetails: React.FC<ChartDetailsProps> = ({
@@ -50,12 +51,13 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
     chartTitle,
     dataTableHeader,
     dataTableOnly = false,
-    compactDataTable = false
+    compactDataTable = false,
+    customTable
 }) => {
     // Le contenu est plié par défaut
     const [isVisible, setIsVisible] = useState(false);
 
-    if (!(sources.length > 0 || showDataTable)) {
+    if (!(sources.length > 0 || showDataTable || customTable)) {
         return null;
     }
 
@@ -83,7 +85,7 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
                             displayMode="tag"
                         />
                     )}
-                    {(sources.length > 0 || showDataTable) && (
+                    {(sources.length > 0 || showDataTable || customTable) && (
                         <button
                             className="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill"
                             onClick={() => setIsVisible(!isVisible)}
@@ -95,7 +97,7 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
                         </button>
                     )}
                 </Header>
-            {(sources.length > 0 || showDataTable) && (
+            {(sources.length > 0 || showDataTable || customTable) && (
                 <DataContainer
                     $isVisible={isVisible}
                     id={`${chartId}-details`}
@@ -108,6 +110,7 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
                             displayMode="text"
                         />
                     )}
+                    {customTable}
                     {children}
                     {showDataTable && dataTable && (
                         <>

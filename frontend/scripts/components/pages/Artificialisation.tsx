@@ -17,8 +17,8 @@ import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalcu
 import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
 import Card from "@components/ui/Card";
-import { ArtificialisationMap } from "@components/map/ui/ArtificialisationMap";
 import { ArtificialisationDiffMap } from "@components/map/ui/ArtificialisationDiffMap";
+import { OcsgeObjectMap } from "@components/map/ui/OcsgeObjectMap";
 import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 
 export const BigNumber = styled.div`
@@ -68,8 +68,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	});
 
 	const { has_zonage } = landData;
-	const [highlightedZoneType, setHighlightedZoneType] = useState<string | null>(null);
-
 	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
 	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
 	if (!landData) return <div role="status" aria-live="polite">Données non disponibles</div>;
@@ -241,10 +239,26 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Surfaces artificialisées par type de couverture et d'usage
+					Occupation du sol artificialisée ({millesimes_by_index?.find(m => m.index === selectedIndex)?.years ?? ""})
 				</h2>
 				{land_type !== LandType.REGION && (
-					<ArtificialisationMap landData={landData} />
+					<>
+						{has_zonage && (
+							<ZonageUrbanismeMap
+								landData={landData}
+								mode="artif"
+								zonageTable={
+									<ArtificialisationZonage
+										artifZonageIndex={artifZonageIndex}
+									/>
+								}
+							/>
+						)}
+						<OcsgeObjectMap
+							landData={landData}
+							mode="artif"
+						/>
+					</>
 				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
@@ -494,20 +508,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				</div>
 			)}
 
-			{has_zonage && (
-				<>
-					<div className="fr-mb-7w">
-						<h2>Carte des zonages d'urbanisme — Artificialisation</h2>
-						<ZonageUrbanismeMap landData={landData} mode="artif" highlightedZoneType={highlightedZoneType} />
-					</div>
-					<ArtificialisationZonage
-						artifZonageIndex={artifZonageIndex}
-						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landArtifStockIndex}
-						onHoverZoneType={setHighlightedZoneType}
-					/>
-				</>
-			)}
 
 			<div className="fr-mb-7w">
 				<h2>Calcul de l'artificialisation des sols</h2>

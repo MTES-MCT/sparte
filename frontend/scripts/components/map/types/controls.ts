@@ -18,6 +18,8 @@ export interface BaseControl {
     id: string;
     type: ControlType;
     targetLayers: string[];
+    /** When true, the control is rendered above the map in addition to the controls panel. */
+    addControlsAboveMap?: boolean;
 }
 
 export interface VisibilityControl extends BaseControl {
@@ -36,6 +38,7 @@ export interface OcsgeMillesimeControl extends BaseControl {
     type: 'ocsge-millesime';
     sourceId: string;
     defaultValue: string;
+    linkedMillesimeIds?: string[];
     disabled?: boolean;
 }
 

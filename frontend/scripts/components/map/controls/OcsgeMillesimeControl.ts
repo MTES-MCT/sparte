@@ -21,6 +21,15 @@ export class OcsgeMillesimeControl extends BaseControl {
             const index = Number.parseInt(indexStr, 10);
             await source.setMillesime(index, departement);
         }
+
+        // Synchroniser les contrôles millésime liés (avec garde anti-boucle)
+        if (control.linkedMillesimeIds && context.manager) {
+            for (const linkedId of control.linkedMillesimeIds) {
+                if (context.manager.getControlValue(linkedId) !== value) {
+                    await context.manager.applyControl(linkedId, value);
+                }
+            }
+        }
     }
 
     getValue(layerId: string, context?: ControlContext): string | undefined {

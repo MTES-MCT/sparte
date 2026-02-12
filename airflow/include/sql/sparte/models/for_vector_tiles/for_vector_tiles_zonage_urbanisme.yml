@@ -64,6 +64,26 @@ models:
         data_type: json
       - name: imper_usage_composition
         data_type: json
+      - name: flux_year_old
+        data_type: integer
+      - name: flux_year_new
+        data_type: integer
+      - name: flux_artif
+        data_type: numeric
+      - name: flux_desartif
+        data_type: numeric
+      - name: flux_artif_net
+        data_type: numeric
+      - name: flux_artif_percent
+        data_type: numeric
+      - name: flux_desartif_percent
+        data_type: numeric
+      - name: flux_artif_net_percent
+        data_type: numeric
+      - name: flux_artif_couverture_composition
+        data_type: json
+      - name: flux_artif_usage_composition
+        data_type: json
       - name: geom
         data_type: user-defined
         data_tests:

@@ -12,8 +12,8 @@ import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelecto
 import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import Card from "@components/ui/Card";
-import { ImpermeabilisationMap } from "@components/map/ui/ImpermeabilisationMap";
 import { ImpermeabilisationDiffMap } from "@components/map/ui/ImpermeabilisationDiffMap";
+import { OcsgeObjectMap } from "@components/map/ui/OcsgeObjectMap";
 import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import Guide from "@components/ui/Guide";
@@ -66,8 +66,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	});
 
 	const { has_zonage } = landData;
-	const [highlightedZoneType, setHighlightedZoneType] = useState<string | null>(null);
-
 	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
 	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
 	if (!landData) return <div role="status" aria-live="polite">Données non disponibles</div>;
@@ -227,11 +225,26 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Surfaces imperméables par type de couverture et
-					d'usage
+					Occupation du sol imperméabilisée ({millesimes_by_index?.find(m => m.index === selectedIndex)?.years ?? ""})
 				</h2>
 				{land_type !== LandType.REGION && (
-					<ImpermeabilisationMap landData={landData} />
+					<>
+						{has_zonage && (
+							<ZonageUrbanismeMap
+								landData={landData}
+								mode="imper"
+								zonageTable={
+									<ImpermeabilisationZonage
+										imperZonageIndex={imperZonageIndex}
+									/>
+								}
+							/>
+						)}
+						<OcsgeObjectMap
+							landData={landData}
+							mode="imper"
+						/>
+					</>
 				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
@@ -481,21 +494,7 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 				</div>
 			)}
 
-			{has_zonage && (
-				<>
-					<div className="fr-mb-7w">
-						<h2>Carte des zonages d'urbanisme — Imperméabilisation</h2>
-						<ZonageUrbanismeMap landData={landData} mode="imper" highlightedZoneType={highlightedZoneType} />
-					</div>
-					<ImpermeabilisationZonage
-						imperZonageIndex={imperZonageIndex}
-						is_interdepartemental={is_interdepartemental}
-						landImperStockIndex={landImperStockIndex}
-						onHoverZoneType={setHighlightedZoneType}
-					/>
-				</>
-			)}
-		</div>
+			</div>
 	);
 };
 

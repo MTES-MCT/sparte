@@ -16,6 +16,8 @@ import type { LandDetailResultType } from "@services/types/land";
 import type { LayerId } from "../types/registry";
 import type { BaseSource } from "../sources/baseSource";
 import type { BaseLayer } from "../layers/baseLayer";
+import type { Control } from "../types/controls";
+import { ConfigurableControlsBar } from "./controls/ConfigurableControlsBar";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -64,7 +66,9 @@ interface BaseMapProps {
     config?: MapConfig;
     landData: LandDetailResultType;
     center?: [number, number] | null;
+    noControl?: boolean;
     onMapLoad?: (map: maplibregl.Map) => void;
+    onControlsReady?: (manager: ControlsManager) => void;
 }
 
 export const BaseMap: React.FC<BaseMapProps> = ({
@@ -73,7 +77,9 @@ export const BaseMap: React.FC<BaseMapProps> = ({
     config,
     landData,
     center,
+    noControl = false,
     onMapLoad,
+    onControlsReady,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
@@ -184,6 +190,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         );
         if (controlsMgr) {
             setControlsManager(controlsMgr);
+            onControlsReady?.(controlsMgr);
         }
 
         // Initialiser le gestionnaire d'info panels si des info panels sont définis
@@ -200,17 +207,26 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         if (mapDiv.current && !mapRef.current) {
             const map = initializeMap(mapDiv.current);
             if (map) {
+                if (noControl) {
+                    map.dragPan.disable();
+                    map.scrollZoom.disable();
+                    map.boxZoom.disable();
+                    map.dragRotate.disable();
+                    map.keyboard.disable();
+                    map.doubleClickZoom.disable();
+                    map.touchZoomRotate.disable();
+                }
                 map.on('load', () => {
                     handleMapLoad(map);
                 });
             }
         }
-    }, [initializeMap, handleMapLoad]);
+    }, [initializeMap, handleMapLoad, noControl]);
 
     useEffect(() => {
-        if (!isMapLoaded) return;
+        if (!isMapLoaded || noControl) return;
         updateControls();
-    }, [isMapLoaded, updateControls]);
+    }, [isMapLoaded, noControl, updateControls]);
 
     useEffect(() => {
         return () => {
@@ -238,7 +254,27 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         return new Map(memoizedConfig.infoPanels.map(config => [config.layerId, config]));
     }, [memoizedConfig?.infoPanels]);
 
+    const configurableControls = useMemo(() => {
+        if (!memoizedConfig?.controlGroups) return [];
+        const controls: Control[] = [];
+        for (const group of memoizedConfig.controlGroups) {
+            for (const control of group.controls) {
+                if (control.addControlsAboveMap) {
+                    controls.push(control);
+                }
+            }
+        }
+        return controls;
+    }, [memoizedConfig]);
+
     return (
+        <>
+        {!noControl && controlsManager && configurableControls.length > 0 && (
+            <ConfigurableControlsBar
+                controls={configurableControls}
+                manager={controlsManager}
+            />
+        )}
         <MapWrapper id={`${id}-wrapper`}>
             <MapContainer
                 id={id}
@@ -246,7 +282,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 $isLoaded={isMapLoaded}
             />
             {children}
-            {controlsManager && memoizedConfig?.controlGroups && memoizedConfig.controlGroups.length > 0 && (
+            {!noControl && controlsManager && memoizedConfig?.controlGroups && memoizedConfig.controlGroups.length > 0 && (
                 <ControlsPanel
                     config={{
                         groups: memoizedConfig.controlGroups
@@ -254,15 +290,18 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                     manager={controlsManager}
                 />
             )}
-            <InfoPanel
-                state={infoPanelState}
-                configs={infoPanelConfigs}
-            />
-            {statsState.isVisible && statsState.categories.length > 0 && (
-                <StatsBar 
+            {!noControl && (
+                <InfoPanel
+                    state={infoPanelState}
+                    configs={infoPanelConfigs}
+                />
+            )}
+            {!noControl && statsState.isVisible && statsState.categories.length > 0 && (
+                <StatsBar
                     categories={statsState.categories}
                 />
             )}
         </MapWrapper>
+        </>
     );
 };

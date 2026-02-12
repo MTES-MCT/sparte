@@ -1,16 +1,21 @@
 import React, { useRef, useCallback, useState, useEffect } from "react";
 import styled from "styled-components";
 import type maplibregl from "maplibre-gl";
+import type { GeoJSONSource } from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
 import { getLastMillesimeIndex, getFirstDepartement, getCouvertureLabel, getUsageLabel } from "../utils/ocsge";
-import { COUVERTURE_COLORS, USAGE_COLORS } from "../constants/ocsge_nomenclatures";
+import { OCSGE_LAYER_NOMENCLATURES, COUVERTURE_COLORS, USAGE_COLORS } from "../constants/ocsge_nomenclatures";
+import { NomenclatureType } from "../types/ocsge";
 import { ZonageType } from "scripts/types/ZonageType";
 import { formatNumber } from "@utils/formatUtils";
 import { bbox } from "@turf/turf";
 import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
+import type { ControlsManager } from "../controls/ControlsManager";
+import ChartDetails from "@components/charts/ChartDetails";
+import { SegmentedControl } from "@codegouvfr/react-dsfr/SegmentedControl";
 
 interface CompositionItem {
 	code: string;
@@ -28,9 +33,8 @@ const SidePanel = styled.div`
 	background: #f6f6f6;
 	border-radius: 4px;
 	padding: 1rem;
-	height: calc(65vh + 18px);
 	font-size: 0.85rem;
-	overflow: hidden;
+	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
 `;
@@ -105,14 +109,19 @@ const SectionTitle = styled.div`
 const Separator = styled.hr`
 	border: none;
 	border-top: 1px solid #e0e0e0;
-	margin: 10px 0;
+	margin: 6px 0;
 `;
-
 
 const MetaText = styled.div`
 	font-size: 0.72rem;
 	color: #888;
 	line-height: 1.4;
+`;
+
+const LibelleLong = styled.div`
+	font-size: 0.72rem;
+	color: #888;
+	margin-top: 2px;
 `;
 
 const SidePanelContent = styled.div`
@@ -192,6 +201,14 @@ const PercentBarFill = styled.div<{ $percent: number; $color: string }>`
 	border-radius: 4px;
 	transition: width 0.3s ease;
 `;
+
+const FluxLabel = styled.span`
+	color: #888;
+	font-size: 0.68rem;
+`;
+
+type SurfaceUnit = "ha" | "m2";
+
 
 const ZONE_TYPE_COLORS: Record<string, string> = {
 	U: "#E63946",
@@ -276,11 +293,20 @@ function renderPieChart(
 	items: CompositionItem[],
 	labelFn: (code: string) => string,
 	colorMap: Record<string, string>,
+	fluxItems?: CompositionItem[],
+	surfaceUnit: SurfaceUnit = "ha",
 ): React.ReactNode {
 	if (items.length === 0) return null;
 
 	const totalSurface = items.reduce((acc, item) => acc + item.surface, 0);
 	if (totalSurface === 0) return null;
+
+	const fluxByCode = new Map<string, CompositionItem>();
+	if (fluxItems) {
+		for (const item of fluxItems) {
+			fluxByCode.set(item.code, item);
+		}
+	}
 
 	const withPercent = items
 		.map((item) => ({
@@ -289,52 +315,88 @@ function renderPieChart(
 		}))
 		.filter((item) => item.percent >= 0.5);
 
+	const stockCodes = new Set(withPercent.map((item) => item.code));
+	const fluxOnlyCodes = fluxItems
+		? fluxItems.filter((item) => !stockCodes.has(item.code) && item.surface !== 0)
+		: [];
+
+	const unitLabel = surfaceUnit === "ha" ? "ha" : "m²";
+
 	return (
 		<PieChartContainer>
 			<PieSvgWrapper>
 				<PieChart items={withPercent} colorMap={colorMap} />
 			</PieSvgWrapper>
 			<LegendList>
-				{withPercent.map((item) => (
-					<LegendItem key={item.code}>
-						<LegendColor $color={colorMap[item.code] || "#ccc"} />
-						<span>{formatNumber({ number: item.percent })}% {labelFn(item.code)}</span>
-					</LegendItem>
-				))}
+				{withPercent.map((item) => {
+					const flux = fluxByCode.get(item.code);
+					const fluxVal = flux ? (surfaceUnit === "ha" ? flux.surface / 10000 : flux.surface) : 0;
+					return (
+						<LegendItem key={item.code}>
+							<LegendColor $color={colorMap[item.code] || "#ccc"} />
+							<span>
+								{formatNumber({ number: item.percent, decimals: 2 })}% {labelFn(item.code)}
+								{fluxItems && fluxVal !== 0 && (
+									<FluxLabel> ({fluxVal > 0 ? "+" : ""}{formatNumber({ number: fluxVal })} {unitLabel})</FluxLabel>
+								)}
+							</span>
+						</LegendItem>
+					);
+				})}
+				{fluxOnlyCodes.map((item) => {
+					const fluxVal = surfaceUnit === "ha" ? item.surface / 10000 : item.surface;
+					return (
+						<LegendItem key={item.code}>
+							<LegendColor $color={colorMap[item.code] || "#ccc"} />
+							<span>
+								0% {labelFn(item.code)}
+								<FluxLabel> ({fluxVal > 0 ? "+" : ""}{formatNumber({ number: fluxVal })} {unitLabel})</FluxLabel>
+							</span>
+						</LegendItem>
+					);
+				})}
 			</LegendList>
 		</PieChartContainer>
 	);
 }
 
-function formatDate(raw: unknown): string | null {
-	if (!raw) return null;
-	const str = String(raw);
-	try {
-		const d = new Date(str);
-		if (Number.isNaN(d.getTime())) return str;
-		return d.toLocaleDateString("fr-FR", { year: "numeric", month: "long", day: "numeric" });
-	} catch {
-		return str;
-	}
-}
-
 interface ZonageUrbanismeMapProps {
 	landData: LandDetailResultType;
 	mode: ZonageUrbanismeMode;
-	highlightedZoneType?: string | null;
+	noControl?: boolean;
+	initialChecksum?: string;
+	zonageTable?: React.ReactNode;
+	onMapReady?: (map: maplibregl.Map) => void;
 }
 
 export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	landData,
 	mode,
-	highlightedZoneType,
+	noControl = false,
+	initialChecksum,
+	zonageTable,
+	onMapReady,
 }) => {
+	const [nomenclature, setNomenclature] = useState<NomenclatureType>("couverture");
+	const [unit, setUnit] = useState<SurfaceUnit>("ha");
 	const lastMillesimeIndex = getLastMillesimeIndex(landData.millesimes);
 	const firstDepartement = getFirstDepartement(landData.departements);
 	const mapRef = useRef<maplibregl.Map | null>(null);
 	const [hoveredFeature, setHoveredFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
 	const [lockedFeature, setLockedFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
 	const lockedChecksumRef = useRef<string | null>(null);
+	const ocsgeLayerType = mode === "artif" ? "artificialisation" : "impermeabilisation";
+	const nomenclatureControlId = `${ocsgeLayerType}-nomenclature`;
+	const controlsManagerRef = useRef<ControlsManager | null>(null);
+
+	const handleControlsReady = useCallback((manager: ControlsManager) => {
+		controlsManagerRef.current = manager;
+		const unsub = manager.subscribe(() => {
+			const val = manager.getControlValue(nomenclatureControlId) as NomenclatureType;
+			if (val) setNomenclature(val);
+		});
+		return unsub;
+	}, [nomenclatureControlId]);
 
 	const label = mode === "artif"
 		? "Zonages d'urbanisme — Artificialisation"
@@ -369,10 +431,13 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 	const handleMapLoad = useCallback((map: maplibregl.Map) => {
 		mapRef.current = map;
+		onMapReady?.(map);
 
 		const layerId = "zonage-urbanisme-layer";
 
+		// Zonage hover/click
 		map.on("mousemove", layerId, (e) => {
+			map.getCanvas().style.cursor = "pointer";
 			if (e.features && e.features.length > 0) {
 				const feature = e.features[0];
 				setHoveredFeature(feature);
@@ -381,6 +446,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		});
 
 		map.on("mouseleave", layerId, () => {
+			map.getCanvas().style.cursor = "";
 			setHoveredFeature(null);
 			updateOutline(map, null);
 		});
@@ -388,6 +454,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		map.on("click", layerId, (e) => {
 			if (e.features && e.features.length > 0) {
 				const feature = e.features[0];
+				console.log("Zonage feature properties:", feature.properties);
 				const checksum = feature.properties?.checksum ?? null;
 				lockedChecksumRef.current = checksum;
 				setLockedFeature(feature);
@@ -397,9 +464,10 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			}
 		});
 
+		// Click on empty area
 		map.on("click", (e) => {
-			const features = map.queryRenderedFeatures(e.point, { layers: [layerId] });
-			if (!features || features.length === 0) {
+			const zonageFeats = map.queryRenderedFeatures(e.point, { layers: [layerId] });
+			if (!zonageFeats || zonageFeats.length === 0) {
 				lockedChecksumRef.current = null;
 				setLockedFeature(null);
 				updateOutline(map, null);
@@ -408,9 +476,57 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				}
 			}
 		});
-	}, [landData.bounds, updateOutline]);
 
-	const ocsgeLayerType = mode === "artif" ? "artificialisation" : "impermeabilisation";
+		// Re-query locked feature when tiles reload (e.g. after millésime change)
+		map.on("sourcedata", () => {
+			const checksum = lockedChecksumRef.current;
+			if (!checksum) return;
+			const rendered = map.queryRenderedFeatures(undefined, { layers: [layerId] });
+			const match = rendered.find(f => f.properties?.checksum === checksum);
+			if (match) {
+				setLockedFeature(match);
+			}
+		});
+
+		// Pre-select a zonage by checksum if provided
+		if (initialChecksum) {
+			const sourceLayer = `zonage_urbanisme_${lastMillesimeIndex}_${firstDepartement}`;
+			const selectZonageByChecksum = () => {
+				const features = map.querySourceFeatures("zonage-urbanisme-source", {
+					sourceLayer,
+					filter: ["==", ["get", "checksum"], initialChecksum],
+				});
+				if (features.length > 0) {
+					const feature = features[0];
+					lockedChecksumRef.current = initialChecksum;
+					setLockedFeature(feature);
+					const bounds = bbox(feature) as [number, number, number, number];
+					map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
+					updateOutline(map, initialChecksum);
+					return true;
+				}
+				return false;
+			};
+
+			// Try immediately, otherwise wait for tiles to load
+			if (!selectZonageByChecksum()) {
+				const onSourceData = () => {
+					if (selectZonageByChecksum()) {
+						map.off("sourcedata", onSourceData);
+					}
+				};
+				map.on("sourcedata", onSourceData);
+			}
+		}
+	}, [landData.bounds, updateOutline, onMapReady, mode, initialChecksum, lastMillesimeIndex, firstDepartement]);
+
+	const ocsgeLabel = mode === "artif"
+		? "Occupation du sol artificialisée"
+		: "Occupation du sol imperméabilisée";
+
+	const ocsgeDescription = mode === "artif"
+		? "Ce calque affiche les objets OCS GE classés comme artificialisés, colorés selon la nomenclature sélectionnée."
+		: "Ce calque affiche les objets OCS GE classés comme imperméables, colorés selon la nomenclature sélectionnée.";
 
 	const config = defineMapConfig({
 		sources: [
@@ -420,11 +536,53 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		],
 		layers: [
 			...BASE_LAYERS,
-			{ type: ocsgeLayerType, nomenclature: "couverture", stats: true },
+			{ type: ocsgeLayerType, nomenclature, stats: true },
 			{ type: "zonage-urbanisme", mode },
 		],
 		controlGroups: [
 			...BASE_CONTROLS,
+			{
+				id: `${ocsgeLayerType}-group`,
+				label: ocsgeLabel,
+				description: ocsgeDescription,
+				controls: [
+					{
+						id: `${ocsgeLayerType}-visibility`,
+						type: "visibility",
+						targetLayers: [`${ocsgeLayerType}-layer`],
+						defaultValue: true,
+					},
+					{
+						id: `${ocsgeLayerType}-opacity`,
+						type: "opacity",
+						targetLayers: [`${ocsgeLayerType}-layer`],
+						defaultValue: 0.7,
+					},
+					{
+						id: `${ocsgeLayerType}-millesime`,
+						type: "ocsge-millesime",
+						targetLayers: [`${ocsgeLayerType}-layer`],
+						sourceId: "ocsge-source",
+						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`,
+						linkedMillesimeIds: ["zonage-urbanisme-millesime"],
+						addControlsAboveMap: true,
+					},
+					{
+						id: `${ocsgeLayerType}-nomenclature`,
+						type: "ocsge-nomenclature",
+						targetLayers: [`${ocsgeLayerType}-layer`],
+						linkedFilterId: `${ocsgeLayerType}-filter`,
+						defaultValue: nomenclature,
+						addControlsAboveMap: true,
+					},
+					{
+						id: `${ocsgeLayerType}-filter`,
+						type: "ocsge-nomenclature-filter",
+						targetLayers: [`${ocsgeLayerType}-layer`],
+						defaultValue: OCSGE_LAYER_NOMENCLATURES[ocsgeLayerType][nomenclature],
+					},
+				],
+			},
 			{
 				id: "zonage-urbanisme-group",
 				label,
@@ -448,39 +606,13 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 						targetLayers: ["zonage-urbanisme-layer"],
 						sourceId: "zonage-urbanisme-source",
 						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`,
+						linkedMillesimeIds: [`${ocsgeLayerType}-millesime`],
 					},
 				],
 			},
 		],
 		infoPanels: [],
 	});
-
-	useEffect(() => {
-		const map = mapRef.current;
-		if (!map || !map.isStyleLoaded()) return;
-		const outlineId = "zonage-urbanisme-layer-outline";
-		try {
-			if (highlightedZoneType) {
-				map.setPaintProperty(outlineId, "line-width", [
-					"case",
-					["==", ["get", "type_zone"], highlightedZoneType],
-					3,
-					0.5,
-				]);
-				map.setPaintProperty(outlineId, "line-color", [
-					"case",
-					["==", ["get", "type_zone"], highlightedZoneType],
-					ZONE_TYPE_COLORS[highlightedZoneType] || "#000",
-					"#000000",
-				]);
-			} else {
-				map.setPaintProperty(outlineId, "line-width", 1);
-				map.setPaintProperty(outlineId, "line-color", "#000000");
-			}
-		} catch {
-			// layer not yet ready
-		}
-	}, [highlightedZoneType]);
 
 	const gradientColor = mode === "artif" ? "#FA4B42" : "#3A7EC2";
 	const modeLabel = mode === "artif" ? "artificialisation" : "imperméabilisation";
@@ -491,7 +623,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		if (!displayedFeature) {
 			return (
 				<SidePanelPlaceholder>
-					Survolez ou cliquez sur un zonage pour afficher ses informations
+					Survolez ou cliquez sur une zone pour afficher ses informations
 				</SidePanelPlaceholder>
 			);
 		}
@@ -502,51 +634,79 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		const typeZone = properties.type_zone as string;
 		const libelle = properties.libelle as string;
 		const libelleLong = properties.libelle_long as string;
-		const destinationDominante = properties.destination_dominante as string;
-		const dateApprobation = formatDate(properties.date_approbation);
-		const dateValidation = formatDate(properties.date_validation);
 		const year = properties.year as number | null;
 		const zonageSurface = properties.zonage_surface as number;
-		const zonageSurfaceHa = zonageSurface ? zonageSurface / 10000 : 0;
+		const toUnit = (m2: number) => unit === "ha" ? m2 / 10000 : m2;
+		const unitLabel = unit === "ha" ? "ha" : "m²";
+		const zonageSurfaceDisplay = zonageSurface ? toUnit(zonageSurface) : 0;
 
 		const percentField = mode === "artif" ? "artif_percent" : "imper_percent";
 		const surfaceField = mode === "artif" ? "artif_surface" : "imper_surface";
 		const percent = properties[percentField] as number | null;
 		const surface = properties[surfaceField] as number | null;
-		const surfaceHa = surface ? surface / 10000 : null;
+		const surfaceDisplay = surface ? toUnit(surface) : null;
 
 		const couvertureField = mode === "artif" ? "artif_couverture_composition" : "imper_couverture_composition";
 		const usageField = mode === "artif" ? "artif_usage_composition" : "imper_usage_composition";
 		const couvertureItems = parseComposition(properties[couvertureField]);
 		const usageItems = parseComposition(properties[usageField]);
 
+		const fluxYearOld = properties.flux_year_old as number | null;
+		const fluxYearNew = properties.flux_year_new as number | null;
+		const fluxArtif = properties.flux_artif as number | null;
+		const fluxDesartif = properties.flux_desartif as number | null;
+		const fluxArtifNet = properties.flux_artif_net as number | null;
+		const fluxArtifPercent = properties.flux_artif_percent as number | null;
+		const fluxDesartifPercent = properties.flux_desartif_percent as number | null;
+		const fluxArtifNetPercent = properties.flux_artif_net_percent as number | null;
+		const hasFlux = fluxArtif != null && (fluxArtif !== 0 || fluxDesartif !== 0);
+
+		const fluxCouvertureItems = parseComposition(properties.flux_artif_couverture_composition);
+		const fluxUsageItems = parseComposition(properties.flux_artif_usage_composition);
+
 		return (
 			<SidePanelContent>
 				<SidePanelHeader>
-					<div>
-						<ZoneTypeBadge $color={ZONE_TYPE_COLORS[typeZone] || "#999"}>
-							{typeZone}
-						</ZoneTypeBadge>
-						<strong>{ZonageType[typeZone as keyof typeof ZonageType] || typeZone}</strong>
-						{libelle && (
-							<span style={{ color: "#666" }}> — {libelle}</span>
-						)}
+					<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", paddingRight: "24px" }}>
+						<div>
+							<ZoneTypeBadge $color={ZONE_TYPE_COLORS[typeZone] || "#999"}>
+								{typeZone}
+							</ZoneTypeBadge>
+							<strong>{ZonageType[typeZone as keyof typeof ZonageType] || typeZone}</strong>
+							{libelle && (
+								<span style={{ color: "#666" }}> — {libelle}</span>
+							)}
+						</div>
+						<SegmentedControl
+							small
+							hideLegend
+							legend="Unité"
+							segments={[
+								{
+									label: "ha",
+									nativeInputProps: {
+										checked: unit === "ha",
+										onChange: () => setUnit("ha"),
+									},
+								},
+								{
+									label: "m²",
+									nativeInputProps: {
+										checked: unit === "m2",
+										onChange: () => setUnit("m2"),
+									},
+								},
+							]}
+						/>
 					</div>
 					{libelleLong && libelleLong !== libelle && (
-						<div style={{ fontSize: "0.72rem", color: "#888", marginTop: 2 }}>
-							{libelleLong}
-						</div>
+						<LibelleLong>{libelleLong}</LibelleLong>
 					)}
 				</SidePanelHeader>
 
-				{destinationDominante && (
-					<InfoRow>
-						<InfoLabel>Destination dominante</InfoLabel>
-						<InfoValue>{destinationDominante}</InfoValue>
-					</InfoRow>
-				)}
+				<SectionTitle>Stock</SectionTitle>
 
-			<InfoRow>
+				<InfoRow>
 					<InfoLabel>Taux d'{modeLabel}</InfoLabel>
 					<InfoValue>
 						{percent != null ? `${formatNumber({ number: percent })} %` : "—"}
@@ -564,37 +724,60 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				<InfoRow>
 					<InfoLabel>Surface</InfoLabel>
 					<InfoValue>
-						{surfaceHa != null ? `${formatNumber({ number: surfaceHa })} ha` : "—"} / {zonageSurface ? `${formatNumber({ number: zonageSurfaceHa })} ha` : "—"}
+						{surfaceDisplay != null ? `${formatNumber({ number: surfaceDisplay })} ${unitLabel}` : "—"} / {zonageSurface ? `${formatNumber({ number: zonageSurfaceDisplay })} ${unitLabel}` : "—"}
 					</InfoValue>
 				</InfoRow>
 
-				{(couvertureItems.length > 0 || usageItems.length > 0) && <Separator />}
-
-				{couvertureItems.length > 0 && (
+				{nomenclature === "couverture" && couvertureItems.length > 0 && (
+					<>
+					<Separator />
 					<PieSection>
 						<SectionTitle>Surfaces {mode === "artif" ? "artificialisées" : "imperméables"} par couverture{year ? ` (${year})` : ""}</SectionTitle>
-						{renderPieChart(couvertureItems, getCouvertureLabel, COUVERTURE_COLORS as Record<string, string>)}
+						{renderPieChart(couvertureItems, getCouvertureLabel, COUVERTURE_COLORS as Record<string, string>, hasFlux ? fluxCouvertureItems : undefined, unit)}
 					</PieSection>
+					</>
 				)}
 
-				{usageItems.length > 0 && (
+				{nomenclature === "usage" && usageItems.length > 0 && (
+					<>
+					<Separator />
 					<PieSection>
 						<SectionTitle>Surfaces {mode === "artif" ? "artificialisées" : "imperméables"} par usage{year ? ` (${year})` : ""}</SectionTitle>
-						{renderPieChart(usageItems, getUsageLabel, USAGE_COLORS as Record<string, string>)}
+						{renderPieChart(usageItems, getUsageLabel, USAGE_COLORS as Record<string, string>, hasFlux ? fluxUsageItems : undefined, unit)}
 					</PieSection>
+					</>
 				)}
 
-				{(dateApprobation || dateValidation) && (
+				{hasFlux && (
 					<>
-						<Separator />
-						<MetaText>
-							{dateApprobation && (
-								<div>Approuvé le {dateApprobation}</div>
-							)}
-							{dateValidation && (
-								<div>Validé le {dateValidation}</div>
-							)}
-						</MetaText>
+					<Separator />
+					<SectionTitle>
+						Flux{fluxYearOld && fluxYearNew ? ` entre ${fluxYearOld} et ${fluxYearNew}` : ""}
+					</SectionTitle>
+
+					<InfoRow>
+						<InfoLabel>Artificialisation</InfoLabel>
+						<InfoValue>
+							+{formatNumber({ number: toUnit(fluxArtif ?? 0) })} {unitLabel}
+							({formatNumber({ number: fluxArtifPercent ?? 0 })} %)
+						</InfoValue>
+					</InfoRow>
+
+					<InfoRow>
+						<InfoLabel>Désartificialisation</InfoLabel>
+						<InfoValue>
+							-{formatNumber({ number: toUnit(fluxDesartif ?? 0) })} {unitLabel}
+							({formatNumber({ number: fluxDesartifPercent ?? 0 })} %)
+						</InfoValue>
+					</InfoRow>
+
+					<InfoRow>
+						<InfoLabel>Artif. nette</InfoLabel>
+						<InfoValue style={{ color: (fluxArtifNet ?? 0) > 0 ? "#E63946" : (fluxArtifNet ?? 0) < 0 ? "#2A9D8F" : undefined }}>
+							{(fluxArtifNet ?? 0) >= 0 ? "+" : ""}{formatNumber({ number: toUnit(fluxArtifNet ?? 0) })} {unitLabel}
+							({(fluxArtifNetPercent ?? 0) >= 0 ? "+" : ""}{formatNumber({ number: fluxArtifNetPercent ?? 0 })} %)
+						</InfoValue>
+					</InfoRow>
 					</>
 				)}
 			</SidePanelContent>
@@ -602,20 +785,23 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	};
 
 	return (
+		<>
 		<MapRow className="fr-grid-row fr-grid-row--gutters">
 			<div className="fr-col-12 fr-col-lg-8">
 				<BaseMap
 					id={`zonage-urbanisme-${mode}-map`}
 					config={config}
 					landData={landData}
+					noControl={noControl}
 					onMapLoad={handleMapLoad}
+					onControlsReady={handleControlsReady}
 				/>
 			</div>
 			<div className="fr-col-12 fr-col-lg-4">
 				<SidePanel>
-					{lockedFeature && (
+					{lockedFeature && !noControl && (
 						<CloseButton
-							title="Désélectionner le zonage"
+							title="Désélectionner la zone"
 							onClick={() => {
 								lockedChecksumRef.current = null;
 								setLockedFeature(null);
@@ -634,5 +820,21 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				</SidePanel>
 			</div>
 		</MapRow>
+		<ChartDetails
+			sources={['ocsge', 'gpu']}
+			chartId={`zonage-urbanisme-${mode}-map-details`}
+			customTable={zonageTable}
+		>
+			<div>
+				<h3 className="fr-mb-0">Calcul</h3>
+				<p className="fr-text--sm">
+					{mode === "artif"
+						? "Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artificialisation. Puis croiser les parcelles avec les zonages d'urbanisme (PLU/GPU) pour mesurer le taux d'artificialisation de chaque zone."
+						: "Qualifier l'imperméabilisation de chaque parcelle OCS GE via la nomenclature OCS GE. Puis croiser les parcelles avec les zonages d'urbanisme (PLU/GPU) pour mesurer le taux d'imperméabilisation de chaque zone."
+					}
+				</p>
+			</div>
+		</ChartDetails>
+		</>
 	);
 };
