@@ -9,7 +9,7 @@ export type Millesime = {
     departement: string;
     departement_name?: string;
 }
-  
+
 export type MillesimeByIndex = {
     index: number;
     years: string;
@@ -187,9 +187,9 @@ type LandDetailQueryArg = string | FetchArgs | {
 }
 
 type LandDetailBaseQuery = BaseQueryFn<LandDetailQueryArg, unknown, FetchBaseQueryError>;
-  
+
 export type UseLandDetailType = TypedUseQuery<
     LandDetailResultType,
     LandDetailQueryArg,
     LandDetailBaseQuery
- >;
+>;

@@ -18,7 +18,7 @@ interface TrajectoiresProps {
 }
 
 const Container = styled.div`
-    background: linear-gradient(180deg,rgb(236, 236, 248) 0%, rgba(236, 236, 248, 0) 100%);
+    background: #fff;
     border-radius: 4px; 
     padding: 1.5rem;
 `;
@@ -434,7 +434,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                         </Container>
                     </div>
                     <div className="fr-col-12 fr-col-lg-3">
-                        <GuideContent title="Comprendre les objectifs" column>
+                        <GuideContent title="Comprendre les objectifs">
                             <p>
                                 <strong>{objectifLabel}</strong> : c'est le maximum d'espaces que le territoire peut consommer entre 2021 et 2030.
                                 Il est calculé en appliquant une réduction de <strong>{objectif_reduction}%</strong> à la consommation de référence (2011-2020).
@@ -499,7 +499,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                         </div>
                     </div>
                     <div className="fr-col-12 fr-col-lg-3">
-                        <GuideContent title="Comment lire ce graphique ?" column>
+                        <GuideContent title="Comment lire ce graphique ?">
                             <p>
                                 Ce graphique compare la <strong>consommation réelle</strong> d'espaces avec la <strong>trajectoire théorique</strong> permettant d'atteindre l'objectif de réduction en 2030.
                             </p>
@@ -575,7 +575,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                             </div>
                         </div>
                         <div className="fr-col-12 fr-col-lg-3">
-                            <GuideContent title="Lecture de la carte" column>
+                            <GuideContent title="Lecture de la carte">
                                 <p>
                                     <ColoredStrong $color="#34D399">{territorialisation.children_stats.en_bonne_voie}</ColoredStrong> {territorialisation.children_stats.en_bonne_voie > 1 ? 'territoires sont' : 'territoire est'} en bonne voie pour respecter leur maximum autorisé.
                                 </p>
@@ -603,7 +603,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
                             </div>
                         </div>
                         <div className="fr-col-12 fr-col-lg-3">
-                            <GuideContent title="Lecture de la carte" column>
+                            <GuideContent title="Lecture de la carte">
                                 <p>Compare la consommation annuelle actuelle à la consommation annualisée autorisée pour atteindre l'objectif de réduction.</p>
                                 <p>
                                     <ColoredStrong $color="#34D399">Vert</ColoredStrong> : consomme moins que le rythme autorisé.<br />

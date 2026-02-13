@@ -1,6 +1,7 @@
 import React from 'react'
 import Guide from '@components/ui/Guide'
 import GenericChart from '@components/charts/GenericChart'
+import Triptych from '@components/ui/Triptych'
 import { LogementVacantOverview, LogementVacantAbstract } from '@components/features/logementVacant'
 import { ExternalServiceTile } from '@components/ui/ExternalServiceTile'
 import zeroLogementVacantImage from '@images/logo_ZLV.png'
@@ -8,16 +9,6 @@ import { LogementVacantTaux } from './components/LogementVacantTaux'
 import { LogementVacantConso } from './components/LogementVacantConso'
 import { LogementVacantAutorisation } from './components/LogementVacantAutorisation'
 import { LogementVacantProps } from './types'
-import React from "react";
-import { LogementVacantProps } from "./types";
-import { LogementVacantProgression } from "./components/LogementVacantProgression";
-import { LogementVacantRatio } from "./components/LogementVacantRatio";
-import { LogementVacantConso } from "./components/LogementVacantConso";
-import { LogementVacantAutorisation } from "./components/LogementVacantAutorisation";
-import Triptych from "@components/ui/Triptych";
-import { LogementVacantOverview, LogementVacantAbstract } from "@components/features/logementVacant";
-import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
-import zeroLogementVacantImage from "@images/logo_ZLV.png";
 
 const LAND_TYPE_LABELS: Record<string, string> = {
   COMM: 'Commune',

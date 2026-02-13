@@ -54,24 +54,26 @@ class ConsoAnnualChart(DiagnosticChart):
     def param(self):
         return super().param | {
             "title": {
-                "text": f"Consommation annuelle d'espaces NAF de {self.land.name} entre {self.data.first().year} et  {self.data.last().year} (ha)"  # noqa: E501
-            },
-            "subtitle": {
-                "text": "La période de référence de la loi Climat & Résilience est mise en évidence par la bande bleue.",  # noqa: E501
+                "text": (
+                    f"Consommation annuelle d'espaces NAF "
+                    f"de {self.land.name} ({self.data.first().year}-{self.data.last().year})"
+                ),
+                "style": {"fontSize": "14px", "fontWeight": "600"},
+                "margin": 25,
             },
             "series": self.series,
-            "chart": {"type": "column"},
+            "chart": {"type": "column", "height": 280},
             "yAxis": {"title": {"text": ""}},
             "xAxis": {
                 "type": "category",
                 "plotBands": [
                     {
-                        "color": "#e5f3ff",
+                        "color": "#f5f5f5",
                         "from": -0.5,
                         "to": 9.5,
                         "label": {
                             "text": "Période de référence de la loi Climat & Résilience",
-                            "style": {"color": "#95ceff", "fontWeight": "bold"},
+                            "style": {"color": "#666666", "fontWeight": "600"},
                         },
                         "className": "plotband_blue",
                     },

@@ -18,6 +18,8 @@
             "@services/*": ["frontend/scripts/services/*"],
             "@images/*": ["frontend/images/*"],
             "@utils/*": ["frontend/scripts/utils/*"],
+            "@theme": ["frontend/scripts/theme/index.ts"],
+            "@theme/*": ["frontend/scripts/theme/*"],
             "scripts/*": ["frontend/scripts/*"]
         }
     },

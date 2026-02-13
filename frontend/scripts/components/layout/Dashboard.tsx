@@ -91,7 +91,6 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
-                                                showTitle={false}
                                             >
                                                 <Synthese
                                                     landData={landData}

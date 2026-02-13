@@ -30,27 +30,30 @@ const NavLink = styled.a`
     text-decoration: none;
     background-image: none;
     -webkit-tap-highlight-color: transparent;
-    transition: color .3s ease;
-    color: #979FB8;
+    transition: color 0.3s ease;
+    color: #979fb8;
 
     &:hover {
-        color: #4318FF;
+        color: #4318ff;
     }
 `;
 
 const Footer = ({ footer }: { footer: { menuItems: MenuItem[] } }) => {
+
+const Footer = ({ projectData }: FooterProps) => {
+    const menuItems = projectData.footer?.menuItems ?? [];
 
     return (
         <Container className="fr-container--fluid">
             <div className="fr-grid-row">
                 <div className="fr-col-12">
                     <NavLinks>
-                        {footer?.menuItems.map((item) => (
+                        {menuItems.map((item) => (
                             <NavLink
                                 key={item.label}
-                                href={item.url}
+                                href={item.url ?? '#'}
                                 target={item.target}
-                                rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                                rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
                             >
                                 {item.label}
                             </NavLink>

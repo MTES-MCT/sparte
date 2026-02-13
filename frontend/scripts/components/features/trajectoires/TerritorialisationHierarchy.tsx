@@ -437,7 +437,7 @@ const TerritorialisationHierarchy = ({
                         </div>
                     </MapContainer>
                     <GuideContainer>
-                        <GuideContent title="Lecture de la carte" column>
+                        <GuideContent title="Lecture de la carte">
                             <p>Chaque territoire est coloré selon son objectif de réduction de consommation d'espaces.</p>
                             <p>Plus la couleur est foncée, plus l'objectif de réduction est ambitieux.</p>
                             <p>Survolez un territoire pour consulter son objectif de réduction.</p>

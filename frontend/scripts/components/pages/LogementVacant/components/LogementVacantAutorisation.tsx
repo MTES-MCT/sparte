@@ -60,7 +60,7 @@ const ComprendreLesDonnees: React.FC<{
   }
 
   return (
-    <GuideContent title="Comprendre les données" column>
+    <GuideContent title="Comprendre les données">
       <p>
         En {endYear}, sur le territoire de {territoryName},{' '}
         <strong>

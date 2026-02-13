@@ -115,7 +115,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
         </div>
 
         <div className="fr-col-12 fr-col-lg-4">
-          <GuideContent title={GUIDE_TEXTS.treemap.title} column>
+          <GuideContent title={GUIDE_TEXTS.treemap.title}>
             {GUIDE_TEXTS.treemap.content}
           </GuideContent>
         </div>
@@ -141,7 +141,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
           </div>
 
           <div className="fr-col-12 fr-col-lg-4">
-            <GuideContent title={GUIDE_TEXTS.populationBubble.title} column>
+            <GuideContent title={GUIDE_TEXTS.populationBubble.title}>
               {GUIDE_TEXTS.populationBubble.content}
             </GuideContent>
           </div>
