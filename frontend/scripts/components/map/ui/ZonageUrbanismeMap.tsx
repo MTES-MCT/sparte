@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from "react";
+import React, { useRef, useCallback, useState, useMemo } from "react";
 import styled from "styled-components";
 import type maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
@@ -413,25 +413,21 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		: "Cette carte affiche les zonages d'urbanisme (PLU) avec l'occupation du sol imperméable visible au survol.";
 
 	const updateOutline = useCallback((map: maplibregl.Map, hoveredChecksum: string | null) => {
-		const outlineId = "zonage-urbanisme-layer-outline";
 		const locked = lockedChecksumRef.current;
-		if (locked && hoveredChecksum && hoveredChecksum !== locked) {
-			map.setPaintProperty(outlineId, "line-width", [
-				"case",
-				["==", ["get", "checksum"], locked], 3,
-				["==", ["get", "checksum"], hoveredChecksum], 3,
-				1,
-			]);
-		} else if (locked || hoveredChecksum) {
-			const active = locked ?? hoveredChecksum;
-			map.setPaintProperty(outlineId, "line-width", [
-				"case",
-				["==", ["get", "checksum"], active],
-				3,
-				1,
-			]);
-		} else {
-			map.setPaintProperty(outlineId, "line-width", 1);
+		const checksums = [locked, hoveredChecksum].filter(Boolean) as string[];
+		const filter: maplibregl.FilterSpecification = checksums.length === 0
+			? ["==", ["get", "checksum"], ""]
+			: checksums.length === 1
+				? ["==", ["get", "checksum"], checksums[0]]
+				: ["in", ["get", "checksum"], ["literal", checksums]];
+
+		const style = map.getStyle();
+		if (!style) return;
+		const highlightLayers = style.layers
+			.filter(l => l.id.startsWith("zonage-urbanisme-layer-highlight"))
+			.map(l => l.id);
+		for (const layerId of highlightLayers) {
+			map.setFilter(layerId, filter);
 		}
 	}, []);
 
@@ -439,39 +435,64 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		mapRef.current = map;
 		onMapReady?.(map);
 
-		const layerId = "zonage-urbanisme-layer";
+		const zonageLayerPrefix = "zonage-urbanisme-layer";
+		let hoveredChecksum: string | null = null;
+		let lastMoveTime = 0;
 
-		map.on("mousemove", layerId, (e) => {
-			map.getCanvas().style.cursor = "pointer";
-			if (e.features && e.features.length > 0) {
-				const feature = e.features[0];
-				setHoveredFeature(feature);
-				updateOutline(map, feature.properties?.checksum ?? null);
+		const getZonageLayers = (): string[] => {
+			const style = map.getStyle();
+			if (!style) return [];
+			return style.layers
+				.filter(l => l.id.startsWith(zonageLayerPrefix) && !l.id.includes("outline") && !l.id.includes("highlight"))
+				.map(l => l.id);
+		};
+
+		const queryZonageFeatures = (point: maplibregl.PointLike): maplibregl.MapGeoJSONFeature[] => {
+			const layers = getZonageLayers();
+			if (layers.length === 0) return [];
+			return map.queryRenderedFeatures(point, { layers });
+		};
+
+		const queryAllZonageRendered = (): maplibregl.MapGeoJSONFeature[] => {
+			const layers = getZonageLayers();
+			if (layers.length === 0) return [];
+			return map.queryRenderedFeatures(undefined, { layers });
+		};
+
+		map.on("mousemove", (e) => {
+			const now = performance.now();
+			if (now - lastMoveTime < 10) return;
+			lastMoveTime = now;
+
+			const features = queryZonageFeatures(e.point);
+			if (features.length > 0) {
+				map.getCanvas().style.cursor = "pointer";
+				const feature = features[0];
+				const checksum = feature.properties?.checksum ?? null;
+				if (checksum !== hoveredChecksum) {
+					hoveredChecksum = checksum;
+					setHoveredFeature(feature);
+					updateOutline(map, checksum);
+				}
+			} else if (hoveredChecksum !== null) {
+				map.getCanvas().style.cursor = "";
+				hoveredChecksum = null;
+				setHoveredFeature(null);
+				updateOutline(map, null);
 			}
 		});
 
-		map.on("mouseleave", layerId, () => {
-			map.getCanvas().style.cursor = "";
-			setHoveredFeature(null);
-			updateOutline(map, null);
-		});
-
-		map.on("click", layerId, (e) => {
-			if (e.features && e.features.length > 0) {
-				const feature = e.features[0];
-				console.log("Zonage feature properties:", feature.properties);
+		map.on("click", (e) => {
+			const features = queryZonageFeatures(e.point);
+			if (features.length > 0) {
+				const feature = features[0];
 				const checksum = feature.properties?.checksum ?? null;
 				lockedChecksumRef.current = checksum;
 				setLockedFeature(feature);
 				const bounds = bbox(feature) as [number, number, number, number];
 				map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
 				updateOutline(map, checksum);
-			}
-		});
-
-		map.on("click", (e) => {
-			const zonageFeats = map.queryRenderedFeatures(e.point, { layers: [layerId] });
-			if (!zonageFeats || zonageFeats.length === 0) {
+			} else {
 				lockedChecksumRef.current = null;
 				setLockedFeature(null);
 				updateOutline(map, null);
@@ -481,10 +502,10 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			}
 		});
 
-		map.on("sourcedata", () => {
+		map.on("sourcedata", (e) => {
 			const checksum = lockedChecksumRef.current;
-			if (!checksum) return;
-			const rendered = map.queryRenderedFeatures(undefined, { layers: [layerId] });
+			if (!checksum || !e.isSourceLoaded) return;
+			const rendered = queryAllZonageRendered();
 			const match = rendered.find(f => f.properties?.checksum === checksum);
 			if (match) {
 				setLockedFeature(match);
@@ -492,20 +513,30 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		});
 
 		if (initialChecksum) {
-			const sourceLayer = `zonage_urbanisme_${lastMillesimeIndex}_${firstDepartement}`;
 			const selectZonageByChecksum = () => {
-				const features = map.querySourceFeatures("zonage-urbanisme-source", {
-					sourceLayer,
-					filter: ["==", ["get", "checksum"], initialChecksum],
-				});
-				if (features.length > 0) {
-					const feature = features[0];
-					lockedChecksumRef.current = initialChecksum;
-					setLockedFeature(feature);
-					const bounds = bbox(feature) as [number, number, number, number];
-					map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
-					updateOutline(map, initialChecksum);
-					return true;
+				// Query all zonage sources (primary + extra department sources)
+				const style = map.getStyle();
+				const zonageSources = style ? Object.keys(style.sources).filter(s => s.startsWith("zonage-urbanisme-source")) : [];
+				for (const sourceId of zonageSources) {
+					const sourceLayers = style!.layers
+						.filter((l: any) => l.source === sourceId && 'source-layer' in l)
+						.map((l: any) => l['source-layer'] as string)
+						.filter((v, i, a) => a.indexOf(v) === i);
+					for (const sourceLayer of sourceLayers) {
+						const features = map.querySourceFeatures(sourceId, {
+							sourceLayer,
+							filter: ["==", ["get", "checksum"], initialChecksum],
+						});
+						if (features.length > 0) {
+							const feature = features[0];
+							lockedChecksumRef.current = initialChecksum;
+							setLockedFeature(feature);
+							const bounds = bbox(feature) as [number, number, number, number];
+							map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
+							updateOutline(map, initialChecksum);
+							return true;
+						}
+					}
 				}
 				return false;
 			};
@@ -529,7 +560,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		? "Ce calque affiche les objets OCS GE classés comme artificialisés, colorés selon la nomenclature sélectionnée."
 		: "Ce calque affiche les objets OCS GE classés comme imperméables, colorés selon la nomenclature sélectionnée.";
 
-	const config = defineMapConfig({
+	const config = useMemo(() => defineMapConfig({
 		sources: [
 			...BASE_SOURCES,
 			{ type: "ocsge" },
@@ -561,7 +592,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					},
 					{
 						id: `${ocsgeLayerType}-millesime`,
-						type: "ocsge-millesime",
+						type: "ocsge-millesime-index",
 						targetLayers: [`${ocsgeLayerType}-layer`],
 						sourceId: "ocsge-source",
 						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`,
@@ -592,7 +623,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					{
 						id: "zonage-urbanisme-visibility",
 						type: "visibility",
-						targetLayers: ["zonage-urbanisme-layer", "zonage-urbanisme-layer-outline"],
+						targetLayers: ["zonage-urbanisme-layer", "zonage-urbanisme-layer-outline", "zonage-urbanisme-layer-highlight"],
 						defaultValue: true,
 					},
 					{
@@ -603,7 +634,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					},
 					{
 						id: "zonage-urbanisme-millesime",
-						type: "ocsge-millesime",
+						type: "ocsge-millesime-index",
 						targetLayers: ["zonage-urbanisme-layer"],
 						sourceId: "zonage-urbanisme-source",
 						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`,
@@ -613,7 +644,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			},
 		],
 		infoPanels: [],
-	});
+	}), [ocsgeLayerType, nomenclature, mode, ocsgeLabel, ocsgeDescription, label, description, lastMillesimeIndex, firstDepartement]);
 
 	const gradientColor = mode === "artif" ? "#FA4B42" : "#3A7EC2";
 	const modeLabel = mode === "artif" ? "artificialisation" : "imperméabilisation";
@@ -633,6 +664,17 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 		const properties = displayedFeature.properties;
 		if (!properties) return null;
+
+		// Extraire département et année depuis le source-layer
+		let featureDept: string | null = null;
+		let featureYear: number | null = null;
+		if (landData.is_interdepartemental && displayedFeature.sourceLayer) {
+			const parts = displayedFeature.sourceLayer.split('_');
+			featureDept = parts[parts.length - 1];
+			const featureIndex = Number.parseInt(parts[parts.length - 2], 10);
+			const millesime = landData.millesimes.find(m => m.departement === featureDept && m.index === featureIndex);
+			featureYear = millesime?.year ?? null;
+		}
 
 		const typeZone = properties.type_zone as string;
 		const libelle = properties.libelle as string;
@@ -697,6 +739,12 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					</HeaderRow>
 					{libelleLong && libelleLong !== libelle && (
 						<LibelleLong>{libelleLong}</LibelleLong>
+					)}
+					{landData.is_interdepartemental && featureDept && (
+						<span style={{ fontSize: "0.8rem", color: "#666" }}>
+							{landData.millesimes.find(m => m.departement === featureDept)?.departement_name || featureDept}
+							{featureYear && ` (${featureYear})`}
+						</span>
 					)}
 				</SidePanelHeader>
 

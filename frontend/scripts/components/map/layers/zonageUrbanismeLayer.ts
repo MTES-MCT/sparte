@@ -82,6 +82,20 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 					"line-opacity": this.options.opacity ?? 0.7,
 				},
 			} as LayerSpecification,
+			// Highlight outline for hovered/locked features
+			{
+				id: `${this.options.id}-highlight`,
+				type: "line" as const,
+				source: this.options.source,
+				"source-layer": sourceLayer,
+				filter: ["==", ["get", "checksum"], ""],
+				layout: { visibility },
+				paint: {
+					"line-color": "#000000",
+					"line-width": 3,
+					"line-opacity": 1,
+				},
+			} as LayerSpecification,
 		];
 	}
 

@@ -67,11 +67,10 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 							<thead>
 								<tr>
 									<th scope="col">Type de zonage</th>
-									<th scope="col">Surface de zonage (ha)</th>
+									<th scope="col">Surface (ha)</th>
 									<th scope="col">Surface artificialisée (ha)</th>
 									<th scope="col">Taux d'artificialisation (%)</th>
-									<th scope="col">Nombre de zones</th>
-								</tr>
+									</tr>
 							</thead>
 							<tbody>
 								{artifZonageIndex
@@ -102,8 +101,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 													/>
 												</PercentBarTrack>
 											</PercentCell>
-											<td>{a.zonage_count}</td>
-										</tr>
+											</tr>
 									))}
 							</tbody>
 						</table>

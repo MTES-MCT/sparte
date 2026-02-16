@@ -239,26 +239,17 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Occupation du sol artificialisée ({millesimes_by_index?.find(m => m.index === selectedIndex)?.years ?? ""})
+					Artificialisation des zonages d'urbanisme
 				</h2>
-				{land_type !== LandType.REGION && (
-					<>
-						{has_zonage && (
-							<ZonageUrbanismeMap
-								landData={landData}
-								mode="artif"
-								zonageTable={
-									<ArtificialisationZonage
-										artifZonageIndex={artifZonageIndex}
-									/>
-								}
-							/>
-						)}
-						<OcsgeObjectMap
-							landData={landData}
-							mode="artif"
-						/>
-					</>
+				<ArtificialisationZonage
+					artifZonageIndex={artifZonageIndex}
+				/>
+				<div className="fr-mt-4w" />
+				{land_type !== LandType.REGION && has_zonage && (
+					<ZonageUrbanismeMap
+						landData={landData}
+						mode="artif"
+					/>
 				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
@@ -508,6 +499,16 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				</div>
 			)}
 
+
+			{land_type !== LandType.REGION && (
+				<div className="fr-mb-7w">
+					<h2>Explorateur des objets OCS GE</h2>
+					<OcsgeObjectMap
+						landData={landData}
+						mode="artif"
+					/>
+				</div>
+			)}
 
 			<div className="fr-mb-7w">
 				<h2>Calcul de l'artificialisation des sols</h2>

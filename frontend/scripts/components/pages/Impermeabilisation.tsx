@@ -225,26 +225,18 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Occupation du sol imperméabilisée ({millesimes_by_index?.find(m => m.index === selectedIndex)?.years ?? ""})
+					Imperméabilisation des zonages d'urbanisme
 				</h2>
-				{land_type !== LandType.REGION && (
-					<>
-						{has_zonage && (
-							<ZonageUrbanismeMap
-								landData={landData}
-								mode="imper"
-								zonageTable={
-									<ImpermeabilisationZonage
-										imperZonageIndex={imperZonageIndex}
-									/>
-								}
+				{land_type !== LandType.REGION && has_zonage && (
+					<ZonageUrbanismeMap
+						landData={landData}
+						mode="imper"
+						zonageTable={
+							<ImpermeabilisationZonage
+								imperZonageIndex={imperZonageIndex}
 							/>
-						)}
-						<OcsgeObjectMap
-							landData={landData}
-							mode="imper"
-						/>
-					</>
+						}
+					/>
 				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
@@ -491,6 +483,16 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 							</GuideContent>
 						</div>
 					</div>
+				</div>
+			)}
+
+			{land_type !== LandType.REGION && (
+				<div className="fr-mb-7w">
+					<h2>Explorateur des objets OCS GE</h2>
+					<OcsgeObjectMap
+						landData={landData}
+						mode="imper"
+					/>
 				</div>
 			)}
 

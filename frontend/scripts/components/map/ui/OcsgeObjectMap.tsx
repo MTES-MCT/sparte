@@ -108,7 +108,7 @@ const MiniMatrixRowLabel = styled.div`
 const MiniMatrixOuter = styled.div`
 	display: flex;
 	gap: 3px;
-	max-width: 245px;
+	max-width: 90%;
 `;
 
 const MiniMatrixGrid = styled.div`
@@ -211,38 +211,45 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 			},
 		});
 
-		const ocsgeId = `${mode === "artif" ? "artificialisation" : "impermeabilisation"}-layer`;
+		const ocsgeLayerPrefix = `${mode === "artif" ? "artificialisation" : "impermeabilisation"}-layer`;
 
-		map.on("mousemove", ocsgeId, (e) => {
-			map.getCanvas().style.cursor = "pointer";
-			if (e.features && e.features.length > 0) {
-				const feature = e.features[0];
-				setHoveredFeature(feature);
-				updateOcsgeHighlight(map, feature);
+		const getOcsgeLayers = (): string[] => {
+			const style = map.getStyle();
+			if (!style) return [];
+			return style.layers
+				.filter(l => l.id.startsWith(ocsgeLayerPrefix))
+				.map(l => l.id);
+		};
+
+		const queryOcsgeFeatures = (point: maplibregl.PointLike): maplibregl.MapGeoJSONFeature[] => {
+			const layers = getOcsgeLayers();
+			if (layers.length === 0) return [];
+			return map.queryRenderedFeatures(point, { layers });
+		};
+
+		map.on("mousemove", (e) => {
+			const features = queryOcsgeFeatures(e.point);
+			if (features.length > 0) {
+				map.getCanvas().style.cursor = "pointer";
+				setHoveredFeature(features[0]);
+				updateOcsgeHighlight(map, features[0]);
+			} else {
+				map.getCanvas().style.cursor = "";
+				setHoveredFeature(null);
+				updateOcsgeHighlight(map, null);
 			}
 		});
 
-		map.on("mouseleave", ocsgeId, () => {
-			map.getCanvas().style.cursor = "";
-			setHoveredFeature(null);
-			updateOcsgeHighlight(map, null);
-		});
-
-		map.on("click", ocsgeId, (e) => {
-			if (e.features && e.features.length > 0) {
-				const feature = e.features[0];
+		map.on("click", (e) => {
+			const features = queryOcsgeFeatures(e.point);
+			if (features.length > 0) {
+				const feature = features[0];
 				lockedOcsgeFeatureRef.current = feature;
 				setLockedFeature(feature);
 				const bounds = bbox(feature) as [number, number, number, number];
 				map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
 				updateOcsgeHighlight(map, feature);
-			}
-		});
-
-		// Click on empty area
-		map.on("click", (e) => {
-			const ocsgeFeats = map.queryRenderedFeatures(e.point, { layers: [ocsgeId] });
-			if (!ocsgeFeats || ocsgeFeats.length === 0) {
+			} else {
 				lockedOcsgeFeatureRef.current = null;
 				setLockedFeature(null);
 				updateOcsgeHighlight(map, null);
@@ -291,7 +298,7 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 					},
 					{
 						id: `${ocsgeLayerType}-millesime`,
-						type: "ocsge-millesime",
+						type: "ocsge-millesime-index",
 						targetLayers: [`${ocsgeLayerType}-layer`],
 						sourceId: "ocsge-source",
 						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`,
@@ -338,8 +345,28 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 		const isArtifByMatrice = codeCs && codeUs && isArtifMatrice(codeCs as Couverture, codeUs as Usage);
 		const isArtifBySeuil = isArtificial && !isArtifByMatrice;
 
+		// Extraire département et année depuis le source-layer
+		let featureDept: string | null = null;
+		let featureYear: number | null = null;
+		if (landData.is_interdepartemental && displayedFeature.sourceLayer) {
+			const parts = displayedFeature.sourceLayer.split('_');
+			featureDept = parts[parts.length - 1];
+			const featureIndex = Number.parseInt(parts[parts.length - 2], 10);
+			const millesime = landData.millesimes.find(m => m.departement === featureDept && m.index === featureIndex);
+			featureYear = millesime?.year ?? null;
+		}
+
 		return (
 			<div style={{ paddingTop: 8 }}>
+				{landData.is_interdepartemental && featureDept && (
+					<InfoRow>
+						<InfoLabel>Département</InfoLabel>
+						<InfoValue>
+							{landData.millesimes.find(m => m.departement === featureDept)?.departement_name || featureDept}
+							{featureYear && ` (${featureYear})`}
+						</InfoValue>
+					</InfoRow>
+				)}
 				<InfoRow>
 					<InfoLabel>Surface</InfoLabel>
 					<InfoValue>
@@ -394,7 +421,7 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 				{mode === "artif" && isArtifBySeuil && (
 					<div className="fr-alert fr-alert--warning fr-alert--sm fr-mt-1w">
 						<p className="fr-text--xs fr-mb-0">
-							Le croisement de couverture et d'usage de cet objet ne correspond pas à de l'artificialisation selon la matrice OCS GE, mais il est classé artificialisé par application des seuils d'interprétation (<a target="_blank" rel="noopener noreferrer" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959#:~:text=Enfin%2C%20sont%20int%C3%A9gr%C3%A9s,agronomique%20du%20sol.">décret du 27 novembre 2023</a>).
+							Classé artificialisé par les <a target="_blank" rel="noopener noreferrer" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959#:~:text=Enfin%2C%20sont%20int%C3%A9gr%C3%A9s,agronomique%20du%20sol.">seuils d'interprétation</a>, et non par la matrice OCS GE.
 						</p>
 					</div>
 				)}

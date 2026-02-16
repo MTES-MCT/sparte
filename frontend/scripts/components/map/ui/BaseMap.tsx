@@ -71,7 +71,7 @@ interface BaseMapProps {
     onControlsReady?: (manager: ControlsManager) => void;
 }
 
-export const BaseMap: React.FC<BaseMapProps> = ({
+export const BaseMap: React.FC<BaseMapProps> = React.memo(({
     id = "map",
     children,
     config,
@@ -304,4 +304,4 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         </MapWrapper>
         </>
     );
-};
+});
