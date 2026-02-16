@@ -43,15 +43,8 @@ export type ProjectDetailResultType = {
   logements_vacants_available: boolean;
   land_id: string;
   land_type: string;
-  departements: string[];
-  bounds: [number, number, number, number];
-  max_bounds: [number, number, number, number];
   target_2031: number | null;
   comparison_lands: ComparisonLand[];
-  centroid: {
-    latitude: number;
-    longitude: number;
-  };
   urls: {
     synthese: string;
     artificialisation: string;
