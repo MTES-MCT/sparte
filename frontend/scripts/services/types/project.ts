@@ -33,14 +33,6 @@ export type ComparisonLand = {
 
 export type ProjectDetailResultType = {
   id: number;
-  created_date: string;
-  level_label: string;
-  analyse_start_date: string;
-  analyse_end_date: string;
-  territory_name: string;
-  has_zonage_urbanisme: boolean;
-  autorisation_logement_available: boolean;
-  logements_vacants_available: boolean;
   land_id: string;
   land_type: string;
   target_2031: number | null;

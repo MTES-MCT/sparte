@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { selectIsNavbarOpen } from "@store/navbarSlice";
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 import { useGetUserLandPreferenceQuery, useToggleFavoriteMutation } from '@services/api';
+import { useGetLandQuery } from '@services/api';
 
 const activeColor = '#4318FF';
 
@@ -84,6 +85,15 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
     const isOpen = useSelector(selectIsNavbarOpen);
+    const { data: landData } = useGetLandQuery(
+        {
+            land_type: projectData?.land_type,
+            land_id: projectData?.land_id
+        },
+        {
+            skip: !projectData
+        }
+    );
 
     const { data: preference } = useGetUserLandPreferenceQuery(
         { land_type: landType!, land_id: landId! },
