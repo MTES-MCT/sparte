@@ -78,6 +78,12 @@ INNER JOIN {{ ref('commune_custom_land') }} as clc
 WHERE
     clc.custom_land_id IS NOT NULL
 GROUP BY clc.custom_land_id
+UNION
+SELECT
+    '{{ var('NATION') }}' as land_type,
+    '{{ var('NATION') }}' as land_id,
+    array_agg(distinct correction_status) as correction_status
+FROM status_with_collectivite_fields
 )
 SELECT
     land_type,
@@ -89,6 +95,7 @@ SELECT
         WHEN ARRAY['UNCHANGED', 'COG_ERROR'] @> correction_status THEN 'données_partiellement_coriggées'
         WHEN ARRAY['UNCHANGED', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_inchangées_avec_données_manquantes'
         WHEN ARRAY['COG_ERROR', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_coriggées_avec_données_manquantes'
+        WHEN ARRAY['UNCHANGED', 'COG_ERROR', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_partiellement_coriggées_avec_données_manquantes'
         ELSE 'ERROR'
     END as consommation_correction_status
 FROM all_status_as_array

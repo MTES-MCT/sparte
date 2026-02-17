@@ -59,3 +59,9 @@ SELECT
     '{{ var('CUSTOM') }}' as land_type,
     {{ common_fields | join(", ") }}
 FROM {{ ref('imper_flux_custom_land_by_usage') }}
+UNION ALL
+SELECT
+    code as land_id,
+    '{{ var('NATION') }}' as land_type,
+    {{ common_fields | join(", ") }}
+FROM {{ ref('imper_flux_nation_by_usage') }}

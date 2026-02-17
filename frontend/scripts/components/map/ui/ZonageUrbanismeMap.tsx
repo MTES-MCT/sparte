@@ -10,7 +10,7 @@ import { OCSGE_LAYER_NOMENCLATURES, COUVERTURE_COLORS, USAGE_COLORS } from "../c
 import { NomenclatureType } from "../types/ocsge";
 import { ZonageType } from "scripts/types/ZonageType";
 import { formatNumber } from "@utils/formatUtils";
-import { bbox } from "@turf/turf";
+
 import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
 import type { ControlsManager } from "../controls/ControlsManager";
 import ChartDetails from "@components/charts/ChartDetails";
@@ -474,6 +474,15 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 	}, []);
 
+	const getFeatureExtent = (feature: maplibregl.MapGeoJSONFeature | GeoJSON.Feature): [number, number, number, number] | null => {
+		const extent = feature.properties?.extent as string | undefined;
+		if (!extent) return null;
+		// Format: "BOX(xmin ymin,xmax ymax)"
+		const match = extent.match(/BOX\(([^ ]+) ([^,]+),([^ ]+) ([^)]+)\)/);
+		if (!match) return null;
+		return [Number(match[1]), Number(match[2]), Number(match[3]), Number(match[4])];
+	};
+
 	const handleMapLoad = useCallback((map: maplibregl.Map) => {
 		mapRef.current = map;
 		onMapReady?.(map);
@@ -549,6 +558,8 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			if (now - lastMoveTime < 10) return;
 			lastMoveTime = now;
 
+			const lowZoom = map.getZoom() < 10;
+
 			const features = queryZonageFeatures(e.point);
 			if (features.length > 0) {
 				map.getCanvas().style.cursor = "pointer";
@@ -557,13 +568,22 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				if (checksum !== hoveredChecksum) {
 					hoveredChecksum = checksum;
 					setHoveredFeature(feature);
-					updateOutline(map, checksum);
+					if (!lowZoom) {
+						updateOutline(map, checksum);
+					}
 				}
 			} else if (hoveredChecksum !== null) {
 				map.getCanvas().style.cursor = "";
 				hoveredChecksum = null;
 				setHoveredFeature(null);
-				updateOutline(map, null);
+				if (!lowZoom) {
+					updateOutline(map, null);
+				}
+			}
+
+			if (lowZoom) {
+				if (tooltipRef.current) tooltipRef.current.style.display = "none";
+				return;
 			}
 
 			// OCSGE tooltip when a zonage is selected
@@ -602,8 +622,8 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				const checksum = feature.properties?.checksum ?? null;
 				lockedChecksumRef.current = checksum;
 				setLockedFeature(feature);
-				const bounds = bbox(feature) as [number, number, number, number];
-				map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
+				const bounds = getFeatureExtent(feature);
+				if (bounds) map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
 				updateOutline(map, checksum);
 			} else {
 				lockedChecksumRef.current = null;
@@ -644,8 +664,8 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 							const feature = features[0];
 							lockedChecksumRef.current = initialChecksum;
 							setLockedFeature(feature as unknown as maplibregl.MapGeoJSONFeature);
-							const bounds = bbox(feature) as [number, number, number, number];
-							map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
+							const bounds = getFeatureExtent(feature);
+							if (bounds) map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
 							updateOutline(map, initialChecksum);
 							return true;
 						}

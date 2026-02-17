@@ -113,6 +113,24 @@ SELECT
     parent_keys
 FROM
     {{ ref('custom_land') }}
+UNION ALL
+SELECT
+    '{{ var("NATION") }}' as land_id,
+    '{{ var("NATION") }}' as land_type,
+    (SELECT array_agg(distinct code) FROM {{ ref('departement') }}) as departements,
+    ST_Union(geom) as geom,
+    ST_Union(simple_geom) as simple_geom,
+    sum(surface) as surface,
+    'France' as name,
+    ARRAY[
+        '{{ var("REGION") }}',
+        '{{ var("DEPARTEMENT") }}',
+        '{{ var("EPCI") }}',
+        '{{ var("SCOT") }}'
+    ] as child_land_types,
+    array[]::varchar[] as parent_keys
+FROM
+    {{ ref('region') }}
 
 ORDER BY land_type
 DESC

@@ -42,3 +42,7 @@ union all
 select
     code as land_id, '{{ var("CUSTOM") }}' as land_type, {{ common_fields }}
 from {{ ref("artif_custom_land_by_couverture") }}
+union all
+select
+    code as land_id, '{{ var("NATION") }}' as land_type, {{ common_fields }}
+from {{ ref("artif_nation_by_couverture") }}

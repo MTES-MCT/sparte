@@ -91,3 +91,12 @@ SELECT
     {{ fields_to_query }}
 FROM
     {{ ref('period_consommation_custom_land') }}
+UNION
+SELECT
+    nation as land_id,
+    '{{ var('NATION') }}' as land_type,
+    '{{ var('NATION') }}' as comparison_level,
+    '{{ var('NATION') }}' as comparison_id,
+    {{ fields_to_query }}
+FROM
+    {{ ref('period_consommation_nation') }}

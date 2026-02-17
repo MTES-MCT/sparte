@@ -48,6 +48,7 @@ select
     stats.flux_imper_net_percent,
     stats.flux_imper_couverture_composition,
     stats.flux_imper_usage_composition,
+    Box2D(st_transform(zonage.geom, 4326))::text as extent,
     st_transform(zonage.geom, 4326) as geom,
     zonage.commune_code as "{{ var('COMMUNE') }}",
     commune.epci as "{{ var('EPCI') }}",
