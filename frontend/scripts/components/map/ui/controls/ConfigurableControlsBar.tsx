@@ -13,6 +13,7 @@ const Bar = styled.div`
 	align-items: center;
 	gap: 0.5rem;
 	padding: 0.25rem 0.6rem;
+	padding-top: 0;
 	background: rgba(255, 255, 255, 0.9);
 	backdrop-filter: blur(4px);
 	border-radius: 4px;

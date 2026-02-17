@@ -14,21 +14,31 @@ import { bbox } from "@turf/turf";
 import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
 import { Tooltip } from "react-tooltip";
 
-const MapRow = styled.div`
-	display: flex;
-	flex-wrap: wrap;
-	align-items: stretch;
+const MapWithSidePanel = styled.div`
+	.maplibregl-ctrl-top-right {
+		right: calc(34% + 1.5rem);
+	}
 `;
 
 const SidePanel = styled.div`
-	position: relative;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: calc(33% + 1.5rem);
+	height: 100%;
 	background: #f6f6f6;
-	border-radius: 4px;
+	border-left: 1.5rem solid #f8f9ff;
 	padding: 1rem;
 	font-size: 0.85rem;
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
+	z-index: 5;
+	box-sizing: border-box;
+
+	@media (max-width: 768px) {
+		width: 100%;
+	}
 `;
 
 const SidePanelPlaceholder = styled.div`
@@ -36,6 +46,7 @@ const SidePanelPlaceholder = styled.div`
 	font-style: italic;
 	text-align: center;
 	padding: 2rem 1rem;
+	margin: auto 0;
 `;
 
 const CloseButton = styled.button`
@@ -198,6 +209,19 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 		mapRef.current = map;
 		onMapReady?.(map);
 
+		// Offset the map center to account for the side panel
+		requestAnimationFrame(() => {
+			const containerWidth = map.getContainer().clientWidth;
+			const remInPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+			const sidePanelWidth = Math.round(containerWidth * 0.33 + 1.5 * remInPx);
+			map.setPadding({ top: 0, bottom: 0, left: 0, right: sidePanelWidth });
+			if (landData.bounds) {
+				map.fitBounds(landData.bounds as [number, number, number, number], {
+					padding: { top: 120, bottom: 120, left: 60, right: 60 }, animate: false,
+				});
+			}
+		});
+
 		// GeoJSON highlight source/layer for OCS GE features
 		map.addSource(OCSGE_HIGHLIGHT_SOURCE, { type: "geojson", data: emptyFC });
 		map.addLayer({
@@ -247,15 +271,12 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 				lockedOcsgeFeatureRef.current = feature;
 				setLockedFeature(feature);
 				const bounds = bbox(feature) as [number, number, number, number];
-				map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
+				map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
 				updateOcsgeHighlight(map, feature);
 			} else {
 				lockedOcsgeFeatureRef.current = null;
 				setLockedFeature(null);
 				updateOcsgeHighlight(map, null);
-				if (landData.bounds) {
-					map.fitBounds(landData.bounds as [number, number, number, number], { padding: 80 });
-				}
 			}
 		});
 	}, [landData.bounds, updateOcsgeHighlight, onMapReady, mode]);
@@ -370,7 +391,7 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 				<InfoRow>
 					<InfoLabel>Surface</InfoLabel>
 					<InfoValue>
-						{surface > 0 ? `${formatNumber({ number: surface })} m²` : "\u2014"}
+						{surface > 0 ? `${formatNumber({ number: surface / 10000 })} ha (${formatNumber({ number: surface })} m²)` : "\u2014"}
 					</InfoValue>
 				</InfoRow>
 
@@ -462,8 +483,8 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 													key={`${cs}-${us}`}
 													$artif={positif}
 													$active={isActive}
-													data-tooltip-id="matrix-tooltip"
-													data-tooltip-html={`${getCouvertureLabel(cs)}<br/>${getUsageLabel(us)}<br/><b>${positif ? labelPositif : labelNegatif}</b>`}
+													{...(isActive ? { id: "matrix-active-cell", "data-tooltip-id": "matrix-active-tooltip" } : { "data-tooltip-id": "matrix-tooltip" })}
+													data-tooltip-html={`<span style="display:inline-block;width:8px;height:8px;background:${(COUVERTURE_COLORS as Record<string, string>)[cs] || '#ccc'};margin-right:4px;vertical-align:middle;border-radius:1px"></span>${getCouvertureLabel(cs)}<br/><span style="display:inline-block;width:8px;height:8px;background:${(USAGE_COLORS as Record<string, string>)[us] || '#ccc'};margin-right:4px;vertical-align:middle;border-radius:1px"></span>${getUsageLabel(us)}<br/><b>${positif ? labelPositif : labelNegatif}</b>`}
 												/>
 											);
 										})}
@@ -472,6 +493,13 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 							</MiniMatrixGrid>
 							</MiniMatrixOuter>
 							<Tooltip id="matrix-tooltip" className="fr-text--xs" />
+							<Tooltip
+								key={`${codeCs}-${codeUs}`}
+								id="matrix-active-tooltip"
+								className="fr-text--xs"
+								isOpen={true}
+								anchorSelect="#matrix-active-cell"
+							/>
 							<MiniMatrixLegend>
 								<MiniMatrixLegendItem>
 									<MiniMatrixLegendDot $color="#FA4B42" />
@@ -490,16 +518,13 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 	};
 
 	return (
-		<MapRow className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-lg-8">
-				<BaseMap
-					id={`ocsge-object-${mode}-map`}
-					config={config}
-					landData={landData}
-					onMapLoad={handleMapLoad}
-				/>
-			</div>
-			<div className="fr-col-12 fr-col-lg-4">
+		<MapWithSidePanel>
+			<BaseMap
+				id={`ocsge-object-${mode}-map`}
+				config={config}
+				landData={landData}
+				onMapLoad={handleMapLoad}
+			>
 				<SidePanel>
 					{lockedFeature && !noControl && (
 						<CloseButton
@@ -509,9 +534,6 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 								setLockedFeature(null);
 								if (mapRef.current) {
 									updateOcsgeHighlight(mapRef.current, null);
-									if (landData.bounds) {
-										mapRef.current.fitBounds(landData.bounds as [number, number, number, number], { padding: 80 });
-									}
 								}
 							}}
 						>
@@ -520,7 +542,7 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 					)}
 					{renderSidePanelContent()}
 				</SidePanel>
-			</div>
-		</MapRow>
+			</BaseMap>
+		</MapWithSidePanel>
 	);
 };

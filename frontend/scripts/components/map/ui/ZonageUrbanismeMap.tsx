@@ -4,7 +4,7 @@ import type maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
+
 import { getLastMillesimeIndex, getFirstDepartement, getCouvertureLabel, getUsageLabel } from "../utils/ocsge";
 import { OCSGE_LAYER_NOMENCLATURES, COUVERTURE_COLORS, USAGE_COLORS } from "../constants/ocsge_nomenclatures";
 import { NomenclatureType } from "../types/ocsge";
@@ -14,7 +14,7 @@ import { bbox } from "@turf/turf";
 import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
 import type { ControlsManager } from "../controls/ControlsManager";
 import ChartDetails from "@components/charts/ChartDetails";
-import { ZoneTypeBadge, ZONE_TYPE_COLORS } from "@components/ui/ZoneTypeBadge";
+import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 import { SegmentedControl } from "@codegouvfr/react-dsfr/SegmentedControl";
 
 interface CompositionItem {
@@ -22,22 +22,31 @@ interface CompositionItem {
 	surface: number;
 }
 
-const MapRow = styled.div`
-	display: flex;
-	flex-wrap: wrap;
-	align-items: stretch;
-`;
-
 const SidePanel = styled.div`
-	position: relative;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: calc(33% + 1.5rem);
+	height: 100%;
 	background: #f6f6f6;
-	border-radius: 4px;
+	border-left: 1.5rem solid #f8f9ff;
 	padding: 1rem;
 	font-size: 0.85rem;
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
-	flex: 1;
+	z-index: 5;
+	box-sizing: border-box;
+
+	@media (max-width: 768px) {
+		width: 100%;
+	}
+`;
+
+const MapWithSidePanel = styled.div`
+	.maplibregl-ctrl-top-right {
+		right: calc(34% + 1.5rem);
+	}
 `;
 
 const SidePanelPlaceholder = styled.div`
@@ -45,6 +54,7 @@ const SidePanelPlaceholder = styled.div`
 	font-style: italic;
 	text-align: center;
 	padding: 2rem 1rem;
+	margin: auto 0;
 `;
 
 const CloseButton = styled.button`
@@ -468,6 +478,19 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		mapRef.current = map;
 		onMapReady?.(map);
 
+		// Offset the map center to account for the side panel (33% on the right)
+		requestAnimationFrame(() => {
+			const containerWidth = map.getContainer().clientWidth;
+			const remInPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+			const sidePanelWidth = Math.round(containerWidth * 0.33 + 1.5 * remInPx);
+			map.setPadding({ top: 0, bottom: 0, left: 0, right: sidePanelWidth });
+			if (landData.bounds) {
+				map.fitBounds(landData.bounds as [number, number, number, number], {
+					padding: { top: 120, bottom: 120, left: 60, right: 60 }, animate: false,
+				});
+			}
+		});
+
 		const zonageLayerPrefix = "zonage-urbanisme-layer";
 		let hoveredChecksum: string | null = null;
 		let lastMoveTime = 0;
@@ -580,14 +603,14 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				lockedChecksumRef.current = checksum;
 				setLockedFeature(feature);
 				const bounds = bbox(feature) as [number, number, number, number];
-				map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
+				map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
 				updateOutline(map, checksum);
 			} else {
 				lockedChecksumRef.current = null;
 				setLockedFeature(null);
 				updateOutline(map, null);
 				if (landData.bounds) {
-					map.fitBounds(landData.bounds as [number, number, number, number], { padding: 80 });
+					map.fitBounds(landData.bounds as [number, number, number, number], { padding: 60 });
 				}
 			}
 		});
@@ -620,9 +643,9 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 						if (features.length > 0) {
 							const feature = features[0];
 							lockedChecksumRef.current = initialChecksum;
-							setLockedFeature(feature);
+							setLockedFeature(feature as unknown as maplibregl.MapGeoJSONFeature);
 							const bounds = bbox(feature) as [number, number, number, number];
-							map.fitBounds(bounds, { padding: 80, maxZoom: 17 });
+							map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
 							updateOutline(map, initialChecksum);
 							return true;
 						}
@@ -786,7 +809,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		if (!displayedFeature) {
 			return (
 				<SidePanelPlaceholder>
-					Survolez ou cliquez sur une zone pour afficher ses informations
+					Cliquez sur un zonage pour afficher ses informations
 				</SidePanelPlaceholder>
 			);
 		}
@@ -850,6 +873,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 								{
 									label: "ha",
 									nativeInputProps: {
+										defaultChecked: true,
 										checked: unit === "ha",
 										onChange: () => setUnit("ha"),
 									},
@@ -947,41 +971,38 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 	return (
 		<>
-		<MapRow className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-lg-8" style={{ position: "relative" }}>
-				<BaseMap
-					id={`zonage-urbanisme-${mode}-map`}
-					config={config}
-					landData={landData}
-					noControl={noControl}
-					onMapLoad={handleMapLoad}
-					onControlsReady={handleControlsReady}
-				/>
-				<OcsgeTooltip ref={tooltipRef} style={{ display: "none" }} />
-			</div>
-			<div className="fr-col-12 fr-col-lg-4" style={{ display: "flex", flexDirection: "column" }}>
-				<SidePanel>
-					{lockedFeature && !noControl && (
-						<CloseButton
-							title="Désélectionner la zone"
-							onClick={() => {
-								lockedChecksumRef.current = null;
-								setLockedFeature(null);
-								if (mapRef.current) {
-									updateOutline(mapRef.current, null);
-									if (landData.bounds) {
-										mapRef.current.fitBounds(landData.bounds as [number, number, number, number], { padding: 80 });
-									}
+		<MapWithSidePanel>
+		<BaseMap
+			id={`zonage-urbanisme-${mode}-map`}
+			config={config}
+			landData={landData}
+			noControl={noControl}
+			onMapLoad={handleMapLoad}
+			onControlsReady={handleControlsReady}
+		>
+			<OcsgeTooltip ref={tooltipRef} style={{ display: "none" }} />
+			<SidePanel>
+				{lockedFeature && !noControl && (
+					<CloseButton
+						title="Désélectionner la zone"
+						onClick={() => {
+							lockedChecksumRef.current = null;
+							setLockedFeature(null);
+							if (mapRef.current) {
+								updateOutline(mapRef.current, null);
+								if (landData.bounds) {
+									mapRef.current.fitBounds(landData.bounds as [number, number, number, number], { padding: 60 });
 								}
-							}}
-						>
-							✕
-						</CloseButton>
-					)}
-					{renderSidePanelContent()}
-				</SidePanel>
-			</div>
-		</MapRow>
+							}
+						}}
+					>
+						✕
+					</CloseButton>
+				)}
+				{renderSidePanelContent()}
+			</SidePanel>
+		</BaseMap>
+		</MapWithSidePanel>
 		<ChartDetails
 			sources={['ocsge', 'gpu']}
 			chartId={`zonage-urbanisme-${mode}-map-details`}

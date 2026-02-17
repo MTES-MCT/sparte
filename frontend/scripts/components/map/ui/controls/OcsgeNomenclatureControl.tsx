@@ -10,7 +10,7 @@ export const OcsgeNomenclatureControl: React.FC<ControlUIProps> = (props) => {
 
     return (
         <Select
-            label="Nomenclature"
+            label="Affichage"
             className={"fr-label--sm"}
             nativeSelectProps={{
                 value: props.value as 'couverture' | 'usage',

@@ -11,7 +11,7 @@ const GroupContainer = styled.div`
 const ControlContainer = styled.div`
     padding: 1.3rem;
     border-bottom: 1px solid #EBEBEC;
-    
+
     &:last-child {
         border-bottom: none;
     }
