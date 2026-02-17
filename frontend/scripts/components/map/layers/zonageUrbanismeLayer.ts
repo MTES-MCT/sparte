@@ -6,26 +6,19 @@ import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
 import { area } from "@turf/turf";
 import { ZonageType } from "scripts/types/ZonageType";
+import { ZONE_TYPE_COLORS } from "@components/ui/ZoneTypeBadge";
 
 export type ZonageUrbanismeMode = "artif" | "imper";
-
-const ZONAGE_TYPE_COLORS: Record<string, string> = {
-	U: "#E63946",
-	AU: "#F4A261",
-	N: "#2A9D8F",
-	A: "#E9C46A",
-};
 
 export class ZonageUrbanismeLayer extends BaseLayer {
 	private millesimeIndex: number;
 	private departement: string;
-	private mode: ZonageUrbanismeMode;
 	private landData?: LandDetailResultType;
 
 	constructor(
 		millesimeIndex: number,
 		departement: string,
-		mode: ZonageUrbanismeMode,
+		_mode: ZonageUrbanismeMode,
 		landData?: LandDetailResultType,
 	) {
 		super({
@@ -37,7 +30,6 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 		});
 		this.millesimeIndex = millesimeIndex;
 		this.departement = departement;
-		this.mode = mode;
 		this.landData = landData;
 	}
 
@@ -55,7 +47,7 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 		const sourceLayer = this.getSourceLayerName();
 
 		return [
-			// Transparent fill layer for hover detection
+			// Colored fill layer
 			{
 				id: this.options.id,
 				type: "fill" as const,
@@ -64,8 +56,16 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 				...(filter && { filter }),
 				layout: { visibility },
 				paint: {
-					"fill-color": "transparent",
-					"fill-opacity": 0,
+					"fill-color": [
+						"match",
+						["get", "type_zone"],
+						"U", "#E63946",
+						"AU", "#F4A261",
+						"N", "#2A9D8F",
+						"A", "#E9C46A",
+						"#C8C8C8",
+					],
+					"fill-opacity": 1,
 				},
 			} as LayerSpecification,
 			// Visible outline
@@ -78,8 +78,8 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 				layout: { visibility },
 				paint: {
 					"line-color": "#000000",
-					"line-width": 1,
-					"line-opacity": this.options.opacity ?? 0.7,
+					"line-width": 0.2,
+					"line-opacity": 0.4,
 				},
 			} as LayerSpecification,
 			// Highlight outline for hovered/locked features
@@ -102,7 +102,6 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 	extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {
 		if (features.length === 0) return [];
 
-		const surfaceField = this.mode === "artif" ? "artif_surface" : "imper_surface";
 		const surfacesByType: Record<string, number> = {};
 
 		for (const feature of features) {
@@ -123,7 +122,7 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 			.map(([typeZone, surface]) => ({
 				code: typeZone,
 				label: ZonageType[typeZone as keyof typeof ZonageType] || typeZone,
-				color: ZONAGE_TYPE_COLORS[typeZone] || "rgb(200, 200, 200)",
+				color: ZONE_TYPE_COLORS[typeZone] || "rgb(200, 200, 200)",
 				value: surface,
 				percent: (surface / totalSurface) * 100,
 			}))

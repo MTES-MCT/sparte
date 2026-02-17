@@ -2,24 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { ZonageType } from "scripts/types/ZonageType";
-
-const ZONE_TYPE_COLORS: Record<string, string> = {
-	U: "#E63946",
-	AU: "#F4A261",
-	N: "#2A9D8F",
-	A: "#E9C46A",
-};
-
-const ZoneTypeBadge = styled.span<{ $color: string }>`
-	display: inline-block;
-	padding: 2px 6px;
-	border-radius: 3px;
-	background-color: ${({ $color }) => $color};
-	color: white;
-	font-weight: 600;
-	font-size: 0.8rem;
-	margin-right: 6px;
-`;
+import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 
 const PercentBarTrack = styled.div`
 	height: 8px;
@@ -81,9 +64,7 @@ export const ArtificialisationZonage: React.FC<ArtificialisationZonageProps> = (
 									.map((a: ZonageData) => (
 										<tr key={`${a.zonage_type}_${a.millesime_index}`}>
 											<td>
-												<ZoneTypeBadge $color={ZONE_TYPE_COLORS[a.zonage_type] || "#999"}>
-													{a.zonage_type}
-												</ZoneTypeBadge>
+												<ZoneTypeBadge type={a.zonage_type} />{" "}
 												<b>{ZonageType[a.zonage_type]}</b>
 											</td>
 											<td>

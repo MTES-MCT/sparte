@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState, useMemo } from "react";
+import React, { useRef, useCallback, useState, useMemo, useEffect } from "react";
 import styled from "styled-components";
 import type maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
@@ -14,6 +14,7 @@ import { bbox } from "@turf/turf";
 import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
 import type { ControlsManager } from "../controls/ControlsManager";
 import ChartDetails from "@components/charts/ChartDetails";
+import { ZoneTypeBadge, ZONE_TYPE_COLORS } from "@components/ui/ZoneTypeBadge";
 import { SegmentedControl } from "@codegouvfr/react-dsfr/SegmentedControl";
 
 interface CompositionItem {
@@ -76,17 +77,6 @@ const HeaderRow = styled.div`
 	justify-content: space-between;
 	gap: 8px;
 	padding-right: 24px;
-`;
-
-const ZoneTypeBadge = styled.span<{ $color: string }>`
-	display: inline-block;
-	padding: 2px 8px;
-	border-radius: 3px;
-	background-color: ${({ $color }) => $color};
-	color: white;
-	font-weight: 600;
-	font-size: 0.8rem;
-	margin-right: 8px;
 `;
 
 const InfoRow = styled.div`
@@ -207,14 +197,21 @@ const FluxNetRow = styled(InfoRow)`
 	padding-top: 3px;
 `;
 
+const OcsgeTooltip = styled.div`
+	position: absolute;
+	pointer-events: none;
+	background: rgba(0, 0, 0, 0.8);
+	color: #fff;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 0.75rem;
+	white-space: nowrap;
+	z-index: 10;
+	transform: translate(12px, -50%);
+`;
+
 type SurfaceUnit = "ha" | "m2";
 
-const ZONE_TYPE_COLORS: Record<string, string> = {
-	U: "#E63946",
-	AU: "#F4A261",
-	N: "#2A9D8F",
-	A: "#E9C46A",
-};
 
 function parseComposition(raw: unknown): CompositionItem[] {
 	if (!raw) return [];
@@ -394,6 +391,12 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	const ocsgeLayerType = mode === "artif" ? "artificialisation" : "impermeabilisation";
 	const nomenclatureControlId = `${ocsgeLayerType}-nomenclature`;
 	const controlsManagerRef = useRef<ControlsManager | null>(null);
+	const nomenclatureRef = useRef<NomenclatureType>(nomenclature);
+	const tooltipRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		nomenclatureRef.current = nomenclature;
+	}, [nomenclature]);
 
 	const handleControlsReady = useCallback((manager: ControlsManager) => {
 		controlsManagerRef.current = manager;
@@ -414,21 +417,51 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 	const updateOutline = useCallback((map: maplibregl.Map, hoveredChecksum: string | null) => {
 		const locked = lockedChecksumRef.current;
-		const checksums = [locked, hoveredChecksum].filter(Boolean) as string[];
-		const filter: maplibregl.FilterSpecification = checksums.length === 0
-			? ["==", ["get", "checksum"], ""]
-			: checksums.length === 1
-				? ["==", ["get", "checksum"], checksums[0]]
-				: ["in", ["get", "checksum"], ["literal", checksums]];
 
 		const style = map.getStyle();
 		if (!style) return;
+
+		// Update highlight outline layers (only for locked/selected)
+		const highlightFilter: maplibregl.FilterSpecification = locked
+			? ["==", ["get", "checksum"], locked]
+			: ["==", ["get", "checksum"], ""];
 		const highlightLayers = style.layers
 			.filter(l => l.id.startsWith("zonage-urbanisme-layer-highlight"))
 			.map(l => l.id);
 		for (const layerId of highlightLayers) {
-			map.setFilter(layerId, filter);
+			map.setFilter(layerId, highlightFilter);
 		}
+
+		// Set fill opacity: 0% on selected, 50% on hovered
+		for (const layerId of style.layers.filter(l => l.id === "zonage-urbanisme-layer").map(l => l.id)) {
+			if (locked && hoveredChecksum && hoveredChecksum !== locked) {
+				map.setPaintProperty(layerId, "fill-opacity", [
+					"case",
+					["==", ["get", "checksum"], locked],
+					0,
+					["==", ["get", "checksum"], hoveredChecksum],
+					0.5,
+					1,
+				]);
+			} else if (locked) {
+				map.setPaintProperty(layerId, "fill-opacity", [
+					"case",
+					["==", ["get", "checksum"], locked],
+					0,
+					1,
+				]);
+			} else if (hoveredChecksum) {
+				map.setPaintProperty(layerId, "fill-opacity", [
+					"case",
+					["==", ["get", "checksum"], hoveredChecksum],
+					0.5,
+					1,
+				]);
+			} else {
+				map.setPaintProperty(layerId, "fill-opacity", 1);
+			}
+		}
+
 	}, []);
 
 	const handleMapLoad = useCallback((map: maplibregl.Map) => {
@@ -459,6 +492,35 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			return map.queryRenderedFeatures(undefined, { layers });
 		};
 
+		const ocsgeLayerId = `${ocsgeLayerType}-layer`;
+		const nonArtifLabel = mode === "artif" ? "Non artificialisé" : "Non imperméabilisé";
+
+		const queryOcsgeFeatures = (point: maplibregl.PointLike): maplibregl.MapGeoJSONFeature[] => {
+			const style = map.getStyle();
+			if (!style) return [];
+			const layers = style.layers.filter(l => l.id === ocsgeLayerId).map(l => l.id);
+			if (layers.length === 0) return [];
+			return map.queryRenderedFeatures(point, { layers });
+		};
+
+		const showTooltip = (x: number, y: number, text: string, color?: string) => {
+			const el = tooltipRef.current;
+			if (!el) return;
+			if (color) {
+				el.innerHTML = `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${color};margin-right:6px;vertical-align:middle"></span>${text}`;
+			} else {
+				el.textContent = text;
+			}
+			el.style.left = `${x}px`;
+			el.style.top = `${y}px`;
+			el.style.display = "block";
+		};
+
+		const hideTooltip = () => {
+			const el = tooltipRef.current;
+			if (el) el.style.display = "none";
+		};
+
 		map.on("mousemove", (e) => {
 			const now = performance.now();
 			if (now - lastMoveTime < 10) return;
@@ -479,6 +541,34 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				hoveredChecksum = null;
 				setHoveredFeature(null);
 				updateOutline(map, null);
+			}
+
+			// OCSGE tooltip when a zonage is selected
+			if (lockedChecksumRef.current) {
+				// Only show tooltip if the topmost zonage at cursor IS the selected one
+				const topZonage = features.length > 0 ? features[0] : null;
+				const topIsLocked = topZonage?.properties?.checksum === lockedChecksumRef.current;
+
+				if (topIsLocked) {
+					const ocsgeFeatures = queryOcsgeFeatures(e.point);
+					if (ocsgeFeatures.length > 0) {
+						const props = ocsgeFeatures[0].properties;
+						const nom = nomenclatureRef.current;
+						const code = nom === "couverture" ? props?.code_cs : props?.code_us;
+						const colorMap = nom === "couverture" ? COUVERTURE_COLORS : USAGE_COLORS;
+						const color = code ? (colorMap as Record<string, string>)[code] : undefined;
+						const label = code
+							? (nom === "couverture" ? getCouvertureLabel(code) : getUsageLabel(code))
+							: null;
+						showTooltip(e.point.x, e.point.y, label || nonArtifLabel, color);
+					} else {
+						showTooltip(e.point.x, e.point.y, nonArtifLabel);
+					}
+				} else {
+					hideTooltip();
+				}
+			} else {
+				hideTooltip();
 			}
 		});
 
@@ -562,17 +652,56 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 	const config = useMemo(() => defineMapConfig({
 		sources: [
-			...BASE_SOURCES,
+			{ type: "orthophoto" },
+			{ type: "emprise" },
 			{ type: "ocsge" },
 			{ type: "zonage-urbanisme" },
 		],
 		layers: [
-			...BASE_LAYERS,
-			{ type: ocsgeLayerType, nomenclature, stats: true },
+			{ type: "orthophoto" },
+			{ type: "emprise" },
+			{ type: ocsgeLayerType, nomenclature },
 			{ type: "zonage-urbanisme", mode },
 		],
 		controlGroups: [
-			...BASE_CONTROLS,
+			{
+				id: "orthophoto-group",
+				label: "Fond de carte",
+				description: "Image aérienne du territoire",
+				controls: [
+					{
+						id: "orthophoto-visibility",
+						type: "visibility",
+						targetLayers: ["orthophoto-layer"],
+						defaultValue: true,
+					},
+					{
+						id: "orthophoto-opacity",
+						type: "opacity",
+						targetLayers: ["orthophoto-layer"],
+						defaultValue: 1,
+					},
+				],
+			},
+			{
+				id: "emprise-group",
+				label: "Emprise du territoire",
+				description: "Contour géographique du territoire",
+				controls: [
+					{
+						id: "emprise-visibility",
+						type: "visibility",
+						targetLayers: ["emprise-layer"],
+						defaultValue: true,
+					},
+					{
+						id: "emprise-opacity",
+						type: "opacity",
+						targetLayers: ["emprise-layer"],
+						defaultValue: 1,
+					},
+				],
+			},
 			{
 				id: `${ocsgeLayerType}-group`,
 				label: ocsgeLabel,
@@ -588,7 +717,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 						id: `${ocsgeLayerType}-opacity`,
 						type: "opacity",
 						targetLayers: [`${ocsgeLayerType}-layer`],
-						defaultValue: 0.7,
+						defaultValue: 1,
 					},
 					{
 						id: `${ocsgeLayerType}-millesime`,
@@ -707,9 +836,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				<SidePanelHeader>
 					<HeaderRow>
 						<div>
-							<ZoneTypeBadge $color={ZONE_TYPE_COLORS[typeZone] || "#999"}>
-								{typeZone}
-							</ZoneTypeBadge>
+							<ZoneTypeBadge type={typeZone} />{" "}
 							<strong>{ZonageType[typeZone as keyof typeof ZonageType] || typeZone}</strong>
 							{libelle && (
 								<span style={{ color: "#666" }}> — {libelle}</span>
@@ -821,7 +948,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	return (
 		<>
 		<MapRow className="fr-grid-row fr-grid-row--gutters">
-			<div className="fr-col-12 fr-col-lg-8">
+			<div className="fr-col-12 fr-col-lg-8" style={{ position: "relative" }}>
 				<BaseMap
 					id={`zonage-urbanisme-${mode}-map`}
 					config={config}
@@ -830,6 +957,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					onMapLoad={handleMapLoad}
 					onControlsReady={handleControlsReady}
 				/>
+				<OcsgeTooltip ref={tooltipRef} style={{ display: "none" }} />
 			</div>
 			<div className="fr-col-12 fr-col-lg-4" style={{ display: "flex", flexDirection: "column" }}>
 				<SidePanel>

@@ -18,6 +18,7 @@ import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
+import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -227,15 +228,22 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 				<h2 className="fr-mt-7w">
 					Imperméabilisation des zonages d'urbanisme
 				</h2>
+				<p className="fr-text--sm fr-mb-2w">
+					Le tableau ci-dessous et la carte associée croisent les zonages d'urbanisme (PLU/PLUi) avec les données OCS GE pour mesurer le taux d'imperméabilisation de chaque zone.
+				</p>
+				<ImpermeabilisationZonage
+					imperZonageIndex={imperZonageIndex}
+				/>
+				<div className="fr-mt-4w" />
+				<p className="fr-text--sm fr-mb-2w">
+					La carte superpose les zonages d'urbanisme et l'occupation du sol. Les zonages sont colorés par type&nbsp;:
+					{" "}<ZoneTypeBadge type="U" /> <ZoneTypeBadge type="AU" /> <ZoneTypeBadge type="N" /> <ZoneTypeBadge type="A" />.
+					<br />Cliquez sur un zonage pour révéler l'occupation du sol en dessous et survolez les objets OCS GE pour identifier leur couverture ou usage.
+				</p>
 				{land_type !== LandType.REGION && has_zonage && (
 					<ZonageUrbanismeMap
 						landData={landData}
 						mode="imper"
-						zonageTable={
-							<ImpermeabilisationZonage
-								imperZonageIndex={imperZonageIndex}
-							/>
-						}
 					/>
 				)}
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
