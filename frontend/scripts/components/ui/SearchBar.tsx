@@ -1,6 +1,6 @@
 import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useSearchTerritoryQuery, useCreateProjectForStatsMutation } from '@services/api';
+import { useSearchTerritoryQuery } from '@services/api';
 
 import useDebounce from '@hooks/useDebounce';
 import Loader from '@components/ui/Loader';
@@ -206,12 +206,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         setData(undefined);
     };
 
-    const [createProjectForStats] = useCreateProjectForStatsMutation();
-
     const handleTerritoryClick = (territory: Territory) => {
-        if (!onTerritorySelect) {
-            createProjectForStats({ land_type: territory.land_type, land_id: territory.source_id });
-        }
         onTerritorySelect ? onTerritorySelect(territory) : defaultBehavior(territory);
         handleReset();
     };

@@ -68,9 +68,15 @@ export function buildFooter() {
 export function buildHeader(isAuthenticated: boolean) {
     const menuItems: MenuItem[] = [
         { label: "Centre d'aide", url: FAQ_URL, target: "_blank", shouldDisplay: true },
-        { label: "Mes diagnostics", url: "/diagnostic/mes-diagnostics", shouldDisplay: isAuthenticated },
-        { label: "Mon compte", url: "/users/profile/", shouldDisplay: isAuthenticated },
-        { label: "Se déconnecter", url: "/users/signout/", shouldDisplay: isAuthenticated },
+        {
+            label: "Mon compte",
+            shouldDisplay: isAuthenticated,
+            subMenu: [
+                { label: "Mes diagnostics", url: "/diagnostic/mes-diagnostics" },
+                { label: "Profil", url: "/users/profile/" },
+                { label: "Déconnexion", url: "/users/signout/" },
+            ],
+        },
         { label: "Se connecter", url: "/users/signin/", shouldDisplay: !isAuthenticated },
         { label: "S'inscrire", url: "/users/signup/", shouldDisplay: !isAuthenticated },
     ];
@@ -88,9 +94,7 @@ export function buildHeader(isAuthenticated: boolean) {
                 height: "50px",
             },
         ],
-        search: {
-            createUrl: "/diagnostic/nouveau",
-        },
+        search: {},
         menuItems,
     };
 }

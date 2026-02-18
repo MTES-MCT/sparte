@@ -10,7 +10,6 @@ __all__ = [
     "RNUPackageRequest",
     "ReportDraft",
     "UserLandPreference",
-    "create_project_api_view",
 ]
 
 
@@ -22,7 +21,3 @@ from .RNUPackage import RNUPackage
 from .RNUPackageRequest import RNUPackageRequest
 from .user_land_preference import UserLandPreference
 from .utils import user_directory_path
-
-# isort: split
-
-from .create import create_project_api_view

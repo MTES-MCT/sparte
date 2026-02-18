@@ -178,7 +178,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => 
     const isDGALNMember = currentUser?.groups?.includes('DGALN') ?? false;
 
     const openModal = () => {
-        setModalTargetInput('');
+        setModalTargetInput(target_custom != null ? String(target_custom) : '');
         setShowCustomTargetModal(true);
     };
 

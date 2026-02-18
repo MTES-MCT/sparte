@@ -74,9 +74,7 @@ export type ProjectDetailResultType = {
   };
   header: {
     logos: Logo[];
-    search: {
-      createUrl: string;
-    };
+    search: Record<string, never>;
     menuItems: MenuItem[];
   };
 };

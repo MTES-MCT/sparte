@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import getCsrfToken from "@utils/csrf";
-import { UseGetProjectQueryType, UserLandPreferenceResultType } from "./types/project";
+import { UserLandPreferenceResultType } from "./types/project";
 import { UseLandDetailType } from "./types/land";
 import { ArtifZonageIndexType } from "./types/artif_zonage";
 import { UseLandFrichesStatutType } from "./types/land_friches_statut";
@@ -30,12 +30,6 @@ export const djangoApi = createApi({
 	baseQuery: fetchBaseQuery({ credentials: "include" }),
 	keepUnusedDataFor: 600,
 	endpoints: (builder) => ({
-		getProjectDownloadLinks: builder.query({
-			query: (projectId) => ({
-				url: `/diagnostic/${projectId}/telechargement-liens`,
-				method: "GET",
-			}),
-		}),
 		getLandConsoStats: builder.query({
 			query: ({ land_type, land_id, from_year, to_year }) => {
 				return `/api/landconsostats/?${new URLSearchParams({
@@ -155,10 +149,6 @@ export const djangoApi = createApi({
 		getLandChildrenGeom: builder.query({
 			query: ({ land_type, land_id, child_land_type }) => `/api/landchildrengeom/${land_type}/${land_id}/${child_land_type}`,
 		}),
-		getProject: builder.query({
-			query: (id) => `/diagnostic/${id}/detail`,
-			providesTags: (result, error, id) => [{ type: 'Project', id }],
-		}),
 		searchTerritory: builder.query({
 			query: (needle) => {
 				const csrfToken = getCsrfToken();
@@ -214,20 +204,6 @@ export const djangoApi = createApi({
 				};
 			},
 			invalidatesTags: (result, error, { land_type, land_id }) => [{ type: 'Preference', id: `${land_type}_${land_id}` }],
-		}),
-		createProjectForStats: builder.mutation<
-			{ id: number },
-			{ land_type: string; land_id: string }
-		>({
-			query: ({ land_type, land_id }) => {
-				const csrfToken = getCsrfToken();
-				return {
-					url: '/diagnostic/nouveau',
-					method: 'POST',
-					body: { land_type, land_id },
-					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-				};
-			},
 		}),
 		startExportPdf: builder.mutation<{ jobId: string }, { draftId: string }>({
 			query: ({ draftId }) => {
@@ -300,20 +276,17 @@ export const djangoApi = createApi({
 			query: () => '/api/me/',
 		}),
 	}),
-	tagTypes: ['Project', 'ReportDraft', 'Preference'],
+	tagTypes: ['ReportDraft', 'Preference'],
 });
 
-const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
 const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
 const useGetUserLandPreferenceQuery = djangoApi.useGetUserLandPreferenceQuery;
 const useUpdatePreferenceTarget2031Mutation = djangoApi.useUpdatePreferenceTarget2031Mutation;
 const useUpdatePreferenceComparisonLandsMutation = djangoApi.useUpdatePreferenceComparisonLandsMutation;
-const useCreateProjectForStatsMutation = djangoApi.useCreateProjectForStatsMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
-const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
 const useGetEnvironmentQuery: UseEnvTypes = djangoApi.useGetEnvironmentQuery;
 const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
 const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
@@ -345,7 +318,6 @@ export {
 	useGetDepartementListQuery,
 	useGetEnvironmentQuery,
 	useSearchTerritoryQuery,
-	useGetProjectQuery,
 	useGetChartConfigQuery,
 	useGetLandQuery,
 	useGetArtifZonageIndexQuery,
@@ -359,10 +331,8 @@ export {
 	useGetUserLandPreferenceQuery,
 	useUpdatePreferenceTarget2031Mutation,
 	useUpdatePreferenceComparisonLandsMutation,
-	useCreateProjectForStatsMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
-	useGetProjectDownloadLinksQuery,
 	useGetLandGeomQuery,
 	useGetLandChildrenGeomQuery,
 	useGetLogementVacantAutorisationStatsQuery,

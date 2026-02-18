@@ -28,13 +28,13 @@
                 </div>
                 <div class="fr-header__tools">
                     <div class="fr-header__tools-links">
-                        {% if request.resolver_match.url_name not in 'home,create,home_rapport_local,complete_profile' %}
-                            <div id="react-search-bar" class="search-bar-no-home d-none d-lg-block" data-create-url="{% url 'project:create' %}"></div>
+                        {% if request.resolver_match.url_name not in 'home,home_rapport_local,complete_profile' %}
+                            <div id="react-search-bar" class="search-bar-no-home d-none d-lg-block"></div>
                         {% endif %}
                         <ul class="fr-btns-group">
-                            {% if request.resolver_match.url_name not in 'home,create,home_rapport_local' %}
+                            {% if request.resolver_match.url_name not in 'home,home_rapport_local' %}
                             <li class="d-lg-none d-xl-none">
-                                <a class="fr-btn" href="{% url 'project:create' %}">
+                                <a class="fr-btn" href="/">
                                     Créer un diagnostic
                                 </a>
                             </li>
@@ -50,7 +50,7 @@
                                 <div class="fr-collapse fr-menu" id="menu-mon-compte">
                                     <ul class="fr-menu__list">
                                         <li>
-                                          <a class="fr-nav__link" href="{% url 'project:list' %}">Mes diagnostics</a>
+                                            <a class="fr-nav__link" href="{% url 'project:list' %}">Mes diagnostics</a>
                                         </li>
                                         <li>
                                             <a class="fr-nav__link" href="{% url 'users:profile' %}" target="_self">Profil</a>

@@ -59,7 +59,10 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
     const dispatch = useDispatch<AppDispatch>();
     const { data: landData, error, isLoading } = useGetLandQuery({ land_type: landType, land_id: landId });
     const { data: currentUser } = useGetCurrentUserQuery();
-    const { data: preference } = useGetUserLandPreferenceQuery({ land_type: landType, land_id: landId });
+    const { data: preference } = useGetUserLandPreferenceQuery(
+        { land_type: landData?.land_type ?? landType, land_id: landData?.land_id ?? landId },
+        { skip: !landData },
+    );
 
     useEffect(() => {
         if (landData?.name) {

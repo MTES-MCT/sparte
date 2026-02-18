@@ -1,7 +1,6 @@
 {% extends "index.html" %}
 
 {% load static %}
-{% load sri %}
 
 {% block pagetitle %}
 Mes diagnostics
@@ -9,101 +8,104 @@ Mes diagnostics
 
 {% block content %}
 <div class="fr-container">
-    <div class="d-flex justify-content-between align-items-center fr-mb-2w">
-        <h1>Mes diagnostics</h1>
-        <div class="fr-search-bar" id="header-search" role="search">
-            <input class="fr-input" placeholder="Rechercher" type="search" id="filter-diagnostic-list-input">
-            <button class="fr-btn" title="Rechercher"></button>
-         </div>
-    </div>
+    <h1 class="fr-mb-2w">Mes diagnostics</h1>
     <div class="fr-grid-row fr-grid-row--gutters">
-        {% for project in projects %}
-
+        {% for pref in preferences %}
+        {% if pref.land %}
         <div class="fr-col-12 fr-col-md-12 diagnostic-list-item">
             <div class="fr-card fr-card--horizontal fr-card--sm">
                 <div class="fr-card__body">
                     <div class="fr-card__content fr-pb-1w">
                         <div class="fr-card__title d-flex justify-content-between align-items-center">
-                            <h3 class="diagnostic-list-item-key fr-mb-0" data-key="{{ project.territory_name }}">
-                                {{ project.territory_name }}
+                            <h3 class="fr-mb-0">
+                                {% if pref.is_favorite %}<span class="bi bi-star-fill" style="color: #FFD700;" aria-label="Territoire favori"></span> {% endif %}{{ pref.land.name }}
                             </h3>
-                            <p class="fr-badge fr-badge--sm fr-badge--search">{{ project.get_land_type_display }}</p>
+                            <p class="fr-badge fr-badge--sm fr-badge--search">{{ pref.land.land_type_label }}</p>
                         </div>
                         <div class="fr-card__end fr-mt-0">
                             <ul class="fr-badges-group">
                                 <li>
-                                    <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">
-                                        <span class="bi bi-bullseye fr-mr-1v" aria-hidden="true"></span>
-                                        Maille d'analyse: {{ project.level_label }}
-                                    </p>
-                                </li>
-                                <li>
                                     <p class="fr-badge fr-badge--sm fr-badge--purple-glycine">
                                         <span class="bi bi-bounding-box-circles fr-mr-1v" aria-hidden="true"></span>
-                                        {{ project.area|floatformat:0 }} ha
+                                        {{ pref.land.surface|floatformat:0 }} ha
                                     </p>
                                 </li>
+                                {% if pref.target_2031 != None %}
+                                <li>
+                                    <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">
+                                        <span class="bi bi-bullseye fr-mr-1v" aria-hidden="true"></span>
+                                        Objectif personnalisé : -{{ pref.target_2031 }}%
+                                    </p>
+                                </li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>
                     <div class="fr-card__footer">
                         <div class="d-flex">
-                            <a href="{% url 'project:home' project.land_type_slug project.land_slug %}" class="fr-mr-2w fr-link--text-decoration-none">
+                            <a href="{% url 'project:home' pref.land.land_type_slug pref.land.slug %}" class="fr-mr-2w fr-link--text-decoration-none">
                                 <button class="fr-btn fr-btn--primary fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line">
                                     Accéder au diagnostic
                                 </button>
                             </a>
-                            <a href="{% url 'project:report_target_2031' project.land_type_slug project.land_slug %}" class="fr-link--text-decoration-none">
+                            <a href="{% url 'project:report_target_2031' pref.land.land_type_slug pref.land.slug %}" class="fr-mr-2w fr-link--text-decoration-none">
                                 <button class="fr-btn fr-btn--primary fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line">
                                     Simuler une trajectoire de sobriété foncière
                                 </button>
                             </a>
+                            <a href="{% url 'project:report_downloads' pref.land.land_type_slug pref.land.slug %}" class="fr-mr-2w fr-link--text-decoration-none">
+                                <button class="fr-btn fr-btn--secondary fr-btn--sm">
+                                    <span class="bi bi-file-earmark-plus fr-mr-1v" aria-hidden="true"></span>
+                                    Créer un rapport
+                                </button>
+                            </a>
+                            {% if pref.report_count > 0 %}
+                            <a href="{% url 'project:report_downloads' pref.land.land_type_slug pref.land.slug %}" class="fr-link--text-decoration-none">
+                                <button class="fr-btn fr-btn--secondary fr-btn--sm">
+                                    <span class="bi bi-file-earmark-text fr-mr-1v" aria-hidden="true"></span>
+                                    Voir mes rapports ({{ pref.report_count }})
+                                </button>
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% endif %}
         {% empty %}
         <p class="text-muted">Vous n'avez aucun diagnostic.</p>
         {% endfor %}
     </div>
-    <p id="diagnostic-list-empty-message" hidden>Il n'y a aucun diagnostic correspondant à votre recherche.</p>
+
+    {% if is_paginated %}
+    <nav role="navigation" class="fr-pagination fr-mt-4w" aria-label="Pagination" style="justify-content: center;">
+        <ul class="fr-pagination__list">
+            {% if page_obj.has_previous %}
+            <li>
+                <a class="fr-pagination__link fr-pagination__link--first" href="?page=1" aria-label="Première page">1</a>
+            </li>
+            <li>
+                <a class="fr-pagination__link fr-pagination__link--prev" href="?page={{ page_obj.previous_page_number }}" aria-label="Page précédente">Précédent</a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            <li>
+                <a class="fr-pagination__link {% if page_obj.number == num %}fr-pagination__link--active{% endif %}" href="?page={{ num }}" aria-label="Page {{ num }}" {% if page_obj.number == num %}aria-current="page"{% endif %}>{{ num }}</a>
+            </li>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li>
+                <a class="fr-pagination__link fr-pagination__link--next" href="?page={{ page_obj.next_page_number }}" aria-label="Page suivante">Suivant</a>
+            </li>
+            <li>
+                <a class="fr-pagination__link fr-pagination__link--last" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Dernière page">{{ page_obj.paginator.num_pages }}</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
 </div>
 {% endblock content %}
-
-{% block bodyend %}
-<script nonce="[NONCE_PLACEHOLDER]">
-    const filterDiagnosticListInput = document.getElementById('filter-diagnostic-list-input')
-
-    if (filterDiagnosticListInput) {
-        filterDiagnosticListInput.onkeyup = () => {
-            const keyword = filterDiagnosticListInput.value.toLowerCase()
-            let elements = document.querySelectorAll('.diagnostic-list-item')
-            elements = Array.from(elements)
-
-            elements.forEach((element) => {
-                const name = element.querySelector('.diagnostic-list-item-key').dataset.key.toLowerCase()
-                if (name.indexOf(keyword) !== -1) {
-                    element.removeAttribute('hidden')
-                    element.style.visibility = 'visible'
-                }
-                else {
-                    element.setAttribute('hidden', true)
-                    element.style.visibility = 'hidden'
-                }
-            })
-
-            // Get hidden elements count
-            const emptyMessage = document.getElementById('diagnostic-list-empty-message')
-            if (elements.length === elements.filter((obj) => obj.hidden).length) {
-                emptyMessage.removeAttribute('hidden')
-                emptyMessage.style.visibility = 'visible'
-            }
-            else {
-                emptyMessage.setAttribute('hidden', true)
-                emptyMessage.style.visibility = 'hidden'
-            }
-        }
-    }
-</script>
-{% endblock bodyend %}
