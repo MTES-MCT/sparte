@@ -1,13 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
 import { formatNumber } from "@utils/formatUtils";
-import { ConsommationChart } from "@components/charts/consommation/ConsommationChart";
+import Kpi from "@components/ui/Kpi";
 import CallToAction from "@components/ui/CallToAction";
 import GuideContent from "@components/ui/GuideContent";
 import ConsoCorrectionStatus from "@components/features/status/ConsoCorrectionStatus";
-import BaseCard from "@components/ui/BaseCard";
 
 interface SyntheseConsoProps {
   landData: LandDetailResultType;
@@ -177,9 +175,9 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
     return <ConsoCorrectionStatus status={consommation_correction_status} />;
   }
 
-  const { land_id, land_type, name, conso_details } = landData;
+  const { name, conso_details } = landData;
   const { urls } = projectData;
-  const { trajectoire_conso_is_territorialise } = conso_details;
+  const { trajectoire_conso_is_territorialise, conso_2011_2020 } = conso_details;
 
   const consoContent = trajectoire_conso_is_territorialise ? (
     <ConsoContentTerritorialise landData={landData} />
@@ -188,19 +186,23 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
   );
 
   return (
-    <div className="fr-mt-5w fr-mb-10w">
+    <div>
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-2w">
-        <div className="fr-col-12 fr-col-md-6 fr-grid-row">
-          <BaseCard $padding="lg">
-            <ConsommationChart
-              id="conso_annual"
-              land_id={land_id}
-              land_type={land_type}
-              showToolbar={true}
-            />
-          </BaseCard>
+        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
+          <Kpi
+            icon="bi bi-arrow-up"
+            label="Consommation d'espaces NAF"
+            value={<>{formatNumber({ number: conso_2011_2020 })} <span>ha</span></>}
+            variant="error"
+            footer={{
+              type: "period",
+              direction: "up",
+              from: { label: "2011" },
+              to: { label: "2020" },
+            }}
+          />
         </div>
-        <div className="fr-col-12 fr-col-md-6 fr-grid-row">
+        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
           <GuideContent title="Que se passe-t-il avant 2031 ?">
             {consoContent}
           </GuideContent>
@@ -209,20 +211,11 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       <CallToAction
         title={`Diagnostiquer et simuler la consommation d'espaces NAF de ${name}`}
         text="Découvrez dans notre diagnostic de consommation d'espaces NAF : analyse détaillée de la consommation d'espaces NAF par destination, mise en relation avec l'évolution démographique, et comparaison avec d'autres territoires."
-      >
-        <Link
-          to={urls.consommation}
-          className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
-        >
-          Diagnostic de la consommation
-        </Link>
-        <Link
-          to={urls.trajectoires}
-          className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
-        >
-          Simulation de trajectoire de consommation
-        </Link>
-      </CallToAction>
+        actions={[
+          { label: "Diagnostic de la consommation", to: urls.consommation },
+          { label: "Simulation de trajectoire", to: urls.trajectoires },
+        ]}
+      />
     </div>
   );
 };

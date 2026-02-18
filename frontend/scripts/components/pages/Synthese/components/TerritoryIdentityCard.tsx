@@ -2,11 +2,9 @@ import React from "react";
 import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import { useGetLandPopDensityQuery } from "@services/api";
-import { useArtificialisation } from "@hooks/useArtificialisation";
-import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { formatNumber } from "@utils/formatUtils";
 import { theme } from "@theme";
-import StatBlock, { Value, Secondary } from "@components/ui/StatBlock";
+import Kpi from "@components/ui/Kpi";
 import Badge from "@components/ui/Badge";
 
 interface TerritoryIdentityCardProps {
@@ -14,24 +12,43 @@ interface TerritoryIdentityCardProps {
   className?: string;
 }
 
-const StatsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: ${theme.spacing.md};
-  margin-bottom: 1.25rem;
+const getMockedData = (landData: LandDetailResultType) => ({
+  hasCompetenceUrba: landData.land_type === "COMM" || landData.land_type === "EPCI" ? true : null,
+  hasObjectifTerritorialise: true,
+  objectifPercent: 50,
+  hasRecentCogChange: false,
+});
+
+const getLandTypeLabel = (type: string): string => {
+  const labels: Record<string, string> = {
+    COMM: "Commune",
+    EPCI: "EPCI",
+    DEPART: "Département",
+    REGION: "Région",
+    SCOT: "SCoT",
+  };
+  return labels[type] || type;
+};
+
+const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
-const DataSectionTitle = styled.span`
-  font-size: ${theme.fontSize.xs};
+const DataSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.sm};
+`;
+
+const DataSectionLabel = styled.span`
+  font-size: ${theme.fontSize.sm};
   font-weight: ${theme.fontWeight.semibold};
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
   color: ${theme.colors.textLight};
-  display: block;
-  margin-bottom: ${theme.spacing.sm};
 `;
 
-const DataTagsRow = styled.div`
+const DataSectionBadges = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: ${theme.spacing.sm};
@@ -44,12 +61,8 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
     year: 2022,
   });
 
-  const { landArtifStockIndex } = useArtificialisation({ landData });
-  const { landImperStockIndex } = useImpermeabilisation({ landData });
-
   const population = populationData?.[0]?.population || null;
-  const density = populationData?.[0]?.density_ha || null;
-  const hasOcsgeData = landData.has_ocsge;
+  const mock = getMockedData(landData);
 
   const dataCoverage = [
     { key: "conso", label: "Consommation d'espaces NAF", available: landData.has_conso },
@@ -61,82 +74,68 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
   ];
 
   return (
-    <div className={className}>
-      <StatsGrid>
-        <StatBlock icon="bi bi-bounding-box-circles" label="Surface">
-          <Value>
-            {formatNumber({ number: landData.surface, decimals: 0 })}
-            <span>ha</span>
-          </Value>
-        </StatBlock>
+    <Section className={className}>
+      <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
+          <Kpi
+            icon="bi bi-geo-alt-fill"
+            label={getLandTypeLabel(landData.land_type)}
+            value={landData.name}
+            variant="info"
+            footer={{
+              type: "metric",
+              items: [
+                {
+                  icon: "bi bi-bounding-box-circles",
+                  label: "Surface",
+                  value: `${formatNumber({ number: landData.surface, decimals: 0 })} ha`,
+                },
+                {
+                  icon: "bi bi-people-fill",
+                  label: "Population",
+                  value: population ? `${formatNumber({ number: population, decimals: 0 })} hab` : "—",
+                },
+              ],
+            }}
+          />
+        </div>
+        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
+          <Kpi
+            icon={mock.hasObjectifTerritorialise ? "bi bi-check-lg" : "bi bi-x-lg"}
+            label="Objectif territorialisé (loi ZAN)"
+            value={mock.hasObjectifTerritorialise ? `-${mock.objectifPercent}%` : "Non défini"}
+            variant={mock.hasObjectifTerritorialise ? "success" : "error"}
+            footer={{
+              type: "metric",
+              items: [
+                {
+                  icon: mock.hasCompetenceUrba ? "bi bi-check-lg" : "bi bi-x-lg",
+                  label: "Compétence urbanisme",
+                  value: mock.hasCompetenceUrba ? "Oui" : "Non",
+                },
+                {
+                  icon: mock.hasRecentCogChange ? "bi bi-exclamation-lg" : "bi bi-check-lg",
+                  label: "Changement COG récent",
+                  value: mock.hasRecentCogChange ? "Oui" : "Non",
+                },
+              ],
+            }}
+          />
+        </div>
+      </div>
 
-        <StatBlock icon="bi bi-people-fill" label="Population">
-          {!population ? (
-            <Value>—</Value>
-          ) : (
-            <>
-              <Value>
-                {formatNumber({ number: population, decimals: 0 })}
-                <span>hab</span>
-              </Value>
-              <Secondary>
-                {density ? `${formatNumber({ number: density, decimals: 2 })} hab/ha · ` : ""}en 2022
-              </Secondary>
-            </>
-          )}
-        </StatBlock>
-
-        {hasOcsgeData && (
-          <>
-            <StatBlock icon="bi bi-buildings-fill" label="Surfaces artificialisées">
-              {landArtifStockIndex.surface <= 0 ? (
-                <Value>—</Value>
-              ) : (
-                <>
-                  <Value>
-                    {formatNumber({ number: landArtifStockIndex.surface, decimals: 0 })}
-                    <span>ha</span>
-                  </Value>
-                  <Secondary>
-                    {formatNumber({ number: landArtifStockIndex.percent, decimals: 1 })}% du territoire
-                    {landData.years_artif?.length ? ` · en ${landData.years_artif[landData.years_artif.length - 1]}` : ""}
-                  </Secondary>
-                </>
-              )}
-            </StatBlock>
-
-            <StatBlock icon="bi bi-droplet-fill" label="Surfaces imperméabilisées">
-              {landImperStockIndex.surface <= 0 ? (
-                <Value>—</Value>
-              ) : (
-                <>
-                  <Value>
-                    {formatNumber({ number: landImperStockIndex.surface, decimals: 0 })}
-                    <span>ha</span>
-                  </Value>
-                  <Secondary>
-                    {formatNumber({ number: landImperStockIndex.percent, decimals: 1 })}% du territoire
-                    {landData.years_artif?.length ? ` · en ${landData.years_artif[landData.years_artif.length - 1]}` : ""}
-                  </Secondary>
-                </>
-              )}
-            </StatBlock>
-          </>
-        )}
-      </StatsGrid>
-
-      <DataSectionTitle>
-        Données disponibles pour ce territoire :
-      </DataSectionTitle>
-      <DataTagsRow>
-        {dataCoverage.map((data) => (
-          <Badge key={data.key} $variant={data.available ? "active" : "neutral"}>
-            <i className={data.available ? "bi bi-check-lg" : "bi bi-x-lg"} />
-            {data.label}
-          </Badge>
-        ))}
-      </DataTagsRow>
-    </div>
+      <DataSection>
+        <DataSectionLabel>Données disponibles pour ce territoire :</DataSectionLabel>
+        <DataSectionBadges>
+          {dataCoverage.map((data) => (
+            <Badge key={data.key} $variant={data.available ? "active" : "neutral"}>
+              <i className={data.available ? "bi bi-check-lg" : "bi bi-x-lg"} />
+              {data.label}
+            </Badge>
+          ))}
+        </DataSectionBadges>
+      </DataSection>
+    </Section>
   );
 };
 

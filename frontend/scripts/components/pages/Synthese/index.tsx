@@ -14,7 +14,6 @@ interface SyntheseProps {
   landData: LandDetailResultType;
 }
 
-// Timeline : violet décoratif pour 2021-2030, bleu action pour 2031-2050
 const timelineColors = {
   light: { dot: theme.colors.accent, ring: theme.colors.accentLight },
   dark: { dot: theme.colors.primary, ring: theme.colors.primaryLight },
@@ -33,7 +32,7 @@ const Timeline = styled.div`
     position: absolute;
     left: 0.55rem;
     top: 0.5rem;
-    bottom: 2rem;
+    bottom: 0;
     width: 3px;
     background: linear-gradient(
       180deg,
@@ -57,7 +56,7 @@ const TimelineItem = styled.div<{ $variant: "light" | "dark" }>`
   &::before {
     content: "";
     position: absolute;
-    left: -2.5rem;
+    left: -2.545rem;
     top: 0.35rem;
     width: 1.4rem;
     height: 1.4rem;
@@ -95,7 +94,6 @@ const TimelineSubtitle = styled.p`
 const LevierSection = styled.section`
   margin-top: ${theme.spacing.xxl};
   padding: ${theme.spacing.xl} 0;
-  border-top: 3px solid ${theme.colors.primary};
 `;
 
 const LevierIntro = styled.p`
@@ -125,7 +123,10 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
             <TimelineSubtitle>
               Objectif : diviser par deux la consommation d'espaces NAF par rapport à la décennie précédente
             </TimelineSubtitle>
-            <SyntheseConso landData={landData} projectData={projectData} />
+            <SyntheseConso
+              landData={landData}
+              projectData={projectData}
+            />
           </TimelineItem>
 
           <TimelineItem $variant="dark">
@@ -134,13 +135,16 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
             <TimelineSubtitle>
               Objectif : compenser toute nouvelle artificialisation par de la renaturation
             </TimelineSubtitle>
-            <SyntheseArtif landData={landData} projectData={projectData} />
+            <SyntheseArtif
+              landData={landData}
+              projectData={projectData}
+            />
           </TimelineItem>
         </Timeline>
       </TimelineSection>
 
       <LevierSection>
-        <h2>Leviers de sobriété foncière</h2>
+        <h2>Agir: Leviers de sobriété foncière</h2>
         <LevierIntro>
           Pour atteindre ces objectifs, plusieurs leviers d'action sont
           identifiés sur votre territoire. Leur activation permet de réduire
@@ -155,7 +159,10 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
         />
 
         <h3 className="fr-mt-5w">Réhabilitation des friches</h3>
-        <SyntheseFriche landData={landData} projectData={projectData} />
+        <SyntheseFriche
+          landData={landData}
+          projectData={projectData}
+        />
       </LevierSection>
     </div>
   );

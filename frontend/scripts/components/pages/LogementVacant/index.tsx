@@ -1,5 +1,4 @@
 import React from 'react'
-import Guide from '@components/ui/Guide'
 import GenericChart from '@components/charts/GenericChart'
 import Triptych from '@components/ui/Triptych'
 import { LogementVacantOverview, LogementVacantAbstract } from '@components/features/logementVacant'
@@ -35,18 +34,6 @@ export const LogementVacant: React.FC<LogementVacantProps> = ({ landData }) =>
     <div className="fr-container--fluid fr-p-3w">
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          <Guide title="Qu'est-ce que la vacance structurelle des logements ?">
-            <p>La vacance des logements se décline en deux formes :</p>
-            <ul>
-              <li><strong>Vacance frictionnelle</strong> : de courte durée, elle est normale et nécessaire à la fluidité du marché immobilier.</li>
-              <li><strong>Vacance structurelle</strong> : de longue durée, elle représente un gisement de logements mobilisables pouvant se substituer à la construction neuve, souvent génératrice d'artificialisation des sols.</li>
-            </ul>
-            <p>
-              C'est cette vacance structurelle qui constitue un levier de sobriété foncière.
-              L'analyse porte sur les logements vacants depuis plus de 2 ans dans le parc privé (source : LOVAC)
-              et ceux inoccupés depuis plus de 3 mois dans le parc social (source : RPLS).
-            </p>
-          </Guide>
           <Triptych
             className="fr-mb-5w"
             definition={{

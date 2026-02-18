@@ -1,44 +1,79 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { theme } from '@theme';
-import BaseCard from '@components/ui/BaseCard';
+import Button from '@components/ui/Button';
 
-const Container = styled(BaseCard)`
-  padding: ${theme.spacing.md};
+interface Action {
+  label: string;
+  to: string;
+}
+
+interface CallToActionProps {
+  title: string;
+  text: string;
+  actions?: Action[];
+}
+
+const Container = styled.div`
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, ${theme.colors.primaryLight} 0%, ${theme.colors.accentLight} 100%);
+  border-radius: ${theme.card.radius};
+  padding: ${theme.spacing.xl};
+  box-shadow: ${theme.card.shadow};
+
+  @media (max-width: 768px) {
+    padding: ${theme.spacing.lg};
+  }
 `;
 
 const Title = styled.h3`
   font-size: ${theme.fontSize.lg};
-  color: ${theme.colors.text};
-  margin-bottom: ${theme.spacing.sm};
+  font-weight: ${theme.fontWeight.bold};
+  color: ${theme.colors.primary};
+  margin: 0 0 ${theme.spacing.xs} 0;
+  line-height: 1.3;
 `;
 
 const Text = styled.p`
   font-size: ${theme.fontSize.sm};
-  color: ${theme.colors.textLight};
+  color: ${theme.colors.text};
   line-height: 1.7;
-  margin-bottom: ${theme.spacing.md};
+  margin: 0 0 ${theme.spacing.md} 0;
+  opacity: 0.85;
 `;
 
 const Actions = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: ${theme.spacing.sm};
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 
-interface CallToActionProps {
-  title: string;
-  text: string;
-  children?: ReactNode;
-}
-
-const CallToAction: React.FC<CallToActionProps> = ({ title, text, children }) => {
+const CallToAction: React.FC<CallToActionProps> = ({ title, text, actions }) => {
   return (
     <Container>
       <Title>{title}</Title>
       <Text>{text}</Text>
-      {children && <Actions>{children}</Actions>}
+      {actions && actions.length > 0 && (
+        <Actions>
+          {actions.map((action, index) => (
+            <Button
+              key={index}
+              variant="primary"
+              to={action.to}
+              icon="bi bi-arrow-right"
+              iconPosition="right"
+            >
+              {action.label}
+            </Button>
+          ))}
+        </Actions>
+      )}
     </Container>
   );
 };
