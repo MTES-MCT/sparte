@@ -3,8 +3,6 @@ import styled from 'styled-components';
 import useWindowSize from '@hooks/useWindowSize';
 import { Tooltip } from 'react-tooltip'
 import SearchBar from '@components/ui/SearchBar';
-import { ProjectDetailResultType } from '@services/types/project';
-
 interface Logo {
     src: string;
     alt: string;
@@ -124,10 +122,9 @@ const ButtonToggleMenu = styled.i<{ $isMobile: boolean }>`
     }
 `;
 
-const Header = ({ projectData }: { projectData: ProjectDetailResultType}) => {
+const Header = ({ header }: { header: { logos: Logo[]; search: { createUrl: string }; menuItems: { label: string; url?: string; target?: string; shouldDisplay?: boolean }[] } }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { isMobile } = useWindowSize(980);
-    const { header } = projectData || {};
 
     // responsive
     useEffect(() => {

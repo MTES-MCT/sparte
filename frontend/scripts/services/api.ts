@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import getCsrfToken from "@utils/csrf";
-import { UseGetProjectQueryType } from "./types/project";
+import { UseGetProjectQueryType, UserLandPreferenceResultType } from "./types/project";
 import { UseLandDetailType } from "./types/land";
 import { ArtifZonageIndexType } from "./types/artif_zonage";
 import { UseLandFrichesStatutType } from "./types/land_friches_statut";
@@ -32,7 +32,7 @@ export const djangoApi = createApi({
 	endpoints: (builder) => ({
 		getProjectDownloadLinks: builder.query({
 			query: (projectId) => ({
-				url: `/project/${projectId}/telechargement-liens`,
+				url: `/diagnostic/${projectId}/telechargement-liens`,
 				method: "GET",
 			}),
 		}),
@@ -156,7 +156,7 @@ export const djangoApi = createApi({
 			query: ({ land_type, land_id, child_land_type }) => `/api/landchildrengeom/${land_type}/${land_id}/${child_land_type}`,
 		}),
 		getProject: builder.query({
-			query: (id) => `/project/${id}/detail`,
+			query: (id) => `/diagnostic/${id}/detail`,
 			providesTags: (result, error, id) => [{ type: 'Project', id }],
 		}),
 		searchTerritory: builder.query({
@@ -178,41 +178,62 @@ export const djangoApi = createApi({
 				return `/api/logementvacantautorisationstats/${land_type}/${land_id}?${queryParams}`
 			},
 		}),
-		updateProjectTarget2031: builder.mutation<
-			{ success: boolean; target_2031: number },
-			{ projectId: number; target_2031: number }
+		getUserLandPreference: builder.query<
+			UserLandPreferenceResultType,
+			{ land_type: string; land_id: string }
 		>({
-			query: ({ projectId, target_2031 }) => {
+			query: ({ land_type, land_id }) => `/api/preference/${land_type}/${land_id}/`,
+			providesTags: (result, error, { land_type, land_id }) => [{ type: 'Preference', id: `${land_type}_${land_id}` }],
+		}),
+		updatePreferenceTarget2031: builder.mutation<
+			{ success: boolean; target_2031: number },
+			{ land_type: string; land_id: string; target_2031: number }
+		>({
+			query: ({ land_type, land_id, target_2031 }) => {
 				const csrfToken = getCsrfToken();
 				return {
-					url: `/api/project/${projectId}/target-2031/`,
+					url: `/api/preference/${land_type}/${land_id}/target-2031/`,
 					method: 'POST',
 					body: { target_2031 },
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},
-			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: String(projectId) }],
+			invalidatesTags: (result, error, { land_type, land_id }) => [{ type: 'Preference', id: `${land_type}_${land_id}` }],
 		}),
-		updateProjectComparisonLands: builder.mutation<
+		updatePreferenceComparisonLands: builder.mutation<
 			{ success: boolean; comparison_lands: Array<{ land_type: string; land_id: string; name: string }> },
-			{ projectId: number; comparison_lands: Array<{ land_type: string; land_id: string; name: string }> }
+			{ land_type: string; land_id: string; comparison_lands: Array<{ land_type: string; land_id: string; name: string }> }
 		>({
-			query: ({ projectId, comparison_lands }) => {
+			query: ({ land_type, land_id, comparison_lands }) => {
 				const csrfToken = getCsrfToken();
 				return {
-					url: `/api/project/${projectId}/comparison-lands/`,
+					url: `/api/preference/${land_type}/${land_id}/comparison-lands/`,
 					method: 'POST',
 					body: { comparison_lands },
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},
-			invalidatesTags: (result, error, { projectId }) => [{ type: 'Project', id: String(projectId) }],
+			invalidatesTags: (result, error, { land_type, land_id }) => [{ type: 'Preference', id: `${land_type}_${land_id}` }],
+		}),
+		createProjectForStats: builder.mutation<
+			{ id: number },
+			{ land_type: string; land_id: string }
+		>({
+			query: ({ land_type, land_id }) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: '/diagnostic/nouveau',
+					method: 'POST',
+					body: { land_type, land_id },
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
 		}),
 		startExportPdf: builder.mutation<{ jobId: string }, { draftId: string }>({
 			query: ({ draftId }) => {
 				const csrfToken = getCsrfToken();
 				return {
-					url: '/project/export/start/',
+					url: '/diagnostic/export/start/',
 					method: 'POST',
 					body: { draft_id: draftId },
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
@@ -220,7 +241,7 @@ export const djangoApi = createApi({
 			},
 		}),
 		getExportStatus: builder.query<{ status: 'pending' | 'completed' | 'failed'; error?: string }, string>({
-			query: (jobId) => `/project/export/status/${jobId}/`,
+			query: (jobId) => `/diagnostic/export/status/${jobId}/`,
 		}),
 		getReportDrafts: builder.query<ReportDraftListItem[], { projectId: number; reportType?: string }>({
 			query: ({ projectId, reportType }) => {
@@ -279,15 +300,17 @@ export const djangoApi = createApi({
 			query: () => '/api/me/',
 		}),
 	}),
-	tagTypes: ['Project', 'ReportDraft'],
+	tagTypes: ['Project', 'ReportDraft', 'Preference'],
 });
 
 const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;
 const useGetImperZonageIndexQuery = djangoApi.useGetImperZonageIndexQuery;
-const useUpdateProjectTarget2031Mutation = djangoApi.useUpdateProjectTarget2031Mutation;
-const useUpdateProjectComparisonLandsMutation = djangoApi.useUpdateProjectComparisonLandsMutation;
+const useGetUserLandPreferenceQuery = djangoApi.useGetUserLandPreferenceQuery;
+const useUpdatePreferenceTarget2031Mutation = djangoApi.useUpdatePreferenceTarget2031Mutation;
+const useUpdatePreferenceComparisonLandsMutation = djangoApi.useUpdatePreferenceComparisonLandsMutation;
+const useCreateProjectForStatsMutation = djangoApi.useCreateProjectForStatsMutation;
 const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetLandFrichesStatutQuery;
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
 const useGetProjectDownloadLinksQuery = djangoApi.useGetProjectDownloadLinksQuery;
@@ -333,8 +356,10 @@ export {
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
-	useUpdateProjectTarget2031Mutation,
-	useUpdateProjectComparisonLandsMutation,
+	useGetUserLandPreferenceQuery,
+	useUpdatePreferenceTarget2031Mutation,
+	useUpdatePreferenceComparisonLandsMutation,
+	useCreateProjectForStatsMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
 	useGetProjectDownloadLinksQuery,

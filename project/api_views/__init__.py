@@ -7,6 +7,11 @@ from .RecordDownloadRequestAPIView import RecordDownloadRequestAPIView
 from .ReportDraftViewSet import ReportDraftViewSet
 from .UpdateProjectComparisonLandsAPIView import UpdateProjectComparisonLandsAPIView
 from .UpdateProjectTarget2031APIView import UpdateProjectTarget2031APIView
+from .UserLandPreferenceAPIView import (
+    UpdatePreferenceComparisonLandsAPIView,
+    UpdatePreferenceTarget2031APIView,
+    UserLandPreferenceAPIView,
+)
 
 __all__ = [
     "EmpriseViewSet",
@@ -18,4 +23,7 @@ __all__ = [
     "ReportDraftViewSet",
     "UpdateProjectComparisonLandsAPIView",
     "UpdateProjectTarget2031APIView",
+    "UpdatePreferenceComparisonLandsAPIView",
+    "UpdatePreferenceTarget2031APIView",
+    "UserLandPreferenceAPIView",
 ]

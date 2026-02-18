@@ -11,6 +11,7 @@ from project.models import (
     RNUPackage,
     RNUPackageRequest,
 )
+from public_data.models import AdminRef
 
 
 @admin.register(ExportJob)
@@ -160,9 +161,13 @@ class RequestAdmin(admin.ModelAdmin):
 
     def link_to_project(self, obj):
         try:
-            link = reverse("project:home", args=[obj.project_id])
+            project = Project.objects.get(id=obj.project_id)
+            link = reverse(
+                "project:home",
+                kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_id": project.land_id},
+            )
             return format_html(f'<a href="{link}">Accès à la fiche</a>')
-        except exceptions.NoReverseMatch:
+        except (Project.DoesNotExist, exceptions.NoReverseMatch):
             return format_html("Diagnostic inconnu")
 
     link_to_project.short_description = "Projet public"  # type: ignore

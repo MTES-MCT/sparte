@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
-import { ProjectDetailResultType } from '@services/types/project';
+import { buildUrls } from '@utils/projectUrls';
+import { useGetCurrentUserQuery } from '@services/api';
 import ActionCard from '@components/ui/ActionCard';
 import {
     LoginPrompt,
@@ -65,13 +66,12 @@ const EmptyDrafts = styled.div`
 
 interface DownloadsProps {
     landData: LandDetailResultType;
-    projectData: ProjectDetailResultType;
 }
 
-const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
-    const isAuthenticated = projectData.header.menuItems.some(
-        item => item.label === 'Mon compte' && item.shouldDisplay
-    );
+const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
+    const { data: currentUser } = useGetCurrentUserQuery();
+    const isAuthenticated = currentUser?.is_authenticated ?? false;
+    const urls = buildUrls(landData.land_type, landData.land_id);
 
     const {
         selectedDraftId,
@@ -95,8 +95,8 @@ const Downloads: React.FC<DownloadsProps> = ({ landData, projectData }) => {
         handleExportPdf,
         handleBack,
     } = useReportDrafts({
-        projectId: projectData.id,
-        downloadsUrl: projectData.urls.downloads,
+        projectId: null,
+        downloadsUrl: urls.downloads,
         isAuthenticated,
     });
 

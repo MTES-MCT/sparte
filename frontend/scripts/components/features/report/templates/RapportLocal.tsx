@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import AnnexeArticleR101Image from '@images/annexe-article-r-101-1-code-urbanisme.png';
-import { useGetLandArtifStockIndexQuery, useGetProjectQuery } from '@services/api';
+import { useGetLandArtifStockIndexQuery, useGetUserLandPreferenceQuery } from '@services/api';
 import { useMillesime } from '@hooks/useMillesime';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
 import { formatNumber } from '@utils/formatUtils';
@@ -83,7 +83,10 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
         onContentChange?.(key, value);
     }, [onContentChange]);
 
-    const { data: projectData } = useGetProjectQuery(String(projectId));
+    const { data: preference } = useGetUserLandPreferenceQuery({
+        land_type: landData.land_type,
+        land_id: landData.land_id,
+    });
 
     const millesimes = landData.millesimes || [];
     const maxIndex = millesimes.length > 0 ? Math.max(...millesimes.map(m => m.index)) : 0;
@@ -121,7 +124,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
         landType: landData?.land_type,
         landName: landData?.name || '',
         contentComparisonTerritories: content.comparison_territories,
-        projectComparisonLands: projectData?.comparison_lands,
+        projectComparisonLands: preference?.comparison_lands,
         onContentChange: handleChange('comparison_territories'),
     });
 

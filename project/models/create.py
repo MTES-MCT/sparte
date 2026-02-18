@@ -12,7 +12,7 @@ def create_project_api_view(request: DRFRequest) -> JsonResponse:
     land_id = request.data.get("land_id")
     land_type = request.data.get("land_type")
     land = LandModel.objects.get(land_id=land_id, land_type=land_type)
-    level = AdminRef.get_analysis_default_level(land_type)
+    level = AdminRef.get_analysis_default_level(land.land_type)
     project = Project(
         name=f"Diagnostic de {land.name}",
         is_public=True,

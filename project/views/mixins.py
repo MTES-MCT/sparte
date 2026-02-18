@@ -4,6 +4,7 @@ from django import forms
 from django.db.models import Q
 from django.urls import reverse_lazy
 
+from public_data.models import AdminRef
 from utils.views import BreadCrumbMixin
 
 
@@ -46,7 +47,10 @@ class GroupMixin(UserQuerysetOrPublicMixin, BreadCrumbMixin):
             project = self.get_object()
             breadcrumbs.append(
                 {
-                    "href": reverse_lazy("project:home", kwargs={"pk": project.id}),
+                    "href": reverse_lazy(
+                        "project:home",
+                        kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_id": project.land_id},
+                    ),
                     "title": project.name,
                 }
             )

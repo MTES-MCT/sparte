@@ -1,12 +1,11 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@store/store';
+import React, { useEffect, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetLandQuery, useGetProjectQuery, useGetEnvironmentQuery } from '@services/api';
-import { setProjectData } from '@store/projectSlice';
-import { selectIsNavbarOpen } from '@store/navbarSlice';
-import useWindowSize from '@hooks/useWindowSize';
+import { useGetLandQuery, useGetCurrentUserQuery, useGetUserLandPreferenceQuery } from '@services/api';
+import { setTerritoryName } from '@store/projectSlice';
+import { AppDispatch } from '@store/store';
+import { buildUrls, buildNavbar, buildFooter, buildHeader } from '@utils/projectUrls';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
@@ -29,7 +28,8 @@ import { LogementVacantStatusEnum } from '@services/types/land';
 import FricheStatus from '@components/features/status/FricheStatus';
 
 interface DashboardProps {
-    projectId: string;
+    landType: string;
+    landId: string;
 }
 
 const ContentWrapper = styled.div`
@@ -54,39 +54,34 @@ const Content = styled.div`
 `;
 
 
-const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
+const Dashboard: React.FC<DashboardProps> = ({ landType, landId }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const { data: projectData, error, isLoading } = useGetProjectQuery(projectId);
-    const { data: landData } = useGetLandQuery(
-        {
-            land_type: projectData?.land_type,
-            land_id: projectData?.land_id
-        },
-        {
-            skip: !projectData
+    const { data: landData, error, isLoading } = useGetLandQuery({ land_type: landType, land_id: landId });
+    const { data: currentUser } = useGetCurrentUserQuery();
+    const { data: preference } = useGetUserLandPreferenceQuery({ land_type: landType, land_id: landId });
+
+    useEffect(() => {
+        if (landData?.name) {
+            dispatch(setTerritoryName(landData.name));
         }
-    );
+    }, [landData?.name, dispatch]);
+
+    const urls = useMemo(() => buildUrls(landType, landId), [landType, landId]);
+    const navbar = useMemo(() => buildNavbar(landType, landId), [landType, landId]);
+    const footer = useMemo(() => buildFooter(), []);
+    const header = useMemo(() => buildHeader(currentUser?.is_authenticated ?? false), [currentUser?.is_authenticated]);
 
     const { ocsge_status, has_ocsge, has_friche, has_conso, consommation_correction_status, has_logements_vacants_prive, has_logements_vacants_social, logements_vacants_status } = landData || {};
 
-    const { urls } = projectData || {};
-
-    useEffect(() => {
-        if (projectData) {
-            dispatch(setProjectData(projectData));
-        }
-    }, [projectData, dispatch]);
-
-
     return (
         <>
-            {projectData && landData && !isLoading && !error && urls && (
+            {landData && !isLoading && !error && (
                 <>
-                    <Header projectData={projectData} />
+                    <Header header={header} />
                     <Router>
                         <TrackingWrapper />
                         <ContentWrapper>
-                            <Navbar projectData={projectData} landData={landData} />
+                            <Navbar navbar={navbar} urls={urls} landData={landData} />
                             <Main>
                                 <TopBar />
                                 <Content>
@@ -99,7 +94,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 showTitle={false}
                                             >
                                                 <Synthese
-                                                    projectData={projectData}
                                                     landData={landData}
                                                 />
                                             </RouteWrapper>
@@ -116,7 +110,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Consommation landData={landData} projectData={projectData} />
+                                                <Consommation landData={landData} preference={preference} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -134,7 +128,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <Trajectoires landData={landData} projectData={projectData} />
+                                                <Trajectoires landData={landData} preference={preference} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -211,7 +205,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                     <ConsoCorrectionStatus status={consommation_correction_status} />
                                                 }
                                             >
-                                                <RapportLocal projectData={projectData} />
+                                                <RapportLocal landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -221,7 +215,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Générer un rapport"
                                             >
-                                                <Downloads landData={landData} projectData={projectData} />
+                                                <Downloads landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -231,13 +225,13 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             <RouteWrapper
                                                 title="Générer un rapport"
                                             >
-                                                <Downloads landData={landData} projectData={projectData} />
+                                                <Downloads landData={landData} />
                                             </RouteWrapper>
                                         }
                                     />
                                 </Routes>
                                 </Content>
-                                <Footer projectData={projectData} />
+                                <Footer footer={footer} />
                             </Main>
                         </ContentWrapper>
                     </Router>

@@ -7,6 +7,7 @@ from django.views.generic import DetailView, ListView, RedirectView
 
 from project.models import Project
 from project.models.enums import ProjectChangeReason
+from public_data.models import AdminRef
 
 from .mixins import GroupMixin
 
@@ -60,7 +61,11 @@ class SplashProgressionView(GroupMixin, DetailView):
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
         if self.object.is_ready_to_be_displayed:
-            response["HX-Redirect"] = reverse("project:home", kwargs=self.kwargs)
+            project = self.get_object()
+            response["HX-Redirect"] = reverse(
+                "project:home",
+                kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_id": project.land_id},
+            )
         return response
 
     def get_context_data(self, **kwargs):

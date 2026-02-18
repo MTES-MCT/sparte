@@ -17,6 +17,19 @@ from .AdminRef import AdminRef
 
 
 class LandModelManager(models.Manager):
+    def _normalize_land_type(self, kwargs):
+        from public_data.models import AdminRef
+
+        if "land_type" in kwargs:
+            kwargs["land_type"] = AdminRef.slug_to_code(kwargs["land_type"])
+        return kwargs
+
+    def get(self, *args, **kwargs):
+        return super().get(*args, **self._normalize_land_type(kwargs))
+
+    def filter(self, *args, **kwargs):
+        return super().filter(*args, **self._normalize_land_type(kwargs))
+
     def get_by_natural_key(self, land_id, land_type):
         return self.get(land_id=land_id, land_type=land_type)
 
@@ -100,6 +113,13 @@ class LandModel(models.Model):
 
     land_id = models.CharField()
     land_type = models.CharField()
+
+    @property
+    def land_type_slug(self) -> str:
+        from public_data.models import AdminRef
+
+        return AdminRef.code_to_slug(self.land_type)
+
     name = models.CharField()
     surface = models.FloatField()
     surface_unit = models.CharField()
@@ -414,6 +434,7 @@ class LandChildrenGeomViewset(viewsets.ViewSet):
 
     def retrieve(self, request, land_type, land_id, child_land_type):
         land = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        child_land_type = AdminRef.slug_to_code(child_land_type)
         children = LandModel.objects.filter(
             parent_keys__contains=[land.key],
             land_type=child_land_type,

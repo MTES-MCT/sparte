@@ -81,6 +81,11 @@ export type ProjectDetailResultType = {
   };
 };
 
+export type UserLandPreferenceResultType = {
+  target_2031: number | null;
+  comparison_lands: ComparisonLand[];
+};
+
 type ProjectDetailQueryArg = string | FetchArgs
 type ProjectDetailBaseQuery = BaseQueryFn<ProjectDetailQueryArg, unknown, FetchBaseQueryError>;
 export type UseGetProjectQueryType = TypedUseQuery<ProjectDetailResultType, ProjectDetailQueryArg, ProjectDetailBaseQuery>;

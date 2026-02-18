@@ -133,6 +133,11 @@ class Project(BaseProject):
         blank=True,
         null=True,
     )
+
+    @property
+    def land_type_slug(self) -> str:
+        return AdminRef.code_to_slug(self.land_type)
+
     land_id = models.CharField(
         "Identifiants du territoire du diagnostic",
         max_length=255,
@@ -363,7 +368,7 @@ class Project(BaseProject):
         }
 
     def get_absolute_url(self):
-        return reverse("project:home", kwargs={"pk": self.pk})
+        return reverse("project:home", kwargs={"land_type": self.land_type_slug, "land_id": self.land_id})
 
     def get_bounding_box(self):
         result = self.emprise_set.aggregate(bbox=Extent("mpoly"))

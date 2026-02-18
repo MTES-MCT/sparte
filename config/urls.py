@@ -54,7 +54,7 @@ urlpatterns += [
     path("", include("home.urls")),
     path("users/", include("users.urls")),
     path("public/", include("public_data.urls")),
-    path("project/", include("project.urls")),
+    path("diagnostic/", include("project.urls")),
     path("api/", include("project.api_urls")),
     path("carte/", include("carto.urls")),
     path("fancy-cache", include("fancy_cache.urls")),

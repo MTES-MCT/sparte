@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { LandDetailResultType } from '@services/types/land';
 import TimelineTrajectoireZanImage from '@images/timeline-trajectoire-zan.png';
-import { useGetProjectQuery, useGetLandArtifStockIndexQuery } from '@services/api';
+import { useGetUserLandPreferenceQuery, useGetLandArtifStockIndexQuery } from '@services/api';
 import { useMillesime } from '@hooks/useMillesime';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
 import { formatNumber } from '@utils/formatUtils';
@@ -104,15 +104,18 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     const consoStartYear = parseInt(content.conso_start_year || String(DEFAULT_consoStartYear));
     const consoEndYear = parseInt(content.conso_end_year || String(DEFAULT_consoEndYear));
 
-    const { data: projectData } = useGetProjectQuery(String(projectId));
+    const { data: preference } = useGetUserLandPreferenceQuery({
+        land_type: landData.land_type,
+        land_id: landData.land_id,
+    });
 
     // Objectif territorialisé (réglementaire) ou national par défaut (50%)
     const objectif_reduction = landData.territorialisation?.has_objectif
         ? landData.territorialisation?.objectif ?? 50
         : 50;
 
-    // Calcul de l'objectif personnalisé (depuis le content ou la valeur du projet par défaut)
-    const defaultTarget2031 = projectData?.target_2031 || 50;
+    // Calcul de l'objectif personnalisé (depuis le content ou la valeur de la préférence par défaut)
+    const defaultTarget2031 = preference?.target_2031 || 50;
     const target_custom = content.target_2031 ? parseFloat(content.target_2031) : defaultTarget2031;
     const has_custom_target = Number(target_custom) !== objectif_reduction;
 
@@ -155,7 +158,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
         landType: landData?.land_type,
         landName: landData?.name || '',
         contentComparisonTerritories: content.comparison_territories,
-        projectComparisonLands: projectData?.comparison_lands,
+        projectComparisonLands: preference?.comparison_lands,
         onContentChange: handleChange('comparison_territories'),
     });
 

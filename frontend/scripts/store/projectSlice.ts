@@ -1,22 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const projectSlice = createSlice({
-  // DEPERECATED : use landData in landSlice instead
   name: 'project',
   initialState: {
-    projectData: null,
+    territoryName: null as string | null,
   },
   reducers: {
-    setProjectData: (state, action) =>
+    setTerritoryName: (state, action) =>
     {
-      state.projectData = action.payload
-    },
-    clearProjectData: (state) =>
-    {
-      state.projectData = null
+      state.territoryName = action.payload
     },
   },
 })
 
-export const { setProjectData, clearProjectData } = projectSlice.actions
+export const { setTerritoryName } = projectSlice.actions
 export default projectSlice.reducer

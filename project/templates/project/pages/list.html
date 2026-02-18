@@ -48,12 +48,12 @@ Mes diagnostics
                     </div>
                     <div class="fr-card__footer">
                         <div class="d-flex">
-                            <a href="{% url 'project:home' project.id %}" class="fr-mr-2w fr-link--text-decoration-none">
+                            <a href="{% url 'project:home' project.land_type_slug project.land_id %}" class="fr-mr-2w fr-link--text-decoration-none">
                                 <button class="fr-btn fr-btn--primary fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line">
                                     Accéder au diagnostic
                                 </button>
                             </a>
-                            <a href="{% url 'project:report_target_2031' project.id %}" class="fr-link--text-decoration-none">
+                            <a href="{% url 'project:report_target_2031' project.land_type_slug project.land_id %}" class="fr-link--text-decoration-none">
                                 <button class="fr-btn fr-btn--primary fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line">
                                     Simuler une trajectoire de sobriété foncière
                                 </button>
@@ -71,7 +71,7 @@ Mes diagnostics
                                     <ul class="fr-list">
                                         {% for draft in project.report_drafts.all %}
                                         <li>
-                                            <a href="{% url 'project:report_downloads_draft' project.id draft.id %}" class="fr-text--sm">
+                                            <a href="{% url 'project:report_downloads_draft' project.land_type_slug project.land_id draft.id %}" class="fr-text--sm">
                                                 {{ draft.name }} ({{ draft.get_report_type_display }})
                                             </a>
                                         </li>

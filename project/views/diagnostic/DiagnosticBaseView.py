@@ -1,16 +1,22 @@
 from django.conf import settings
 from django.views.generic import DetailView
 
-from project.models import Project
+from public_data.models import AdminRef
+from public_data.models.administration import LandModel
 
 
 class DiagnosticBaseView(DetailView):
-    context_object_name = "project"
-    queryset = Project.objects.all()
+    context_object_name = "land"
+    model = LandModel
+
+    def get_object(self, queryset=None):
+        land_type = AdminRef.slug_to_code(self.kwargs["land_type"])
+        return LandModel.objects.get(
+            land_type=land_type,
+            land_id=self.kwargs["land_id"],
+        )
 
     def get_context_data(self, **kwargs):
-        project: Project = self.get_object()
-
-        kwargs.update({"project_id": project.id, "HIGHCHART_SERVER": settings.HIGHCHART_SERVER})
+        kwargs.update({"HIGHCHART_SERVER": settings.HIGHCHART_SERVER})
 
         return super().get_context_data(**kwargs)

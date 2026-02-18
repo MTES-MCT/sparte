@@ -219,7 +219,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
                         landInfo: { name: selectedDraft.name, landId: selectedDraft.id },
                     }));
 
-                    const response = await fetch(`/project/export/download/${jobId}/?project_id=${projectId}`);
+                    const response = await fetch(`/diagnostic/export/download/${jobId}/?project_id=${projectId}`);
                     if (response.ok) {
                         const blob = await response.blob();
                         const timestamp = new Date().toISOString().slice(0, 10);

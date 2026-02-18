@@ -1,5 +1,4 @@
 from django.urls import path
-from django.views.generic.base import RedirectView
 from rest_framework import routers
 
 from project.models.create import create_project_api_view
@@ -31,58 +30,53 @@ urlpatterns = [
     ),
     # CRUD
     path("mes-diagnostics", views.ProjectListView.as_view(), name="list"),
-    path("<int:pk>/", RedirectView.as_view(pattern_name="project:report_synthesis", permanent=True), name="home"),
+    path("<str:land_type>/<str:land_id>/", views.diagnostic.DiagnosticSynthesisView.as_view(), name="home"),
     path("<int:pk>/detail", ProjectDetailView.as_view(), name="project-detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     # REPORT
     path(
-        route="<int:pk>/tableau-de-bord/artificialisation",
+        route="<str:land_type>/<str:land_id>/artificialisation",
         view=views.diagnostic.DiagnosticArtificialisationView.as_view(),
         name="report_artif",
     ),
     path(
-        route="<int:pk>/tableau-de-bord/impermeabilisation",
+        route="<str:land_type>/<str:land_id>/impermeabilisation",
         view=views.diagnostic.DiagnosticImpermeabilisationView.as_view(),
         name="report_imper",
     ),
     path(
-        "<int:pk>/tableau-de-bord/consommation",
+        "<str:land_type>/<str:land_id>/consommation",
         views.diagnostic.DiagnosticConsoView.as_view(),
         name="report_conso",
     ),
     path(
-        "<int:pk>/tableau-de-bord/synthesis",
-        views.diagnostic.DiagnosticSynthesisView.as_view(),
-        name="report_synthesis",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/vacance-des-logements",
+        "<str:land_type>/<str:land_id>/vacance-des-logements",
         views.diagnostic.DiagnosticLogementVacantView.as_view(),
         name="report_logement_vacant",
     ),
     path(
-        "<int:pk>/tableau-de-bord/friches",
+        "<str:land_type>/<str:land_id>/friches",
         views.diagnostic.DiagnosticFrichesView.as_view(),
         name="report_friches",
     ),
     path(
-        "<int:pk>/tableau-de-bord/trajectoires",
+        "<str:land_type>/<str:land_id>/trajectoires",
         views.diagnostic.DiagnosticTrajectoiresView.as_view(),
         name="report_target_2031",
     ),
     path(
-        "<int:pk>/tableau-de-bord/rapport-local",
+        "<str:land_type>/<str:land_id>/rapport-local",
         views.diagnostic.DiagnostictRapportLocalView.as_view(),
         name="report_local",
     ),
     # DOWNLOAD
     path(
-        "<int:pk>/tableau-de-bord/telechargements",
+        "<str:land_type>/<str:land_id>/telechargements",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads",
     ),
     path(
-        "<int:pk>/tableau-de-bord/telechargements/<uuid:draft_id>",
+        "<str:land_type>/<str:land_id>/telechargements/<uuid:draft_id>",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads_draft",
     ),

@@ -1,9 +1,9 @@
 import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useSearchTerritoryQuery } from '@services/api';
+import { useSearchTerritoryQuery, useCreateProjectForStatsMutation } from '@services/api';
+import { landTypeCodeToSlug } from '@utils/landUtils';
 import useDebounce from '@hooks/useDebounce';
 import Loader from '@components/ui/Loader';
-import getCsrfToken from '@utils/csrf';
 
 interface SearchBarProps {
     onTerritorySelect?: (territory: Territory) => void;
@@ -22,20 +22,8 @@ export interface Territory {
     land_type: string;
 }
 
-const defaultBehavior = async (territory: Territory) => {
-    const response = await fetch("/project/nouveau", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrfToken(),
-        },
-        body: JSON.stringify({
-            land_id: territory.source_id,
-            land_type: territory.land_type,
-        }),
-    })
-    const { id } = await response.json()
-    window.location.href = `/project/${id}/tableau-de-bord/synthesis`
+const defaultBehavior = (territory: Territory) => {
+    window.location.href = `/diagnostic/${landTypeCodeToSlug(territory.land_type)}/${territory.source_id}`
 }
 
 
@@ -216,7 +204,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
         setData(undefined);
     };
 
+    const [createProjectForStats] = useCreateProjectForStatsMutation();
+
     const handleTerritoryClick = (territory: Territory) => {
+        if (!onTerritorySelect) {
+            createProjectForStats({ land_type: territory.land_type, land_id: territory.source_id });
+        }
         onTerritorySelect ? onTerritorySelect(territory) : defaultBehavior(territory);
         handleReset();
     };

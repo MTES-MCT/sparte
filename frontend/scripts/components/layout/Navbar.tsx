@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components';
 import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
-import { MenuItem, ProjectDetailResultType } from '@services/types/project';
+import { MenuItem } from '@services/types/project';
 import { LandDetailResultType } from '@services/types/land';
 
 const primaryColor = '#313178';
@@ -203,9 +203,14 @@ const DownloadItems: React.FC<DownloadItemsProps> = ({ downloadsUrl }) => (
     </DownloadLink>
 );
 
-const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDetailResultType }> = ({ projectData, landData }) => {
+interface NavbarProps {
+    navbar: { menuItems: MenuItem[] };
+    urls: { downloads: string };
+    landData: LandDetailResultType;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ navbar, urls, landData }) => {
     const location = useLocation();
-    const { navbar, urls } = projectData
 
     const dispatch = useDispatch();
     const isOpen = useSelector(selectIsNavbarOpen);
