@@ -63,13 +63,12 @@ if (ocsgeImplementationMap)
 
 const dashboard = document.getElementById('react-root');
 if (dashboard) {
-  const landType = dashboard.dataset.landType;
-  const landId = dashboard.dataset.landId;
+  const { landType, landId, landSlug } = dashboard.dataset;
 
   createRoot(dashboard).render(
     <ErrorBoundary>
       <Provider store={store}>
-        <Dashboard landType={landType} landId={landId} />
+        <Dashboard landType={landType} landId={landId} landSlug={landSlug} />
       </Provider>
     </ErrorBoundary>,
   );

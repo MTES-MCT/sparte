@@ -1,7 +1,7 @@
 import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery, useCreateProjectForStatsMutation } from '@services/api';
-import { landTypeCodeToSlug } from '@utils/landUtils';
+
 import useDebounce from '@hooks/useDebounce';
 import Loader from '@components/ui/Loader';
 
@@ -20,10 +20,12 @@ export interface Territory {
     area: number;
     land_type_label: string;
     land_type: string;
+    land_type_slug: string;
+    slug: string;
 }
 
 const defaultBehavior = (territory: Territory) => {
-    window.location.href = `/diagnostic/${landTypeCodeToSlug(territory.land_type)}/${territory.source_id}`
+    window.location.href = `/diagnostic/${territory.land_type_slug}/${territory.slug}`
 }
 
 

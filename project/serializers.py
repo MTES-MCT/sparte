@@ -81,7 +81,6 @@ class ReportDraftSerializer(serializers.ModelSerializer):
         model = ReportDraft
         fields = [
             "id",
-            "project",
             "report_type",
             "report_type_display",
             "name",
@@ -102,7 +101,6 @@ class ReportDraftListSerializer(serializers.ModelSerializer):
         model = ReportDraft
         fields = [
             "id",
-            "project",
             "report_type",
             "report_type_display",
             "name",

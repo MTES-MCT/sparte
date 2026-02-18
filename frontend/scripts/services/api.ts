@@ -243,9 +243,9 @@ export const djangoApi = createApi({
 		getExportStatus: builder.query<{ status: 'pending' | 'completed' | 'failed'; error?: string }, string>({
 			query: (jobId) => `/diagnostic/export/status/${jobId}/`,
 		}),
-		getReportDrafts: builder.query<ReportDraftListItem[], { projectId: number; reportType?: string }>({
-			query: ({ projectId, reportType }) => {
-				const params = new URLSearchParams({ project_id: projectId.toString() });
+		getReportDrafts: builder.query<ReportDraftListItem[], { landType: string; landId: string; reportType?: string }>({
+			query: ({ landType, landId, reportType }) => {
+				const params = new URLSearchParams({ land_type: landType, land_id: landId });
 				if (reportType) params.append('report_type', reportType);
 				return `/api/report-drafts/?${params}`;
 			},

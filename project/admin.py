@@ -49,7 +49,6 @@ class ReportDraftAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "user",
-        "project",
         "report_type",
         "land_type",
         "land_id",
@@ -59,7 +58,7 @@ class ReportDraftAdmin(admin.ModelAdmin):
     list_filter = ("report_type", "land_type", "created_at")
     search_fields = ("name", "user__email", "land_id")
     readonly_fields = ("id", "created_at", "updated_at")
-    list_select_related = ("user", "project")
+    list_select_related = ("user",)
 
 
 @admin.register(Project)
@@ -164,7 +163,7 @@ class RequestAdmin(admin.ModelAdmin):
             project = Project.objects.get(id=obj.project_id)
             link = reverse(
                 "project:home",
-                kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_id": project.land_id},
+                kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_slug": project.land_slug},
             )
             return format_html(f'<a href="{link}">Accès à la fiche</a>')
         except (Project.DoesNotExist, exceptions.NoReverseMatch):

@@ -37,7 +37,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
     context_object_name = "projects"  # override to add an "s"
 
     def get_queryset(self):
-        return Project.objects.filter(user=self.request.user).prefetch_related("report_drafts")
+        return Project.objects.filter(user=self.request.user)
 
 
 class SplashScreenView(GroupMixin, DetailView):
@@ -64,7 +64,7 @@ class SplashProgressionView(GroupMixin, DetailView):
             project = self.get_object()
             response["HX-Redirect"] = reverse(
                 "project:home",
-                kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_id": project.land_id},
+                kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_slug": project.land_slug},
             )
         return response
 

@@ -114,7 +114,9 @@ export type TerritorialisationHierarchyItem = {
 export type LandDetailResultType = {
     land_id: string;
     land_type: LandType;
+    land_type_slug: string;
     name: string;
+    slug: string;
     surface: number;
     surface_unit: string;
     surface_artif: number | null;

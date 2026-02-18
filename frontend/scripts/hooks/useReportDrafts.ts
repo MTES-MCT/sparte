@@ -33,12 +33,13 @@ const sanitizeFilename = (str: string): string => {
 };
 
 interface UseReportDraftsOptions {
-    projectId: number;
+    landType: string;
+    landId: string;
     downloadsUrl: string;
     isAuthenticated: boolean;
 }
 
-export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: UseReportDraftsOptions) => {
+export const useReportDrafts = ({ landType, landId, downloadsUrl, isAuthenticated }: UseReportDraftsOptions) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { draftId: urlDraftId } = useParams<{ draftId?: string }>();
@@ -59,7 +60,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
     const pdfStatus = useSelector((state: RootState) => selectPdfExportStatus(state));
 
     const { data: drafts = [], isLoading: isDraftsLoading } = useGetReportDraftsQuery(
-        { projectId },
+        { landType, landId },
         { skip: !isAuthenticated }
     );
 
@@ -182,16 +183,17 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
 
     const handleCreateDraft = useCallback(async (data: { name: string; reportType: ReportType }) => {
         const result = await createDraft({
-            project: projectId,
             report_type: data.reportType,
             name: data.name,
             content: {},
+            land_type: landType,
+            land_id: landId,
         });
 
         if ('data' in result) {
             navigate(`${downloadsUrl}/${result.data.id}`);
         }
-    }, [createDraft, projectId, navigate, downloadsUrl]);
+    }, [createDraft, landType, landId, navigate, downloadsUrl]);
 
     // State for prefilling the create modal (default to 'rapport-complet')
     const [prefilledReportType, setPrefilledReportType] = useState<ReportType>('rapport-complet');
@@ -219,7 +221,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
                         landInfo: { name: selectedDraft.name, landId: selectedDraft.id },
                     }));
 
-                    const response = await fetch(`/diagnostic/export/download/${jobId}/?project_id=${projectId}`);
+                    const response = await fetch(`/diagnostic/export/download/${jobId}/`);
                     if (response.ok) {
                         const blob = await response.blob();
                         const timestamp = new Date().toISOString().slice(0, 10);
@@ -247,7 +249,7 @@ export const useReportDrafts = ({ projectId, downloadsUrl, isAuthenticated }: Us
         } catch {
             dispatch(setPdfExportError('Erreur lors de la génération du PDF'));
         }
-    }, [selectedDraft, dispatch, startExportPdf, getExportStatus, projectId]);
+    }, [selectedDraft, dispatch, startExportPdf, getExportStatus]);
 
     const handleBack = useCallback(() => {
         navigate(downloadsUrl);

@@ -30,6 +30,7 @@ import FricheStatus from '@components/features/status/FricheStatus';
 interface DashboardProps {
     landType: string;
     landId: string;
+    landSlug: string;
 }
 
 const ContentWrapper = styled.div`
@@ -54,7 +55,7 @@ const Content = styled.div`
 `;
 
 
-const Dashboard: React.FC<DashboardProps> = ({ landType, landId }) => {
+const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { data: landData, error, isLoading } = useGetLandQuery({ land_type: landType, land_id: landId });
     const { data: currentUser } = useGetCurrentUserQuery();
@@ -66,8 +67,8 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId }) => {
         }
     }, [landData?.name, dispatch]);
 
-    const urls = useMemo(() => buildUrls(landType, landId), [landType, landId]);
-    const navbar = useMemo(() => buildNavbar(landType, landId), [landType, landId]);
+    const urls = useMemo(() => buildUrls(landType, landSlug), [landType, landSlug]);
+    const navbar = useMemo(() => buildNavbar(landType, landSlug), [landType, landSlug]);
     const footer = useMemo(() => buildFooter(), []);
     const header = useMemo(() => buildHeader(currentUser?.is_authenticated ?? false), [currentUser?.is_authenticated]);
 

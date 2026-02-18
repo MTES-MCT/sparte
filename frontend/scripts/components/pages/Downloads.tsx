@@ -71,7 +71,7 @@ interface DownloadsProps {
 const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
     const { data: currentUser } = useGetCurrentUserQuery();
     const isAuthenticated = currentUser?.is_authenticated ?? false;
-    const urls = buildUrls(landData.land_type, landData.land_id);
+    const urls = buildUrls(landData.land_type_slug, landData.slug);
 
     const {
         selectedDraftId,
@@ -95,7 +95,8 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
         handleExportPdf,
         handleBack,
     } = useReportDrafts({
-        projectId: null,
+        landType: landData.land_type,
+        landId: landData.land_id,
         downloadsUrl: urls.downloads,
         isAuthenticated,
     });

@@ -49,7 +49,7 @@ class GroupMixin(UserQuerysetOrPublicMixin, BreadCrumbMixin):
                 {
                     "href": reverse_lazy(
                         "project:home",
-                        kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_id": project.land_id},
+                        kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_slug": project.land_slug},
                     ),
                     "title": project.name,
                 }

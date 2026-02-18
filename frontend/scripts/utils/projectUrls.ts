@@ -2,8 +2,8 @@ import type { MenuItem } from '@services/types/project';
 
 const FAQ_URL = "https://faq.mondiagartif.beta.gouv.fr/fr/";
 
-export function buildUrls(landType: string, landId: string) {
-    const base = `/diagnostic/${landType}/${landId}`;
+export function buildUrls(landType: string, landSlug: string) {
+    const base = `/diagnostic/${landType}/${landSlug}`;
     return {
         synthese: `${base}/`,
         artificialisation: `${base}/artificialisation`,
@@ -17,8 +17,8 @@ export function buildUrls(landType: string, landId: string) {
     };
 }
 
-export function buildNavbar(landType: string, landId: string) {
-    const urls = buildUrls(landType, landId);
+export function buildNavbar(landType: string, landSlug: string) {
+    const urls = buildUrls(landType, landSlug);
     const menuItems: MenuItem[] = [
         {
             label: "Synthèse",

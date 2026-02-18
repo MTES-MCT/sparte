@@ -110,17 +110,16 @@ class LandModel(models.Model):
         DONNEES_PARTIELLEMENT_CORRIGEES = "données_partiellement_coriggées", "données_partiellement_coriggées"
         DONNEES_INCHANGEES = "données_inchangées", "données_inchangées"
         DONNEES_MANQUANTES = "données_manquantes", "données_manquantes"
+        DONNEES_CORRIGEES_AVEC_DONNEES_MANQUANTES = (
+            "données_coriggées_avec_données_manquantes",
+            "données_coriggées_avec_données_manquantes",
+        )
 
     land_id = models.CharField()
     land_type = models.CharField()
-
-    @property
-    def land_type_slug(self) -> str:
-        from public_data.models import AdminRef
-
-        return AdminRef.code_to_slug(self.land_type)
-
+    land_type_slug = models.CharField()
     name = models.CharField()
+    slug = models.CharField()
     surface = models.FloatField()
     surface_unit = models.CharField()
     geom = MultiPolygonField()

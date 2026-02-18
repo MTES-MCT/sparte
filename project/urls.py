@@ -30,53 +30,57 @@ urlpatterns = [
     ),
     # CRUD
     path("mes-diagnostics", views.ProjectListView.as_view(), name="list"),
-    path("<str:land_type>/<str:land_id>/", views.diagnostic.DiagnosticSynthesisView.as_view(), name="home"),
+    # Export PDF (polling) — must be before <str:land_type>/<str:land_slug> routes
+    path("export/start/", ExportStartView.as_view(), name="export_start"),
+    path("export/status/<str:job_id>/", ExportStatusView.as_view(), name="export_status"),
+    path("export/download/<str:job_id>/", RecordDownloadRequestAPIView.as_view(), name="export_download"),
+    path("<str:land_type>/<str:land_slug>/", views.diagnostic.DiagnosticSynthesisView.as_view(), name="home"),
     path("<int:pk>/detail", ProjectDetailView.as_view(), name="project-detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     # REPORT
     path(
-        route="<str:land_type>/<str:land_id>/artificialisation",
+        route="<str:land_type>/<str:land_slug>/artificialisation",
         view=views.diagnostic.DiagnosticArtificialisationView.as_view(),
         name="report_artif",
     ),
     path(
-        route="<str:land_type>/<str:land_id>/impermeabilisation",
+        route="<str:land_type>/<str:land_slug>/impermeabilisation",
         view=views.diagnostic.DiagnosticImpermeabilisationView.as_view(),
         name="report_imper",
     ),
     path(
-        "<str:land_type>/<str:land_id>/consommation",
+        "<str:land_type>/<str:land_slug>/consommation",
         views.diagnostic.DiagnosticConsoView.as_view(),
         name="report_conso",
     ),
     path(
-        "<str:land_type>/<str:land_id>/vacance-des-logements",
+        "<str:land_type>/<str:land_slug>/vacance-des-logements",
         views.diagnostic.DiagnosticLogementVacantView.as_view(),
         name="report_logement_vacant",
     ),
     path(
-        "<str:land_type>/<str:land_id>/friches",
+        "<str:land_type>/<str:land_slug>/friches",
         views.diagnostic.DiagnosticFrichesView.as_view(),
         name="report_friches",
     ),
     path(
-        "<str:land_type>/<str:land_id>/trajectoires",
+        "<str:land_type>/<str:land_slug>/trajectoires",
         views.diagnostic.DiagnosticTrajectoiresView.as_view(),
         name="report_target_2031",
     ),
     path(
-        "<str:land_type>/<str:land_id>/rapport-local",
+        "<str:land_type>/<str:land_slug>/rapport-local",
         views.diagnostic.DiagnostictRapportLocalView.as_view(),
         name="report_local",
     ),
     # DOWNLOAD
     path(
-        "<str:land_type>/<str:land_id>/telechargements",
+        "<str:land_type>/<str:land_slug>/telechargements",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads",
     ),
     path(
-        "<str:land_type>/<str:land_id>/telechargements/<uuid:draft_id>",
+        "<str:land_type>/<str:land_slug>/telechargements/<uuid:draft_id>",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads_draft",
     ),
@@ -85,10 +89,6 @@ urlpatterns = [
         ProjectDownloadLinkView.as_view(),
         name="report_download_url",
     ),
-    # Export PDF (polling)
-    path("export/start/", ExportStartView.as_view(), name="export_start"),
-    path("export/status/<str:job_id>/", ExportStatusView.as_view(), name="export_status"),
-    path("export/download/<str:job_id>/", RecordDownloadRequestAPIView.as_view(), name="export_download"),
 ]
 
 # Add API urls
