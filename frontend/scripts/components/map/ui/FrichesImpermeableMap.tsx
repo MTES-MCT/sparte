@@ -107,6 +107,7 @@ export const FrichesImpermeableMap: React.FC<FrichesImpermeableMapProps> = ({
             config={config}
             landData={extendedLandData}
             center={center}
+            mapHeight="65vh"
             onMapLoad={onMapLoad}
         />
     );
