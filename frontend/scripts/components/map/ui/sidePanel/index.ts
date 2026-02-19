@@ -6,6 +6,8 @@ export { OcsgeObjectSidePanel } from "./OcsgeObjectSidePanel";
 export type { OcsgeObjectSidePanelProps } from "./OcsgeObjectSidePanel";
 export { ArtificialisationDiffSidePanel } from "./ArtificialisationDiffSidePanel";
 export type { ArtificialisationDiffSidePanelProps } from "./ArtificialisationDiffSidePanel";
+export { CarroyageLeaSidePanel } from "./CarroyageLeaSidePanel";
+export type { CarroyageLeaSidePanelProps } from "./CarroyageLeaSidePanel";
 export { renderPieChart, FluxLabel } from "./PieChart";
 export { parseComposition, getFluxNetColor } from "./utils";
 export type { SurfaceUnit, CompositionItem } from "./types";
