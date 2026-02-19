@@ -98,11 +98,11 @@ const variantStyles = {
     background: transparent;
     color: ${theme.button.link.color};
     border: none;
+    font-weight: ${theme.fontWeight.medium};
 
     &:hover:not(:disabled) {
       background: transparent;
       gap: 0.55rem;
-      text-decoration: underline;
     }
   `,
   outline: css<{ $size: ButtonSize }>`

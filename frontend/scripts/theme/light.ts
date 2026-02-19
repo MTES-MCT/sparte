@@ -32,19 +32,19 @@ export const theme = {
     borderLight: "#eeeeee",
 
     // Sémantiques DSFR
-    success: "#18753c",
-    successLight: "#b8fec9",
-    successBg: "#f0fdf4",
-    successBorder: "#d0e9da",
+    success: "#059669",
+    successLight: "#a7f3d0",
+    successBg: "#ecfdf5",
+    successBorder: "#bce3d5",
 
     warning: "#b34000",
     warningLight: "#ffe9e6",
     warningBg: "#fff4f3",
 
-    error: "#ce0500",
-    errorLight: "#ffe9e9",
+    error: "#dc2626",
+    errorLight: "#fecaca",
     errorBg: "#fef2f2",
-    errorBorder: "#e2aead",
+    errorBorder: "#f0d4d4",
 
     info: "#4318FF",
     infoLight: "#f0f0ff",
@@ -55,7 +55,7 @@ export const theme = {
   // ─── Palette catégories (pour graphiques, tags, etc.) ───
   palette: {
     blue: "#0063cb",
-    green: "#18753c",
+    green: "#059669",
     orange: "#d64d00",
     purple: "#6e445a",
     teal: "#00a88f",
@@ -105,16 +105,16 @@ export const theme = {
       color: "#000091",
     },
     success: {
-      background: "#dffee6",
-      color: "#18753c",
+      background: "#ecfdf5",
+      color: "#059669",
     },
     warning: {
       background: "#fff4f3",
       color: "#b34000",
     },
     error: {
-      background: "#fff4f4",
-      color: "#ce0500",
+      background: "#fef2f2",
+      color: "#dc2626",
     },
   },
 
@@ -132,7 +132,7 @@ export const theme = {
   // ─── Typographie ───
   fontSize: {
     xs: "0.7rem",
-    sm: "0.8rem",
+    sm: "0.82rem",
     md: "0.95rem",
     lg: "1.15rem",
     xl: "1.35rem",

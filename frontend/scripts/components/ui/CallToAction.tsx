@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { theme } from '@theme';
 import Button from '@components/ui/Button';
+import BaseCard from '@components/ui/BaseCard';
 
 interface Action {
   label: string;
@@ -14,17 +15,8 @@ interface CallToActionProps {
   actions?: Action[];
 }
 
-const Container = styled.div`
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, ${theme.colors.primaryLight} 0%, ${theme.colors.accentLight} 100%);
-  border-radius: ${theme.card.radius};
-  padding: ${theme.spacing.xl};
-  box-shadow: ${theme.card.shadow};
-
-  @media (max-width: 768px) {
-    padding: ${theme.spacing.lg};
-  }
+const Container = styled(BaseCard)`
+  padding: ${theme.spacing.lg};
 `;
 
 const Title = styled.h3`

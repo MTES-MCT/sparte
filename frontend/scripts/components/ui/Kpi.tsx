@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { theme } from "@theme";
 import BaseCard from "@components/ui/BaseCard";
+import Button from "@components/ui/Button";
 
 type KpiVariant = "info" | "success" | "error";
 
@@ -11,14 +12,19 @@ interface KpiMetricItem {
   value: string;
 }
 
-interface KpiPeriod {
+interface KpiPeriodItem {
   label: string;
-  value?: string;
+  active?: boolean;
 }
 
 type KpiFooter =
   | { type: "metric"; items: [KpiMetricItem, KpiMetricItem] }
-  | { type: "period"; direction: "up" | "down" | "neutral"; from: KpiPeriod; to: KpiPeriod };
+  | { type: "period"; periods: KpiPeriodItem[] };
+
+interface KpiAction {
+  label: string;
+  to: string;
+}
 
 export interface KpiProps {
   icon: string;
@@ -29,10 +35,11 @@ export interface KpiProps {
   variant: KpiVariant;
   badge?: string;
   footer?: KpiFooter;
+  action?: KpiAction;
 }
 
 const variantConfig: Record<KpiVariant, { color: string; bg: string; border: string }> = {
-  info: { color: theme.colors.info, bg: theme.colors.infoBg, border: theme.colors.infoBorder },
+  info: { color: theme.colors.primary, bg: theme.colors.infoBg, border: theme.colors.infoBorder },
   success: { color: theme.colors.success, bg: theme.colors.successBg, border: theme.colors.successBorder },
   error: { color: theme.colors.error, bg: theme.colors.errorBg, border: theme.colors.errorBorder },
 };
@@ -100,18 +107,11 @@ const ValueText = styled.div<{ $color: string }>`
 
 const LabelText = styled.div`
   font-size: ${theme.fontSize.sm};
-  color: ${theme.colors.textMuted};
   margin-top: 0.5rem;
   font-weight: ${theme.fontWeight.medium};
 `;
 
 const DescriptionText = styled.div`
-  font-size: ${theme.fontSize.md};
-  color: ${theme.colors.textLight};
-  margin-top: 0.25rem;
-`;
-
-const DetailText = styled.div`
   font-size: ${theme.fontSize.sm};
   color: ${theme.colors.textLight};
   margin-top: 0.25rem;
@@ -120,6 +120,15 @@ const DetailText = styled.div`
 const FooterWrapper = styled.div<{ $bg: string }>`
   padding: 1rem 1.5rem;
   background: ${({ $bg }) => $bg};
+`;
+
+const ActionWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid ${theme.colors.border};
+  background: ${theme.colors.backgroundSubtle};
 `;
 
 const MetricRow = styled.div`
@@ -189,11 +198,7 @@ const MetricValueText = styled.span`
 const PeriodRow = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const PeriodBlock = styled.div<{ $align: "left" | "right" }>`
-  flex: 1;
-  text-align: ${({ $align }) => $align};
+  justify-content: space-between;
 `;
 
 const PeriodLabel = styled.div`
@@ -204,29 +209,18 @@ const PeriodLabel = styled.div`
   font-weight: ${theme.fontWeight.semibold};
 `;
 
-const PeriodValue = styled.div`
-  font-size: ${theme.fontSize.lg};
-  font-weight: ${theme.fontWeight.bold};
-  color: ${theme.colors.text};
-
-  span {
-    font-size: ${theme.fontSize.sm};
-    font-weight: ${theme.fontWeight.medium};
-    color: ${theme.colors.textLight};
-    margin-left: 0.15rem;
-  }
-`;
-
 const ConnectorWrapper = styled.div`
-  flex: 0 0 auto;
+  flex: 1;
   display: flex;
   align-items: center;
-  padding: 0 1.5rem;
+  justify-content: center;
+  padding: 0 1rem;
   position: relative;
 `;
 
 const ConnectorLine = styled.div<{ $border: string }>`
-  width: 60px;
+  width: 100%;
+  max-width: 60px;
   height: 2px;
   background: ${({ $border }) => $border};
   position: relative;
@@ -298,26 +292,29 @@ const MetricFooter: React.FC<{
 );
 
 const PeriodFooter: React.FC<{
-  from: KpiPeriod;
-  to: KpiPeriod;
+  periods: KpiPeriodItem[];
   color: string;
   border: string;
-}> = ({ from, to, color, border }) => (
+}> = ({ periods, color, border }) => (
   <PeriodRow>
-    <PeriodBlock $align="left">
-      <PeriodLabel>{from.label}</PeriodLabel>
-      {from.value && <PeriodValue>{from.value}</PeriodValue>}
-    </PeriodBlock>
-    <ConnectorWrapper>
-      <ConnectorLine $border={border} />
-      <ConnectorBadge $color={color}>
-        <i className="bi bi-chevron-right" />
-      </ConnectorBadge>
-    </ConnectorWrapper>
-    <PeriodBlock $align="right">
-      <PeriodLabel>{to.label}</PeriodLabel>
-      {to.value && <PeriodValue>{to.value}</PeriodValue>}
-    </PeriodBlock>
+    {periods.map((period, index) => {
+      const isLast = index === periods.length - 1;
+      const badgeColor = period.active !== false ? color : border;
+
+      return (
+        <React.Fragment key={index}>
+          <PeriodLabel>{period.label}</PeriodLabel>
+          {!isLast && (
+            <ConnectorWrapper>
+              <ConnectorLine $border={border} />
+              <ConnectorBadge $color={badgeColor}>
+                <i className="bi bi-chevron-right" />
+              </ConnectorBadge>
+            </ConnectorWrapper>
+          )}
+        </React.Fragment>
+      );
+    })}
   </PeriodRow>
 );
 
@@ -326,10 +323,10 @@ const Kpi: React.FC<KpiProps> = ({
   label,
   value,
   description,
-  detail,
   variant,
   badge,
   footer,
+  action,
 }) => {
   const config = variantConfig[variant];
 
@@ -348,7 +345,6 @@ const Kpi: React.FC<KpiProps> = ({
         <ValueText $color={config.color}>{value}</ValueText>
         <LabelText>{label}</LabelText>
         {description && <DescriptionText>{description}</DescriptionText>}
-        {detail && <DetailText>{detail}</DetailText>}
       </Header>
       {footer && (
         <FooterWrapper $bg={config.bg}>
@@ -356,9 +352,16 @@ const Kpi: React.FC<KpiProps> = ({
             <MetricFooter items={footer.items} color={config.color} border={config.border} />
           )}
           {footer.type === "period" && (
-            <PeriodFooter from={footer.from} to={footer.to} color={config.color} border={config.border} />
+            <PeriodFooter periods={footer.periods} color={config.color} border={config.border} />
           )}
         </FooterWrapper>
+      )}
+      {action && (
+        <ActionWrapper>
+          <Button variant="link" to={action.to} icon="bi bi-arrow-right" iconPosition="right">
+            {action.label}
+          </Button>
+        </ActionWrapper>
       )}
     </Card>
   );

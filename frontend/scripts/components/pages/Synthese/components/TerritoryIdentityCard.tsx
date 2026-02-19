@@ -44,7 +44,6 @@ const DataSection = styled.div`
 
 const DataSectionLabel = styled.span`
   font-size: ${theme.fontSize.sm};
-  font-weight: ${theme.fontWeight.semibold};
   color: ${theme.colors.textLight};
 `;
 

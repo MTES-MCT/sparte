@@ -8,6 +8,8 @@ import SyntheseArtif from "./components/SyntheseArtif";
 import SyntheseFriche from "./components/SyntheseFriche";
 import SyntheseLogementVacant from "./components/SyntheseLogementVacant";
 import TerritoryIdentityCard from "./components/TerritoryIdentityCard";
+import DiagnosticsHub from "./components/DiagnosticsHub";
+import Feedback from '@components/ui/Feedback';
 
 interface SyntheseProps {
   projectData: ProjectDetailResultType;
@@ -15,7 +17,7 @@ interface SyntheseProps {
 }
 
 const timelineColors = {
-  light: { dot: theme.colors.accent, ring: theme.colors.accentLight },
+  light: { dot: theme.colors.highlight, ring: theme.colors.highlightLight },
   dark: { dot: theme.colors.primary, ring: theme.colors.primaryLight },
 } as const;
 
@@ -37,9 +39,10 @@ const Timeline = styled.div`
     background: linear-gradient(
       180deg,
       ${timelineColors.light.dot} 0%,
-      ${timelineColors.light.dot} 45%,
-      ${timelineColors.dark.dot} 55%,
-      ${timelineColors.dark.dot} 100%
+      ${timelineColors.light.dot} 40%,
+      ${timelineColors.dark.dot} 50%,
+      ${timelineColors.dark.dot} 85%,
+      transparent 100%
     );
     border-radius: 2px;
   }
@@ -118,7 +121,7 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
         </p>
         <Timeline>
           <TimelineItem $variant="light">
-            <TimelineYear $variant="light">2021 — 2030</TimelineYear>
+            <TimelineYear $variant="light">Horizon 2031</TimelineYear>
             <TimelineTitle>Mesure et réduction de la consommation d'espaces</TimelineTitle>
             <TimelineSubtitle>
               Objectif : diviser par deux la consommation d'espaces NAF par rapport à la décennie précédente
@@ -130,7 +133,7 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
           </TimelineItem>
 
           <TimelineItem $variant="dark">
-            <TimelineYear $variant="dark">2031 — 2050</TimelineYear>
+            <TimelineYear $variant="dark">Horizon 2050</TimelineYear>
             <TimelineTitle>Zéro Artificialisation Nette</TimelineTitle>
             <TimelineSubtitle>
               Objectif : compenser toute nouvelle artificialisation par de la renaturation
@@ -164,6 +167,57 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
           projectData={projectData}
         />
       </LevierSection>
+
+      <section className="fr-mb-6w">
+        <DiagnosticsHub
+          links={[
+            {
+              icon: "bi bi-graph-up",
+              title: "Consommation d'espaces",
+              description: "Analyse détaillée par destination et évolution démographique",
+              to: projectData.urls.consommation,
+              available: landData.has_conso,
+            },
+            {
+              icon: "bi bi-sliders",
+              title: "Simulation de trajectoire",
+              description: "Projetez et simulez vos objectifs de réduction",
+              to: projectData.urls.trajectoires,
+              available: landData.has_conso,
+            },
+            {
+              icon: "bi bi-layers",
+              title: "Artificialisation des sols",
+              description: "Flux d'artificialisation et couverture OCS GE",
+              to: projectData.urls.artificialisation,
+              available: landData.has_ocsge,
+            },
+            {
+              icon: "bi bi-layers",
+              title: "Imperméabilisation des sols",
+              description: "Imperméabilisation des sols",
+              to: projectData.urls.impermeabilisation,
+              available: landData.has_ocsge,
+            },
+            {
+              icon: "bi bi-house",
+              title: "Logements vacants",
+              description: "Parc privé, bailleurs sociaux et potentiel de mobilisation",
+              to: projectData.urls.logementVacant,
+              available: landData.has_logements_vacants_prive || landData.has_logements_vacants_social,
+            },
+            {
+              icon: "bi bi-building-x",
+              title: "Friches",
+              description: "Localisation, surface et potentiel de réhabilitation",
+              to: projectData.urls.friches,
+              available: landData.has_friche,
+            },
+          ]}
+        />
+      </section>
+
+      <Feedback onSubmit={(rating, comment) => console.log(rating, comment)} />
     </div>
   );
 };

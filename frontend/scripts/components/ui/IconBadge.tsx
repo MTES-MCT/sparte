@@ -10,13 +10,13 @@ interface IconBadgeProps {
 const Wrapper = styled.div<{ $size: number }>`
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
-  border-radius: ${theme.radius};
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: ${theme.iconBadge.background};
-  color: ${theme.iconBadge.color};
+  background: ${theme.colors.primary};
+  color: #fff;
 
   i {
     font-size: ${theme.fontSize.md};
