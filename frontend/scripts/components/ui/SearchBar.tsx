@@ -1,9 +1,9 @@
 import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
+
 import useDebounce from '@hooks/useDebounce';
 import Loader from '@components/ui/Loader';
-import getCsrfToken from '@utils/csrf';
 
 interface SearchBarProps {
     onTerritorySelect?: (territory: Territory) => void;
@@ -20,22 +20,12 @@ export interface Territory {
     area: number;
     land_type_label: string;
     land_type: string;
+    land_type_slug: string;
+    slug: string;
 }
 
-const defaultBehavior = async (territory: Territory) => {
-    const response = await fetch("/project/nouveau", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrfToken(),
-        },
-        body: JSON.stringify({
-            land_id: territory.source_id,
-            land_type: territory.land_type,
-        }),
-    })
-    const { id } = await response.json()
-    window.location.href = `/project/${id}/tableau-de-bord/synthesis`
+const defaultBehavior = (territory: Territory) => {
+    window.location.href = `/diagnostic/${territory.land_type_slug}/${territory.slug}`
 }
 
 

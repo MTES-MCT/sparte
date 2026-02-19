@@ -1,11 +1,10 @@
-import { ProjectDetailResultType } from '@services/api';
 import React from 'react';
 import styled from 'styled-components';
 
 
 interface MenuItem {
     label: string;
-    url: string;
+    url?: string;
     target?: string;
 }
 
@@ -39,8 +38,7 @@ const NavLink = styled.a`
     }
 `;
 
-const Footer = ({ projectData }: { projectData: ProjectDetailResultType}) => {
-    const { footer } = projectData;
+const Footer = ({ footer }: { footer: { menuItems: MenuItem[] } }) => {
 
     return (
         <Container className="fr-container--fluid">

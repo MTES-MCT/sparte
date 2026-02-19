@@ -56,7 +56,7 @@ class SigninTest(TestCase):
     @override_settings(MIDDLEWARE=testing_middleware)
     def test_signin_does_not_redirect_to_external_next_param(self) -> None:
         next_url = "https://malicious-site.com"
-        default_success_url = "/project/mes-diagnostics"
+        default_success_url = "/diagnostic/mes-diagnostics"
         response = self.client.post(
             path=f"/users/signin/?next={next_url}",
             data=urlencode(

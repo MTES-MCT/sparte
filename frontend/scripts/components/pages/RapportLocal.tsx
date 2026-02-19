@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ProjectDetailResultType } from "@services/types/project";
+import { LandDetailResultType } from "@services/types/land";
+import { buildUrls } from "@utils/projectUrls";
 import CallToAction from "@components/ui/CallToAction";
 
 // Images statiques
@@ -11,7 +12,7 @@ import successIcon from "@images/success_icon.png";
 import successIconDisabled from "@images/success_icon_disabled.png";
 
 interface RapportLocalProps {
-  projectData: ProjectDetailResultType;
+  landData: LandDetailResultType;
 }
 
 const ExternalLink: React.FC<{ href: string; children: React.ReactNode }> = ({
@@ -95,24 +96,23 @@ const IndicatorTile: React.FC<IndicatorTileProps> = ({
   </div>
 );
 
-const RapportLocal: React.FC<RapportLocalProps> = ({ projectData }) => {
+const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
+  const urls = buildUrls(landData.land_type, landData.land_id);
   return (
     <div className="fr-container--fluid fr-p-3w">
       <div className="fr-grid-row">
         <div className="fr-col-12">
-          {projectData?.urls?.downloads && (
-            <CallToAction
-              title="Besoin d'aide ?"
-              text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
+          <CallToAction
+            title="Besoin d'aide ?"
+            text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
+          >
+            <Link
+              to={urls.downloads}
+              className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
             >
-              <Link
-                to={projectData.urls.downloads}
-                className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
-              >
-                Accéder aux téléchargements
-              </Link>
-            </CallToAction>
-          )}
+              Accéder aux téléchargements
+            </Link>
+          </CallToAction>
 
           {/* Section: Objet du rapport */}
           <div className="fr-mt-3w">

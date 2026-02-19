@@ -1,10 +1,11 @@
 import React from "react";
 import { Territory } from "@components/ui/SearchBar";
 import { ComparisonLand } from "@services/types/project";
-import { useUpdateProjectComparisonLandsMutation } from "@services/api";
+import { useUpdatePreferenceComparisonLandsMutation } from "@services/api";
 
 interface UseComparisonTerritoriesOptions {
-  projectId?: number;
+  landId?: string;
+  landType?: string;
   comparisonLands?: ComparisonLand[];
   defaultTerritories?: ComparisonLand[];
   onComparisonLandsChange?: (lands: ComparisonLand[]) => void;
@@ -33,13 +34,14 @@ export const useComparisonTerritories = (
   options: UseComparisonTerritoriesOptions = {}
 ) => {
   const {
-    projectId,
+    landId: optLandId,
+    landType: optLandType,
     comparisonLands = [],
     defaultTerritories = [],
     onComparisonLandsChange,
   } = options;
 
-  const [updateComparisonLands] = useUpdateProjectComparisonLandsMutation();
+  const [updateComparisonLands] = useUpdatePreferenceComparisonLandsMutation();
 
   const isDefaultSelection = comparisonLands.length === 0;
   const effectiveLands = isDefaultSelection ? defaultTerritories : comparisonLands;
@@ -73,11 +75,11 @@ export const useComparisonTerritories = (
     (newLands: ComparisonLand[]) => {
       if (onComparisonLandsChange) {
         onComparisonLandsChange(newLands);
-      } else if (projectId) {
-        updateComparisonLands({ projectId, comparison_lands: newLands });
+      } else if (optLandId && optLandType) {
+        updateComparisonLands({ land_type: optLandType, land_id: optLandId, comparison_lands: newLands });
       }
     },
-    [projectId, onComparisonLandsChange, updateComparisonLands]
+    [optLandId, optLandType, onComparisonLandsChange, updateComparisonLands]
   );
 
   const handleAddTerritory = React.useCallback(

@@ -74,3 +74,23 @@ class HtmxMiddleware:
         request.htmx = "HX-Request" in request.headers
         response = self.get_response(request)
         return response
+
+
+class LandTypeSlugMiddleware:
+    """Convert land_type slugs (e.g. 'commune') to codes (e.g. 'COMM') in query parameters."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        land_type = request.GET.get("land_type")
+        if land_type:
+            from public_data.models import AdminRef
+
+            converted = AdminRef.slug_to_code(land_type)
+            if converted != land_type:
+                query_dict = request.GET.copy()
+                query_dict["land_type"] = converted
+                request.GET = query_dict
+
+        return self.get_response(request)

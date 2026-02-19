@@ -27,3 +27,4 @@ models:
                 - données_inchangées_avec_données_manquantes
                 - données_partiellement_coriggées
                 - données_inchangées
+                - données_coriggées_avec_données_manquantes

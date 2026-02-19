@@ -2,13 +2,12 @@ import React from "react";
 import Card from "@components/ui/Card";
 import GenericChart from "@components/charts/GenericChart";
 import { LandDetailResultType } from "@services/types/land";
-import { ProjectDetailResultType } from "@services/types/project";
 import { formatNumber } from "@utils/formatUtils";
 import { ConsommationControls } from "./components/ConsommationControls";
 import { ConsoDemography } from "./components/ConsoDemography";
 import { ConsoComparison } from "./components/ConsoComparison";
 import { useConsoData, useNearestTerritories, useComparisonTerritories } from "./hooks";
-import { ComparisonLand } from "@services/types/project";
+import { ComparisonLand, UserLandPreferenceResultType } from "@services/types/project";
 import { ConsommationControlsProvider, useConsommationControls } from "./context/ConsommationControlsContext";
 import { TopBarContent } from "@components/layout/TopBarContent";
 import Loader from "@components/ui/Loader";
@@ -17,7 +16,7 @@ import { CarroyageLeaMap } from "@components/map";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
-  projectData: ProjectDetailResultType;
+  preference?: UserLandPreferenceResultType;
 }
 
 const DetailsCalculationFichiersFonciers: React.FC = () => (
@@ -27,7 +26,7 @@ const DetailsCalculationFichiersFonciers: React.FC = () => (
   </div>
 );
 
-const ConsommationContent: React.FC<ConsommationProps> = ({ landData, projectData }) => {
+const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference }) => {
   const { land_id, land_type, name, child_land_types } = landData || {};
 
   const {
@@ -67,8 +66,9 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, projectDat
     handleRemoveTerritory,
     handleResetTerritories,
   } = useComparisonTerritories(land_id, land_type, name, {
-    projectId: projectData?.id,
-    comparisonLands: projectData?.comparison_lands || [],
+    landId: land_id,
+    landType: land_type,
+    comparisonLands: preference?.comparison_lands ?? [],
     defaultTerritories,
   });
   if (!landData) {
@@ -316,7 +316,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, projectDat
   );
 };
 
-export const Consommation: React.FC<ConsommationProps> = ({ landData, projectData }) => {
+export const Consommation: React.FC<ConsommationProps> = ({ landData, preference }) => {
   const { land_id, land_type, child_land_types } = landData || {};
 
   return (
@@ -325,7 +325,7 @@ export const Consommation: React.FC<ConsommationProps> = ({ landData, projectDat
       land_type={land_type}
       childLandTypes={child_land_types}
     >
-      <ConsommationContent landData={landData} projectData={projectData} />
+      <ConsommationContent landData={landData} preference={preference} />
     </ConsommationControlsProvider>
   );
 };

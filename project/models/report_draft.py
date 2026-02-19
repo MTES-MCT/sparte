@@ -14,11 +14,6 @@ class ReportDraft(models.Model):
         on_delete=models.CASCADE,
         related_name="report_drafts",
     )
-    project = models.ForeignKey(
-        "project.Project",
-        on_delete=models.CASCADE,
-        related_name="report_drafts",
-    )
     report_type = models.CharField(
         max_length=30,
         choices=RequestedDocumentChoices.choices,

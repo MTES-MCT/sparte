@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
+import { buildUrls } from "@utils/projectUrls";
 import Loader from "@components/ui/Loader";
 import { formatNumber } from "@utils/formatUtils";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
@@ -21,7 +21,6 @@ import ConsoCorrectionStatus from "@components/features/status/ConsoCorrectionSt
 import OcsgeStatus from "@components/features/status/OcsgeStatus";
 
 interface SyntheseProps {
-  projectData: ProjectDetailResultType;
   landData: LandDetailResultType;
 }
 
@@ -168,13 +167,11 @@ const SyntheseConsoTexteTerritorialise = ({
 
 const SyntheseConso = ({
   landData,
-  projectData,
 }: {
   landData: LandDetailResultType;
-  projectData: ProjectDetailResultType;
 }) => {
   const { land_id, land_type, name, conso_details } = landData;
-  const { urls } = projectData;
+  const urls = buildUrls(land_type, land_id);
   const { trajectoire_conso_is_territorialise } = conso_details;
 
   return (
@@ -223,7 +220,8 @@ const SyntheseConso = ({
   );
 };
 
-const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
+const SyntheseArtif = ({ landData }: SyntheseProps) => {
+  const urls = buildUrls(landData.land_type, landData.land_id);
   const {
     landArtifStockIndex: data,
     isLoading,
@@ -310,7 +308,7 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
       >
         <div className="d-flex align-items-center gap-3">
           <Link
-            to={projectData.urls.artificialisation}
+            to={urls.artificialisation}
             className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
           >
             Diagnostic de l'artificialisation
@@ -321,7 +319,8 @@ const SyntheseArtif = ({ landData, projectData }: SyntheseProps) => {
   );
 };
 
-const SyntheseLogementVacant = ({ landData, projectData }: SyntheseProps) => {
+const SyntheseLogementVacant = ({ landData }: SyntheseProps) => {
+  const urls = buildUrls(landData.land_type, landData.land_id);
   return (
     <div className="fr-mt-5w">
       {(landData.has_logements_vacants_prive || landData.has_logements_vacants_social) ? (
@@ -339,7 +338,7 @@ const SyntheseLogementVacant = ({ landData, projectData }: SyntheseProps) => {
             }
             name={landData.name}
             className="fr-mt-2w"
-            link={projectData.urls.logementVacant}
+            link={urls.logementVacant}
           />
         </>
       ) : (
@@ -349,7 +348,8 @@ const SyntheseLogementVacant = ({ landData, projectData }: SyntheseProps) => {
   );
 };
 
-const SyntheseFriche = ({ landData, projectData }: SyntheseProps) => {
+const SyntheseFriche = ({ landData }: SyntheseProps) => {
+  const urls = buildUrls(landData.land_type, landData.land_id);
   return (
     <div className="fr-mt-7w">
       {landData.has_friche ? (
@@ -363,7 +363,7 @@ const SyntheseFriche = ({ landData, projectData }: SyntheseProps) => {
             friche_status_details={landData.friche_status_details}
             name={landData.name}
             className="fr-mt-2w"
-            link={projectData.urls.friches}
+            link={urls.friches}
           />
         </>
       ) : (
@@ -373,7 +373,7 @@ const SyntheseFriche = ({ landData, projectData }: SyntheseProps) => {
   );
 };
 
-const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
+const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
   const { consommation_correction_status, ocsge_status, has_conso, has_ocsge } =
     landData;
   return (
@@ -381,13 +381,13 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
       <h2>Comprendre : les objectifs de sobriété foncière</h2>
       <h3>Période 2021-2030 : mesure de la consommation d'espaces</h3>
       {has_conso ? (
-        <SyntheseConso landData={landData} projectData={projectData} />
+        <SyntheseConso landData={landData} />
       ) : (
         <ConsoCorrectionStatus status={consommation_correction_status} />
       )}
       <h3>Période 2031 - 2050 : mesure de l’artificialisation des sols</h3>
       {has_ocsge ? (
-        <SyntheseArtif landData={landData} projectData={projectData} />
+        <SyntheseArtif landData={landData} />
       ) : (
         <OcsgeStatus status={ocsge_status} />
       )}
@@ -395,9 +395,9 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
         Agir : les leviers de la sobriété foncière
       </h2>
       <h3>Vacance des Logements</h3>
-      <SyntheseLogementVacant landData={landData} projectData={projectData} />
+      <SyntheseLogementVacant landData={landData} />
       <h3>Réhabilitation des friches</h3>
-      <SyntheseFriche landData={landData} projectData={projectData} />
+      <SyntheseFriche landData={landData} />
     </div>
   );
 };

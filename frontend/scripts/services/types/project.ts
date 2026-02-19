@@ -74,11 +74,14 @@ export type ProjectDetailResultType = {
   };
   header: {
     logos: Logo[];
-    search: {
-      createUrl: string;
-    };
+    search: Record<string, never>;
     menuItems: MenuItem[];
   };
+};
+
+export type UserLandPreferenceResultType = {
+  target_2031: number | null;
+  comparison_lands: ComparisonLand[];
 };
 
 type ProjectDetailQueryArg = string | FetchArgs

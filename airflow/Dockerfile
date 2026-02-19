@@ -1,4 +1,4 @@
-FROM quay.io/astronomer/astro-runtime:12.6.0-base
+FROM quay.io/astronomer/astro-runtime:13.4.0-base
 
 # Switch to root for setup
 USER root

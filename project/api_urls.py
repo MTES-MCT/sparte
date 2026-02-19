@@ -6,8 +6,9 @@ from rest_framework.routers import DefaultRouter
 
 from project.api_views import (
     ReportDraftViewSet,
-    UpdateProjectComparisonLandsAPIView,
-    UpdateProjectTarget2031APIView,
+    UpdatePreferenceComparisonLandsAPIView,
+    UpdatePreferenceTarget2031APIView,
+    UserLandPreferenceAPIView,
 )
 from project.charts import (
     AnnualConsoByDeterminantChart,
@@ -294,11 +295,20 @@ def chart_view(request, id, land_type, land_id):
 urlpatterns = [
     path("", include(router.urls)),
     path("me/", me_view, name="me"),
-    path("project/<int:pk>/target-2031/", UpdateProjectTarget2031APIView.as_view(), name="update-target-2031"),
     path(
-        "project/<int:pk>/comparison-lands/",
-        UpdateProjectComparisonLandsAPIView.as_view(),
-        name="update-comparison-lands",
+        "preference/<str:land_type>/<str:land_id>/",
+        UserLandPreferenceAPIView.as_view(),
+        name="user-land-preference",
+    ),
+    path(
+        "preference/<str:land_type>/<str:land_id>/target-2031/",
+        UpdatePreferenceTarget2031APIView.as_view(),
+        name="update-preference-target-2031",
+    ),
+    path(
+        "preference/<str:land_type>/<str:land_id>/comparison-lands/",
+        UpdatePreferenceComparisonLandsAPIView.as_view(),
+        name="update-preference-comparison-lands",
     ),
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path(

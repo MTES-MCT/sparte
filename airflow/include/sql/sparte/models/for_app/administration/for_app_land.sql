@@ -9,7 +9,12 @@ SELECT
     land.land_type || '_' || land.land_id as key,
     land.land_id,
     land.land_type,
+    {{ land_type_to_slug('land.land_type') }} as land_type_slug,
     name,
+    CASE
+        WHEN land.land_type = '{{ var("NATION") }}' THEN 'france'
+        ELSE land.land_id || '-' || {{ slugify('name') }}
+    END as slug,
     {{ m2_to_ha('land.surface') }} as surface,
     'ha' as surface_unit,
     ARRAY[

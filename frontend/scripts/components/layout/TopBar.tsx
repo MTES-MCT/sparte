@@ -57,14 +57,14 @@ const Title = styled.div`
 `;
 
 const TopBar: React.FC = () => {
-    const projectData = useSelector((state: RootState) => state.project.projectData);
+    const territoryName = useSelector((state: RootState) => state.project.territoryName);
     const isOpen = useSelector(selectIsNavbarOpen);
 
     return (
         <Container>
             <LeftSection>
                 { !isOpen && <ButtonToggleNavbar /> }
-                <Title>{ projectData?.territory_name }</Title>
+                <Title>{ territoryName }</Title>
             </LeftSection>
             <RightSection id="topbar-slot">
                 {/* Le contenu sera rendu ici via React Portal */}

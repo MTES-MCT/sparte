@@ -129,6 +129,7 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "users.middleware.ProfileCompletionMiddleware",
+    "config.middlewares.LandTypeSlugMiddleware",
 ]
 
 

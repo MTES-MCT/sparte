@@ -4,17 +4,17 @@ import Card from '@components/ui/Card';
 import { TerritorialisationHierarchy } from '@components/features/trajectoires/TerritorialisationHierarchy';
 import { TerritorialisationWarning } from '@components/features/trajectoires/TerritorialisationWarning';
 import GuideContent from '@components/ui/GuideContent';
-import { useUpdateProjectTarget2031Mutation, useGetCurrentUserQuery } from '@services/api';
+import { useUpdatePreferenceTarget2031Mutation, useGetCurrentUserQuery } from '@services/api';
 import { formatNumber } from '@utils/formatUtils';
 import { getLandTypeLabel } from '@utils/landUtils';
 import { LandDetailResultType } from '@services/types/land';
-import { ProjectDetailResultType } from '@services/types/project';
+import { UserLandPreferenceResultType } from '@services/types/project';
 import styled from 'styled-components';
 import GenericChart from '@components/charts/GenericChart';
 
 interface TrajectoiresProps {
     landData: LandDetailResultType;
-    projectData: ProjectDetailResultType;
+    preference?: UserLandPreferenceResultType;
 }
 
 const PeriodTitle = styled.h4`
@@ -168,9 +168,9 @@ const MiniComparisonChart: React.FC<MiniComparisonChartProps> = ({
 };
 
 
-const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) => {
+const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, preference }) => {
     const { land_id, land_type, name, conso_details, territorialisation } = landData;
-    const [updateTarget2031, { isLoading: isUpdating }] = useUpdateProjectTarget2031Mutation();
+    const [updateTarget2031, { isLoading: isUpdating }] = useUpdatePreferenceTarget2031Mutation();
     const [showCustomTargetModal, setShowCustomTargetModal] = useState(false);
     const [modalTargetInput, setModalTargetInput] = useState<string>('');
 
@@ -178,7 +178,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
     const isDGALNMember = currentUser?.groups?.includes('DGALN') ?? false;
 
     const openModal = () => {
-        setModalTargetInput(projectData.target_2031?.toString() ?? '');
+        setModalTargetInput(target_custom != null ? String(target_custom) : '');
         setShowCustomTargetModal(true);
     };
 
@@ -221,7 +221,7 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
     const depassement_2031 = conso_projetee_2031 - allowed_conso_2021_2030;
 
     // Calcul de l'objectif personnalisé
-    const target_custom = projectData.target_2031;
+    const target_custom: number | null = preference?.target_2031 ?? null;
     const has_custom_target = target_custom != null;
     const allowed_conso_custom = has_custom_target ? conso_2011_2020 * (1 - target_custom / 100) : 0;
     const allowed_conso_custom_per_year = has_custom_target ? allowed_conso_custom / 10 : 0;
@@ -236,11 +236,11 @@ const Trajectoires: React.FC<TrajectoiresProps> = ({ landData, projectData }) =>
 
     const handleSaveCustomTarget = () => {
         if (modalTargetInput === '') {
-            updateTarget2031({ projectId: projectData.id, target_2031: null });
+            updateTarget2031({ land_type, land_id, target_2031: objectif_reduction });
         } else {
             const numValue = Number.parseFloat(modalTargetInput);
             if (!Number.isNaN(numValue) && numValue >= 0 && numValue <= 100) {
-                updateTarget2031({ projectId: projectData.id, target_2031: numValue });
+                updateTarget2031({ land_type, land_id, target_2031: numValue });
             }
         }
         setShowCustomTargetModal(false);

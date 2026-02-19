@@ -1,12 +1,6 @@
-from project.models import Project
-
 from .DiagnosticBaseView import DiagnosticBaseView
 
 
 class DiagnosticSynthesisView(DiagnosticBaseView):
     template_name = "project/pages/synthese.html"
-
-    def get_context_data(self, **kwargs):
-        project: Project = self.get_object()
-        kwargs.update({"diagnostic": project})
-        return super().get_context_data(**kwargs)
+    page_section = "Synthèse"
