@@ -2,9 +2,7 @@ import json
 import logging
 
 from django.http import JsonResponse
-from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 
 from project.models.user_land_preference import UserLandPreference
 from public_data.models import AdminRef
@@ -12,7 +10,6 @@ from public_data.models import AdminRef
 logger = logging.getLogger(__name__)
 
 
-@method_decorator(csrf_exempt, name="dispatch")
 class UserLandPreferenceAPIView(View):
     """GET: retourne les preferences de l'utilisateur pour un territoire."""
 
@@ -38,7 +35,6 @@ class UserLandPreferenceAPIView(View):
             return JsonResponse({"is_favorited": False, "target_2031": None, "comparison_lands": []})
 
 
-@method_decorator(csrf_exempt, name="dispatch")
 class UpdatePreferenceTarget2031APIView(View):
     """POST: met a jour target_2031 pour l'utilisateur courant."""
 
@@ -82,7 +78,6 @@ class UpdatePreferenceTarget2031APIView(View):
             )
 
 
-@method_decorator(csrf_exempt, name="dispatch")
 class UpdatePreferenceComparisonLandsAPIView(View):
     """POST: met a jour comparison_lands pour l'utilisateur courant."""
 
@@ -101,6 +96,7 @@ class UpdatePreferenceComparisonLandsAPIView(View):
             if not isinstance(comparison_lands, list):
                 return JsonResponse({"success": False, "error": "comparison_lands doit etre une liste"}, status=400)
 
+            sanitized_lands = []
             for item in comparison_lands:
                 if not isinstance(item, dict):
                     return JsonResponse(
@@ -111,13 +107,20 @@ class UpdatePreferenceComparisonLandsAPIView(View):
                         {"success": False, "error": "Chaque territoire doit avoir land_type, land_id et name"},
                         status=400,
                     )
+                sanitized_lands.append(
+                    {
+                        "land_type": str(item["land_type"]),
+                        "land_id": str(item["land_id"]),
+                        "name": str(item["name"]),
+                    }
+                )
 
             pref, _ = UserLandPreference.objects.get_or_create(
                 user=request.user,
                 land_type=land_type,
                 land_id=land_id,
             )
-            pref.comparison_lands = comparison_lands
+            pref.comparison_lands = sanitized_lands
             pref.save(update_fields=["comparison_lands"])
 
             return JsonResponse({"success": True, "comparison_lands": pref.comparison_lands})
