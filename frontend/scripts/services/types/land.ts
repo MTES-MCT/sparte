@@ -115,6 +115,7 @@ export type LandDetailResultType = {
     land_id: string;
     land_type: LandType;
     land_type_slug: string;
+    land_type_label: string;
     name: string;
     slug: string;
     surface: number;

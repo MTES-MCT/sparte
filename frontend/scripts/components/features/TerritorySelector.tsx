@@ -1,14 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
-import SearchBar, { Territory } from '@components/ui/SearchBar';
+import SearchBar from '@components/ui/SearchBar';
+import { LandDetailResultType } from '@services/types/land';
 import { TerritoryBadge } from '@components/pages/Consommation/components/ConsoComparison/TerritoryBadge';
 
 interface TerritorySelectorProps {
-    territories: Territory[];
-    excludedTerritories: Territory[];
+    territories: LandDetailResultType[];
+    excludedTerritories: LandDetailResultType[];
     isDefaultSelection: boolean;
-    onAddTerritory: (territory: Territory) => void;
-    onRemoveTerritory: (territory: Territory) => void;
+    onAddTerritory: (territory: LandDetailResultType) => void;
+    onRemoveTerritory: (territory: LandDetailResultType) => void;
     onReset: () => void;
     searchLabel?: string;
     emptyText?: string;
@@ -58,7 +59,7 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                 ) : (
                     territories.map((territory) => (
                         <TerritoryBadge
-                            key={`${territory.land_type}_${territory.source_id}`}
+                            key={`${territory.land_type}_${territory.land_id}`}
                             territory={territory}
                             onRemove={onRemoveTerritory}
                         />

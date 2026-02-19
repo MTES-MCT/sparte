@@ -8,6 +8,8 @@ from .LandModel import (
     LandChildrenGeomViewset,
     LandModel,
     LandModelGeomViewset,
+    LandModelSearchSerializer,
+    LandModelSerializer,
     LandModelViewset,
 )
 from .Nation import Nation
@@ -23,6 +25,8 @@ __all__ = [
     "LandMixin",
     "LandModel",
     "LandModelViewset",
+    "LandModelSerializer",
+    "LandModelSearchSerializer",
     "LandModelGeomViewset",
     "LandChildrenGeomViewset",
     "Region",

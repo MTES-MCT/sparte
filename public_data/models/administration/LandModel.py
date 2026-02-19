@@ -403,12 +403,31 @@ class LandModel(models.Model):
 
 class LandModelSerializer(serializers.ModelSerializer):
     territorialisation = serializers.DictField(read_only=True)
+    land_type_label = serializers.CharField(read_only=True)
 
     class Meta:
         model = LandModel
         exclude = (
             "geom",
             "simple_geom",
+        )
+
+
+class LandModelSearchSerializer(serializers.ModelSerializer):
+    land_type_label = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = LandModel
+        fields = (
+            "id",
+            "land_id",
+            "land_type",
+            "land_type_slug",
+            "land_type_label",
+            "name",
+            "slug",
+            "key",
+            "surface",
         )
 
 

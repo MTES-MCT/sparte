@@ -1,5 +1,5 @@
 import React from "react";
-import { Territory } from "@components/ui/SearchBar";
+import { LandDetailResultType } from "@services/types/land";
 import { ComparisonLand } from "@services/types/project";
 import { useUpdatePreferenceComparisonLandsMutation } from "@services/api";
 
@@ -11,19 +11,18 @@ interface UseComparisonTerritoriesOptions {
   onComparisonLandsChange?: (lands: ComparisonLand[]) => void;
 }
 
-const toTerritory = (land: ComparisonLand): Territory => ({
-  id: 0,
+const toTerritory = (land: ComparisonLand) => ({
   name: land.name,
-  source_id: land.land_id,
+  land_id: land.land_id,
   land_type: land.land_type,
   land_type_label: "",
-  area: 0,
-  public_key: `${land.land_type}_${land.land_id}`,
-});
+  surface: 0,
+  key: `${land.land_type}_${land.land_id}`,
+} as unknown as LandDetailResultType);
 
-const toComparisonLand = (territory: Territory): ComparisonLand => ({
+const toComparisonLand = (territory: LandDetailResultType): ComparisonLand => ({
   land_type: territory.land_type,
-  land_id: territory.source_id,
+  land_id: territory.land_id,
   name: territory.name,
 });
 
@@ -56,15 +55,14 @@ export const useComparisonTerritories = (
     return effectiveLands.map((t) => `${t.land_type}_${t.land_id}`).join(",");
   }, [effectiveLands]);
 
-  const mainTerritory: Territory = React.useMemo(() => ({
-    id: 0,
+  const mainTerritory = React.useMemo(() => ({
     name: landName,
-    source_id: landId,
+    land_id: landId,
     land_type: landType,
     land_type_label: "",
-    area: 0,
-    public_key: "",
-  }), [landId, landType, landName]);
+    surface: 0,
+    key: "",
+  } as unknown as LandDetailResultType), [landId, landType, landName]);
 
   const excludedTerritories = React.useMemo(
     () => [mainTerritory, ...territories],
@@ -83,11 +81,11 @@ export const useComparisonTerritories = (
   );
 
   const handleAddTerritory = React.useCallback(
-    (territory: Territory) => {
+    (territory: LandDetailResultType) => {
       const isDuplicate = effectiveLands.some(
-        (t) => t.land_id === territory.source_id && t.land_type === territory.land_type
+        (t) => t.land_id === territory.land_id && t.land_type === territory.land_type
       );
-      const isSelf = territory.source_id === landId && territory.land_type === landType;
+      const isSelf = territory.land_id === landId && territory.land_type === landType;
 
       if (!isDuplicate && !isSelf) {
         save([...effectiveLands, toComparisonLand(territory)]);
@@ -97,9 +95,9 @@ export const useComparisonTerritories = (
   );
 
   const handleRemoveTerritory = React.useCallback(
-    (territory: Territory) => {
+    (territory: LandDetailResultType) => {
       const newLands = effectiveLands.filter(
-        (t) => !(t.land_id === territory.source_id && t.land_type === territory.land_type)
+        (t) => !(t.land_id === territory.land_id && t.land_type === territory.land_type)
       );
       save(newLands);
     },

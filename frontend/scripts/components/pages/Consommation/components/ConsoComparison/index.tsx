@@ -1,5 +1,5 @@
 import React from "react";
-import { Territory } from "@components/ui/SearchBar";
+import { LandDetailResultType } from "@services/types/land";
 import TerritorySelector from "@components/features/TerritorySelector";
 import { ChartSection } from "./ChartSection";
 import { CHART_DESCRIPTIONS, GUIDE_TEXTS } from "./constants";
@@ -11,12 +11,12 @@ interface ConsoComparisonProps {
   landName: string;
   startYear: number;
   endYear: number;
-  territories: Territory[];
-  excludedTerritories: Territory[];
+  territories: LandDetailResultType[];
+  excludedTerritories: LandDetailResultType[];
   comparisonLandIds: string | null;
   isDefaultSelection: boolean;
-  onAddTerritory: (territory: Territory) => void;
-  onRemoveTerritory: (territory: Territory) => void;
+  onAddTerritory: (territory: LandDetailResultType) => void;
+  onRemoveTerritory: (territory: LandDetailResultType) => void;
   onReset: () => void;
 }
 

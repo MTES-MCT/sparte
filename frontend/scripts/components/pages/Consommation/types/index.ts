@@ -2,7 +2,7 @@
  * Types for Consommation page components
  */
 
-import { Territory } from "@components/ui/SearchBar";
+import { LandDetailResultType } from "@services/types/land";
 
 export interface SimilarTerritory {
   land_id: string;
@@ -30,4 +30,4 @@ export interface ConsommationProps {
   surface: number;
 }
 
-export type { Territory };
+export type { LandDetailResultType };

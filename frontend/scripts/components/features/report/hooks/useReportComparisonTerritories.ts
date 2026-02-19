@@ -24,7 +24,7 @@ export const useReportComparisonTerritories = ({
   const defaultTerritories: ComparisonLand[] = React.useMemo(
     () => nearestTerritories.map((t) => ({
       land_type: t.land_type,
-      land_id: t.source_id,
+      land_id: t.land_id,
       name: t.name,
     })),
     [nearestTerritories]

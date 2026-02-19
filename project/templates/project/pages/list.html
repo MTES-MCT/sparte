@@ -3,23 +3,85 @@
 {% load static %}
 
 {% block pagetitle %}
-Mes diagnostics
+Mes territoires
 {% endblock pagetitle %}
 
 {% block content %}
 <div class="fr-container">
-    <h1 class="fr-mb-2w">Mes diagnostics</h1>
+    <h1 class="fr-mb-2w">Mes territoires</h1>
+
+    {% if main_pref %}
+    <div class="fr-mb-4w">
+        <h2 class="fr-h4 fr-mb-1w">Territoire principal d'intérêt</h2>
+        <div class="fr-card fr-card--horizontal fr-card--sm fr-card--shadow">
+            <div class="fr-card__body">
+                <div class="fr-card__content fr-pb-1w">
+                    <div class="fr-card__title d-flex justify-content-between align-items-center">
+                        <h3 class="fr-mb-0">{{ main_pref.land.name }}</h3>
+                        <p class="fr-badge fr-badge--sm fr-badge--search">{{ main_pref.land.land_type_label }}</p>
+                    </div>
+                    <div class="fr-card__end fr-mt-0">
+                        <ul class="fr-badges-group">
+                            <li>
+                                <p class="fr-badge fr-badge--sm fr-badge--purple-glycine">
+                                    <span class="bi bi-bounding-box-circles fr-mr-1v" aria-hidden="true"></span>
+                                    {{ main_pref.land.surface|floatformat:0 }} ha
+                                </p>
+                            </li>
+                            {% if main_pref.target_2031 != None %}
+                            <li>
+                                <p class="fr-badge fr-badge--sm fr-badge--green-emeraude">
+                                    <span class="bi bi-bullseye fr-mr-1v" aria-hidden="true"></span>
+                                    Objectif personnalisé : -{{ main_pref.target_2031 }}%
+                                </p>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="fr-card__footer">
+                    <div class="d-flex">
+                        <a href="{% url 'project:home' main_pref.land.land_type_slug main_pref.land.slug %}" class="fr-mr-2w fr-link--text-decoration-none">
+                            <button class="fr-btn fr-btn--primary fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line">
+                                Accéder au diagnostic
+                            </button>
+                        </a>
+                        <a href="{% url 'project:report_target_2031' main_pref.land.land_type_slug main_pref.land.slug %}" class="fr-mr-2w fr-link--text-decoration-none">
+                            <button class="fr-btn fr-btn--primary fr-btn--icon-right fr-btn--sm fr-icon-arrow-right-line">
+                                Simuler une trajectoire de sobriété foncière
+                            </button>
+                        </a>
+                        <a href="{% url 'project:report_downloads' main_pref.land.land_type_slug main_pref.land.slug %}" class="fr-mr-2w fr-link--text-decoration-none">
+                            <button class="fr-btn fr-btn--secondary fr-btn--sm">
+                                <span class="bi bi-file-earmark-plus fr-mr-1v" aria-hidden="true"></span>
+                                Créer un rapport
+                            </button>
+                        </a>
+                        {% if main_pref.report_count > 0 %}
+                        <a href="{% url 'project:report_downloads' main_pref.land.land_type_slug main_pref.land.slug %}" class="fr-link--text-decoration-none">
+                            <button class="fr-btn fr-btn--secondary fr-btn--sm">
+                                <span class="bi bi-file-earmark-text fr-mr-1v" aria-hidden="true"></span>
+                                Voir mes rapports ({{ main_pref.report_count }})
+                            </button>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <h2 class="fr-h4 fr-mb-1w"><span class="bi bi-star-fill" style="color: #FFD700;" aria-hidden="true"></span> Territoires favoris</h2>
     <div class="fr-grid-row fr-grid-row--gutters">
         {% for pref in preferences %}
-        {% if pref.land %}
+        {% if pref.land and not pref.is_favorite %}
         <div class="fr-col-12 fr-col-md-12 diagnostic-list-item">
             <div class="fr-card fr-card--horizontal fr-card--sm">
                 <div class="fr-card__body">
                     <div class="fr-card__content fr-pb-1w">
                         <div class="fr-card__title d-flex justify-content-between align-items-center">
-                            <h3 class="fr-mb-0">
-                                {% if pref.is_favorite %}<span class="bi bi-star-fill" style="color: #FFD700;" aria-label="Territoire favori"></span> {% endif %}{{ pref.land.name }}
-                            </h3>
+                            <h3 class="fr-mb-0">{{ pref.land.name }}</h3>
                             <p class="fr-badge fr-badge--sm fr-badge--search">{{ pref.land.land_type_label }}</p>
                         </div>
                         <div class="fr-card__end fr-mt-0">
@@ -67,15 +129,25 @@ Mes diagnostics
                                 </button>
                             </a>
                             {% endif %}
+                            <form method="post" action="{% url 'project:remove_favorite' pref.pk %}" class="fr-ml-auto">
+                                {% csrf_token %}
+                                <button type="submit" class="fr-btn fr-btn--tertiary fr-btn--sm" title="Retirer des favoris">
+                                    <span class="bi bi-star-fill fr-mr-1v" style="color: #FFD700;" aria-hidden="true"></span>
+                                    Retirer
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         {% endif %}
-        {% empty %}
-        <p class="text-muted">Vous n'avez aucun diagnostic.</p>
         {% endfor %}
+        {% if not has_other_favorites %}
+        <div class="fr-col-12">
+            <p class="fr-text--sm" style="color: #666; font-style: italic;">Vous n'avez pas encore de territoires favoris. Consultez un diagnostic et cliquez sur l'étoile pour ajouter un territoire ici.</p>
+        </div>
+        {% endif %}
     </div>
 
     {% if is_paginated %}

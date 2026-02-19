@@ -1,11 +1,12 @@
 import React from "react";
-import SearchBar, { Territory } from "@components/ui/SearchBar";
+import SearchBar from "@components/ui/SearchBar";
+import { LandDetailResultType } from "@services/types/land";
 
 interface TerritorySelectorProps {
   landId: string;
   landType: string;
-  additionalTerritories: Territory[];
-  onTerritorySelect: (territory: Territory) => void;
+  additionalTerritories: LandDetailResultType[];
+  onTerritorySelect: (territory: LandDetailResultType) => void;
 }
 
 /**
@@ -17,15 +18,14 @@ export const TerritorySelector: React.FC<TerritorySelectorProps> = ({
   additionalTerritories,
   onTerritorySelect,
 }) => {
-  const mainTerritory: Territory = {
-    id: 0,
+  const mainTerritory = {
     name: "",
-    source_id: landId,
+    land_id: landId,
     land_type: landType,
     land_type_label: "",
-    area: 0,
-    public_key: "",
-  };
+    surface: 0,
+    key: "",
+  } as unknown as LandDetailResultType;
 
   const excludedTerritories = [mainTerritory, ...additionalTerritories];
 

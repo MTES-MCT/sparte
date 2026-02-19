@@ -1,8 +1,6 @@
 from .AccessView import AccessView
 from .AliveView import AliveView
 from .ContactView import ContactView
-from .download_package_request import download_package_request
-from .DownloadView import DownloadView
 from .HomeRapportLocalView import HomeRapportLocalView
 from .HomeView import HomeView
 from .LegalNoticeView import LegalNoticeView
@@ -21,8 +19,6 @@ __all__ = [
     "AccessView",
     "AliveView",
     "ContactView",
-    "download_package_request",
-    "DownloadView",
     "HomeRapportLocalView",
     "HomeView",
     "LegalNoticeView",
