@@ -47,11 +47,11 @@
     "ts-loader": "^9.5.1",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "^5.6.2",
-    "webpack": "^5.96.1",
+    "webpack": "^5.105.2",
     "webpack-bundle-analyzer": "^4.7.0",
     "webpack-bundle-tracker": "^3.1.1",
     "webpack-cli": "^5.0.1",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-dev-server": "^5.2.3"
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^1.16.10",
@@ -85,7 +85,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.1.0",
-    "react-router-dom": "^6.26.0",
+    "react-router-dom": "^6.30.3",
     "react-tooltip": "^5.28.0",
     "styled-components": "^6.1.8"
   }
