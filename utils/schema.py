@@ -7,9 +7,6 @@ from public_data.models import (
     ArtifZonage,
     ArtifZonageIndex,
     AutorisationLogement,
-    Commune,
-    Departement,
-    Epci,
     ImperZonage,
     ImperZonageIndex,
     LandArtifFlux,
@@ -53,8 +50,6 @@ from public_data.models import (
     LandPopStats,
     LogementVacant,
     NearestTerritories,
-    Region,
-    Scot,
 )
 
 
@@ -88,11 +83,6 @@ def init_unmanaged_schema_for_tests() -> None:
 
     with connection.schema_editor() as schema_editor:
         # Administration
-        drop_and_create_model(Region, schema_editor)
-        drop_and_create_model(Departement, schema_editor)
-        drop_and_create_model(Epci, schema_editor)
-        drop_and_create_model(Scot, schema_editor)
-        drop_and_create_model(Commune, schema_editor)
         drop_and_create_model(LandModel, schema_editor)
 
         # Consommation

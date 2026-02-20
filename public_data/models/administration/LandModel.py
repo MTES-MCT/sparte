@@ -9,7 +9,7 @@ from django.db import models
 from django.db.models.functions import Lower
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_control, cache_page
+from django.views.decorators.cache import cache_control
 from rest_framework import serializers, viewsets
 from rest_framework.response import Response
 
@@ -374,31 +374,9 @@ class LandModel(models.Model):
         # Limit to 20 results
         return qs[:20]
 
-    # -------------------------------------------------------------------------
-    # DEPRECATED: Compatibility properties for Land search migration
-    # These properties exist to maintain compatibility with LandSerializer
-    # which was originally designed to work with the Land class.
-    # See public_data/models/administration/Land.py for the original implementation.
-    # -------------------------------------------------------------------------
-
     @property
     def land_type_label(self):
-        """DEPRECATED: Use AdminRef.get_label(land_type) instead."""
         return AdminRef.CHOICES_DICT.get(self.land_type, self.land_type)
-
-    @property
-    def public_key(self):
-        """DEPRECATED: Use 'key' field instead."""
-        return self.key
-
-    @property
-    def area(self):
-        """DEPRECATED: Use 'surface' field instead."""
-        return self.surface
-
-    def get_official_id(self):
-        """DEPRECATED: Use 'land_id' field instead."""
-        return self.land_id
 
 
 class LandModelSerializer(serializers.ModelSerializer):
@@ -410,6 +388,31 @@ class LandModelSerializer(serializers.ModelSerializer):
         exclude = (
             "geom",
             "simple_geom",
+        )
+
+
+class LandModelListSerializer(serializers.ModelSerializer):
+    land_type_label = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = LandModel
+        fields = (
+            "id",
+            "land_id",
+            "land_type",
+            "land_type_slug",
+            "land_type_label",
+            "name",
+            "slug",
+            "key",
+            "surface",
+            "has_ocsge",
+            "has_conso",
+            "has_zonage",
+            "has_friche",
+            "millesimes",
+            "departements",
+            "is_interdepartemental",
         )
 
 
@@ -474,10 +477,13 @@ class LandModelViewset(viewsets.ViewSet):
     queryset = LandModel.objects.all()
     serializer_class = LandModelSerializer
 
-    @method_decorator(cache_page(60 * 10))
     def list(self, request):
-        queryset = LandModel.objects.all()
-        serializer = LandModelSerializer(queryset, many=True)
+        queryset = LandModel.objects.defer("geom", "simple_geom").all()
+        land_type = request.query_params.get("land_type")
+        if land_type:
+            land_type = AdminRef.slug_to_code(land_type)
+            queryset = queryset.filter(land_type=land_type)
+        serializer = LandModelListSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, land_type, land_id):

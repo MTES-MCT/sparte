@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
-import { getLandTypeLabel } from "@utils/landUtils";
 import LogoMDA from "@images/logo-mon-diagnostic-artificialisation.svg";
 import { FullPageContainer } from "../styles";
 
@@ -125,7 +124,7 @@ const CoverPage: React.FC<CoverPageProps> = ({ landData, reportTitle, reportSubt
                         {landData.name}{landData.land_type !== "REGION" && ` (${landData.land_id})`}
                     </TerritoryName>
                     <TerritoryMeta>
-                        <span className="fr-tag fr-tag--blue fr-tag--sm">{getLandTypeLabel(landData.land_type)}</span>
+                        <span className="fr-tag fr-tag--blue fr-tag--sm">{landData.land_type_label}</span>
                         <span className="fr-tag fr-tag--blue fr-tag--sm">{Math.round(landData.surface).toLocaleString('fr-FR')} ha</span>
                     </TerritoryMeta>
                 </CoverTerritory>

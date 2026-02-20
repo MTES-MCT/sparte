@@ -9,7 +9,7 @@ from project.charts.constants import (
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
-from public_data.models.administration import Departement
+from public_data.models.administration import AdminRef, LandModel
 from public_data.models.artificialisation import (
     LandArtifFluxUsageComposition,
     LandArtifFluxUsageCompositionIndex,
@@ -88,9 +88,9 @@ class ArtifFluxByUsage(DiagnosticChart):
             # Pour LandArtifFluxUsageComposition, on a year_old et year_new (singular)
             departement_code = self.params.get("departement")
             try:
-                departement = Departement.objects.get(source_id=departement_code)
+                departement = LandModel.objects.get(land_id=departement_code, land_type=AdminRef.DEPARTEMENT)
                 departement_label = f"{departement_code} - {departement.name}"
-            except Departement.DoesNotExist:
+            except LandModel.DoesNotExist:
                 departement_label = departement_code
             years_info = f" entre {self.data[0].year_old} et {self.data[0].year_new}"
             return f"{years_info} ({departement_label})"

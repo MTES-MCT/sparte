@@ -16,7 +16,9 @@ DEV = "dev"
 GDAL = "gdal"
 PSYCOPG = "psycopg"
 
-DEFAULT_SUBSET_GEOM_SELECT = "SELECT mpoly FROM public_for_app.for_app_departement WHERE source_id = '75'"
+DEFAULT_SUBSET_GEOM_SELECT = (
+    "SELECT simple_geom FROM public_for_app.for_app_land WHERE land_id = '75' AND land_type = 'DEPART'"
+)
 
 
 def get_database_connection_string(environment: str) -> PgConnectionString:
@@ -104,14 +106,6 @@ def copy_table_from_dw_to_app(
         ),
         "tasks": Param(
             default=[
-                "copy_public_data_commune",
-                "copy_public_data_departement",
-                "copy_public_data_epci",
-                "copy_public_data_scot",
-                "copy_public_data_region",
-                "copy_public_data_epci_departements",
-                "copy_public_data_scot_departements",
-                "copy_public_data_scot_regions",
                 "copy_public_data_landconso",
                 "copy_public_data_landconsocomparison",
                 "copy_public_data_landconsostats",
@@ -167,101 +161,6 @@ def copy_table_from_dw_to_app(
     },
 )
 def update_app():  # noqa: C901
-    @task.python
-    def copy_public_data_commune(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_commune",
-            to_table="public.public_data_commune",
-            use_subset=context["params"]["use_subset"],
-            subset_where=f"mpoly && ({context['params']['subset_geom']})",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["insee"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_departement(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_departement",
-            to_table="public.public_data_departement",
-            use_subset=context["params"]["use_subset"],
-            subset_where=f"mpoly && ({context['params']['subset_geom']})",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["source_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_epci(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_epci",
-            to_table="public.public_data_epci",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["source_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_scot(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_scot",
-            to_table="public.public_data_scot",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["source_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_region(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_region",
-            to_table="public.public_data_region",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["source_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_epci_departements(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_epci_departements",
-            to_table="public.public_data_epci_departements",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["epci_id"],
-                ["departement_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_scot_departements(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_scot_departements",
-            to_table="public.public_data_scot_departements",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["scot_id"],
-                ["departement_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_scot_regions(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_scot_regions",
-            to_table="public.public_data_scot_regions",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["scot_id"],
-                ["region_id"],
-            ],
-        )
-
     @task.python
     def copy_public_data_landconso(**context):
         return copy_table_from_dw_to_app(
@@ -816,14 +715,6 @@ def update_app():  # noqa: C901
         return context["params"]["tasks"]
 
     copy_public_data_branch() >> [
-        copy_public_data_commune(),
-        copy_public_data_departement(),
-        copy_public_data_epci(),
-        copy_public_data_scot(),
-        copy_public_data_region(),
-        copy_public_data_epci_departements(),
-        copy_public_data_scot_departements(),
-        copy_public_data_scot_regions(),
         copy_public_data_landconso(),
         copy_public_data_landconsocomparison(),
         copy_public_data_landconsostats(),

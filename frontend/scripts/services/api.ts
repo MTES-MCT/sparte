@@ -138,7 +138,7 @@ export const djangoApi = createApi({
 			query: () => "/carroyage-destination-config",
 		}),
 		getDepartementList: builder.query({
-			query: () => "/public/departements/",
+			query: () => "/api/lands/?land_type=departement",
 		}),
 		getLand: builder.query({
 			query: ({ land_type, land_id }) => `/api/lands/${land_type}/${land_id}`,

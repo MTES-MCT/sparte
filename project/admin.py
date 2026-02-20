@@ -3,14 +3,7 @@ from django.urls import exceptions, reverse
 from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
-from project.models import (
-    ExportJob,
-    Project,
-    ReportDraft,
-    Request,
-    RNUPackage,
-    RNUPackageRequest,
-)
+from project.models import ExportJob, Project, ReportDraft, Request
 from public_data.models import AdminRef
 
 
@@ -179,29 +172,3 @@ class RequestAdmin(admin.ModelAdmin):
             return format_html("Diagnostic inconnu")
 
     link_to_project.short_description = "Projet admin"  # type: ignore
-
-
-@admin.register(RNUPackage)
-class RNUPackageAdmin(admin.ModelAdmin):
-    model = RNUPackage
-    list_display = (
-        "departement_official_id",
-        "created_at",
-        "updated_at",
-    )
-    search_fields = ("departement_official_id",)
-    readonly_fields = (
-        "created_at",
-        "updated_at",
-    )
-
-
-@admin.register(RNUPackageRequest)
-class RNUPackageRequestAdmin(admin.ModelAdmin):
-    model = RNUPackageRequest
-    list_display = (
-        "user",
-        "rnu_package",
-        "departement_official_id",
-    )
-    search_fields = ("email",)
