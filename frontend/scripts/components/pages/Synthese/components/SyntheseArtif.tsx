@@ -14,16 +14,10 @@ interface SyntheseArtifProps {
   projectData: ProjectDetailResultType;
 }
 
-const SyntheseArtif: React.FC<SyntheseArtifProps> = ({
+const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
   landData,
   projectData,
 }) => {
-  const { has_ocsge, ocsge_status } = landData;
-
-  if (!has_ocsge) {
-    return <OcsgeStatus status={ocsge_status} />;
-  }
-
   const {
     landArtifStockIndex: data,
     isLoading,
@@ -59,7 +53,7 @@ const SyntheseArtif: React.FC<SyntheseArtifProps> = ({
       </div>
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
-          icon="bi bi-heart-arrow"
+          icon="bi bi-house-check"
           label="Artificialisation nette"
           description="Période de réduction"
           value={<>Zéro</>}
@@ -67,7 +61,7 @@ const SyntheseArtif: React.FC<SyntheseArtifProps> = ({
           footer={{
             type: "period",
             periods: [
-              { label: "2031", active: true },
+              { label: "2031", active: false },
               { label: "2050" },
             ],
           }}
@@ -115,6 +109,17 @@ const SyntheseArtif: React.FC<SyntheseArtifProps> = ({
       </div>
     </div>
   );
+};
+
+const SyntheseArtif: React.FC<SyntheseArtifProps> = ({
+  landData,
+  projectData,
+}) => {
+  if (!landData.has_ocsge) {
+    return <OcsgeStatus status={landData.ocsge_status} />;
+  }
+
+  return <SyntheseArtifContent landData={landData} projectData={projectData} />;
 };
 
 export default SyntheseArtif;

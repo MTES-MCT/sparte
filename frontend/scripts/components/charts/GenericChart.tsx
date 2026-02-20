@@ -70,9 +70,9 @@ type GenericChartProps = {
 const ChartCard = styled.div`
   display: flex;
   flex-direction: column;
-  background: ${theme.card.background};
-  border-radius: ${theme.card.radius};
-  box-shadow: ${theme.card.shadow};
+  background: ${theme.colors.background};
+  border-radius: ${theme.radius.card};
+  box-shadow: ${theme.shadow.md};
   overflow: hidden;
   width: 100%;
 `;

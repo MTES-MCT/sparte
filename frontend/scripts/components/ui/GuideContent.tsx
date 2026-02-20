@@ -8,7 +8,7 @@ import Button from '@components/ui/Button';
 
 const Container = styled.div`
     padding: 1.25rem ${theme.spacing.lg};
-    border-radius: ${theme.radius};
+    border-radius: ${theme.radius.card};
     background: ${theme.colors.background};
     display: flex;
     flex-direction: column;
@@ -72,7 +72,7 @@ const GuideContent: React.FC<GuideContentProps> = ({ title, children, DrawerTitl
         <BaseCard>
             <Container>
                 <Header>
-                    <IconBadge icon="bi bi-info-circle" $size={38} />
+                    <IconBadge icon="bi bi-info-circle" $size={40} />
                     <TitleLabel>{title}</TitleLabel>
                 </Header>
                 <Content>

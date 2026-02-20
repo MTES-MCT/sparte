@@ -39,7 +39,7 @@ export interface KpiProps {
 }
 
 const variantConfig: Record<KpiVariant, { color: string; bg: string; border: string }> = {
-  info: { color: theme.colors.primary, bg: theme.colors.infoBg, border: theme.colors.infoBorder },
+  info: { color: theme.colors.primary, bg: theme.colors.infoLight, border: theme.colors.infoBorder },
   success: { color: theme.colors.success, bg: theme.colors.successBg, border: theme.colors.successBorder },
   error: { color: theme.colors.error, bg: theme.colors.errorBg, border: theme.colors.errorBorder },
 };

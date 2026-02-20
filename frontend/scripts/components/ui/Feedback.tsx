@@ -5,8 +5,7 @@ import { theme } from '@theme';
 import Button from '@components/ui/Button';
 import BaseCard from '@components/ui/BaseCard';
 
-import rocketAnimation from '@animations/thumbs-up.json';
-import successAnimation from '@animations/success.json';
+import animation from '@animations/cup.json';
 
 const starPop = keyframes`
   0% {
@@ -26,12 +25,12 @@ const Wrapper = styled(BaseCard)`
   overflow: visible;
 `;
 
-const RocketSide = styled.div`
+const AnimationSide = styled.div`
   position: relative;
   width: 35%;
   min-width: 200px;
-  background: linear-gradient(145deg, ${theme.colors.primary} 0%, #2a2a8a 100%);
-  border-radius: ${theme.radius} 0 0 ${theme.radius};
+  background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%);
+  border-radius: ${theme.radius.card} 0 0 ${theme.radius.card};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,7 +46,7 @@ const AnimationWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80%;
+  width: 50%;
   height: auto;
   z-index: 10;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
@@ -63,24 +62,12 @@ const ContentSide = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: 280px;
+  height: 320px;
 
   @media (max-width: 768px) {
     padding: 6% 5%;
-    min-height: 260px;
+    height: 300px;
   }
-`;
-
-const Eyebrow = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  font-size: ${theme.fontSize.xs};
-  font-weight: ${theme.fontWeight.semibold};
-  color: ${theme.colors.primary};
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: ${theme.spacing.sm};
 `;
 
 const Title = styled.h3`
@@ -94,25 +81,25 @@ const Title = styled.h3`
 const Subtitle = styled.p`
   font-size: ${theme.fontSize.sm};
   color: ${theme.colors.textLight};
-  margin: 0 0 ${theme.spacing.lg} 0;
+  margin: 0 0 ${theme.spacing.md} 0;
   line-height: 1.6;
 `;
 
 const StarsContainer = styled.div`
   display: flex;
   gap: clamp(0.4rem, 2vw, 0.75rem);
-  margin-bottom: ${theme.spacing.lg};
+  margin-bottom: ${theme.spacing.md};
 `;
 
 const Star = styled.button<{ $active: boolean; $animated: boolean }>`
   background: ${({ $active }) => ($active ? theme.colors.accentLight : theme.colors.backgroundAlt)};
-  border: 2px solid ${({ $active }) => ($active ? '#fbbf24' : theme.colors.border)};
-  border-radius: ${theme.radius};
-  width: clamp(40px, 10vw, 52px);
-  height: clamp(40px, 10vw, 52px);
+  border: 2px solid ${({ $active }) => ($active ? theme.colors.star : theme.colors.border)};
+  border-radius: ${theme.radius.element};
+  width: clamp(32px, 8vw, 42px);
+  height: clamp(32px, 8vw, 42px);
   cursor: pointer;
-  font-size: clamp(1rem, 3vw, 1.3rem);
-  color: ${({ $active }) => ($active ? '#fbbf24' : theme.colors.textMuted)};
+  font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+  color: ${({ $active }) => ($active ? theme.colors.star : theme.colors.textMuted)};
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
@@ -127,8 +114,8 @@ const Star = styled.button<{ $active: boolean; $animated: boolean }>`
   &:hover {
     transform: scale(1.1);
     background: ${theme.colors.accentLight};
-    border-color: #fbbf24;
-    color: #fbbf24;
+    border-color: ${theme.colors.star};
+    color: ${theme.colors.star};
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -148,7 +135,7 @@ const TextArea = styled.textarea`
   padding: ${theme.spacing.sm} ${theme.spacing.md};
   background: ${theme.colors.backgroundAlt};
   border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.radius};
+  border-radius: ${theme.radius.element};
   font-size: ${theme.fontSize.sm};
   font-family: inherit;
   color: ${theme.colors.text};
@@ -192,34 +179,25 @@ const Feedback: React.FC<FeedbackProps> = ({ onSubmit }) => {
 
   const displayRating = hoveredRating || rating;
 
-  const currentAnimation = submitted ? successAnimation : rocketAnimation;
-
   return (
     <Wrapper>
-      <RocketSide>
+      <AnimationSide>
         <AnimationWrapper>
           <Lottie
-            animationData={currentAnimation}
+            animationData={animation}
             loop={true}
             style={{ width: '100%', height: '100%' }}
           />
         </AnimationWrapper>
-      </RocketSide>
+      </AnimationSide>
       <ContentSide>
         {submitted ? (
           <>
-            <Eyebrow>
-              <i className="bi bi-check-circle" />
-              Merci
-            </Eyebrow>
             <Title>Votre avis a bien été envoyé !</Title>
             <Subtitle>Merci de contribuer à l'amélioration de l'outil.</Subtitle>
           </>
         ) : (
           <>
-            <Eyebrow>
-              Votre avis compte
-            </Eyebrow>
             <Title>Cette page vous a-t-elle été utile ?</Title>
             <Subtitle>Aidez-nous à améliorer l'outil en partageant votre expérience.</Subtitle>
 

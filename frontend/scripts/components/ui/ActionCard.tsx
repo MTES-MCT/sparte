@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { theme } from "@theme";
 import BaseCard from "@components/ui/BaseCard";
+import IconBadge from "@components/ui/IconBadge";
 
 interface ActionCardProps {
   icon?: string;
@@ -14,24 +15,26 @@ interface ActionCardProps {
 }
 
 const Card = styled(BaseCard)<{ $disabled: boolean; $interactive: boolean }>`
-  display: flex;
-  align-items: flex-start;
-  gap: ${theme.spacing.md};
-  padding: ${theme.spacing.lg};
-  background: white;
-  text-decoration: none;
-  text-align: left;
-  width: 100%;
-  font-family: inherit;
-  font-size: inherit;
-  border: 1px solid ${theme.colors.border};
-  cursor: ${({ $interactive, $disabled }) =>
-    $disabled ? "not-allowed" : $interactive ? "pointer" : "default"};
-  transition: all 0.2s ease;
-  opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
+  && {
+    display: flex;
+    align-items: flex-start;
+    gap: ${theme.spacing.md};
+    padding: ${theme.spacing.lg};
+    background: ${theme.colors.background};
+    text-decoration: none;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid ${theme.colors.border};
+    cursor: ${({ $interactive, $disabled }) =>
+      $disabled ? "not-allowed" : $interactive ? "pointer" : "default"};
+    transition: all 0.2s ease;
+    opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
+  }
 
-  &:hover {
-    background: white;
+  &&:hover {
+    background: ${theme.colors.background};
     ${({ $interactive, $disabled }) =>
       $interactive &&
       !$disabled &&
@@ -43,18 +46,6 @@ const Card = styled(BaseCard)<{ $disabled: boolean; $interactive: boolean }>`
   }
 `;
 
-const IconWrapper = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${theme.colors.primaryLight};
-  color: ${theme.colors.primary};
-  font-size: 1.25rem;
-  flex-shrink: 0;
-`;
 
 const Content = styled.div`
   flex: 1;
@@ -110,11 +101,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
   const content = (
     <>
-      {icon && (
-        <IconWrapper>
-          <i className={icon} aria-hidden="true" />
-        </IconWrapper>
-      )}
+      {icon && <IconBadge icon={icon} />}
       <Content>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>

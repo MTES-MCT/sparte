@@ -22,7 +22,7 @@ const SourceTag = styled.span`
   color: ${theme.colors.textMuted};
   background: ${theme.badge.neutral.background};
   padding: 0.2rem ${theme.spacing.sm};
-  border-radius: ${theme.radius};
+  border-radius: ${theme.radius.element};
 `;
 
 const TextContainer = styled.div`

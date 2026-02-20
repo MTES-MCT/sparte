@@ -7,15 +7,11 @@ export const theme = {
     // DSFR Core
     primary: "#000091",
     primaryLight: "#e3e3fd",
+    primaryDark: "#2a2a8a",
 
     // Accent pour interactions (bleu info DSFR)
     accent: "#0063cb",
     accentLight: "#e8edff",
-
-    // Highlight pour éléments actionnables (bleu électrique)
-    highlight: "#4318FF",
-    highlightLight: "#f0f0ff",
-    highlightBorder: "rgba(67, 24, 255, 0.2)",
 
     // Texte
     text: "var(--text-title-grey)",
@@ -29,44 +25,25 @@ export const theme = {
 
     // Bordures
     border: "#ebebec",
-    borderLight: "#eeeeee",
 
-    // Sémantiques DSFR
+    // Sémantiques
     success: "#059669",
-    successLight: "#a7f3d0",
     successBg: "#ecfdf5",
     successBorder: "#bce3d5",
 
     warning: "#b34000",
-    warningLight: "#ffe9e6",
     warningBg: "#fff4f3",
 
     error: "#dc2626",
-    errorLight: "#fecaca",
     errorBg: "#fef2f2",
     errorBorder: "#f0d4d4",
 
     info: "#4318FF",
     infoLight: "#f0f0ff",
-    infoBg: "#f0f0ff",
     infoBorder: "#dbd8eb",
-  },
 
-  // ─── Palette catégories (pour graphiques, tags, etc.) ───
-  palette: {
-    blue: "#0063cb",
-    green: "#059669",
-    orange: "#d64d00",
-    purple: "#6e445a",
-    teal: "#00a88f",
-    pink: "#a94645",
-  },
-
-  // ─── Cartes ───
-  card: {
-    background: "#ffffff",
-    shadow: "0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03)",
-    radius: "8px",
+    // Notation par étoiles
+    star: "#fbbf24",
   },
 
   // ─── Boutons ───
@@ -104,24 +81,10 @@ export const theme = {
       background: "#e3e3fd",
       color: "#000091",
     },
-    success: {
-      background: "#ecfdf5",
-      color: "#059669",
+    info: {
+      background: "#f0f0ff",
+      color: "#4318FF",
     },
-    warning: {
-      background: "#fff4f3",
-      color: "#b34000",
-    },
-    error: {
-      background: "#fef2f2",
-      color: "#dc2626",
-    },
-  },
-
-  // ─── Icônes décoratives ───
-  iconBadge: {
-    background: "#e3e3fd",
-    color: "#000091",
   },
 
   // ─── Liens ───
@@ -157,15 +120,15 @@ export const theme = {
   },
 
   // ─── Radius ───
-  radius: "6px",
-  radiusLg: "10px",
+  radius: {
+    card: "8px",
+    element: "6px",
+  },
 
   // ─── Ombres ───
   shadow: {
-    sm: "0 1px 2px rgba(0, 0, 0, 0.04)",
     md: "0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03)",
     lg: "0 4px 6px rgba(0, 0, 0, 0.03), 0 12px 24px rgba(0, 0, 0, 0.06)",
-    highlight: "0 0 0 3px rgba(67, 24, 255, 0.12), 0 4px 16px rgba(67, 24, 255, 0.1)",
   },
 } as const;
 

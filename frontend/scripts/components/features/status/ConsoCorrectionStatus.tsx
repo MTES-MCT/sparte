@@ -1,11 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-
-const NoticeBody = styled.div`
-    flex-direction: column;
-    display: flex;
-    gap: 0.5rem;
-`;
+import StatusNotice from './StatusNotice';
 
 export enum ConsoCorrectionStatusEnum {
     DONNEES_CORRIGEES = 'données_coriggées',
@@ -17,14 +11,14 @@ export enum ConsoCorrectionStatusEnum {
     DONNEES_PARTIELLEMENT_CORRIGEES_AVEC_DONNEES_MANQUANTES = 'données_partiellement_coriggées_avec_données_manquantes'
 }
 
-interface IconsoCorrectionStatusMessages {
-    title: string;
-    message: string;
+interface StatusMessage {
+  title: string;
+  description: string;
 }
 
 const defaultTitle = "Données de consommation modifiées";
 const warningTitle = "Données de consommation indisponibles";
-const missingMessage = `Votre territoire est absent du dernier millésime de données de consommation d'espaces NAF. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.`
+const missingMessage = "Votre territoire est absent du dernier millésime de données de consommation d'espaces NAF. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.";
 
 export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]?: IconsoCorrectionStatusMessages } = {
     'données_coriggées': {
@@ -53,12 +47,13 @@ export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]
     }
 };
 
-
 export interface ConsoCorrectionStatusProps {
-    status: ConsoCorrectionStatusEnum;
+  status: ConsoCorrectionStatusEnum;
 }
 
 const ConsoCorrectionStatus: React.FC<ConsoCorrectionStatusProps> = ({ status }) => {
+  const content = consoCorrectionStatusMessages[status];
+  if (!content) return null;
 
     const statusMessage = consoCorrectionStatusMessages[status];
     if (!statusMessage) return null;
