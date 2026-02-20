@@ -45,7 +45,9 @@ const baseStyles = css`
   text-decoration: none;
 
   &:disabled {
-    opacity: 0.5;
+    background: ${theme.colors.backgroundAlt};
+    color: ${theme.colors.textMuted};
+    border-color: ${theme.colors.border};
     cursor: not-allowed;
   }
 `;
@@ -79,8 +81,7 @@ const variantStyles = {
     border: none;
 
     &:hover:not(:disabled) {
-      background: ${theme.button.primary.backgroundHover};
-      color: ${theme.button.primary.color};
+      background: ${theme.colors.hover};
     }
   `,
   secondary: css<{ $size: ButtonSize }>`
@@ -90,7 +91,8 @@ const variantStyles = {
     border: none;
 
     &:hover:not(:disabled) {
-      background: ${theme.button.secondary.backgroundHover};
+      background: ${theme.colors.hover};
+      color: ${theme.colors.background};
     }
   `,
   link: css`
@@ -101,7 +103,7 @@ const variantStyles = {
     font-weight: ${theme.fontWeight.medium};
 
     &:hover:not(:disabled) {
-      background: transparent;
+      color: ${theme.colors.hover};
       gap: 0.55rem;
     }
   `,
@@ -112,7 +114,9 @@ const variantStyles = {
     border: 1px solid ${theme.button.outline.border};
 
     &:hover:not(:disabled) {
-      background: ${theme.button.outline.backgroundHover};
+      background: ${theme.colors.hover};
+      color: ${theme.colors.background};
+      border-color: ${theme.colors.hover};
     }
   `,
 };

@@ -26,6 +26,9 @@ export const theme = {
     // Bordures
     border: "#ebebec",
 
+    // Interactions
+    hover: "#1212FF",
+
     // Sémantiques
     success: "#059669",
     successBg: "#ecfdf5",
@@ -51,23 +54,19 @@ export const theme = {
     primary: {
       background: "#000091",
       color: "#ffffff",
-      backgroundHover: "#000074",
     },
     secondary: {
       background: "#e3e3fd",
       color: "#000091",
-      backgroundHover: "#cacafb",
     },
     link: {
       background: "transparent",
       color: "#000091",
-      backgroundHover: "transparent",
     },
     outline: {
       background: "transparent",
       color: "#000091",
       border: "#000091",
-      backgroundHover: "#e3e3fd",
     },
   },
 
