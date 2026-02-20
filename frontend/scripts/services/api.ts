@@ -134,6 +134,16 @@ export const djangoApi = createApi({
 		getEnvironment: builder.query({
 			query: () => "/env",
 		}),
+		getCarroyageBounds: builder.query({
+			query: ({ land_type, land_id, start_year, end_year }: { land_type: string; land_id: string; start_year: number; end_year: number }) => {
+				return `/api/landcarroyagebounds/?${new URLSearchParams({
+					land_type,
+					land_id,
+					start_year: start_year.toString(),
+					end_year: end_year.toString(),
+				})}`
+			},
+		}),
 		getCarroyageDestinationConfig: builder.query({
 			query: () => "/carroyage-destination-config",
 		}),
@@ -318,6 +328,7 @@ const {
 	useGetLandPopDensityQuery,
 	useGetSimilarTerritoriesQuery,
 	useGetLogementVacantAutorisationStatsQuery,
+	useGetCarroyageBoundsQuery,
 	useGetCarroyageDestinationConfigQuery,
 	useGetLandChildrenGeomQuery,
 	useGetReportDraftsQuery,
@@ -352,6 +363,7 @@ export {
 	useGetLandGeomQuery,
 	useGetLandChildrenGeomQuery,
 	useGetLogementVacantAutorisationStatsQuery,
+	useGetCarroyageBoundsQuery,
 	useGetCarroyageDestinationConfigQuery,
 	useStartExportPdfMutation,
 	useLazyGetExportStatusQuery,
