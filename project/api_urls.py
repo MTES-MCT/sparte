@@ -1,3 +1,7 @@
+import hashlib
+import json
+
+from django.core.cache import cache
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import include, path
 from rest_framework.decorators import api_view
@@ -72,6 +76,37 @@ from project.charts.demography.PopulationConsoComparisonChart import (
 )
 from project.charts.demography.PopulationConsoProgressionChart import (
     PopulationConsoProgressionChart,
+)
+from project.charts.dossier_complet import (
+    DcChomageConsoMap,
+    DcCreationsEntreprisesChart,
+    DcCspRepartitionChart,
+    DcEmploiChomageChart,
+    DcEmploiConsoMap,
+    DcEmploiMap,
+    DcEmploiVsConsoChart,
+    DcEquipementsBpeChart,
+    DcLogementConsoMap,
+    DcLogementConstructionChart,
+    DcLogementMap,
+    DcLogementParcChart,
+    DcLogementVacantMap,
+    DcLogementVsConsoChart,
+    DcMenagesConsoMap,
+    DcMenagesEvolutionChart,
+    DcPauvreteMap,
+    DcPopulationConsoMap,
+    DcPopulationEvolutionChart,
+    DcPopulationMap,
+    DcPopulationPyramidChart,
+    DcPopulationVsConsoChart,
+    DcResidencesSecondairesChart,
+    DcResidencesSecondairesConsoMap,
+    DcResidencesSecondairesMap,
+    DcRevenusMap,
+    DcRevenusPauvreteChart,
+    DcTourismeChart,
+    DcVacanceConsoMap,
 )
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
@@ -256,6 +291,37 @@ def get_chart_klass_or_404(chart_id):
         "logement_vacant_taux_progression_chart": LogementVacantTauxProgressionChart,
         "logement_vacant_map_percent": LogementVacantMapPercent,
         "logement_vacant_map_absolute": LogementVacantMapAbsolute,
+        # Dossier complet INSEE charts
+        "dc_population_evolution": DcPopulationEvolutionChart,
+        "dc_population_pyramid": DcPopulationPyramidChart,
+        "dc_logement_parc": DcLogementParcChart,
+        "dc_logement_construction": DcLogementConstructionChart,
+        "dc_menages_evolution": DcMenagesEvolutionChart,
+        "dc_emploi_chomage": DcEmploiChomageChart,
+        "dc_csp_repartition": DcCspRepartitionChart,
+        "dc_revenus_pauvrete": DcRevenusPauvreteChart,
+        "dc_creations_entreprises": DcCreationsEntreprisesChart,
+        "dc_equipements_bpe": DcEquipementsBpeChart,
+        "dc_tourisme": DcTourismeChart,
+        "dc_population_vs_conso": DcPopulationVsConsoChart,
+        "dc_logement_vs_conso": DcLogementVsConsoChart,
+        "dc_emploi_vs_conso": DcEmploiVsConsoChart,
+        # Dossier complet INSEE maps
+        "dc_population_map": DcPopulationMap,
+        "dc_logement_map": DcLogementMap,
+        "dc_logement_vacant_map": DcLogementVacantMap,
+        "dc_emploi_map": DcEmploiMap,
+        "dc_revenus_map": DcRevenusMap,
+        "dc_pauvrete_map": DcPauvreteMap,
+        "dc_population_conso_map": DcPopulationConsoMap,
+        "dc_logement_conso_map": DcLogementConsoMap,
+        "dc_emploi_conso_map": DcEmploiConsoMap,
+        "dc_chomage_conso_map": DcChomageConsoMap,
+        "dc_vacance_conso_map": DcVacanceConsoMap,
+        "dc_menages_conso_map": DcMenagesConsoMap,
+        "dc_residences_secondaires": DcResidencesSecondairesChart,
+        "dc_residences_secondaires_conso_map": DcResidencesSecondairesConsoMap,
+        "dc_residences_secondaires_map": DcResidencesSecondairesMap,
     }
 
     if chart_id not in charts:
@@ -281,17 +347,39 @@ def chart_view_file_response(chart, id, land_type, land_id):
     )
 
 
-def chart_view(request, id, land_type, land_id):
-    land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+def _chart_cache_key(id, land_type, land_id, params):
+    params_str = json.dumps(params, sort_keys=True)
+    h = hashlib.md5(params_str.encode()).hexdigest()
+    return f"chart:{id}:{land_type}:{land_id}:{h}"
 
-    chart_klass = get_chart_klass_or_404(id)
+
+def chart_view(request, id, land_type, land_id):
     chart_params = request.GET.dict()
+
+    # PNG responses are not cached
+    if chart_params.get("format") == "png":
+        land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+        chart_klass = get_chart_klass_or_404(id)
+        user = request.user if request.user.is_authenticated else None
+        chart = chart_klass(land=land, params=chart_params, user=user)
+        return chart_view_file_response(chart=chart, id=id, land_type=land_type, land_id=land_id)
+
+    cache_key = _chart_cache_key(id, land_type, land_id, chart_params)
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return JsonResponse(data=cached)
+
+    land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+    chart_klass = get_chart_klass_or_404(id)
     user = request.user if request.user.is_authenticated else None
     chart = chart_klass(land=land, params=chart_params, user=user)
 
-    if "format" in chart_params and chart_params["format"] == "png":
-        return chart_view_file_response(chart=chart, id=id, land_type=land_type, land_id=land_id)
-    return chart_view_json_response(chart=chart)
+    data = {
+        "highcharts_options": chart.chart,
+        "data_table": getattr(chart, "data_table", None),
+    }
+    cache.set(cache_key, data, timeout=60 * 60 * 24)  # 24 hours
+    return JsonResponse(data=data)
 
 
 urlpatterns = [

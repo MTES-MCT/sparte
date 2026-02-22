@@ -5,6 +5,7 @@ import { LandDetailResultType } from "@services/types/land";
 import { formatNumber } from "@utils/formatUtils";
 import { ConsommationControls } from "./components/ConsommationControls";
 import { ConsoDemography } from "./components/ConsoDemography";
+import { ConsoInsee } from "./components/ConsoInsee";
 import { ConsoComparison } from "./components/ConsoComparison";
 import { useConsoData, useNearestTerritories, useComparisonTerritories } from "./hooks";
 import { ComparisonLand, UserLandPreferenceResultType } from "@services/types/project";
@@ -294,6 +295,15 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
         populationStock={populationStock}
         isLoadingPop={isLoadingPop}
         populationCardRef={populationCardRef}
+      />
+
+      <ConsoInsee
+        landId={land_id}
+        landType={land_type}
+        startYear={startYear}
+        endYear={endYear}
+        childLandTypes={child_land_types}
+        childType={childType}
       />
 
       <ConsoComparison

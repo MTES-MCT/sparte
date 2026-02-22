@@ -154,6 +154,28 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landfriche",
                 "copy_public_data_landfrichegeojson",
                 "copy_public_data_landcarroyagebounds",
+                "copy_public_data_dc_population",
+                "copy_public_data_dc_menages",
+                "copy_public_data_dc_logement",
+                "copy_public_data_dc_mobilite_residentielle",
+                "copy_public_data_dc_categories_socioprofessionnelles",
+                "copy_public_data_dc_situation_conjugale",
+                "copy_public_data_dc_scolarisation_diplomes",
+                "copy_public_data_dc_emploi_statut",
+                "copy_public_data_dc_deplacements_domicile_travail",
+                "copy_public_data_dc_activite_chomage",
+                "copy_public_data_dc_emplois_lieu_travail",
+                "copy_public_data_dc_logement_confort",
+                "copy_public_data_dc_historique",
+                "copy_public_data_dc_revenus_pauvrete",
+                "copy_public_data_dc_salaires",
+                "copy_public_data_dc_etablissements",
+                "copy_public_data_dc_creations_entreprises",
+                "copy_public_data_dc_creations_etablissements",
+                "copy_public_data_dc_unites_legales_actives",
+                "copy_public_data_dc_tourisme",
+                "copy_public_data_dc_electeurs",
+                "copy_public_data_dc_equipements_bpe",
             ],
             type="array",
         ),
@@ -721,6 +743,203 @@ def update_app():  # noqa: C901
                 ["land_id", "land_type", "start_year", "end_year", "destination"],
             ],
         )
+    @task.python
+    def copy_public_data_dc_population(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_population",
+            to_table="public.public_data_dc_population",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_menages(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_menages",
+            to_table="public.public_data_dc_menages",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_logement(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_logement",
+            to_table="public.public_data_dc_logement",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_mobilite_residentielle(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_mobilite_residentielle",
+            to_table="public.public_data_dc_mobilite_residentielle",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_categories_socioprofessionnelles(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_categories_socioprofessionnelles",
+            to_table="public.public_data_dc_categories_socioprofessionnelles",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_situation_conjugale(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_situation_conjugale",
+            to_table="public.public_data_dc_situation_conjugale",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_scolarisation_diplomes(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_scolarisation_diplomes",
+            to_table="public.public_data_dc_scolarisation_diplomes",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_emploi_statut(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_emploi_statut",
+            to_table="public.public_data_dc_emploi_statut",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_deplacements_domicile_travail(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_deplacements_domicile_travail",
+            to_table="public.public_data_dc_deplacements_domicile_travail",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_activite_chomage(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_activite_chomage",
+            to_table="public.public_data_dc_activite_chomage",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_emplois_lieu_travail(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_emplois_lieu_travail",
+            to_table="public.public_data_dc_emplois_lieu_travail",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_logement_confort(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_logement_confort",
+            to_table="public.public_data_dc_logement_confort",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_historique(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_historique",
+            to_table="public.public_data_dc_historique",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_revenus_pauvrete(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_revenus_pauvrete",
+            to_table="public.public_data_dc_revenus_pauvrete",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_salaires(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_salaires",
+            to_table="public.public_data_dc_salaires",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_etablissements(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_etablissements",
+            to_table="public.public_data_dc_etablissements",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_creations_entreprises(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_creations_entreprises",
+            to_table="public.public_data_dc_creations_entreprises",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_creations_etablissements(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_creations_etablissements",
+            to_table="public.public_data_dc_creations_etablissements",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_unites_legales_actives(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_unites_legales_actives",
+            to_table="public.public_data_dc_unites_legales_actives",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_tourisme(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_tourisme",
+            to_table="public.public_data_dc_tourisme",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_electeurs(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_electeurs",
+            to_table="public.public_data_dc_electeurs",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
+
+    @task.python
+    def copy_public_data_dc_equipements_bpe(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_dc_equipements_bpe",
+            to_table="public.public_data_dc_equipements_bpe",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["land_id", "land_type"]],
+        )
 
     @task.branch
     def copy_public_data_branch(**context):
@@ -775,6 +994,28 @@ def update_app():  # noqa: C901
         copy_public_data_landfriche(),
         copy_public_data_landfrichegeojson(),
         copy_public_data_landcarroyagebounds(),
+        copy_public_data_dc_population(),
+        copy_public_data_dc_menages(),
+        copy_public_data_dc_logement(),
+        copy_public_data_dc_mobilite_residentielle(),
+        copy_public_data_dc_categories_socioprofessionnelles(),
+        copy_public_data_dc_situation_conjugale(),
+        copy_public_data_dc_scolarisation_diplomes(),
+        copy_public_data_dc_emploi_statut(),
+        copy_public_data_dc_deplacements_domicile_travail(),
+        copy_public_data_dc_activite_chomage(),
+        copy_public_data_dc_emplois_lieu_travail(),
+        copy_public_data_dc_logement_confort(),
+        copy_public_data_dc_historique(),
+        copy_public_data_dc_revenus_pauvrete(),
+        copy_public_data_dc_salaires(),
+        copy_public_data_dc_etablissements(),
+        copy_public_data_dc_creations_entreprises(),
+        copy_public_data_dc_creations_etablissements(),
+        copy_public_data_dc_unites_legales_actives(),
+        copy_public_data_dc_tourisme(),
+        copy_public_data_dc_electeurs(),
+        copy_public_data_dc_equipements_bpe(),
     ]
 
 
