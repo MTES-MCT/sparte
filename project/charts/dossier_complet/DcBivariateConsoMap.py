@@ -10,7 +10,7 @@ Colors are obtained by bilinear interpolation of 4 corner colors.
 import json
 
 from django.core.serializers import serialize
-from django.db.models import Sum
+from django.db.models import Max, Sum
 
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
@@ -204,8 +204,8 @@ class DcBivariateConsoMap(DiagnosticChart):
                 )
             }
 
-        # Consumption
-        conso_data = dict(
+        # Consumption + surface
+        conso_qs = (
             LandConso.objects.filter(
                 land_id__in=child_land_ids,
                 land_type=child_type,
@@ -213,29 +213,36 @@ class DcBivariateConsoMap(DiagnosticChart):
                 year__lt=conso_end,
             )
             .values("land_id")
-            .annotate(total_conso=Sum(self.conso_field))
-            .values_list("land_id", "total_conso")
+            .annotate(
+                total_conso=Sum(self.conso_field),
+                surface=Max("surface"),
+            )
         )
+        conso_data = {row["land_id"]: (row["total_conso"], row["surface"]) for row in conso_qs}
 
         rows = []
         for land_id in child_land_ids:
             indic_obj = indic_data.get(land_id)
             indic_val = self.compute_indicator_value(indic_obj, indic_start_field, indic_end_field)
 
-            total_conso_m2 = conso_data.get(land_id, 0) or 0
+            total_conso_m2, surface_m2 = conso_data.get(land_id, (0, 0))
+            total_conso_m2 = total_conso_m2 or 0
+            surface_m2 = surface_m2 or 0
             conso_ha = round(total_conso_m2 / 10000, 2)
+            conso_pct = round(total_conso_m2 / surface_m2 * 100, 4) if surface_m2 > 0 else 0
 
             rows.append(
                 {
                     "land_id": land_id,
                     "conso_ha": conso_ha,
+                    "conso_pct": conso_pct,
                     "indic_val": indic_val,
                 }
             )
 
-        # Terciles
+        # Terciles (on relative consumption %)
         indic_values = [r["indic_val"] for r in rows if r["indic_val"] is not None]
-        conso_values = [r["conso_ha"] for r in rows]
+        conso_values = [r["conso_pct"] for r in rows]
 
         indic_t1, indic_t2 = compute_terciles(indic_values) if len(indic_values) >= 3 else (0, 0)
         conso_t1, conso_t2 = compute_terciles(conso_values) if len(conso_values) >= 3 else (0, 0)
@@ -263,7 +270,7 @@ class DcBivariateConsoMap(DiagnosticChart):
         result = []
         for row in rows:
             cat_id = classify_3x3(
-                row["conso_ha"],
+                row["conso_pct"],
                 row["indic_val"],
                 conso_t1,
                 conso_t2,
@@ -279,6 +286,7 @@ class DcBivariateConsoMap(DiagnosticChart):
                     "category_label": labels[cat_id],
                     "verdict": verdict,
                     "conso_fmt": f"{row['conso_ha']:.2f}",
+                    "conso_pct_fmt": f"{row['conso_pct']:.2f}",
                     "indic_fmt": self.format_indicator(row["indic_val"]),
                 }
             )
@@ -295,7 +303,7 @@ class DcBivariateConsoMap(DiagnosticChart):
             "headers": [
                 AdminRef.get_label(self.child_land_type),
                 self.indicator_short,
-                f"Conso. {conso_start}-{conso_end} (ha)",
+                f"Conso. {conso_start}-{conso_end} (%)",
                 "Catégorie",
             ],
             "boldFirstColumn": True,
@@ -305,7 +313,7 @@ class DcBivariateConsoMap(DiagnosticChart):
                     "data": [
                         land_names.get(d["land_id"], d["land_id"]),
                         d["indic_fmt"],
-                        d["conso_fmt"],
+                        f"{d['conso_pct_fmt']}%",
                         labels[d["category_id"]],
                     ],
                 }
@@ -341,7 +349,7 @@ class DcBivariateConsoMap(DiagnosticChart):
         conso_t1, conso_t2, indic_t1, indic_t2 = self.thresholds
 
         rows = self._raw_data[0]
-        conso_values = [r["conso_ha"] for r in rows]
+        conso_values = [r["conso_pct"] for r in rows]
         indic_values = [r["indic_val"] for r in rows if r["indic_val"] is not None]
 
         return super().param | {
@@ -350,12 +358,12 @@ class DcBivariateConsoMap(DiagnosticChart):
             "subtitle": {"text": self.get_chart_subtitle()},
             "credits": INSEE_CREDITS,
             "custom": {
-                "conso_t1": round(conso_t1, 2),
-                "conso_t2": round(conso_t2, 2),
+                "conso_t1": round(conso_t1, 4),
+                "conso_t2": round(conso_t2, 4),
                 "indic_t1": round(indic_t1, 2),
                 "indic_t2": round(indic_t2, 2),
-                "conso_min": round(min(conso_values), 2) if conso_values else None,
-                "conso_max": round(max(conso_values), 2) if conso_values else None,
+                "conso_min": round(min(conso_values), 4) if conso_values else None,
+                "conso_max": round(max(conso_values), 4) if conso_values else None,
                 "indic_min": round(min(indic_values), 2) if indic_values else None,
                 "indic_max": round(max(indic_values), 2) if indic_values else None,
                 "indicator_name": self.indicator_name,
@@ -388,7 +396,7 @@ class DcBivariateConsoMap(DiagnosticChart):
                             f'<span style="font-weight:bold">{self.indicator_name}</span><br/>'
                             "{point.indic_fmt}<br/><br/>"
                             '<span style="font-weight:bold">Consommation d\'espaces NAF</span><br/>'
-                            "{point.conso_fmt} ha<br/><br/>"
+                            "{point.conso_pct_fmt}% ({point.conso_fmt} ha)<br/><br/>"
                             '<span style="color:{point.color}">\u25CF</span> '
                             "{point.category_label}<br/><br/>"
                             '<em style="font-size:0.85em">{point.verdict}</em>'

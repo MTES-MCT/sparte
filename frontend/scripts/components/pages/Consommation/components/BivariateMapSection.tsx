@@ -54,21 +54,23 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
   const fem = indicGender === "f";
   const adj = { faible: "faible", moyen: fem ? "moyenne" : "moyen", fort: fem ? "forte" : "fort" };
 
+  const fmt2 = (v: number) => parseFloat(v.toFixed(2)).toString();
+
   const fmtIndic = (v: number) => {
-    if (indicUnit === "%") return v > 0 ? `+${v}` : `${v}`;
-    return `${v}`;
+    if (indicUnit === "%") return v > 0 ? `+${fmt2(v)}` : fmt2(v);
+    return fmt2(v);
   };
 
-  const cMin = consoMin ?? 0;
-  const cMax = consoMax ?? "∞";
+  const cMin = consoMin == null ? "0" : fmt2(consoMin);
+  const cMax = consoMax == null ? "∞" : fmt2(consoMax);
   const iMin = indicMin == null ? "−∞" : fmtIndic(indicMin);
   const iMax = indicMax == null ? "+∞" : fmtIndic(indicMax);
 
   const consoRanges = consoT1 != null && consoT2 != null
     ? [
-        `[${cMin}, ${consoT1}]`,
-        `]${consoT1}, ${consoT2}]`,
-        `]${consoT2}, ${cMax}]`,
+        `[${cMin}, ${fmt2(consoT1)}]`,
+        `]${fmt2(consoT1)}, ${fmt2(consoT2)}]`,
+        `]${fmt2(consoT2)}, ${cMax}]`,
       ]
     : null;
   const indicRanges = indicT1 != null && indicT2 != null
@@ -119,7 +121,7 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
                   {/* Y-axis label */}
                   <div style={{ display: "flex", alignItems: "center", height: 226, marginRight: 4 }}>
                     <div style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", fontSize: "0.85rem", fontWeight: 600 }}>
-                      Consommation (ha)
+                      Consommation (%)
                     </div>
                   </div>
                   {/* Grid + X-axis */}
@@ -137,7 +139,7 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
                                   <strong>${CONSO_QUALIF[ri]}, ${indicQualif[ci]}</strong>
                                 </div>
                                 <div style="margin-bottom:6px;font-size:0.85rem;line-height:1.5">
-                                  <div><strong>Consommation :</strong> ${consoRanges ? consoRanges[ri] + " ha" : CONSO_QUALIF[ri].toLowerCase()}</div>
+                                  <div><strong>Consommation :</strong> ${consoRanges ? consoRanges[ri] + " %" : CONSO_QUALIF[ri].toLowerCase()}</div>
                                   <div><strong>${indicName} :</strong> ${indicRanges
                                     ? indicRanges[ci] + (indicUnit ? " " + indicUnit : "")
                                     : indicQualif[ci]}</div>
