@@ -100,7 +100,7 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className={colorGrid ? "fr-col-12 fr-col-lg-8" : "fr-col-12"}>
             <GenericChart
-              key={`${chartId}-${childLandType}-${period}`}
+              key={`${chartId}-${landId}-${childLandType}-${period}`}
               id={chartId}
               land_id={landId}
               land_type={landType}

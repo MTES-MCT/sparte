@@ -315,13 +315,7 @@ CACHES: Dict[str, Any] = {}
 if ENVIRONMENT == "local":
     CACHES = {
         "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": env.str("SCALINGO_REDIS_URL", default="redis://127.0.0.1:6379/0"),
-            "TIMEOUT": 60 * 15,  # 15 minutes
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "MAX_ENTRIES": 1000,
-            },
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
         }
     }
 else:

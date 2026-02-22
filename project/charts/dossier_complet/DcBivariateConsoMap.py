@@ -74,6 +74,8 @@ PALETTE_TEAL = bilinear_palette("#99d8c9", "#00695c", "#e34a33", "#fdcc8a")
 PALETTE_DIVERGING = bilinear_palette("#006d2c", "#fee08b", "#fc8d59", "#b30000")
 # Orange – used by DcResidencesSecondairesConsoMap
 PALETTE_ORANGE = bilinear_palette("#fdd49e", "#d94701", "#e34a33", "#fdcc8a")
+# Créations d'entreprises: vert=sobre, rouge=gaspillage
+PALETTE_CREATIONS = bilinear_palette("#e0e0e0", "#1a9850", "#d73027", "#5e4fa2")
 
 CONSO_LABELS = ["faible", "moyenne", "forte"]
 INDIC_LABELS = ["faible", "moyen(ne)", "fort(e)"]
@@ -403,14 +405,13 @@ class DcBivariateConsoMap(DiagnosticChart):
                     "borderWidth": 1,
                     "dataLabels": {"enabled": False},
                     "tooltip": {
+                        "headerFormat": "",
                         "pointFormat": (
-                            "<b>{point.name}</b><br/><br/>"
-                            f'<span style="font-weight:bold">{self.indicator_name}</span><br/>'
-                            "{point.indic_fmt}<br/><br/>"
-                            f'<span style="font-weight:bold">{self.conso_label}</span><br/>'
-                            "{point.conso_pct_fmt}% ({point.conso_fmt} ha)<br/><br/>"
+                            "<b>{point.name}</b><br/>"
+                            f"{self.indicator_name} : "
+                            "<b>{point.indic_fmt}</b><br/>"
+                            "Consommation : <b>{point.conso_pct_fmt}%</b><br/>"
                             '<span style="color:{point.color}">\u25CF</span> '
-                            "{point.category_label}<br/><br/>"
                             '<em style="font-size:0.85em">{point.verdict}</em>'
                         ),
                     },

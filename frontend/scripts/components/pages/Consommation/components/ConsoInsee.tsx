@@ -35,31 +35,6 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       {/* Population */}
       <h4 className="fr-mt-5w">Population</h4>
 
-      <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <GenericChart
-              id="dc_population_evolution"
-              land_id={landId}
-              land_type={landType}
-              sources={["insee"]}
-              showDataTable={true}
-            />
-          </div>
-        </div>
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <GenericChart
-              id="dc_population_pyramid"
-              land_id={landId}
-              land_type={landType}
-              sources={["insee"]}
-              showDataTable={true}
-            />
-          </div>
-        </div>
-      </div>
-
       {hasChildren && mapChildType && (
         <BivariateMapSection
           chartId="dc_population_conso_map"
@@ -72,28 +47,15 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       {/* Logement */}
       <h4 className="fr-mt-5w">Logement</h4>
 
-      <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <GenericChart
-              id="dc_logement_parc"
-              land_id={landId}
-              land_type={landType}
-              sources={["insee"]}
-              showDataTable={true}
-            />
-          </div>
-        </div>
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <GenericChart
-              id="dc_logement_construction"
-              land_id={landId}
-              land_type={landType}
-              sources={["insee"]}
-              showDataTable={true}
-            />
-          </div>
+      <div className="fr-mb-3w">
+        <div className="bg-white fr-p-2w rounded">
+          <GenericChart
+            id="dc_logement_parc"
+            land_id={landId}
+            land_type={landType}
+            sources={["insee"]}
+            showDataTable={true}
+          />
         </div>
       </div>
 
@@ -115,18 +77,27 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       )}
 
       {hasChildren && mapChildType && (
-        <div className="fr-mb-5w">
-          <div className="bg-white fr-p-2w rounded">
-            <GenericChart
-              key={`dc_logement_vacant_map-${mapChildType}`}
-              id="dc_logement_vacant_map"
-              land_id={landId}
-              land_type={landType}
-              params={{ child_land_type: mapChildType }}
-              sources={["insee"]}
-              showDataTable={true}
-              isMap={true}
-            />
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
+          <div className="fr-col-12 fr-col-lg-8">
+            <div className="bg-white fr-p-2w rounded h-100">
+              <GenericChart
+                key={`dc_logement_vacant_map-${mapChildType}`}
+                id="dc_logement_vacant_map"
+                land_id={landId}
+                land_type={landType}
+                params={{ child_land_type: mapChildType }}
+                sources={["insee"]}
+                showDataTable={true}
+                isMap={true}
+              />
+            </div>
+          </div>
+          <div className="fr-col-12 fr-col-lg-4">
+            <div className="fr-alert fr-alert--info fr-alert--sm h-100">
+              <p className="fr-text--sm fr-mb-0">
+                TODO : trouver pourquoi les donn&eacute;es sont diff&eacute;rentes de ZLV
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -134,15 +105,24 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       {/* Residences secondaires */}
       <h4 className="fr-mt-5w">Résidences secondaires</h4>
 
-      <div className="fr-mb-3w">
-        <div className="bg-white fr-p-2w rounded">
-          <GenericChart
-            id="dc_residences_secondaires"
-            land_id={landId}
-            land_type={landType}
-            sources={["insee"]}
-            showDataTable={true}
-          />
+      <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div className="fr-col-12 fr-col-lg-8">
+          <div className="bg-white fr-p-2w rounded h-100">
+            <GenericChart
+              id="dc_residences_secondaires"
+              land_id={landId}
+              land_type={landType}
+              sources={["insee"]}
+              showDataTable={true}
+            />
+          </div>
+        </div>
+        <div className="fr-col-12 fr-col-lg-4">
+          <div className="fr-alert fr-alert--info fr-alert--sm h-100">
+            <p className="fr-text--sm fr-mb-0">
+              TODO : comment mettre donn&eacute;e en valeur
+            </p>
+          </div>
         </div>
       </div>
 
@@ -177,32 +157,19 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       {/* Emploi et economie */}
       <h4 className="fr-mt-5w">Emploi et économie</h4>
 
-      <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <GenericChart
-              id="dc_creations_entreprises"
-              land_id={landId}
-              land_type={landType}
-              sources={["insee"]}
-              showDataTable={true}
-            />
-          </div>
-        </div>
-        <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <GenericChart
-              id="dc_emploi_vs_conso"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                start_date: String(startYear),
-                end_date: String(endYear),
-              }}
-              sources={["insee", "majic"]}
-              showDataTable={true}
-            />
-          </div>
+      <div className="fr-mb-3w">
+        <div className="bg-white fr-p-2w rounded">
+          <GenericChart
+            id="dc_emploi_vs_conso"
+            land_id={landId}
+            land_type={landType}
+            params={{
+              start_date: String(startYear),
+              end_date: String(endYear),
+            }}
+            sources={["insee", "majic"]}
+            showDataTable={true}
+          />
         </div>
       </div>
 
@@ -210,6 +177,12 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
         <>
           <BivariateMapSection
             chartId="dc_emploi_conso_map"
+            landId={landId}
+            landType={landType}
+            childLandType={mapChildType}
+          />
+          <BivariateMapSection
+            chartId="dc_creations_entreprises_conso_map"
             landId={landId}
             landType={landType}
             childLandType={mapChildType}

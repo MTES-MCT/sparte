@@ -105,22 +105,6 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
             f"{self.land.name} ({conso_start}-{conso_end})"
         )
 
-    @property
-    def param(self):
-        base = super().param
-        # Enrich tooltip with population start/end
-        base["series"][0]["tooltip"]["pointFormat"] = (
-            "<b>{point.name}</b><br/><br/>"
-            '<span style="font-weight:bold">Population</span><br/>'
-            "Évolution : {point.indic_fmt}<br/><br/>"
-            '<span style="font-weight:bold">Consommation d\'espaces NAF</span><br/>'
-            "{point.conso_fmt} ha<br/><br/>"
-            '<span style="color:{point.color}">\u25CF</span> '
-            "{point.category_label}<br/><br/>"
-            '<em style="font-size:0.85em">{point.verdict}</em>'
-        )
-        return base
-
 
 # Needed for the import in data_table
 from public_data.models import AdminRef  # noqa: E402
