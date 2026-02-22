@@ -15,6 +15,7 @@ class DcVacanceConsoMap(DcBivariateConsoMap):
 
     name = "dc vacance conso map"
     bivariate_colors = PALETTE_DIVERGING
+    conso_field = "habitat"
     indicator_name = "Taux de vacance des logements"
     indicator_short = "taux vacance"
     indicator_unit = "%"

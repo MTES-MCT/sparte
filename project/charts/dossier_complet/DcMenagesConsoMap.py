@@ -8,6 +8,7 @@ class DcMenagesConsoMap(DcBivariateConsoMap):
 
     name = "dc menages conso map"
     bivariate_colors = PALETTE_TEAL
+    conso_field = "habitat"
     indicator_name = "Évolution du nombre de ménages"
     indicator_short = "évol. ménages"
     indicator_unit = "%"

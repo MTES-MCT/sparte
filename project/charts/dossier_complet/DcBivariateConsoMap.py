@@ -138,6 +138,16 @@ class DcBivariateConsoMap(DiagnosticChart):
     bivariate_colors = PALETTE_GREEN
     conso_field = "total"  # override with "activite" etc.
 
+    CONSO_LABELS = {
+        "total": "Consommation totale",
+        "habitat": "Consommation pour l'habitat",
+        "activite": "Consommation pour l'activité",
+    }
+
+    @property
+    def conso_label(self):
+        return self.CONSO_LABELS.get(self.conso_field, "Consommation d'espaces")
+
     @property
     def child_land_type(self):
         return self.params.get("child_land_type")
@@ -303,7 +313,7 @@ class DcBivariateConsoMap(DiagnosticChart):
             "headers": [
                 AdminRef.get_label(self.child_land_type),
                 self.indicator_short,
-                f"Conso. {conso_start}-{conso_end} (%)",
+                f"{self.conso_label} {conso_start}-{conso_end} (%)",
                 "Catégorie",
             ],
             "boldFirstColumn": True,
@@ -325,14 +335,15 @@ class DcBivariateConsoMap(DiagnosticChart):
         _, _, conso_start, conso_end = self.period_years
         child_label = self.formatted_child_land_type
         return (
-            f"{self.indicator_name} et consommation d'espaces des {child_label}s"
+            f"{self.indicator_name} et {self.conso_label.lower()}"
+            f" des {child_label}s"
             f" - {self.land.name} ({conso_start}-{conso_end})"
         )
 
     def get_chart_subtitle(self):
         return (
             f"Croisement entre {self.indicator_name.lower()} (INSEE) "
-            "et la consommation d'espaces NAF (fichiers fonciers)"
+            f"et la {self.conso_label.lower()} NAF (fichiers fonciers)"
         )
 
     @property
@@ -366,6 +377,7 @@ class DcBivariateConsoMap(DiagnosticChart):
                 "conso_max": round(max(conso_values), 4) if conso_values else None,
                 "indic_min": round(min(indic_values), 2) if indic_values else None,
                 "indic_max": round(max(indic_values), 2) if indic_values else None,
+                "conso_label": self.conso_label,
                 "indicator_name": self.indicator_name,
                 "indicator_short": self.indicator_short,
                 "indicator_unit": self.indicator_unit,
@@ -395,7 +407,7 @@ class DcBivariateConsoMap(DiagnosticChart):
                             "<b>{point.name}</b><br/><br/>"
                             f'<span style="font-weight:bold">{self.indicator_name}</span><br/>'
                             "{point.indic_fmt}<br/><br/>"
-                            '<span style="font-weight:bold">Consommation d\'espaces NAF</span><br/>'
+                            f'<span style="font-weight:bold">{self.conso_label}</span><br/>'
                             "{point.conso_pct_fmt}% ({point.conso_fmt} ha)<br/><br/>"
                             '<span style="color:{point.color}">\u25CF</span> '
                             "{point.category_label}<br/><br/>"

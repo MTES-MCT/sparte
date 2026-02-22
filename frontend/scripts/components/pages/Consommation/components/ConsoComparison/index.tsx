@@ -147,6 +147,87 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
           </div>
         </div>
       </div>
+
+      <div className="fr-mt-5w">
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-lg-8">
+            <ChartSection
+              id="dc_logement_conso_comparison_chart"
+              landId={landId}
+              landType={landType}
+              startYear={startYear}
+              endYear={endYear}
+              comparisonLandIds={comparisonLandIds}
+              sources={["majic", "insee"]}
+            >
+              <div>
+                <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.logementConso.title}</h6>
+                {CHART_DESCRIPTIONS.logementConso.content}
+              </div>
+            </ChartSection>
+          </div>
+
+          <div className="fr-col-12 fr-col-lg-4">
+            <GuideContent title={GUIDE_TEXTS.populationBubble.title} column>
+              {GUIDE_TEXTS.populationBubble.content}
+            </GuideContent>
+          </div>
+        </div>
+      </div>
+
+      <div className="fr-mt-5w">
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-lg-8">
+            <ChartSection
+              id="dc_menages_conso_comparison_chart"
+              landId={landId}
+              landType={landType}
+              startYear={startYear}
+              endYear={endYear}
+              comparisonLandIds={comparisonLandIds}
+              sources={["majic", "insee"]}
+            >
+              <div>
+                <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.menagesConso.title}</h6>
+                {CHART_DESCRIPTIONS.menagesConso.content}
+              </div>
+            </ChartSection>
+          </div>
+
+          <div className="fr-col-12 fr-col-lg-4">
+            <GuideContent title={GUIDE_TEXTS.populationBubble.title} column>
+              {GUIDE_TEXTS.populationBubble.content}
+            </GuideContent>
+          </div>
+        </div>
+      </div>
+
+      <div className="fr-mt-5w">
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-lg-8">
+            <ChartSection
+              id="dc_emploi_conso_comparison_chart"
+              landId={landId}
+              landType={landType}
+              startYear={startYear}
+              endYear={endYear}
+              comparisonLandIds={comparisonLandIds}
+              sources={["majic", "insee"]}
+            >
+              <div>
+                <h6 className="fr-mb-0">{CHART_DESCRIPTIONS.emploiConso.title}</h6>
+                {CHART_DESCRIPTIONS.emploiConso.content}
+              </div>
+            </ChartSection>
+          </div>
+
+          <div className="fr-col-12 fr-col-lg-4">
+            <GuideContent title={GUIDE_TEXTS.populationBubble.title} column>
+              {GUIDE_TEXTS.populationBubble.content}
+            </GuideContent>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -45,6 +45,7 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
   const consoMax = custom?.conso_max;
   const indicMin = custom?.indic_min;
   const indicMax = custom?.indic_max;
+  const consoLabel = custom?.conso_label || "Consommation";
   const indicName = custom?.indicator_name || "Indicateur";
   const indicUnit = custom?.indicator_unit || "";
   const indicGender = custom?.indicator_gender || "m";
@@ -121,7 +122,7 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
                   {/* Y-axis label */}
                   <div style={{ display: "flex", alignItems: "center", height: 226, marginRight: 4 }}>
                     <div style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", fontSize: "0.85rem", fontWeight: 600 }}>
-                      Consommation (%)
+                      {consoLabel} (%)
                     </div>
                   </div>
                   {/* Grid + X-axis */}
@@ -139,7 +140,7 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
                                   <strong>${CONSO_QUALIF[ri]}, ${indicQualif[ci]}</strong>
                                 </div>
                                 <div style="margin-bottom:6px;font-size:0.85rem;line-height:1.5">
-                                  <div><strong>Consommation :</strong> ${consoRanges ? consoRanges[ri] + " %" : CONSO_QUALIF[ri].toLowerCase()}</div>
+                                  <div><strong>${consoLabel} :</strong> ${consoRanges ? consoRanges[ri] + " %" : CONSO_QUALIF[ri].toLowerCase()}</div>
                                   <div><strong>${indicName} :</strong> ${indicRanges
                                     ? indicRanges[ci] + (indicUnit ? " " + indicUnit : "")
                                     : indicQualif[ci]}</div>
