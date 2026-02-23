@@ -17,8 +17,10 @@ import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalcu
 import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
 import Card from "@components/ui/Card";
-import { ArtificialisationMap } from "@components/map/ui/ArtificialisationMap";
 import { ArtificialisationDiffMap } from "@components/map/ui/ArtificialisationDiffMap";
+import { OcsgeObjectMap } from "@components/map/ui/OcsgeObjectMap";
+import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
+import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -67,7 +69,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	});
 
 	const { has_zonage } = landData;
-
 	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
 	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
 	if (!landData) return <div role="status" aria-live="polite">Données non disponibles</div>;
@@ -239,12 +240,36 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Surfaces artificialisées par type de couverture et d'usage
+					Artificialisation des zonages d'urbanisme
 				</h2>
-				{land_type !== LandType.REGION && (
-					<ArtificialisationMap landData={landData} />
+				<p className="fr-text--sm fr-mb-2w">
+					Le tableau ci-dessous et la carte associée croisent les zonages d'urbanisme (PLU/PLUi) avec les données OCS GE pour mesurer le taux d'artificialisation de chaque zone.
+				</p>
+				<ArtificialisationZonage
+					artifZonageIndex={artifZonageIndex}
+				/>
+				<div className="fr-mt-4w" />
+				<p className="fr-text--sm fr-mb-2w">
+					La carte superpose les zonages d'urbanisme et l'occupation du sol. Les zonages sont colorés par type&nbsp;:
+					{" "}<ZoneTypeBadge type="U" /> <ZoneTypeBadge type="AU" /> <ZoneTypeBadge type="N" /> <ZoneTypeBadge type="A" />.
+					<br />Cliquez sur un zonage pour révéler l'occupation du sol en dessous et survolez les objets OCS GE pour identifier leur couverture ou usage.
+				</p>
+				{land_type !== LandType.REGION && has_zonage && (
+					<ZonageUrbanismeMap
+						landData={landData}
+						mode="artif"
+					/>
 				)}
-				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
+				<h2 className="fr-mt-4w">
+					Artificialisation par type de couverture et d'usage
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landArtifStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-2w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
 						<OcsgeMillesimeSelector
 							millesimes_by_index={millesimes_by_index}
@@ -335,15 +360,6 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 			</div>
 
 			<div className="fr-mb-7w">
-				<h2 className="fr-mt-7w">
-					Artificialisation par type de couverture et d'usage
-					{" "}
-					<MillesimeDisplay 
-						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landArtifStockIndex}
-						between={true}
-					/>
-				</h2>
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
 					{
 						is_interdepartemental && (
@@ -492,12 +508,24 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 				</div>
 			)}
 
-			{has_zonage && (
-				<ArtificialisationZonage
-					artifZonageIndex={artifZonageIndex}
-					is_interdepartemental={is_interdepartemental}
-					landArtifStockIndex={landArtifStockIndex}
-				/>
+
+			{land_type !== LandType.REGION && (
+				<div className="fr-mb-7w">
+					<h2>Explorateur des objets OCS GE artificialisés</h2>
+					<p className="fr-text--sm fr-mb-2w">
+						Cette carte permet d'explorer individuellement les objets OCS GE artificialisés du territoire. Chaque objet est caractérisé par un croisement couverture / usage qui détermine s'il est artificialisé ou non.
+						Sélectionnez un objet sur la carte pour consulter sa couverture, son usage et son statut d'artificialisation.
+						<br />
+						<br />Exemple : un objet de couverture <span style={{display: "inline-block", width: 10, height: 10, background: "rgb(255, 55, 122)", marginRight: 3, verticalAlign: "middle"}} /> <strong>Zones bâties</strong> et d'usage <span style={{display: "inline-block", width: 10, height: 10, background: "rgb(230, 0, 77)", marginRight: 3, verticalAlign: "middle"}} /> <strong>Résidentiel</strong> est considéré comme <strong style={{color: "#E63946"}}>artificialisé</strong>.
+						À l'inverse, un objet de couverture <span style={{display: "inline-block", width: 10, height: 10, background: "rgb(0, 128, 64)", marginRight: 3, verticalAlign: "middle"}} /> <strong>Formations herbacées</strong> et d'usage <span style={{display: "inline-block", width: 10, height: 10, background: "rgb(0, 128, 0)", marginRight: 3, verticalAlign: "middle"}} /> <strong>Sylviculture</strong> est considéré comme <strong style={{color: "#2A9D8F"}}>non artificialisé</strong>.
+						<br />
+						<br />Attention : certains objets dont le croisement couverture / usage correspond à de l'artificialisation peuvent ne pas être comptabilisés comme tels après application des <a href="#seuils-interpretation">seuils d'interprétation</a>.
+					</p>
+					<OcsgeObjectMap
+						landData={landData}
+						mode="artif"
+					/>
+				</div>
 			)}
 
 			<div className="fr-mb-7w">
@@ -530,7 +558,7 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 							/>
 						</div>
 					</section>
-					<h3 className="fr-mt-5w">Les seuils d'interprétation</h3>
+					<h3 id="seuils-interpretation" className="fr-mt-5w">Les seuils d'interprétation</h3>
 					<p className="fr-text--sm">
 						Une fois les espaces qualifiés en artificiels ou non-artificiels à
 						partir du tableau de croisement,{" "}

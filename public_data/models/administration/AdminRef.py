@@ -77,6 +77,7 @@ class AdminRef:
             cls.SCOT: cls.EPCI,
             cls.DEPARTEMENT: cls.EPCI,
             cls.REGION: cls.DEPARTEMENT,
+            cls.NATION: cls.REGION,
             cls.COMPOSITE: cls.COMMUNE,
             cls.CUSTOM: cls.COMMUNE,
         }[level]
@@ -108,6 +109,12 @@ class AdminRef:
                 cls.COMMUNE,
                 cls.EPCI,
                 cls.DEPARTEMENT,
+            ],
+            cls.NATION: [
+                cls.COMMUNE,
+                cls.EPCI,
+                cls.DEPARTEMENT,
+                cls.REGION,
             ],
             cls.COMPOSITE: [
                 cls.COMMUNE,

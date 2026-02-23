@@ -12,7 +12,9 @@ export enum ConsoCorrectionStatusEnum {
     DONNEES_INCHANGEES_AVEC_DONNEES_MANQUANTES = 'données_inchangées_avec_données_manquantes',
     DONNEES_PARTIELLEMENT_CORRIGEES = 'données_partiellement_coriggées',
     DONNEES_INCHANGEES = 'données_inchangées',
-    DONNEES_MANQUANTES = 'données_manquantes'
+    DONNEES_MANQUANTES = 'données_manquantes',
+    DONNEES_CORRIGEES_AVEC_DONNEES_MANQUANTES = 'données_coriggées_avec_données_manquantes',
+    DONNEES_PARTIELLEMENT_CORRIGEES_AVEC_DONNEES_MANQUANTES = 'données_partiellement_coriggées_avec_données_manquantes'
 }
 
 interface IconsoCorrectionStatusMessages {
@@ -40,6 +42,14 @@ export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]
     'données_manquantes': {
         title: warningTitle,
         message: missingMessage,
+    },
+    'données_coriggées_avec_données_manquantes': {
+        title: defaultTitle,
+        message: `Certaines données de consommation d'espaces NAF ont été corrigées pour votre territoire, et certaines communes sont absentes du dernier millésime.`
+    },
+    'données_partiellement_coriggées_avec_données_manquantes': {
+        title: defaultTitle,
+        message: `Certaines données de consommation d'espaces NAF ont été corrigées pour votre territoire, et certaines communes sont absentes du dernier millésime.`
     }
 };
 
@@ -50,8 +60,10 @@ export interface ConsoCorrectionStatusProps {
 
 const ConsoCorrectionStatus: React.FC<ConsoCorrectionStatusProps> = ({ status }) => {
 
-    const title = consoCorrectionStatusMessages[status].title;
-    const message = consoCorrectionStatusMessages[status].message;
+    const statusMessage = consoCorrectionStatusMessages[status];
+    if (!statusMessage) return null;
+
+    const { title, message } = statusMessage;
 
     return (
         <div className="fr-notice fr-notice--info fr-my-3w">

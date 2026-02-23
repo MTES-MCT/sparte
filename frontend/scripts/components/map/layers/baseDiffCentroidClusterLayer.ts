@@ -36,7 +36,9 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
     }
 
     private handleData(e: maplibregl.MapSourceDataEvent): void {
-        if (!this.map || e.sourceId !== this.getSourceId() || !e.isSourceLoaded) return;
+        if (!this.map || !e.isSourceLoaded) return;
+        const baseId = this.getSourceId();
+        if (e.sourceId !== baseId && !e.sourceId.startsWith(`${baseId}-dept-`)) return;
 
         // La source est maintenant chargée, on peut configurer les vrais listeners
         // et supprimer le listener temporaire 'data'
@@ -55,27 +57,41 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
         this.updateMarkersOnScreen(newMarkers);
     }
 
+    private getSourceIds(): string[] {
+        if (!this.map) return [this.getSourceId()];
+        const baseId = this.getSourceId();
+        const style = this.map.getStyle();
+        if (!style?.sources) return [baseId];
+
+        return Object.keys(style.sources).filter(
+            id => id === baseId || id.startsWith(`${baseId}-dept-`)
+        );
+    }
+
     private createMarkersFromFeatures(): Record<string, maplibregl.Marker> {
         const newMarkers: Record<string, maplibregl.Marker> = {};
-        const features = this.map!.querySourceFeatures(this.getSourceId());
 
-        for (const feature of features) {
-            const marker = this.createMarkerFromFeature(feature);
-            if (marker) {
-                newMarkers[marker.id] = marker.marker;
+        for (const sourceId of this.getSourceIds()) {
+            const features = this.map!.querySourceFeatures(sourceId);
+
+            for (const feature of features) {
+                const marker = this.createMarkerFromFeature(feature, sourceId);
+                if (marker) {
+                    newMarkers[marker.id] = marker.marker;
+                }
             }
         }
 
         return newMarkers;
     }
 
-    private createMarkerFromFeature(feature: any): { id: string; marker: maplibregl.Marker } | null {
+    private createMarkerFromFeature(feature: any, sourceId: string): { id: string; marker: maplibregl.Marker } | null {
         const coords = feature.geometry;
         const props = feature.properties;
 
         if (!props?.cluster || coords.type !== 'Point') return null;
 
-        const id = props.cluster_id;
+        const id = `${sourceId}_${props.cluster_id}`;
         const coordinates = coords.coordinates as [number, number];
 
         let marker = this.markers[id];

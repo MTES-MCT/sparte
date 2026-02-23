@@ -47,7 +47,7 @@ export const ImpermeabilisationMap: React.FC<ImpermeabilisationMapProps> = ({
 					},
 					{
 						id: "impermeabilisation-millesime",
-						type: "ocsge-millesime",
+						type: "ocsge-millesime-index",
 						targetLayers: ["impermeabilisation-layer"],
 						sourceId: "ocsge-source",
 						defaultValue: `${lastMillesimeIndex}_${firstDepartement}`

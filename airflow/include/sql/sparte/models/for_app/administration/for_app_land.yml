@@ -175,6 +175,7 @@ models:
                 - données_manquantes
                 - données_partiellement_coriggées
                 - données_coriggées_avec_données_manquantes
+                - données_partiellement_coriggées_avec_données_manquantes
       - name: has_conso
         data_type: boolean
         tests:

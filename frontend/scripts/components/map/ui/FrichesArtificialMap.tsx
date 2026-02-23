@@ -92,6 +92,7 @@ export const FrichesArtificialMap: React.FC<FrichesArtificialMapProps> = ({
             config={config}
             landData={extendedLandData}
             center={center}
+            mapHeight="65vh"
             onMapLoad={onMapLoad}
         />
     );

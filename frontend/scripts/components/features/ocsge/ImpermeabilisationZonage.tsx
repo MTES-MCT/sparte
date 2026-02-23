@@ -2,14 +2,25 @@ import React from "react";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
 import { ZonageType } from "scripts/types/ZonageType";
-import ChartDetails from "@components/charts/ChartDetails";
-import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
-import { LandImperStockIndex } from "@services/types/landimperstockindex";
+import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 
-const ProgressBarCell = styled.td`
-	.progress-bar-container {
-		max-width: 100% !important;
-	}
+const PercentBarTrack = styled.div`
+	height: 8px;
+	background: #e0e0e0;
+	border-radius: 4px;
+	overflow: hidden;
+`;
+
+const PercentBarFill = styled.div<{ $percent: number; $color: string }>`
+	height: 100%;
+	width: ${({ $percent }) => Math.min($percent, 100)}%;
+	background-color: ${({ $color }) => $color};
+	border-radius: 4px;
+	transition: width 0.3s ease;
+`;
+
+const PercentCell = styled.td`
+	vertical-align: middle;
 `;
 
 interface ZonageData {
@@ -25,82 +36,60 @@ interface ZonageData {
 
 interface ImpermeabilisationZonageProps {
 	imperZonageIndex: ZonageData[];
-	is_interdepartemental: boolean;
-	landImperStockIndex: LandImperStockIndex;
 }
 
 export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> = ({
 	imperZonageIndex,
-	is_interdepartemental,
-	landImperStockIndex,
 }) => {
 	return (
-		<div className="fr-mb-7w">
-			<h2>Imperméabilisation des zonages d'urbanisme <MillesimeDisplay is_interdepartemental={is_interdepartemental} landArtifStockIndex={landImperStockIndex} /></h2>
-			<div className="bg-white fr-p-4w rounded">
-				<div className="fr-table fr-mb-0">
-					<div className="fr-table__wrapper">
-						<div className="fr-table__container">
-							<div className="fr-table__content">
-								<table>
-									<thead>
-										<tr>
-											<th scope="col">Type de zonage</th>
-											<th scope="col">Surface de zonage (ha)</th>
-											<th scope="col">Surface imperméable (ha)</th>
-											<th scope="col">Taux d'imperméabilisation (%)</th>
-											<th scope="col">Nombre de zones</th>
+		<div className="fr-table fr-mb-0">
+			<div className="fr-table__wrapper">
+				<div className="fr-table__container">
+					<div className="fr-table__content">
+						<table>
+							<thead>
+								<tr>
+									<th scope="col">Type de zonage</th>
+									<th scope="col">Surface de zonage (ha)</th>
+									<th scope="col">Surface imperméable (ha)</th>
+									<th scope="col">Taux d'imperméabilisation (%)</th>
+									<th scope="col">Nombre de zones</th>
+								</tr>
+							</thead>
+							<tbody>
+								{imperZonageIndex
+									?.filter((a: ZonageData) => a && typeof a.zonage_surface === 'number')
+									?.sort(
+										(a: ZonageData, b: ZonageData) => b.zonage_surface - a.zonage_surface
+									)
+									.map((a: ZonageData) => (
+										<tr key={`${a.zonage_type}_${a.millesime_index}`}>
+											<td>
+												<ZoneTypeBadge type={a.zonage_type} />{" "}
+												<b>{ZonageType[a.zonage_type]}</b>
+											</td>
+											<td>
+												{formatNumber({ number: a.zonage_surface })}
+											</td>
+											<td>
+												{formatNumber({ number: a.impermeable_surface })}
+											</td>
+											<PercentCell>
+												<div>{formatNumber({ number: a.impermeable_percent })}%</div>
+												<PercentBarTrack>
+													<PercentBarFill
+														$percent={a.impermeable_percent}
+														$color="#3A7EC2"
+													/>
+												</PercentBarTrack>
+											</PercentCell>
+											<td>{a.zonage_count}</td>
 										</tr>
-									</thead>
-									<tbody>
-										{imperZonageIndex
-											?.filter((a: ZonageData) => a && typeof a.zonage_surface === 'number')
-											?.sort(
-												(a: ZonageData, b: ZonageData) => b.zonage_surface - a.zonage_surface
-											)
-											.map((a: ZonageData) => (
-												<tr key={`${a.zonage_type}_${a.millesime_index}`}>
-													<td>
-														<b>
-															{ZonageType[a.zonage_type as keyof typeof ZonageType]} ({a.zonage_type})
-														</b>
-													</td>
-													<td>
-														{formatNumber({ number: a.zonage_surface })}
-													</td>
-													<td>
-														{formatNumber({ number: a.impermeable_surface })}
-													</td>
-													<ProgressBarCell>
-														<div className="progress-bar-container">
-															<div
-																className={`progress-bar-indicator w-${Math.round(
-																	a.impermeable_percent
-																)}`}
-															/>
-															<div className="progress-bar-value">
-																{formatNumber({
-																	number: a.impermeable_percent,
-																})}
-																%
-															</div>
-														</div>
-													</ProgressBarCell>
-													<td>{a.zonage_count}</td>
-												</tr>
-											))}
-									</tbody>
-								</table>
-							</div>
-						</div>
+									))}
+							</tbody>
+						</table>
 					</div>
 				</div>
-				<ChartDetails sources={['ocsge', 'gpu']} chartId="impermeabilisation-zonage-tableau">
-					<div>
-						<h3 className="fr-mb-0">Calcul</h3>
-						<p className="fr-text--sm fr-mb-0">Qualifier l'imperméabilisation de chaque parcelle OCS GE via la nomenclature OCS GE. Puis comparer la surface totale des parcelles imperméables dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
-					</div>
-				</ChartDetails>
 			</div>
 		</div>
 	);

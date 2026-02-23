@@ -11,6 +11,7 @@ import { FrichesCentroidSource } from "../sources/frichesCentroidSource";
 import { OcsgeFrichesSource } from "../sources/ocsgeFrichesSource";
 import { CarroyageLeaSource } from "../sources/carroyageLeaSource";
 import { OsmSource } from "../sources/osmSource";
+import { ZonageUrbanismeSource } from "../sources/zonageUrbanismeSource";
 import type { SourceConfig } from "../types/builder";
 import type { LandDetailResultType } from "@services/types/land";
 
@@ -29,6 +30,7 @@ const sourceRegistry: Record<string, SourceFactory> = {
     "ocsge-friches": (landData) => new OcsgeFrichesSource(landData),
     "carroyage-lea": () => new CarroyageLeaSource(),
     "osm": () => new OsmSource(),
+    "zonage-urbanisme": (landData) => new ZonageUrbanismeSource(landData),
 };
 
 export function createSource(cfg: SourceConfig, landData: LandDetailResultType): BaseSource {

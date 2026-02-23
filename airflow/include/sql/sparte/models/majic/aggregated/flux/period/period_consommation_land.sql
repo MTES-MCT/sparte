@@ -71,3 +71,10 @@ SELECT
     custom_land_surface as land_surface,
     {{ common_fields }}
 FROM {{ ref('period_consommation_custom_land') }}
+UNION ALL
+SELECT
+    nation as land_id,
+    '{{ var("NATION") }}' as land_type,
+    nation_surface as land_surface,
+    {{ common_fields }}
+FROM {{ ref('period_consommation_nation') }}

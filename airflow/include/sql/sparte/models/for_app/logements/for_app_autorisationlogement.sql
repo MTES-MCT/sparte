@@ -70,6 +70,17 @@ SELECT
     surface_de_plancher_commencee
 FROM
     {{ ref('logement_custom_land')}}
+UNION
+SELECT
+    code_nation as land_id,
+    '{{ var('NATION') }}' as land_type,
+    year as year,
+    logements_autorises,
+    logements_commences,
+    surface_de_plancher_autorisee,
+    surface_de_plancher_commencee
+FROM
+    {{ ref('logement_nation')}}
 ), with_percentages as (
 SELECT
     autorisations.land_id,

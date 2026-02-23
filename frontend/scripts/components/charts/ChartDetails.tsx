@@ -50,7 +50,7 @@ const ChartDetails: React.FC<ChartDetailsProps> = ({
     chartTitle,
     dataTableHeader,
     dataTableOnly = false,
-    compactDataTable = false
+    compactDataTable = false,
 }) => {
     // Le contenu est plié par défaut
     const [isVisible, setIsVisible] = useState(false);

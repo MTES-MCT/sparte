@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import { useGetLandQuery, useGetCurrentUserQuery, useGetUserLandPreferenceQuery } from '@services/api';
 import { buildUrls, buildNavbar, buildFooter, buildHeader } from '@utils/projectUrls';
+import { landTypeCodeToSlug } from '@utils/landUtils';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
@@ -61,8 +62,9 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
     );
 
 
-    const urls = useMemo(() => buildUrls(landType, landSlug), [landType, landSlug]);
-    const navbar = useMemo(() => buildNavbar(landType, landSlug), [landType, landSlug]);
+    const landTypeSlug = useMemo(() => landTypeCodeToSlug(landType), [landType]);
+    const urls = useMemo(() => buildUrls(landTypeSlug, landSlug), [landTypeSlug, landSlug]);
+    const navbar = useMemo(() => buildNavbar(landTypeSlug, landSlug), [landTypeSlug, landSlug]);
     const footer = useMemo(() => buildFooter(), []);
     const header = useMemo(() => buildHeader(currentUser?.is_authenticated ?? false), [currentUser?.is_authenticated]);
 

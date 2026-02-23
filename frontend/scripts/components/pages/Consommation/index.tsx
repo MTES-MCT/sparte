@@ -279,9 +279,8 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
             Le total affiché ici peut donc être <strong>différent de celui du territoire</strong>.
           </p>
         </div>
-        <div className="bg-white fr-p-2w rounded">
-          <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} childLandType={childType} />
-        </div>
+        <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} childLandType={childType} />
+
       </div>
 
       <ConsoDemography

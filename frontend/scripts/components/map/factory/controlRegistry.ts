@@ -1,6 +1,7 @@
 import { VisibilityControl } from "../controls/VisibilityControl";
 import { OpacityControl } from "../controls/OpacityControl";
 import { OcsgeMillesimeControl } from "../controls/OcsgeMillesimeControl";
+import { OcsgeMillesimeIndexControl } from "../controls/OcsgeMillesimeIndexControl";
 import { OcsgeDiffMillesimeControl } from "../controls/OcsgeDiffMillesimeControl";
 import { OcsgeNomenclatureControl } from "../controls/OcsgeNomenclatureControl";
 import { OcsgeNomenclatureFilterControl } from "../controls/OcsgeNomenclatureFilterControl";
@@ -12,6 +13,7 @@ const controlRegistry: Record<ControlType, ControlFactory> = {
     visibility: () => new VisibilityControl(),
     opacity: () => new OpacityControl(),
     'ocsge-millesime': () => new OcsgeMillesimeControl(),
+    'ocsge-millesime-index': () => new OcsgeMillesimeIndexControl(),
     'ocsge-diff-millesime': () => new OcsgeDiffMillesimeControl(),
     'ocsge-nomenclature': () => new OcsgeNomenclatureControl(),
     'ocsge-nomenclature-filter': () => new OcsgeNomenclatureFilterControl(),

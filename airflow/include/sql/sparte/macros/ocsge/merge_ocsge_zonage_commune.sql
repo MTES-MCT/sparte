@@ -44,5 +44,8 @@ select
     zonage_count,
     indicateur_surface / zonage_surface * 100 as indicateur_percent
 from without_percent
+-- certains zonages PLU ont une surface nulle (géométrie dégénérée ou intersection
+-- vide avec l'OCS GE), on les ignore car marginaux (2 sur ~159 000)
+where zonage_surface > 0
 
 {% endmacro %}

@@ -12,11 +12,13 @@ import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelecto
 import { useImpermeabilisation } from "@hooks/useImpermeabilisation";
 import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage";
 import Card from "@components/ui/Card";
-import { ImpermeabilisationMap } from "@components/map/ui/ImpermeabilisationMap";
 import { ImpermeabilisationDiffMap } from "@components/map/ui/ImpermeabilisationDiffMap";
+import { OcsgeObjectMap } from "@components/map/ui/OcsgeObjectMap";
+import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import Guide from "@components/ui/Guide";
 import GuideContent from "@components/ui/GuideContent";
+import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 
 export const BigNumber = styled.div`
 	font-size: 3rem;
@@ -65,7 +67,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 	});
 
 	const { has_zonage } = landData;
-
 	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
 	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
 	if (!landData) return <div role="status" aria-live="polite">Données non disponibles</div>;
@@ -225,13 +226,36 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 
 			<div className="fr-mb-7w">
 				<h2 className="fr-mt-7w">
-					Surfaces imperméables par type de couverture et
-					d'usage
+					Imperméabilisation des zonages d'urbanisme
 				</h2>
-				{land_type !== LandType.REGION && (
-					<ImpermeabilisationMap landData={landData} />
+				<p className="fr-text--sm fr-mb-2w">
+					Le tableau ci-dessous et la carte associée croisent les zonages d'urbanisme (PLU/PLUi) avec les données OCS GE pour mesurer le taux d'imperméabilisation de chaque zone.
+				</p>
+				<ImpermeabilisationZonage
+					imperZonageIndex={imperZonageIndex}
+				/>
+				<div className="fr-mt-4w" />
+				<p className="fr-text--sm fr-mb-2w">
+					La carte superpose les zonages d'urbanisme et l'occupation du sol. Les zonages sont colorés par type&nbsp;:
+					{" "}<ZoneTypeBadge type="U" /> <ZoneTypeBadge type="AU" /> <ZoneTypeBadge type="N" /> <ZoneTypeBadge type="A" />.
+					<br />Cliquez sur un zonage pour révéler l'occupation du sol en dessous et survolez les objets OCS GE pour identifier leur couverture ou usage.
+				</p>
+				{land_type !== LandType.REGION && has_zonage && (
+					<ZonageUrbanismeMap
+						landData={landData}
+						mode="imper"
+					/>
 				)}
-				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-4w fr-mb-5w rounded">
+				<h2 className="fr-mt-4w">
+					Imperméabilisation par type de couverture et d'usage
+					{" "}
+					<MillesimeDisplay
+						is_interdepartemental={is_interdepartemental}
+						landArtifStockIndex={landImperStockIndex}
+						between={true}
+					/>
+				</h2>
+				<div className="bg-white fr-px-4w fr-pt-4w fr-mt-2w fr-mb-5w rounded">
 					<div className="d-flex gap-4">
 						<OcsgeMillesimeSelector
 							millesimes_by_index={millesimes_by_index}
@@ -322,15 +346,6 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 			</div>
 			
 			<div className="fr-mb-7w">
-				<h2 className="fr-mt-7w">
-					Imperméabilisation par type de couverture et d'usage
-					{" "}
-					<MillesimeDisplay 
-						is_interdepartemental={is_interdepartemental}
-						landArtifStockIndex={landImperStockIndex}
-						between={true}
-					/>
-				</h2>
 				<div className="bg-white fr-px-4w fr-pt-4w fr-mb-5w rounded">
 					{
 						is_interdepartemental && (
@@ -479,14 +494,24 @@ export const Impermeabilisation: React.FC<ImpermeabilisationProps> = ({
 				</div>
 			)}
 
-			{has_zonage && (
-				<ImpermeabilisationZonage 
-					imperZonageIndex={imperZonageIndex}
-					is_interdepartemental={is_interdepartemental}
-					landImperStockIndex={landImperStockIndex}
-				/>
+			{land_type !== LandType.REGION && (
+				<div className="fr-mb-7w">
+					<h2>Explorateur des objets OCS GE imperméabilisés</h2>
+					<p className="fr-text--sm fr-mb-2w">
+						Cette carte permet d'explorer individuellement les objets OCS GE imperméabilisés du territoire. Chaque objet est caractérisé par un croisement couverture / usage qui détermine s'il est imperméabilisé ou non.
+						Sélectionnez un objet sur la carte pour consulter sa couverture, son usage et son statut d'imperméabilisation.
+						<br />
+						<br />Exemple : un objet de couverture <span style={{display: "inline-block", width: 10, height: 10, background: "rgb(255, 55, 122)", marginRight: 3, verticalAlign: "middle"}} /> <strong>Zones bâties</strong> est considéré comme <strong style={{color: "#E63946"}}>imperméabilisé</strong>.
+						À l'inverse, un objet de couverture <span style={{display: "inline-block", width: 10, height: 10, background: "rgb(0, 128, 64)", marginRight: 3, verticalAlign: "middle"}} /> <strong>Formations herbacées</strong> est considéré comme <strong style={{color: "#2A9D8F"}}>non imperméabilisé</strong>.
+					</p>
+					<OcsgeObjectMap
+						landData={landData}
+						mode="imper"
+					/>
+				</div>
 			)}
-		</div>
+
+			</div>
 	);
 };
 

@@ -12,6 +12,7 @@ models:
                 - REGION
                 - SCOT
                 - CUSTOM
+                - NATION
           - not_null
       - name: land_id
         data_type: character varying
@@ -28,3 +29,4 @@ models:
                 - données_partiellement_coriggées
                 - données_inchangées
                 - données_coriggées_avec_données_manquantes
+                - données_partiellement_coriggées_avec_données_manquantes

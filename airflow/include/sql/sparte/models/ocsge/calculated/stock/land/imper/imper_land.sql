@@ -52,6 +52,13 @@ SELECT
     {{ common_fields }}
 FROM
     {{ ref("imper_custom_land") }}
+UNION ALL
+SELECT
+    code as land_id,
+    '{{ var("NATION") }}' as land_type,
+    {{ common_fields }}
+FROM
+    {{ ref("imper_nation") }}
 )
 SELECT
     land_id,

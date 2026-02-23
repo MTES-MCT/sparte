@@ -166,6 +166,18 @@ class LandModel(models.Model):
     def territorialisation(self):
         from public_data.models.territorialisation import TerritorialisationObjectif
 
+        if self.land_type == AdminRef.NATION:
+            return {
+                "has_objectif": False,
+                "objectif": None,
+                "hierarchy": [],
+                "has_children": False,
+                "children_land_types": [],
+                "children_stats": None,
+                "is_from_parent": False,
+                "parent_land_name": None,
+            }
+
         objectif = TerritorialisationObjectif.objects.filter(
             land__land_id=self.land_id,
             land__land_type=self.land_type,
@@ -474,7 +486,7 @@ class LandChildrenGeomViewset(viewsets.ViewSet):
 @method_decorator(cache_control(public=True, max_age=3600), name="retrieve")
 @method_decorator(cache_control(public=True, max_age=3600), name="list")
 class LandModelViewset(viewsets.ViewSet):
-    queryset = LandModel.objects.all()
+    queryset = LandModel.objects.defer("geom", "simple_geom")
     serializer_class = LandModelSerializer
 
     def list(self, request):
@@ -487,6 +499,6 @@ class LandModelViewset(viewsets.ViewSet):
         return Response(serializer.data)
 
     def retrieve(self, request, land_type, land_id):
-        queryset = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        queryset = LandModel.objects.defer("geom", "simple_geom").get(land_id=land_id, land_type=land_type)
         serializer = LandModelSerializer(queryset)
         return Response(serializer.data)
