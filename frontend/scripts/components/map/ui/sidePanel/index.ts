@@ -6,6 +6,8 @@ export { OcsgeObjectSidePanel } from "./OcsgeObjectSidePanel";
 export type { OcsgeObjectSidePanelProps } from "./OcsgeObjectSidePanel";
 export { ArtificialisationDiffSidePanel } from "./ArtificialisationDiffSidePanel";
 export type { ArtificialisationDiffSidePanelProps } from "./ArtificialisationDiffSidePanel";
+export { ImpermeabilisationDiffSidePanel } from "./ImpermeabilisationDiffSidePanel";
+export type { ImpermeabilisationDiffSidePanelProps } from "./ImpermeabilisationDiffSidePanel";
 export { CarroyageLeaSidePanel } from "./CarroyageLeaSidePanel";
 export type { CarroyageLeaSidePanelProps } from "./CarroyageLeaSidePanel";
 export { renderPieChart, FluxLabel } from "./PieChart";
