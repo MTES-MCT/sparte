@@ -11,23 +11,11 @@ import TerritoryIdentityCard from "./components/TerritoryIdentityCard";
 import DiagnosticsHub from "./components/DiagnosticsHub";
 import Feedback from '@components/ui/Feedback';
 import Badge from '@components/ui/Badge';
-import BaseCard from '@components/ui/BaseCard';
 
 interface SyntheseProps {
   projectData: ProjectDetailResultType;
   landData: LandDetailResultType;
 }
-
-const phaseColors = {
-  phase1: {
-    primary: theme.colors.info,
-    light: theme.colors.infoLight,
-  },
-  phase2: {
-    primary: theme.colors.primary,
-    light: theme.colors.primaryLight,
-  },
-} as const;
 
 const TimelineWrapper = styled.div`
   position: relative;
@@ -58,26 +46,18 @@ const PhaseBlock = styled.div`
   position: relative;
 `;
 
-const MarkerDot = styled.div<{ $phase: "phase1" | "phase2" }>`
+const MarkerDot = styled.div`
   position: absolute;
   left: -2rem;
-  top: 50%;
+  top: 1rem;
   transform: translate(-50%, -50%);
   margin-left: 6px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: ${({ $phase }) => phaseColors[$phase].primary};
+  background: ${theme.colors.primary};
   border: 2px solid white;
-  box-shadow: 0 0 0 2px ${({ $phase }) => phaseColors[$phase].light};
-`;
-
-const MilestoneCard = styled(BaseCard)`
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: ${theme.spacing.xs};
+  box-shadow: 0 0 0 2px ${theme.colors.primaryLight};
 `;
 
 const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
@@ -93,18 +73,16 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
           La <strong>loi Climat et Résilience</strong>, consistent à réduire la consommation d'espaces naturels, agricoles et forestiers et à terme de compenser toute nouvelle artificialisation par de la renaturation.
         </p>
 
-        <TimelineWrapper className="fr-mt-4w">
+        <TimelineWrapper className="fr-mt-4w fr-pt-4w">
           <TimelineEndpoint $position="start" />
 
           <PhaseBlock className="fr-mb-4w">
-            <MarkerDot $phase="phase1" />
-            <MilestoneCard>
-              <Badge $variant="info">Horizon 2031</Badge>
-              <h3 className="fr-mb-0">Réduction de la consommation d'espaces</h3>
-              <p className="fr-text--sm fr-mb-0">
-                Diviser par deux la consommation d'espaces NAF par rapport à la décennie précédente
-              </p>
-            </MilestoneCard>
+            <MarkerDot />
+            <Badge $variant="info">Horizon 2031</Badge>
+            <h3 className="fr-mb-0">Réduction de la consommation d'espaces</h3>
+            <p className="fr-text--sm fr-mb-0">
+              Diviser par deux la consommation d'espaces NAF par rapport à la décennie précédente
+            </p>
           </PhaseBlock>
 
           <div className="fr-mb-5w">
@@ -115,14 +93,12 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
           </div>
 
           <PhaseBlock className="fr-mb-4w">
-            <MarkerDot $phase="phase2" />
-            <MilestoneCard>
-              <Badge $variant="active">Horizon 2050</Badge>
-              <h3 className="fr-mb-0">Zéro Artificialisation Nette</h3>
-              <p className="fr-text--sm fr-mb-0">
-                Compenser toute nouvelle artificialisation par de la renaturation
-              </p>
-            </MilestoneCard>
+            <MarkerDot />
+            <Badge $variant="active">Horizon 2050</Badge>
+            <h3 className="fr-mb-0">Zéro Artificialisation Nette</h3>
+            <p className="fr-text--sm fr-mb-0">
+              Compenser toute nouvelle artificialisation par de la renaturation
+            </p>
           </PhaseBlock>
 
           <div className="fr-mb-5w">
