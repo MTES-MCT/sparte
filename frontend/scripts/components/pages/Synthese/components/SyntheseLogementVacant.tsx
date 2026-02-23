@@ -1,6 +1,6 @@
 import React from "react";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
+import { ProjectUrls } from "@utils/projectUrls";
 import { formatNumber } from "@utils/formatUtils";
 import Kpi from "@components/ui/Kpi";
 import GuideContent from "@components/ui/GuideContent";
@@ -9,12 +9,12 @@ import { LogementVacantAbstractContent } from "@components/features/logementVaca
 
 interface SyntheseLogementVacantProps {
   landData: LandDetailResultType;
-  projectData: ProjectDetailResultType;
+  urls: ProjectUrls;
 }
 
 const SyntheseLogementVacant: React.FC<SyntheseLogementVacantProps> = ({
   landData,
-  projectData,
+  urls,
 }) => {
   if (!landData.has_logements_vacants_prive && !landData.has_logements_vacants_social) {
     return <LogementVacantStatus />;
@@ -56,7 +56,7 @@ const SyntheseLogementVacant: React.FC<SyntheseLogementVacantProps> = ({
           }}
           action={{
             label: "Voir le diagnostic des logements vacants",
-            to: projectData.urls.logementVacant,
+            to: urls.logementVacant,
           }}
         />
       </div>

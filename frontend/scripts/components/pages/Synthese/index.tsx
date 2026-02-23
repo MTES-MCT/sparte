@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
 import { theme } from "@theme";
+import { buildUrls } from "@utils/projectUrls";
 import SyntheseConso from "./components/SyntheseConso";
 import SyntheseArtif from "./components/SyntheseArtif";
 import SyntheseFriche from "./components/SyntheseFriche";
@@ -13,7 +13,6 @@ import Feedback from '@components/ui/Feedback';
 import Badge from '@components/ui/Badge';
 
 interface SyntheseProps {
-  projectData: ProjectDetailResultType;
   landData: LandDetailResultType;
 }
 
@@ -60,7 +59,9 @@ const MarkerDot = styled.div`
   box-shadow: 0 0 0 2px ${theme.colors.primaryLight};
 `;
 
-const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
+const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
+  const urls = buildUrls(landData.land_type_slug, landData.slug);
+
   return (
     <div className="fr-container--fluid fr-p-3w">
       <TerritoryIdentityCard landData={landData} className="fr-mb-7w" />
@@ -88,7 +89,7 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
           <div className="fr-mb-5w">
             <SyntheseConso
               landData={landData}
-              projectData={projectData}
+              urls={urls}
             />
           </div>
 
@@ -104,7 +105,7 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
           <div className="fr-mb-5w">
             <SyntheseArtif
               landData={landData}
-              projectData={projectData}
+              urls={urls}
             />
           </div>
 
@@ -124,13 +125,13 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
         <h3>Vacance des logements</h3>
         <SyntheseLogementVacant
           landData={landData}
-          projectData={projectData}
+          urls={urls}
         />
 
         <h3 className="fr-mt-5w">Réhabilitation des friches</h3>
         <SyntheseFriche
           landData={landData}
-          projectData={projectData}
+          urls={urls}
         />
       </div>
 
@@ -141,42 +142,42 @@ const Synthese: React.FC<SyntheseProps> = ({ projectData, landData }) => {
               icon: "bi bi-graph-up",
               title: "Consommation d'espaces",
               description: "Analyse détaillée par destination et évolution démographique",
-              to: projectData.urls.consommation,
+              to: urls.consommation,
               available: landData.has_conso,
             },
             {
               icon: "bi bi-sliders",
               title: "Simulation de trajectoire",
               description: "Projetez et simulez vos objectifs de réduction",
-              to: projectData.urls.trajectoires,
+              to: urls.trajectoires,
               available: landData.has_conso,
             },
             {
               icon: "bi bi-layers",
               title: "Artificialisation des sols",
               description: "Flux d'artificialisation et couverture OCS GE",
-              to: projectData.urls.artificialisation,
+              to: urls.artificialisation,
               available: landData.has_ocsge,
             },
             {
               icon: "bi bi-layers",
               title: "Imperméabilisation des sols",
               description: "Imperméabilisation des sols",
-              to: projectData.urls.impermeabilisation,
+              to: urls.impermeabilisation,
               available: landData.has_ocsge,
             },
             {
               icon: "bi bi-house",
               title: "Logements vacants",
               description: "Parc privé, bailleurs sociaux et potentiel de mobilisation",
-              to: projectData.urls.logementVacant,
+              to: urls.logementVacant,
               available: landData.has_logements_vacants_prive || landData.has_logements_vacants_social,
             },
             {
               icon: "bi bi-building-x",
               title: "Friches",
               description: "Localisation, surface et potentiel de réhabilitation",
-              to: projectData.urls.friches,
+              to: urls.friches,
               available: landData.has_friche,
             },
           ]}

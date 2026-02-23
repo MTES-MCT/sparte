@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-
 interface MenuItem {
     label: string;
     url?: string;
@@ -40,15 +39,12 @@ const NavLink = styled.a`
 
 const Footer = ({ footer }: { footer: { menuItems: MenuItem[] } }) => {
 
-const Footer = ({ projectData }: FooterProps) => {
-    const menuItems = projectData.footer?.menuItems ?? [];
-
     return (
         <Container className="fr-container--fluid">
             <div className="fr-grid-row">
                 <div className="fr-col-12">
                     <NavLinks>
-                        {menuItems.map((item) => (
+                        {footer?.menuItems.map((item) => (
                             <NavLink
                                 key={item.label}
                                 href={item.url ?? '#'}

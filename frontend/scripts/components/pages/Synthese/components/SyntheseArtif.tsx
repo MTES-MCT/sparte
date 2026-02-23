@@ -1,6 +1,6 @@
 import React from "react";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
+import { ProjectUrls } from "@utils/projectUrls";
 import { formatNumber } from "@utils/formatUtils";
 import Loader from "@components/ui/Loader";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
@@ -11,12 +11,12 @@ import GuideContent from "@components/ui/GuideContent";
 
 interface SyntheseArtifProps {
   landData: LandDetailResultType;
-  projectData: ProjectDetailResultType;
+  urls: ProjectUrls;
 }
 
 const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
   landData,
-  projectData,
+  urls,
 }) => {
   const {
     landArtifStockIndex: data,
@@ -47,7 +47,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
           }}
           action={{
             label: "Voir le diagnostic d'artificialisation",
-            to: projectData.urls.artificialisation,
+            to: urls.artificialisation,
           }}
         />
       </div>
@@ -67,7 +67,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
           }}
           action={{
             label: "Voir le diagnostic d'artificialisation",
-            to: projectData.urls.artificialisation,
+            to: urls.artificialisation,
           }}
         />
       </div>
@@ -113,13 +113,13 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
 
 const SyntheseArtif: React.FC<SyntheseArtifProps> = ({
   landData,
-  projectData,
+  urls,
 }) => {
   if (!landData.has_ocsge) {
     return <OcsgeStatus status={landData.ocsge_status} />;
   }
 
-  return <SyntheseArtifContent landData={landData} projectData={projectData} />;
+  return <SyntheseArtifContent landData={landData} urls={urls} />;
 };
 
 export default SyntheseArtif;

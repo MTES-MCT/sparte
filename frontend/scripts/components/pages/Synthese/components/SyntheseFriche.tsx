@@ -1,6 +1,6 @@
 import React from "react";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
+import { ProjectUrls } from "@utils/projectUrls";
 import { formatNumber, pluralize } from "@utils/formatUtils";
 import Kpi from "@components/ui/Kpi";
 import GuideContent from "@components/ui/GuideContent";
@@ -9,12 +9,12 @@ import { FricheAbstractContent } from "@components/features/friches/FricheAbstra
 
 interface SyntheseFricheProps {
   landData: LandDetailResultType;
-  projectData: ProjectDetailResultType;
+  urls: ProjectUrls;
 }
 
 const SyntheseFriche: React.FC<SyntheseFricheProps> = ({
   landData,
-  projectData,
+  urls,
 }) => {
   if (!landData.has_friche) {
     return <FricheStatus />;
@@ -54,7 +54,7 @@ const SyntheseFriche: React.FC<SyntheseFricheProps> = ({
           }}
           action={{
             label: "Voir le diagnostic des friches",
-            to: projectData.urls.friches,
+            to: urls.friches,
           }}
         />
       </div>

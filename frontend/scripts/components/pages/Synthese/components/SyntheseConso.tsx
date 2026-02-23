@@ -1,6 +1,6 @@
 import React from "react";
-import { ProjectDetailResultType } from "@services/types/project";
 import { LandDetailResultType } from "@services/types/land";
+import { ProjectUrls } from "@utils/projectUrls";
 import { formatNumber } from "@utils/formatUtils";
 import Kpi from "@components/ui/Kpi";
 import GuideContent from "@components/ui/GuideContent";
@@ -8,12 +8,12 @@ import ConsoCorrectionStatus from "@components/features/status/ConsoCorrectionSt
 
 interface SyntheseConsoProps {
   landData: LandDetailResultType;
-  projectData: ProjectDetailResultType;
+  urls: ProjectUrls;
 }
 
 const SyntheseConso: React.FC<SyntheseConsoProps> = ({
   landData,
-  projectData,
+  urls,
 }) => {
   const { has_conso, consommation_correction_status } = landData;
 
@@ -22,7 +22,6 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
   }
 
   const { name, conso_details } = landData;
-  const { urls } = projectData;
   const { conso_2011_2020 } = conso_details;
 
   return (
