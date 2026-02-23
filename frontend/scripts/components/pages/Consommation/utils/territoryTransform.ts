@@ -1,4 +1,4 @@
-import { Territory } from "@components/ui/SearchBar";
+import { LandDetailResultType } from "@services/types/land";
 
 /**
  * Generic interface for territory data with nearest/similar territory information
@@ -23,7 +23,7 @@ export function transformToTerritories(
   rawData: TerritoryData[] | undefined,
   landId: string,
   landType: string
-): Territory[] {
+): LandDetailResultType[] {
   if (!rawData) return [];
 
   return rawData
@@ -32,19 +32,18 @@ export function transformToTerritories(
       const territoryId = item.nearest_land_id || item.similar_land_id;
       return territoryId !== landId;
     })
-    .map((item: TerritoryData): Territory => {
+    .map((item: TerritoryData) => {
       // Support both nearest_land_name and similar_land_name
       const name = item.nearest_land_name || item.similar_land_name || "";
-      const sourceId = item.nearest_land_id || item.similar_land_id || "";
+      const land_id = item.nearest_land_id || item.similar_land_id || "";
 
       return {
-        id: 0,
-        source_id: sourceId,
+        land_id,
         land_type: landType,
-        name: name,
-        public_key: "",
-        area: 0,
+        name,
+        key: "",
+        surface: 0,
         land_type_label: "",
-      };
+      } as unknown as LandDetailResultType;
     });
 }

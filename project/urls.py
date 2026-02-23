@@ -15,7 +15,8 @@ app_name = "project"
 # See below for DRF's router inclusions
 
 urlpatterns = [
-    path("mes-diagnostics", views.ProjectListView.as_view(), name="list"),
+    path("mes-territoires", views.UserLandPreferenceListView.as_view(), name="list"),
+    path("retirer-favori/<int:pk>/", views.RemoveFavoriteView.as_view(), name="remove_favorite"),
     # Export PDF (polling) — must be before <str:land_type>/<str:land_slug> routes
     path("export/start/", ExportStartView.as_view(), name="export_start"),
     path("export/status/<str:job_id>/", ExportStatusView.as_view(), name="export_status"),

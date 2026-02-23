@@ -9,23 +9,13 @@ from django.contrib.gis.geos import MultiPolygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator
 from django.db import models
-from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
 from project.models.enums import ProjectChangeReason
-from public_data.models import (
-    AdminRef,
-    ArtifZonage,
-    Departement,
-    Epci,
-    LandModel,
-    Region,
-    Scot,
-)
-from public_data.models.administration import Commune
+from public_data.models import AdminRef, LandModel
 from public_data.models.administration.enums import ConsommationCorrectionStatus
 from public_data.models.enums import SRID
 from public_data.models.mixins import DataColorationMixin
@@ -154,7 +144,7 @@ class Project(BaseProject):
     )
 
     @property
-    def cities(self) -> QuerySet[Commune]:
+    def cities(self):
         return self.land.get_cities()
 
     comparison_lands = models.JSONField(
@@ -276,14 +266,7 @@ class Project(BaseProject):
 
     @property
     def area(self) -> float:
-        return self.land.area
-
-    @cached_property
-    def has_zonage_urbanisme(self) -> bool:
-        return ArtifZonage.objects.filter(
-            land_id=self.land_id,
-            land_type=self.land_type,
-        ).exists()
+        return self.land.surface
 
     @cached_property
     def consommation_correction_status(self) -> str:
@@ -386,47 +369,9 @@ class Project(BaseProject):
         result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
         return result["center"]
 
-    @cached_property
-    def land(self) -> Commune | Departement | Epci | Region | Scot:
-        """DEPRECATED: Use land_model instead where possible.
-        Returns the underlying administrative model instance."""
-        return AdminRef.get_class(self.land_type).objects.get_by_natural_key(self.land_id, self.land_type)
-
     @property
     def land_model(self) -> LandModel:
         return LandModel.objects.get(land_type=self.land_type, land_id=self.land_id)
-
-    def get_arbitrary_comparison_lands(self) -> QuerySet[Departement] | QuerySet[Region] | None:
-        """
-        Return a queryset of lands if the project has arbitrary comparison lands
-        set, otherwise None.
-
-        Note that Guyane Française does not have arbitrary comparison lands the
-        same way as the other DROM-COM. It is because the territory is too
-        large to be compared with these territories.
-        """
-        arbitrary_comparison_source_ids = {
-            AdminRef.DEPARTEMENT: {
-                "971": ["972", "974"],
-                "972": ["971", "974"],
-                "974": ["971", "972"],
-            },
-            AdminRef.REGION: {
-                "01": ["02", "04"],
-                "02": ["01", "04"],
-                "04": ["01", "02"],
-            },
-        }
-
-        if self.land_type not in arbitrary_comparison_source_ids:
-            return None
-
-        if self.land.official_id not in arbitrary_comparison_source_ids[self.land_type]:
-            return None
-
-        comparison_source_ids = arbitrary_comparison_source_ids[self.land_type][self.land.official_id]
-
-        return AdminRef.get_class(name=self.land_type).objects.filter(source_id__in=comparison_source_ids)
 
     def get_neighbors(self):
         return (
@@ -434,17 +379,6 @@ class Project(BaseProject):
             .objects.filter(mpoly__intersects=self.combined_emprise.buffer(0.0001))
             .exclude(mpoly=self.land.mpoly)
         )
-
-    def get_comparison_lands(
-        self, limit=9
-    ) -> QuerySet[Commune] | QuerySet[Departement] | QuerySet[Region] | QuerySet[Epci] | QuerySet[Scot]:
-        """
-        Returns a queryset of lands that the project is to be compared with.
-
-        By defaut, returns lands neighboring the project's combined emprise,
-        unless arbitrary comparison lands are defined.
-        """
-        return (self.get_arbitrary_comparison_lands() or self.get_neighbors()).order_by("name")[:limit]
 
     def comparison_lands_and_self_land(self) -> list[LandModel]:
         """DEPRECATED: Use comparison_land_models_and_self() instead."""

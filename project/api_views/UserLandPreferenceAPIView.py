@@ -19,7 +19,7 @@ class UserLandPreferenceAPIView(View):
     def get(self, request, land_type, land_id):
         land_type = AdminRef.slug_to_code(land_type)
         if not request.user or not request.user.is_authenticated:
-            return JsonResponse({"target_2031": None, "comparison_lands": []})
+            return JsonResponse({"is_favorited": False, "target_2031": None, "comparison_lands": []})
 
         try:
             pref = UserLandPreference.objects.get(
@@ -29,12 +29,13 @@ class UserLandPreferenceAPIView(View):
             )
             return JsonResponse(
                 {
+                    "is_favorited": True,
                     "target_2031": float(pref.target_2031) if pref.target_2031 is not None else None,
                     "comparison_lands": pref.comparison_lands,
                 }
             )
         except UserLandPreference.DoesNotExist:
-            return JsonResponse({"target_2031": None, "comparison_lands": []})
+            return JsonResponse({"is_favorited": False, "target_2031": None, "comparison_lands": []})
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -129,3 +130,28 @@ class UpdatePreferenceComparisonLandsAPIView(View):
             return JsonResponse(
                 {"success": False, "error": "Une erreur est survenue lors de la mise a jour"}, status=500
             )
+
+
+class ToggleFavoriteAPIView(View):
+    """POST: ajoute ou supprime un territoire des favoris de l'utilisateur."""
+
+    def post(self, request, land_type, land_id):
+        land_type = AdminRef.slug_to_code(land_type)
+        if not request.user or not request.user.is_authenticated:
+            return JsonResponse({"success": False, "error": "Authentification requise"}, status=401)
+
+        try:
+            pref = UserLandPreference.objects.get(
+                user=request.user,
+                land_type=land_type,
+                land_id=land_id,
+            )
+            pref.delete()
+            return JsonResponse({"success": True, "is_favorited": False})
+        except UserLandPreference.DoesNotExist:
+            UserLandPreference.objects.create(
+                user=request.user,
+                land_type=land_type,
+                land_id=land_id,
+            )
+            return JsonResponse({"success": True, "is_favorited": True})

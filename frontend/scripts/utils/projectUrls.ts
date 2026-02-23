@@ -72,7 +72,7 @@ export function buildHeader(isAuthenticated: boolean) {
             label: "Mon compte",
             shouldDisplay: isAuthenticated,
             subMenu: [
-                { label: "Mes diagnostics", url: "/diagnostic/mes-diagnostics" },
+                { label: "Mes territoires", url: "/diagnostic/mes-territoires" },
                 { label: "Profil", url: "/users/profile/" },
                 { label: "Déconnexion", url: "/users/signout/" },
             ],

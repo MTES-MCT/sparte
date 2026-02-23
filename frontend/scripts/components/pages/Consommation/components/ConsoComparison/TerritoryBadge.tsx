@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import { Territory } from "@components/ui/SearchBar";
+import { LandDetailResultType } from "@services/types/land";
 
 interface TerritoryBadgeProps {
-  territory: Territory;
-  onRemove: (territory: Territory) => void;
+  territory: LandDetailResultType;
+  onRemove: (territory: LandDetailResultType) => void;
 }
 
 export const TerritoryBadge: React.FC<TerritoryBadgeProps> = ({ territory, onRemove }) => {

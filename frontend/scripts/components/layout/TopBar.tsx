@@ -1,9 +1,9 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '@store/store';
 import styled from 'styled-components';
 import { selectIsNavbarOpen } from "@store/navbarSlice";
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
+import { useGetUserLandPreferenceQuery, useToggleFavoriteMutation } from '@services/api';
 
 const activeColor = '#4318FF';
 
@@ -56,15 +56,64 @@ const Title = styled.div`
     font-weight: 600;
 `;
 
-const TopBar: React.FC = () => {
-    const territoryName = useSelector((state: RootState) => state.project.territoryName);
+const FavoriteButton = styled.button<{ $active: boolean }>`
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0.25rem;
+    color: ${({ $active }) => ($active ? '#FFD700' : '#ccc')};
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: #FFD700;
+    }
+
+    &:disabled {
+        cursor: default;
+        opacity: 0.5;
+    }
+`;
+
+interface TopBarProps {
+    name?: string;
+    landType?: string;
+    landId?: string;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
     const isOpen = useSelector(selectIsNavbarOpen);
+
+    const { data: preference } = useGetUserLandPreferenceQuery(
+        { land_type: landType!, land_id: landId! },
+        { skip: !landType || !landId },
+    );
+    const [toggleFavorite, { isLoading: isToggling }] = useToggleFavoriteMutation();
+
+    const handleToggleFavorite = useCallback(() => {
+        if (landType && landId) {
+            toggleFavorite({ land_type: landType, land_id: landId });
+        }
+    }, [landType, landId, toggleFavorite]);
+
+    const isFavorited = preference?.is_favorited ?? false;
 
     return (
         <Container>
             <LeftSection>
                 { !isOpen && <ButtonToggleNavbar /> }
-                <Title>{ territoryName }</Title>
+                <Title>{ name }</Title>
+                {landType && landId && (
+                    <FavoriteButton
+                        $active={isFavorited}
+                        onClick={handleToggleFavorite}
+                        disabled={isToggling}
+                        title={isFavorited ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                    >
+                        {isFavorited ? '\u2605' : '\u2606'}
+                    </FavoriteButton>
+                )}
             </LeftSection>
             <RightSection id="topbar-slot">
                 {/* Le contenu sera rendu ici via React Portal */}

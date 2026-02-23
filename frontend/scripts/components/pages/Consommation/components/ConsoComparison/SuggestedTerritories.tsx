@@ -1,11 +1,11 @@
 import React from "react";
-import { Territory } from "@components/ui/SearchBar";
+import { LandDetailResultType } from "@services/types/land";
 
 interface SuggestedTerritoriesProps {
   title: string;
-  territories: Territory[];
-  additionalTerritories: Territory[];
-  onTerritoryAdd: (territory: Territory) => void;
+  territories: LandDetailResultType[];
+  additionalTerritories: LandDetailResultType[];
+  onTerritoryAdd: (territory: LandDetailResultType) => void;
   onReset?: () => void;
   showResetButton?: boolean;
 }
@@ -47,12 +47,12 @@ export const SuggestedTerritories: React.FC<SuggestedTerritoriesProps> = ({
       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
         {territories.map((territory) => {
           const isAlreadyAdded = additionalTerritories.some(
-            (t) => t.source_id === territory.source_id && t.land_type === territory.land_type
+            (t) => t.land_id === territory.land_id && t.land_type === territory.land_type
           );
 
           return (
             <button
-              key={territory.source_id}
+              key={territory.land_id}
               onClick={() => onTerritoryAdd(territory)}
               disabled={isAlreadyAdded}
               className="fr-badge fr-badge--sm"

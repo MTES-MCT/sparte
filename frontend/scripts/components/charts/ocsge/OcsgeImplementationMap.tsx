@@ -8,11 +8,10 @@ HighchartsMap(Highcharts);
 
 interface Departement {
   id: number;
-  source_id: string;
+  land_id: string;
   name: string;
-  region_id: number;
-  is_artif_ready: boolean;
-  ocsge_millesimes: number[] | null;
+  has_ocsge: boolean;
+  millesimes: { departement: string; year: number }[] | null;
 }
 
 interface GeoJSON {
@@ -29,8 +28,8 @@ interface Feature {
 interface Properties {
   code: string;
   nom: string;
-  is_artif_ready?: boolean;
-  ocsge_millesimes?: number[] | null;
+  has_ocsge?: boolean;
+  millesimes?: number[] | null;
 }
 
 interface Geometry {
@@ -39,7 +38,7 @@ interface Geometry {
 }
 
 const pointFormatter = function (this: any) {
-  const millesimes = this.properties.ocsge_millesimes;
+  const millesimes = this.properties.millesimes;
   const millesimesText = millesimes
     ? `Millésimes OCS GE disponibles: ${millesimes.join(', ')}`
     : "OCS GE Non disponible";
@@ -47,7 +46,12 @@ const pointFormatter = function (this: any) {
 };
 
 const dataLabelFormatter = function (this: any) {
-  return this.point.properties.ocsge_millesimes ? this.point.properties.nom : '';
+  return this.point.properties.millesimes ? this.point.properties.nom : '';
+};
+
+const extractMillesimeYears = (millesimes: { departement: string; year: number }[] | null): number[] | null => {
+  if (!millesimes || millesimes.length === 0) return null;
+  return Array.from(new Set(millesimes.map(m => m.year))).sort((a, b) => a - b);
 };
 
 const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]): GeoJSON => {
@@ -55,14 +59,15 @@ const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]):
     ...geojson,
     features: geojson.features.map(feature => {
       const code = feature.properties.code;
-      const departement = departements.find(dept => dept.source_id === code);
+      const departement = departements.find(dept => dept.land_id === code);
       if (departement) {
+        const years = extractMillesimeYears(departement.millesimes);
         return {
           ...feature,
           properties: {
             ...feature.properties,
-            is_artif_ready: departement.is_artif_ready,
-            ocsge_millesimes: departement.ocsge_millesimes,
+            has_ocsge: departement.has_ocsge,
+            millesimes: years,
           },
         };
       } else {
@@ -109,7 +114,7 @@ const OcsgeImplementationMap: React.FC = () => {
         keys: ['code', 'value'],
         data: mapData
           ? mapData.features
-              .filter(feature => feature.properties.is_artif_ready)
+              .filter(feature => feature.properties.has_ocsge)
               .map(feature => ({
                 code: feature.properties.code,
                 value: 1,

@@ -4,8 +4,6 @@ import django.contrib.gis.db.models.fields
 import django.db.models.deletion
 from django.db import migrations, models
 
-import public_data.models.administration
-
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -84,10 +82,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            bases=(
-                public_data.models.administration.LandMixin,
-                models.Model,
-            ),
+            bases=(models.Model,),
         ),
         migrations.AddField(
             model_name="commune",

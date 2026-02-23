@@ -6,6 +6,7 @@ from rest_framework.routers import DefaultRouter
 
 from project.api_views import (
     ReportDraftViewSet,
+    ToggleFavoriteAPIView,
     UpdatePreferenceComparisonLandsAPIView,
     UpdatePreferenceTarget2031APIView,
     UserLandPreferenceAPIView,
@@ -309,6 +310,11 @@ urlpatterns = [
         "preference/<str:land_type>/<str:land_id>/comparison-lands/",
         UpdatePreferenceComparisonLandsAPIView.as_view(),
         name="update-preference-comparison-lands",
+    ),
+    path(
+        "preference/<str:land_type>/<str:land_id>/toggle-favorite/",
+        ToggleFavoriteAPIView.as_view(),
+        name="toggle-favorite",
     ),
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path(

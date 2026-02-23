@@ -138,7 +138,7 @@ export const djangoApi = createApi({
 			query: () => "/carroyage-destination-config",
 		}),
 		getDepartementList: builder.query({
-			query: () => "/public/departements/",
+			query: () => "/api/lands/?land_type=departement",
 		}),
 		getLand: builder.query({
 			query: ({ land_type, land_id }) => `/api/lands/${land_type}/${land_id}`,
@@ -200,6 +200,20 @@ export const djangoApi = createApi({
 					url: `/api/preference/${land_type}/${land_id}/comparison-lands/`,
 					method: 'POST',
 					body: { comparison_lands },
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+			invalidatesTags: (result, error, { land_type, land_id }) => [{ type: 'Preference', id: `${land_type}_${land_id}` }],
+		}),
+		toggleFavorite: builder.mutation<
+			{ success: boolean; is_favorited: boolean },
+			{ land_type: string; land_id: string }
+		>({
+			query: ({ land_type, land_id }) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: `/api/preference/${land_type}/${land_id}/toggle-favorite/`,
+					method: 'POST',
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},
@@ -289,6 +303,7 @@ const useGetLandFrichesStatutQuery: UseLandFrichesStatutType = djangoApi.useGetL
 const useGetLandFrichesQuery: UseLandFrichesType = djangoApi.useGetLandFrichesQuery;
 const useGetEnvironmentQuery: UseEnvTypes = djangoApi.useGetEnvironmentQuery;
 const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
+const useToggleFavoriteMutation = djangoApi.useToggleFavoriteMutation;
 const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
 const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
 
@@ -331,6 +346,7 @@ export {
 	useGetUserLandPreferenceQuery,
 	useUpdatePreferenceTarget2031Mutation,
 	useUpdatePreferenceComparisonLandsMutation,
+	useToggleFavoriteMutation,
 	useGetLandFrichesStatutQuery,
 	useGetLandFrichesQuery,
 	useGetLandGeomQuery,

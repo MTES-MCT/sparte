@@ -1,10 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useMemo } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import { useGetLandQuery, useGetCurrentUserQuery, useGetUserLandPreferenceQuery } from '@services/api';
-import { setTerritoryName } from '@store/projectSlice';
-import { AppDispatch } from '@store/store';
 import { buildUrls, buildNavbar, buildFooter, buildHeader } from '@utils/projectUrls';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import Footer from '@components/layout/Footer';
@@ -56,7 +53,6 @@ const Content = styled.div`
 
 
 const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => {
-    const dispatch = useDispatch<AppDispatch>();
     const { data: landData, error, isLoading } = useGetLandQuery({ land_type: landType, land_id: landId });
     const { data: currentUser } = useGetCurrentUserQuery();
     const { data: preference } = useGetUserLandPreferenceQuery(
@@ -64,11 +60,6 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
         { skip: !landData },
     );
 
-    useEffect(() => {
-        if (landData?.name) {
-            dispatch(setTerritoryName(landData.name));
-        }
-    }, [landData?.name, dispatch]);
 
     const urls = useMemo(() => buildUrls(landType, landSlug), [landType, landSlug]);
     const navbar = useMemo(() => buildNavbar(landType, landSlug), [landType, landSlug]);
@@ -87,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                         <ContentWrapper>
                             <Navbar navbar={navbar} urls={urls} landData={landData} />
                             <Main>
-                                <TopBar />
+                                <TopBar name={landData.name} landType={landData.land_type} landId={landData.land_id} />
                                 <Content>
                                     <Routes>
                                     <Route

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Territory } from '@components/ui/SearchBar';
+import { LandDetailResultType } from '@services/types/land';
 import { ContentZoneMode } from '../editor/ContentZone';
 import { CalloutEditInfo } from '../styles';
 
 interface ComparisonTerritoriesCalloutProps {
-    territories: Territory[];
+    territories: LandDetailResultType[];
     landName: string;
     isDefaultSelection: boolean;
     mode: ContentZoneMode;
