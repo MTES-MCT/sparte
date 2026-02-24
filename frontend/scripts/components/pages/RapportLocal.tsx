@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { LandDetailResultType } from "@services/types/land";
 import { buildUrls } from "@utils/projectUrls";
 import CallToAction from "@components/ui/CallToAction";
@@ -97,7 +96,8 @@ const IndicatorTile: React.FC<IndicatorTileProps> = ({
 );
 
 const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
-  const urls = buildUrls(landData.land_type, landData.land_id);
+  const urls = buildUrls(landData.land_type_slug, landData.slug);
+  
   return (
     <div className="fr-container--fluid fr-p-3w">
       <div className="fr-grid-row">
@@ -105,14 +105,13 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
           <CallToAction
             title="Besoin d'aide ?"
             text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
-          >
-            <Link
-              to={urls.downloads}
-              className="fr-btn fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm"
-            >
-              Accéder aux téléchargements
-            </Link>
-          </CallToAction>
+            actions={[
+              {
+                label: "Accéder aux téléchargements",
+                to: urls.downloads,
+              },
+            ]}
+          />
 
           {/* Section: Objet du rapport */}
           <div className="fr-mt-3w">
