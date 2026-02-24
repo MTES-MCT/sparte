@@ -1,150 +1,184 @@
-import React, { useState, ReactNode } from 'react';
-import styled from 'styled-components';
-import BaseCard from '@components/ui/BaseCard';
+import React, { useState, ReactNode } from "react";
+import styled from "styled-components";
+import { theme } from "@theme";
+import BaseCard from "@components/ui/BaseCard";
+import Drawer from "@components/ui/Drawer";
+import IconBadge from "@components/ui/IconBadge";
 
-const Container = styled(BaseCard)`
-    background: white;
-    display: flex;
-    height: 180px;
-    overflow: hidden;
-`;
-
-const TabsList = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    width: 180px;
-`;
-
-const Tab = styled.button`
-    all: unset;
-    box-sizing: border-box;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0 1rem;
-    font-size: 0.8rem;
-    flex: 1;
-    width: 100%;
-    background-color: #EDEDF8;
-    border-left: 3px solid transparent;
-    font-weight: 700;
-    transition: all 0.3s ease;
-
-    &:hover, &[aria-selected="true"] {
-        color: var(--text-action-high-blue-france);
-        background: #fff !important;
-        border-left-color: var(--border-action-high-blue-france);
-    }
-
-    i {
-        font-size: 0.85rem;
-    }
-`;
-
-const TabContent = styled.div`
-    flex: 1;
-    padding: 1rem 1.25rem;
-    overflow-y: auto;
-    border-left: 1px solid #EBEBEC;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    color: var(--text-default-grey);
-
-    p, ul, li {
-        font-size: 0.85rem;
-        line-height: 1.5;
-        margin-bottom: 0.35rem;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
-    ul {
-        padding-left: 1.25rem;
-    }
-
-    a {
-        color: var(--text-action-high-blue-france);
-    }
-`;
+type SectionKey = "definition" | "donnees" | "reglementation";
 
 export interface TriptychSection {
-    content: ReactNode;
+  content: ReactNode;
+  preview?: string;
 }
 
 interface TriptychProps {
-    definition: TriptychSection;
-    donnees: TriptychSection;
-    cadreReglementaire?: TriptychSection;
-    className?: string;
+  definition: TriptychSection;
+  donnees: TriptychSection;
+  cadreReglementaire?: TriptychSection;
+  className?: string;
 }
 
-interface TabConfig {
-    key: 'definition' | 'donnees' | 'reglementation';
-    title: string;
-    icon: string;
-    section: TriptychSection;
+interface SectionConfig {
+  key: SectionKey;
+  title: string;
+  icon: string;
 }
 
-const Triptych: React.FC<TriptychProps> = ({ definition, donnees, cadreReglementaire, className }) => {
-    const [activeTab, setActiveTab] = useState<'definition' | 'donnees' | 'reglementation'>('definition');
+const Container = styled(BaseCard)`
+  display: flex;
+  padding: 0;
+  overflow: hidden;
+`;
 
-    const tabs: TabConfig[] = [
-        {
-            key: 'definition',
-            title: 'Définition',
-            icon: 'bi bi-book',
-            section: definition,
-        },
-        {
-            key: 'donnees',
-            title: 'Données',
-            icon: 'bi bi-database',
-            section: donnees,
-        },
-        ...(cadreReglementaire
-            ? [
-                {
-                    key: 'reglementation' as const,
-                    title: 'Réglementation',
-                    icon: 'bi bi-shield-check',
-                    section: cadreReglementaire,
-                },
-              ]
-            : []),
-    ];
+const Section = styled.button`
+  all: unset;
+  box-sizing: border-box;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.xs};
+  padding: ${theme.spacing.md};
+  cursor: pointer;
+  transition: background 0.2s ease;
 
-    const activeSection = tabs.find(t => t.key === activeTab)?.section;
+  &:hover {
+    background: ${theme.colors.backgroundSubtle} !important;
+  }
 
-    return (
-        <Container className={className}>
-            <TabsList role="tablist" aria-orientation="vertical">
-                {tabs.map((tab) => (
-                    <Tab
-                        key={tab.key}
-                        role="tab"
-                        aria-selected={activeTab === tab.key}
-                        aria-controls={`tabpanel-${tab.key}`}
-                        onClick={() => setActiveTab(tab.key)}
-                        type="button"
-                    >
-                        <i className={tab.icon} aria-hidden="true" />
-                        <span>{tab.title}</span>
-                    </Tab>
-                ))}
-            </TabsList>
-            <TabContent
-                role="tabpanel"
-                id={`tabpanel-${activeTab}`}
-                aria-labelledby={activeTab}
+  &:not(:last-child) {
+    border-right: 1px solid ${theme.colors.border};
+  }
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.sm};
+`;
+
+const SectionTitle = styled.span`
+  font-size: ${theme.fontSize.sm};
+  font-weight: ${theme.fontWeight.semibold};
+  color: ${theme.colors.text};
+`;
+
+const SectionPreview = styled.p`
+  font-size: ${theme.fontSize.xs};
+  color: ${theme.colors.textLight};
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const SectionCta = styled.span`
+  font-size: ${theme.fontSize.xs};
+  color: ${theme.colors.primary};
+  font-weight: ${theme.fontWeight.medium};
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.xs};
+  margin-top: auto;
+
+  i {
+    font-size: 0.6rem;
+    transition: transform 0.2s ease;
+  }
+
+  ${Section}:hover & i {
+    transform: translateX(3px);
+  }
+`;
+
+const DrawerContent = styled.div`
+  p,
+  ul,
+  li {
+    font-size: ${theme.fontSize.sm};
+    line-height: 1.7;
+    margin-bottom: ${theme.spacing.sm};
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  ul {
+    padding-left: ${theme.spacing.lg};
+  }
+
+  a {
+    color: ${theme.colors.primary};
+
+    &:hover {
+      color: ${theme.colors.hover};
+    }
+  }
+`;
+
+const SECTIONS_CONFIG: SectionConfig[] = [
+  { key: "definition", title: "Définition", icon: "bi bi-book" },
+  { key: "donnees", title: "Données", icon: "bi bi-database" },
+  { key: "reglementation", title: "Réglementation", icon: "bi bi-shield-check" },
+];
+
+const Triptych: React.FC<TriptychProps> = ({
+  definition,
+  donnees,
+  cadreReglementaire,
+  className,
+}) => {
+  const [openSection, setOpenSection] = useState<SectionKey | null>(null);
+
+  const sections: Record<SectionKey, TriptychSection | undefined> = {
+    definition,
+    donnees,
+    reglementation: cadreReglementaire,
+  };
+
+  const visibleSections = SECTIONS_CONFIG.filter((s) => sections[s.key]);
+  const activeSection = openSection ? sections[openSection] : null;
+  const activeConfig = SECTIONS_CONFIG.find((s) => s.key === openSection);
+
+  return (
+    <>
+      <Container className={className}>
+        {visibleSections.map((config) => {
+          const section = sections[config.key]!;
+          return (
+            <Section
+              key={config.key}
+              type="button"
+              onClick={() => setOpenSection(config.key)}
+              aria-label={`Ouvrir ${config.title}`}
             >
-                {activeSection?.content}
-            </TabContent>
-        </Container>
-    );
+              <SectionHeader>
+                <IconBadge icon={config.icon} size={34} variant="light" />
+                <SectionTitle>{config.title}</SectionTitle>
+              </SectionHeader>
+              {section.preview && (
+                <SectionPreview>{section.preview}</SectionPreview>
+              )}
+              <SectionCta>
+                En savoir plus <i className="bi bi-chevron-right" />
+              </SectionCta>
+            </Section>
+          );
+        })}
+      </Container>
+
+      <Drawer
+        isOpen={openSection !== null}
+        title={activeConfig?.title ?? ""}
+        onClose={() => setOpenSection(null)}
+      >
+        <DrawerContent>{activeSection?.content}</DrawerContent>
+      </Drawer>
+    </>
+  );
 };
 
 export default Triptych;

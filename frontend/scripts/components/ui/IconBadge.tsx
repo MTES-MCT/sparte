@@ -27,6 +27,7 @@ const variantStyles = {
 const Wrapper = styled.div<{ $size: number; $variant: IconBadgeVariant }>`
   width: ${({ $size }) => $size}px;
   height: ${({ $size }) => $size}px;
+  font-size: ${({ $size }) => $size}px;
   border-radius: ${({ $variant }) => variantStyles[$variant].borderRadius};
   display: flex;
   align-items: center;
@@ -36,7 +37,7 @@ const Wrapper = styled.div<{ $size: number; $variant: IconBadgeVariant }>`
   color: ${({ $variant }) => variantStyles[$variant].color};
 
   i {
-    font-size: 1.25rem;
+    font-size: 45%;
   }
 `;
 

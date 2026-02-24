@@ -91,6 +91,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
         <Triptych
           className="fr-mb-5w"
           definition={{
+            preview: "La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).",
             content: (
               <>
                 <p>La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme <strong>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</strong> (article 194 de la loi Climat et résilience).</p>
@@ -100,6 +101,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
             ),
           }}
           donnees={{
+            preview: "Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le CEREMA à partir des données d'évolution des fichiers fonciers.",
             content: (
               <>
                 <p>Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le <strong>CEREMA</strong> à partir des données d'évolution des <strong>fichiers fonciers</strong>.</p>
@@ -109,6 +111,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
             ),
           }}
           cadreReglementaire={{
+            preview: "La loi Climat et Résilience, adoptée en 2021, engage la France à limiter la consommation d'espaces naturels, agricoles et forestiers (NAF), entendue comme leur transformation en espaces urbanisés.",
             content: (
               <>
                 <p>La loi Climat et Résilience, adoptée en 2021, engage la France à <strong>limiter la consommation d'espaces naturels, agricoles et forestiers</strong> (NAF), entendue comme leur transformation en espaces urbanisés.</p>

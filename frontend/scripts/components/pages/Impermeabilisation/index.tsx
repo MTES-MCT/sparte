@@ -1,5 +1,7 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
+import Triptych from "@components/ui/Triptych";
+import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { ImpermeabilisationProvider, useImpermeabilisationContext } from "./context/ImpermeabilisationContext";
 import {
   ImperKpiCards,
@@ -16,10 +18,57 @@ interface ImpermeabilisationProps {
 }
 
 const ImpermeabilisationContent: React.FC = () => {
-  const { childLandTypes } = useImpermeabilisationContext();
+  const { childLandTypes, name, millesimes, isInterdepartemental } = useImpermeabilisationContext();
 
   return (
     <div className="fr-container--fluid fr-p-3w">
+      <Triptych
+        className="fr-mb-5w"
+        definition={{
+          preview: "L'imperméabilisation des sols est définie comme : 1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations). 2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement</strong> (artificiel, asphalté, bétonné, couvert de pavés ou de dalles).",
+          content: (
+            <>
+              <p>L'imperméabilisation des sols est définie comme :</p>
+              <ul>
+                <li>
+                  1° Surfaces dont les sols sont imperméabilisés en{" "}
+                  <strong>raison du bâti</strong> (constructions, aménagements,
+                  ouvrages ou installations).
+                </li>
+                <li>
+                  2° Surfaces dont les sols sont imperméabilisés en{" "}
+                  <strong>raison d'un revêtement</strong> (artificiel, asphalté,
+                  bétonné, couvert de pavés ou de dalles).
+                </li>
+              </ul>
+            </>
+          ),
+        }}
+        donnees={{
+          preview: "La mesure de l'imperméabilisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Échelle), base de données de référence pour la description de l'occupation du sol. Cette donnée est produite par l'IGN tous les 3 ans pour chaque département. Chaque production est appelée un millésime.",
+          content: (
+            <>
+              <p>
+                La mesure de l'imperméabilisation d'un territoire repose sur la
+                donnée{" "}
+                <strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>,
+                base de données de référence pour la description de l'occupation
+                du sol.
+              </p>
+              <p>
+                Cette donnée est produite par l'IGN tous les 3 ans pour chaque
+                département. Chaque production est appelée un millésime.
+              </p>
+              <LandMillesimeTable
+                millesimes={millesimes}
+                territory_name={name}
+                is_interdepartemental={isInterdepartemental}
+                compact
+              />
+            </>
+          ),
+        }}
+      />
       <ImperKpiCards />
       <ImperNetFlux />
       <ImperZonage />

@@ -31,6 +31,7 @@ const TrajectoiresContent: React.FC = () => {
       <Triptych
         className="fr-mb-5w"
         definition={{
+          preview: "La trajectoire de sobriété foncière décrit la réduction progressive de la consommation d'espaces naturels, agricoles et forestiers (NAF) sur un territoire.",
           content: (
             <>
               <p className="fr-mb-2w">
@@ -58,6 +59,7 @@ const TrajectoiresContent: React.FC = () => {
           ),
         }}
         donnees={{
+          preview: "Les données affichées sur cette plateforme proviennent du Portail national de l'artificialisation et sont produites par le CEREMA à partir des Fichiers Fonciers.",
           content: (
             <>
               <p>
@@ -77,6 +79,7 @@ const TrajectoiresContent: React.FC = () => {
           ),
         }}
         cadreReglementaire={{
+          preview: "La loi n° 2021-1104 du 22 août 2021 dite 'Climat et Résilience' fixe pour la France l'objectif de parvenir au Zéro Artificialisation Nette (ZAN) à l'horizon 2050 (article L.101-2-1 du Code de l'urbanisme).",
           content: (
             <>
               <p>
