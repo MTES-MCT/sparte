@@ -170,6 +170,7 @@ from public_data.models import (
     LandFricheZonageEnvironnementaleViewset,
     LandFricheZonageTypeViewset,
     LandFricheZoneActiviteViewset,
+    LandImperFluxIndexViewset,
     LandImperFluxViewset,
     LandImperStockCouvertureCompositionViewset,
     LandImperStockIndexViewset,
@@ -433,6 +434,7 @@ urlpatterns = [
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
     path("imperzonage/", ImperZonageViewset.as_view(), name="imperzonageindex"),
     path("landimperflux/", LandImperFluxViewset.as_view(), name="imperflux"),
+    path("landimperfluxindex/", LandImperFluxIndexViewset.as_view(), name="imperfluxindex"),
     path("landartifflux/", LandArtifFluxViewset.as_view(), name="artifflux"),
     path("landartiffluxindex/", LandArtifFluxIndexViewset.as_view(), name="artiffluxindex"),
     path(

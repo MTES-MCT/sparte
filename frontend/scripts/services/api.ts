@@ -99,6 +99,16 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getLandImperFluxIndex: builder.query({
+			query: ({ land_type, land_id, millesime_old_index, millesime_new_index }) => {
+				return `/api/landimperfluxindex/?${new URLSearchParams({
+					land_type,
+					land_id,
+					millesime_old_index: String(millesime_old_index),
+					millesime_new_index: String(millesime_new_index),
+				})}`
+			},
+		}),
 		getArtifZonageIndex: builder.query({
 			query: ({ land_type, land_id, millesime_index }) => {
 				return `/api/artifzonageindex/?${new URLSearchParams({
@@ -334,6 +344,7 @@ const {
 	useGetLandArtifStockIndexQuery,
 	useGetLandArtifFluxIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandImperFluxIndexQuery,
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
@@ -362,6 +373,7 @@ export {
 	useGetLandArtifStockIndexQuery,
 	useGetLandArtifFluxIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandImperFluxIndexQuery,
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
