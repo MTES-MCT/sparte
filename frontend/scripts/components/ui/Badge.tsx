@@ -13,7 +13,7 @@ interface BadgeProps {
 }
 
 const sizeConfig: Record<BadgeSize, { padding: string; fontSize: string }> = {
-  sm: { padding: "0.35rem 0.6rem", fontSize: theme.fontSize.xs },
+  sm: { padding: "0.13rem 0.6rem", fontSize: theme.fontSize.xs },
   md: { padding: "0.4rem 0.75rem", fontSize: theme.fontSize.sm },
 };
 

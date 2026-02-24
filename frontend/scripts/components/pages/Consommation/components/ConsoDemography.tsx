@@ -76,7 +76,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
       <h3 id="conso-demographie">Consommation d'espaces NAF et démographie</h3>
 
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-        <div className="fr-col-12 fr-col-lg-4" ref={populationCardRef}>
+        <div className="fr-col-12 fr-col-xl-4 fr-grid-row" ref={populationCardRef}>
           <Kpi
             icon="bi bi-people"
             label="Évolution de la population"
@@ -93,22 +93,28 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             }}
           />
         </div>
-        <div className="fr-col-12 fr-col-lg-4">
+        <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
           <Kpi
             icon="bi bi-people-fill"
             label="Population"
             value={formatPopulationStockValue()}
-            description={`En ${endYear}`}
             variant="default"
+            footer={{
+              type: "period",
+              periods: [{ label: String(endYear) }],
+            }}
           />
         </div>
-        <div className="fr-col-12 fr-col-lg-4">
+        <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
           <Kpi
             icon="bi bi-bar-chart"
             label="Densité de population"
             value={formatDensityValue()}
-            description={`En ${endYear}`}
             variant="default"
+            footer={{
+              type: "period",
+              periods: [{ label: String(endYear) }],
+            }}
           />
         </div>
       </div>

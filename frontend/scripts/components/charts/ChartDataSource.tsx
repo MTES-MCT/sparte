@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { theme } from '@theme';
 import IconBadge from '@components/ui/IconBadge';
+import Badge from '@components/ui/Badge';
 
 const Container = styled.div<{ $displayMode: 'tag' | 'text' }>`
   display: flex;
@@ -14,15 +15,6 @@ const TagsContainer = styled.div`
   align-items: center;
   flex-wrap: wrap;
   gap: 0.35rem;
-`;
-
-const SourceTag = styled.span`
-  font-size: ${theme.fontSize.xs};
-  font-weight: ${theme.fontWeight.semibold};
-  color: ${theme.colors.textMuted};
-  background: ${theme.badge.neutral.background};
-  padding: 0.2rem ${theme.spacing.sm};
-  border-radius: ${theme.radius.tag};
 `;
 
 const TextContainer = styled.div`
@@ -93,7 +85,9 @@ const ChartDataSource: React.FC<ChartDataSourceProps> = ({ sources, displayMode 
             const source = SOURCES_DETAILS[src];
             if (!source) return null;
             return (
-              <SourceTag key={src}>{source.label}</SourceTag>
+              <Badge key={src} size="sm" variant="neutral">
+                {source.label}
+              </Badge>
             );
           })}
         </TagsContainer>

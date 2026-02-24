@@ -205,10 +205,10 @@ const MetricValueText = styled.span`
   color: ${theme.colors.text};
 `;
 
-const PeriodRow = styled.div`
+const PeriodRow = styled.div<{ $centered?: boolean }>`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: ${({ $centered }) => ($centered ? "center" : "space-between")};
 `;
 
 const PeriodLabel = styled.div`
@@ -305,28 +305,32 @@ const PeriodFooter: React.FC<{
   periods: KpiPeriodItem[];
   color: string;
   border: string;
-}> = ({ periods, color, border }) => (
-  <PeriodRow>
-    {periods.map((period, index) => {
-      const isLast = index === periods.length - 1;
-      const badgeColor = period.active !== false ? color : border;
+}> = ({ periods, color, border }) => {
+  const isSinglePeriod = periods.length === 1;
 
-      return (
-        <React.Fragment key={index}>
-          <PeriodLabel>{period.label}</PeriodLabel>
-          {!isLast && (
-            <ConnectorWrapper>
-              <ConnectorLine $border={border} />
-              <ConnectorBadge $color={badgeColor}>
-                <i className="bi bi-chevron-right" />
-              </ConnectorBadge>
-            </ConnectorWrapper>
-          )}
-        </React.Fragment>
-      );
-    })}
-  </PeriodRow>
-);
+  return (
+    <PeriodRow $centered={isSinglePeriod}>
+      {periods.map((period, index) => {
+        const isLast = index === periods.length - 1;
+        const badgeColor = period.active !== false ? color : border;
+
+        return (
+          <React.Fragment key={index}>
+            <PeriodLabel>{period.label}</PeriodLabel>
+            {!isLast && (
+              <ConnectorWrapper>
+                <ConnectorLine $border={border} />
+                <ConnectorBadge $color={badgeColor}>
+                  <i className="bi bi-chevron-right" />
+                </ConnectorBadge>
+              </ConnectorWrapper>
+            )}
+          </React.Fragment>
+        );
+      })}
+    </PeriodRow>
+  );
+};
 
 const MiniChartWrapper = styled.div`
   display: flex;

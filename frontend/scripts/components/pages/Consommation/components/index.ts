@@ -1,5 +1,6 @@
 export { ConsommationControls } from "./ConsommationControls";
+export { ConsoAnnuelle } from "./ConsoAnnuelle";
+export { ConsoMaps } from "./ConsoMaps";
+export { ConsoCarroyage } from "./ConsoCarroyage";
 export { ConsoDemography } from "./ConsoDemography";
 export { ConsoComparison } from "./ConsoComparison";
-export { TerritorySelector } from "./ConsoComparison/TerritorySelector";
-export { SuggestedTerritories } from "./ConsoComparison/SuggestedTerritories";
