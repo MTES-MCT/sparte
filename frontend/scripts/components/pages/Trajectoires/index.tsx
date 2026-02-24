@@ -2,6 +2,7 @@ import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import { UserLandPreferenceResultType } from "@services/types/project";
 import Triptych from "@components/ui/Triptych";
+import Feedback from "@components/ui/Feedback";
 import Notice from "@components/ui/Notice";
 import {
   TrajectoiresProvider,
@@ -142,6 +143,9 @@ const TrajectoiresContent: React.FC = () => {
       <TrajectoiresProjection />
       <TrajectoiresChildrenStats />
       <TrajectoiresCustomTargetModal />
+      <div className="fr-mt-5w">
+        <Feedback />
+      </div>
     </div>
   );
 };

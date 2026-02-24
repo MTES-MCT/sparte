@@ -94,7 +94,7 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
 
   const objectifLabel = getObjectifLabel();
   const objectifType = isFromParent || !hasTerritorialisation ? "suggéré" : "réglementaire";
-  const objectifTypeBadge = isFromParent || !hasTerritorialisation ? "Objectif national non réglementaire" : "Objectif national réglementaire";
+  const objectifTypeBadge = isFromParent || !hasTerritorialisation ? "objectif suggéré" : "objectif réglementaire";
 
   const sourceDocument = territorialisation?.source_document ?? null;
   const currentDocument = territorialisation?.hierarchy?.at(-1) ?? null;

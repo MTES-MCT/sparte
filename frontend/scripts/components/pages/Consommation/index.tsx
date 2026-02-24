@@ -14,6 +14,7 @@ import { TopBarContent } from "@components/layout/TopBarContent";
 import Loader from "@components/ui/Loader";
 import { CarroyageLeaMap } from "@components/map";
 import Triptych from "@components/ui/Triptych";
+import Feedback from "@components/ui/Feedback";
 
 interface ConsommationProps {
   landData: LandDetailResultType;
@@ -356,19 +357,22 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
       />
 
       <ConsoComparison
-          landId={land_id}
-          landType={land_type}
-          landName={name}
-          startYear={startYear}
-          endYear={endYear}
-          territories={territories}
-          excludedTerritories={excludedTerritories}
-          comparisonLandIds={comparisonLandIds}
-          isDefaultSelection={isDefaultSelection}
-          onAddTerritory={handleAddTerritory}
-          onRemoveTerritory={handleRemoveTerritory}
-          onReset={handleResetTerritories}
-        />
+        landId={land_id}
+        landType={land_type}
+        landName={name}
+        startYear={startYear}
+        endYear={endYear}
+        territories={territories}
+        excludedTerritories={excludedTerritories}
+        comparisonLandIds={comparisonLandIds}
+        isDefaultSelection={isDefaultSelection}
+        onAddTerritory={handleAddTerritory}
+        onRemoveTerritory={handleRemoveTerritory}
+        onReset={handleResetTerritories}
+      />
+      <div className="fr-mt-5w">
+        <Feedback />
+      </div>
       </div>
     </>
   );

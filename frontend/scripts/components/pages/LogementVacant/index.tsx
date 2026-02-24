@@ -1,6 +1,7 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
+import Feedback from "@components/ui/Feedback";
 import {
   LogementVacantProvider,
   useLogementVacantContext,
@@ -106,6 +107,7 @@ const LogementVacantContent: React.FC = () => {
           <LogementVacantExternalServices />
         </div>
       </div>
+      <Feedback />
     </div>
   );
 };

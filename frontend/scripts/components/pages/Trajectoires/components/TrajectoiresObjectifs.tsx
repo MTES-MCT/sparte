@@ -67,7 +67,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
 
   const reductionContent = (
     <div className="fr-grid-row fr-grid-row--gutters">
-      <div className="fr-col-12 fr-col-lg-4 fr-grid-row">
+      <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-bullseye"
           label={`${objectifLabel} (-${objectifReduction}%)`}
@@ -77,7 +77,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
               {formatNumber({ number: allowedConso2021_2030 })} <span>ha</span>
             </>
           }
-          variant={hasTerritorialisation ? "default" : "success"}
+          variant={hasTerritorialisation ? "success" : "default"}
           badge={objectifTypeBadge}
           footer={{
             type: "minichart",
@@ -88,14 +88,14 @@ export const TrajectoiresObjectifs: React.FC = () => {
                 value: annualConsoSince2021,
               },
               {
-                label: `Consommation annuelle moyenne autorisée selon l'objectif (${objectifType})`,
+                label: `Consommation annuelle moyenne objectif ${objectifType}`,
                 value: allowedConso2021_2030PerYear,
               },
             ],
           }}
         />
       </div>
-      <div className="fr-col-12 fr-col-md-4 fr-grid-row">
+      <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-sliders"
           label={hasCustomTarget ? `Objectif personnalisé (-${targetCustom}%)` : "Objectif personnalisé"}
@@ -122,14 +122,14 @@ export const TrajectoiresObjectifs: React.FC = () => {
                 value: annualConsoSince2021,
               },
               {
-                label: "Consommation autorisée (personnalisé)",
+                label: "Consommation annuelle moyenne objectif personnalisé",
                 value: hasCustomTarget ? allowedConsoCustomPerYear : null,
               },
             ],
           }}
         />
       </div>
-      <div className="fr-col-12 fr-col-lg-4 fr-grid-row">
+      <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <GuideContent title="Comprendre l'objectif de réduction">
           <p>
             <strong>{objectifLabel}</strong> : c'est le maximum d'espaces que le

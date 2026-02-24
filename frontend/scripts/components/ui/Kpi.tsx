@@ -61,7 +61,7 @@ const Card = styled(BaseCard)`
 
 const Header = styled.div`
   padding: 1.5rem 1.75rem;
-  padding-top: 4.5rem;
+  padding-top: 4rem;
   background: white;
   display: flex;
   flex-direction: column;
@@ -131,15 +131,14 @@ const FooterWrapper = styled.div<{ $bg: string }>`
   background: ${({ $bg }) => $bg};
 `;
 
-const ActionWrapper = styled.div<{ $empty?: boolean }>`
+const ActionWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   height: 2.75rem;
   padding: 0.75rem 1rem;
-  border-top: ${({ $empty }) => ($empty ? "none" : `1px solid ${theme.colors.border}`)};
-  border-bottom: ${({ $empty }) => ($empty ? "none" : `1px solid ${theme.colors.border}`)};
-  background: ${({ $empty }) => ($empty ? "transparent" : theme.colors.backgroundSubtle)};
+  border-top: 1px solid ${theme.colors.border};
+  background: ${theme.colors.backgroundSubtle};
 `;
 
 const MetricRow = styled.div`
@@ -341,31 +340,33 @@ const MiniChartRow = styled.div`
   gap: ${theme.spacing.xs};
 `;
 
-const MiniChartHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: ${theme.spacing.sm};
-`;
-
 const MiniChartLabel = styled.span`
   font-size: ${theme.fontSize.xs};
   color: ${theme.colors.textLight};
+`;
+
+const MiniChartBarRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${theme.spacing.sm};
+`;
+
+const MiniChartTrack = styled.div`
   flex: 1;
+  min-width: 0;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: ${theme.radius.tag};
+  overflow: hidden;
 `;
 
 const MiniChartValue = styled.span<{ $color: string }>`
   font-size: ${theme.fontSize.sm};
   font-weight: ${theme.fontWeight.bold};
   color: ${({ $color }) => $color};
-`;
-
-const MiniChartTrack = styled.div`
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: ${theme.radius.tag};
-  overflow: hidden;
+  flex-shrink: 0;
+  min-width: 70px;
+  text-align: right;
 `;
 
 const MiniChartBar = styled.div<{ $width: number; $color: string; $hidden?: boolean }>`
@@ -396,19 +397,19 @@ const MiniChartFooter: React.FC<{
     <MiniChartWrapper>
       {bars.map((bar, index) => (
         <MiniChartRow key={index}>
-          <MiniChartHeader>
-            <MiniChartLabel>{bar.label}</MiniChartLabel>
+          <MiniChartLabel>{bar.label}</MiniChartLabel>
+          <MiniChartBarRow>
+            <MiniChartTrack>
+              <MiniChartBar
+                $width={bar.value !== null ? (bar.value / maxValue) * 100 : 0}
+                $color={barColors[index]}
+                $hidden={bar.value === null}
+              />
+            </MiniChartTrack>
             <MiniChartValue $color={barColors[index]}>
               {formatValue(bar.value)}
             </MiniChartValue>
-          </MiniChartHeader>
-          <MiniChartTrack>
-            <MiniChartBar
-              $width={bar.value !== null ? (bar.value / maxValue) * 100 : 0}
-              $color={barColors[index]}
-              $hidden={bar.value === null}
-            />
-          </MiniChartTrack>
+          </MiniChartBarRow>
         </MiniChartRow>
       ))}
     </MiniChartWrapper>
@@ -443,19 +444,6 @@ const Kpi: React.FC<KpiProps> = ({
         <LabelText>{label}</LabelText>
         {description && <DescriptionText>{description}</DescriptionText>}
       </Header>
-      <ActionWrapper $empty={!action}>
-        {action && (
-          <Button
-            variant="link"
-            to={action.to}
-            onClick={action.onClick}
-            icon="bi bi-arrow-right"
-            iconPosition="right"
-          >
-            {action.label}
-          </Button>
-        )}
-      </ActionWrapper>
       {footer && (
         <FooterWrapper $bg={config.bg}>
           {footer.type === "metric" && (
@@ -468,6 +456,19 @@ const Kpi: React.FC<KpiProps> = ({
             <MiniChartFooter bars={footer.bars} unit={footer.unit} color={config.color} />
           )}
         </FooterWrapper>
+      )}
+      {action && (
+        <ActionWrapper>
+            <Button
+              variant="link"
+              to={action.to}
+              onClick={action.onClick}
+              icon="bi bi-arrow-right"
+              iconPosition="right"
+            >
+              {action.label}
+            </Button>
+        </ActionWrapper>
       )}
     </Card>
   );

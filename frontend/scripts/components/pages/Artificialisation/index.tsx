@@ -1,6 +1,7 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
+import Feedback from "@components/ui/Feedback";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 import { ArtificialisationProvider, useArtificialisationContext } from "./context/ArtificialisationContext";
 import {
@@ -70,6 +71,7 @@ const ArtificialisationContent: React.FC = () => {
       <ArtifChildLands />
       <ArtifExplorer />
       <ArtifCalculation />
+      <Feedback />
     </div>
   );
 };

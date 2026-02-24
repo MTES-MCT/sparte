@@ -2,6 +2,7 @@ import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import { buildUrls } from "@utils/projectUrls";
 import CallToAction from "@components/ui/CallToAction";
+import Feedback from "@components/ui/Feedback";
 
 // Images statiques
 import ecoleIcon from "@images/ecole_icon.png";
@@ -101,7 +102,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
   return (
     <div className="fr-container--fluid fr-p-3w">
       <div className="fr-grid-row">
-        <div className="fr-col-12">
+        <div className="fr-col-12 fr-mb-5w">
           <CallToAction
             title="Besoin d'aide ?"
             text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
@@ -379,6 +380,9 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               2031).
             </p>
           </Section>
+        </div>
+        <div className="fr-col-12">
+          <Feedback />
         </div>
       </div>
     </div>
