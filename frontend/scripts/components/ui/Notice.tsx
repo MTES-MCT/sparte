@@ -10,6 +10,7 @@ interface NoticeProps {
     title: string;
     message: string | ReactNode;
     icon?: string;
+    className?: string;
 }
 
 const THEME_CONFIG: Record<NoticeType, { color: string; bgColor: string; defaultIcon: string }> = {
@@ -56,21 +57,30 @@ const Title = styled.h4<{ $type: NoticeType }>`
     }
 `;
 
-const Message = styled.p<{ $type: NoticeType }>`
-    font-size: ${theme.fontSize.md};
+const Message = styled.p`
+    font-size: ${theme.fontSize.sm};
     margin: 0;
+
+    p {
+        font-size: ${theme.fontSize.sm};
+        margin-bottom: ${theme.spacing.sm};
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
 `;
 
-const Notice: React.FC<NoticeProps> = ({ type, title, message, icon }) => {
+const Notice: React.FC<NoticeProps> = ({ type, title, message, icon, className }) => {
     const iconClass = icon ?? THEME_CONFIG[type].defaultIcon;
 
     return (
-        <Container $type={type}>
+        <Container $type={type} className={className}>
             <Title $type={type}>
                 <i className={iconClass} />
                 {title}
             </Title>
-            <Message $type={type}>{message}</Message>
+            <Message>{message}</Message>
         </Container>
     );
 };

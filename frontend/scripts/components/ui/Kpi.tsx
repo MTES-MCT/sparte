@@ -17,13 +17,20 @@ interface KpiPeriodItem {
   active?: boolean;
 }
 
+interface KpiMiniChartBar {
+  label: string;
+  value: number | null;
+}
+
 type KpiFooter =
   | { type: "metric"; items: [KpiMetricItem, KpiMetricItem] }
-  | { type: "period"; periods: KpiPeriodItem[] };
+  | { type: "period"; periods: KpiPeriodItem[] }
+  | { type: "minichart"; bars: [KpiMiniChartBar, KpiMiniChartBar]; unit?: string };
 
 interface KpiAction {
   label: string;
-  to: string;
+  to?: string;
+  onClick?: () => void;
 }
 
 export interface KpiProps {
@@ -53,7 +60,8 @@ const Card = styled(BaseCard)`
 `;
 
 const Header = styled.div`
-  padding: 2rem 1.75rem;
+  padding: 1.5rem 1.75rem;
+  padding-top: 4.5rem;
   background: white;
   display: flex;
   flex-direction: column;
@@ -123,13 +131,15 @@ const FooterWrapper = styled.div<{ $bg: string }>`
   background: ${({ $bg }) => $bg};
 `;
 
-const ActionWrapper = styled.div`
+const ActionWrapper = styled.div<{ $empty?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
+  height: 2.75rem;
   padding: 0.75rem 1rem;
-  border-top: 1px solid ${theme.colors.border};
-  background: ${theme.colors.backgroundSubtle};
+  border-top: ${({ $empty }) => ($empty ? "none" : `1px solid ${theme.colors.border}`)};
+  border-bottom: ${({ $empty }) => ($empty ? "none" : `1px solid ${theme.colors.border}`)};
+  background: ${({ $empty }) => ($empty ? "transparent" : theme.colors.backgroundSubtle)};
 `;
 
 const MetricRow = styled.div`
@@ -319,6 +329,92 @@ const PeriodFooter: React.FC<{
   </PeriodRow>
 );
 
+const MiniChartWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.md};
+`;
+
+const MiniChartRow = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${theme.spacing.xs};
+`;
+
+const MiniChartHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: ${theme.spacing.sm};
+`;
+
+const MiniChartLabel = styled.span`
+  font-size: ${theme.fontSize.xs};
+  color: ${theme.colors.textLight};
+  flex: 1;
+`;
+
+const MiniChartValue = styled.span<{ $color: string }>`
+  font-size: ${theme.fontSize.sm};
+  font-weight: ${theme.fontWeight.bold};
+  color: ${({ $color }) => $color};
+`;
+
+const MiniChartTrack = styled.div`
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: ${theme.radius.tag};
+  overflow: hidden;
+`;
+
+const MiniChartBar = styled.div<{ $width: number; $color: string; $hidden?: boolean }>`
+  height: 100%;
+  width: ${({ $width, $hidden }) => ($hidden ? 0 : Math.max($width, 3))}%;
+  background: ${({ $color }) => $color};
+  border-radius: ${theme.radius.tag};
+  transition: width 0.4s ease;
+`;
+
+const MiniChartFooter: React.FC<{
+  bars: [KpiMiniChartBar, KpiMiniChartBar];
+  unit?: string;
+  color: string;
+}> = ({ bars, unit = "", color }) => {
+  const validValues = bars.map((b) => b.value).filter((v): v is number => v !== null);
+  const maxValue = Math.max(...validValues, 0.001);
+
+  const formatValue = (value: number | null) => {
+    if (value === null) return "—";
+    const formatted = value.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
+    return unit ? `${formatted} ${unit}` : formatted;
+  };
+
+  const barColors = [theme.colors.textMuted, color];
+
+  return (
+    <MiniChartWrapper>
+      {bars.map((bar, index) => (
+        <MiniChartRow key={index}>
+          <MiniChartHeader>
+            <MiniChartLabel>{bar.label}</MiniChartLabel>
+            <MiniChartValue $color={barColors[index]}>
+              {formatValue(bar.value)}
+            </MiniChartValue>
+          </MiniChartHeader>
+          <MiniChartTrack>
+            <MiniChartBar
+              $width={bar.value !== null ? (bar.value / maxValue) * 100 : 0}
+              $color={barColors[index]}
+              $hidden={bar.value === null}
+            />
+          </MiniChartTrack>
+        </MiniChartRow>
+      ))}
+    </MiniChartWrapper>
+  );
+};
+
 const Kpi: React.FC<KpiProps> = ({
   icon,
   label,
@@ -347,6 +443,19 @@ const Kpi: React.FC<KpiProps> = ({
         <LabelText>{label}</LabelText>
         {description && <DescriptionText>{description}</DescriptionText>}
       </Header>
+      <ActionWrapper $empty={!action}>
+        {action && (
+          <Button
+            variant="link"
+            to={action.to}
+            onClick={action.onClick}
+            icon="bi bi-arrow-right"
+            iconPosition="right"
+          >
+            {action.label}
+          </Button>
+        )}
+      </ActionWrapper>
       {footer && (
         <FooterWrapper $bg={config.bg}>
           {footer.type === "metric" && (
@@ -355,14 +464,10 @@ const Kpi: React.FC<KpiProps> = ({
           {footer.type === "period" && (
             <PeriodFooter periods={footer.periods} color={config.color} border={config.border} />
           )}
+          {footer.type === "minichart" && (
+            <MiniChartFooter bars={footer.bars} unit={footer.unit} color={config.color} />
+          )}
         </FooterWrapper>
-      )}
-      {action && (
-        <ActionWrapper>
-          <Button variant="link" to={action.to} icon="bi bi-arrow-right" iconPosition="right">
-            {action.label}
-          </Button>
-        </ActionWrapper>
       )}
     </Card>
   );

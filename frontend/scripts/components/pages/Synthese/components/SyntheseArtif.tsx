@@ -65,10 +65,6 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
               { label: "2050" },
             ],
           }}
-          action={{
-            label: "Voir le diagnostic d'artificialisation",
-            to: urls.artificialisation,
-          }}
         />
       </div>
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">

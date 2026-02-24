@@ -35,6 +35,15 @@ const Content = styled.div`
     color: ${theme.colors.textLight};
     flex: 1;
 
+    p {
+        margin-bottom: ${theme.spacing.sm};
+        font-size: ${theme.fontSize.sm};
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
     strong {
         color: ${theme.colors.text};
     }
