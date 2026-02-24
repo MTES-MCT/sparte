@@ -4,7 +4,7 @@ import type maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import { useGetCarroyageDestinationConfigQuery, useGetLandChildrenGeomQuery } from "@services/api";
+import { useGetCarroyageBoundsQuery, useGetCarroyageDestinationConfigQuery, useGetLandChildrenGeomQuery } from "@services/api";
 import Loader from "@components/ui/Loader";
 import type { ExpressionSpecification } from "maplibre-gl";
 import { CarroyageLeaSidePanel } from "./sidePanel";
@@ -109,32 +109,45 @@ const ColorDot = styled.span<{ $color: string; $active: boolean }>`
     border: 1px solid ${({ $active }) => ($active ? 'white' : '#ccc')};
 `;
 
-function buildCumulativeColorExpression(
+function buildCumulativeExpression(
     startYear: number,
     endYear: number,
-    destination: DestinationType,
-    config: DestinationConfig
+    suffix: string
 ): ExpressionSpecification {
     const minYear = Math.max(startYear, 2011);
     const maxYear = Math.min(endYear, 2023);
-    const suffix = config[destination].suffix;
-    const baseColor = config[destination].color;
 
     const yearFields: ExpressionSpecification[] = [];
     for (let year = minYear; year <= maxYear; year++) {
         yearFields.push(["coalesce", ["get", `conso_${year}${suffix}`], 0] as ExpressionSpecification);
     }
 
-    let cumulativeExpression: ExpressionSpecification;
-    if (yearFields.length === 0) {
-        cumulativeExpression = ["literal", 0] as ExpressionSpecification;
-    } else if (yearFields.length === 1) {
-        cumulativeExpression = yearFields[0];
-    } else {
-        cumulativeExpression = ["+", ...yearFields] as ExpressionSpecification;
-    }
+    if (yearFields.length === 0) return ["literal", 0] as ExpressionSpecification;
+    if (yearFields.length === 1) return yearFields[0];
+    return ["+", ...yearFields] as ExpressionSpecification;
+}
 
-    const colorStops = buildColorStops(baseColor).flatMap(([threshold, color]) => [threshold, color]);
+function buildCumulativeFilter(
+    startYear: number,
+    endYear: number,
+    suffix: string
+): ExpressionSpecification {
+    return [">", buildCumulativeExpression(startYear, endYear, suffix), 0] as ExpressionSpecification;
+}
+
+function buildCumulativeColorExpression(
+    startYear: number,
+    endYear: number,
+    destination: DestinationType,
+    config: DestinationConfig,
+    bounds: { min_value: number; max_value: number } | null
+): ExpressionSpecification {
+    const suffix = config[destination].suffix;
+    const baseColor = config[destination].color;
+    const stops = buildColorStops(baseColor, bounds);
+    if (!stops) return null;
+    const cumulativeExpression = buildCumulativeExpression(startYear, endYear, suffix);
+    const colorStops = stops.flatMap(([threshold, color]) => [threshold, color]);
 
     return [
         "interpolate",
@@ -170,21 +183,27 @@ function darkenColor(hex: string, factor: number): string {
     );
 }
 
-const COLOR_STOPS: [number, number][] = [
-    [0, 0],
-    [100, 0.3],
-    [500, 0.5],
-    [1000, 0.7],
-    [2500, 1],
-    [5000, -0.3],
-];
+// Opacities for the 6 color stops (from white to darkened)
+const OPACITY_STOPS: number[] = [0, 0.3, 0.5, 0.7, 1, -0.3];
+// Relative positions of stops (non-linear)
+const STOP_RATIOS: number[] = [0, 0.02, 0.1, 0.2, 0.5, 1];
 
-function buildColorStops(baseColor: string): [number, string][] {
-    return COLOR_STOPS.map(([threshold, opacity]) => {
-        if (opacity === 0) return [threshold, "#ffffff"];
-        if (opacity < 0) return [threshold, darkenColor(baseColor, -opacity)];
-        if (opacity === 1) return [threshold, baseColor];
-        return [threshold, adjustColorOpacity(baseColor, opacity)];
+function buildDynamicColorStops(bounds: { min_value: number; max_value: number } | null): number[] | null {
+    if (!bounds || bounds.max_value <= 0) return null;
+    // Convert max from ha to m² for the map expression (tile data is in m²)
+    const maxM2 = bounds.max_value * 10000;
+    return STOP_RATIOS.map((ratio) => Math.round(ratio * maxM2));
+}
+
+function buildColorStops(baseColor: string, bounds: { min_value: number; max_value: number } | null): [number, string][] | null {
+    const thresholds = buildDynamicColorStops(bounds);
+    if (!thresholds) return null;
+    return thresholds.map((threshold, i) => {
+        const opacity = OPACITY_STOPS[i];
+        if (opacity === 0) return [threshold, "#ffffff"] as [number, string];
+        if (opacity < 0) return [threshold, darkenColor(baseColor, -opacity)] as [number, string];
+        if (opacity === 1) return [threshold, baseColor] as [number, string];
+        return [threshold, adjustColorOpacity(baseColor, opacity)] as [number, string];
     });
 }
 
@@ -207,11 +226,21 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
 }) => {
     const { data: destinationConfig } = useGetCarroyageDestinationConfigQuery(undefined);
     const { land_type, land_id } = landData || {};
+    const { data: boundsData } = useGetCarroyageBoundsQuery(
+        { land_type, land_id, start_year: startYear, end_year: endYear },
+        { skip: !land_type || !land_id || startYear >= endYear }
+    );
     const geomChildType = (childLandType === "EPCI" || childLandType === "SCOT") ? "COMM" : childLandType;
     const { data: childrenGeom } = useGetLandChildrenGeomQuery(
         geomChildType ? { land_type, land_id, child_land_type: geomChildType } : undefined,
         { skip: !geomChildType }
     );
+    const getBoundsForDestination = useCallback((dest: string): { min_value: number; max_value: number } | null => {
+        if (!boundsData || !Array.isArray(boundsData)) return null;
+        const entry = boundsData.find((b: { destination: string }) => b.destination === dest);
+        return entry ? { min_value: entry.min_value, max_value: entry.max_value } : null;
+    }, [boundsData]);
+
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [selectedDestination, setSelectedDestination] = useState<DestinationType>("total");
     const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -237,17 +266,30 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         setIsUpdating(true);
 
         requestAnimationFrame(() => {
-            const colorExpression = buildCumulativeColorExpression(startYear, endYear, selectedDestination, destinationConfig);
-            map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            const bounds = getBoundsForDestination(selectedDestination);
+            const suffix = destinationConfig[selectedDestination].suffix;
+            const colorExpression = buildCumulativeColorExpression(startYear, endYear, selectedDestination, destinationConfig, bounds);
+            const nonZeroFilter = buildCumulativeFilter(startYear, endYear, suffix);
+            const territoryFilter = ["in", land_id, ["get", land_type]] as ExpressionSpecification;
+            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as ExpressionSpecification;
+            if (colorExpression) {
+                map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            }
+            map.setFilter("carroyage-lea-layer", combinedFilter);
+            if (map.getLayer("carroyage-lea-layer-outline")) {
+                map.setFilter("carroyage-lea-layer-outline", combinedFilter);
+            }
 
             map.once("idle", () => {
                 setIsUpdating(false);
             });
         });
-    }, [startYear, endYear, selectedDestination, destinationConfig]);
+    }, [startYear, endYear, selectedDestination, destinationConfig, boundsData, getBoundsForDestination, land_type, land_id]);
 
     const getIndicatorPosition = useCallback((value: number): number => {
-        const thresholds = COLOR_STOPS.map(([t]) => t);
+        const bounds = getBoundsForDestination(selectedDestination);
+        const thresholds = buildDynamicColorStops(bounds);
+        if (!thresholds) return 0;
         const step = 100 / (thresholds.length - 1);
         const positions = thresholds.map((_, i) => i * step);
 
@@ -261,7 +303,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             }
         }
         return 100;
-    }, []);
+    }, [getBoundsForDestination, selectedDestination]);
 
     // Calculer la valeur cumulée pour une feature
     const calculateCumulativeValue = useCallback((properties: Record<string, unknown>) => {
@@ -405,13 +447,24 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
 
         // Appliquer immédiatement le style avec la destination par défaut
         if (destinationConfig) {
-            const colorExpression = buildCumulativeColorExpression(startYear, endYear, "total", destinationConfig);
-            map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            const bounds = getBoundsForDestination("total");
+            const suffix = destinationConfig["total"].suffix;
+            const colorExpression = buildCumulativeColorExpression(startYear, endYear, "total", destinationConfig, bounds);
+            const nonZeroFilter = buildCumulativeFilter(startYear, endYear, suffix);
+            const territoryFilter = ["in", land_id, ["get", land_type]] as ExpressionSpecification;
+            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as ExpressionSpecification;
+            if (colorExpression) {
+                map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            }
+            map.setFilter("carroyage-lea-layer", combinedFilter);
+            if (map.getLayer("carroyage-lea-layer-outline")) {
+                map.setFilter("carroyage-lea-layer-outline", combinedFilter);
+            }
         }
 
         setIsMapLoaded(true);
         onMapLoad?.(map);
-    }, [onMapLoad, startYear, endYear, destinationConfig, landData.bounds]);
+    }, [onMapLoad, startYear, endYear, destinationConfig, getBoundsForDestination, landData.bounds, land_id, land_type]);
 
     const config = useMemo(() => defineMapConfig({
         sources: [
@@ -490,6 +543,11 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         return <Loader size={32} />;
     }
 
+    const currentBounds = getBoundsForDestination(selectedDestination);
+    const maxHa = currentBounds?.max_value ?? 0.5;
+    const midHa = maxHa / 2;
+    const formatLegend = (v: number) => v >= 1 ? Math.round(v).toString() : v.toFixed(2).replace('.', ',');
+
     return (
         <>
         <div className="fr-mb-2w">
@@ -551,8 +609,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                 </LegendGradientContainer>
                 <LegendLabels>
                     <span>0</span>
-                    <span>0,1</span>
-                    <span>0,5+</span>
+                    <span>{formatLegend(midHa)}</span>
+                    <span>{formatLegend(maxHa)}</span>
                 </LegendLabels>
             </LegendContainer>
         </BaseMap>
