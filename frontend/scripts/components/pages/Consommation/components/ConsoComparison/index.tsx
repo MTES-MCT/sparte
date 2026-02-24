@@ -4,6 +4,7 @@ import TerritorySelector from "@components/features/TerritorySelector";
 import { ChartSection } from "./ChartSection";
 import { CHART_DESCRIPTIONS, GUIDE_TEXTS } from "./constants";
 import GuideContent from "@components/ui/GuideContent";
+import BaseCard from "@components/ui/BaseCard";
 
 interface ConsoComparisonProps {
   landId: string;
@@ -40,22 +41,24 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
 
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div className="fr-col-12 fr-col-lg-6">
-          <div className="bg-white fr-p-3w rounded h-100">
-            <p className="fr-text--xs">
-              <i className="bi bi-info-circle fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec {landName}.
-            </p>
-            <TerritorySelector
-              territories={territories}
-              excludedTerritories={excludedTerritories}
-              isDefaultSelection={isDefaultSelection}
-              onAddTerritory={onAddTerritory}
-              onRemoveTerritory={onRemoveTerritory}
-              onReset={onReset}
-              searchLabel="Ajouter un territoire de comparaison"
-              showCount={true}
-              compact={true}
-            />
-          </div>
+          <BaseCard>
+            <div className="fr-p-3w">
+              <p className="fr-text--xs">
+                <i className="bi bi-info-circle fr-mr-1w" /> Par défaut les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec {landName}.
+              </p>
+              <TerritorySelector
+                territories={territories}
+                excludedTerritories={excludedTerritories}
+                isDefaultSelection={isDefaultSelection}
+                onAddTerritory={onAddTerritory}
+                onRemoveTerritory={onRemoveTerritory}
+                onReset={onReset}
+                searchLabel="Ajouter un territoire de comparaison"
+                showCount={true}
+                compact={true}
+              />
+            </div>
+          </BaseCard>
         </div>
 
         <div className="fr-col-12 fr-col-lg-6">

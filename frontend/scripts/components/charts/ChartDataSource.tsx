@@ -37,7 +37,7 @@ export const SOURCES_DETAILS: Record<string, { label: string; html: string }> = 
     html: `Historique des populations communales issues des recensements de la population (1876-2021) produits et diffusés par l'INSEE.<br/>Les données de population "estimée" ont été réalisées en utilisant une moyenne, permettant de projeter les tendances des années précédentes.`
   },
   majic: {
-    label: 'Fichiers fonciers',
+    label: 'Cerema',
     html: `Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2024, intégrant les évolutions réalisées au cours de l'année 2023.`
   },
   gpu: {

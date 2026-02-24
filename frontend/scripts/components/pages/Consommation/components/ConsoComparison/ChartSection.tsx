@@ -27,22 +27,20 @@ export const ChartSection: React.FC<ChartSectionProps> = ({
   children,
 }) => {
   return (
-    <div className="bg-white fr-p-2w rounded h-100">
-      <GenericChart
-        isMap={isMap}
-        id={id}
-        land_id={landId}
-        land_type={landType}
-        params={{
-          start_date: String(startYear),
-          end_date: String(endYear),
-          ...(comparisonLandIds !== null && { comparison_lands: comparisonLandIds }),
-        }}
-        sources={sources}
-        showDataTable={showDataTable}
-      >
-        {children}
-      </GenericChart>
-    </div>
+    <GenericChart
+      isMap={isMap}
+      id={id}
+      land_id={landId}
+      land_type={landType}
+      params={{
+        start_date: String(startYear),
+        end_date: String(endYear),
+        ...(comparisonLandIds !== null && { comparison_lands: comparisonLandIds }),
+      }}
+      sources={sources}
+      showDataTable={showDataTable}
+    >
+      {children}
+    </GenericChart>
   );
 };

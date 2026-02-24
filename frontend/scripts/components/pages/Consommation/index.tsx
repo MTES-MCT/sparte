@@ -1,5 +1,5 @@
 import React from "react";
-import Card from "@components/ui/Card";
+import Kpi from "@components/ui/Kpi";
 import GenericChart from "@components/charts/GenericChart";
 import { LandDetailResultType } from "@services/types/land";
 import { formatNumber } from "@utils/formatUtils";
@@ -12,7 +12,6 @@ import { ComparisonLand, UserLandPreferenceResultType } from "@services/types/pr
 import { ConsommationControlsProvider, useConsommationControls } from "./context/ConsommationControlsContext";
 import { TopBarContent } from "@components/layout/TopBarContent";
 import Loader from "@components/ui/Loader";
-import Guide from "@components/ui/Guide";
 import { CarroyageLeaMap } from "@components/map";
 import Triptych from "@components/ui/Triptych";
 
@@ -118,59 +117,78 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
             ),
           }}
         />
-        <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-          <div className="fr-col-12 fr-col-lg-4" ref={consoCardRef}>
-            <Card
-              icon="bi-bar-chart"
-              badgeClass="fr-badge--error"
-              badgeLabel="Consommation d'espaces"
-              value={
-                isLoadingConso || totalConsoHa === null ? <Loader size={32} /> : `${formatNumber({ number: totalConsoHa, addSymbol: true })} ha`
-              }
-              label={`Entre ${startYear} et ${endYear}`}
-              isHighlighted={true}
-              highlightBadge="Donnée clé"
-            />
-          </div>
-        </div>
-
       <div>
         <h3 id="conso-annuelle">Évolution annuelle et répartition de la consommation d'espaces NAF</h3>
 
         <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-          <div className="fr-col-12 fr-col-lg-8">
-            <div className="bg-white fr-p-2w rounded h-100">
-              <GenericChart
-                id="chart_determinant"
-                land_id={land_id}
-                land_type={land_type}
-                params={{
-                  start_date: String(startYear),
-                  end_date: String(endYear),
-                }}
-                sources={["majic"]}
-                showDataTable={true}
-              >
-                <DetailsCalculationFichiersFonciers />
-              </GenericChart>
-            </div>
+          <div className="fr-col-12 fr-col-lg-4" ref={consoCardRef}>
+            <Kpi
+              icon="bi-bar-chart"
+              label="Consommation d'espaces"
+              value={
+                isLoadingConso || totalConsoHa === null ? <Loader size={32} /> : <>{formatNumber({ number: totalConsoHa, addSymbol: true })} <span>ha</span></>
+              }
+              variant="error"
+              badge="Donnée clé"
+              footer={{
+                type: "period",
+                periods: [
+                  { label: String(startYear), active: true },
+                  { label: String(endYear) },
+                ],
+              }}
+            />
           </div>
-          <div className="fr-col-12 fr-col-lg-4">
-            <div className="bg-white fr-p-2w rounded h-100">
-              <GenericChart
-                id="pie_determinant"
-                land_id={land_id}
-                land_type={land_type}
-                params={{
-                  start_date: String(startYear),
-                  end_date: String(endYear),
-                }}
-                sources={["majic"]}
-                showDataTable={true}
-              >
-                <DetailsCalculationFichiersFonciers />
-              </GenericChart>
-            </div>
+          <div className="fr-col-12 fr-col-lg-8">
+            <GenericChart
+              id="annual_total_conso_chart"
+              land_id={land_id}
+              land_type={land_type}
+              params={{
+                start_date: String(startYear),
+                end_date: String(endYear),
+                ...(childType && { child_type: childType }),
+              }}
+              sources={["majic"]}
+              showDataTable={true}
+            >
+              <DetailsCalculationFichiersFonciers />
+            </GenericChart>
+          </div>
+        </div>
+
+        <h3 id="conso-determinants">Répartition de la consommation d'espaces NAF par destination</h3>
+
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-lg-6">
+            <GenericChart
+              id="pie_determinant"
+              land_id={land_id}
+              land_type={land_type}
+              params={{
+                start_date: String(startYear),
+                end_date: String(endYear),
+              }}
+              sources={["majic"]}
+              showDataTable={true}
+            >
+              <DetailsCalculationFichiersFonciers />
+            </GenericChart>
+          </div>
+          <div className="fr-col-12 fr-col-lg-6">
+            <GenericChart
+              id="chart_determinant"
+              land_id={land_id}
+              land_type={land_type}
+              params={{
+                start_date: String(startYear),
+                end_date: String(endYear),
+              }}
+              sources={["majic"]}
+              showDataTable={true}
+            >
+              <DetailsCalculationFichiersFonciers />
+            </GenericChart>
           </div>
         </div>
 
@@ -201,63 +219,59 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
 
           <div className="fr-grid-row fr-grid-row--gutters">
             <div className="fr-col-12 fr-col-lg-6">
-              <div className="bg-white fr-p-2w rounded h-100">
-                <GenericChart
-                  key={`conso_map_relative-${childType}-${startYear}-${endYear}`}
-                  id="conso_map_relative"
-                  land_id={land_id}
-                  land_type={land_type}
-                  params={{
-                    start_date: String(startYear),
-                    end_date: String(endYear),
-                    child_land_type: childType,
-                  }}
-                  sources={["majic"]}
-                  showDataTable={true}
-                  isMap={true}
-                >
-                  <div>
-                    <h6 className="fr-mb-0">Comprendre la carte</h6>
-                    <p className="fr-text--xs fr-mb-0">
-                      Cette carte permet de visualiser la consommation d'espaces NAF relative à la surface de chaque territoire, représentée par l'intensité de la couleur : plus la teinte est foncée, plus la consommation d'espaces est importante par rapport à la surface du territoire.
-                    </p>
-                    <h6 className="fr-mb-0 fr-mt-2w">Source</h6>
-                    <p className="fr-text--xs fr-mb-0">
-                      Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
-                    </p>
-                  </div>
-                </GenericChart>
-              </div>
+              <GenericChart
+                key={`conso_map_relative-${childType}-${startYear}-${endYear}`}
+                id="conso_map_relative"
+                land_id={land_id}
+                land_type={land_type}
+                params={{
+                  start_date: String(startYear),
+                  end_date: String(endYear),
+                  child_land_type: childType,
+                }}
+                sources={["majic"]}
+                showDataTable={true}
+                isMap={true}
+              >
+                <div>
+                  <h6 className="fr-mb-0">Comprendre la carte</h6>
+                  <p className="fr-text--xs fr-mb-0">
+                    Cette carte permet de visualiser la consommation d'espaces NAF relative à la surface de chaque territoire, représentée par l'intensité de la couleur : plus la teinte est foncée, plus la consommation d'espaces est importante par rapport à la surface du territoire.
+                  </p>
+                  <h6 className="fr-mb-0 fr-mt-2w">Source</h6>
+                  <p className="fr-text--xs fr-mb-0">
+                    Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
+                  </p>
+                </div>
+              </GenericChart>
             </div>
 
             <div className="fr-col-12 fr-col-lg-6">
-              <div className="bg-white fr-p-2w rounded h-100">
-                <GenericChart
-                  key={`conso_map_bubble-${childType}-${startYear}-${endYear}`}
-                  id="conso_map_bubble"
-                  land_id={land_id}
-                  land_type={land_type}
-                  params={{
-                    start_date: String(startYear),
-                    end_date: String(endYear),
-                    child_land_type: childType,
-                  }}
-                  sources={["majic"]}
-                  showDataTable={true}
-                  isMap={true}
-                >
-                  <div>
-                    <h6 className="fr-mb-0">Comprendre la carte</h6>
-                    <p className="fr-text--xs fr-mb-0">
-                      Cette carte permet de visualiser les flux de consommation d'espaces NAF par territoire : la taille des cercles est proportionnelle à la consommation totale d'espaces sur la période sélectionnée.
-                    </p>
-                    <h6 className="fr-mb-0 fr-mt-2w">Source</h6>
-                    <p className="fr-text--xsfr-mb-0">
-                      Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
-                    </p>
-                  </div>
-                </GenericChart>
-              </div>
+              <GenericChart
+                key={`conso_map_bubble-${childType}-${startYear}-${endYear}`}
+                id="conso_map_bubble"
+                land_id={land_id}
+                land_type={land_type}
+                params={{
+                  start_date: String(startYear),
+                  end_date: String(endYear),
+                  child_land_type: childType,
+                }}
+                sources={["majic"]}
+                showDataTable={true}
+                isMap={true}
+              >
+                <div>
+                  <h6 className="fr-mb-0">Comprendre la carte</h6>
+                  <p className="fr-text--xs fr-mb-0">
+                    Cette carte permet de visualiser les flux de consommation d'espaces NAF par territoire : la taille des cercles est proportionnelle à la consommation totale d'espaces sur la période sélectionnée.
+                  </p>
+                  <h6 className="fr-mb-0 fr-mt-2w">Source</h6>
+                  <p className="fr-text--xs fr-mb-0">
+                    Les données proviennent des <strong>fichiers fonciers</strong> (Cerema, d'après DGFiP).
+                  </p>
+                </div>
+              </GenericChart>
             </div>
           </div>
 
