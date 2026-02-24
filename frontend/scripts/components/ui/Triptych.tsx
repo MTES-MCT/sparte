@@ -1,7 +1,8 @@
 import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components';
+import BaseCard from '@components/ui/BaseCard';
 
-const Container = styled.div`
+const Container = styled(BaseCard)`
     background: white;
     display: flex;
     height: 180px;

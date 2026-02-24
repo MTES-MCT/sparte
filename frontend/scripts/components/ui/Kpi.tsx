@@ -49,6 +49,7 @@ const Card = styled(BaseCard)`
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
 `;
 
 const Header = styled.div`
