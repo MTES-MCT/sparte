@@ -15,6 +15,7 @@ export const BaseCard = styled.div<{ $padding?: CardPadding }>`
   border-radius: ${theme.radius.default};
   box-shadow: ${theme.shadow.md};
   width: 100%;
+  height: 100%;
   overflow: hidden;
   padding: ${({ $padding }) => ($padding ? paddingMap[$padding] : "0")};
 `;
