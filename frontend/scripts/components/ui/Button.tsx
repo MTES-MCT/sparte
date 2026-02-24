@@ -39,7 +39,7 @@ type ButtonProps = ButtonAsButton | ButtonAsAnchor | ButtonAsRouterLink;
 const baseStyles = css`
   display: inline-flex;
   align-items: center;
-  border-radius: ${theme.radius.element};
+  border-radius: ${theme.radius.default};
   cursor: pointer;
   transition: background 0.15s ease, gap 0.2s ease;
   text-decoration: none;

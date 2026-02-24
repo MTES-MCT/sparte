@@ -30,7 +30,7 @@ const AnimationSide = styled.div`
   width: 35%;
   min-width: 200px;
   background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%);
-  border-radius: ${theme.radius.card} 0 0 ${theme.radius.card};
+  border-radius: ${theme.radius.default} 0 0 ${theme.radius.default};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,9 +92,9 @@ const StarsContainer = styled.div`
 `;
 
 const Star = styled.button<{ $active: boolean; $animated: boolean }>`
-  background: ${({ $active }) => ($active ? theme.colors.accentLight : theme.colors.backgroundAlt)};
+  background: ${({ $active }) => ($active ? theme.colors.accentBg : theme.colors.backgroundAlt)};
   border: 2px solid ${({ $active }) => ($active ? theme.colors.star : theme.colors.border)};
-  border-radius: ${theme.radius.element};
+  border-radius: ${theme.radius.default};
   width: clamp(32px, 8vw, 42px);
   height: clamp(32px, 8vw, 42px);
   cursor: pointer;
@@ -113,7 +113,7 @@ const Star = styled.button<{ $active: boolean; $animated: boolean }>`
 
   &:hover {
     transform: scale(1.1);
-    background: ${theme.colors.accentLight};
+    background: ${theme.colors.accentBg};
     border-color: ${theme.colors.star};
     color: ${theme.colors.star};
   }
@@ -135,7 +135,7 @@ const TextArea = styled.textarea`
   padding: ${theme.spacing.sm} ${theme.spacing.md};
   background: ${theme.colors.backgroundAlt};
   border: 1px solid ${theme.colors.border};
-  border-radius: ${theme.radius.element};
+  border-radius: ${theme.radius.default};
   font-size: ${theme.fontSize.sm};
   font-family: inherit;
   color: ${theme.colors.text};

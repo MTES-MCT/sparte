@@ -32,7 +32,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           label="Consommation d'espaces NAF"
           description="Période de référence"
           value={<>{formatNumber({ number: conso_2011_2020 })} <span>ha</span></>}
-          variant="info"
+          variant="default"
           footer={{
             type: "period",
             periods: [
@@ -52,7 +52,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           label="Consommation d'espaces NAF"
           description="Période de réduction"
           value={<>12 <span>ha</span></>}
-          variant="info"
+          variant="default"
           footer={{
             type: "period",
             periods: [

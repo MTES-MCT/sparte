@@ -1,5 +1,5 @@
 import React from 'react';
-import StatusNotice from './StatusNotice';
+import Notice from '@components/ui/Notice';
 
 export enum OcsgeStatusEnum {
   COMPLETE_UNIFORM = "COMPLETE_UNIFORM",
@@ -50,7 +50,7 @@ const OcsgeStatus: React.FC<OcsgeStatusProps> = ({ status }) => {
   const content = statusMessages[status];
   if (!content) return null;
 
-  return <StatusNotice title={content.title} description={content.description} />;
+  return <Notice type="default" title={content.title} message={content.description} />;
 };
 
 export default OcsgeStatus;

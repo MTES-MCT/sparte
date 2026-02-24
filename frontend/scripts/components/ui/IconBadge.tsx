@@ -6,20 +6,21 @@ type IconBadgeVariant = "light" | "dark";
 
 interface IconBadgeProps {
   icon: string;
-  $size?: number;
-  $variant?: IconBadgeVariant;
+  size?: number;
+  variant?: IconBadgeVariant;
+  className?: string;
 }
 
 const variantStyles = {
   light: {
-    background: theme.colors.primaryLight,
+    background: theme.colors.primaryBg,
     color: theme.colors.primary,
-    borderRadius: theme.radius.card,
+    borderRadius: theme.radius.default,
   },
   dark: {
     background: theme.colors.primary,
     color: theme.colors.background,
-    borderRadius: "50%",
+    borderRadius: theme.radius.round,
   },
 };
 
@@ -39,8 +40,13 @@ const Wrapper = styled.div<{ $size: number; $variant: IconBadgeVariant }>`
   }
 `;
 
-const IconBadge: React.FC<IconBadgeProps> = ({ icon, $size = 48, $variant = "light" }) => (
-  <Wrapper $size={$size} $variant={$variant}>
+const IconBadge: React.FC<IconBadgeProps> = ({
+  icon,
+  size = 48,
+  variant = "light",
+  className,
+}) => (
+  <Wrapper $size={size} $variant={variant} className={className}>
     <i className={icon} />
   </Wrapper>
 );

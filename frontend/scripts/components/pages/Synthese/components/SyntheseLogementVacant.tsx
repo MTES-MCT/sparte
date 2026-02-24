@@ -36,7 +36,7 @@ const SyntheseLogementVacant: React.FC<SyntheseLogementVacantProps> = ({
         <Kpi
           icon="bi bi-house"
           label="Logements vacants"
-          variant="info"
+          variant="default"
           badge={isActionnable ? "Actionnable" : undefined}
           value={formatNumber({ number: totalVacants, decimals: 0 })}
           footer={{

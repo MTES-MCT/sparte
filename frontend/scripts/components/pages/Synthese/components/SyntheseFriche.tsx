@@ -33,7 +33,7 @@ const SyntheseFriche: React.FC<SyntheseFricheProps> = ({
         <Kpi
           icon="bi bi-building-x"
           label="Friches sans projet"
-          variant="info"
+          variant="default"
           badge={friche_sans_projet_count > 0 ? "Actionnable" : undefined}
           value={<>{formatNumber({ number: friche_sans_projet_surface })} <span>ha</span></>}
           description={`${friche_sans_projet_count} ${pluralize(friche_sans_projet_count, "friche")}`}

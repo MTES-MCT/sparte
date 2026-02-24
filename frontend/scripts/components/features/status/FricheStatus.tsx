@@ -1,10 +1,11 @@
 import React from 'react';
-import StatusNotice from './StatusNotice';
+import Notice from '@components/ui/Notice';
 
 const FricheStatus: React.FC = () => (
-  <StatusNotice
+  <Notice
+    type="default"
     title="Données de friches non disponibles"
-    description="Les données de friches issues des données Cartofriches ne sont pas disponibles sur ce territoire."
+    message="Les données de friches issues des données Cartofriches ne sont pas disponibles sur ce territoire."
   />
 );
 

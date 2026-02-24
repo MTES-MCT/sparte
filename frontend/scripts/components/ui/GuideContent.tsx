@@ -8,7 +8,7 @@ import Button from '@components/ui/Button';
 
 const Container = styled.div`
     padding: 1.25rem ${theme.spacing.lg};
-    border-radius: ${theme.radius.card};
+    border-radius: ${theme.radius.default};
     background: ${theme.colors.background};
     display: flex;
     flex-direction: column;
@@ -35,19 +35,8 @@ const Content = styled.div`
     color: ${theme.colors.textLight};
     flex: 1;
 
-    p {
-        font-size: ${theme.fontSize.sm};
-        line-height: 1.7;
-        margin-bottom: 0.3rem;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
     strong {
         color: ${theme.colors.text};
-        font-weight: 650;
     }
 `;
 
@@ -72,7 +61,7 @@ const GuideContent: React.FC<GuideContentProps> = ({ title, children, DrawerTitl
         <BaseCard>
             <Container>
                 <Header>
-                    <IconBadge icon="bi bi-info-circle" $size={40} />
+                    <IconBadge icon="bi bi-lightbulb" size={40} />
                     <TitleLabel>{title}</TitleLabel>
                 </Header>
                 <Content>

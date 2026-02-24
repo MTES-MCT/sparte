@@ -11,10 +11,9 @@ interface ActionCardProps {
   description: string;
   to?: string;
   onClick?: () => void;
-  disabled?: boolean;
 }
 
-const Card = styled(BaseCard)<{ $disabled: boolean; $interactive: boolean }>`
+const Card = styled(BaseCard)<{ $interactive: boolean }>`
   && {
     display: flex;
     align-items: flex-start;
@@ -27,17 +26,14 @@ const Card = styled(BaseCard)<{ $disabled: boolean; $interactive: boolean }>`
     font-family: inherit;
     font-size: inherit;
     border: 1px solid ${theme.colors.border};
-    cursor: ${({ $interactive, $disabled }) =>
-      $disabled ? "not-allowed" : $interactive ? "pointer" : "default"};
+    cursor: ${({ $interactive }) => ($interactive ? "pointer" : "default")};
     transition: all 0.2s ease;
-    opacity: ${({ $disabled }) => ($disabled ? 0.5 : 1)};
   }
 
   &&:hover {
     background: ${theme.colors.background};
-    ${({ $interactive, $disabled }) =>
+    ${({ $interactive }) =>
       $interactive &&
-      !$disabled &&
       `
         border-color: ${theme.colors.primary};
         box-shadow: ${theme.shadow.lg};
@@ -45,7 +41,6 @@ const Card = styled(BaseCard)<{ $disabled: boolean; $interactive: boolean }>`
       `}
   }
 `;
-
 
 const Content = styled.div`
   flex: 1;
@@ -90,14 +85,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
   description,
   to,
   onClick,
-  disabled = false,
 }) => {
-  const interactive = !!(to || onClick) && !disabled;
-
-  const commonProps = {
-    $disabled: disabled,
-    $interactive: interactive,
-  };
+  const interactive = !!(to || onClick);
 
   const content = (
     <>
@@ -114,9 +103,9 @@ const ActionCard: React.FC<ActionCardProps> = ({
     </>
   );
 
-  if (to && !disabled) {
+  if (to) {
     return (
-      <Card as={Link} to={to} {...commonProps}>
+      <Card as={Link} to={to} $interactive>
         {content}
       </Card>
     );
@@ -124,13 +113,13 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
   if (onClick) {
     return (
-      <Card as="button" onClick={onClick} disabled={disabled} {...commonProps}>
+      <Card as="button" onClick={onClick} $interactive>
         {content}
       </Card>
     );
   }
 
-  return <Card {...commonProps}>{content}</Card>;
+  return <Card $interactive={false}>{content}</Card>;
 };
 
 export default ActionCard;

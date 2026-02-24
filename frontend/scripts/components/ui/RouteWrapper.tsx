@@ -38,7 +38,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
 
     return (
         <>
-            <div className="fr-container--fluid fr-pt-3w fr-pl-3w fr-pr-3w fr-pb-2w">
+            <div className="fr-container--fluid fr-pt-3w fr-pl-3w fr-pr-3w fr-pb-1w">
                 <div className="fr-grid-row">
                     <div className="fr-col-12">
                         {showTitle && <Title>{title}</Title>}

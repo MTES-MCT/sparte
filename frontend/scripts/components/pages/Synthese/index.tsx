@@ -56,7 +56,7 @@ const MarkerDot = styled.div`
   border-radius: 50%;
   background: ${theme.colors.primary};
   border: 2px solid white;
-  box-shadow: 0 0 0 2px ${theme.colors.primaryLight};
+  box-shadow: 0 0 0 2px ${theme.colors.primaryBg};
 `;
 
 const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
@@ -66,7 +66,7 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
     <div className="fr-container--fluid fr-p-3w">
       <TerritoryIdentityCard landData={landData} className="fr-mb-7w" />
 
-      <div className="fr-mb-6w">
+      <div className="fr-mb-7w">
         <h2 className="fr-mb-1w">Comprendre : les objectifs de sobriété foncière</h2>
         <p className="fr-text--sm fr-mb-4w">
           Chaque année, l'équivalent de 4 terrains de football par heure est artificialisé.
@@ -74,12 +74,12 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
           La <strong>loi Climat et Résilience</strong>, consistent à réduire la consommation d'espaces naturels, agricoles et forestiers et à terme de compenser toute nouvelle artificialisation par de la renaturation.
         </p>
 
-        <TimelineWrapper className="fr-mt-4w fr-pt-4w">
+        <TimelineWrapper className="fr-pt-4w">
           <TimelineEndpoint $position="start" />
 
           <PhaseBlock className="fr-mb-4w">
             <MarkerDot />
-            <Badge $variant="info">Horizon 2031</Badge>
+            <Badge variant="highlight">Horizon 2031</Badge>
             <h3 className="fr-mb-0">Réduction de la consommation d'espaces</h3>
             <p className="fr-text--sm fr-mb-0">
               Diviser par deux la consommation d'espaces NAF par rapport à la décennie précédente
@@ -95,7 +95,7 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
 
           <PhaseBlock className="fr-mb-4w">
             <MarkerDot />
-            <Badge $variant="active">Horizon 2050</Badge>
+            <Badge variant="highlight">Horizon 2050</Badge>
             <h3 className="fr-mb-0">Zéro Artificialisation Nette</h3>
             <p className="fr-text--sm fr-mb-0">
               Compenser toute nouvelle artificialisation par de la renaturation
@@ -113,7 +113,7 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
         </TimelineWrapper>
       </div>
 
-      <div className="fr-mb-6w">
+      <div className="fr-mb-7w">
         <h2 className="fr-mb-1w">Agir: Leviers de sobriété foncière</h2>
         <div className="fr-text--sm fr-mb-4w">
           Pour atteindre ces objectifs, plusieurs leviers d'action sont
@@ -135,53 +135,8 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
         />
       </div>
 
-      <div className="fr-mb-6w">
-        <DiagnosticsHub
-          links={[
-            {
-              icon: "bi bi-graph-up",
-              title: "Consommation d'espaces",
-              description: "Analyse détaillée par destination et évolution démographique",
-              to: urls.consommation,
-              available: landData.has_conso,
-            },
-            {
-              icon: "bi bi-sliders",
-              title: "Simulation de trajectoire",
-              description: "Projetez et simulez vos objectifs de réduction",
-              to: urls.trajectoires,
-              available: landData.has_conso,
-            },
-            {
-              icon: "bi bi-layers",
-              title: "Artificialisation des sols",
-              description: "Flux d'artificialisation et couverture OCS GE",
-              to: urls.artificialisation,
-              available: landData.has_ocsge,
-            },
-            {
-              icon: "bi bi-layers",
-              title: "Imperméabilisation des sols",
-              description: "Imperméabilisation des sols",
-              to: urls.impermeabilisation,
-              available: landData.has_ocsge,
-            },
-            {
-              icon: "bi bi-house",
-              title: "Logements vacants",
-              description: "Parc privé, bailleurs sociaux et potentiel de mobilisation",
-              to: urls.logementVacant,
-              available: landData.has_logements_vacants_prive || landData.has_logements_vacants_social,
-            },
-            {
-              icon: "bi bi-building-x",
-              title: "Friches",
-              description: "Localisation, surface et potentiel de réhabilitation",
-              to: urls.friches,
-              available: landData.has_friche,
-            },
-          ]}
-        />
+      <div className="fr-mb-7w">
+        <DiagnosticsHub urls={urls} />
       </div>
 
       <Feedback onSubmit={(rating, comment) => console.log(rating, comment)} />

@@ -4,7 +4,7 @@ import { theme } from "@theme";
 import BaseCard from "@components/ui/BaseCard";
 import Button from "@components/ui/Button";
 
-type KpiVariant = "info" | "success" | "error";
+type KpiVariant = "default" | "success" | "error";
 
 interface KpiMetricItem {
   icon: string;
@@ -39,7 +39,7 @@ export interface KpiProps {
 }
 
 const variantConfig: Record<KpiVariant, { color: string; bg: string; border: string }> = {
-  info: { color: theme.colors.primary, bg: theme.colors.infoLight, border: theme.colors.infoBorder },
+  default: { color: theme.colors.primary, bg: theme.colors.primaryBg, border: theme.colors.primaryBorder },
   success: { color: theme.colors.success, bg: theme.colors.successBg, border: theme.colors.successBorder },
   error: { color: theme.colors.error, bg: theme.colors.errorBg, border: theme.colors.errorBorder },
 };
@@ -71,7 +71,7 @@ const BadgeTag = styled.div<{ $color: string }>`
   align-items: center;
   gap: 0.35rem;
   padding: 0.3rem 0.65rem;
-  border-radius: 100px;
+  border-radius: ${theme.radius.tag};
   font-size: 0.7rem;
   font-weight: ${theme.fontWeight.bold};
   text-transform: uppercase;

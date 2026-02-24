@@ -1,6 +1,6 @@
 import React from 'react';
 import { LogementVacantStatusEnum } from '@services/types/land';
-import StatusNotice from './StatusNotice';
+import Notice from '@components/ui/Notice';
 
 interface LogementVacantStatusProps {
   status?: LogementVacantStatusEnum;
@@ -56,7 +56,7 @@ const LogementVacantStatus: React.FC<LogementVacantStatusProps> = ({ status }) =
   const content = noticeContentMap[status];
   if (!content) return null;
 
-  return <StatusNotice title={content.title} description={content.description} />;
+  return <Notice type="default" title={content.title} message={content.description} />;
 };
 
 export default LogementVacantStatus;

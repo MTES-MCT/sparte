@@ -71,7 +71,7 @@ const ChartCard = styled.div`
   display: flex;
   flex-direction: column;
   background: ${theme.colors.background};
-  border-radius: ${theme.radius.card};
+  border-radius: ${theme.radius.default};
   box-shadow: ${theme.shadow.md};
   overflow: hidden;
   width: 100%;

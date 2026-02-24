@@ -12,7 +12,7 @@ const paddingMap: Record<CardPadding, string> = {
 
 export const BaseCard = styled.div<{ $padding?: CardPadding }>`
   background: ${theme.colors.background};
-  border-radius: ${theme.radius.card};
+  border-radius: ${theme.radius.default};
   box-shadow: ${theme.shadow.md};
   width: 100%;
   overflow: hidden;

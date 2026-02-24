@@ -80,7 +80,7 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
             icon="bi bi-geo-alt-fill"
             label={getLandTypeLabel(landData.land_type)}
             value={landData.name}
-            variant="info"
+            variant="default"
             footer={{
               type: "metric",
               items: [
@@ -127,7 +127,7 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
         <DataSectionLabel>Données disponibles pour ce territoire :</DataSectionLabel>
         <DataSectionBadges>
           {dataCoverage.map((data) => (
-            <Badge key={data.key} $variant={data.available ? "active" : "neutral"}>
+            <Badge key={data.key} variant={data.available ? "active" : "neutral"} size="sm">
               <i className={data.available ? "bi bi-check-lg" : "bi bi-x-lg"} />
               {data.label}
             </Badge>

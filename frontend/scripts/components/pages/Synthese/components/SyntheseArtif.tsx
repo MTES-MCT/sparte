@@ -57,7 +57,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
           label="Artificialisation nette"
           description="Période de réduction"
           value={<>Zéro</>}
-          variant="info"
+          variant="default"
           footer={{
             type: "period",
             periods: [

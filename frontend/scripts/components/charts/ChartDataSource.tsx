@@ -22,7 +22,7 @@ const SourceTag = styled.span`
   color: ${theme.colors.textMuted};
   background: ${theme.badge.neutral.background};
   padding: 0.2rem ${theme.spacing.sm};
-  border-radius: ${theme.radius.element};
+  border-radius: ${theme.radius.tag};
 `;
 
 const TextContainer = styled.div`
@@ -76,7 +76,7 @@ const ChartDataSource: React.FC<ChartDataSourceProps> = ({ sources, displayMode 
 
   return (
     <Container $displayMode={displayMode}>
-      <IconBadge icon="bi bi-database" $size={28} />
+      <IconBadge icon="bi bi-database" size={28} />
       {displayMode === 'text' ? (
         <TextContainer>
           {sources.map((src) => {

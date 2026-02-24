@@ -1,5 +1,5 @@
 import React from 'react';
-import StatusNotice from './StatusNotice';
+import Notice from '@components/ui/Notice';
 
 export enum ConsoCorrectionStatusEnum {
     DONNEES_CORRIGEES = 'données_coriggées',

@@ -1,10 +1,11 @@
 import React from 'react';
-import StatusNotice from './StatusNotice';
+import Notice from '@components/ui/Notice';
 
 const GpuStatus: React.FC = () => (
-  <StatusNotice
+  <Notice
+    type="default"
     title="Données de zonages d'urbanisme non disponibles"
-    description="Les données de zonages d'urbanisme issus du GPU (Géoportail de l'Urbanisme) ne sont pas disponibles sur ce territoire."
+    message="Les données de zonages d'urbanisme issus du GPU (Géoportail de l'Urbanisme) ne sont pas disponibles sur ce territoire."
   />
 );
 
