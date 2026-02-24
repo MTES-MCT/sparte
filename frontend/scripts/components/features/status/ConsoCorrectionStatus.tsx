@@ -12,15 +12,15 @@ export enum ConsoCorrectionStatusEnum {
 }
 
 interface StatusMessage {
-  title: string;
-  description: string;
+    title: string;
+    message: string;
 }
 
 const defaultTitle = "Données de consommation modifiées";
 const warningTitle = "Données de consommation indisponibles";
 const missingMessage = "Votre territoire est absent du dernier millésime de données de consommation d'espaces NAF. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.";
 
-export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]?: IconsoCorrectionStatusMessages } = {
+export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]?: StatusMessage } = {
     'données_coriggées': {
         title: defaultTitle,
         message: missingMessage,
@@ -63,10 +63,7 @@ const ConsoCorrectionStatus: React.FC<ConsoCorrectionStatusProps> = ({ status })
     return (
         <div className="fr-notice fr-notice--info fr-my-3w">
             <div className="fr-container--fluid fr-p-3w">
-                <NoticeBody className="fr-notice__body flex-column">
-                    <p className="fr-notice__title">{ title }</p>
-                    <p className="fr-notice__desc fr-text--sm">{ message }</p>
-                </NoticeBody>
+                <Notice type="default" title={title} message={message} />
             </div>
         </div>
     );
