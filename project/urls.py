@@ -49,6 +49,11 @@ urlpatterns = [
         name="report_friches",
     ),
     path(
+        "<str:land_type>/<str:land_slug>/residences-secondaires",
+        views.diagnostic.DiagnosticResidencesSecondairesView.as_view(),
+        name="report_residences_secondaires",
+    ),
+    path(
         "<str:land_type>/<str:land_slug>/trajectoires",
         views.diagnostic.DiagnosticTrajectoiresView.as_view(),
         name="report_target_2031",

@@ -401,6 +401,7 @@ class DcBivariateConsoMap(DiagnosticChart):
                     "joinBy": ["land_id"],
                     "colorKey": "category_id",
                     "opacity": 1,
+                    **({"cursor": "pointer"} if self.child_land_type != AdminRef.COMMUNE else {}),
                     "borderColor": "#999999",
                     "borderWidth": 1,
                     "dataLabels": {"enabled": False},

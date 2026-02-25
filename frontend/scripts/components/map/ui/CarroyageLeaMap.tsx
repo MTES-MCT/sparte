@@ -230,7 +230,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         { land_type, land_id, start_year: startYear, end_year: endYear },
         { skip: !land_type || !land_id || startYear >= endYear }
     );
-    const geomChildType = (childLandType === "EPCI" || childLandType === "SCOT") ? "COMM" : childLandType;
+    const geomChildType = childLandType;
     const { data: childrenGeom } = useGetLandChildrenGeomQuery(
         geomChildType ? { land_type, land_id, child_land_type: geomChildType } : undefined,
         { skip: !geomChildType }
@@ -284,7 +284,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                 setIsUpdating(false);
             });
         });
-    }, [startYear, endYear, selectedDestination, destinationConfig, boundsData, getBoundsForDestination, land_type, land_id]);
+    }, [startYear, endYear, selectedDestination, destinationConfig, boundsData, getBoundsForDestination, land_type, land_id, isMapLoaded]);
 
     const getIndicatorPosition = useCallback((value: number): number => {
         const bounds = getBoundsForDestination(selectedDestination);
@@ -539,7 +539,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         ],
     }), []);
 
-    if (!destinationConfig) {
+    if (!destinationConfig || !boundsData) {
         return <Loader size={32} />;
     }
 

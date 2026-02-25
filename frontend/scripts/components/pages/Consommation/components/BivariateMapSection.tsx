@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
+import { getLandTypeLabel } from "@utils/landUtils";
 import { useGetChartConfigQuery } from "@services/api";
 import { Tooltip } from "react-tooltip";
 
@@ -10,28 +12,74 @@ const PERIODS = [
 
 const CONSO_QUALIF = ["Consommation faible", "Consommation moyenne", "Consommation forte"];
 
+const CHILD_LAND_TYPE_MAP: Record<string, string> = {
+  REGION: 'DEPART',
+  DEPART: 'EPCI',
+  SCOT: 'COMM',
+  EPCI: 'COMM',
+};
+
 interface BivariateMapSectionProps {
   chartId: string;
   landId: string;
   landType: string;
+  landName?: string;
   childLandType: string;
+  childLandTypes?: string[];
+  onChildLandTypeChange?: (type: string) => void;
 }
 
 export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
   chartId,
   landId,
   landType,
+  landName,
   childLandType,
+  childLandTypes,
+  onChildLandTypeChange,
 }) => {
   const [period, setPeriod] = React.useState("2016_2022");
   const tooltipId = `bivariate-tooltip-${chartId}`;
 
+  // Navigation stack for drill-down
+  const [mapNavStack, setMapNavStack] = useState<{ land_id: string; land_type: string; name: string; child_land_type: string }[]>([]);
+
+  const currentMapLand = mapNavStack.length > 0 ? mapNavStack[mapNavStack.length - 1] : null;
+  const mapLandId = currentMapLand?.land_id ?? landId;
+  const mapLandType = currentMapLand?.land_type ?? landType;
+  const mapChildLandType = currentMapLand?.child_land_type ?? childLandType;
+
+  const handleMapPointClick = useCallback((point: { land_id: string; land_type: string; name: string }) => {
+    const pointLandType = point.land_type || mapChildLandType;
+    const nextChildType = CHILD_LAND_TYPE_MAP[pointLandType];
+    if (!nextChildType) return;
+    setMapNavStack((prev) => [...prev, {
+      land_id: point.land_id,
+      land_type: pointLandType,
+      name: point.name,
+      child_land_type: nextChildType,
+    }]);
+  }, [mapChildLandType]);
+
+  const handleMapBreadcrumbClick = useCallback((index: number) => {
+    setMapNavStack((prev) => prev.slice(0, index));
+  }, []);
+
+  // Reset nav stack when childLandType changes from parent
+  useEffect(() => {
+    setMapNavStack([]);
+  }, [childLandType]);
+
+  const handleChildLandTypeChangeLocal = useCallback((type: string) => {
+    onChildLandTypeChange?.(type);
+  }, [onChildLandTypeChange]);
+
   const { data: config } = useGetChartConfigQuery(
     {
       id: chartId,
-      land_type: landType,
-      land_id: landId,
-      child_land_type: childLandType,
+      land_type: mapLandType,
+      land_id: mapLandId,
+      child_land_type: mapChildLandType,
       period,
     },
   );
@@ -86,28 +134,56 @@ export const BivariateMapSection: React.FC<BivariateMapSectionProps> = ({
   return (
     <div className="fr-mb-5w">
       <div className="bg-white fr-p-2w rounded">
-        <div className="fr-mb-2w">
+        <div className="fr-mb-2w d-flex align-items-center gap-2">
           {PERIODS.map((p) => (
             <button
               key={p.value}
-              className={`fr-btn ${period === p.value ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm fr-mr-1w`}
+              className={`fr-btn ${period === p.value ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm`}
               onClick={() => setPeriod(p.value)}
             >
               {p.label}
             </button>
           ))}
+          {childLandTypes && childLandTypes.length > 1 && (
+            <>
+              <span style={{ borderLeft: "1px solid #ddd", height: 24 }} />
+              {childLandTypes.map((clt) => (
+                <button
+                  key={clt}
+                  className={`fr-btn ${childLandType === clt ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm`}
+                  onClick={() => handleChildLandTypeChangeLocal(clt)}
+                >
+                  {getLandTypeLabel(clt)}
+                </button>
+              ))}
+            </>
+          )}
         </div>
+        {mapNavStack.length > 0 && (
+          <Breadcrumb
+            className="fr-mb-1w"
+            segments={[
+              { label: landName || landId, linkProps: { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); handleMapBreadcrumbClick(0) } } },
+              ...mapNavStack.slice(0, -1).map((entry, i) => ({
+                label: entry.name,
+                linkProps: { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); handleMapBreadcrumbClick(i + 1) } },
+              })),
+            ]}
+            currentPageLabel={mapNavStack[mapNavStack.length - 1].name}
+          />
+        )}
         <div className="fr-grid-row fr-grid-row--gutters">
           <div className={colorGrid ? "fr-col-12 fr-col-lg-8" : "fr-col-12"}>
             <GenericChart
-              key={`${chartId}-${landId}-${childLandType}-${period}`}
+              key={`${chartId}-${mapLandId}-${mapChildLandType}-${period}`}
               id={chartId}
-              land_id={landId}
-              land_type={landType}
-              params={{ child_land_type: childLandType, period }}
+              land_id={mapLandId}
+              land_type={mapLandType}
+              params={{ child_land_type: mapChildLandType, period }}
               sources={["insee", "majic"]}
               showDataTable={true}
               isMap={true}
+              onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
             />
           </div>
           {colorGrid && (

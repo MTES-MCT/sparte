@@ -492,41 +492,30 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 					<div className="fr-grid-row fr-grid-row--gutters">
 						<div className="fr-col-12 fr-col-lg-8">
 							<div className="bg-white fr-p-2w h-100 rounded">
-								<div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' }}>
-									{child_land_types.length > 1 && (
-										<div role="tablist" aria-label="Sélection du type de territoire">
-											{child_land_types.map((child_land_type) => (
-												<button
-													className={`fr-btn  ${
-														childLandType === child_land_type
-															? "fr-btn--primary"
-															: "fr-btn--tertiary"
-													}`}
-													key={child_land_type}
-													onClick={() => handleChildLandTypeChange(child_land_type)}
-													role="tab"
-													aria-selected={childLandType === child_land_type}
-													aria-label={`Sélectionner ${getLandTypeLabel(child_land_type)}`}
-												>
-													{getLandTypeLabel(child_land_type)}
-												</button>
-											))}
-										</div>
-									)}
-									{mapNavStack.length > 0 && (
-										<Breadcrumb
-											className="fr-mb-0"
-											segments={[
-												{ label: name, linkProps: { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); handleMapBreadcrumbClick(0) } } },
-												...mapNavStack.slice(0, -1).map((entry, i) => ({
-													label: entry.name,
-													linkProps: { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); handleMapBreadcrumbClick(i + 1) } },
-												})),
-											]}
-											currentPageLabel={mapNavStack[mapNavStack.length - 1].name}
-										/>
-									)}
+								<div className="fr-mb-2w d-flex align-items-center gap-2">
+									{child_land_types.length > 1 && child_land_types.map((child_land_type) => (
+										<button
+											key={child_land_type}
+											className={`fr-btn ${childLandType === child_land_type ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm`}
+											onClick={() => handleChildLandTypeChange(child_land_type)}
+										>
+											{getLandTypeLabel(child_land_type)}
+										</button>
+									))}
 								</div>
+								{mapNavStack.length > 0 && (
+									<Breadcrumb
+										className="fr-mb-1w"
+										segments={[
+											{ label: name, linkProps: { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); handleMapBreadcrumbClick(0) } } },
+											...mapNavStack.slice(0, -1).map((entry, i) => ({
+												label: entry.name,
+												linkProps: { href: '#', onClick: (e: React.MouseEvent) => { e.preventDefault(); handleMapBreadcrumbClick(i + 1) } },
+											})),
+										]}
+										currentPageLabel={mapNavStack[mapNavStack.length - 1].name}
+									/>
+								)}
 								{/* key forces React to remount the chart when navigation or childLandType changes */}
 								<GenericChart
 									key={`artif_map_${mapLandType}_${mapLandId}_${mapChildLandType}`}

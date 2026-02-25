@@ -1,10 +1,13 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
 import { ConsoStats } from "./ConsoStats";
+import { BivariateMapSection } from "./BivariateMapSection";
+
 
 interface ConsoDemographyProps {
   landId: string;
   landType: string;
+  landName?: string;
   startYear: number;
   endYear: number;
   populationEvolution: number | null;
@@ -13,6 +16,9 @@ interface ConsoDemographyProps {
   populationStock: number | null;
   isLoadingPop: boolean;
   populationCardRef?: React.RefObject<HTMLDivElement>;
+  childLandTypes?: string[];
+  childType?: string;
+  onChildLandTypeChange?: (type: string) => void;
 }
 
 /**
@@ -21,6 +27,7 @@ interface ConsoDemographyProps {
 export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   landId,
   landType,
+  landName,
   startYear,
   endYear,
   populationEvolution,
@@ -29,7 +36,12 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   populationStock,
   isLoadingPop,
   populationCardRef,
+  childLandTypes,
+  childType,
+  onChildLandTypeChange,
 }) => {
+  const hasChildren = childLandTypes && childLandTypes.length > 0;
+  const mapChildType = childType || (childLandTypes && childLandTypes[0]);
   return (
     <div className="fr-mt-7w">
       <h3 id="conso-demographie">Consommation d'espaces NAF et démographie</h3>
@@ -70,6 +82,32 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
           </GenericChart>
         </div>
       </div>
+
+      <div className="fr-mt-5w" />
+
+      {hasChildren && mapChildType && (
+        <BivariateMapSection
+          chartId="dc_population_conso_map"
+          landId={landId}
+          landType={landType}
+          landName={landName}
+          childLandType={mapChildType}
+          childLandTypes={childLandTypes}
+          onChildLandTypeChange={onChildLandTypeChange}
+        />
+      )}
+
+      {hasChildren && mapChildType && (
+        <BivariateMapSection
+          chartId="dc_menages_conso_map"
+          landId={landId}
+          landType={landType}
+          landName={landName}
+          childLandType={mapChildType}
+          childLandTypes={childLandTypes}
+          onChildLandTypeChange={onChildLandTypeChange}
+        />
+      )}
     </div>
   );
 };

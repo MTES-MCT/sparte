@@ -82,9 +82,9 @@ class AnnualConsoByDeterminantChart(DiagnosticChart):
             "xAxis": {"type": "category"},
             "legend": {
                 **super().param["legend"],
-                "layout": "vertical",
-                "align": "right",
-                "verticalAlign": "middle",
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "bottom",
             },
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
             "series": self.series,

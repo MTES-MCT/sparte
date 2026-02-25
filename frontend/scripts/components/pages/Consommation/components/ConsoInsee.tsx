@@ -1,60 +1,86 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
+import Card from "@components/ui/Card";
+import { formatNumber } from "@utils/formatUtils";
 import { BivariateMapSection } from "./BivariateMapSection";
 
 interface ConsoInseeProps {
   landId: string;
   landType: string;
+  landName?: string;
   startYear: number;
   endYear: number;
   childLandTypes?: string[];
   childType?: string;
+  onChildLandTypeChange?: (type: string) => void;
+  logements?: number | null;
+  evolutionLogementsPercent?: number | null;
+  evolutionLogementsAbsolute?: number | null;
+  densiteLogements?: number | null;
+  emplois?: number | null;
+  evolutionEmploisPercent?: number | null;
+  evolutionEmploisAbsolute?: number | null;
+  densiteEmplois?: number | null;
 }
 
 export const ConsoInsee: React.FC<ConsoInseeProps> = ({
   landId,
   landType,
+  landName,
   startYear,
   endYear,
   childLandTypes,
   childType,
+  onChildLandTypeChange,
+  logements,
+  evolutionLogementsPercent,
+  evolutionLogementsAbsolute,
+  densiteLogements,
+  emplois,
+  evolutionEmploisPercent,
+  evolutionEmploisAbsolute,
+  densiteEmplois,
 }) => {
   const hasChildren = childLandTypes && childLandTypes.length > 0;
   const mapChildType = childType || (childLandTypes && childLandTypes[0]);
-  const [rsYear, setRsYear] = React.useState("2022");
 
   return (
     <div className="fr-mt-7w">
-      <h3 id="conso-insee">Indicateurs INSEE du territoire</h3>
-      <p className="fr-text--sm fr-mb-3w">
-        Les données ci-dessous sont issues du <strong>dossier complet INSEE</strong> et
-        permettent de croiser les dynamiques territoriales (population, logement, emploi, etc.)
-        avec la consommation d'espaces NAF.
-      </p>
-
-      {/* Population */}
-      <h4 className="fr-mt-5w">Population</h4>
-
-      {hasChildren && mapChildType && (
-        <BivariateMapSection
-          chartId="dc_population_conso_map"
-          landId={landId}
-          landType={landType}
-          childLandType={mapChildType}
-        />
-      )}
-
       {/* Logement */}
-      <h4 className="fr-mt-5w">Logement</h4>
+      <h3 className="fr-mt-5w">Consommation d'espaces NAF et logement</h3>
 
-      <div className="fr-mb-3w">
-        <div className="bg-white fr-p-2w rounded">
-          <GenericChart
-            id="dc_logement_parc"
-            land_id={landId}
-            land_type={landType}
-            sources={["insee"]}
-            showDataTable={true}
+      <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
+        <div className="fr-col-12 fr-col-lg-4">
+          <Card
+            icon="bi-graph-up-arrow"
+            badgeClass="fr-badge--info"
+            badgeLabel="Évolution des logements"
+            value={evolutionLogementsAbsolute != null
+              ? `${evolutionLogementsAbsolute > 0 ? "+" : ""}${formatNumber({ number: evolutionLogementsAbsolute })}`
+              : "n.d."}
+            label={evolutionLogementsPercent != null
+              ? `Entre 2011 et 2022 (${evolutionLogementsPercent > 0 ? "+" : ""}${evolutionLogementsPercent} %)`
+              : "Entre 2011 et 2022"}
+            isHighlighted={true}
+            highlightBadge="Donnée clé"
+          />
+        </div>
+        <div className="fr-col-12 fr-col-lg-4">
+          <Card
+            icon="bi-buildings"
+            badgeClass="fr-badge--info"
+            badgeLabel="Nombre de logements"
+            value={logements != null ? formatNumber({ number: logements }) : "n.d."}
+            label="En 2022"
+          />
+        </div>
+        <div className="fr-col-12 fr-col-lg-4">
+          <Card
+            icon="bi-grid-3x3-gap"
+            badgeClass="fr-badge--info"
+            badgeLabel="Densité de logements"
+            value={densiteLogements != null ? `${formatNumber({ number: densiteLogements })} / ha` : "n.d."}
+            label="En 2022"
           />
         </div>
       </div>
@@ -65,97 +91,73 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
             chartId="dc_logement_conso_map"
             landId={landId}
             landType={landType}
+            landName={landName}
             childLandType={mapChildType}
+            childLandTypes={childLandTypes}
+            onChildLandTypeChange={onChildLandTypeChange}
           />
           <BivariateMapSection
             chartId="dc_vacance_conso_map"
             landId={landId}
             landType={landType}
+            landName={landName}
             childLandType={mapChildType}
+            childLandTypes={childLandTypes}
+            onChildLandTypeChange={onChildLandTypeChange}
           />
         </>
       )}
 
-      {hasChildren && mapChildType && (
-        <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
-          <div className="fr-col-12 fr-col-lg-8">
-            <div className="bg-white fr-p-2w rounded h-100">
-              <GenericChart
-                key={`dc_logement_vacant_map-${mapChildType}`}
-                id="dc_logement_vacant_map"
-                land_id={landId}
-                land_type={landType}
-                params={{ child_land_type: mapChildType }}
-                sources={["insee"]}
-                showDataTable={true}
-                isMap={true}
-              />
-            </div>
-          </div>
-          <div className="fr-col-12 fr-col-lg-4">
-            <div className="fr-alert fr-alert--info fr-alert--sm h-100">
-              <p className="fr-text--sm fr-mb-0">
-                TODO : trouver pourquoi les donn&eacute;es sont diff&eacute;rentes de ZLV
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Emploi et economie */}
+      <h3 className="fr-mt-5w">Consommation d'espaces NAF et emploi</h3>
 
-      {/* Residences secondaires */}
-      <h4 className="fr-mt-5w">Résidences secondaires</h4>
-
-      <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
-        <div className="fr-col-12 fr-col-lg-8">
-          <div className="bg-white fr-p-2w rounded h-100">
-            <GenericChart
-              id="dc_residences_secondaires"
-              land_id={landId}
-              land_type={landType}
-              sources={["insee"]}
-              showDataTable={true}
-            />
-          </div>
+      <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
+        <div className="fr-col-12 fr-col-lg-4">
+          <Card
+            icon="bi-graph-up-arrow"
+            badgeClass="fr-badge--info"
+            badgeLabel="Évolution des emplois"
+            value={evolutionEmploisAbsolute != null
+              ? `${evolutionEmploisAbsolute > 0 ? "+" : ""}${formatNumber({ number: evolutionEmploisAbsolute })}`
+              : "n.d."}
+            label={evolutionEmploisPercent != null
+              ? `Entre 2011 et 2022 (${evolutionEmploisPercent > 0 ? "+" : ""}${evolutionEmploisPercent} %)`
+              : "Entre 2011 et 2022"}
+            isHighlighted={true}
+            highlightBadge="Donnée clé"
+          />
         </div>
         <div className="fr-col-12 fr-col-lg-4">
-          <div className="fr-alert fr-alert--info fr-alert--sm h-100">
-            <p className="fr-text--sm fr-mb-0">
-              TODO : comment mettre donn&eacute;e en valeur
-            </p>
-          </div>
+          <Card
+            icon="bi-briefcase"
+            badgeClass="fr-badge--info"
+            badgeLabel="Nombre d'emplois"
+            value={emplois != null ? formatNumber({ number: emplois }) : "n.d."}
+            label="En 2022"
+          />
+        </div>
+        <div className="fr-col-12 fr-col-lg-4">
+          <Card
+            icon="bi-grid-3x3-gap"
+            badgeClass="fr-badge--info"
+            badgeLabel="Densité d'emplois"
+            value={densiteEmplois != null ? `${formatNumber({ number: densiteEmplois })} / ha` : "n.d."}
+            label="En 2022"
+          />
         </div>
       </div>
 
       {hasChildren && mapChildType && (
-        <div className="fr-mb-5w">
-          <div className="bg-white fr-p-2w rounded">
-            <div className="fr-mb-2w">
-              {["2011", "2016", "2022"].map((y) => (
-                <button
-                  key={y}
-                  className={`fr-btn ${rsYear === y ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm fr-mr-1w`}
-                  onClick={() => setRsYear(y)}
-                >
-                  {y}
-                </button>
-              ))}
-            </div>
-            <GenericChart
-              key={`dc_residences_secondaires_map-${mapChildType}-${rsYear}`}
-              id="dc_residences_secondaires_map"
-              land_id={landId}
-              land_type={landType}
-              params={{ child_land_type: mapChildType, year: rsYear }}
-              sources={["insee"]}
-              showDataTable={true}
-              isMap={true}
-            />
-          </div>
-        </div>
+        <BivariateMapSection
+          chartId="dc_emploi_conso_map"
+          landId={landId}
+          landType={landType}
+          landName={landName}
+          childLandType={mapChildType}
+          childLandTypes={childLandTypes}
+          onChildLandTypeChange={onChildLandTypeChange}
+        />
       )}
-
-      {/* Emploi et economie */}
-      <h4 className="fr-mt-5w">Emploi et économie</h4>
 
       <div className="fr-mb-3w">
         <div className="bg-white fr-p-2w rounded">
@@ -176,52 +178,24 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       {hasChildren && mapChildType && (
         <>
           <BivariateMapSection
-            chartId="dc_emploi_conso_map"
-            landId={landId}
-            landType={landType}
-            childLandType={mapChildType}
-          />
-          <BivariateMapSection
             chartId="dc_creations_entreprises_conso_map"
             landId={landId}
             landType={landType}
+            landName={landName}
             childLandType={mapChildType}
+            childLandTypes={childLandTypes}
+            onChildLandTypeChange={onChildLandTypeChange}
           />
           <BivariateMapSection
             chartId="dc_chomage_conso_map"
             landId={landId}
             landType={landType}
+            landName={landName}
             childLandType={mapChildType}
+            childLandTypes={childLandTypes}
+            onChildLandTypeChange={onChildLandTypeChange}
           />
         </>
-      )}
-
-      {/* Menages */}
-      <h4 className="fr-mt-5w">Ménages</h4>
-
-      <div className="fr-mb-5w">
-        <div className="bg-white fr-p-2w rounded">
-          <GenericChart
-            id="dc_menages_evolution"
-            land_id={landId}
-            land_type={landType}
-            params={{
-              start_date: String(startYear),
-              end_date: String(endYear),
-            }}
-            sources={["insee", "majic"]}
-            showDataTable={true}
-          />
-        </div>
-      </div>
-
-      {hasChildren && mapChildType && (
-        <BivariateMapSection
-          chartId="dc_menages_conso_map"
-          landId={landId}
-          landType={landType}
-          childLandType={mapChildType}
-        />
       )}
 
     </div>

@@ -13,6 +13,7 @@ export function buildUrls(landType: string, landSlug: string) {
         consommation: `${base}/consommation`,
         logementVacant: `${base}/vacance-des-logements`,
         friches: `${base}/friches`,
+        residencesSecondaires: `${base}/residences-secondaires`,
         downloads: `${base}/telechargements`,
     };
 }
@@ -48,6 +49,7 @@ export function buildNavbar(landType: string, landSlug: string) {
             subMenu: [
                 { label: "Vacance des logements", url: urls.logementVacant },
                 { label: "Friches", url: urls.friches },
+                { label: "Résidences secondaires", url: urls.residencesSecondaires, new: true },
             ],
         },
     ];
