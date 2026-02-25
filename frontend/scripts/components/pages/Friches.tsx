@@ -315,7 +315,6 @@ export const Friches: React.FC<FrichesProps> = ({ landData }) => {
                     </Guide>
 				</div>
 			</div>
-            <h2 className="fr-mt-5w">Vue d'ensemble</h2>
             <FricheOverview 
                 friche_status_details={landData.friche_status_details} 
             />
