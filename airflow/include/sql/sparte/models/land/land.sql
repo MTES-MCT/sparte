@@ -76,9 +76,9 @@ SELECT
     {{ common_fields }},
     {{ admin_express_common_fields }},
     ARRAY[
+        '{{ var("DEPARTEMENT") }}',
         '{{ var("EPCI") }}',
-        '{{ var("SCOT") }}',
-        '{{ var("DEPARTEMENT") }}'
+        '{{ var("SCOT") }}'
     ] as child_land_types,
     ARRAY[
         '{{ var("NATION") }}_' || '{{ var("NATION") }}'

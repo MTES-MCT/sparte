@@ -63,6 +63,7 @@ type GenericChartProps = {
     hideToggle?: boolean;
     compactDataTable?: boolean;
     hideDetails?: boolean;
+    onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
 }
 
 const LoaderContainer = styled.div`
@@ -88,6 +89,7 @@ const GenericChart = ({
   dataTableOnly = false,
   compactDataTable = false,
   hideDetails = false,
+  onPointClick,
 } : GenericChartProps) =>
 {
   const chartRef = useRef<any>(null)
@@ -175,14 +177,34 @@ const GenericChart = ({
 
   const handleChartCallback = (chart: Highcharts.Chart) =>
   {
-    if (!pieSeries || pieSeries.length === 0) return
-
-    pieSeries.forEach((series: Highcharts.SeriesOptionsType) =>
+    if (pieSeries && pieSeries.length > 0)
     {
-      chart.addSeries(series, false)
-    })
+      pieSeries.forEach((series: Highcharts.SeriesOptionsType) =>
+      {
+        chart.addSeries(series, false)
+      })
+      chart.redraw()
+    }
 
-    chart.redraw()
+    if (onPointClick)
+    {
+      chart.series.forEach((series) =>
+      {
+        Highcharts.addEvent(series, 'click', (e: any) =>
+        {
+          const opts = e?.point?.options
+          const pt = e?.point
+          if (opts?.land_id && opts?.land_type)
+          {
+            onPointClick({
+              land_id: opts.land_id,
+              land_type: opts.land_type,
+              name: pt?.name || opts?.name || '',
+            })
+          }
+        })
+      })
+    }
   }
 
   const shouldRedraw = true
@@ -233,7 +255,7 @@ const GenericChart = ({
                     updateArgs={[shouldRedraw, oneToOne, animation]}
                     containerProps={{ ...defaultContainerProps, ...containerProps }}
                     constructorType={isMap ? 'mapChart' : 'chart'}
-                    callback={pieSeries ? handleChartCallback : undefined}
+                    callback={(pieSeries || onPointClick) ? handleChartCallback : undefined}
                 />
             )}
             {!hideDetails && (
