@@ -93,7 +93,11 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		}
 
 		// Set fill opacity: 0% on selected, 50% on hovered
-		for (const layerId of style.layers.filter(l => l.id === "zonage-urbanisme-layer").map(l => l.id)) {
+		const fillLayers = style.layers
+			.filter(l => l.id === "zonage-urbanisme-layer" || l.id.startsWith("zonage-urbanisme-layer-dept-"))
+			.filter(l => !l.id.includes("outline") && !l.id.includes("highlight"))
+			.map(l => l.id);
+		for (const layerId of fillLayers) {
 			if (locked && hoveredChecksum && hoveredChecksum !== locked) {
 				map.setPaintProperty(layerId, "fill-opacity", [
 					"case",

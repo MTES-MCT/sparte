@@ -20,12 +20,12 @@ export const getLandTypeLabel = (
 	}
 
 	const labels: Record<string, string> = {
-		'COMM': 'commune',
+		'COMM': 'Commune',
 		'EPCI': 'EPCI',
-		'DEPART': 'département',
-		'REGION': 'région',
+		'DEPART': 'Département',
+		'REGION': 'Région',
 		'SCOT': 'SCoT',
-		'NAT': 'national',
+		'NATION': 'National',
 	};
 
 	const label = labels[landType] || landType.toLowerCase();
