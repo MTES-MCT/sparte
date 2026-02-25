@@ -109,9 +109,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 	});
 
 	const { has_zonage } = landData;
-	if (isLoading) return <div role="status" aria-live="polite">Chargement...</div>;
-	if (error) return <div role="alert" aria-live="assertive">Erreur : {error}</div>;
-	if (!landData) return <div role="status" aria-live="polite">Données non disponibles</div>;
+	if (error) return <div className="fr-container--fluid fr-p-3w" role="alert" aria-live="assertive">Erreur : {error}</div>;
+	if (!landData) return <div className="fr-container--fluid fr-p-3w" role="status" aria-live="polite">Données non disponibles</div>;
 
 	return (
 		<div className="fr-container--fluid fr-p-3w">
