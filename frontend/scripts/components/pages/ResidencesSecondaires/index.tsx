@@ -25,6 +25,20 @@ export const ResidencesSecondaires: React.FC<ResidencesSecondairesProps> = ({ la
 
   return (
     <div className="fr-container--fluid fr-p-3w">
+      <Guide
+        title="Qu'est-ce qu'une résidence secondaire ?"
+        className="fr-mb-5w"
+      >
+        <p className="fr-text--sm">
+          Une résidence secondaire est un logement utilisé pour les week-ends, les loisirs ou les vacances.
+          Les logements meublés loués (ou à louer) pour des séjours touristiques sont également classés en résidences secondaires.
+        </p>
+        <p className="fr-text--sm">
+          La présence de résidences secondaires sur un territoire constitue un levier potentiel de sobriété foncière :
+          leur transformation en résidences principales permettrait de répondre à la demande de logements sans consommer de nouveaux espaces naturels, agricoles ou forestiers.
+        </p>
+      </Guide>
+
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
         <div className="fr-col-12 fr-col-lg-4">
           <Card
@@ -60,20 +74,6 @@ export const ResidencesSecondaires: React.FC<ResidencesSecondairesProps> = ({ la
           />
         </div>
       </div>
-
-      <Guide
-        title="Qu'est-ce qu'une résidence secondaire ?"
-        className="fr-mb-5w"
-      >
-        <p className="fr-text--sm">
-          Une résidence secondaire est un logement utilisé pour les week-ends, les loisirs ou les vacances.
-          Les logements meublés loués (ou à louer) pour des séjours touristiques sont également classés en résidences secondaires.
-        </p>
-        <p className="fr-text--sm">
-          La présence de résidences secondaires sur un territoire constitue un levier potentiel de sobriété foncière :
-          leur transformation en résidences principales permettrait de répondre à la demande de logements sans consommer de nouveaux espaces naturels, agricoles ou forestiers.
-        </p>
-      </Guide>
 
       <h3>Évolution des résidences secondaires</h3>
 
