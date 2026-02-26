@@ -192,6 +192,9 @@ class BaseOcsgeMap(DiagnosticChart):
             srid=3857,
         )
 
+        child_land_type = self.params.get("child_land_type")
+        is_drillable = child_land_type != AdminRef.COMMUNE
+
         percents = [d["percent"] for d in self.data]
         bubble_data_pos = [
             {
@@ -256,7 +259,7 @@ class BaseOcsgeMap(DiagnosticChart):
                     "data": self.data,
                     "joinBy": ["land_id"],
                     "opacity": 1,
-                    "cursor": "pointer",
+                    **({"cursor": "pointer"} if is_drillable else {}),
                     "showInLegend": False,
                     "dataLabels": {"enabled": False},
                     "tooltip": self.stock_tooltip,
@@ -270,7 +273,7 @@ class BaseOcsgeMap(DiagnosticChart):
                     "minSize": 5,
                     "maxSize": "8%",
                     "opacity": 0.7,
-                    "cursor": "pointer",
+                    **({"cursor": "pointer"} if is_drillable else {}),
                     "showInLegend": True,
                     "colorAxis": False,
                     "tooltip": self.flux_tooltip_pos,
@@ -284,7 +287,7 @@ class BaseOcsgeMap(DiagnosticChart):
                     "minSize": 5,
                     "maxSize": "8%",
                     "opacity": 0.7,
-                    "cursor": "pointer",
+                    **({"cursor": "pointer"} if is_drillable else {}),
                     "showInLegend": True,
                     "colorAxis": False,
                     "tooltip": self.flux_tooltip_neg,

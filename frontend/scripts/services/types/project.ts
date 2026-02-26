@@ -12,6 +12,7 @@ export type SubMenuItem = {
   label: string;
   url?: string;
   new?: boolean;
+  dgaln_only?: boolean;
 };
 
 export type MenuItem = {
@@ -23,6 +24,7 @@ export type MenuItem = {
   shouldDisplay?: boolean;
   new?: boolean;
   soon?: boolean;
+  dgaln_only?: boolean;
 };
 
 export type ComparisonLand = {

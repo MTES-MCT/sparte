@@ -39,6 +39,36 @@ export const CHART_DESCRIPTIONS = {
       </>
     ),
   },
+  logementConso: {
+    title: "À propos",
+    content: (
+      <>
+        <p className="fr-text--xs fr-mb-0">
+          Ce graphique compare la consommation d'espaces NAF à destination de l'habitat au regard de l'évolution du parc de logements. La taille des bulles représente la population totale de chaque territoire.
+        </p>
+      </>
+    ),
+  },
+  menagesConso: {
+    title: "À propos",
+    content: (
+      <>
+        <p className="fr-text--xs fr-mb-0">
+          Ce graphique compare la consommation d'espaces NAF à destination de l'habitat au regard de l'évolution du nombre de ménages. La taille des bulles représente la population totale de chaque territoire.
+        </p>
+      </>
+    ),
+  },
+  emploiConso: {
+    title: "À propos",
+    content: (
+      <>
+        <p className="fr-text--xs fr-mb-0">
+          Ce graphique compare la consommation d'espaces NAF à destination de l'activité au regard de l'évolution de l'emploi. La taille des bulles représente la population totale de chaque territoire.
+        </p>
+      </>
+    ),
+  },
 } as const;
 
 export const GUIDE_TEXTS = {

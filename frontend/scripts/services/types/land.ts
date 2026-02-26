@@ -167,6 +167,18 @@ export type LandDetailResultType = {
     max_bounds: [number, number, number, number];
     conso_details: ConsoDetails;
     consommation_correction_status: ConsoCorrectionStatusEnum;
+    logements_22: number | null;
+    evolution_logements_percent: number | null;
+    evolution_logements_absolute: number | null;
+    densite_logements: number | null;
+    emplois_22: number | null;
+    evolution_emplois_percent: number | null;
+    evolution_emplois_absolute: number | null;
+    densite_emplois: number | null;
+    residences_secondaires_22: number | null;
+    evolution_residences_secondaires_percent: number | null;
+    evolution_residences_secondaires_absolute: number | null;
+    densite_residences_secondaires: number | null;
 };
 
 type LandDetailQueryArg = string | FetchArgs | {

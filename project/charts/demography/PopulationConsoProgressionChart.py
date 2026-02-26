@@ -118,6 +118,12 @@ class PopulationConsoProgressionChart(DiagnosticChart):
                     "title": {"text": "Consommation d'espaces NAF (ha)", "style": {"color": "#6a6af4"}},
                 },
             ],
+            "legend": {
+                **super().param["legend"],
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "bottom",
+            },
             "tooltip": {"shared": True},
             "series": self.series,
         }

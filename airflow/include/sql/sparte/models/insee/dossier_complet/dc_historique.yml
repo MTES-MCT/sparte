@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: dc_historique
+    columns:
+      - name: codgeo
+        tests:
+          - unique
+          - not_null
+          - has_all_communes:
+              severity: warn

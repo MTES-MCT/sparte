@@ -194,11 +194,11 @@ const GenericChart = ({
         {
           const opts = e?.point?.options
           const pt = e?.point
-          if (opts?.land_id && opts?.land_type)
+          if (opts?.land_id)
           {
             onPointClick({
               land_id: opts.land_id,
-              land_type: opts.land_type,
+              land_type: opts.land_type || '',
               name: pt?.name || opts?.name || '',
             })
           }

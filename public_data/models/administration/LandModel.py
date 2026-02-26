@@ -151,6 +151,18 @@ class LandModel(models.Model):
     max_bounds = ArrayField(base_field=models.FloatField())
     conso_details = models.JSONField()
     consommation_correction_status = models.TextField(choices=ConsommationCorrectionStatus.choices)
+    logements_22 = models.FloatField(null=True)
+    evolution_logements_percent = models.FloatField(null=True)
+    evolution_logements_absolute = models.FloatField(null=True)
+    densite_logements = models.FloatField(null=True)
+    emplois_22 = models.FloatField(null=True)
+    evolution_emplois_percent = models.FloatField(null=True)
+    evolution_emplois_absolute = models.FloatField(null=True)
+    densite_emplois = models.FloatField(null=True)
+    residences_secondaires_22 = models.FloatField(null=True)
+    evolution_residences_secondaires_percent = models.FloatField(null=True)
+    evolution_residences_secondaires_absolute = models.FloatField(null=True)
+    densite_residences_secondaires = models.FloatField(null=True)
 
     class Meta:
         managed = False

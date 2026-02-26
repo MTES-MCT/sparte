@@ -315,8 +315,8 @@ CACHES: Dict[str, Any] = {}
 if ENVIRONMENT == "local":
     CACHES = {
         "default": {
-            "BACKEND": "config.cache_backends.RedisDummyCache",
-        },
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
     }
 else:
     CACHES = {

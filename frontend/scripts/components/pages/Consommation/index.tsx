@@ -5,6 +5,7 @@ import { LandDetailResultType } from "@services/types/land";
 import { formatNumber } from "@utils/formatUtils";
 import { ConsommationControls } from "./components/ConsommationControls";
 import { ConsoDemography } from "./components/ConsoDemography";
+import { ConsoInsee } from "./components/ConsoInsee";
 import { ConsoComparison } from "./components/ConsoComparison";
 import { useConsoData, useNearestTerritories, useComparisonTerritories } from "./hooks";
 import { ComparisonLand, UserLandPreferenceResultType } from "@services/types/project";
@@ -117,48 +118,10 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
         </div>
 
       <div>
-        <h3 id="conso-annuelle">Évolution annuelle de la consommation d'espaces NAF</h3>
+        <h3 id="conso-annuelle">Évolution annuelle et répartition de la consommation d'espaces NAF</h3>
 
-        <div className="fr-mb-5w">
-          <div className="bg-white fr-p-2w rounded">
-            <GenericChart
-              id="annual_total_conso_chart"
-              land_id={land_id}
-              land_type={land_type}
-              params={{
-                start_date: String(startYear),
-                end_date: String(endYear),
-                ...(childType && { child_type: childType }),
-              }}
-              sources={["majic"]}
-              showDataTable={true}
-            >
-              <DetailsCalculationFichiersFonciers />
-            </GenericChart>
-          </div>
-        </div>
-
-        <h3 id="conso-determinants">Répartition de la consommation d'espaces NAF par destination</h3>
-
-        <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12 fr-col-lg-6">
-            <div className="bg-white fr-p-2w rounded h-100">
-              <GenericChart
-                id="pie_determinant"
-                land_id={land_id}
-                land_type={land_type}
-                params={{
-                  start_date: String(startYear),
-                  end_date: String(endYear),
-                }}
-                sources={["majic"]}
-                showDataTable={true}
-              >
-                <DetailsCalculationFichiersFonciers />
-              </GenericChart>
-            </div>
-          </div>
-          <div className="fr-col-12 fr-col-lg-6">
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
+          <div className="fr-col-12 fr-col-lg-8">
             <div className="bg-white fr-p-2w rounded h-100">
               <GenericChart
                 id="chart_determinant"
@@ -175,7 +138,25 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
               </GenericChart>
             </div>
           </div>
+          <div className="fr-col-12 fr-col-lg-4">
+            <div className="bg-white fr-p-2w rounded h-100">
+              <GenericChart
+                id="pie_determinant"
+                land_id={land_id}
+                land_type={land_type}
+                params={{
+                  start_date: String(startYear),
+                  end_date: String(endYear),
+                }}
+                sources={["majic"]}
+                showDataTable={true}
+              >
+                <DetailsCalculationFichiersFonciers />
+              </GenericChart>
+            </div>
+          </div>
         </div>
+
       </div>
 
       {child_land_types && child_land_types.length > 0 && (
@@ -192,6 +173,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
                       ? "fr-btn--primary"
                       : "fr-btn--tertiary"
                   } fr-btn--sm fr-mr-1w`}
+                  style={childType !== child_land_type ? { backgroundColor: "white" } : undefined}
                   onClick={() => setChildType(child_land_type)}
                 >
                   {LAND_TYPE_LABELS[child_land_type] || child_land_type}
@@ -279,6 +261,26 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
             Le total affiché ici peut donc être <strong>différent de celui du territoire</strong>.
           </p>
         </div>
+
+        {child_land_types && child_land_types.length > 1 && (
+          <div className="fr-mb-2w">
+            {child_land_types.map((child_land_type) => (
+              <button
+                key={child_land_type}
+                className={`fr-btn ${
+                  childType === child_land_type
+                    ? "fr-btn--primary"
+                    : "fr-btn--tertiary"
+                } fr-btn--sm fr-mr-1w`}
+                style={childType !== child_land_type ? { backgroundColor: "white" } : undefined}
+                onClick={() => setChildType(child_land_type)}
+              >
+                {LAND_TYPE_LABELS[child_land_type] || child_land_type}
+              </button>
+            ))}
+          </div>
+        )}
+
         <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} childLandType={childType} />
 
       </div>
@@ -286,6 +288,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
       <ConsoDemography
         landId={land_id}
         landType={land_type}
+        landName={name}
         startYear={startYear}
         endYear={endYear}
         populationEvolution={populationEvolution}
@@ -294,6 +297,28 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
         populationStock={populationStock}
         isLoadingPop={isLoadingPop}
         populationCardRef={populationCardRef}
+        childLandTypes={child_land_types}
+        childType={childType}
+        onChildLandTypeChange={setChildType}
+      />
+
+      <ConsoInsee
+        landId={land_id}
+        landType={land_type}
+        landName={name}
+        startYear={startYear}
+        endYear={endYear}
+        childLandTypes={child_land_types}
+        childType={childType}
+        onChildLandTypeChange={setChildType}
+        logements={landData.logements_22}
+        evolutionLogementsPercent={landData.evolution_logements_percent}
+        evolutionLogementsAbsolute={landData.evolution_logements_absolute}
+        densiteLogements={landData.densite_logements}
+        emplois={landData.emplois_22}
+        evolutionEmploisPercent={landData.evolution_emplois_percent}
+        evolutionEmploisAbsolute={landData.evolution_emplois_absolute}
+        densiteEmplois={landData.densite_emplois}
       />
 
       <ConsoComparison

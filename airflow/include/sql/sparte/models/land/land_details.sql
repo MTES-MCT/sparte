@@ -41,7 +41,13 @@ SELECT
         ELSE true
     END as is_interdepartemental,
     trajectoire.*,
-    conso_correction_status.consommation_correction_status
+    conso_correction_status.consommation_correction_status,
+    logement.logements_22,
+    logement.logements_11,
+    logement.residences_secondaires_22,
+    logement.residences_secondaires_11,
+    emploi.emplois_22,
+    emploi.emplois_11
 FROM
     {{ ref('land') }}
 
@@ -134,3 +140,23 @@ LEFT JOIN LATERAL (
         land_conso_correction_status.land_id = land.land_id AND
         land_conso_correction_status.land_type = land.land_type
 ) conso_correction_status ON true
+LEFT JOIN LATERAL (
+    SELECT
+        logements_22,
+        logements_11,
+        residences_secondaires_22,
+        residences_secondaires_11
+    FROM {{ ref('for_app_dc_logement') }}
+    WHERE
+        for_app_dc_logement.land_id = land.land_id AND
+        for_app_dc_logement.land_type = land.land_type
+) logement ON true
+LEFT JOIN LATERAL (
+    SELECT
+        emplois_22,
+        emplois_11
+    FROM {{ ref('for_app_dc_emplois_lieu_travail') }}
+    WHERE
+        for_app_dc_emplois_lieu_travail.land_id = land.land_id AND
+        for_app_dc_emplois_lieu_travail.land_type = land.land_type
+) emploi ON true

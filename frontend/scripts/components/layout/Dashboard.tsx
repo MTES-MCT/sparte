@@ -18,6 +18,7 @@ import { Artificialisation } from '@components/pages/Artificialisation';
 import { Impermeabilisation } from '@components/pages/Impermeabilisation';
 import Downloads from '@components/pages/Downloads';
 import { Friches } from '@components/pages/Friches';
+import { ResidencesSecondaires } from '@components/pages/ResidencesSecondaires';
 import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
@@ -62,9 +63,11 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
     );
 
 
+    const isDGALNMember = currentUser?.groups?.includes('DGALN') ?? false;
+
     const landTypeSlug = useMemo(() => landTypeCodeToSlug(landType), [landType]);
     const urls = useMemo(() => buildUrls(landTypeSlug, landSlug), [landTypeSlug, landSlug]);
-    const navbar = useMemo(() => buildNavbar(landTypeSlug, landSlug), [landTypeSlug, landSlug]);
+    const navbar = useMemo(() => buildNavbar(landTypeSlug, landSlug, isDGALNMember), [landTypeSlug, landSlug, isDGALNMember]);
     const footer = useMemo(() => buildFooter(), []);
     const header = useMemo(() => buildHeader(currentUser?.is_authenticated ?? false), [currentUser?.is_authenticated]);
 
@@ -189,6 +192,16 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             >
                                                     <Friches landData={landData} />
                                                 </RouteWrapper>
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.residencesSecondaires}
+                                        element={
+                                            <RouteWrapper
+                                                title="Résidences secondaires"
+                                            >
+                                                <ResidencesSecondaires landData={landData} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route

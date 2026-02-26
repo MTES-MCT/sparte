@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: dossier_complet
+    columns:
+      - name: codgeo
+        tests:
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - codgeo
+            - variable
