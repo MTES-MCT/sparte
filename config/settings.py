@@ -79,7 +79,6 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "crispy_bootstrap5",
-    "django_app_parameter",
     "sri",
     "simple_history",
     "corsheaders",
@@ -149,7 +148,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
-                "django_app_parameter.context_processors.add_global_parameter_context",
                 "csp.context_processors.nonce",
                 "config.context_processors.add_settings_to_context",
             ],
@@ -721,5 +719,20 @@ CRISP_WEBHOOK_SECRET_KEY = env.str("CRISP_WEBHOOK_SECRET_KEY")
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]
+
+# App parameters (previously stored in database via django_app_parameter)
+MAINTENANCE_MODE = env.bool("MAINTENANCE_MODE", default=False)
+TEAM_EMAIL = env.str("TEAM_EMAIL", default="equipe@support.mondiagartif.beta.gouv.fr")
+METABASE_URL = env.str("METABASE_URL", default="https://sparte-metabase.osc-secnum-fr1.scalingo.io/")
+STATS_HEIGHT = env.str("STATS_HEIGHT", default="5240")
+STATS_URL = env.str(
+    "STATS_URL",
+    default="http://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/8dc81856-e117-4431-8c5d-1ec7b04887b3",
+)
+WEBINAIRE_URL = env.str(
+    "WEBINAIRE_URL",
+    default="https://app.livestorm.co/mte/mon-diag-artif-webinaire-de-presentation?s=7425e75c-4336-47c8-acd2-5459b8261af6",  # noqa: E501
+)
+FAQ_URL = env.str("FAQ_URL", default="https://faq.mondiagartif.beta.gouv.fr/fr/")
 
 IS_TEST = "test" in sys.argv

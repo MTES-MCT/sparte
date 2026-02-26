@@ -57,7 +57,7 @@ services:
   django:
     build: .
     image: sparte/backend:latest
-    command: ["sh", "-c", "python manage.py migrate && python manage.py load_param --no-update --file required_parameters.json && python manage.py runserver 0.0.0.0:8080 --nothreading"]
+    command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8080 --nothreading"]
     volumes:
       - .:/app
     env_file: .env

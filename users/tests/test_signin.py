@@ -11,8 +11,6 @@ testing_middleware = [m for m in settings.MIDDLEWARE if "csrf" not in m.lower()]
 
 
 class SigninTest(TestCase):
-    fixtures = ["users/tests/parameters.json"]
-
     def setUp(self):
         self.credentials = {
             "first_name": "John",

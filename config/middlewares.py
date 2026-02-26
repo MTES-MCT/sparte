@@ -2,9 +2,9 @@ import logging
 import time
 
 from csp.middleware import CSPMiddleware
+from django.conf import settings as app_settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from django_app_parameter import app_parameter
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ class MaintenanceModeMiddleware:
 
         # Évitez une redirection infinie en autorisant l'accès à la vue de maintenance et à l'admin
         if (
-            app_parameter.MAINTENANCE_MODE
+            app_settings.MAINTENANCE_MODE
             and not request.path.startswith("/admin/")
             and request.path != maintenance_path
         ):

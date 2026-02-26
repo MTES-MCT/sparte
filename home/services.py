@@ -1,6 +1,6 @@
 import logging
 
-from django_app_parameter import app_parameter
+from django.conf import settings
 
 from utils.emails import SibTemplateEmail
 
@@ -16,7 +16,7 @@ def send_contact_form(contact_form_id):
     try:
         email = SibTemplateEmail(
             template_id=9,
-            recipients=[{"Name": "Equipe Mon Diagnostic Artificialisation", "email": app_parameter.TEAM_EMAIL}],
+            recipients=[{"Name": "Equipe Mon Diagnostic Artificialisation", "email": settings.TEAM_EMAIL}],
             params={
                 "content_html": contact_form.content.replace("\n", "<br/>"),
                 "sender": contact_form.email,

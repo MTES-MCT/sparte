@@ -17,8 +17,6 @@ success_url = "/users/signin/"
 
 
 class SignupTest(TestCase):
-    fixtures = ["users/tests/parameters.json"]
-
     def test_signup_form_with_working_payload(self) -> None:
         self.client.post(path=form_url, data=valid_payload)
         self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())

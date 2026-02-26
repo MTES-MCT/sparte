@@ -19,8 +19,6 @@ working_payload = {
 
 
 class CompleteProfileTest(TestCase):
-    fixtures = ["users/tests/parameters.json"]
-
     def setUp(self):
         self.credentials = {
             "first_name": "John",

@@ -2,8 +2,6 @@ from django.test import TestCase
 
 
 class HomeTests(TestCase):
-    fixtures = ["users/tests/parameters.json"]
-
     def test_home_status_code(self) -> None:
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
