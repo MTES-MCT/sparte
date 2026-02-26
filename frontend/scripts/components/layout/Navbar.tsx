@@ -152,6 +152,7 @@ const MenuItemContent: React.FC<{ item: MenuItem }> = ({ item }) => (
         <div className="d-flex flex-column items-center">
             {item.new && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
             {item.soon && (<p className="fr-badge fr-badge--sm fr-badge--info">Bientôt</p>)}
+            {item.dgaln_only && (<p className="fr-badge fr-badge--sm fr-badge--purple-glycine" title="Page réservée aux membres du groupe DGALN">DGALN</p>)}
             <MenuText $disabled={!item.url}>{item.label}</MenuText>
         </div>
     </>

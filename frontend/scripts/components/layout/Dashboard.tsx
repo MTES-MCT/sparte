@@ -63,9 +63,11 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
     );
 
 
+    const isDGALNMember = currentUser?.groups?.includes('DGALN') ?? false;
+
     const landTypeSlug = useMemo(() => landTypeCodeToSlug(landType), [landType]);
     const urls = useMemo(() => buildUrls(landTypeSlug, landSlug), [landTypeSlug, landSlug]);
-    const navbar = useMemo(() => buildNavbar(landTypeSlug, landSlug), [landTypeSlug, landSlug]);
+    const navbar = useMemo(() => buildNavbar(landTypeSlug, landSlug, isDGALNMember), [landTypeSlug, landSlug, isDGALNMember]);
     const footer = useMemo(() => buildFooter(), []);
     const header = useMemo(() => buildHeader(currentUser?.is_authenticated ?? false), [currentUser?.is_authenticated]);
 

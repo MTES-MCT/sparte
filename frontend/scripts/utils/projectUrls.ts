@@ -18,8 +18,12 @@ export function buildUrls(landType: string, landSlug: string) {
     };
 }
 
-export function buildNavbar(landType: string, landSlug: string) {
+export function buildNavbar(landType: string, landSlug: string, isDGALNMember: boolean = false) {
     const urls = buildUrls(landType, landSlug);
+
+    const filterDgaln = (items: MenuItem["subMenu"]): MenuItem["subMenu"] =>
+        items?.filter(item => !item.dgaln_only || isDGALNMember);
+
     const menuItems: MenuItem[] = [
         {
             label: "Synthèse",
@@ -46,11 +50,11 @@ export function buildNavbar(landType: string, landSlug: string) {
         {
             label: "Leviers de sobriété foncière",
             icon: "bi bi-bar-chart",
-            subMenu: [
+            subMenu: filterDgaln([
                 { label: "Vacance des logements", url: urls.logementVacant },
                 { label: "Friches", url: urls.friches },
-                { label: "Résidences secondaires", url: urls.residencesSecondaires, new: true },
-            ],
+                { label: "Résidences secondaires", url: urls.residencesSecondaires, dgaln_only: true },
+            ]),
         },
     ];
     return { menuItems };
