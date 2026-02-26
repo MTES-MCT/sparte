@@ -35,8 +35,8 @@ process_env_file() {
     local label="$2"
     local found=0
 
-    # Chercher les lignes avec des placeholders
-    while IFS= read -r line; do
+    # Lire le fichier via fd 3 pour laisser stdin (/dev/tty) libre pour l'utilisateur
+    while IFS= read -r line <&3; do
         # Ignorer les commentaires et lignes vides
         [[ "$line" =~ ^[[:space:]]*# ]] && continue
         [[ -z "$line" ]] && continue
@@ -64,17 +64,14 @@ process_env_file() {
             echo -e "  ${DIM}Actuel : ${var_value}${RESET}"
 
             printf "  Valeur : "
-            read -r new_value
+            read -r new_value </dev/tty
 
             if [ -n "$new_value" ]; then
-                # Échapper les caractères spéciaux pour sed
-                local escaped_old escaped_new
-                escaped_old=$(printf '%s\n' "$var_value" | sed 's/[[\.*^$()+?{|]/\\&/g')
-                escaped_new=$(printf '%s\n' "$new_value" | sed 's/[&/\]/\\&/g')
-                sed -i.bak "s|^${var_name}=${escaped_old}$|${var_name}=${escaped_new}|" "$env_file"
+                # Utiliser un séparateur qui n'apparaît pas dans les valeurs
+                sed -i.bak "s|^${var_name}=.*|${var_name}=${new_value}|" "$env_file"
             fi
         fi
-    done < "$env_file"
+    done 3< "$env_file"
 
     # Nettoyer les fichiers de backup
     rm -f "${env_file}.bak"
