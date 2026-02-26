@@ -43,9 +43,10 @@ echo ""
 
 ensure_docker || exit 1
 
-# Demander le connection string de la base source
+# Demander le connection string de la base source (masqué car contient un mot de passe)
 printf "  Connection string de la base source : "
-read -r source_url </dev/tty
+read -rs source_url </dev/tty
+echo ""
 if [ -z "$source_url" ]; then
     echo -e "  ${RED}Connection string requis.${RESET}"
     exit 1
@@ -54,7 +55,8 @@ fi
 # Vérifier la connexion à la source (via Docker pour avoir la bonne version)
 echo ""
 echo -e "  ${DIM}Test de connexion à la base source...${RESET}"
-if ! docker run --rm --network host "$PG_DOCKER_IMAGE" psql "$source_url" -c "SELECT 1" &>/dev/null; then
+if ! docker run --rm --network host -e SOURCE_URL="$source_url" "$PG_DOCKER_IMAGE" \
+    sh -c 'psql "$SOURCE_URL" -c "SELECT 1"' &>/dev/null; then
     echo -e "  ${RED}Impossible de se connecter à la base source.${RESET}"
     echo -e "  ${DIM}Vérifiez le connection string et que votre IP est autorisée.${RESET}"
     exit 1
@@ -110,8 +112,8 @@ docker run --rm --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
 
 # pg_dump depuis la source | psql dans la destination (via Docker pour la compatibilité de version)
 # --no-owner --no-acl : ignore les rôles qui n'existent pas en local
-docker run --rm --network host "$PG_DOCKER_IMAGE" \
-    pg_dump "$source_url" --no-owner --no-acl --format=plain | \
+docker run --rm --network host -e SOURCE_URL="$source_url" "$PG_DOCKER_IMAGE" \
+    sh -c 'pg_dump "$SOURCE_URL" --no-owner --no-acl --format=plain' | \
     docker run --rm -i --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
     psql -h localhost -p "$PGPORT" -U "$PGUSER" -d "$PGDB" --quiet 2>&1 | \
     grep -i "error" || true
