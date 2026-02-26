@@ -25,11 +25,10 @@ install: install-docker install-airflow ## Installe tout le projet (backend + fr
 	@bash scripts/setup_env.sh
 	docker compose build
 	docker compose up -d
-	@echo "En attente du démarrage des services..."
-	@sleep 5
 	@echo "Création du bucket S3 local..."
 	@docker compose exec s3 sh -c 'mkdir -p /data/sparte-local' 2>/dev/null || true
-	docker compose exec django python manage.py load_param --no-update --file required_parameters.json
+	@echo "En attente du démarrage de Django (migrations + paramètres)..."
+	@until docker compose exec django python -c "import django" 2>/dev/null; do sleep 2; done
 	@echo "Installation terminée. Site accessible sur http://localhost:8080/"
 
 install-airflow: install-astro-cli ## Installe et démarre Airflow

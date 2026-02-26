@@ -9,7 +9,37 @@ Le projet utilise deux fichiers `.env` :
 
 Les deux fichiers sont créés automatiquement par `make install` depuis leurs `.env.example` respectifs.
 
+`make install` propose trois modes pour configurer les variables :
+
+1. **Saisie interactive** : chaque variable à compléter est affichée avec sa description
+2. **Import Vaultwarden** : importe les fichiers complets depuis deux secure notes Bitwarden/Vaultwarden
+3. **Manuel** : compléter les fichiers `.env` soi-même
+
 Les valeurs marquées `ASK_A_MAINTAINER` sont à demander à un mainteneur du projet.
+
+## Vaultwarden
+
+Pour utiliser l'import automatique, créer deux **secure notes** dans Vaultwarden contenant uniquement les variables secrètes (celles marquées `ASK_A_MAINTAINER`, `PICK_A_PASSWORD`, etc.) au format `KEY=VALUE` :
+
+Exemple de contenu d'une note :
+
+```
+POSTGRES_PASSWORD=monmotdepasse
+SECRET=une-cle-secrete
+API_KEY_SENDINBLUE=xkeysib-...
+PROCONNECT_SECRET=...
+```
+
+Les fichiers `.env` sont d'abord créés depuis `.env.example`, puis le script remplace les placeholders par les valeurs de Vaultwarden.
+
+Le script demande :
+
+1. **URL du serveur** Vaultwarden (ex: `https://vault.example.com`)
+2. **Clé API** Bitwarden (`client_id` + `client_secret`) — disponible dans *Settings > Security > Keys > API Key*
+3. **Mot de passe maître** pour déverrouiller le coffre
+4. **Lien ou ID** de chaque secure note — copiable depuis l'URL de la note dans Vaultwarden (ex: `https://vault.example.com/#/vault?itemId=xxxx-xxxx`)
+
+Prérequis : [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`) installé (`brew install bitwarden-cli`).
 
 ---
 
