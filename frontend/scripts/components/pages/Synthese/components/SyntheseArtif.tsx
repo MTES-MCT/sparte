@@ -37,7 +37,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
           label="Artificialisation nette"
           description="Période actuelle"
           value={<>{data.flux_surface > 0 ? "+" : ""}{formatNumber({ number: data.flux_surface })} <span>ha</span></>}
-          variant={data.flux_surface > 0 ? "error" : data.flux_surface < 0 ? "success" : "info"}
+          variant={data.flux_surface > 0 ? "error" : data.flux_surface < 0 ? "success" : "default"}
           footer={{
             type: "period",
             periods: [

@@ -114,7 +114,7 @@ const DrawerContent = styled.div`
     color: ${theme.colors.primary};
 
     &:hover {
-      color: ${theme.colors.hover};
+      color: ${theme.colors.primaryHover};
     }
   }
 `;

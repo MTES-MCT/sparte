@@ -127,7 +127,7 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
         <DataSectionLabel>Données disponibles pour ce territoire :</DataSectionLabel>
         <DataSectionBadges>
           {dataCoverage.map((data) => (
-            <Badge key={data.key} variant={data.available ? "active" : "neutral"} size="sm">
+            <Badge key={data.key} variant={data.available ? "highlight" : "neutral"} size="sm">
               <i className={data.available ? "bi bi-check-lg" : "bi bi-x-lg"} />
               {data.label}
             </Badge>

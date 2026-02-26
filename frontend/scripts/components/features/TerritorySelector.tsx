@@ -62,6 +62,7 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                             key={`${territory.land_type}_${territory.land_id}`}
                             size="sm"
                             onDismiss={() => onRemoveTerritory(territory)}
+                            variant="primary"
                         >
                             {territory.name}
                         </Tag>

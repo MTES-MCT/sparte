@@ -81,7 +81,7 @@ const variantStyles = {
     border: none;
 
     &:hover:not(:disabled) {
-      background: ${theme.colors.hover};
+      background: ${theme.colors.primaryHover};
     }
   `,
   secondary: css<{ $size: ButtonSize }>`
@@ -91,7 +91,7 @@ const variantStyles = {
     border: none;
 
     &:hover:not(:disabled) {
-      background: ${theme.colors.hover};
+      background: ${theme.colors.primaryHover};
       color: ${theme.colors.background};
     }
   `,
@@ -103,7 +103,7 @@ const variantStyles = {
     font-weight: ${theme.fontWeight.medium};
 
     &:hover:not(:disabled) {
-      color: ${theme.colors.hover};
+      color: ${theme.colors.primaryHover};
       gap: 0.55rem;
     }
   `,
@@ -114,9 +114,9 @@ const variantStyles = {
     border: 1px solid ${theme.button.outline.border};
 
     &:hover:not(:disabled) {
-      background: ${theme.colors.hover};
+      background: ${theme.colors.primaryHover};
       color: ${theme.colors.background};
-      border-color: ${theme.colors.hover};
+      border-color: ${theme.colors.primaryHover};
     }
   `,
 };

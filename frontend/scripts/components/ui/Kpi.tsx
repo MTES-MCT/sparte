@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { theme } from "@theme";
 import BaseCard from "@components/ui/BaseCard";
 import Button from "@components/ui/Button";
+import Tag from "@components/ui/Tag";
 
 type KpiVariant = "default" | "success" | "error";
 
@@ -72,25 +73,11 @@ const Header = styled.div`
   position: relative;
 `;
 
-const BadgeTag = styled.div<{ $color: string }>`
+const TagWrapper = styled.div`
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.65rem;
-  border-radius: ${theme.radius.tag};
-  font-size: 0.7rem;
-  font-weight: ${theme.fontWeight.bold};
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  background: ${({ $color }) => $color};
-  color: white;
-
-  i {
-    font-size: 0.7rem;
-  }
 `;
 
 const HeaderIcon = styled.div<{ $color: string }>`
@@ -436,10 +423,15 @@ const Kpi: React.FC<KpiProps> = ({
     <Card>
       <Header>
         {badge && (
-          <BadgeTag $color={config.color}>
-            <i className="bi bi-lightning-charge-fill" />
-            {badge}
-          </BadgeTag>
+          <TagWrapper>
+            <Tag
+              variant={variant === "default" ? "primary" : variant}
+              size="sm"
+              icon="bi bi-lightning-charge-fill"
+            >
+              {badge}
+            </Tag>
+          </TagWrapper>
         )}
         <HeaderIcon $color={config.color}>
           <i className={icon} />

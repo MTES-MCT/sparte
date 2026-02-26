@@ -54,12 +54,12 @@ export const TrajectoiresObjectifs: React.FC = () => {
       </div>
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
       <GuideContent title="Comprendre la période de référence">
-          <p>
-            <strong>La période de référence</strong> sert de base pour mesurer la consommation d’espaces NAF (Naturels, Agricoles et Forestiers), afin de fixer les objectifs de réduction d’ici 2031.
-          </p>
-          <p>
-            <strong>Elle s'étale de 2011 à 2020, soit 10 ans.</strong> L’objectif est de réduire de moitié cette consommation d’ici 2031 par rapport à ce qui a été consommé durant cette période.
-          </p>
+        <p>
+          La <strong>période de référence</strong> désigne la décennie utilisée pour calculer combien d’espaces NAF (Naturels, Agricoles et Forestiers) ont été consommés par l’urbanisation, afin de définir la trajectoire de réduction à atteindre d’ici 2031.
+        </p>
+        <p>
+          <strong>Elle s'étend du 1ᵉʳ janvier 2011 au 31 décembre 2020 (10 ans).</strong> Sur la base de ce bilan, l’objectif national est de réduire de moitié la consommation d’espaces NAF entre 2021 et 2030 par rapport à ce qui a été consommé sur cette période de référence.
+        </p>
         </GuideContent>
       </div>
     </div>

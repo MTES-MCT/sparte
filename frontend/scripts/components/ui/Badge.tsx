@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { theme } from "@theme";
 
-type BadgeVariant = "neutral" | "active" | "highlight";
+type BadgeVariant = "neutral" | "highlight";
 type BadgeSize = "sm" | "md";
 
 interface BadgeProps {
@@ -17,6 +17,11 @@ const sizeConfig: Record<BadgeSize, { padding: string; fontSize: string }> = {
   md: { padding: "0.4rem 0.75rem", fontSize: theme.fontSize.sm },
 };
 
+const variantConfig: Record<BadgeVariant, { background: string; color: string }> = {
+  neutral: { background: theme.colors.backgroundMuted, color: theme.colors.text },
+  highlight: { background: theme.colors.primaryBg, color: theme.colors.primaryHover },
+};
+
 const StyledBadge = styled.span<{ $variant: BadgeVariant; $size: BadgeSize }>`
   display: inline-flex;
   align-items: center;
@@ -25,8 +30,8 @@ const StyledBadge = styled.span<{ $variant: BadgeVariant; $size: BadgeSize }>`
   font-size: ${({ $size }) => sizeConfig[$size].fontSize};
   font-weight: ${theme.fontWeight.medium};
   border-radius: ${theme.radius.default};
-  background: ${({ $variant }) => theme.badge[$variant].background};
-  color: ${({ $variant }) => theme.badge[$variant].color};
+  background: ${({ $variant }) => variantConfig[$variant].background};
+  color: ${({ $variant }) => variantConfig[$variant].color};
 
   i {
     font-size: inherit;

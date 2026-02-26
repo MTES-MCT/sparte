@@ -29,7 +29,7 @@ const AnimationSide = styled.div`
   position: relative;
   width: 35%;
   min-width: 200px;
-  background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryDark} 100%);
+  background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryHover} 100%);
   border-radius: ${theme.radius.default} 0 0 ${theme.radius.default};
   display: flex;
   align-items: center;

@@ -2,12 +2,13 @@ import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { theme } from "@theme";
 
-type TagVariant = "neutral" | "active" | "highlight";
+type TagVariant = "neutral" | "primary" | "success" | "error";
 type TagSize = "sm" | "md";
 
 interface TagProps {
   variant?: TagVariant;
   size?: TagSize;
+  icon?: string;
   children: ReactNode;
   onDismiss?: () => void;
   className?: string;
@@ -18,69 +19,83 @@ const sizeConfig: Record<TagSize, { padding: string; fontSize: string }> = {
   md: { padding: "0.35rem 0.65rem", fontSize: theme.fontSize.sm },
 };
 
-const tagStyles = css<{ $variant: TagVariant; $size: TagSize; $dismissible: boolean }>`
+const variantConfig: Record<TagVariant, { background: string; backgroundHover: string; color: string }> = {
+  neutral: { background: theme.colors.backgroundMuted, backgroundHover: theme.colors.backgroundMutedHover, color: theme.colors.text },
+  primary: { background: theme.colors.primary, backgroundHover: theme.colors.primaryHover, color: "white" },
+  success: { background: theme.colors.success, backgroundHover: theme.colors.successHover, color: "white" },
+  error: { background: theme.colors.error, backgroundHover: theme.colors.errorHover, color: "white" },
+};
+
+const tagStyles = css<{ $variant: TagVariant; $size: TagSize; $clickable: boolean }>`
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.35rem;
   padding: ${({ $size }) => sizeConfig[$size].padding};
   font-size: ${({ $size }) => sizeConfig[$size].fontSize};
-  font-weight: ${theme.fontWeight.medium};
+  font-weight: ${theme.fontWeight.semibold};
   border-radius: ${theme.radius.tag};
-  background: ${({ $variant }) => theme.badge[$variant].background};
-  color: ${({ $variant }) => theme.badge[$variant].color};
+  background: ${({ $variant }) => variantConfig[$variant].background};
+  color: ${({ $variant }) => variantConfig[$variant].color};
   border: none;
-  cursor: ${({ $dismissible }) => ($dismissible ? "pointer" : "default")};
-  transition: opacity 0.15s ease;
+  cursor: ${({ $clickable }) => ($clickable ? "pointer" : "default")};
+  transition: background 0.15s ease;
 
-  ${({ $dismissible }) =>
-    $dismissible &&
+  ${({ $clickable, $variant }) =>
+    $clickable &&
     css`
       &:hover {
-        opacity: 0.8;
+        background: ${variantConfig[$variant].backgroundHover} !important;
       }
     `}
 
   i {
-    font-size: 0.75em;
-    opacity: 0.7;
+    font-size: 0.85em;
   }
 `;
 
-const StyledTagSpan = styled.span<{ $variant: TagVariant; $size: TagSize; $dismissible: boolean }>`
+const StyledTagSpan = styled.span<{ $variant: TagVariant; $size: TagSize; $clickable: boolean }>`
   ${tagStyles}
 `;
 
-const StyledTagButton = styled.button<{ $variant: TagVariant; $size: TagSize; $dismissible: boolean }>`
+const StyledTagButton = styled.button<{ $variant: TagVariant; $size: TagSize; $clickable: boolean }>`
   ${tagStyles}
 `;
 
 const Tag: React.FC<TagProps> = ({
-  variant = "active",
+  variant = "neutral",
   size = "md",
+  icon,
   children,
   onDismiss,
   className,
 }) => {
+  const content = (
+    <>
+      {icon && <i className={icon} />}
+      {children}
+      {onDismiss && <i className="bi bi-x-lg" />}
+    </>
+  );
+
   if (onDismiss) {
     return (
       <StyledTagButton
         type="button"
         $variant={variant}
         $size={size}
-        $dismissible={true}
+        $clickable={true}
         className={className}
         onClick={onDismiss}
         aria-label={`Supprimer ${typeof children === "string" ? children : ""}`}
       >
-        {children}
-        <i className="bi bi-x-lg" />
+        {content}
       </StyledTagButton>
     );
   }
 
   return (
-    <StyledTagSpan $variant={variant} $size={size} $dismissible={false} className={className}>
-      {children}
+    <StyledTagSpan $variant={variant} $size={size} $clickable={false} className={className}>
+      {content}
     </StyledTagSpan>
   );
 };

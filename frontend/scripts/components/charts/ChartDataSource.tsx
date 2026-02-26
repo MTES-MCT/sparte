@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { theme } from '@theme';
-import IconBadge from '@components/ui/IconBadge';
-import Badge from '@components/ui/Badge';
+import Tag from '@components/ui/Tag';
 
 const Container = styled.div<{ $displayMode: 'tag' | 'text' }>`
   display: flex;
@@ -68,7 +67,6 @@ const ChartDataSource: React.FC<ChartDataSourceProps> = ({ sources, displayMode 
 
   return (
     <Container $displayMode={displayMode}>
-      <IconBadge icon="bi bi-database" size={28} />
       {displayMode === 'text' ? (
         <TextContainer>
           {sources.map((src) => {
@@ -85,9 +83,9 @@ const ChartDataSource: React.FC<ChartDataSourceProps> = ({ sources, displayMode 
             const source = SOURCES_DETAILS[src];
             if (!source) return null;
             return (
-              <Badge key={src} size="sm" variant="neutral">
+              <Tag key={src} size="sm" icon="bi bi-database">
                 {source.label}
-              </Badge>
+              </Tag>
             );
           })}
         </TagsContainer>

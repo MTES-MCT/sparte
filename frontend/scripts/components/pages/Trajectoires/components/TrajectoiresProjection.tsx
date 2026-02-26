@@ -20,7 +20,7 @@ export const TrajectoiresProjection: React.FC = () => {
     <div className="fr-mt-5w">
       <SectionTitle>Projection jusqu'en 2030</SectionTitle>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-lg-9">
+        <div className="fr-col-12 fr-col-xl-9 fr-grid-row">
           <BaseCard>
             {landId && landType && (
               <GenericChart
@@ -36,7 +36,7 @@ export const TrajectoiresProjection: React.FC = () => {
             )}
           </BaseCard>
         </div>
-        <div className="fr-col-12 fr-col-lg-3">
+        <div className="fr-col-12 fr-col-xl-3 fr-grid-row">
           <GuideContent title="Comment lire ce graphique ?">
             <p>
               Ce graphique compare la <strong>consommation réelle</strong>{" "}

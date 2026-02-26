@@ -5,12 +5,11 @@
 const palette = {
   // DSFR Core
   primary: "#000091",
+  primaryHover: "#2a2a8a",
   primaryBg: "#e3e3fd",
   primaryBorder: "#c5c5f7",
-  primaryDark: "#2a2a8a",
 
   // Interactions
-  hover: "#1212FF",
   accent: "#4318FF",
   accentBg: "#e8edff",
 
@@ -19,20 +18,23 @@ const palette = {
   grey100: "#f9fafb",
   grey200: "#f6f6f6",
   grey300: "#eeeeee",
-  grey400: "#ebebec",
+  grey400: "#dddddd",
   grey600: "#666666",
   grey800: "#3a3a3a",
 
   // Sémantiques
   success: "#059669",
+  successHover: "#047857",
   successBg: "#ecfdf5",
   successBorder: "#bce3d5",
 
   warning: "#b34000",
+  warningHover: "#9a3700",
   warningBg: "#fff4f3",
   warningBorder: "#f5d0c5",
 
   error: "#dc2626",
+  errorHover: "#b91c1c",
   errorBg: "#fef2f2",
   errorBorder: "#f0d4d4",
 
@@ -43,36 +45,50 @@ const palette = {
 export const theme = {
   // ─── Couleurs sémantiques ───
   colors: {
+    // Primary
     primary: palette.primary,
+    primaryHover: palette.primaryHover,
     primaryBg: palette.primaryBg,
     primaryBorder: palette.primaryBorder,
-    primaryDark: palette.primaryDark,
 
+    // Accent
+    accent: palette.accent,
     accentBg: palette.accentBg,
-    hover: palette.hover,
 
+    // Texte
     text: "var(--text-title-grey)",
     textLight: "var(--text-mention-grey)",
     textMuted: palette.grey600,
 
+    // Surfaces
     background: palette.white,
     backgroundAlt: palette.grey200,
     backgroundSubtle: palette.grey100,
+    backgroundMuted: palette.grey300,
+    backgroundMutedHover: palette.grey400,
 
+    // Bordures
     border: palette.grey400,
 
+    // Success
     success: palette.success,
+    successHover: palette.successHover,
     successBg: palette.successBg,
     successBorder: palette.successBorder,
 
+    // Warning
     warning: palette.warning,
+    warningHover: palette.warningHover,
     warningBg: palette.warningBg,
     warningBorder: palette.warningBorder,
 
+    // Error
     error: palette.error,
+    errorHover: palette.errorHover,
     errorBg: palette.errorBg,
     errorBorder: palette.errorBorder,
 
+    // Autres
     star: palette.yellow,
   },
 
@@ -94,22 +110,6 @@ export const theme = {
       background: "transparent",
       color: palette.primary,
       border: palette.primary,
-    },
-  },
-
-  // ─── Badges ───
-  badge: {
-    neutral: {
-      background: palette.grey300,
-      color: palette.grey800,
-    },
-    active: {
-      background: palette.primaryBg,
-      color: palette.primary,
-    },
-    highlight: {
-      background: palette.primaryBg,
-      color: palette.accent,
     },
   },
 
