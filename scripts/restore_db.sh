@@ -102,6 +102,10 @@ PGPASSWORD="${PGPASSWORD:-}"
 PGDB="${PGDB:-postgres}"
 PGPORT="5555"  # Port exposé dans docker-compose.yml
 
+# Arrêter Django et les autres services connectés à la base
+echo -e "  ${DIM}Arrêt de Django (pour libérer les connexions à la base)...${RESET}"
+docker compose stop django 2>/dev/null || true
+
 # Vérifier que le container DB tourne
 if ! docker compose ps db --status running 2>/dev/null | grep -q "db"; then
     echo -e "  ${DIM}Démarrage du container PostgreSQL...${RESET}"
@@ -122,14 +126,18 @@ echo -e "  ${CYAN}Restauration dans la base locale (${PGDB} sur localhost:${PGPO
 echo -e "  ${DIM}Cela peut prendre plusieurs minutes selon la taille de la base.${RESET}"
 echo ""
 
-dropdb -h localhost -p "$PGPORT" -U "$PGUSER" --if-exists "$PGDB" 2>/dev/null || true
-createdb -h localhost -p "$PGPORT" -U "$PGUSER" -T template0 "$PGDB" 2>/dev/null || true
+dropdb -h localhost -p "$PGPORT" -U "$PGUSER" --if-exists "$PGDB"
+createdb -h localhost -p "$PGPORT" -U "$PGUSER" -T template0 "$PGDB"
 
 # pg_dump depuis la source | psql dans la destination
 # --no-owner --no-acl : ignore les rôles qui n'existent pas en local
 pg_dump "$source_url" --no-owner --no-acl --format=plain | \
     psql -h localhost -p "$PGPORT" -U "$PGUSER" -d "$PGDB" --quiet 2>&1 | \
     grep -i "error" || true
+
+# Relancer Django
+echo -e "  ${DIM}Redémarrage de Django...${RESET}"
+docker compose start django 2>/dev/null || true
 
 echo ""
 echo -e "  ${GREEN}Base de données restaurée.${RESET}"
