@@ -22,16 +22,7 @@ help: ## Affiche cette aide
 install: install-docker install-airflow ## Installe tout le projet (backend + frontend + airflow)
 	@test -f .env || (cp .env.example .env && echo "Fichier .env créé depuis .env.example")
 	@test -f airflow/.env || (cp airflow/.env.example airflow/.env && echo "Fichier airflow/.env créé depuis airflow/.env.example")
-	@if grep -q 'PICK_A_PASSWORD\|ASK_A_MAINTAINER\|YOUR_EMAIL\|YOUR_MATTERMOST\|CREATE_A_SECRET' .env airflow/.env 2>/dev/null; then \
-		echo ""; \
-		echo "⚠  Certaines variables d'environnement doivent être complétées :"; \
-		echo "   - .env"; \
-		echo "   - airflow/.env"; \
-		echo "   Cherchez PICK_A_PASSWORD, ASK_A_MAINTAINER, YOUR_EMAIL, CREATE_A_SECRET_KEY"; \
-		echo "   Voir ENV.md pour la documentation."; \
-		echo ""; \
-		read -p "Appuyez sur Entrée une fois les fichiers complétés..." _; \
-	fi
+	@bash scripts/setup_env.sh
 	docker compose build
 	docker compose up -d
 	@echo "En attente du démarrage des services..."
