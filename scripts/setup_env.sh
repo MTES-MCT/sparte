@@ -94,8 +94,6 @@ extract_item_id() {
 
 bw_login() {
     local server_url="$1"
-    local client_id="$2"
-    local client_secret="$3"
 
     # Déconnecter la session précédente pour repartir proprement
     bw logout 2>/dev/null || true
@@ -104,20 +102,14 @@ bw_login() {
     echo -e "  ${DIM}Serveur : ${server_url}${RESET}"
     bw config server "$server_url" 2>/dev/null
 
-    # Connexion avec la clé API
-    echo -e "  ${DIM}Connexion avec la clé API...${RESET}"
-    export BW_CLIENTID="$client_id"
-    export BW_CLIENTSECRET="$client_secret"
-    if ! bw login --apikey 2>&1 | grep -v "^$"; then
-        echo -e "  ${RED}Échec de la connexion.${RESET}"
-        return 1
-    fi
-
-    # Déverrouillage du coffre (demande le mot de passe maître)
-    echo -e "  ${DIM}Déverrouillage du coffre...${RESET}"
-    BW_SESSION=$(bw unlock --raw </dev/tty)
+    # Connexion avec email + mot de passe
+    # Note : les clés API d'organisation ne sont pas supportées par le CLI Bitwarden,
+    # seules les clés API personnelles fonctionnent. On utilise donc email + mot de passe
+    # pour pouvoir accéder aux items des coffres d'organisation.
+    echo -e "  ${DIM}Connexion (les clés API ne sont pas supportées pour les coffres d'organisation)${RESET}"
+    BW_SESSION=$(bw login --raw </dev/tty)
     if [ -z "$BW_SESSION" ]; then
-        echo -e "  ${RED}Échec du déverrouillage.${RESET}"
+        echo -e "  ${RED}Échec de la connexion.${RESET}"
         return 1
     fi
 
@@ -170,7 +162,7 @@ fetch_from_vaultwarden() {
 
     ensure_bw_cli || return 1
 
-    # Demander les infos de connexion
+    # Demander l'URL du serveur
     printf "  URL du serveur Vaultwarden (ex: https://vault.example.com) : "
     read -r server_url </dev/tty
     if [ -z "$server_url" ]; then
@@ -178,20 +170,7 @@ fetch_from_vaultwarden() {
         return 1
     fi
 
-    echo ""
-    echo -e "  ${DIM}Clé API Bitwarden (Settings > Security > Keys > API Key)${RESET}"
-    printf "  client_id : "
-    read -r client_id </dev/tty
-    printf "  client_secret : "
-    read -rs client_secret </dev/tty
-    echo ""
-
-    if [ -z "$client_id" ] || [ -z "$client_secret" ]; then
-        echo -e "  ${RED}client_id et client_secret requis.${RESET}"
-        return 1
-    fi
-
-    bw_login "$server_url" "$client_id" "$client_secret" || return 1
+    bw_login "$server_url" || return 1
 
     bw sync --session "$BW_SESSION" >/dev/null 2>&1
 
