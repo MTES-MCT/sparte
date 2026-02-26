@@ -1,20 +1,66 @@
-import React from "react";
-import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
-import BaseCard from "@components/ui/BaseCard";
+import React, { useState, useCallback } from "react";
+import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import GenericChart from "@components/charts/GenericChart";
 import GuideContent from "@components/ui/GuideContent";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { getLandTypeLabel } from "@utils/landUtils";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
+const CHILD_LAND_TYPE_MAP: Record<string, string> = {
+  REGION: "DEPART",
+  DEPART: "EPCI",
+  SCOT: "COMM",
+  EPCI: "COMM",
+};
+
 export const ArtifChildLands: React.FC = () => {
   const {
     landId,
     landType,
+    name,
     childLandTypes,
     childLandType,
     setChildLandType,
     defaultStockIndex,
   } = useArtificialisationContext();
+
+  const [mapNavStack, setMapNavStack] = useState<
+    { land_id: string; land_type: string; name: string; child_land_type: string }[]
+  >([]);
+
+  const handleMapPointClick = useCallback(
+    (point: { land_id: string; land_type: string; name: string }) => {
+      const nextChildType = CHILD_LAND_TYPE_MAP[point.land_type];
+      if (!nextChildType) return;
+      setMapNavStack((prev) => [
+        ...prev,
+        {
+          land_id: point.land_id,
+          land_type: point.land_type,
+          name: point.name,
+          child_land_type: nextChildType,
+        },
+      ]);
+    },
+    []
+  );
+
+  const handleMapBreadcrumbClick = useCallback((index: number) => {
+    setMapNavStack((prev) => prev.slice(0, index));
+  }, []);
+
+  const handleChildLandTypeChange = useCallback(
+    (newType: string) => {
+      setChildLandType(newType);
+      setMapNavStack([]);
+    },
+    [setChildLandType]
+  );
+
+  const currentMapLand = mapNavStack.length > 0 ? mapNavStack[mapNavStack.length - 1] : null;
+  const mapLandId = currentMapLand?.land_id ?? landId;
+  const mapLandType = currentMapLand?.land_type ?? landType;
+  const mapChildLandType = currentMapLand?.child_land_type ?? childLandType;
 
   if (!childLandTypes || childLandTypes.length === 0) {
     return null;
@@ -25,52 +71,91 @@ export const ArtifChildLands: React.FC = () => {
       <h2>Artificialisation des {getLandTypeLabel(childLandType, true)}</h2>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-lg-8">
-          {childLandTypes.length > 1 && (
-            <div role="tablist" aria-label="Sélection du type de territoire" className="fr-mb-2w">
-              {childLandTypes.map((child_land_type) => (
-                <button
-                  className={`fr-btn ${
-                    childLandType === child_land_type
-                      ? "fr-btn--primary"
-                      : "fr-btn--tertiary"
-                  }`}
-                  key={child_land_type}
-                  onClick={() => setChildLandType(child_land_type)}
-                  role="tab"
-                  aria-selected={childLandType === child_land_type}
-                  aria-label={`Sélectionner ${getLandTypeLabel(child_land_type)}`}
-                >
-                  {getLandTypeLabel(child_land_type)}
-                </button>
-              ))}
+          <div className="bg-white fr-p-2w h-100 rounded">
+            <div className="fr-mb-2w d-flex align-items-center gap-2">
+              {childLandTypes.length > 1 &&
+                childLandTypes.map((child_land_type) => (
+                  <button
+                    key={child_land_type}
+                    className={`fr-btn ${
+                      childLandType === child_land_type ? "fr-btn--primary" : "fr-btn--tertiary"
+                    } fr-btn--sm`}
+                    onClick={() => handleChildLandTypeChange(child_land_type)}
+                  >
+                    {getLandTypeLabel(child_land_type)}
+                  </button>
+                ))}
             </div>
-          )}
-          <OcsgeGraph
-            isMap
-            id="artif_map"
-            land_id={landId}
-            land_type={landType}
-            containerProps={{
-              style: {
-                height: "500px",
-                width: "100%",
-              },
-            }}
-            params={{
-              index: defaultStockIndex,
-              previous_index: defaultStockIndex - 1,
-              child_land_type: childLandType,
-            }}
-            sources={["ocsge"]}
-            showDataTable={true}
-          >
-            <DetailsCalculationOcsge />
-          </OcsgeGraph>
+            {mapNavStack.length > 0 && (
+              <Breadcrumb
+                className="fr-mb-1w"
+                segments={[
+                  {
+                    label: name,
+                    linkProps: {
+                      href: "#",
+                      onClick: (e: React.MouseEvent) => {
+                        e.preventDefault();
+                        handleMapBreadcrumbClick(0);
+                      },
+                    },
+                  },
+                  ...mapNavStack.slice(0, -1).map((entry, i) => ({
+                    label: entry.name,
+                    linkProps: {
+                      href: "#",
+                      onClick: (e: React.MouseEvent) => {
+                        e.preventDefault();
+                        handleMapBreadcrumbClick(i + 1);
+                      },
+                    },
+                  })),
+                ]}
+                currentPageLabel={mapNavStack[mapNavStack.length - 1].name}
+              />
+            )}
+            <GenericChart
+              key={`artif_map_${mapLandType}_${mapLandId}_${mapChildLandType}`}
+              isMap
+              id="artif_map"
+              land_id={mapLandId}
+              land_type={mapLandType}
+              containerProps={{
+                style: {
+                  height: "500px",
+                  width: "100%",
+                },
+              }}
+              params={{
+                index: defaultStockIndex,
+                previous_index: defaultStockIndex - 1,
+                child_land_type: mapChildLandType,
+              }}
+              sources={["ocsge"]}
+              showDataTable={true}
+              onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
+            >
+              <DetailsCalculationOcsge />
+            </GenericChart>
+          </div>
         </div>
         <div className="fr-col-12 fr-col-lg-4">
-          <GuideContent title="Comprendre les données">
-            <p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
-            <p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
+          <GuideContent title="Comprendre les données" column>
+            <p>
+              La couleur de fond indique le <strong>taux d'artificialisation</strong> de chaque
+              territoire : plus la teinte <strong style={{ color: "#6a6af4" }}>violette</strong> est
+              intense, plus la part artificialisée est élevée.
+            </p>
+            <p>
+              Les cercles représentent l'<strong>évolution</strong> entre les deux millésimes :{" "}
+              <strong style={{ color: "#FC9292" }}>rouge</strong> pour une artificialisation nette,{" "}
+              <strong style={{ color: "#7ec974" }}>vert</strong> pour une désartificialisation nette.
+              Leur taille est proportionnelle à la surface concernée.
+            </p>
+            <p>
+              Cliquez sur un territoire pour afficher le détail de ses sous-territoires. Le fil
+              d'Ariane en haut de la carte permet de revenir au niveau précédent.
+            </p>
           </GuideContent>
         </div>
       </div>

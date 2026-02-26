@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { theme } from "@theme";
-import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
+import GenericChart from "@components/charts/GenericChart";
 import BaseCard from "@components/ui/BaseCard";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
@@ -64,7 +64,7 @@ export const ArtifRepartition: React.FC = () => {
             .map((m) => (
               <div key={`${m.index}_${m.departement}`} className="fr-col-12 fr-col-lg-6">
                 <FlexColumn>
-                  <OcsgeGraph
+                  <GenericChart
                     id="pie_artif_by_couverture"
                     land_id={landId}
                     land_type={landType}
@@ -76,8 +76,8 @@ export const ArtifRepartition: React.FC = () => {
                     showDataTable={true}
                   >
                     <DetailsCalculationOcsge />
-                  </OcsgeGraph>
-                  <OcsgeGraph
+                  </GenericChart>
+                  <GenericChart
                     id="pie_artif_by_usage"
                     land_id={landId}
                     land_type={landType}
@@ -89,14 +89,14 @@ export const ArtifRepartition: React.FC = () => {
                     showDataTable={true}
                   >
                     <DetailsCalculationOcsge />
-                  </OcsgeGraph>
+                  </GenericChart>
                 </FlexColumn>
               </div>
             ))
         ) : (
           <>
             <div className="fr-col-12 fr-col-lg-6">
-              <OcsgeGraph
+              <GenericChart
                 id="pie_artif_by_couverture"
                 land_id={landId}
                 land_type={landType}
@@ -105,10 +105,10 @@ export const ArtifRepartition: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
             <div className="fr-col-12 fr-col-lg-6">
-              <OcsgeGraph
+              <GenericChart
                 id="pie_artif_by_usage"
                 land_id={landId}
                 land_type={landType}
@@ -117,7 +117,7 @@ export const ArtifRepartition: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
           </>
         )}

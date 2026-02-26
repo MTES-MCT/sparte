@@ -198,6 +198,105 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
           </div>
         </div>
       </div>
+
+      <div className="fr-mt-5w">
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
+            <GenericChart
+              id="dc_logement_conso_comparison_chart"
+              land_id={landId}
+              land_type={landType}
+              params={chartParams}
+              sources={["majic", "insee"]}
+              showDataTable={true}
+            >
+              <div>
+                <h6 className="fr-mb-0">À propos</h6>
+                <p className="fr-text--xs fr-mb-0">
+                  Ce graphique compare la consommation d'espaces NAF à destination de l'habitat au regard de l'évolution du parc de logements. La taille des bulles représente la population totale de chaque territoire.
+                </p>
+              </div>
+            </GenericChart>
+          </div>
+
+          <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
+            <GuideContent title="Comprendre les données">
+              <p className="fr-text--xs fr-mb-0">
+                Ce graphique représente chaque territoire par une bulle, dont
+                la taille est proportionnelle à sa population. La position des
+                bulles sur l'axe vertical indique la consommation d'espaces NAF
+                et l'axe horizontal indique l'évolution démographique.
+              </p>
+            </GuideContent>
+          </div>
+        </div>
+      </div>
+
+      <div className="fr-mt-5w">
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
+            <GenericChart
+              id="dc_menages_conso_comparison_chart"
+              land_id={landId}
+              land_type={landType}
+              params={chartParams}
+              sources={["majic", "insee"]}
+              showDataTable={true}
+            >
+              <div>
+                <h6 className="fr-mb-0">À propos</h6>
+                <p className="fr-text--xs fr-mb-0">
+                  Ce graphique compare la consommation d'espaces NAF à destination de l'habitat au regard de l'évolution du nombre de ménages. La taille des bulles représente la population totale de chaque territoire.
+                </p>
+              </div>
+            </GenericChart>
+          </div>
+
+          <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
+            <GuideContent title="Comprendre les données">
+              <p className="fr-text--xs fr-mb-0">
+                Ce graphique représente chaque territoire par une bulle, dont
+                la taille est proportionnelle à sa population. La position des
+                bulles sur l'axe vertical indique la consommation d'espaces NAF
+                et l'axe horizontal indique l'évolution démographique.
+              </p>
+            </GuideContent>
+          </div>
+        </div>
+      </div>
+
+      <div className="fr-mt-5w">
+        <div className="fr-grid-row fr-grid-row--gutters">
+          <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
+            <GenericChart
+              id="dc_emploi_conso_comparison_chart"
+              land_id={landId}
+              land_type={landType}
+              params={chartParams}
+              sources={["majic", "insee"]}
+              showDataTable={true}
+            >
+              <div>
+                <h6 className="fr-mb-0">À propos</h6>
+                <p className="fr-text--xs fr-mb-0">
+                  Ce graphique compare la consommation d'espaces NAF à destination de l'activité au regard de l'évolution de l'emploi. La taille des bulles représente la population totale de chaque territoire.
+                </p>
+              </div>
+            </GenericChart>
+          </div>
+
+          <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
+            <GuideContent title="Comprendre les données">
+              <p className="fr-text--xs fr-mb-0">
+                Ce graphique représente chaque territoire par une bulle, dont
+                la taille est proportionnelle à sa population. La position des
+                bulles sur l'axe vertical indique la consommation d'espaces NAF
+                et l'axe horizontal indique l'évolution démographique.
+              </p>
+            </GuideContent>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

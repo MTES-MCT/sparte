@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { theme } from "@theme";
-import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
+import GenericChart from "@components/charts/GenericChart";
 import BaseCard from "@components/ui/BaseCard";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
@@ -40,7 +40,7 @@ export const ArtifFluxDetail: React.FC = () => {
             .map((m) => (
               <div key={`${m.index}_${m.departement}`} className="fr-col-12">
                 <FlexColumn>
-                  <OcsgeGraph
+                  <GenericChart
                     id="artif_flux_by_couverture"
                     land_id={landId}
                     land_type={landType}
@@ -53,8 +53,8 @@ export const ArtifFluxDetail: React.FC = () => {
                     showDataTable={true}
                   >
                     <DetailsCalculationOcsge />
-                  </OcsgeGraph>
-                  <OcsgeGraph
+                  </GenericChart>
+                  <GenericChart
                     id="artif_flux_by_usage"
                     land_id={landId}
                     land_type={landType}
@@ -67,14 +67,14 @@ export const ArtifFluxDetail: React.FC = () => {
                     showDataTable={true}
                   >
                     <DetailsCalculationOcsge />
-                  </OcsgeGraph>
+                  </GenericChart>
                 </FlexColumn>
               </div>
             ))
         ) : (
           <>
             <div className="fr-col-12">
-              <OcsgeGraph
+              <GenericChart
                 id="artif_flux_by_couverture"
                 land_id={landId}
                 land_type={landType}
@@ -86,10 +86,10 @@ export const ArtifFluxDetail: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
             <div className="fr-col-12">
-              <OcsgeGraph
+              <GenericChart
                 id="artif_flux_by_usage"
                 land_id={landId}
                 land_type={landType}
@@ -101,7 +101,7 @@ export const ArtifFluxDetail: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
           </>
         )}

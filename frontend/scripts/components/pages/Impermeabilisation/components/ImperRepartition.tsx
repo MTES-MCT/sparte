@@ -1,5 +1,5 @@
 import React from "react";
-import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
+import GenericChart from "@components/charts/GenericChart";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
@@ -54,7 +54,7 @@ export const ImperRepartition: React.FC = () => {
                 key={`${m.index}_${m.departement}`}
                 className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
               >
-                <OcsgeGraph
+                <GenericChart
                   id="pie_imper_by_couverture"
                   land_id={land_id}
                   land_type={land_type}
@@ -66,8 +66,8 @@ export const ImperRepartition: React.FC = () => {
                   showDataTable={true}
                 >
                   <DetailsCalculationOcsge />
-                </OcsgeGraph>
-                <OcsgeGraph
+                </GenericChart>
+                <GenericChart
                   id="pie_imper_by_usage"
                   land_id={land_id}
                   land_type={land_type}
@@ -79,13 +79,13 @@ export const ImperRepartition: React.FC = () => {
                   showDataTable={true}
                 >
                   <DetailsCalculationOcsge />
-                </OcsgeGraph>
+                </GenericChart>
               </div>
             ))
         ) : (
           <>
             <div className="fr-col-12 fr-col-lg-6">
-              <OcsgeGraph
+              <GenericChart
                 id="pie_imper_by_couverture"
                 land_id={land_id}
                 land_type={land_type}
@@ -96,10 +96,10 @@ export const ImperRepartition: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
             <div className="fr-col-12 fr-col-lg-6">
-              <OcsgeGraph
+              <GenericChart
                 id="pie_imper_by_usage"
                 land_id={land_id}
                 land_type={land_type}
@@ -110,7 +110,7 @@ export const ImperRepartition: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
           </>
         )}

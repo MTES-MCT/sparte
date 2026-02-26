@@ -1,5 +1,5 @@
 import React from "react";
-import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
+import GenericChart from "@components/charts/GenericChart";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import BaseCard from "@components/ui/BaseCard";
@@ -34,7 +34,7 @@ export const ImperFluxDetail: React.FC = () => {
                 key={`${m.index}_${m.departement}`}
                 className="fr-col-12 gap-4 d-flex flex-column"
               >
-                <OcsgeGraph
+                <GenericChart
                   id="imper_flux_by_couverture"
                   land_id={land_id}
                   land_type={land_type}
@@ -47,8 +47,8 @@ export const ImperFluxDetail: React.FC = () => {
                   showDataTable={true}
                 >
                   <DetailsCalculationOcsge />
-                </OcsgeGraph>
-                <OcsgeGraph
+                </GenericChart>
+                <GenericChart
                   id="imper_flux_by_usage"
                   land_id={land_id}
                   land_type={land_type}
@@ -61,13 +61,13 @@ export const ImperFluxDetail: React.FC = () => {
                   showDataTable={true}
                 >
                   <DetailsCalculationOcsge />
-                </OcsgeGraph>
+                </GenericChart>
               </div>
             ))
         ) : (
           <>
             <div className="fr-col-12">
-              <OcsgeGraph
+              <GenericChart
                 id="imper_flux_by_couverture"
                 land_id={land_id}
                 land_type={land_type}
@@ -79,10 +79,10 @@ export const ImperFluxDetail: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
             <div className="fr-col-12">
-              <OcsgeGraph
+              <GenericChart
                 id="imper_flux_by_usage"
                 land_id={land_id}
                 land_type={land_type}
@@ -94,7 +94,7 @@ export const ImperFluxDetail: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
           </>
         )}

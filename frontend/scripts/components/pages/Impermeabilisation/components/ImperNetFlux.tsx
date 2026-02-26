@@ -1,5 +1,5 @@
 import React from "react";
-import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
+import GenericChart from "@components/charts/GenericChart";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
@@ -48,7 +48,7 @@ export const ImperNetFlux: React.FC = () => {
               .filter((e) => e.index === maxIndex)
               .map((m) => (
                 <div key={`${m.index}_${m.departement}`} className="fr-col-12">
-                  <OcsgeGraph
+                  <GenericChart
                     id="imper_net_flux"
                     land_id={land_id}
                     land_type={land_type}
@@ -61,12 +61,12 @@ export const ImperNetFlux: React.FC = () => {
                     showDataTable={true}
                   >
                     <DetailsCalculationOcsge />
-                  </OcsgeGraph>
+                  </GenericChart>
                 </div>
               ))
           ) : (
             <div className="fr-col-12">
-              <OcsgeGraph
+              <GenericChart
                 id="imper_net_flux"
                 land_id={land_id}
                 land_type={land_type}
@@ -78,7 +78,7 @@ export const ImperNetFlux: React.FC = () => {
                 showDataTable={true}
               >
                 <DetailsCalculationOcsge />
-              </OcsgeGraph>
+              </GenericChart>
             </div>
           )}
         </div>

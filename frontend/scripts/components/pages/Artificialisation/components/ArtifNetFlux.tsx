@@ -1,5 +1,5 @@
 import React from "react";
-import { OcsgeGraph } from "@components/charts/ocsge/OcsgeGraph";
+import GenericChart from "@components/charts/GenericChart";
 import { LandType } from "@services/types/land";
 import BaseCard from "@components/ui/BaseCard";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
@@ -47,7 +47,7 @@ export const ArtifNetFlux: React.FC = () => {
             .filter((e) => e.index === maxIndex)
             .map((m) => (
               <div key={`${m.index}_${m.departement}`} className="fr-col-12">
-                <OcsgeGraph
+                <GenericChart
                   id="artif_net_flux"
                   land_id={landId}
                   land_type={landType}
@@ -60,12 +60,12 @@ export const ArtifNetFlux: React.FC = () => {
                   showDataTable={true}
                 >
                   <DetailsCalculationOcsge />
-                </OcsgeGraph>
+                </GenericChart>
               </div>
             ))
         ) : (
           <div className="fr-col-12">
-            <OcsgeGraph
+            <GenericChart
               id="artif_net_flux"
               land_id={landId}
               land_type={landType}
@@ -77,7 +77,7 @@ export const ArtifNetFlux: React.FC = () => {
               showDataTable={true}
             >
               <DetailsCalculationOcsge />
-            </OcsgeGraph>
+            </GenericChart>
           </div>
         )}
       </div>

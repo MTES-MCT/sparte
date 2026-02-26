@@ -12,6 +12,7 @@ import {
   ConsoMaps,
   ConsoCarroyage,
   ConsoDemography,
+  ConsoInsee,
   ConsoComparison,
 } from "./components";
 
@@ -26,6 +27,8 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
   const {
     startYear,
     endYear,
+    childType,
+    setChildType,
     populationEvolution,
     populationEvolutionPercent,
     isLoadingPop,
@@ -121,6 +124,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
         <ConsoDemography
           landId={land_id}
           landType={land_type}
+          landName={name}
           startYear={startYear}
           endYear={endYear}
           populationEvolution={populationEvolution}
@@ -129,6 +133,28 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
           populationStock={populationStock}
           isLoadingPop={isLoadingPop}
           populationCardRef={populationCardRef}
+          childLandTypes={child_land_types}
+          childType={childType}
+          onChildLandTypeChange={setChildType}
+        />
+
+        <ConsoInsee
+          landId={land_id}
+          landType={land_type}
+          landName={name}
+          startYear={startYear}
+          endYear={endYear}
+          childLandTypes={child_land_types}
+          childType={childType}
+          onChildLandTypeChange={setChildType}
+          logements={landData.logements_22}
+          evolutionLogementsPercent={landData.evolution_logements_percent}
+          evolutionLogementsAbsolute={landData.evolution_logements_absolute}
+          densiteLogements={landData.densite_logements}
+          emplois={landData.emplois_22}
+          evolutionEmploisPercent={landData.evolution_emplois_percent}
+          evolutionEmploisAbsolute={landData.evolution_emplois_absolute}
+          densiteEmplois={landData.densite_emplois}
         />
 
         <ConsoComparison
