@@ -97,34 +97,29 @@ bw_login() {
     local client_id="$2"
     local client_secret="$3"
 
+    # Déconnecter la session précédente pour repartir proprement
+    bw logout 2>/dev/null || true
+
     # Configurer le serveur
-    bw config server "$server_url" >/dev/null 2>&1
+    echo -e "  ${DIM}Serveur : ${server_url}${RESET}"
+    bw config server "$server_url" 2>/dev/null
 
-    local status
-    status=$(bw status 2>/dev/null | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+    # Connexion avec la clé API
+    echo -e "  ${DIM}Connexion avec la clé API...${RESET}"
+    export BW_CLIENTID="$client_id"
+    export BW_CLIENTSECRET="$client_secret"
+    if ! bw login --apikey 2>&1 | grep -v "^$"; then
+        echo -e "  ${RED}Échec de la connexion.${RESET}"
+        return 1
+    fi
 
-    case "$status" in
-        unlocked)
-            echo -e "  ${DIM}Coffre déjà déverrouillé.${RESET}"
-            BW_SESSION=$(bw unlock --raw </dev/tty)
-            ;;
-        locked)
-            echo -e "  ${DIM}Coffre verrouillé — déverrouillage...${RESET}"
-            BW_SESSION=$(bw unlock --raw </dev/tty)
-            ;;
-        unauthenticated)
-            echo -e "  ${DIM}Connexion avec la clé API...${RESET}"
-            export BW_CLIENTID="$client_id"
-            export BW_CLIENTSECRET="$client_secret"
-            bw login --apikey >/dev/null 2>&1
-            echo -e "  ${DIM}Déverrouillage du coffre...${RESET}"
-            BW_SESSION=$(bw unlock --raw </dev/tty)
-            ;;
-        *)
-            echo -e "${RED}Impossible de déterminer le statut de Bitwarden CLI.${RESET}"
-            return 1
-            ;;
-    esac
+    # Déverrouillage du coffre (demande le mot de passe maître)
+    echo -e "  ${DIM}Déverrouillage du coffre...${RESET}"
+    BW_SESSION=$(bw unlock --raw </dev/tty)
+    if [ -z "$BW_SESSION" ]; then
+        echo -e "  ${RED}Échec du déverrouillage.${RESET}"
+        return 1
+    fi
 
     export BW_SESSION
 }
@@ -134,13 +129,12 @@ bw_get_note() {
     local item_id="$1"
     local item_json
     # bw get item fonctionne pour les items personnels et organisationnels
-    item_json=$(bw get item "$item_id" --session "$BW_SESSION" 2>&1)
-    if [ $? -ne 0 ]; then
+    item_json=$(bw get item "$item_id" --session "$BW_SESSION" 2>&1) || {
         echo -e "  ${DIM}Erreur bw : ${item_json}${RESET}" >&2
         return 1
-    fi
+    }
     # Extraire les notes du JSON
-    echo "$item_json" | python3 -c "import sys,json; n=json.load(sys.stdin).get('notes',''); print(n)" 2>/dev/null
+    echo "$item_json" | python3 -c "import sys,json; n=json.load(sys.stdin).get('notes',''); print(n if n else '')" 2>/dev/null
 }
 
 # Applique les secrets d'une note Vaultwarden sur un fichier .env existant
