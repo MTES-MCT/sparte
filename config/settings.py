@@ -265,7 +265,7 @@ AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
-AWS_S3_ENDPOINT_URL = "https://s3.fr-par.scw.cloud"
+AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default="https://s3.fr-par.scw.cloud")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
