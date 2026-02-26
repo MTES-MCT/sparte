@@ -132,7 +132,15 @@ bw_login() {
 # Récupère le contenu d'une secure note par son ID
 bw_get_note() {
     local item_id="$1"
-    bw get notes "$item_id" --session "$BW_SESSION" 2>/dev/null
+    local item_json
+    # bw get item fonctionne pour les items personnels et organisationnels
+    item_json=$(bw get item "$item_id" --session "$BW_SESSION" 2>&1)
+    if [ $? -ne 0 ]; then
+        echo -e "  ${DIM}Erreur bw : ${item_json}${RESET}" >&2
+        return 1
+    fi
+    # Extraire les notes du JSON
+    echo "$item_json" | python3 -c "import sys,json; n=json.load(sys.stdin).get('notes',''); print(n)" 2>/dev/null
 }
 
 # Applique les secrets d'une note Vaultwarden sur un fichier .env existant
@@ -195,14 +203,16 @@ fetch_from_vaultwarden() {
 
     # Demander les liens des notes
     echo ""
-    echo -e "  ${DIM}Collez le lien Vaultwarden ou l'ID de chaque secure note.${RESET}"
-    echo -e "  ${DIM}Appuyez sur Entrée pour passer un fichier.${RESET}"
+    echo -e "  ${DIM}Pour chaque note, collez l'URL ou l'ID de l'élément Vaultwarden.${RESET}"
+    echo -e "  ${DIM}  URL : https://vault.example.com/#/vault?itemId=xxxx-xxxx${RESET}"
+    echo -e "  ${DIM}  ID  : xxxx-xxxx-xxxx-xxxx${RESET}"
+    echo -e "  ${DIM}Appuyez sur Entrée pour passer.${RESET}"
     echo ""
 
     local success=0
 
     # .env
-    printf "  Lien de la note ${CYAN}.env${RESET} : "
+    printf "  Note des secrets ${CYAN}.env${RESET} (URL ou ID) : "
     read -r env_link </dev/tty
     if [ -n "$env_link" ]; then
         local env_id
@@ -223,7 +233,7 @@ fetch_from_vaultwarden() {
     fi
 
     # airflow/.env
-    printf "  Lien de la note ${CYAN}airflow/.env${RESET} : "
+    printf "  Note des secrets ${CYAN}airflow/.env${RESET} (URL ou ID) : "
     read -r airflow_link </dev/tty
     if [ -n "$airflow_link" ]; then
         local airflow_id
