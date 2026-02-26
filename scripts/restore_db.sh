@@ -97,6 +97,12 @@ echo -e "  ${CYAN}Restauration dans la base locale (${PGDB} sur localhost:${PGPO
 echo -e "  ${DIM}Cela peut prendre plusieurs minutes selon la taille de la base.${RESET}"
 echo ""
 
+# Terminer toutes les connexions actives sur la base
+docker run --rm --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
+    psql -h localhost -p "$PGPORT" -U "$PGUSER" -d postgres -c \
+    "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$PGDB' AND pid <> pg_backend_pid();" \
+    &>/dev/null || true
+
 docker run --rm --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
     dropdb -h localhost -p "$PGPORT" -U "$PGUSER" --if-exists "$PGDB"
 docker run --rm --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
