@@ -118,9 +118,11 @@ docker run --rm --network host -e SOURCE_URL="$source_url" "$PG_DOCKER_IMAGE" \
     psql -h localhost -p "$PGPORT" -U "$PGUSER" -d "$PGDB" --quiet 2>&1 | \
     grep -i "error" || true
 
-# Relancer Django
-echo -e "  ${DIM}Redémarrage de Django...${RESET}"
-docker compose start django 2>/dev/null || true
+# Redémarrer les services
+echo -e "  ${DIM}Redémarrage des services...${RESET}"
+docker compose restart db 2>/dev/null || true
+sleep 3
+docker compose up -d django 2>/dev/null || true
 
 echo ""
 echo -e "  ${GREEN}Base de données restaurée.${RESET}"
