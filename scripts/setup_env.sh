@@ -28,15 +28,56 @@ RESET='\033[0m'
 # Vaultwarden
 # ──────────────────────────────────────────────
 
-check_bw_cli() {
+ensure_bw_cli() {
+    if command -v bw &>/dev/null; then
+        return 0
+    fi
+
+    echo -e "  ${DIM}Bitwarden CLI (bw) non trouvé — installation...${RESET}"
+    local os
+    os=$(uname -s)
+
+    case "$os" in
+        Darwin)
+            if command -v brew &>/dev/null; then
+                brew install bitwarden-cli
+            else
+                echo -e "  ${RED}Homebrew requis pour installer bw sur macOS.${RESET}"
+                return 1
+            fi
+            ;;
+        Linux)
+            if command -v snap &>/dev/null; then
+                sudo snap install bw
+            elif command -v npm &>/dev/null; then
+                npm install -g @bitwarden/cli
+            else
+                echo -e "  ${RED}snap ou npm requis pour installer bw sur Linux.${RESET}"
+                return 1
+            fi
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            if command -v winget &>/dev/null; then
+                winget install -e --id Bitwarden.CLI
+            elif command -v npm &>/dev/null; then
+                npm install -g @bitwarden/cli
+            else
+                echo -e "  ${RED}winget ou npm requis pour installer bw sur Windows.${RESET}"
+                return 1
+            fi
+            ;;
+        *)
+            echo -e "  ${RED}OS non reconnu. Installez bw manuellement : https://bitwarden.com/help/cli/${RESET}"
+            return 1
+            ;;
+    esac
+
     if ! command -v bw &>/dev/null; then
-        echo -e "${RED}Bitwarden CLI (bw) non installé.${RESET}"
-        echo -e "${DIM}Installation :${RESET}"
-        echo -e "  macOS  : brew install bitwarden-cli"
-        echo -e "  Linux  : snap install bw"
-        echo -e "  npm    : npm install -g @bitwarden/cli"
+        echo -e "  ${RED}Installation échouée. Installez bw manuellement : https://bitwarden.com/help/cli/${RESET}"
         return 1
     fi
+
+    echo -e "  ${GREEN}bw installé.${RESET}"
 }
 
 # Extrait l'itemId d'un lien Vaultwarden ou retourne la valeur telle quelle si c'est déjà un ID
@@ -125,7 +166,7 @@ fetch_from_vaultwarden() {
     echo -e "${YELLOW}Import des secrets depuis Vaultwarden${RESET}"
     echo ""
 
-    check_bw_cli || return 1
+    ensure_bw_cli || return 1
 
     # Demander les infos de connexion
     printf "  URL du serveur Vaultwarden (ex: https://vault.example.com) : "
