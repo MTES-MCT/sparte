@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Restaure une base de données distante (ex: staging Scalingo) dans le PostgreSQL local.
-# Utilise pg_dump + psql en local pour éviter les problèmes de version PostgreSQL.
+# Utilise pg_dump via Docker pour garantir la compatibilité de version PostgreSQL.
 # Appelé par `make install` ou `make restore-db`.
 
 set -euo pipefail
@@ -17,45 +17,15 @@ RESET='\033[0m'
 # Dépendances
 # ──────────────────────────────────────────────
 
-ensure_psql() {
-    if command -v psql &>/dev/null && command -v pg_dump &>/dev/null; then
-        return 0
-    fi
+# Version PostgreSQL utilisée (doit correspondre à celle du docker-compose.yml)
+PG_VERSION="17"
+PG_DOCKER_IMAGE="postgres:${PG_VERSION}-alpine"
 
-    echo -e "  ${DIM}psql/pg_dump non trouvé — installation...${RESET}"
-    local os
-    os=$(uname -s)
-
-    case "$os" in
-        Darwin)
-            if command -v brew &>/dev/null; then
-                brew install libpq && brew link --force libpq
-            else
-                echo -e "  ${RED}Homebrew requis pour installer psql sur macOS.${RESET}"
-                return 1
-            fi
-            ;;
-        Linux)
-            if command -v apt-get &>/dev/null; then
-                sudo apt-get update && sudo apt-get install -y postgresql-client
-            elif command -v dnf &>/dev/null; then
-                sudo dnf install -y postgresql
-            else
-                echo -e "  ${RED}Installez postgresql-client manuellement.${RESET}"
-                return 1
-            fi
-            ;;
-        *)
-            echo -e "  ${RED}Installez psql manuellement.${RESET}"
-            return 1
-            ;;
-    esac
-
-    if ! command -v psql &>/dev/null; then
-        echo -e "  ${RED}Installation échouée.${RESET}"
+ensure_docker() {
+    if ! command -v docker &>/dev/null; then
+        echo -e "  ${RED}Docker est requis pour ce script.${RESET}"
         return 1
     fi
-    echo -e "  ${GREEN}psql installé.${RESET}"
 }
 
 # ──────────────────────────────────────────────
@@ -71,7 +41,7 @@ echo -e "${DIM}Le connection string est disponible sur Scalingo :${RESET}"
 echo -e "${DIM}  Dashboard > App > Resources > PostgreSQL > Connection string${RESET}"
 echo ""
 
-ensure_psql || exit 1
+ensure_docker || exit 1
 
 # Demander le connection string de la base source
 printf "  Connection string de la base source : "
@@ -81,10 +51,10 @@ if [ -z "$source_url" ]; then
     exit 1
 fi
 
-# Vérifier la connexion à la source
+# Vérifier la connexion à la source (via Docker pour avoir la bonne version)
 echo ""
 echo -e "  ${DIM}Test de connexion à la base source...${RESET}"
-if ! psql "$source_url" -c "SELECT 1" &>/dev/null; then
+if ! docker run --rm --network host "$PG_DOCKER_IMAGE" psql "$source_url" -c "SELECT 1" &>/dev/null; then
     echo -e "  ${RED}Impossible de se connecter à la base source.${RESET}"
     echo -e "  ${DIM}Vérifiez le connection string et que votre IP est autorisée.${RESET}"
     exit 1
@@ -115,7 +85,8 @@ fi
 
 # Vérifier la connexion locale
 export PGPASSWORD
-if ! psql -h localhost -p "$PGPORT" -U "$PGUSER" -d postgres -c "SELECT 1" &>/dev/null; then
+if ! docker run --rm --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
+    psql -h localhost -p "$PGPORT" -U "$PGUSER" -d postgres -c "SELECT 1" &>/dev/null; then
     echo -e "  ${RED}Impossible de se connecter au PostgreSQL local (localhost:${PGPORT}).${RESET}"
     exit 1
 fi
@@ -126,12 +97,16 @@ echo -e "  ${CYAN}Restauration dans la base locale (${PGDB} sur localhost:${PGPO
 echo -e "  ${DIM}Cela peut prendre plusieurs minutes selon la taille de la base.${RESET}"
 echo ""
 
-dropdb -h localhost -p "$PGPORT" -U "$PGUSER" --if-exists "$PGDB"
-createdb -h localhost -p "$PGPORT" -U "$PGUSER" -T template0 "$PGDB"
+docker run --rm --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
+    dropdb -h localhost -p "$PGPORT" -U "$PGUSER" --if-exists "$PGDB"
+docker run --rm --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
+    createdb -h localhost -p "$PGPORT" -U "$PGUSER" -T template0 "$PGDB"
 
-# pg_dump depuis la source | psql dans la destination
+# pg_dump depuis la source | psql dans la destination (via Docker pour la compatibilité de version)
 # --no-owner --no-acl : ignore les rôles qui n'existent pas en local
-pg_dump "$source_url" --no-owner --no-acl --format=plain | \
+docker run --rm --network host "$PG_DOCKER_IMAGE" \
+    pg_dump "$source_url" --no-owner --no-acl --format=plain | \
+    docker run --rm -i --network host -e PGPASSWORD="$PGPASSWORD" "$PG_DOCKER_IMAGE" \
     psql -h localhost -p "$PGPORT" -U "$PGUSER" -d "$PGDB" --quiet 2>&1 | \
     grep -i "error" || true
 

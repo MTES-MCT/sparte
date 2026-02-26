@@ -1,6 +1,6 @@
 services:
   db:
-    image: kartoza/postgis:14-3.3--v2022.08.30
+    image: kartoza/postgis:17-3.5
     shm_size: 1gb
     volumes:
       - db_data:/var/lib/postgresql/data
