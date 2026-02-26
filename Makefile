@@ -3,7 +3,7 @@
 .PHONY: help install install-airflow \
        start stop restart \
        start-airflow stop-airflow \
-       migrate makemigrations shell createsuperuser \
+       migrate makemigrations shell createsuperuser restore-db \
        build test test-backend test-frontend test-airflow lint \
        logs logs-django logs-db logs-frontend
 
@@ -29,6 +29,7 @@ install: install-docker install-airflow ## Installe tout le projet (backend + fr
 	@docker compose exec s3 sh -c 'mkdir -p /data/sparte-local' 2>/dev/null || true
 	@echo "En attente du démarrage de Django (migrations + paramètres)..."
 	@until docker compose exec django python -c "import django" 2>/dev/null; do sleep 2; done
+	@bash scripts/restore_db.sh
 	@echo "Installation terminée. Site accessible sur http://localhost:8080/"
 
 install-airflow: install-astro-cli ## Installe et démarre Airflow
@@ -84,6 +85,13 @@ start-airflow: ## Démarre Airflow
 
 stop-airflow: ## Arrête Airflow
 	cd airflow && astro dev stop
+
+# ──────────────────────────────────────────────
+# Base de données
+# ──────────────────────────────────────────────
+
+restore-db: ## Restaure la BDD depuis une base distante (ex: staging Scalingo)
+	@bash scripts/restore_db.sh
 
 # ──────────────────────────────────────────────
 # Django

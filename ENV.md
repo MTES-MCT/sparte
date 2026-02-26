@@ -35,9 +35,8 @@ Les fichiers `.env` sont d'abord créés depuis `.env.example`, puis le script r
 Le script demande :
 
 1. **URL du serveur** Vaultwarden (ex: `https://vault.example.com`)
-2. **Clé API** Bitwarden (`client_id` + `client_secret`) — disponible dans *Settings > Security > Keys > API Key*
-3. **Mot de passe maître** pour déverrouiller le coffre
-4. **Lien ou ID** de chaque secure note — copiable depuis l'URL de la note dans Vaultwarden (ex: `https://vault.example.com/#/vault?itemId=xxxx-xxxx`)
+2. **Email + mot de passe** du compte Vaultwarden
+3. **Lien ou ID** de chaque secure note — copiable depuis l'URL de la note dans Vaultwarden (ex: `https://vault.example.com/#/vault?itemId=xxxx-xxxx`)
 
 Prérequis : [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`) installé (`brew install bitwarden-cli`).
 
