@@ -1,6 +1,6 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
-import { BivariateMap } from "@components/charts/BivariateMap";
+import { BivariateMap } from "@components/charts/consommation/BivariateMap";
 import Kpi from "@components/ui/Kpi";
 import Loader from "@components/ui/Loader";
 import { formatNumber } from "@utils/formatUtils";
