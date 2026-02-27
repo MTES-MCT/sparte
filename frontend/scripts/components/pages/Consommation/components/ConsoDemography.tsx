@@ -1,9 +1,9 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
+import { BivariateMap } from "@components/charts/BivariateMap";
 import Kpi from "@components/ui/Kpi";
 import Loader from "@components/ui/Loader";
 import { formatNumber } from "@utils/formatUtils";
-import { BivariateMapSection } from "./BivariateMapSection";
 
 interface ConsoDemographyProps {
   landId: string;
@@ -144,7 +144,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
       <div className="fr-mt-5w" />
 
       {hasChildren && mapChildType && (
-        <BivariateMapSection
+        <BivariateMap
           chartId="dc_population_conso_map"
           landId={landId}
           landType={landType}
@@ -156,7 +156,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
       )}
 
       {hasChildren && mapChildType && (
-        <BivariateMapSection
+        <BivariateMap
           chartId="dc_menages_conso_map"
           landId={landId}
           landType={landType}

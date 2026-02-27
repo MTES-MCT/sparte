@@ -1,8 +1,8 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
+import { BivariateMap } from "@components/charts/BivariateMap";
 import Card from "@components/ui/Card";
 import { formatNumber } from "@utils/formatUtils";
-import { BivariateMapSection } from "./BivariateMapSection";
 
 interface ConsoInseeProps {
   landId: string;
@@ -87,7 +87,7 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
 
       {hasChildren && mapChildType && (
         <>
-          <BivariateMapSection
+          <BivariateMap
             chartId="dc_logement_conso_map"
             landId={landId}
             landType={landType}
@@ -96,7 +96,7 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
             childLandTypes={childLandTypes}
             onChildLandTypeChange={onChildLandTypeChange}
           />
-          <BivariateMapSection
+          <BivariateMap
             chartId="dc_vacance_conso_map"
             landId={landId}
             landType={landType}
@@ -148,7 +148,7 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       </div>
 
       {hasChildren && mapChildType && (
-        <BivariateMapSection
+        <BivariateMap
           chartId="dc_emploi_conso_map"
           landId={landId}
           landType={landType}
@@ -177,7 +177,7 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
 
       {hasChildren && mapChildType && (
         <>
-          <BivariateMapSection
+          <BivariateMap
             chartId="dc_creations_entreprises_conso_map"
             landId={landId}
             landType={landType}
@@ -186,7 +186,7 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
             childLandTypes={childLandTypes}
             onChildLandTypeChange={onChildLandTypeChange}
           />
-          <BivariateMapSection
+          <BivariateMap
             chartId="dc_chomage_conso_map"
             landId={landId}
             landType={landType}
