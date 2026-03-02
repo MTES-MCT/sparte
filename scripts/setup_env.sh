@@ -63,15 +63,25 @@ paste_env_content() {
     echo ""
     echo -e "  ${CYAN}── ${label} ──${RESET}"
     echo -e "  ${DIM}Collez le contenu du fichier .env (lignes KEY=VALUE),${RESET}"
-    echo -e "  ${DIM}puis appuyez sur Entrée et tapez ${CYAN}EOF${DIM} pour terminer.${RESET}"
-    echo -e "  ${DIM}Appuyez directement sur Entrée puis ${CYAN}EOF${DIM} pour passer.${RESET}"
+    echo -e "  ${DIM}puis appuyez sur Entrée pour terminer.${RESET}"
+    echo -e "  ${DIM}Appuyez directement sur Entrée pour passer.${RESET}"
     echo ""
 
+    # Masquer la saisie pour ne pas afficher les secrets
+    stty -echo 2>/dev/null || true
     local pasted_content=""
+    local line_count=0
     while IFS= read -r line </dev/tty; do
-        [ "$line" = "EOF" ] && break
+        [ -z "$line" ] && break
         pasted_content+="${line}"$'\n'
+        line_count=$((line_count + 1))
     done
+    stty echo 2>/dev/null || true
+
+    # Afficher un retour visuel
+    if [ $line_count -gt 0 ]; then
+        echo -e "  ${DIM}(${line_count} lignes reçues)${RESET}"
+    fi
 
     # Supprimer le dernier saut de ligne
     pasted_content="${pasted_content%$'\n'}"
