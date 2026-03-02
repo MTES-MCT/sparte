@@ -42,7 +42,7 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
                 </>
               )
             }
-            variant="error"
+            variant="default"
             badge="Donnée clé"
             footer={{
               type: "period",

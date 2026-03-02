@@ -16,7 +16,7 @@ export const LogementVacantConso: React.FC = () => {
           start_date: String(startYear),
           end_date: String(endYear),
         }}
-        sources={["fichiers_fonciers", "lovac", "rpls"]}
+        sources={["majic", "lovac", "rpls"]}
         showDataTable={true}
       />
     </BaseCard>

@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Button from "@components/ui/Button";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
 const ControlLabel = styled.span`
@@ -80,12 +81,13 @@ export const ConsommationControls: React.FC = () => {
 				</select>
 
 				{hasChangedFromDefault && (
-					<button
+					<Button
 						onClick={handleReset}
-						className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-refresh-line flex-shrink-0"
+						variant="secondary"
+						size="small"
+						icon="bi bi-arrow-clockwise"
 						title={`Réinitialiser à la période ${defaultStartYear}-${defaultEndYear}`}
-					>
-					</button>
+					/>
 				)}
 
 				{childLandTypes && childLandTypes.length > 1 && (

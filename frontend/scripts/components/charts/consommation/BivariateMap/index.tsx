@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
+import Button from "@components/ui/Button";
 import { getLandTypeLabel } from "@utils/landUtils";
 import { useGetChartConfigQuery } from "@services/api";
 import { theme } from "@theme";
@@ -169,25 +170,27 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
     <div className="fr-mb-5w">
       <div className="fr-mb-2w" style={styles.buttonGroup}>
         {PERIODS.map((p) => (
-          <button
+          <Button
             key={p.value}
-            className={`fr-btn ${period === p.value ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm`}
+            variant={period === p.value ? "primary" : "secondary"}
+            size="small"
             onClick={() => setPeriod(p.value)}
           >
             {p.label}
-          </button>
+          </Button>
         ))}
         {childLandTypes && childLandTypes.length > 1 && (
           <>
             <span style={styles.separator} />
             {childLandTypes.map((clt) => (
-              <button
+              <Button
                 key={clt}
-                className={`fr-btn ${childLandType === clt ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm`}
+                variant={childLandType === clt ? "primary" : "secondary"}
+                size="small"
                 onClick={() => handleChildLandTypeChange(clt)}
               >
                 {getLandTypeLabel(clt)}
-              </button>
+              </Button>
             ))}
           </>
         )}

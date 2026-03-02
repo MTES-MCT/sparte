@@ -97,7 +97,7 @@ export const LogementVacantAutorisation: React.FC = () => {
     <>
       {hasAutorisationLogement ? (
         <div className="fr-grid-row fr-grid-row--gutters">
-          <div className="fr-col-12 fr-col-lg-8">
+          <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
             <BaseCard className="h-100">
               <GenericChart
                 id="logement_vacant_autorisation_ratio_progression_chart"
@@ -112,7 +112,7 @@ export const LogementVacantAutorisation: React.FC = () => {
               />
             </BaseCard>
           </div>
-          <div className="fr-col-12 fr-col-lg-4">
+          <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
             <ComprendreLesDonnees />
           </div>
         </div>

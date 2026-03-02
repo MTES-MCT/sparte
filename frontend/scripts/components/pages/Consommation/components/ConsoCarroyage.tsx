@@ -1,6 +1,7 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import { CarroyageLeaMap } from "@components/map";
+import Button from "@components/ui/Button";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
 interface ConsoCarroyageProps {
@@ -27,20 +28,16 @@ export const ConsoCarroyage: React.FC<ConsoCarroyageProps> = ({ landData }) => {
       </div>
 
       {childLandTypes && childLandTypes.length > 1 && (
-        <div className="fr-mb-2w">
+        <div className="fr-mb-2w d-flex gap-2">
           {childLandTypes.map((child_land_type) => (
-            <button
+            <Button
               key={child_land_type}
-              className={`fr-btn ${
-                childType === child_land_type
-                  ? "fr-btn--primary"
-                  : "fr-btn--tertiary"
-              } fr-btn--sm fr-mr-1w`}
-              style={childType !== child_land_type ? { backgroundColor: "white" } : undefined}
+              variant={childType === child_land_type ? "primary" : "secondary"}
+              size="small"
               onClick={() => setChildType(child_land_type)}
             >
               {landTypeLabels[child_land_type] || child_land_type}
-            </button>
+            </Button>
           ))}
         </div>
       )}

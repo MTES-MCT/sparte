@@ -7,10 +7,11 @@ import Tag from "@components/ui/Tag";
 
 type KpiVariant = "default" | "success" | "error";
 
-interface KpiMetricItem {
+export interface KpiMetricItem {
   icon: string;
   label: string;
   value: string;
+  iconVariant?: KpiVariant;
 }
 
 interface KpiPeriodItem {
@@ -264,29 +265,34 @@ const MetricFooter: React.FC<{
   items: [KpiMetricItem, KpiMetricItem];
   color: string;
   border: string;
-}> = ({ items, color, border }) => (
-  <MetricRow>
-    <MetricItem>
-      <MetricIcon $color={color}>
-        <i className={items[0].icon} />
-      </MetricIcon>
-      <MetricContent>
-        <MetricLabel>{items[0].label}</MetricLabel>
-        <MetricValueText>{items[0].value}</MetricValueText>
-      </MetricContent>
-    </MetricItem>
-    <MetricDivider $border={border} />
-    <MetricItem>
-      <MetricIcon $color={color}>
-        <i className={items[1].icon} />
-      </MetricIcon>
-      <MetricContent>
-        <MetricLabel>{items[1].label}</MetricLabel>
-        <MetricValueText>{items[1].value}</MetricValueText>
-      </MetricContent>
-    </MetricItem>
-  </MetricRow>
-);
+}> = ({ items, color, border }) => {
+  const getIconColor = (item: KpiMetricItem) =>
+    item.iconVariant ? variantConfig[item.iconVariant].color : color;
+
+  return (
+    <MetricRow>
+      <MetricItem>
+        <MetricIcon $color={getIconColor(items[0])}>
+          <i className={items[0].icon} />
+        </MetricIcon>
+        <MetricContent>
+          <MetricLabel>{items[0].label}</MetricLabel>
+          <MetricValueText>{items[0].value}</MetricValueText>
+        </MetricContent>
+      </MetricItem>
+      <MetricDivider $border={border} />
+      <MetricItem>
+        <MetricIcon $color={getIconColor(items[1])}>
+          <i className={items[1].icon} />
+        </MetricIcon>
+        <MetricContent>
+          <MetricLabel>{items[1].label}</MetricLabel>
+          <MetricValueText>{items[1].value}</MetricValueText>
+        </MetricContent>
+      </MetricItem>
+    </MetricRow>
+  );
+};
 
 const PeriodFooter: React.FC<{
   periods: KpiPeriodItem[];

@@ -5,7 +5,7 @@
 const palette = {
   // DSFR Core
   primary: "#000091",
-  primaryHover: "#2a2a8a",
+  primaryHover: "#4318FF",
   primaryBg: "#e3e3fd",
   primaryBorder: "#c5c5f7",
 
@@ -60,7 +60,7 @@ export const theme = {
     textLight: "var(--text-mention-grey)",
     textMuted: palette.grey600,
 
-    // Surfaces
+    // Fonds
     background: palette.white,
     backgroundAlt: palette.grey200,
     backgroundSubtle: palette.grey100,

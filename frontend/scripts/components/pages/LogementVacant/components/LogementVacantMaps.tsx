@@ -32,39 +32,35 @@ export const LogementVacantMaps: React.FC = () => {
       )}
 
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-lg-6">
-          <BaseCard className="h-100">
-            <GenericChart
-              key={`logement_vacant_map_percent-${childType}-${endYear}`}
-              id="logement_vacant_map_percent"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                end_date: String(endYear),
-                child_land_type: childType,
-              }}
-              showDataTable={true}
-              isMap={true}
-              sources={["lovac", "rpls"]}
-            />
-          </BaseCard>
+        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
+          <GenericChart
+            key={`logement_vacant_map_percent-${childType}-${endYear}`}
+            id="logement_vacant_map_percent"
+            land_id={landId}
+            land_type={landType}
+            params={{
+              end_date: String(endYear),
+              child_land_type: childType,
+            }}
+            showDataTable={true}
+            isMap={true}
+            sources={["lovac", "rpls"]}
+          />
         </div>
-        <div className="fr-col-12 fr-col-lg-6">
-          <BaseCard className="h-100">
-            <GenericChart
-              key={`logement_vacant_map_absolute-${childType}-${endYear}`}
-              id="logement_vacant_map_absolute"
-              land_id={landId}
-              land_type={landType}
-              params={{
-                end_date: String(endYear),
-                child_land_type: childType,
-              }}
-              showDataTable={true}
-              isMap={true}
-              sources={["lovac", "rpls"]}
-            />
-          </BaseCard>
+        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
+          <GenericChart
+            key={`logement_vacant_map_absolute-${childType}-${endYear}`}
+            id="logement_vacant_map_absolute"
+            land_id={landId}
+            land_type={landType}
+            params={{
+              end_date: String(endYear),
+              child_land_type: childType,
+            }}
+            showDataTable={true}
+            isMap={true}
+            sources={["lovac", "rpls"]}
+          />
         </div>
       </div>
     </div>

@@ -72,8 +72,6 @@ export const FrichesKpiCards: React.FC = () => {
 
   return (
     <>
-      <h2 className="fr-mt-5w">Vue d'ensemble</h2>
-
       <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
         <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
           <Kpi

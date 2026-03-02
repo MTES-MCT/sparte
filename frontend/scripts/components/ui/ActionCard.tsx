@@ -14,6 +14,7 @@ interface ActionCardProps {
 }
 
 const Card = styled(BaseCard)<{ $interactive: boolean }>`
+border-radius: ${theme.radius.default};
   && {
     display: flex;
     align-items: flex-start;

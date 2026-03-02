@@ -14,9 +14,9 @@ export const ArtifKpiCards: React.FC = () => {
     ? `Entre le millésime n°${landArtifStockIndex.millesime_index - 1} et le millésime n°${landArtifStockIndex.millesime_index}`
     : `Entre ${landArtifStockIndex.flux_previous_years?.[0] ?? "–"} et ${landArtifStockIndex.years?.[0] ?? "–"}`;
 
-  const artifNetteFooterMetrics: [{ icon: string; label: string; value: string }, { icon: string; label: string; value: string }] = [
-    { icon: "bi bi-plus-lg", label: "Artificialisation", value: landArtifFluxIndex != null ? `${formatNumber({ number: landArtifFluxIndex.flux_artif })} ha` : "–" },
-    { icon: "bi bi-dash-lg", label: "Désartificialisation", value: landArtifFluxIndex != null ? `${formatNumber({ number: landArtifFluxIndex.flux_desartif })} ha` : "–" },
+  const artifNetteFooterMetrics: [{ icon: string; label: string; value: string; iconVariant?: "default" | "success" | "error" }, { icon: string; label: string; value: string; iconVariant?: "default" | "success" | "error" }] = [
+    { icon: "bi bi-plus-lg", label: "Artificialisation", value: landArtifFluxIndex != null ? `${formatNumber({ number: landArtifFluxIndex.flux_artif })} ha` : "–", iconVariant: "error" },
+    { icon: "bi bi-dash-lg", label: "Désartificialisation", value: landArtifFluxIndex != null ? `${formatNumber({ number: landArtifFluxIndex.flux_desartif })} ha` : "–", iconVariant: "success" },
   ];
 
   const millesimeLabel = isInterdepartemental
@@ -37,7 +37,7 @@ export const ArtifKpiCards: React.FC = () => {
             label="Artificialisation nette"
             description={`${artifNettePeriodText}`}
             value={<>{formatNumber({ number: landArtifStockIndex.flux_surface, addSymbol: true })} <span>ha</span></>}
-            variant="error"
+            variant="default"
             badge="Donnée clé"
             footer={{
               type: "metric",

@@ -1,5 +1,6 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
+import Button from "@components/ui/Button";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
 interface ConsoMapsProps {
@@ -30,19 +31,16 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
       <h3 id="conso-map">Cartes de consommation d'espaces</h3>
 
       {childLandTypes.length > 1 && (
-        <div className="fr-mb-3w">
+        <div className="fr-mb-3w d-flex gap-2">
           {childLandTypes.map((childLandType) => (
-            <button
+            <Button
               key={childLandType}
-              className={`fr-btn ${
-                childType === childLandType
-                  ? "fr-btn--primary"
-                  : "fr-btn--tertiary"
-              } fr-btn--sm fr-mr-1w`}
+              variant={childType === childLandType ? "primary" : "secondary"}
+              size="small"
               onClick={() => setChildType(childLandType)}
             >
               {landTypeLabels[childLandType] || childLandType}
-            </button>
+            </Button>
           ))}
         </div>
       )}

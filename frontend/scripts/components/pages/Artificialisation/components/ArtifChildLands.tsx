@@ -69,23 +69,22 @@ export const ArtifChildLands: React.FC = () => {
   return (
     <div className="fr-mb-7w">
       <h2>Artificialisation des {getLandTypeLabel(childLandType, true)}</h2>
+      <div className="fr-mb-2w d-flex align-items-center gap-2">
+        {childLandTypes.length > 1 &&
+          childLandTypes.map((child_land_type) => (
+            <button
+              key={child_land_type}
+              className={`fr-btn ${
+                childLandType === child_land_type ? "fr-btn--primary" : "fr-btn--tertiary"
+              } fr-btn--sm`}
+              onClick={() => handleChildLandTypeChange(child_land_type)}
+            >
+              {getLandTypeLabel(child_land_type)}
+            </button>
+          ))}
+      </div>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-lg-8">
-          <div className="bg-white fr-p-2w h-100 rounded">
-            <div className="fr-mb-2w d-flex align-items-center gap-2">
-              {childLandTypes.length > 1 &&
-                childLandTypes.map((child_land_type) => (
-                  <button
-                    key={child_land_type}
-                    className={`fr-btn ${
-                      childLandType === child_land_type ? "fr-btn--primary" : "fr-btn--tertiary"
-                    } fr-btn--sm`}
-                    onClick={() => handleChildLandTypeChange(child_land_type)}
-                  >
-                    {getLandTypeLabel(child_land_type)}
-                  </button>
-                ))}
-            </div>
+        <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
             {mapNavStack.length > 0 && (
               <Breadcrumb
                 className="fr-mb-1w"
@@ -137,10 +136,9 @@ export const ArtifChildLands: React.FC = () => {
             >
               <DetailsCalculationOcsge />
             </GenericChart>
-          </div>
         </div>
-        <div className="fr-col-12 fr-col-lg-4">
-          <GuideContent title="Comprendre les données" column>
+        <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
+          <GuideContent title="Comprendre les données">
             <p>
               La couleur de fond indique le <strong>taux d'artificialisation</strong> de chaque
               territoire : plus la teinte <strong style={{ color: "#6a6af4" }}>violette</strong> est

@@ -10,7 +10,7 @@ export const LogementVacantExternalServices: React.FC = () => {
         vacants
       </h2>
       <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-lg-6">
+        <div className="fr-col-12">
           <ExternalServiceTile
             imageUrl={zeroLogementVacantImage}
             imageAlt="Logo de Zéro Logement Vacant"

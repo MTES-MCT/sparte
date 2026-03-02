@@ -3,6 +3,7 @@ import { LandDetailResultType } from "@services/types/land";
 import { buildUrls } from "@utils/projectUrls";
 import CallToAction from "@components/ui/CallToAction";
 import Feedback from "@components/ui/Feedback";
+import BaseCard from "@components/ui/BaseCard";
 
 // Images statiques
 import ecoleIcon from "@images/ecole_icon.png";
@@ -22,16 +23,6 @@ const ExternalLink: React.FC<{ href: string; children: React.ReactNode }> = ({
   <a rel="noopener noreferrer" target="_blank" href={href}>
     {children}
   </a>
-);
-
-const Section: React.FC<{ title: string; children: React.ReactNode }> = ({
-  title,
-  children,
-}) => (
-  <div className="fr-mt-7w">
-    <h4>{title}</h4>
-    <div className="bg-white fr-p-4w rounded">{children}</div>
-  </div>
 );
 
 const EntityTile: React.FC<{
@@ -120,7 +111,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               Objet du rapport triennal local de suivi de l'artificialisation
               des sols
             </h4>
-            <div className="bg-white fr-p-4w rounded">
+            <BaseCard className="fr-p-3w fr-mb-4w">
               <div className="fr-highlight fr-highlight--no-margin">
                 <p className="fr-text--sm">
                   Sur la décennie 2011-2021, 24 000 ha d'espaces naturels,
@@ -174,11 +165,12 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
                   d'un document de planification ou d'urbanisme.
                 </p>
               </div>
-            </div>
+            </BaseCard>
           </div>
 
           {/* Section: Qui doit établir ce rapport */}
-          <Section title="Qui doit établir ce rapport ?">
+          <BaseCard className="fr-p-3w fr-mb-4w">
+            <h4>Qui doit établir ce rapport ?</h4>
             <div className="fr-container--fluid">
               <div className="fr-grid-row fr-grid-row--gutters">
                 <EntityTile
@@ -211,10 +203,11 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               membres de l'EPCI compétent ainsi qu'aux observatoires locaux de
               l'habitat et du foncier.
             </p>
-          </Section>
+          </BaseCard>
 
           {/* Section: Quand doit être établi ce rapport */}
-          <Section title="Quand doit être établi ce rapport et sur quelle période ?">
+          <BaseCard className="fr-p-3w fr-mb-4w">
+            <h4>Quand doit être établi ce rapport et sur quelle période ?</h4>
             <p className="fr-text--sm mb-3">
               Le premier rapport doit être réalisé 3 ans après l'entrée en
               vigueur de la loi, soit en 2024.
@@ -242,10 +235,11 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
                 données sources).
               </li>
             </ul>
-          </Section>
+          </BaseCard>
 
           {/* Section: Que doit contenir ce rapport */}
-          <Section title="Que doit contenir ce rapport ?">
+          <BaseCard className="fr-p-3w fr-mb-4w">
+            <h4>Que doit contenir ce rapport ?</h4>
             <p className="fr-text--sm mb-3">
               Le contenu minimal obligatoire est détaillé à l'
               <ExternalLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048470630">
@@ -318,10 +312,11 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
                 n'ont pas intégré cet objectif.
               </p>
             </div>
-          </Section>
+          </BaseCard>
 
           {/* Section: Sources d'informations */}
-          <Section title="Quelles sont les sources d'informations disponibles pour ce rapport ?">
+          <BaseCard className="fr-p-3w fr-mb-4w">
+            <h4>Quelles sont les sources d'informations disponibles pour ce rapport ?</h4>
             <p className="fr-text--sm mb-3">
               Les données produites par l'
               <ExternalLink href="https://artificialisation.developpement-durable.gouv.fr/">
@@ -379,7 +374,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               2021) et sur la décennie en cours (1er janvier 2021-1er janvier
               2031).
             </p>
-          </Section>
+          </BaseCard>
         </div>
         <div className="fr-col-12">
           <Feedback />

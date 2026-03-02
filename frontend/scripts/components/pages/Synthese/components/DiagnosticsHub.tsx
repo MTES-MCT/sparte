@@ -49,7 +49,6 @@ const DIAGNOSTICS = [
 ];
 
 const Container = styled(BaseCard)`
-  padding: ${theme.spacing.xl};
   background: linear-gradient(135deg, ${theme.colors.primaryBg} 0%, white 100%);
 `;
 
@@ -79,7 +78,7 @@ const Grid = styled.div`
 `;
 
 const DiagnosticsHub: React.FC<DiagnosticsHubProps> = ({ urls }) => (
-  <Container>
+  <Container className="fr-p-3w">
     <Title>
       <i className="bi bi-compass" />
       Explorer les diagnostics détaillés

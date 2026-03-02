@@ -178,19 +178,17 @@ export const ConsoInsee: React.FC<ConsoInseeProps> = ({
       )}
 
       <div className="fr-mb-3w">
-        <div className="bg-white fr-p-2w rounded">
-          <GenericChart
-            id="dc_emploi_vs_conso"
-            land_id={landId}
-            land_type={landType}
-            params={{
-              start_date: String(startYear),
-              end_date: String(endYear),
-            }}
-            sources={["insee", "majic"]}
-            showDataTable={true}
-          />
-        </div>
+        <GenericChart
+          id="dc_emploi_vs_conso"
+          land_id={landId}
+          land_type={landType}
+          params={{
+            start_date: String(startYear),
+            end_date: String(endYear),
+          }}
+          sources={["insee", "majic"]}
+          showDataTable={true}
+        />
       </div>
 
       {hasChildren && mapChildType && (

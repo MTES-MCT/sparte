@@ -1,22 +1,21 @@
+import React from "react";
 import styled from "styled-components";
 import { theme } from "@theme";
 
-type CardPadding = "none" | "sm" | "md" | "lg";
+interface BaseCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
 
-const paddingMap: Record<CardPadding, string> = {
-  none: "0",
-  sm: theme.spacing.sm,
-  md: theme.spacing.md,
-  lg: theme.spacing.lg,
-};
-
-export const BaseCard = styled.div<{ $padding?: CardPadding }>`
+const Card = styled.div`
   background: ${theme.colors.background};
   border-radius: ${theme.radius.default};
   box-shadow: ${theme.shadow.md};
   width: 100%;
   overflow: hidden;
-  padding: ${({ $padding }) => ($padding ? paddingMap[$padding] : "0")};
 `;
+
+export const BaseCard: React.FC<BaseCardProps> = ({ className, ...props }) => (
+  <Card className={className} {...props} />
+);
 
 export default BaseCard;

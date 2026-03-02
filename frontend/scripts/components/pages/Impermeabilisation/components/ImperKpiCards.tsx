@@ -19,18 +19,20 @@ export const ImperKpiCards: React.FC = () => {
     : `Entre ${landImperStockIndex.flux_previous_years?.[0] ?? "–"} et ${landImperStockIndex.years?.[0] ?? "–"}`;
 
   const imperNetteFooterMetrics: [
-    { icon: string; label: string; value: string },
-    { icon: string; label: string; value: string }
+    { icon: string; label: string; value: string; iconVariant?: "default" | "success" | "error" },
+    { icon: string; label: string; value: string; iconVariant?: "default" | "success" | "error" }
   ] = [
     {
       icon: "bi bi-plus-lg",
       label: "Imperméabilisation",
       value: `${formatNumber({ number: landImperFluxIndex?.flux_imper })} ha`,
+      iconVariant: "error",
     },
     {
       icon: "bi bi-dash-lg",
       label: "Désimperméabilisation",
       value: `${formatNumber({ number: landImperFluxIndex?.flux_desimper })} ha`,
+      iconVariant: "success",
     },
   ];
 
@@ -67,7 +69,7 @@ export const ImperKpiCards: React.FC = () => {
                 <span>ha</span>
               </>
             }
-            variant="error"
+            variant="default"
             badge="Donnée clé"
             footer={{
               type: "metric",
