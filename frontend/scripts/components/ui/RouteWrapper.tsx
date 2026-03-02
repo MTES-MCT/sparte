@@ -11,10 +11,6 @@ interface RouteWrapperProps {
     showTitle?: boolean;
 }
 
-const Title = styled.h1`
-    margin: 1rem 0 0 0;
-`;
-
 const RouteWrapper: React.FC<RouteWrapperProps> = ({
     title,
     children,
@@ -41,8 +37,8 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
             <div className="fr-container--fluid fr-pt-3w fr-pl-3w fr-pr-3w fr-pb-1w">
                 <div className="fr-grid-row">
                     <div className="fr-col-12">
-                        {showTitle && <Title>{title}</Title>}
-                        {showStatus && status}
+                        {showTitle && <h1 className="fr-mb-1w">{title}</h1>}
+                        {showStatus && <div className="fr-mt-5w fr-mb-2w">{status}</div>}
                     </div>
                 </div>
             </div>

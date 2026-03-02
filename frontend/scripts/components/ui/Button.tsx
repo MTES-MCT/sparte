@@ -97,14 +97,15 @@ const variantStyles = {
   `,
   link: css`
     padding: 0;
-    background: transparent;
+    background: none;
     color: ${theme.button.link.color};
     border: none;
-    font-weight: ${theme.fontWeight.medium};
+    font-size: inherit;
+    font-weight: inherit;
 
     &:hover:not(:disabled) {
+      background: none;
       color: ${theme.colors.primaryHover};
-      gap: 0.55rem;
     }
   `,
   outline: css<{ $size: ButtonSize }>`

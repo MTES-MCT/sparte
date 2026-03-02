@@ -1,6 +1,7 @@
 import React from "react";
 import Kpi from "@components/ui/Kpi";
 import { formatNumber } from "@utils/formatUtils";
+import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
 export const ArtifKpiCards: React.FC = () => {
@@ -9,10 +10,6 @@ export const ArtifKpiCards: React.FC = () => {
     landArtifFluxIndex,
     isInterdepartemental,
   } = useArtificialisationContext();
-
-  const artifNettePeriodText = isInterdepartemental
-    ? `Entre le millésime n°${landArtifStockIndex.millesime_index - 1} et le millésime n°${landArtifStockIndex.millesime_index}`
-    : `Entre ${landArtifStockIndex.flux_previous_years?.[0] ?? "–"} et ${landArtifStockIndex.years?.[0] ?? "–"}`;
 
   const artifNetteFooterMetrics: [{ icon: string; label: string; value: string; iconVariant?: "default" | "success" | "error" }, { icon: string; label: string; value: string; iconVariant?: "default" | "success" | "error" }] = [
     { icon: "bi bi-plus-lg", label: "Artificialisation", value: landArtifFluxIndex != null ? `${formatNumber({ number: landArtifFluxIndex.flux_artif })} ha` : "–", iconVariant: "error" },
@@ -35,7 +32,14 @@ export const ArtifKpiCards: React.FC = () => {
           <Kpi
             icon="bi bi-buildings"
             label="Artificialisation nette"
-            description={`${artifNettePeriodText}`}
+            description={
+              <MillesimeDisplay
+                is_interdepartemental={isInterdepartemental}
+                landArtifStockIndex={landArtifStockIndex}
+                between={true}
+                capitalize={true}
+              />
+            }
             value={<>{formatNumber({ number: landArtifStockIndex.flux_surface, addSymbol: true })} <span>ha</span></>}
             variant="default"
             badge="Donnée clé"

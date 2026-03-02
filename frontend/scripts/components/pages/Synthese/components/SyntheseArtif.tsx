@@ -4,6 +4,7 @@ import { ProjectUrls } from "@utils/projectUrls";
 import { formatNumber } from "@utils/formatUtils";
 import Loader from "@components/ui/Loader";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
+import { OcsgeDrawerProvider } from "@components/features/ocsge/OcsgeDrawerContext";
 import { useArtificialisation } from "@hooks/useArtificialisation";
 import Kpi from "@components/ui/Kpi";
 import OcsgeStatus from "@components/features/status/OcsgeStatus";
@@ -30,6 +31,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
   if (error) return <div>Erreur : {error}</div>;
 
   return (
+    <OcsgeDrawerProvider millesimes={landData.millesimes} territoryName={landData.name} isInterdepartemental={landData.is_interdepartemental}>
     <div className="fr-grid-row fr-grid-row--gutters">
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
@@ -41,8 +43,17 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
           footer={{
             type: "period",
             periods: [
-              { label: data.flux_previous_years.length > 0 ? data.flux_previous_years.join("-") : "—", active: true },
-              { label: data.years.length > 0 ? data.years.join("-") : "—" },
+              {
+                label: landData.is_interdepartemental
+                  ? `Millésime n°${data.millesime_index - 1}`
+                  : data.flux_previous_years.length > 0 ? data.flux_previous_years.join("-") : "—",
+                active: true,
+              },
+              {
+                label: landData.is_interdepartemental
+                  ? `Millésime n°${data.millesime_index}`
+                  : data.years.length > 0 ? data.years.join("-") : "—",
+              },
             ],
           }}
           action={{
@@ -108,6 +119,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
         </GuideContent>
       </div>
     </div>
+    </OcsgeDrawerProvider>
   );
 };
 

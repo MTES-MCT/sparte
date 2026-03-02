@@ -1,6 +1,7 @@
 import React from "react";
 import Kpi from "@components/ui/Kpi";
 import { formatNumber } from "@utils/formatUtils";
+import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { useImpermeabilisationContext } from "../context/ImpermeabilisationContext";
 
 export const ImperKpiCards: React.FC = () => {
@@ -13,10 +14,6 @@ export const ImperKpiCards: React.FC = () => {
   const millesimeLabel = isInterdepartemental
     ? `Millésime n°${landImperStockIndex.millesime_index}`
     : landImperStockIndex.years?.[0]?.toString() ?? "–";
-
-  const imperNettePeriodText = isInterdepartemental
-    ? `Entre le millésime n°${landImperStockIndex.millesime_index - 1} et le millésime n°${landImperStockIndex.millesime_index}`
-    : `Entre ${landImperStockIndex.flux_previous_years?.[0] ?? "–"} et ${landImperStockIndex.years?.[0] ?? "–"}`;
 
   const imperNetteFooterMetrics: [
     { icon: string; label: string; value: string; iconVariant?: "default" | "success" | "error" },
@@ -59,7 +56,14 @@ export const ImperKpiCards: React.FC = () => {
           <Kpi
             icon="bi bi-droplet"
             label="Imperméabilisation nette"
-            description={`${imperNettePeriodText}`}
+            description={
+              <MillesimeDisplay
+                is_interdepartemental={isInterdepartemental}
+                landArtifStockIndex={landImperStockIndex}
+                between={true}
+                capitalize={true}
+              />
+            }
             value={
               <>
                 {formatNumber({

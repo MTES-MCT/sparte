@@ -127,6 +127,7 @@ const ActionWrapper = styled.div`
   padding: 0.75rem 1rem;
   border-top: 1px solid ${theme.colors.border};
   background: ${theme.colors.backgroundSubtle};
+  font-size: ${theme.fontSize.sm};
 `;
 
 const MetricRow = styled.div`

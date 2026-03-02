@@ -17,6 +17,7 @@ interface TriptychProps {
   donnees: TriptychSection;
   cadreReglementaire?: TriptychSection;
   className?: string;
+  onDonneesClick?: () => void;
 }
 
 interface SectionConfig {
@@ -130,6 +131,7 @@ const Triptych: React.FC<TriptychProps> = ({
   donnees,
   cadreReglementaire,
   className,
+  onDonneesClick,
 }) => {
   const [openSection, setOpenSection] = useState<SectionKey | null>(null);
 
@@ -152,7 +154,13 @@ const Triptych: React.FC<TriptychProps> = ({
             <Section
               key={config.key}
               type="button"
-              onClick={() => setOpenSection(config.key)}
+              onClick={() => {
+                if (config.key === "donnees" && onDonneesClick) {
+                  onDonneesClick();
+                } else {
+                  setOpenSection(config.key);
+                }
+              }}
               aria-label={`Ouvrir ${config.title}`}
             >
               <SectionHeader>

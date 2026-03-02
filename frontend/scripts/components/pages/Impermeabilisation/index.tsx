@@ -2,7 +2,7 @@ import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
 import Feedback from "@components/ui/Feedback";
-import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
+import { OcsgeDrawerProvider, useOcsgeDrawer } from "@components/features/ocsge/OcsgeDrawerContext";
 import { ImpermeabilisationProvider, useImpermeabilisationContext } from "./context/ImpermeabilisationContext";
 import {
   ImperKpiCards,
@@ -18,15 +18,16 @@ interface ImpermeabilisationProps {
   landData: LandDetailResultType;
 }
 
-const ImpermeabilisationContent: React.FC = () => {
-  const { childLandTypes, name, millesimes, isInterdepartemental } = useImpermeabilisationContext();
+const ImpermeabilisationPageContent: React.FC = () => {
+  const { childLandTypes } = useImpermeabilisationContext();
+  const ocsgeDrawer = useOcsgeDrawer();
 
   return (
     <div className="fr-container--fluid fr-p-3w">
       <Triptych
         className="fr-mb-5w"
         definition={{
-          preview: "L'imperméabilisation des sols est définie comme : 1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations). 2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement</strong> (artificiel, asphalté, bétonné, couvert de pavés ou de dalles).",
+          preview: "L'imperméabilisation des sols est définie comme : 1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations). 2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (artificiel, asphalté, bétonné, couvert de pavés ou de dalles).",
           content: (
             <>
               <p>L'imperméabilisation des sols est définie comme :</p>
@@ -46,29 +47,10 @@ const ImpermeabilisationContent: React.FC = () => {
           ),
         }}
         donnees={{
-          preview: "La mesure de l'imperméabilisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Échelle), base de données de référence pour la description de l'occupation du sol. Cette donnée est produite par l'IGN tous les 3 ans pour chaque département. Chaque production est appelée un millésime.",
-          content: (
-            <>
-              <p>
-                La mesure de l'imperméabilisation d'un territoire repose sur la
-                donnée{" "}
-                <strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>,
-                base de données de référence pour la description de l'occupation
-                du sol.
-              </p>
-              <p>
-                Cette donnée est produite par l'IGN tous les 3 ans pour chaque
-                département. Chaque production est appelée un millésime.
-              </p>
-              <LandMillesimeTable
-                millesimes={millesimes}
-                territory_name={name}
-                is_interdepartemental={isInterdepartemental}
-                compact
-              />
-            </>
-          ),
+          preview: "La mesure de l'imperméabilisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Échelle), base de données de référence pour la description de l'occupation du sol.",
+          content: null,
         }}
+        onDonneesClick={ocsgeDrawer?.openDrawer}
       />
       <ImperKpiCards />
       <ImperNetFlux />
@@ -79,6 +61,16 @@ const ImpermeabilisationContent: React.FC = () => {
       <ImperExplorer />
       <Feedback />
     </div>
+  );
+};
+
+const ImpermeabilisationContent: React.FC = () => {
+  const { name, millesimes, isInterdepartemental } = useImpermeabilisationContext();
+
+  return (
+    <OcsgeDrawerProvider millesimes={millesimes} territoryName={name} isInterdepartemental={isInterdepartemental}>
+      <ImpermeabilisationPageContent />
+    </OcsgeDrawerProvider>
   );
 };
 
