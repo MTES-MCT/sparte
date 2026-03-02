@@ -1,139 +1,30 @@
 #!/usr/bin/env bash
-# Script interactif pour compléter les variables d'environnement
+# Script pour compléter les variables d'environnement
 # Appelé par `make install`
 #
 # Deux modes :
-# 1. Vaultwarden : importe les secrets depuis deux secure notes Bitwarden/Vaultwarden
-# 2. Interactif : demande chaque variable à compléter une par une
-#
-# Organisation Vaultwarden attendue :
-#   - Deux secure notes contenant uniquement les variables secrètes (KEY=VALUE)
-#   - Le script demande l'URL du serveur, la clé API, et les liens des deux notes
-#   - Les .env sont d'abord créés depuis .env.example, puis les secrets remplacent les placeholders.
+# 1. Coller le contenu d'un fichier .env pour compléter les valeurs manquantes
+# 2. Passer et compléter les fichiers .env manuellement
 
 set -euo pipefail
 
 PLACEHOLDERS="PICK_A_PASSWORD|ASK_A_MAINTAINER|YOUR_EMAIL|YOUR_MATTERMOST_USERNAME|CREATE_A_SECRET_KEY"
-ENV_DOC="ENV.md"
 
 # Couleurs
 CYAN='\033[36m'
 YELLOW='\033[33m'
 GREEN='\033[32m'
-RED='\033[31m'
 DIM='\033[2m'
 RESET='\033[0m'
 
 # ──────────────────────────────────────────────
-# Vaultwarden
+# Coller un fichier .env
 # ──────────────────────────────────────────────
 
-ensure_bw_cli() {
-    if command -v bw &>/dev/null; then
-        return 0
-    fi
-
-    echo -e "  ${DIM}Bitwarden CLI (bw) non trouvé — installation...${RESET}"
-    local os
-    os=$(uname -s)
-
-    case "$os" in
-        Darwin)
-            if command -v brew &>/dev/null; then
-                brew install bitwarden-cli
-            else
-                echo -e "  ${RED}Homebrew requis pour installer bw sur macOS.${RESET}"
-                return 1
-            fi
-            ;;
-        Linux)
-            if command -v snap &>/dev/null; then
-                sudo snap install bw
-            elif command -v npm &>/dev/null; then
-                npm install -g @bitwarden/cli
-            else
-                echo -e "  ${RED}snap ou npm requis pour installer bw sur Linux.${RESET}"
-                return 1
-            fi
-            ;;
-        MINGW*|MSYS*|CYGWIN*)
-            if command -v winget &>/dev/null; then
-                winget install -e --id Bitwarden.CLI
-            elif command -v npm &>/dev/null; then
-                npm install -g @bitwarden/cli
-            else
-                echo -e "  ${RED}winget ou npm requis pour installer bw sur Windows.${RESET}"
-                return 1
-            fi
-            ;;
-        *)
-            echo -e "  ${RED}OS non reconnu. Installez bw manuellement : https://bitwarden.com/help/cli/${RESET}"
-            return 1
-            ;;
-    esac
-
-    if ! command -v bw &>/dev/null; then
-        echo -e "  ${RED}Installation échouée. Installez bw manuellement : https://bitwarden.com/help/cli/${RESET}"
-        return 1
-    fi
-
-    echo -e "  ${GREEN}bw installé.${RESET}"
-}
-
-# Extrait l'itemId d'un lien Vaultwarden ou retourne la valeur telle quelle si c'est déjà un ID
-extract_item_id() {
-    local input="$1"
-    # Si c'est une URL contenant itemId=...
-    if echo "$input" | grep -q 'itemId='; then
-        echo "$input" | sed 's/.*itemId=\([^&]*\).*/\1/'
-    else
-        # Sinon c'est déjà un ID
-        echo "$input"
-    fi
-}
-
-bw_login() {
-    local server_url="$1"
-
-    # Déconnecter la session précédente pour repartir proprement
-    bw logout 2>/dev/null || true
-
-    # Configurer le serveur
-    echo -e "  ${DIM}Serveur : ${server_url}${RESET}"
-    bw config server "$server_url" 2>/dev/null
-
-    # Connexion avec email + mot de passe
-    # Note : les clés API d'organisation ne sont pas supportées par le CLI Bitwarden,
-    # seules les clés API personnelles fonctionnent. On utilise donc email + mot de passe
-    # pour pouvoir accéder aux items des coffres d'organisation.
-    echo -e "  ${DIM}Connexion (les clés API ne sont pas supportées pour les coffres d'organisation)${RESET}"
-    BW_SESSION=$(bw login --raw </dev/tty)
-    if [ -z "$BW_SESSION" ]; then
-        echo -e "  ${RED}Échec de la connexion.${RESET}"
-        return 1
-    fi
-
-    export BW_SESSION
-}
-
-# Récupère le contenu d'une secure note par son ID
-bw_get_note() {
-    local item_id="$1"
-    local item_json
-    # bw get item fonctionne pour les items personnels et organisationnels
-    item_json=$(bw get item "$item_id" --session "$BW_SESSION" 2>&1) || {
-        echo -e "  ${DIM}Erreur bw : ${item_json}${RESET}" >&2
-        return 1
-    }
-    # Extraire les notes du JSON
-    echo "$item_json" | python3 -c "import sys,json; n=json.load(sys.stdin).get('notes',''); print(n if n else '')" 2>/dev/null
-}
-
-# Applique les secrets d'une note Vaultwarden sur un fichier .env existant
-# La note contient des lignes KEY=VALUE (uniquement les secrets)
+# Applique des lignes KEY=VALUE sur un fichier .env existant
 apply_secrets_to_env() {
     local env_file="$1"
-    local note_content="$2"
+    local content="$2"
     local count=0
 
     while IFS= read -r line; do
@@ -150,166 +41,58 @@ apply_secrets_to_env() {
             rm -f "${env_file}.bak"
             count=$((count + 1))
         fi
-    done <<< "$note_content"
+    done <<< "$content"
 
     echo "$count"
 }
 
-fetch_from_vaultwarden() {
-    echo ""
-    echo -e "${YELLOW}Import des secrets depuis Vaultwarden${RESET}"
-    echo ""
-
-    ensure_bw_cli || return 1
-
-    # Demander l'URL du serveur
-    printf "  URL du serveur Vaultwarden (ex: https://vault.example.com) : "
-    read -r server_url </dev/tty
-    if [ -z "$server_url" ]; then
-        echo -e "  ${RED}URL requise.${RESET}"
-        return 1
-    fi
-
-    bw_login "$server_url" || return 1
-
-    bw sync --session "$BW_SESSION" >/dev/null 2>&1
-
-    # Demander les liens des notes
-    echo ""
-    echo -e "  ${DIM}Pour chaque note, collez l'URL ou l'ID de l'élément Vaultwarden.${RESET}"
-    echo -e "  ${DIM}  URL : https://vault.example.com/#/vault?itemId=xxxx-xxxx${RESET}"
-    echo -e "  ${DIM}  ID  : xxxx-xxxx-xxxx-xxxx${RESET}"
-    echo -e "  ${DIM}Appuyez sur Entrée pour passer.${RESET}"
-    echo ""
-
-    local success=0
-
-    # .env
-    printf "  Note des secrets ${CYAN}.env${RESET} (URL ou ID) : "
-    read -r env_link </dev/tty
-    if [ -n "$env_link" ]; then
-        local env_id
-        env_id=$(extract_item_id "$env_link")
-        local env_content
-        if env_content=$(bw_get_note "$env_id"); then
-            if [ -n "$env_content" ]; then
-                local count
-                count=$(apply_secrets_to_env ".env" "$env_content")
-                echo -e "  ${GREEN}${count} variables importées dans .env${RESET}"
-                success=1
-            else
-                echo -e "  ${RED}Note trouvée mais vide${RESET}"
-            fi
-        else
-            echo -e "  ${RED}Note introuvable (ID: ${env_id})${RESET}"
-        fi
-    fi
-
-    # airflow/.env
-    printf "  Note des secrets ${CYAN}airflow/.env${RESET} (URL ou ID) : "
-    read -r airflow_link </dev/tty
-    if [ -n "$airflow_link" ]; then
-        local airflow_id
-        airflow_id=$(extract_item_id "$airflow_link")
-        local airflow_content
-        if airflow_content=$(bw_get_note "$airflow_id"); then
-            if [ -n "$airflow_content" ]; then
-                local count
-                count=$(apply_secrets_to_env "airflow/.env" "$airflow_content")
-                echo -e "  ${GREEN}${count} variables importées dans airflow/.env${RESET}"
-                success=1
-            else
-                echo -e "  ${RED}Note trouvée mais vide${RESET}"
-            fi
-        else
-            echo -e "  ${RED}Note introuvable (ID: ${airflow_id})${RESET}"
-        fi
-    fi
-
-    if [ $success -eq 0 ]; then
-        echo ""
-        echo -e "${RED}Aucun secret importé. Basculement vers la saisie interactive...${RESET}"
-        return 1
-    fi
-
-    return 0
-}
-
-# ──────────────────────────────────────────────
-# Interactif
-# ──────────────────────────────────────────────
-
-# Cherche la description d'une variable dans ENV.md
-get_description() {
-    local var_name="$1"
-    if [ -f "$ENV_DOC" ]; then
-        grep -m1 "| \`${var_name}\`" "$ENV_DOC" 2>/dev/null | sed 's/.*| `[^`]*` | \([^|]*\) |.*/\1/' | sed 's/^ *//;s/ *$//' || true
-    fi
-}
-
-# Traite un fichier .env interactivement
-process_env_file() {
+paste_env_content() {
     local env_file="$1"
     local label="$2"
-    local found=0
 
-    # Lire le fichier via fd 3 pour laisser stdin (/dev/tty) libre pour l'utilisateur
-    while IFS= read -r line <&3; do
-        # Ignorer les commentaires et lignes vides
-        [[ "$line" =~ ^[[:space:]]*# ]] && continue
-        [[ -z "$line" ]] && continue
-
-        # Extraire nom=valeur
-        local var_name="${line%%=*}"
-        local var_value="${line#*=}"
-
-        # Vérifier si la valeur contient un placeholder
-        if echo "$var_value" | grep -qE "$PLACEHOLDERS"; then
-            if [ $found -eq 0 ]; then
-                echo ""
-                echo -e "${CYAN}── ${label} ──${RESET}"
-                found=1
-            fi
-
-            local description
-            description=$(get_description "$var_name")
-
-            echo ""
-            echo -e "  ${CYAN}${var_name}${RESET}"
-            if [ -n "$description" ]; then
-                echo -e "  ${DIM}${description}${RESET}"
-            fi
-            echo -e "  ${DIM}Actuel : ${var_value}${RESET}"
-
-            printf "  Valeur : "
-            read -r new_value </dev/tty
-
-            if [ -n "$new_value" ]; then
-                sed -i.bak "s|^${var_name}=.*|${var_name}=${new_value}|" "$env_file"
-            fi
-        fi
-    done 3< "$env_file"
-
-    # Nettoyer les fichiers de backup
-    rm -f "${env_file}.bak"
-
-    if [ $found -eq 0 ]; then
-        echo -e "  ${label} : ${DIM}aucune variable à compléter${RESET}"
+    if [ ! -f "$env_file" ]; then
+        return 0
     fi
+
+    # Vérifier s'il y a des placeholders dans ce fichier
+    if ! grep -qE "$PLACEHOLDERS" "$env_file" 2>/dev/null; then
+        echo -e "  ${label} : ${DIM}aucune variable à compléter${RESET}"
+        return 0
+    fi
+
+    echo ""
+    echo -e "  ${CYAN}── ${label} ──${RESET}"
+    echo -e "  ${DIM}Collez le contenu du fichier .env (lignes KEY=VALUE),${RESET}"
+    echo -e "  ${DIM}puis appuyez sur Entrée et tapez ${CYAN}EOF${DIM} pour terminer.${RESET}"
+    echo -e "  ${DIM}Appuyez directement sur Entrée puis ${CYAN}EOF${DIM} pour passer.${RESET}"
+    echo ""
+
+    local pasted_content=""
+    while IFS= read -r line </dev/tty; do
+        [ "$line" = "EOF" ] && break
+        pasted_content+="${line}"$'\n'
+    done
+
+    # Supprimer le dernier saut de ligne
+    pasted_content="${pasted_content%$'\n'}"
+
+    if [ -z "$pasted_content" ]; then
+        echo -e "  ${DIM}Aucun contenu collé, fichier non modifié.${RESET}"
+        return 0
+    fi
+
+    local count
+    count=$(apply_secrets_to_env "$env_file" "$pasted_content")
+    echo -e "  ${GREEN}${count} variables importées dans ${label}${RESET}"
 }
 
-interactive_setup() {
+import_from_paste() {
     echo ""
-    echo -e "${DIM}Appuyez sur Entrée sans rien saisir pour garder la valeur actuelle.${RESET}"
-    echo -e "${DIM}Les valeurs ASK_A_MAINTAINER sont à demander à un mainteneur du projet.${RESET}"
+    echo -e "${YELLOW}Import par collage de fichier .env${RESET}"
+    echo -e "${DIM}Demandez le fichier .env à un mainteneur du projet, puis collez son contenu ci-dessous.${RESET}"
 
-    if [ -f ".env" ]; then
-        process_env_file ".env" ".env — Application"
-    fi
-
-    if [ -f "airflow/.env" ]; then
-        process_env_file "airflow/.env" "airflow/.env — Airflow"
-    fi
+    paste_env_content ".env" ".env"
+    paste_env_content "airflow/.env" "airflow/.env"
 }
 
 # ──────────────────────────────────────────────
@@ -338,26 +121,20 @@ fi
 echo ""
 echo "  Comment configurer les variables ?"
 echo ""
-echo -e "  ${CYAN}1${RESET}) Saisie interactive"
-echo -e "  ${CYAN}2${RESET}) Importer depuis Vaultwarden"
-echo -e "  ${CYAN}3${RESET}) Passer (compléter les fichiers .env manuellement)"
+echo -e "  ${CYAN}1${RESET}) Coller le contenu d'un fichier .env"
+echo -e "  ${CYAN}2${RESET}) Passer (compléter les fichiers .env manuellement)"
 echo ""
-printf "  Choix [1/2/3] : "
+printf "  Choix [1/2] : "
 read -r choice </dev/tty
 
 case "$choice" in
-    2)
-        if ! fetch_from_vaultwarden; then
-            interactive_setup
-        fi
+    1)
+        import_from_paste
         ;;
-    3)
+    *)
         echo ""
         echo -e "  ${DIM}Pensez à compléter .env et airflow/.env avant de lancer l'application.${RESET}"
         echo -e "  ${DIM}Voir ENV.md pour la documentation.${RESET}"
-        ;;
-    *)
-        interactive_setup
         ;;
 esac
 
