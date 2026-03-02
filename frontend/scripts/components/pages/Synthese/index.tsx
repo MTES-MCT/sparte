@@ -7,7 +7,6 @@ import SyntheseFriche from "./components/SyntheseFriche";
 import SyntheseLogementVacant from "./components/SyntheseLogementVacant";
 import TerritoryIdentityCard from "./components/TerritoryIdentityCard";
 import DiagnosticsHub from "./components/DiagnosticsHub";
-import Feedback from "@components/ui/Feedback";
 import Badge from "@components/ui/Badge";
 import Timeline from "@components/ui/Timeline";
 
@@ -76,12 +75,7 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
           urls={urls}
         />
       </div>
-
-      <div className="fr-mb-7w">
-        <DiagnosticsHub urls={urls} />
-      </div>
-
-      <Feedback onSubmit={(rating, comment) => console.log(rating, comment)} />
+      <DiagnosticsHub urls={urls} />
     </div>
   );
 };

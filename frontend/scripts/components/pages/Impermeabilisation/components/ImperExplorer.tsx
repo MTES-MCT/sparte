@@ -9,7 +9,7 @@ export const ImperExplorer: React.FC = () => {
   if (land_type === LandType.REGION) return null;
 
   return (
-    <div className="fr-mb-7w">
+    <>
       <h2>Explorateur des objets OCS GE imperméabilisés</h2>
       <p className="fr-text--sm fr-mb-2w">
         Cette carte permet d'explorer individuellement les objets OCS GE
@@ -47,6 +47,6 @@ export const ImperExplorer: React.FC = () => {
         <strong style={{ color: "#2A9D8F" }}>non imperméabilisé</strong>.
       </p>
       <OcsgeObjectMap landData={landData} mode="imper" />
-    </div>
+    </>
   );
 };

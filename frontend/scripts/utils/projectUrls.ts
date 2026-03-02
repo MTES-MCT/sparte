@@ -11,6 +11,7 @@ export type ProjectUrls = {
     consommation: string;
     logementVacant: string;
     friches: string;
+    residencesSecondaires: string;
     downloads: string;
 };
 

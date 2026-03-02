@@ -1,5 +1,5 @@
 import React from "react";
-import Card from "@components/ui/Card";
+import Kpi from "@components/ui/Kpi";
 import { formatNumber } from "@utils/formatUtils";
 
 interface RSKpisProps {
@@ -15,39 +15,55 @@ export const RSKpis: React.FC<RSKpisProps> = ({
   evolutionAbsolute,
   densite,
 }) => {
+  const evolutionValue = evolutionAbsolute != null
+    ? `${evolutionAbsolute > 0 ? "+" : ""}${formatNumber({ number: evolutionAbsolute })}`
+    : "n.d.";
+
+  const evolutionVariant = evolutionAbsolute != null
+    ? evolutionAbsolute > 0 ? "error" : evolutionAbsolute < 0 ? "success" : "default"
+    : "default";
+
   return (
     <div className="fr-grid-row fr-grid-row--gutters fr-mb-5w">
       <div className="fr-col-12 fr-col-lg-4">
-        <Card
-          icon="bi-graph-up-arrow"
-          badgeClass="fr-badge--info"
-          badgeLabel="Évolution des résidences secondaires"
-          value={evolutionAbsolute != null
-            ? `${evolutionAbsolute > 0 ? "+" : ""}${formatNumber({ number: evolutionAbsolute })}`
-            : "n.d."}
-          label={evolutionPercent != null
-            ? `Entre 2011 et 2022 (${evolutionPercent > 0 ? "+" : ""}${evolutionPercent} %)`
-            : "Entre 2011 et 2022"}
-          isHighlighted={true}
-          highlightBadge="Donnée clé"
+        <Kpi
+          icon={evolutionAbsolute != null && evolutionAbsolute > 0 ? "bi bi-arrow-up" : evolutionAbsolute != null && evolutionAbsolute < 0 ? "bi bi-arrow-down" : "bi bi-dash"}
+          label="Évolution des résidences secondaires"
+          value={evolutionValue}
+          description={evolutionPercent != null ? `${evolutionPercent > 0 ? "+" : ""}${evolutionPercent} %` : undefined}
+          variant={evolutionVariant}
+          badge="Donnée clé"
+          footer={{
+            type: "period",
+            periods: [
+              { label: "2011", active: true },
+              { label: "2022" },
+            ],
+          }}
         />
       </div>
       <div className="fr-col-12 fr-col-lg-4">
-        <Card
-          icon="bi-house"
-          badgeClass="fr-badge--info"
-          badgeLabel="Nombre de résidences secondaires"
+        <Kpi
+          icon="bi bi-house"
+          label="Résidences secondaires"
           value={residencesSecondaires != null ? formatNumber({ number: residencesSecondaires }) : "n.d."}
-          label="En 2022"
+          variant="default"
+          footer={{
+            type: "period",
+            periods: [{ label: "2022" }],
+          }}
         />
       </div>
       <div className="fr-col-12 fr-col-lg-4">
-        <Card
-          icon="bi-grid-3x3-gap"
-          badgeClass="fr-badge--info"
-          badgeLabel="Densité de résidences secondaires"
-          value={densite != null ? `${formatNumber({ number: densite })} / ha` : "n.d."}
-          label="En 2022"
+        <Kpi
+          icon="bi bi-grid-3x3-gap"
+          label="Densité de résidences secondaires"
+          value={<>{densite != null ? formatNumber({ number: densite }) : "n.d."} <span>/ ha</span></>}
+          variant="default"
+          footer={{
+            type: "period",
+            periods: [{ label: "2022" }],
+          }}
         />
       </div>
     </div>

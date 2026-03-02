@@ -22,7 +22,6 @@ const starPop = keyframes`
 const Wrapper = styled(BaseCard)`
   display: flex;
   align-items: stretch;
-  overflow: visible;
 `;
 
 const AnimationSide = styled.div`
@@ -30,11 +29,6 @@ const AnimationSide = styled.div`
   width: 35%;
   min-width: 200px;
   background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryHover} 100%);
-  border-radius: ${theme.radius.default} 0 0 ${theme.radius.default};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
 
   @media (max-width: 768px) {
     display: none;
@@ -48,7 +42,6 @@ const AnimationWrapper = styled.div`
   transform: translate(-50%, -50%);
   width: 50%;
   height: auto;
-  z-index: 10;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
 
   @media (prefers-reduced-motion: reduce) {
@@ -137,7 +130,6 @@ const TextArea = styled.textarea`
   border: 1px solid ${theme.colors.border};
   border-radius: ${theme.radius.default};
   font-size: ${theme.fontSize.sm};
-  font-family: inherit;
   color: ${theme.colors.text};
   resize: none;
   transition: border-color 0.2s ease;

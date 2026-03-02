@@ -5,7 +5,6 @@ import { useConsoData, useNearestTerritories, useComparisonTerritories } from ".
 import { ConsommationControlsProvider, useConsommationControls } from "./context/ConsommationControlsContext";
 import { TopBarContent } from "@components/layout/TopBarContent";
 import Triptych from "@components/ui/Triptych";
-import Feedback from "@components/ui/Feedback";
 import {
   ConsommationControls,
   ConsoAnnuelle,
@@ -171,10 +170,6 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
           onRemoveTerritory={handleRemoveTerritory}
           onReset={handleResetTerritories}
         />
-
-        <div className="fr-mt-5w">
-          <Feedback />
-        </div>
       </div>
     </>
   );

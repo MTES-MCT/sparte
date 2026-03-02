@@ -13,6 +13,7 @@ interface CallToActionProps {
   title: string;
   text: string;
   actions?: Action[];
+  className?: string;
 }
 
 const Container = styled(BaseCard)`
@@ -46,9 +47,9 @@ const Actions = styled.div`
   }
 `;
 
-const CallToAction: React.FC<CallToActionProps> = ({ title, text, actions }) => {
+const CallToAction: React.FC<CallToActionProps> = ({ title, text, actions, className }) => {
   return (
-    <Container>
+    <Container className={className}>
       <Title>{title}</Title>
       <Text>{text}</Text>
       {actions && actions.length > 0 && (

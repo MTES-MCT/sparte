@@ -4,7 +4,7 @@ import zeroLogementVacantImage from "@images/logo_ZLV.png";
 
 export const LogementVacantExternalServices: React.FC = () => {
   return (
-    <div className="fr-mb-7w">
+    <>
       <h2 className="fr-h4 fr-mb-3w">
         Pour aller plus loin dans votre démarche de remobilisation des logements
         vacants
@@ -20,6 +20,6 @@ export const LogementVacantExternalServices: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };

@@ -71,9 +71,9 @@ export const FrichesKpiCards: React.FC = () => {
   ];
 
   return (
-    <>
-      <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-        <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+    <div className="fr-mb-5w">
+      <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
+        <div className="fr-col-12 fr-col-xl-4">
           <Kpi
             icon="bi bi-building-x"
             label={`${friche_sans_projet_count} ${pluralize(friche_sans_projet_count, "friche")} sans projet`}
@@ -91,7 +91,7 @@ export const FrichesKpiCards: React.FC = () => {
             }}
           />
         </div>
-        <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+        <div className="fr-col-12 fr-col-xl-4">
           <Kpi
             icon="bi bi-building"
             label={`${friche_avec_projet_count} ${pluralize(friche_avec_projet_count, "friche")} avec projet`}
@@ -108,7 +108,7 @@ export const FrichesKpiCards: React.FC = () => {
             }}
           />
         </div>
-        <div className="fr-col-12 fr-col-md-6 fr-col-lg-4">
+        <div className="fr-col-12 fr-col-xl-4">
           <Kpi
             icon="bi bi-building-check"
             label={`${friche_reconvertie_count} ${pluralize(friche_reconvertie_count, "friche")} reconvertie${friche_reconvertie_count > 1 ? "s" : ""}`}
@@ -131,8 +131,7 @@ export const FrichesKpiCards: React.FC = () => {
         friche_status={fricheStatus}
         friche_status_details={fricheStatusDetails}
         name={name}
-        className="fr-mt-2w"
       />
-    </>
+    </div>
   );
 };

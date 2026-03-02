@@ -12,7 +12,6 @@ const MapsContainer = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 2rem;
-  margin-top: 3rem;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -56,7 +55,7 @@ export const FrichesMaps: React.FC = () => {
   } = useFrichesContext();
 
   return (
-    <MapsContainer ref={mapsContainerRef}>
+    <MapsContainer ref={mapsContainerRef} className="fr-mb-5w">
       <StickyMapColumn $isMobile={isMobile}>
         <h2 className="fr-mb-3w">Friches</h2>
         <FrichesMap

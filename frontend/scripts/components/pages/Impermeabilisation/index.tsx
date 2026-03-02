@@ -1,7 +1,6 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
-import Feedback from "@components/ui/Feedback";
 import { OcsgeDrawerProvider, useOcsgeDrawer } from "@components/features/ocsge/OcsgeDrawerContext";
 import { ImpermeabilisationProvider, useImpermeabilisationContext } from "./context/ImpermeabilisationContext";
 import {
@@ -59,7 +58,6 @@ const ImpermeabilisationPageContent: React.FC = () => {
       <ImperFluxDetail />
       {childLandTypes.length > 0 && <ImperChildLands />}
       <ImperExplorer />
-      <Feedback />
     </div>
   );
 };

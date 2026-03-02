@@ -5,9 +5,9 @@ import OcsgeMatricePNG from "@images/ocsge_matrice_passage.png";
 
 export const ArtifCalculation: React.FC = () => {
   return (
-    <div className="fr-mb-7w">
+    <>
       <h2>Calcul de l'artificialisation des sols</h2>
-      <BaseCard className="fr-p-3w fr-mb-7w">
+      <BaseCard className="fr-p-3w">
         <p className="fr-text--sm">
           La mesure de l'artificialisation est obtenue à partir de la donnée OCS
           GE, en s'appuyant en particulier sur un tableau de croisement
@@ -120,6 +120,6 @@ export const ArtifCalculation: React.FC = () => {
           </div>
         </div>
       </BaseCard>
-    </div>
+    </>
   );
 };

@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import styled from 'styled-components';
 import usePageTitle from '@hooks/usePageTitle';
+import Feedback from '@components/ui/Feedback';
+
 interface RouteWrapperProps {
     title: string;
     children: ReactNode;
@@ -9,6 +10,7 @@ interface RouteWrapperProps {
     showStatus?: boolean;
     status?: ReactNode;
     showTitle?: boolean;
+    showFeedback?: boolean;
 }
 
 const RouteWrapper: React.FC<RouteWrapperProps> = ({
@@ -18,6 +20,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
     showPage = true,
     showStatus = false,
     showTitle = true,
+    showFeedback = true,
 }) => {
     const location = useLocation();
 
@@ -29,7 +32,12 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
     }, [location.pathname]);
 
     if (!showTitle && !showStatus && showPage) {
-        return <>{children}</>;
+        return (
+            <>
+                {children}
+                {showFeedback && <Feedback />}
+            </>
+        );
     }
 
     return (
@@ -44,6 +52,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
             </div>
             
             {showPage && children}
+            {showFeedback && <div className="fr-p-3w"><Feedback /></div>}
         </>
     );
 };

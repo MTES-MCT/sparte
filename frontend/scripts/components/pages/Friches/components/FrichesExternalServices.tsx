@@ -5,8 +5,8 @@ import urbanvitalizImage from "@images/logo-urbanvitaliz.png";
 
 export const FrichesExternalServices: React.FC = () => {
   return (
-    <div className="fr-mb-7w">
-      <h2 className="fr-mt-10w">
+    <>
+      <h2>
         Pour aller plus loin dans votre démarche de réhabilitation de friches
       </h2>
       <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
@@ -29,6 +29,6 @@ export const FrichesExternalServices: React.FC = () => {
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };

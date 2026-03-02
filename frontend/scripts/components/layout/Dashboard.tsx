@@ -86,159 +86,161 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                 <TopBar name={landData.name} landType={landData.land_type} landId={landData.land_id} />
                                 <Content>
                                     <Routes>
-                                    <Route
-                                        path={urls.synthese}
-                                        element={
-                                            <RouteWrapper
-                                                title="Synthèse"
-                                            >
-                                                <Synthese
-                                                    landData={landData}
-                                                />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.consommation}
-                                        element={
-                                            <RouteWrapper
-                                                title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
-                                                showPage={has_conso}
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
-                                                status={
-                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
-                                                }
-                                            >
-                                                <Consommation landData={landData} preference={preference} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.trajectoires}
-                                        element={
-                                            <RouteWrapper
-                                                title="Trajectoire de sobriété foncière"
-                                                showPage={has_conso}
-                                                showStatus={![
-                                                    ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
-                                                    ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES
-                                                ].includes(consommation_correction_status)}
-                                                status={
-                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
-                                                }
-                                            >
-                                                <Trajectoires landData={landData} preference={preference} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.artificialisation}
-                                        element={
-                                            <RouteWrapper
-                                                title="Artificialisation des sols"
-                                                showPage={has_ocsge}
-                                                showStatus={ocsge_status !== OcsgeStatusEnum.COMPLETE_UNIFORM}
-                                                status={
-                                                    <OcsgeStatus status={ocsge_status} />
-                                                }
-                                            >
-                                                    <Artificialisation landData={landData} />
-                                                </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.impermeabilisation}
-                                        element={
-                                            <RouteWrapper
-                                                title="Imperméabilisation des sols"
-                                                showPage={has_ocsge}
-                                                showStatus={ocsge_status !== OcsgeStatusEnum.COMPLETE_UNIFORM}
-                                                status={
-                                                    <OcsgeStatus status={ocsge_status} />
-                                                }
-                                            >
-                                                    <Impermeabilisation
+                                        <Route
+                                            path={urls.synthese}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Synthèse"
+                                                >
+                                                    <Synthese
                                                         landData={landData}
                                                     />
                                                 </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.logementVacant}
-                                        element={
-                                            <RouteWrapper
-                                                title="Vacance des logements"
-                                                showPage={has_logements_vacants_prive || has_logements_vacants_social}
-                                                showStatus={!has_logements_vacants_prive || !has_logements_vacants_social || logements_vacants_status?.includes('secretise') || logements_vacants_status?.includes('indisponibles')}
-                                                status={
-                                                    <LogementVacantStatus status={logements_vacants_status} />
-                                                }
-                                            >
-                                                <LogementVacant landData={landData} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.friches}
-                                        element={
-                                            <RouteWrapper
-                                                title="Friches"
-                                                showPage={has_friche}
-                                                showStatus={!has_friche}
-                                                status={
-                                                    <FricheStatus />
-                                                }
-                                            >
-                                                    <Friches landData={landData} />
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.consommation}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
+                                                    showPage={has_conso}
+                                                    showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
+                                                    status={
+                                                        <ConsoCorrectionStatus status={consommation_correction_status} />
+                                                    }
+                                                >
+                                                    <Consommation landData={landData} preference={preference} />
                                                 </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.residencesSecondaires}
-                                        element={
-                                            <RouteWrapper
-                                                title="Résidences secondaires"
-                                            >
-                                                <ResidencesSecondaires landData={landData} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.rapportLocal}
-                                        element={
-                                            <RouteWrapper
-                                                title="Rapport triennal local"
-                                                showPage={has_conso}
-                                                showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
-                                                status={
-                                                    <ConsoCorrectionStatus status={consommation_correction_status} />
-                                                }
-                                            >
-                                                <RapportLocal landData={landData} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.downloads}
-                                        element={
-                                            <RouteWrapper
-                                                title="Générer un rapport"
-                                            >
-                                                <Downloads landData={landData} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={`${urls.downloads}/:draftId`}
-                                        element={
-                                            <RouteWrapper
-                                                title="Générer un rapport"
-                                            >
-                                                <Downloads landData={landData} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                </Routes>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.trajectoires}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Trajectoire de sobriété foncière"
+                                                    showPage={has_conso}
+                                                    showStatus={![
+                                                        ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES
+                                                    ].includes(consommation_correction_status)}
+                                                    status={
+                                                        <ConsoCorrectionStatus status={consommation_correction_status} />
+                                                    }
+                                                >
+                                                    <Trajectoires landData={landData} preference={preference} />
+                                                </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.artificialisation}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Artificialisation des sols"
+                                                    showPage={has_ocsge}
+                                                    showStatus={ocsge_status !== OcsgeStatusEnum.COMPLETE_UNIFORM}
+                                                    status={
+                                                        <OcsgeStatus status={ocsge_status} />
+                                                    }
+                                                >
+                                                        <Artificialisation landData={landData} />
+                                                    </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.impermeabilisation}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Imperméabilisation des sols"
+                                                    showPage={has_ocsge}
+                                                    showStatus={ocsge_status !== OcsgeStatusEnum.COMPLETE_UNIFORM}
+                                                    status={
+                                                        <OcsgeStatus status={ocsge_status} />
+                                                    }
+                                                >
+                                                        <Impermeabilisation
+                                                            landData={landData}
+                                                        />
+                                                    </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.logementVacant}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Vacance des logements"
+                                                    showPage={has_logements_vacants_prive || has_logements_vacants_social}
+                                                    showStatus={!has_logements_vacants_prive || !has_logements_vacants_social || logements_vacants_status?.includes('secretise') || logements_vacants_status?.includes('indisponibles')}
+                                                    status={
+                                                        <LogementVacantStatus status={logements_vacants_status} />
+                                                    }
+                                                >
+                                                    <LogementVacant landData={landData} />
+                                                </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.friches}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Friches"
+                                                    showPage={has_friche}
+                                                    showStatus={!has_friche}
+                                                    status={
+                                                        <FricheStatus />
+                                                    }
+                                                >
+                                                        <Friches landData={landData} />
+                                                    </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.residencesSecondaires}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Résidences secondaires"
+                                                >
+                                                    <ResidencesSecondaires landData={landData} />
+                                                </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.rapportLocal}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Rapport triennal local"
+                                                    showPage={has_conso}
+                                                    showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
+                                                    status={
+                                                        <ConsoCorrectionStatus status={consommation_correction_status} />
+                                                    }
+                                                >
+                                                    <RapportLocal landData={landData} />
+                                                </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.downloads}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Générer un rapport"
+                                                    showFeedback={false}
+                                                >
+                                                    <Downloads landData={landData} />
+                                                </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={`${urls.downloads}/:draftId`}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Générer un rapport"
+                                                    showFeedback={false}
+                                                >
+                                                    <Downloads landData={landData} />
+                                                </RouteWrapper>
+                                            }
+                                        />
+                                    </Routes>
                                 </Content>
                                 <Footer footer={footer} />
                             </Main>

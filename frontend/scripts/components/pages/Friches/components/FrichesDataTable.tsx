@@ -187,8 +187,8 @@ export const FrichesDataTable: React.FC = () => {
   ];
 
   return (
-    <div className="fr-mb-7w">
-      <h2 className="fr-mt-7w">Détail des friches</h2>
+    <div className="fr-mb-5w">
+      <h2>Détail des friches</h2>
       <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
         <div className="fr-col-12">
           <SearchContainer>

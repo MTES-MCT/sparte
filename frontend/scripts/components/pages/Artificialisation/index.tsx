@@ -1,7 +1,6 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
-import Feedback from "@components/ui/Feedback";
 import { OcsgeDrawerProvider, useOcsgeDrawer } from "@components/features/ocsge/OcsgeDrawerContext";
 import { ArtificialisationProvider, useArtificialisationContext } from "./context/ArtificialisationContext";
 import {
@@ -57,7 +56,6 @@ const ArtificialisationPageContent: React.FC = () => {
       <ArtifChildLands />
       <ArtifExplorer />
       <ArtifCalculation />
-      <Feedback />
     </div>
   );
 };

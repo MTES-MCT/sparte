@@ -1,7 +1,6 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
-import Feedback from "@components/ui/Feedback";
 import {
   LogementVacantProvider,
   useLogementVacantContext,
@@ -73,22 +72,22 @@ const LogementVacantContent: React.FC = () => {
       />
       <LogementVacantKpiCards />
 
-      <div className="fr-mb-7w">
-        <h2 className="fr-h4 fr-mb-3w">
+      <div className="fr-mb-5w">
+        <h2 className="fr-mb-3w">
           Évolution du taux de vacance des logements sur le territoire
         </h2>
         <LogementVacantTaux />
       </div>
 
-      <div className="fr-mb-7w">
-        <h2 className="fr-h4 fr-mb-3w">
+      <div className="fr-mb-5w">
+        <h2 className="fr-mb-3w">
           Logements vacants et consommation d'espaces NAF
         </h2>
         <LogementVacantConso />
       </div>
 
-      <div className="fr-mb-7w">
-        <h2 className="fr-h4 fr-mb-3w">
+      <div className="fr-mb-5w">
+        <h2 className="fr-mb-3w">
           Logements vacants et autorisations d'urbanisme
         </h2>
         <LogementVacantAutorisation />
@@ -99,7 +98,6 @@ const LogementVacantContent: React.FC = () => {
       )}
 
       <LogementVacantExternalServices />
-      <Feedback />
     </div>
   );
 };

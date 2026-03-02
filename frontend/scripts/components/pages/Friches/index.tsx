@@ -1,7 +1,6 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
-import Feedback from "@components/ui/Feedback";
 import { FrichesProvider } from "./context/FrichesContext";
 import {
   FrichesKpiCards,
@@ -99,7 +98,6 @@ const FrichesContent: React.FC = () => {
       <FrichesDataTable />
       <FrichesMaps />
       <FrichesExternalServices />
-      <Feedback />
     </div>
   );
 };
