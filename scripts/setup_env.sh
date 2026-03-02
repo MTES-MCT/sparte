@@ -63,7 +63,7 @@ paste_env_content() {
     echo ""
     echo -e "  ${CYAN}── ${label} ──${RESET}"
     echo -e "  ${DIM}Collez le contenu du fichier .env (lignes KEY=VALUE),${RESET}"
-    echo -e "  ${DIM}puis appuyez sur Entrée pour terminer.${RESET}"
+    echo -e "  ${DIM}puis appuyez sur Entrée (deux fois si nécessaire) pour terminer.${RESET}"
     echo -e "  ${DIM}Appuyez directement sur Entrée pour passer.${RESET}"
     echo ""
 
