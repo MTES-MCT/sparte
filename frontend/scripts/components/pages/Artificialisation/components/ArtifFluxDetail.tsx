@@ -26,7 +26,7 @@ export const ArtifFluxDetail: React.FC = () => {
   const maxIndex = Math.max(...millesimes.map((m) => m.index));
 
   return (
-    <div className="fr-mb-7w">
+    <div className="fr-mb-5w">
       {isInterdepartemental && (
         <DepartmentSelector
           byDepartement={byDepartementFlux}

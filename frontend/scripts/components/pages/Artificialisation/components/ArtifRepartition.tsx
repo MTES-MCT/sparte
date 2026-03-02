@@ -30,8 +30,8 @@ export const ArtifRepartition: React.FC = () => {
   } = useArtificialisationContext();
 
   return (
-    <>
-      <h2 className="fr-mt-4w">
+    <div className="fr-mb-5w">
+      <h2>
         Artificialisation par type de couverture et d'usage{" "}
         <MillesimeDisplay
           is_interdepartemental={isInterdepartemental}
@@ -39,7 +39,7 @@ export const ArtifRepartition: React.FC = () => {
           between={true}
         />
       </h2>
-      <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
+      <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-auto">
           <OcsgeMillesimeSelector
             millesimes_by_index={millesimesByIndex}
@@ -62,7 +62,7 @@ export const ArtifRepartition: React.FC = () => {
           millesimes
             .filter((e) => e.index === selectedIndex)
             .map((m) => (
-              <div key={`${m.index}_${m.departement}`} className="fr-col-12 fr-col-lg-6">
+              <div key={`${m.index}_${m.departement}`} className="fr-col-12 fr-col-xl-6">
                 <FlexColumn>
                   <GenericChart
                     id="pie_artif_by_couverture"
@@ -95,7 +95,7 @@ export const ArtifRepartition: React.FC = () => {
             ))
         ) : (
           <>
-            <div className="fr-col-12 fr-col-lg-6">
+            <div className="fr-col-12 fr-col-xl-6">
               <GenericChart
                 id="pie_artif_by_couverture"
                 land_id={landId}
@@ -107,7 +107,7 @@ export const ArtifRepartition: React.FC = () => {
                 <DetailsCalculationOcsge />
               </GenericChart>
             </div>
-            <div className="fr-col-12 fr-col-lg-6">
+            <div className="fr-col-12 fr-col-xl-6">
               <GenericChart
                 id="pie_artif_by_usage"
                 land_id={landId}
@@ -122,6 +122,6 @@ export const ArtifRepartition: React.FC = () => {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 };

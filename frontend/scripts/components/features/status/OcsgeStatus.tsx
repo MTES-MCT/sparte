@@ -21,23 +21,23 @@ const errorMessage = `${defaultMessage} ${detailMessage}`;
 
 const statusMessages: Partial<Record<OcsgeStatusEnum, StatusMessage>> = {
   [OcsgeStatusEnum.COMPLETE_NOT_UNIFORM]: {
-    title: "Données OCS GE disponibles mais non uniformes",
+    title: "Données OCS GE disponibles mais non uniformes.",
     description: "Les données OCS GE sont disponibles sur ce territoire, mais les dates des millésimes ne sont pas uniformes entre toutes les collectivités."
   },
   [OcsgeStatusEnum.PARTIAL]: {
-    title: "Données OCS GE partiellement disponibles",
+    title: "Données OCS GE partiellement disponibles.",
     description: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire. ${detailMessage}`
   },
   [OcsgeStatusEnum.PARTIAL_DUE_TO_PRODUCTOR_ISSUE]: {
-    title: "Données OCS GE partiellement disponibles",
+    title: "Données OCS GE partiellement disponibles.",
     description: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire en raison d'un problème lié à la production de la donnée. ${detailMessage}`
   },
   [OcsgeStatusEnum.NO_DATA]: {
-    title: "Données OCS GE non disponibles",
+    title: "Données OCS GE non disponibles.",
     description: errorMessage
   },
   [OcsgeStatusEnum.UNDEFINED]: {
-    title: "Données OCS GE non disponibles",
+    title: "Données OCS GE non disponibles.",
     description: errorMessage
   },
 };
@@ -50,7 +50,7 @@ const OcsgeStatus: React.FC<OcsgeStatusProps> = ({ status }) => {
   const content = statusMessages[status];
   if (!content) return null;
 
-  return <Notice type="default" title={content.title} message={content.description} />;
+  return <Notice type="warning" title={content.title} description={content.description} />;
 };
 
 export default OcsgeStatus;

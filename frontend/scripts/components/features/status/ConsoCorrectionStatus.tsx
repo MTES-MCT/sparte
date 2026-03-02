@@ -16,8 +16,8 @@ interface StatusMessage {
     message: string;
 }
 
-const defaultTitle = "Données de consommation modifiées";
-const warningTitle = "Données de consommation indisponibles";
+const defaultTitle = "Données de consommation modifiées.";
+const warningTitle = "Données de consommation indisponibles.";
 const missingMessage = "Votre territoire est absent du dernier millésime de données de consommation d'espaces NAF. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.";
 
 export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]?: StatusMessage } = {
@@ -30,7 +30,7 @@ export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]
         message: `Certaines données de consommation d'espaces NAF ont été corrigées pour votre territoire, il s'agit la plupart du temps d'erreur de Code Officiel Géographique dans les données sources.`
     },
     'données_inchangées_avec_données_manquantes': {
-        title: "Données de consommation partiellement disponibles",
+        title: "Données de consommation partiellement disponibles.",
         message: 'Certaines communes de votre territoire sont absentes du dernier millésime de données de consommation d\'espaces NAF.'
     },
     'données_manquantes': {
@@ -63,7 +63,7 @@ const ConsoCorrectionStatus: React.FC<ConsoCorrectionStatusProps> = ({ status })
     return (
         <div className="fr-notice fr-notice--info fr-my-3w">
             <div className="fr-container--fluid fr-p-3w">
-                <Notice type="default" title={title} message={message} />
+                <Notice type="warning" title={title} description={message} />
             </div>
         </div>
     );

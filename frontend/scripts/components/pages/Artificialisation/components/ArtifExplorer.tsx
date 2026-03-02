@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { LandType } from "@services/types/land";
 import { OcsgeObjectMap } from "@components/map/ui/OcsgeObjectMap";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
+import Notice from "@components/ui/Notice";
 
 const ColorSquare = styled.span<{ $color: string }>`
   display: inline-block;
@@ -21,7 +22,7 @@ export const ArtifExplorer: React.FC = () => {
   }
 
   return (
-    <div className="fr-mb-7w">
+    <div className="fr-mb-5w">
       <h2>Explorateur des objets OCS GE artificialisés</h2>
       <p className="fr-text--sm fr-mb-2w">
         Cette carte permet d'explorer individuellement les objets OCS GE artificialisés du territoire. Chaque objet est caractérisé par un croisement couverture / usage qui détermine s'il est artificialisé ou non.

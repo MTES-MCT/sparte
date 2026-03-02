@@ -103,25 +103,22 @@ const TrajectoiresContent: React.FC = () => {
       />
 
       {!hasTerritorialisation && (
-        <Notice
-          type="warning"
-          title="Objectif national par défaut"
-          className="fr-mb-5w"
-          message={
-            <>
-              <p>
-                L'équipe travaille à l'intégration des objectifs déjà
-                territorialisés de réduction de la consommation d'espaces NAF.
-                Dans l'attente de cette mise à jour, <strong>vous pouvez simuler différents scénarios d'objectifs de réduction ci-dessous</strong>. Par défaut,
-                en attendant cette territorialisation, l'outil affiche l'objectif
-                national de réduction de 50%.
-              </p>
-              <p>
-                <strong>Cet objectif est fourni à titre indicatif et n'a pas de valeur réglementaire.</strong>
-              </p>
-            </>
-          }
-        />
+        <div className="fr-mb-5w">
+          <Notice
+            type="warning"
+            title="Objectif national par défaut."
+            description={
+              <>
+                  L'équipe travaille à l'intégration des objectifs déjà
+                  territorialisés de réduction de la consommation d'espaces NAF.
+                  Dans l'attente de cette mise à jour, <strong>vous pouvez simuler différents scénarios d'objectifs de réduction ci-dessous</strong>. Par défaut,
+                  en attendant cette territorialisation, l'outil affiche l'objectif
+                  national de réduction de 50%.
+                  <strong>Cet objectif est fourni à titre indicatif et n'a pas de valeur réglementaire.</strong>
+              </>
+            }
+          />
+        </div>
       )}
 
       {hasTerritorialisation && territorialisation?.hierarchy?.length > 0 && (

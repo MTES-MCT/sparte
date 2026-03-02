@@ -22,8 +22,8 @@ export const ImperRepartition: React.FC = () => {
   } = useImpermeabilisationContext();
 
   return (
-    <>
-      <h2 className="fr-mt-4w">
+    <div className="fr-mb-5w">
+      <h2>
         Imperméabilisation par type de couverture et d'usage{" "}
         <MillesimeDisplay
           is_interdepartemental={isInterdepartemental}
@@ -52,7 +52,7 @@ export const ImperRepartition: React.FC = () => {
             .map((m) => (
               <div
                 key={`${m.index}_${m.departement}`}
-                className="fr-col-12 fr-col-lg-6 gap-4 d-flex flex-column"
+                className="fr-col-12 fr-col-xl-6 gap-4 d-flex flex-column"
               >
                 <GenericChart
                   id="pie_imper_by_couverture"
@@ -84,7 +84,7 @@ export const ImperRepartition: React.FC = () => {
             ))
         ) : (
           <>
-            <div className="fr-col-12 fr-col-lg-6">
+            <div className="fr-col-12 fr-col-xl-6">
               <GenericChart
                 id="pie_imper_by_couverture"
                 land_id={land_id}
@@ -98,7 +98,7 @@ export const ImperRepartition: React.FC = () => {
                 <DetailsCalculationOcsge />
               </GenericChart>
             </div>
-            <div className="fr-col-12 fr-col-lg-6">
+            <div className="fr-col-12 fr-col-xl-6">
               <GenericChart
                 id="pie_imper_by_usage"
                 land_id={land_id}
@@ -115,6 +115,6 @@ export const ImperRepartition: React.FC = () => {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 };

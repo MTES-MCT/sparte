@@ -1,5 +1,6 @@
 import React from "react";
 import BaseCard from "@components/ui/BaseCard";
+import Notice from "@components/ui/Notice";
 import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
 import OcsgeMatricePNG from "@images/ocsge_matrice_passage.png";
 
@@ -103,22 +104,16 @@ export const ArtifCalculation: React.FC = () => {
             </a>
           </li>
         </ul>
-        <div className="fr-notice fr-notice--info">
-          <div className="fr-px-2w">
-            <div className="fr-notice__body">
-              <p>
-                <span className="fr-notice__title fr-text--sm">
-                  L'IGN est actuellement en cours de production d'une base de données nationale intégrant les exemptions prévues pour les installations photovoltaïques au sol et les parcs ou jardins publics. Les données affichées sur la plateforme ne prennent pas encore en compte ces exemptions.
-                </span>
-                <a className="fr-notice__desc fr-text--sm" target="_blank" href="/newsletter/inscription">
-                  {" "}
-                  Inscrivez-vous à notre lettre d'infos pour être prévenu(e) de la
-                  disponibilité de ces données
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
+        <Notice
+          type="info"
+          withCard={false}
+          title="L'IGN est actuellement en cours de production d'une base de données nationale intégrant les exemptions prévues pour les installations photovoltaïques au sol et les parcs ou jardins publics. Les données affichées sur la plateforme ne prennent pas encore en compte ces exemptions."
+          description={
+            <a target="_blank" href="/newsletter/inscription">
+              Inscrivez-vous à notre lettre d'infos pour être prévenu(e) de la disponibilité de ces données
+            </a>
+          }
+        />
       </BaseCard>
     </>
   );

@@ -24,7 +24,7 @@ export const ArtifNetFlux: React.FC = () => {
 
   return (
     <div className="fr-mb-7w">
-      <h2 className="fr-mt-7w">
+      <h2>
         Artificialisation nette des sols{" "}
         <MillesimeDisplay
           is_interdepartemental={isInterdepartemental}
@@ -33,7 +33,9 @@ export const ArtifNetFlux: React.FC = () => {
         />
       </h2>
       {landType !== LandType.REGION && (
-        <ArtificialisationDiffMap landData={landData} />
+        <div className="fr-mb-5w">
+          <ArtificialisationDiffMap landData={landData} />
+        </div>
       )}
       {isInterdepartemental && (
         <DepartmentSelector

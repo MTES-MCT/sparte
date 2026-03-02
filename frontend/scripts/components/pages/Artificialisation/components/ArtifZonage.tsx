@@ -9,8 +9,8 @@ export const ArtifZonage: React.FC = () => {
   const { landData, landType, hasZonage, artifZonageIndex } = useArtificialisationContext();
 
   return (
-    <>
-      <h2 className="fr-mt-7w">Artificialisation des zonages d'urbanisme</h2>
+    <div className="fr-mb-5w">
+      <h2>Artificialisation des zonages d'urbanisme</h2>
       <p className="fr-text--sm fr-mb-2w">
         Le tableau ci-dessous et la carte associée croisent les zonages d'urbanisme (PLU/PLUi) avec les données OCS GE pour mesurer le taux d'artificialisation de chaque zone.
       </p>
@@ -24,6 +24,6 @@ export const ArtifZonage: React.FC = () => {
       {landType !== LandType.REGION && hasZonage && (
         <ZonageUrbanismeMap landData={landData} mode="artif" />
       )}
-    </>
+    </div>
   );
 };

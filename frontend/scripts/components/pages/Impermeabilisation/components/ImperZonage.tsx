@@ -10,7 +10,7 @@ export const ImperZonage: React.FC = () => {
     useImpermeabilisationContext();
 
   return (
-    <div className="fr-mb-7w">
+    <div className="fr-mb-5w">
       <h2 className="fr-mt-7w">Imperméabilisation des zonages d'urbanisme</h2>
       <p className="fr-text--sm fr-mb-2w">
         Le tableau ci-dessous et la carte associée croisent les zonages

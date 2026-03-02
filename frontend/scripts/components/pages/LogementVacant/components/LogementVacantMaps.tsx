@@ -1,6 +1,7 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
 import BaseCard from "@components/ui/BaseCard";
+import Button from "@components/ui/Button";
 import { useLogementVacantContext } from "../context/LogementVacantContext";
 
 export const LogementVacantMaps: React.FC = () => {
@@ -18,15 +19,15 @@ export const LogementVacantMaps: React.FC = () => {
       {childLandTypes.length > 1 && (
         <div className="fr-mb-3w">
           {childLandTypes.map((clt) => (
-            <button
+            <Button
               key={clt}
-              className={`fr-btn ${
-                childType === clt ? "fr-btn--primary" : "fr-btn--tertiary"
-              } fr-btn--sm fr-mr-1w`}
+              variant={childType === clt ? "primary" : "outline"}
+              size="small"
+              className="fr-mr-1w"
               onClick={() => setChildType(clt)}
             >
               {getLandTypeLabel(clt)}
-            </button>
+            </Button>
           ))}
         </div>
       )}

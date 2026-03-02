@@ -6,6 +6,7 @@ import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { useGetCarroyageBoundsQuery, useGetCarroyageDestinationConfigQuery, useGetLandChildrenGeomQuery } from "@services/api";
 import Loader from "@components/ui/Loader";
+import Button from "@components/ui/Button";
 import type { ExpressionSpecification } from "maplibre-gl";
 import { CarroyageLeaSidePanel } from "./sidePanel";
 
@@ -554,15 +555,15 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             {Object.keys(destinationConfig).map((dest, index) => (
                 <React.Fragment key={dest}>
                 {index === 1 && <ButtonSeparator />}
-                <button
-                    className={`fr-btn ${
-                        selectedDestination === dest ? 'fr-btn--primary' : 'fr-btn--tertiary'
-                    } fr-btn--sm fr-mr-1w fr-mb-1w`}
+                <Button
+                    variant={selectedDestination === dest ? 'primary' : 'outline'}
+                    size="small"
+                    className="fr-mr-1w fr-mb-1w"
                     onClick={() => setSelectedDestination(dest)}
                 >
                     <ColorDot $color={destinationConfig[dest].color} $active={selectedDestination === dest} />
                     {destinationConfig[dest].label}
-                </button>
+                </Button>
                 </React.Fragment>
             ))}
         </div>

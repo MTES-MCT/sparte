@@ -1,5 +1,13 @@
 import React from "react";
+import Button from "@components/ui/Button";
 import { MillesimeByIndex } from "@services/types/land";
+import styled from "styled-components";
+import { theme } from "@theme";
+
+const Container = styled.div`
+	display: flex;
+	gap: ${theme.spacing.sm};
+`;
 
 interface OcsgeMillesimeSelectorProps {
 	index: number;
@@ -14,18 +22,16 @@ export const OcsgeMillesimeSelector: React.FC<OcsgeMillesimeSelectorProps> = ({
 	millesimes_by_index,
 	isDepartemental = false,
 }) => (
-	<ul className="fr-btns-group fr-btns-group--inline-sm">
+	<Container>
 		{millesimes_by_index.map((m) => (
-			<li key={m.years}>
-				<button
-					type="button"
-					className={`fr-btn ${m.index !== index ? "fr-btn--tertiary" : ""}`}
-					onClick={() => setIndex(m.index)}
-					title={m.years}
-				>
-					{isDepartemental ? `Millésime n°${m.index}` : m.years}
-				</button>
-			</li>
+			<Button
+				type="button"
+				variant={m.index === index ? "primary" : "outline"}
+				onClick={() => setIndex(m.index)}
+				title={m.years}
+			>
+				{isDepartemental ? `Millésime n°${m.index}` : m.years}
+			</Button>
 		))}
-	</ul>
+	</Container>
 ); 

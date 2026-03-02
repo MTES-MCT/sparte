@@ -76,9 +76,9 @@ export const TrajectoiresChildrenStats: React.FC = () => {
       </SectionTitle>
 
       <Notice
-        type="default"
+        type="warning"
         title="Section réservée DGALN"
-        message="Cette section est réservée aux agents de la DGALN et n'est pas visible par les autres utilisateurs."
+        description="Cette section est réservée aux agents de la DGALN et n'est pas visible par les autres utilisateurs."
       />
 
       <MutedText className="fr-text--sm fr-mb-2w fr-mt-3w">

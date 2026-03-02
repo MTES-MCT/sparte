@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
+import Button from "@components/ui/Button";
 import GuideContent from "@components/ui/GuideContent";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { getLandTypeLabel } from "@utils/landUtils";
@@ -67,22 +68,22 @@ export const ArtifChildLands: React.FC = () => {
   }
 
   return (
-    <div className="fr-mb-7w">
+    <div className="fr-mb-5w">
       <h2>Artificialisation des {getLandTypeLabel(childLandType, true)}</h2>
-      <div className="fr-mb-2w d-flex align-items-center gap-2">
-        {childLandTypes.length > 1 &&
-          childLandTypes.map((child_land_type) => (
-            <button
+      {childLandTypes.length > 1 && (
+        <div className="fr-mb-2w d-flex align-items-center gap-2">
+          {childLandTypes.map((child_land_type) => (
+            <Button
               key={child_land_type}
-              className={`fr-btn ${
-                childLandType === child_land_type ? "fr-btn--primary" : "fr-btn--tertiary"
-              } fr-btn--sm`}
+              variant={childLandType === child_land_type ? "primary" : "outline"}
+              size="small"
               onClick={() => handleChildLandTypeChange(child_land_type)}
             >
               {getLandTypeLabel(child_land_type)}
-            </button>
+            </Button>
           ))}
-      </div>
+        </div>
+      )}
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
             {mapNavStack.length > 0 && (
