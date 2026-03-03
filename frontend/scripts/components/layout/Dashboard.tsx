@@ -91,6 +91,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             element={
                                                 <RouteWrapper
                                                     title="Synthèse"
+                                                    landData={landData}
                                                 >
                                                     <Synthese
                                                         landData={landData}
@@ -108,6 +109,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     status={
                                                         <ConsoCorrectionStatus status={consommation_correction_status} />
                                                     }
+                                                    landData={landData}
                                                 >
                                                     <Consommation landData={landData} preference={preference} />
                                                 </RouteWrapper>
@@ -126,6 +128,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     status={
                                                         <ConsoCorrectionStatus status={consommation_correction_status} />
                                                     }
+                                                    landData={landData}
                                                 >
                                                     <Trajectoires landData={landData} preference={preference} />
                                                 </RouteWrapper>
@@ -141,6 +144,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     status={
                                                         <OcsgeStatus status={ocsge_status} />
                                                     }
+                                                    landData={landData}
                                                 >
                                                         <Artificialisation landData={landData} />
                                                     </RouteWrapper>
@@ -156,6 +160,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     status={
                                                         <OcsgeStatus status={ocsge_status} />
                                                     }
+                                                    landData={landData}
                                                 >
                                                         <Impermeabilisation
                                                             landData={landData}
@@ -173,6 +178,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     status={
                                                         <LogementVacantStatus status={logements_vacants_status} />
                                                     }
+                                                    landData={landData}
                                                 >
                                                     <LogementVacant landData={landData} />
                                                 </RouteWrapper>
@@ -188,6 +194,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     status={
                                                         <FricheStatus />
                                                     }
+                                                    landData={landData}
                                                 >
                                                         <Friches landData={landData} />
                                                     </RouteWrapper>
@@ -198,6 +205,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             element={
                                                 <RouteWrapper
                                                     title="Résidences secondaires"
+                                                    landData={landData}
                                                 >
                                                     <ResidencesSecondaires landData={landData} />
                                                 </RouteWrapper>
@@ -213,6 +221,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     status={
                                                         <ConsoCorrectionStatus status={consommation_correction_status} />
                                                     }
+                                                    landData={landData}
                                                 >
                                                     <RapportLocal landData={landData} />
                                                 </RouteWrapper>

@@ -2,6 +2,7 @@ import string
 import traceback
 from random import choices
 
+from django.conf import settings
 from django.core import validators
 from django.db import models
 from django.urls import reverse
@@ -99,3 +100,45 @@ class Newsletter(models.Model):
 
     def __str__(self):
         return f"Newsletter de {self.email}"
+
+
+class PageFeedback(models.Model):
+    rating = models.PositiveSmallIntegerField(
+        "Note",
+        validators=[
+            validators.MinValueValidator(1),
+            validators.MaxValueValidator(5),
+        ],
+        help_text="Note de 1 à 5 étoiles.",
+    )
+    comment = models.TextField("Commentaire", blank=True, default="")
+    page_url = models.CharField("URL de la page", max_length=500)
+
+    land_type = models.CharField("Type de territoire", max_length=50, blank=True, default="")
+    land_id = models.CharField("Identifiant du territoire", max_length=100, blank=True, default="")
+    land_name = models.CharField("Nom du territoire", max_length=255, blank=True, default="")
+    page_name = models.CharField(
+        "Nom de la page",
+        max_length=100,
+        blank=True,
+        default="",
+        help_text="Thématique de la page (ex: Consommation, Artificialisation…).",
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="Utilisateur",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    created_at = models.DateTimeField("Date de création", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Feedback de page"
+        verbose_name_plural = "Feedbacks de page"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        label = self.land_name or self.page_url
+        return f"{'⭐' * self.rating} — {label} ({self.created_at:%d/%m/%Y})"

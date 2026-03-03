@@ -1,7 +1,13 @@
 import React, { ReactNode, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import usePageTitle from '@hooks/usePageTitle';
-import Feedback from '@components/ui/Feedback';
+import Feedback, { FeedbackContext } from '@components/ui/Feedback';
+
+export interface FeedbackLandData {
+    land_type: string;
+    land_id: string;
+    name: string;
+}
 
 interface RouteWrapperProps {
     title: string;
@@ -11,6 +17,7 @@ interface RouteWrapperProps {
     status?: ReactNode;
     showTitle?: boolean;
     showFeedback?: boolean;
+    landData?: FeedbackLandData;
 }
 
 const RouteWrapper: React.FC<RouteWrapperProps> = ({
@@ -21,21 +28,28 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
     showStatus = false,
     showTitle = true,
     showFeedback = true,
+    landData,
 }) => {
     const location = useLocation();
 
     usePageTitle(title);
 
-    // Restaurer le scroll en haut de la page à chaque changement de route
     useEffect(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }, [location.pathname]);
+
+    const feedbackContext: FeedbackContext = {
+        pageName: title,
+        landType: landData?.land_type ?? '',
+        landId: landData?.land_id ?? '',
+        landName: landData?.name ?? '',
+    };
 
     if (!showTitle && !showStatus && showPage) {
         return (
             <>
                 {children}
-                {showFeedback && <Feedback />}
+                {showFeedback && <Feedback context={feedbackContext} />}
             </>
         );
     }
@@ -52,7 +66,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
             </div>
             
             {showPage && children}
-            {showFeedback && <div className="fr-p-3w"><Feedback /></div>}
+            {showFeedback && <div className="fr-p-3w"><Feedback context={feedbackContext} /></div>}
         </>
     );
 };

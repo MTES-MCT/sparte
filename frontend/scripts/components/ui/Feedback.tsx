@@ -4,8 +4,18 @@ import Lottie from 'lottie-react';
 import { theme } from '@theme';
 import Button from '@components/ui/Button';
 import BaseCard from '@components/ui/BaseCard';
+import { useSubmitFeedbackMutation } from '@services/api';
 
 import animation from '@animations/cup.json';
+
+declare global {
+  interface Window {
+    $crisp?: {
+      get?: (key: string) => unknown;
+    };
+  }
+}
+
 
 const starPop = keyframes`
   0% {
@@ -145,16 +155,33 @@ const TextArea = styled.textarea`
 `;
 
 
-interface FeedbackProps {
-  onSubmit?: (rating: number, comment: string) => void;
+export interface FeedbackContext {
+  pageName: string;
+  landType: string;
+  landId: string;
+  landName: string;
 }
 
-const Feedback: React.FC<FeedbackProps> = ({ onSubmit }) => {
+interface FeedbackProps {
+  context?: FeedbackContext;
+}
+
+function getCrispSessionId(): string {
+  try {
+    const sessionId = window.$crisp?.get?.('session:identifier');
+    return typeof sessionId === 'string' ? sessionId : '';
+  } catch {
+    return '';
+  }
+}
+
+const Feedback: React.FC<FeedbackProps> = ({ context }) => {
   const [rating, setRating] = useState<number>(0);
   const [hoveredRating, setHoveredRating] = useState<number>(0);
   const [comment, setComment] = useState('');
   const [animatedStar, setAnimatedStar] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [submitFeedback, { isLoading }] = useSubmitFeedbackMutation();
 
   const handleStarClick = (star: number) => {
     setRating(star);
@@ -162,9 +189,25 @@ const Feedback: React.FC<FeedbackProps> = ({ onSubmit }) => {
     setTimeout(() => setAnimatedStar(null), 300);
   };
 
-  const handleSubmit = () => {
-    if (rating > 0) {
-      onSubmit?.(rating, comment);
+  const handleSubmit = async () => {
+    if (rating === 0 || isLoading) return;
+
+    try {
+      const payload = {
+        rating,
+        comment,
+        page_url: window.location.pathname,
+        land_type: context?.landType ?? '',
+        land_id: context?.landId ?? '',
+        land_name: context?.landName ?? '',
+        page_name: context?.pageName ?? '',
+        crisp_session_id: getCrispSessionId(),
+      };
+
+      await submitFeedback(payload as any).unwrap();
+
+      setSubmitted(true);
+    } catch {
       setSubmitted(true);
     }
   };
@@ -216,8 +259,8 @@ const Feedback: React.FC<FeedbackProps> = ({ onSubmit }) => {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
-              <Button variant="primary" icon="bi bi-send" iconPosition="right" onClick={handleSubmit} disabled={rating === 0}>
-                Envoyer
+              <Button variant="primary" icon="bi bi-send" iconPosition="right" onClick={handleSubmit} disabled={rating === 0 || isLoading}>
+                {isLoading ? 'Envoi…' : 'Envoyer'}
               </Button>
             </FormGroup>
           </>

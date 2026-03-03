@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 
+from home.api import PageFeedbackViewSet
 from project.api_views import (
     ReportDraftViewSet,
     ToggleFavoriteAPIView,
@@ -189,6 +190,7 @@ app_name = "api"
 
 router = DefaultRouter()
 router.register(r"report-drafts", ReportDraftViewSet, basename="report-draft")
+router.register(r"feedback", PageFeedbackViewSet, basename="feedback")
 
 
 @api_view(["GET"])

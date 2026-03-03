@@ -319,6 +319,26 @@ export const djangoApi = createApi({
 		getCurrentUser: builder.query<CurrentUserResponse, void>({
 			query: () => '/api/me/',
 		}),
+		submitFeedback: builder.mutation<void, {
+			rating: number;
+			comment: string;
+			page_url: string;
+			land_type: string;
+			land_id: string;
+			land_name: string;
+			page_name: string;
+			crisp_session_id?: string;
+		}>({
+			query: (body) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: '/api/feedback/',
+					method: 'POST',
+					body,
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+		}),
 	}),
 	tagTypes: ['ReportDraft', 'Preference'],
 });
@@ -336,6 +356,8 @@ const useGetLandGeomQuery = djangoApi.useGetLandGeomQuery;
 const useToggleFavoriteMutation = djangoApi.useToggleFavoriteMutation;
 const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
 const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
+
+const useSubmitFeedbackMutation = djangoApi.useSubmitFeedbackMutation;
 
 const {
 	useGetDepartementListQuery,
@@ -398,4 +420,5 @@ export {
 	useUpdateReportDraftMutation,
 	useDeleteReportDraftMutation,
 	useGetCurrentUserQuery,
+	useSubmitFeedbackMutation,
 };
