@@ -1,28 +1,26 @@
 import styled from "styled-components";
+import { theme } from "@theme";
+import BaseCard from "@components/ui/BaseCard";
 
 export const MapWithSidePanel = styled.div`
 	.maplibregl-ctrl-top-right {
-		right: calc(34% + 1.5rem);
+		right: calc(33% + ${theme.spacing.lg});
 	}
 `;
 
-export const SidePanel = styled.div`
+export const SidePanel = styled(BaseCard)`
 	position: absolute;
-	top: 0;
-	right: 0;
-	width: calc(33% + 1.5rem);
-	height: 100%;
-	background: #f6f6f6;
-	border-left: 1.5rem solid #f8f9ff;
-	padding: 1rem;
-	font-size: 0.85rem;
-	overflow-y: auto;
+	top: ${theme.spacing.sm};
+	right: ${theme.spacing.sm};
+	bottom: calc(${theme.spacing.sm} + 18px);
+	width: calc(33% - ${theme.spacing.sm});
 	display: flex;
 	flex-direction: column;
-	z-index: 5;
+	z-index: 1;
 	box-sizing: border-box;
 
 	@media (max-width: 768px) {
-		width: 100%;
+		width: calc(100% - ${theme.spacing.md});
+		left: ${theme.spacing.sm};
 	}
 `;

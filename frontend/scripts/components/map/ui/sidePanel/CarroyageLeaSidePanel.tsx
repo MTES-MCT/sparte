@@ -1,34 +1,20 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
 import type maplibregl from "maplibre-gl";
+import { theme } from "@theme";
 import { formatNumber } from "@utils/formatUtils";
 import ChartDataTable from "@components/charts/ChartDataTable";
-import { SidePanelPlaceholder } from "./SidePanelPrimitives";
+import { SidePanelPlaceholder, PlaceholderIcon, SidePanelContent, SidePanelHeader, HeaderContent, SidePanelTitle, SidePanelSubtitle } from "./SidePanelPrimitives";
 
 type DestinationConfig = Record<string, { label: string; suffix: string; color: string; light_text: boolean }>;
-
-const SidePanelHeader = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	margin-bottom: 1rem;
-`;
-
-const SidePanelCoords = styled.span`
-	font-size: 0.75rem;
-	color: #666;
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-`;
 
 const ColorSwatch = styled.span<{ $color: string }>`
 	display: inline-block;
 	width: 12px;
 	height: 12px;
-	border-radius: 2px;
+	border-radius: 3px;
 	background-color: ${({ $color }) => $color};
-	border: 1px solid #ccc;
+	border: 1px solid ${theme.colors.border};
 	flex-shrink: 0;
 `;
 
@@ -157,6 +143,7 @@ export const CarroyageLeaSidePanel: React.FC<CarroyageLeaSidePanelProps> = ({
 	if (!sidePanelData && !hoveredChildName) {
 		return (
 			<SidePanelPlaceholder>
+				<PlaceholderIcon><i className="bi bi-hand-index" /></PlaceholderIcon>
 				Survolez une cellule sur la carte pour afficher le détail de la consommation
 			</SidePanelPlaceholder>
 		);
@@ -166,22 +153,26 @@ export const CarroyageLeaSidePanel: React.FC<CarroyageLeaSidePanelProps> = ({
 		<>
 			{(hoveredChildName || hoveredValue !== null) && (
 				<SidePanelHeader>
-					{hoveredChildName && <strong>{hoveredChildName}</strong>}
-					<SidePanelCoords>
-						{hoveredCoords && <span>{hoveredCoords.lat.toFixed(5)}, {hoveredCoords.lng.toFixed(5)}</span>}
-						{hoveredValue !== null && (
-							<ColorSwatch $color={getColorForValue(hoveredValue, destinationConfig[selectedDestination].color)} />
+					<HeaderContent>
+						{hoveredChildName && <SidePanelTitle>{hoveredChildName}</SidePanelTitle>}
+						{hoveredCoords && (
+							<SidePanelSubtitle>{hoveredCoords.lat.toFixed(5)}, {hoveredCoords.lng.toFixed(5)}</SidePanelSubtitle>
 						)}
-					</SidePanelCoords>
+					</HeaderContent>
+					{hoveredValue !== null && (
+						<ColorSwatch $color={getColorForValue(hoveredValue, destinationConfig[selectedDestination].color)} />
+					)}
 				</SidePanelHeader>
 			)}
-			{sidePanelData && (
-				<ChartDataTable
-					title={`Consommation - ${destinationConfig[selectedDestination].label}`}
-					compact
-					data={sidePanelData}
-				/>
-			)}
+			<SidePanelContent>
+				{sidePanelData && (
+					<ChartDataTable
+						title={`Consommation - ${destinationConfig[selectedDestination].label}`}
+						compact
+						data={sidePanelData}
+					/>
+				)}
+			</SidePanelContent>
 		</>
 	);
 };

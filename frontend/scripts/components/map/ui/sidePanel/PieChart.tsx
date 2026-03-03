@@ -1,12 +1,13 @@
 import React from "react";
 import styled from "styled-components";
+import { theme } from "@theme";
 import { formatNumber } from "@utils/formatUtils";
 import type { CompositionItem, SurfaceUnit } from "./types";
 
 const PieChartContainer = styled.div`
 	display: flex;
 	align-items: flex-start;
-	gap: 8px;
+	gap: ${theme.spacing.sm};
 	width: 100%;
 `;
 
@@ -27,9 +28,10 @@ const LegendList = styled.div`
 const LegendItem = styled.div`
 	display: flex;
 	align-items: flex-start;
-	gap: 6px;
-	font-size: 0.72rem;
+	gap: ${theme.spacing.xs};
+	font-size: ${theme.fontSize.xs};
 	line-height: 1.3;
+	color: ${theme.colors.text};
 
 	> span:last-child {
 		overflow: hidden;
@@ -47,12 +49,13 @@ const LegendColor = styled.span<{ $color: string }>`
 	border-radius: 2px;
 	background-color: ${({ $color }) => $color};
 	flex-shrink: 0;
+	margin-top: 2px;
 `;
 
 export const FluxLabel = styled.span<{ $positive?: boolean }>`
-	font-size: 0.68rem;
-	font-weight: 700;
-	color: ${({ $positive }) => ($positive ? "#E63946" : "#2A9D8F")};
+	font-size: ${theme.fontSize.xs};
+	font-weight: ${theme.fontWeight.semibold};
+	color: ${({ $positive }) => ($positive ? theme.colors.error : theme.colors.success)};
 `;
 
 function PieChart({

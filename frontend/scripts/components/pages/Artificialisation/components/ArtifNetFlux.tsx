@@ -23,7 +23,7 @@ export const ArtifNetFlux: React.FC = () => {
   const maxIndex = Math.max(...millesimes.map((m) => m.index));
 
   return (
-    <div className="fr-mb-7w">
+    <div className="fr-mb-5w">
       <h2>
         Artificialisation nette des sols{" "}
         <MillesimeDisplay

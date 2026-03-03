@@ -360,9 +360,9 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
 
             <GridLayout>
               <YAxisLabels>
-                <YAxisLabel>Élevée</YAxisLabel>
-                <YAxisArrow aria-hidden="true" />
                 <YAxisLabel>Faible</YAxisLabel>
+                <YAxisArrow aria-hidden="true" />
+                <YAxisLabel>Élevée</YAxisLabel>
               </YAxisLabels>
 
               <GridWrapper>

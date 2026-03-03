@@ -18,36 +18,7 @@ import type { BaseSource } from "../sources/baseSource";
 import type { BaseLayer } from "../layers/baseLayer";
 import type { Control } from "../types/controls";
 import { ConfigurableControlsBar } from "./controls/ConfigurableControlsBar";
-import { BaseCard } from "@components/ui/BaseCard";
-
-const MapWithSidePanelLayout = styled.div`
-	display: flex;
-	gap: 1rem;
-	align-items: stretch;
-	
-	.maplibregl-ctrl-top-right {
-		right: 0.5rem;
-	}
-`;
-
-const MapCard = styled(BaseCard)`
-	flex: 1;
-	min-width: 0;
-`;
-
-const SidePanelCard = styled(BaseCard)`
-	width: 33%;
-	min-width: 300px;
-	overflow-y: auto;
-	padding: 1rem;
-	font-size: 0.85rem;
-	display: flex;
-	flex-direction: column;
-	
-	@media (max-width: 768px) {
-		width: 100%;
-	}
-`;
+import { SidePanel, MapWithSidePanel } from "./sidePanel";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -290,51 +261,43 @@ export const BaseMap: React.FC<BaseMapProps> = React.memo(({
         return controls;
     }, [memoizedConfig]);
 
-    const mapContent = (
-        <MapCard>
-            <MapWrapper id={`${id}-wrapper`}>
-                {controlsManager && configurableControls.length > 0 && (
-                    <ConfigurableControlsBar
-                        controls={configurableControls}
-                        manager={controlsManager}
-                    />
-                )}
-                <MapContainer
-                    id={id}
-                    ref={mapDiv}
-                    $isLoaded={isMapLoaded}
-                    $height={mapHeight}
+    const Wrapper = sidePanel ? MapWithSidePanel : React.Fragment;
+
+    return (
+        <Wrapper>
+        <MapWrapper id={`${id}-wrapper`}>
+            {controlsManager && configurableControls.length > 0 && (
+                <ConfigurableControlsBar
+                    controls={configurableControls}
+                    manager={controlsManager}
                 />
-                {children}
-                {controlsManager && memoizedConfig?.controlGroups && memoizedConfig.controlGroups.length > 0 && (
-                    <ControlsPanel
-                        config={{
-                            groups: memoizedConfig.controlGroups
-                        }}
-                        manager={controlsManager}
-                    />
-                )}
-                <InfoPanel
-                    state={infoPanelState}
-                    configs={infoPanelConfigs}
+            )}
+            <MapContainer
+                id={id}
+                ref={mapDiv}
+                $isLoaded={isMapLoaded}
+                $height={mapHeight}
+            />
+            {children}
+            {sidePanel && <SidePanel>{sidePanel}</SidePanel>}
+            {controlsManager && memoizedConfig?.controlGroups && memoizedConfig.controlGroups.length > 0 && (
+                <ControlsPanel
+                    config={{
+                        groups: memoizedConfig.controlGroups
+                    }}
+                    manager={controlsManager}
                 />
-                {statsState.isVisible && statsState.categories.length > 0 && (
-                    <StatsBar
-                        categories={statsState.categories}
-                    />
-                )}
-            </MapWrapper>
-        </MapCard>
+            )}
+            <InfoPanel
+                state={infoPanelState}
+                configs={infoPanelConfigs}
+            />
+            {statsState.isVisible && statsState.categories.length > 0 && (
+                <StatsBar
+                    categories={statsState.categories}
+                />
+            )}
+        </MapWrapper>
+        </Wrapper>
     );
-
-    if (sidePanel) {
-        return (
-            <MapWithSidePanelLayout>
-                {mapContent}
-                <SidePanelCard>{sidePanel}</SidePanelCard>
-            </MapWithSidePanelLayout>
-        );
-    }
-
-    return mapContent;
 });

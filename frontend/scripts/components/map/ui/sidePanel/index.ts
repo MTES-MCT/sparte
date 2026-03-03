@@ -1,5 +1,5 @@
 export { SidePanel, MapWithSidePanel } from "./SidePanelLayout";
-export { SidePanelPlaceholder, CloseButton, InfoRow, InfoLabel, InfoValue, ColorDot } from "./SidePanelPrimitives";
+export { SidePanelPlaceholder, PlaceholderIcon, SidePanelHeader, HeaderContent, SidePanelTitle, SidePanelSubtitle, CloseButton, InfoRow, InfoLabel, InfoValue, ColorDot, SectionTitle, Section, Separator, SidePanelContent } from "./SidePanelPrimitives";
 export { ZonageUrbanismeSidePanel } from "./ZonageUrbanismeSidePanel";
 export type { ZonageUrbanismeSidePanelProps } from "./ZonageUrbanismeSidePanel";
 export { OcsgeObjectSidePanel } from "./OcsgeObjectSidePanel";

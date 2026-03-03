@@ -1,11 +1,12 @@
 import React, { useRef, useLayoutEffect } from "react";
 import styled from "styled-components";
 import type maplibregl from "maplibre-gl";
+import { theme } from "@theme";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { formatNumber } from "@utils/formatUtils";
 import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, ALL_OCSGE_COUVERTURE_CODES, ALL_OCSGE_USAGE_CODES } from "../../constants/ocsge_nomenclatures";
-import { SidePanelPlaceholder, CloseButton, InfoRow, InfoLabel, InfoValue, ColorDot } from "./SidePanelPrimitives";
+import { SidePanelPlaceholder, PlaceholderIcon, SidePanelHeader, SidePanelTitle, CloseButton, InfoRow, InfoLabel, InfoValue, ColorDot, SectionTitle, Section, Separator, SidePanelContent } from "./SidePanelPrimitives";
 import { Tooltip } from "react-tooltip";
 
 export interface OcsgeDiffConfig {
@@ -27,90 +28,70 @@ export interface OcsgeDiffSidePanelProps {
 	config: OcsgeDiffConfig;
 }
 
-const SectionTitle = styled.div`
-	font-weight: 600;
-	font-size: 0.8rem;
-	color: #333;
-`;
-
-const Separator = styled.div`
-	border-top: 1px solid #ddd;
-`;
-
-const SidePanelContent = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	flex: 1;
-	min-height: 0;
-`;
-
-const Section = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-`;
-
-const DiffChip = styled.span`
-	display: inline-flex;
-	align-items: center;
-	gap: 3px;
-`;
-
 const MiniMatrixWrapper = styled.div`
-	margin-top: 4px;
 	position: relative;
 `;
 
 const MiniMatrixLabel = styled.div`
-	font-size: 0.6rem;
-	color: #666;
+	font-size: ${theme.fontSize.xs};
+	font-weight: ${theme.fontWeight.medium};
+	color: ${theme.colors.textMuted};
 	text-align: center;
+	margin-bottom: 2px;
 `;
 
 const MiniMatrixRowLabel = styled.div`
-	font-size: 0.6rem;
-	color: #666;
+	font-size: ${theme.fontSize.xs};
+	font-weight: ${theme.fontWeight.medium};
+	color: ${theme.colors.textMuted};
 	writing-mode: vertical-lr;
 	transform: rotate(180deg);
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	padding-right: 2px;
 `;
 
 const MiniMatrixOuter = styled.div`
 	display: flex;
-	gap: 3px;
-	max-width: 90%;
+	gap: 2px;
+	width: 100%;
 `;
 
 const MiniMatrixGrid = styled.div`
 	display: grid;
-	grid-template-columns: auto repeat(${ALL_OCSGE_COUVERTURE_CODES.length}, 1fr);
+	grid-template-columns: auto repeat(${ALL_OCSGE_COUVERTURE_CODES.length}, minmax(0, 1fr));
 	gap: 1px;
 	flex: 1;
 	min-width: 0;
 `;
 
 const MiniMatrixHeaderCell = styled.div<{ $color: string; $highlight?: boolean }>`
-	aspect-ratio: 1;
-	border-radius: 1px;
+	width: 100%;
+	height: clamp(8px, 2vw, 14px);
+	border-radius: 2px;
 	background-color: ${({ $color }) => $color};
-	${({ $highlight }) => $highlight && "outline: 1.5px solid #000;"}
-	transition: outline 0.2s ease;
+	${({ $highlight }) => $highlight && `outline: 2px solid ${theme.colors.text}; z-index: 1;`}
+	transition: outline 0.15s ease;
+`;
+
+const MiniMatrixRowHeaderCell = styled(MiniMatrixHeaderCell)`
+	height: auto;
+	width: clamp(8px, 2vw, 14px);
 `;
 
 const MiniMatrixCell = styled.div<{ $positive: boolean; $variant: "before" | "after" | "none" }>`
-	aspect-ratio: 1;
-	border-radius: 1px;
+	width: 100%;
+	height: clamp(8px, 2vw, 14px);
+	border-radius: 2px;
 	background-color: ${({ $positive }) => $positive ? "#FA4B42" : "#2A9D8F"};
-	opacity: ${({ $variant }) => $variant !== "none" ? 1 : 0.25};
+	opacity: ${({ $variant }) => $variant !== "none" ? 1 : 0.2};
 	outline: ${({ $variant }) =>
-		$variant === "before" ? "2px dashed #000"
-		: $variant === "after" ? "2px solid #000"
+		$variant === "before" ? `2px dashed ${theme.colors.text}`
+		: $variant === "after" ? `2px solid ${theme.colors.text}`
 		: "none"};
 	outline-offset: -1px;
-	transition: opacity 0.2s ease, outline 0.2s ease;
+	transition: opacity 0.15s ease, outline 0.15s ease;
 	position: relative;
 	z-index: ${({ $variant }) => $variant !== "none" ? 1 : 0};
 `;
@@ -127,10 +108,10 @@ const ArrowSvg = styled.svg`
 
 const MiniMatrixLegend = styled.div`
 	display: flex;
-	gap: 10px;
-	margin-top: 4px;
-	font-size: 0.65rem;
-	color: #666;
+	gap: ${theme.spacing.sm};
+	margin-top: ${theme.spacing.xs};
+	font-size: ${theme.fontSize.xs};
+	color: ${theme.colors.textMuted};
 	flex-wrap: wrap;
 `;
 
@@ -144,7 +125,7 @@ const MiniMatrixLegendDot = styled.span<{ $color: string }>`
 	display: inline-block;
 	width: 8px;
 	height: 8px;
-	border-radius: 1px;
+	border-radius: 2px;
 	background-color: ${({ $color }) => $color};
 `;
 
@@ -152,8 +133,8 @@ const MiniMatrixLegendOutline = styled.span<{ $dashed?: boolean }>`
 	display: inline-block;
 	width: 8px;
 	height: 8px;
-	border-radius: 1px;
-	border: 1.5px ${({ $dashed }) => $dashed ? "dashed" : "solid"} #000;
+	border-radius: 2px;
+	border: 1.5px ${({ $dashed }) => $dashed ? "dashed" : "solid"} ${theme.colors.text};
 `;
 
 export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
@@ -200,6 +181,7 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 	if (!feature) {
 		return (
 			<SidePanelPlaceholder>
+				<PlaceholderIcon><i className="bi bi-hand-index" /></PlaceholderIcon>
 				Survolez ou cliquez sur un objet pour afficher ses informations
 			</SidePanelPlaceholder>
 		);
@@ -230,23 +212,24 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 	const sameMatrixClass = oldByMatrix === newByMatrix;
 	const isBySeuil = hasMatrix && (isPositive || isNegative) && sameMatrixClass;
 
+	const title = isPositive ? positiveLabel : isNegative ? negativeLabel : "Flux OCS GE";
+
 	return (
 		<>
-			{isLocked && (
-				<CloseButton title="Désélectionner l'objet" onClick={onClose}>
-					✕
-				</CloseButton>
-			)}
+			<SidePanelHeader>
+				<SidePanelTitle>{title}</SidePanelTitle>
+				{isLocked && (
+					<CloseButton title="Désélectionner l'objet" onClick={onClose}>
+						✕
+					</CloseButton>
+				)}
+			</SidePanelHeader>
 			<SidePanelContent>
 				<Section>
 					<InfoRow>
 						<InfoLabel>Type</InfoLabel>
 						<InfoValue>
-							<Badge
-								noIcon
-								severity={isPositive ? "error" : isNegative ? "success" : "info"}
-								small
-							>
+							<Badge noIcon severity={isPositive ? "error" : isNegative ? "success" : "info"} small>
 								{isPositive ? positiveLabel : isNegative ? negativeLabel : "Inconnu"}
 							</Badge>
 						</InfoValue>
@@ -263,11 +246,11 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 						<>
 							<InfoRow>
 								<InfoLabel>Couverture avant</InfoLabel>
-								<InfoValue><DiffChip><ColorDot $color={csOldColor} />{getCouvertureLabel(csOld)}</DiffChip></InfoValue>
+								<InfoValue><ColorDot $color={csOldColor} />{getCouvertureLabel(csOld)}</InfoValue>
 							</InfoRow>
 							<InfoRow>
 								<InfoLabel>Couverture après</InfoLabel>
-								<InfoValue><DiffChip><ColorDot $color={csNewColor} />{getCouvertureLabel(csNew)}</DiffChip></InfoValue>
+								<InfoValue><ColorDot $color={csNewColor} />{getCouvertureLabel(csNew)}</InfoValue>
 							</InfoRow>
 						</>
 					)}
@@ -275,11 +258,11 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 						<>
 							<InfoRow>
 								<InfoLabel>Usage avant</InfoLabel>
-								<InfoValue><DiffChip><ColorDot $color={usOldColor} />{getUsageLabel(usOld)}</DiffChip></InfoValue>
+								<InfoValue><ColorDot $color={usOldColor} />{getUsageLabel(usOld)}</InfoValue>
 							</InfoRow>
 							<InfoRow>
 								<InfoLabel>Usage après</InfoLabel>
-								<InfoValue><DiffChip><ColorDot $color={usNewColor} />{getUsageLabel(usNew)}</DiffChip></InfoValue>
+								<InfoValue><ColorDot $color={usNewColor} />{getUsageLabel(usNew)}</InfoValue>
 							</InfoRow>
 						</>
 					)}
@@ -317,7 +300,7 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 										))}
 										{ALL_OCSGE_USAGE_CODES.map(us => (
 											<React.Fragment key={us}>
-												<MiniMatrixHeaderCell
+												<MiniMatrixRowHeaderCell
 													$color={(USAGE_COLORS as Record<string, string>)[us]}
 													$highlight={us === usOld || us === usNew}
 													data-tooltip-id={tooltipId}
@@ -335,7 +318,7 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 															$positive={inMatrix}
 															$variant={variant}
 															data-tooltip-id={tooltipId}
-															data-tooltip-html={`<span style="display:inline-block;width:8px;height:8px;background:${(COUVERTURE_COLORS as Record<string, string>)[cs] || '#ccc'};margin-right:4px;vertical-align:middle;border-radius:1px"></span>${getCouvertureLabel(cs)}<br/><span style="display:inline-block;width:8px;height:8px;background:${(USAGE_COLORS as Record<string, string>)[us] || '#ccc'};margin-right:4px;vertical-align:middle;border-radius:1px"></span>${getUsageLabel(us)}<br/><b>${inMatrix ? matrixPositiveLabel : matrixNegativeLabel}</b>${isBefore ? "<br/><i>Avant</i>" : ""}${isAfter ? "<br/><i>Après</i>" : ""}`}
+															data-tooltip-html={`<span style="display:inline-block;width:8px;height:8px;background:${(COUVERTURE_COLORS as Record<string, string>)[cs] || '#ccc'};margin-right:4px;vertical-align:middle;border-radius:2px"></span>${getCouvertureLabel(cs)}<br/><span style="display:inline-block;width:8px;height:8px;background:${(USAGE_COLORS as Record<string, string>)[us] || '#ccc'};margin-right:4px;vertical-align:middle;border-radius:2px"></span>${getUsageLabel(us)}<br/><b>${inMatrix ? matrixPositiveLabel : matrixNegativeLabel}</b>${isBefore ? "<br/><i>Avant</i>" : ""}${isAfter ? "<br/><i>Après</i>" : ""}`}
 														/>
 													);
 												})}
@@ -347,12 +330,12 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 									<ArrowSvg>
 										<defs>
 											<marker id={arrowheadId} markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto">
-												<polygon points="0 0, 6 2.5, 0 5" fill="#000" />
+												<polygon points="0 0, 6 2.5, 0 5" fill={theme.colors.text} />
 											</marker>
 										</defs>
 										<line
 											ref={lineRef}
-											stroke="#000"
+											stroke={theme.colors.text}
 											strokeWidth="1.5"
 											markerEnd={`url(#${arrowheadId})`}
 										/>
