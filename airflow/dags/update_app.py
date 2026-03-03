@@ -743,6 +743,7 @@ def update_app():  # noqa: C901
                 ["land_id", "land_type", "start_year", "end_year", "destination"],
             ],
         )
+
     @task.python
     def copy_public_data_dc_population(**context):
         return copy_table_from_dw_to_app(
