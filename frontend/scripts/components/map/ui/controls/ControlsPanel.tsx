@@ -7,24 +7,26 @@ import type { ControlsManager } from "../../controls/ControlsManager";
 
 const ToggleButton = styled(Button)`
     position: absolute;
-    bottom: 10px;
+    bottom: 28px;
     left: 1vw;
-    z-index: 2;
+    z-index: 3;
 `;
 
 const ControlPanel = styled.div<{ $isOpen: boolean }>`
     position: absolute;
-    bottom: 10px;
+    bottom: 28px;
     left: 1vw;
 	top: 1vw;
 	width: 25vw;
-    z-index: 1;
+    z-index: 2;
     background: #ffffff;
     overflow: hidden;
 	opacity: ${props => props.$isOpen ? 1 : 0};
 	visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
 	transition: opacity 0.1s ease, visibility 0.1s ease;
 	padding-bottom: 32px;
+	border-radius: 7px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
 `;
 
 const SlidingContainer = styled.div<{ $showDetails: boolean }>`

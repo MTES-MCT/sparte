@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 
+from home.api import PageFeedbackViewSet
 from project.api_views import (
     ReportDraftViewSet,
     ToggleFavoriteAPIView,
@@ -170,6 +171,7 @@ from public_data.models import (
     LandFricheZonageEnvironnementaleViewset,
     LandFricheZonageTypeViewset,
     LandFricheZoneActiviteViewset,
+    LandImperFluxIndexViewset,
     LandImperFluxViewset,
     LandImperStockCouvertureCompositionViewset,
     LandImperStockIndexViewset,
@@ -188,6 +190,7 @@ app_name = "api"
 
 router = DefaultRouter()
 router.register(r"report-drafts", ReportDraftViewSet, basename="report-draft")
+router.register(r"feedback", PageFeedbackViewSet, basename="feedback")
 
 
 @api_view(["GET"])
@@ -433,6 +436,7 @@ urlpatterns = [
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
     path("imperzonage/", ImperZonageViewset.as_view(), name="imperzonageindex"),
     path("landimperflux/", LandImperFluxViewset.as_view(), name="imperflux"),
+    path("landimperfluxindex/", LandImperFluxIndexViewset.as_view(), name="imperfluxindex"),
     path("landartifflux/", LandArtifFluxViewset.as_view(), name="artifflux"),
     path("landartiffluxindex/", LandArtifFluxIndexViewset.as_view(), name="artiffluxindex"),
     path(

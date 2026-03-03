@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import SearchBar from '@components/ui/SearchBar';
+import Tag from '@components/ui/Tag';
 import { LandDetailResultType } from '@services/types/land';
-import { TerritoryBadge } from '@components/pages/Consommation/components/ConsoComparison/TerritoryBadge';
 
 interface TerritorySelectorProps {
     territories: LandDetailResultType[];
@@ -58,11 +58,14 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                     <p className="fr-text--sm fr-text--alt">{emptyText}</p>
                 ) : (
                     territories.map((territory) => (
-                        <TerritoryBadge
+                        <Tag
                             key={`${territory.land_type}_${territory.land_id}`}
-                            territory={territory}
-                            onRemove={onRemoveTerritory}
-                        />
+                            size="sm"
+                            onDismiss={() => onRemoveTerritory(territory)}
+                            variant="primary"
+                        >
+                            {territory.name}
+                        </Tag>
                     ))
                 )}
             </TerritoryList>

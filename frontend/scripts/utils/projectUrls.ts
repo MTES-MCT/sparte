@@ -2,7 +2,20 @@ import type { MenuItem } from '@services/types/project';
 
 const FAQ_URL = "https://faq.mondiagartif.beta.gouv.fr/fr/";
 
-export function buildUrls(landType: string, landSlug: string) {
+export type ProjectUrls = {
+    synthese: string;
+    artificialisation: string;
+    impermeabilisation: string;
+    rapportLocal: string;
+    trajectoires: string;
+    consommation: string;
+    logementVacant: string;
+    friches: string;
+    residencesSecondaires: string;
+    downloads: string;
+};
+
+export function buildUrls(landType: string, landSlug: string): ProjectUrls {
     const base = `/diagnostic/${landType}/${landSlug}`;
     return {
         synthese: `${base}/`,

@@ -7,12 +7,17 @@ interface StatsBarProps {
 }
 
 const StatsContainer = styled.div`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background-color: rgba(255, 255, 255, 0.95);
     display: flex;
     flex-direction: row;
     width: 100%;
     height: 18px;
     overflow: hidden;
+    z-index: 4;
 `;
 
 const StatSegment = styled.div<{ $percent: number; $color: string }>`

@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import type maplibregl from "maplibre-gl";
+import { theme } from "@theme";
 import { formatNumber } from "@utils/formatUtils";
 import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS } from "../../constants/ocsge_nomenclatures";
@@ -11,72 +12,38 @@ import type { LandDetailResultType } from "@services/types/land";
 import { MODE_CONFIG } from "../../constants/modeConfig";
 import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 import { SegmentedControl } from "@codegouvfr/react-dsfr/SegmentedControl";
-import { SidePanelPlaceholder, CloseButton, InfoRow, InfoLabel, InfoValue } from "./SidePanelPrimitives";
+import { SidePanelPlaceholder, PlaceholderIcon, SidePanelHeader, HeaderContent, SidePanelTitle, SidePanelSubtitle, CloseButton, InfoRow, InfoLabel, InfoValue, SectionTitle, Section, Separator, SidePanelContent } from "./SidePanelPrimitives";
 import { renderPieChart } from "./PieChart";
 import { parseComposition, getFluxNetColor } from "./utils";
 import type { SurfaceUnit } from "./types";
 
-const SidePanelHeader = styled.div`
-	padding-bottom: 0.5rem;
-	border-bottom: 1px solid #ddd;
-`;
-
-const HeaderRow = styled.div`
+const UnitRow = styled.div`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 8px;
-	padding-right: 24px;
-`;
-
-const SectionTitle = styled.div`
-	font-weight: 600;
-	font-size: 0.8rem;
-	color: #333;
-`;
-
-const Separator = styled.div`
-	border-top: 1px solid #ddd;
-`;
-
-const LibelleLong = styled.div`
-	font-size: 0.72rem;
-	color: #888;
-	margin-top: 2px;
-`;
-
-const SidePanelContent = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-	flex: 1;
-	min-height: 0;
-`;
-
-const Section = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
+	gap: ${theme.spacing.sm};
 `;
 
 const PercentBarTrack = styled.div`
-	height: 8px;
-	background: #e0e0e0;
-	border-radius: 4px;
+	height: 6px;
+	background: ${theme.colors.backgroundMuted};
+	border-radius: ${theme.radius.default};
 	overflow: hidden;
+	margin-top: 2px;
 `;
 
 const PercentBarFill = styled.div<{ $percent: number; $color: string }>`
 	height: 100%;
 	width: ${({ $percent }) => Math.min($percent, 100)}%;
 	background-color: ${({ $color }) => $color};
-	border-radius: 4px;
+	border-radius: ${theme.radius.default};
 	transition: width 0.3s ease;
 `;
 
 const FluxNetRow = styled(InfoRow)`
-	border-top: 1px solid #999;
-	padding-top: 3px;
+	border-top: 1px solid ${theme.colors.textMuted};
+	padding-top: 4px;
+	margin-top: 2px;
 `;
 
 export interface ZonageUrbanismeSidePanelProps {
@@ -108,6 +75,7 @@ export const ZonageUrbanismeSidePanel: React.FC<ZonageUrbanismeSidePanelProps> =
 	if (!feature) {
 		return (
 			<SidePanelPlaceholder>
+				<PlaceholderIcon><i className="bi bi-hand-index" /></PlaceholderIcon>
 				Cliquez sur un zonage pour afficher ses informations
 			</SidePanelPlaceholder>
 		);
@@ -155,58 +123,59 @@ export const ZonageUrbanismeSidePanel: React.FC<ZonageUrbanismeSidePanelProps> =
 
 	return (
 		<>
-			{isLocked && (
-				<CloseButton title="Désélectionner la zone" onClick={onClose}>
-					✕
-				</CloseButton>
-			)}
-			<SidePanelContent>
-				<SidePanelHeader>
-					<HeaderRow>
-						<div>
-							<ZoneTypeBadge type={typeZone} />{" "}
-							<strong>{ZonageType[typeZone as keyof typeof ZonageType] || typeZone}</strong>
-							{libelle && (
-								<span style={{ color: "#666" }}> — {libelle}</span>
-							)}
-						</div>
-						<SegmentedControl
-							small
-							hideLegend
-							legend="Unité"
-							segments={[
-								{
-									label: "ha",
-									nativeInputProps: {
-										defaultChecked: true,
-										checked: unit === "ha",
-										onChange: () => onUnitChange("ha"),
-									},
-								},
-								{
-									label: "m²",
-									nativeInputProps: {
-										checked: unit === "m2",
-										onChange: () => onUnitChange("m2"),
-									},
-								},
-							]}
-						/>
-					</HeaderRow>
+			<SidePanelHeader>
+				<HeaderContent>
+					<SidePanelTitle>
+						<ZoneTypeBadge type={typeZone} />{" "}
+						{ZonageType[typeZone as keyof typeof ZonageType] || typeZone}
+						{libelle && <span style={{ fontWeight: 400, color: theme.colors.textMuted }}> — {libelle}</span>}
+					</SidePanelTitle>
 					{libelleLong && libelleLong !== libelle && (
-						<LibelleLong>{libelleLong}</LibelleLong>
+						<SidePanelSubtitle>{libelleLong}</SidePanelSubtitle>
 					)}
 					{landData.is_interdepartemental && featureDept && (
-						<span style={{ fontSize: "0.8rem", color: "#666" }}>
+						<SidePanelSubtitle>
 							{landData.millesimes.find(m => m.departement === featureDept)?.departement_name || featureDept}
 							{featureYear && ` (${featureYear})`}
-						</span>
+						</SidePanelSubtitle>
 					)}
-				</SidePanelHeader>
+				</HeaderContent>
+				{isLocked && (
+					<CloseButton title="Désélectionner la zone" onClick={onClose}>
+						✕
+					</CloseButton>
+				)}
+			</SidePanelHeader>
+			<SidePanelContent>
+				<UnitRow>
+					<InfoLabel><strong>Taux d&apos;{modeLabel}</strong></InfoLabel>
+					<SegmentedControl
+						small
+						hideLegend
+						legend="Unité"
+						segments={[
+							{
+								label: "ha",
+								nativeInputProps: {
+									defaultChecked: true,
+									checked: unit === "ha",
+									onChange: () => onUnitChange("ha"),
+								},
+							},
+							{
+								label: "m²",
+								nativeInputProps: {
+									checked: unit === "m2",
+									onChange: () => onUnitChange("m2"),
+								},
+							},
+						]}
+					/>
+				</UnitRow>
 
 				<Section>
 					<InfoRow>
-						<InfoLabel><strong>Taux d&apos;{modeLabel}</strong></InfoLabel>
+						<InfoLabel>Taux</InfoLabel>
 						<InfoValue>
 							{percent != null ? `${formatNumber({ number: percent })} %` : "—"}
 						</InfoValue>
@@ -235,11 +204,11 @@ export const ZonageUrbanismeSidePanel: React.FC<ZonageUrbanismeSidePanelProps> =
 							</InfoRow>
 							<InfoRow>
 								<InfoLabel>{modeLabelCap}</InfoLabel>
-								<InfoValue style={{ color: "#E63946" }}>+{formatNumber({ number: toUnit(fluxPlus ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
+								<InfoValue style={{ color: theme.colors.error }}>+{formatNumber({ number: toUnit(fluxPlus ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
 							</InfoRow>
 							<InfoRow>
 								<InfoLabel>{desLabel}</InfoLabel>
-								<InfoValue style={{ color: "#2A9D8F" }}>-{formatNumber({ number: toUnit(fluxMinus ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
+								<InfoValue style={{ color: theme.colors.success }}>-{formatNumber({ number: toUnit(fluxMinus ?? 0), decimals: 2 })} {unitLabel}</InfoValue>
 							</InfoRow>
 							<FluxNetRow>
 								<InfoLabel><strong>{modeLabelCap} nette</strong></InfoLabel>

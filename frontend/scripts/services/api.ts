@@ -80,12 +80,32 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getLandArtifFluxIndex: builder.query({
+			query: ({ land_type, land_id, millesime_old_index, millesime_new_index }) => {
+				return `/api/landartiffluxindex/?${new URLSearchParams({
+					land_type,
+					land_id,
+					millesime_old_index: String(millesime_old_index),
+					millesime_new_index: String(millesime_new_index),
+				})}`
+			},
+		}),
 		getLandImperStockIndex: builder.query({
 			query: ({ land_type, land_id, millesime_index }) => {
 				return `/api/landimperstockindex/?${new URLSearchParams({
 					land_type,
 					land_id,
 					millesime_index
+				})}`
+			},
+		}),
+		getLandImperFluxIndex: builder.query({
+			query: ({ land_type, land_id, millesime_old_index, millesime_new_index }) => {
+				return `/api/landimperfluxindex/?${new URLSearchParams({
+					land_type,
+					land_id,
+					millesime_old_index: String(millesime_old_index),
+					millesime_new_index: String(millesime_new_index),
 				})}`
 			},
 		}),
@@ -299,6 +319,26 @@ export const djangoApi = createApi({
 		getCurrentUser: builder.query<CurrentUserResponse, void>({
 			query: () => '/api/me/',
 		}),
+		submitFeedback: builder.mutation<void, {
+			rating: number;
+			comment: string;
+			page_url: string;
+			land_type: string;
+			land_id: string;
+			land_name: string;
+			page_name: string;
+			crisp_session_id?: string;
+		}>({
+			query: (body) => {
+				const csrfToken = getCsrfToken();
+				return {
+					url: '/api/feedback/',
+					method: 'POST',
+					body,
+					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+				};
+			},
+		}),
 	}),
 	tagTypes: ['ReportDraft', 'Preference'],
 });
@@ -317,12 +357,16 @@ const useToggleFavoriteMutation = djangoApi.useToggleFavoriteMutation;
 const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
 const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
 
+const useSubmitFeedbackMutation = djangoApi.useSubmitFeedbackMutation;
+
 const {
 	useGetDepartementListQuery,
 	useSearchTerritoryQuery,
 	useGetChartConfigQuery,
 	useGetLandArtifStockIndexQuery,
+	useGetLandArtifFluxIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandImperFluxIndexQuery,
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
@@ -349,7 +393,9 @@ export {
 	useGetArtifZonageIndexQuery,
 	useGetImperZonageIndexQuery,
 	useGetLandArtifStockIndexQuery,
+	useGetLandArtifFluxIndexQuery,
 	useGetLandImperStockIndexQuery,
+	useGetLandImperFluxIndexQuery,
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
@@ -374,4 +420,5 @@ export {
 	useUpdateReportDraftMutation,
 	useDeleteReportDraftMutation,
 	useGetCurrentUserQuery,
+	useSubmitFeedbackMutation,
 };

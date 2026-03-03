@@ -1,22 +1,37 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from "react";
+import { Notice as DSFRNotice } from "@codegouvfr/react-dsfr/Notice";
+import BaseCard from "@components/ui/BaseCard";
+
+type NoticeType = "info" | "warning" | "alert";
 
 interface NoticeProps {
-    type: 'success' | 'warning';
-    message: string | ReactNode;
-    reportTitle: string;
+    type: NoticeType;
+    title: string;
+    description: string | ReactNode;
+    withCard?: boolean;
 }
 
-const NOTICE_TITLES = {
-    success: (reportTitle: string) => `Votre demande de téléchargement du rapport ${reportTitle} a bien été prise en compte`,
-    warning: (reportTitle: string) => `Erreur lors de votre demande de téléchargement du rapport ${reportTitle}`
-} as const;
+const SEVERITY_MAP: Record<NoticeType, "info" | "warning" | "alert"> = {
+    info: "info",
+    warning: "warning",
+    alert: "alert",
+};
 
-const Notice: React.FC<NoticeProps> = ({ type, message, reportTitle }) => (
-    <div className={`bg-white fr-mt-2w fr-alert fr-alert--${type}`}>
-        <h3 className="fr-alert__title">{NOTICE_TITLES[type](reportTitle)}</h3>
-        <p>{message}</p>
-    </div>
-);
+const Notice: React.FC<NoticeProps> = ({ type, title, description, withCard = true }) => {
+    const notice = (
+        <DSFRNotice
+            severity={SEVERITY_MAP[type]}
+            title={<span className="fr-text--sm">{title}</span>}
+            description={<span className="fr-text--sm">{description}</span>}
+        />
+    );
+
+    if (withCard) {
+        return <BaseCard>{notice}</BaseCard>;
+    }
+
+    return notice;
+};
 
 export default Notice;
 

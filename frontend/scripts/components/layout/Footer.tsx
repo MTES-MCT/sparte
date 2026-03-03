@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-
 interface MenuItem {
     label: string;
     url?: string;
@@ -30,11 +29,11 @@ const NavLink = styled.a`
     text-decoration: none;
     background-image: none;
     -webkit-tap-highlight-color: transparent;
-    transition: color .3s ease;
-    color: #979FB8;
+    transition: color 0.3s ease;
+    color: #979fb8;
 
     &:hover {
-        color: #4318FF;
+        color: #4318ff;
     }
 `;
 
@@ -48,9 +47,9 @@ const Footer = ({ footer }: { footer: { menuItems: MenuItem[] } }) => {
                         {footer?.menuItems.map((item) => (
                             <NavLink
                                 key={item.label}
-                                href={item.url}
+                                href={item.url ?? '#'}
                                 target={item.target}
-                                rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                                rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
                             >
                                 {item.label}
                             </NavLink>

@@ -69,12 +69,18 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 			},
 		});
 
-		const targetLayer = "artificialisation-diff-layer";
+		const getArtifDiffLayers = (): string[] => {
+			const style = map.getStyle();
+			if (!style?.layers) return [];
+			return style.layers
+				.filter(l => l.id.startsWith("artificialisation-diff-layer"))
+				.map(l => l.id);
+		};
 
 		const queryFeatures = (point: maplibregl.PointLike): maplibregl.MapGeoJSONFeature[] => {
-			const style = map.getStyle();
-			if (!style?.layers.some(l => l.id === targetLayer)) return [];
-			return map.queryRenderedFeatures(point, { layers: [targetLayer] });
+			const layers = getArtifDiffLayers();
+			if (layers.length === 0) return [];
+			return map.queryRenderedFeatures(point, { layers });
 		};
 
 		map.on("mousemove", (e) => {

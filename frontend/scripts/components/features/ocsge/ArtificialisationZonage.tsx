@@ -23,7 +23,7 @@ const PercentCell = styled.td`
 	vertical-align: middle;
 `;
 
-interface ZonageData {
+export interface ZonageData {
 	zonage_type: keyof typeof ZonageType;
 	zonage_surface: number;
 	artificial_surface: number;

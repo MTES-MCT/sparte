@@ -23,7 +23,7 @@ const PercentCell = styled.td`
 	vertical-align: middle;
 `;
 
-interface ZonageData {
+export interface ImperZonageData {
 	zonage_type: keyof typeof ZonageType;
 	zonage_surface: number;
 	impermeable_surface: number;
@@ -35,7 +35,7 @@ interface ZonageData {
 }
 
 interface ImpermeabilisationZonageProps {
-	imperZonageIndex: ZonageData[];
+	imperZonageIndex: ImperZonageData[];
 }
 
 export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> = ({

@@ -67,12 +67,18 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 			},
 		});
 
-		const targetLayer = "impermeabilisation-diff-layer";
+		const getImperDiffLayers = (): string[] => {
+			const style = map.getStyle();
+			if (!style?.layers) return [];
+			return style.layers
+				.filter(l => l.id.startsWith("impermeabilisation-diff-layer"))
+				.map(l => l.id);
+		};
 
 		const queryFeatures = (point: maplibregl.PointLike): maplibregl.MapGeoJSONFeature[] => {
-			const style = map.getStyle();
-			if (!style?.layers.some(l => l.id === targetLayer)) return [];
-			return map.queryRenderedFeatures(point, { layers: [targetLayer] });
+			const layers = getImperDiffLayers();
+			if (layers.length === 0) return [];
+			return map.queryRenderedFeatures(point, { layers });
 		};
 
 		map.on("mousemove", (e) => {

@@ -473,7 +473,6 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	const displayedFeature = lockedFeature ?? hoveredFeature;
 
 	return (
-		<>
 		<BaseMap
 			id={`zonage-urbanisme-${mode}-map`}
 			config={config}
@@ -504,17 +503,5 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		>
 			<OcsgeTooltip ref={tooltipRef} style={{ display: "none" }} />
 		</BaseMap>
-		<ChartDetails
-			sources={['ocsge', 'gpu']}
-			chartId={`zonage-urbanisme-${mode}-map-details`}
-		>
-			<div>
-				<h3 className="fr-mb-0">Calcul</h3>
-				<p className="fr-text--sm">
-					{chartDescription}
-				</p>
-			</div>
-		</ChartDetails>
-		</>
 	);
 };
