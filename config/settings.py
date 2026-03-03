@@ -727,7 +727,7 @@ METABASE_URL = env.str("METABASE_URL", default="https://sparte-metabase.osc-secn
 STATS_HEIGHT = env.str("STATS_HEIGHT", default="5240")
 STATS_URL = env.str(
     "STATS_URL",
-    default="http://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/8dc81856-e117-4431-8c5d-1ec7b04887b3",
+    default="https://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/8dc81856-e117-4431-8c5d-1ec7b04887b3",
 )
 WEBINAIRE_URL = env.str(
     "WEBINAIRE_URL",
