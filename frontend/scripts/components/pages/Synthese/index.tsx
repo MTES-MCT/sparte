@@ -1,12 +1,14 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import { buildUrls } from "@utils/projectUrls";
-import SyntheseConso from "./components/SyntheseConso";
-import SyntheseArtif from "./components/SyntheseArtif";
-import SyntheseFriche from "./components/SyntheseFriche";
-import SyntheseLogementVacant from "./components/SyntheseLogementVacant";
-import TerritoryIdentityCard from "./components/TerritoryIdentityCard";
-import DiagnosticsHub from "./components/DiagnosticsHub";
+import {
+  SyntheseConso,
+  SyntheseArtif,
+  SyntheseFriche,
+  SyntheseLogementVacant,
+  TerritoryIdentityCard,
+  DiagnosticsHub,
+} from "./components";
 import Badge from "@components/ui/Badge";
 import Timeline from "@components/ui/Timeline";
 

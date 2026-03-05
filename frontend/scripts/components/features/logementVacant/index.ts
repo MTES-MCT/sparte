@@ -1,3 +1,1 @@
-export { default as LogementVacantOverview } from './logementVacantOverview';
-export { default as LogementVacantAbstract } from './logementVacantAbstract';
-export { LogementVacantAbstractContent } from './LogementVacantAbstractContent';
+export { default as LogementVacantAbstract } from './LogementVacantAbstract';
