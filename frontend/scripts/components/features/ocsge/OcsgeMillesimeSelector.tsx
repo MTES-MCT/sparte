@@ -25,6 +25,7 @@ export const OcsgeMillesimeSelector: React.FC<OcsgeMillesimeSelectorProps> = ({
 	<Container>
 		{millesimes_by_index.map((m) => (
 			<Button
+				key={m.index}
 				type="button"
 				variant={m.index === index ? "primary" : "outline"}
 				onClick={() => setIndex(m.index)}
