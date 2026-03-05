@@ -11,8 +11,7 @@ module.exports = {
             "last 2 Safari versions",
             "last 2 iOS versions",
             "last 1 Android version",
-            "last 1 ChromeAndroid version",
-            "ie 11"
+            "last 1 ChromeAndroid version"
           ]
         }
       }
