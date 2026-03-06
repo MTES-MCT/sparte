@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import Button from "@components/ui/Button";
 import { useTrajectoiresContext } from "../context/TrajectoiresContext";
 
 const ModalOverlay = styled.div`
@@ -80,21 +81,21 @@ export const TrajectoiresCustomTargetModal: React.FC = () => {
           </p>
         </div>
         <ModalActions>
-          <button
+          <Button
             type="button"
-            className="fr-btn fr-btn--tertiary-no-outline"
+            variant="tertiary"
             onClick={() => setShowCustomTargetModal(false)}
           >
             Annuler
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="fr-btn"
+            variant="primary"
             onClick={handleSaveCustomTarget}
             disabled={isUpdating}
           >
             Enregistrer
-          </button>
+          </Button>
         </ModalActions>
       </ModalContent>
     </ModalOverlay>

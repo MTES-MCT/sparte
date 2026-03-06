@@ -6,6 +6,7 @@ import { useDataTable } from "@hooks/useDataTable";
 import { DataTable } from "@components/ui/DataTable";
 import { Pagination } from "@components/ui/Pagination";
 import { SearchInput } from "@components/ui/SearchInput";
+import Button from "@components/ui/Button";
 import { STATUT_BADGE_CONFIG, STATUT_ORDER } from "@components/features/friches/constants";
 import { useFrichesContext } from "../context/FrichesContext";
 
@@ -85,13 +86,13 @@ export const FrichesDataTable: React.FC = () => {
       label: "",
       sortable: false,
       render: (_: unknown, friche: LandFriche) => (
-        <button
-          className="fr-btn fr-btn--sm fr-btn--secondary"
+        <Button
+          variant="secondary"
+          size="sm"
+          icon="bi bi-geo-alt"
           onClick={() => handleFricheClick(friche.point_on_surface)}
           title="Voir sur la carte"
-        >
-          <i className="bi bi-geo-alt"></i>
-        </button>
+        />
       ),
     },
     {

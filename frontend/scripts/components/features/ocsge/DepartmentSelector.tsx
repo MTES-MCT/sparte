@@ -22,7 +22,7 @@ export const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
 			<Button
 				onClick={() => setByDepartement(!byDepartement)}
 				type="button"
-				variant="outline"
+				variant="tertiary"
 			>
 				<span>
 					{byDepartement

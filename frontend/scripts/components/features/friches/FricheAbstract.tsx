@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { formatNumber, pluralize } from "@utils/formatUtils";
 import { FricheStatusDetails, FricheStatusEnum } from "@services/types/land";
 import styled from "styled-components";
+import Button from "@components/ui/Button";
 
 const FricheAbstractContainer = styled.div`
     background-color: white;
@@ -99,7 +99,11 @@ const FricheAbstract: React.FC<FricheAbstractProps> = ({
                         Les friches sans projet : un levier actionnable pour la sobriété foncière
                     </h3>
                     {contentMap[friche_status]}
-                    {link && <Link to={link} className="fr-btn fr-mt-3w fr-icon-arrow-right-line fr-btn--icon-right fr-text--sm">Accéder au détail des friches</Link>}
+                    {link && (
+                        <Button to={link} icon="bi bi-arrow-right" iconPosition="right" className="fr-mt-3w">
+                            Accéder au détail des friches
+                        </Button>
+                    )}
                 </div>
             </div>
         </FricheAbstractContainer>

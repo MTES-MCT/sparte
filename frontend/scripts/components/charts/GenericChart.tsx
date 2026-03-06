@@ -101,7 +101,7 @@ const ChartFooter = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: ${theme.spacing.md} ${theme.spacing.lg};
+  padding: ${theme.spacing.sm};
   border-top: 1px solid ${theme.colors.border};
 `;
 
@@ -257,10 +257,10 @@ const GenericChart = ({
       <ChartBody>
         {showToolbar && (
           <Toolbar>
-            <Button variant="secondary" size="small" icon="bi bi-download" onClick={handleDownloadPNG} title="Télécharger en PNG">
+            <Button variant="secondary" size="sm" icon="bi bi-download" onClick={handleDownloadPNG} title="Télécharger en PNG">
               PNG
             </Button>
-            <Button variant="secondary" size="small" icon="bi bi-arrows-fullscreen" onClick={handleFullscreen} title="Plein écran">
+            <Button variant="secondary" size="sm" icon="bi bi-fullscreen" onClick={handleFullscreen} title="Plein écran">
               Plein écran
             </Button>
           </Toolbar>
@@ -284,7 +284,7 @@ const GenericChart = ({
             ) : (
               <div />
             )}
-            <Button variant="secondary" size="small" icon="bi bi-table" onClick={() => setIsExplorerOpen(true)} type="button">
+            <Button variant="tertiary" size="sm" icon="bi bi-chevron-right" iconPosition="right" onClick={() => setIsExplorerOpen(true)} type="button">
               Détails données et calculs
             </Button>
           </ChartFooter>

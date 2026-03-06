@@ -463,7 +463,7 @@ const Kpi: React.FC<KpiProps> = ({
       {action && (
         <ActionWrapper>
             <Button
-              variant="link"
+              variant="tertiary" noBackground noPadding
               to={action.to}
               onClick={action.onClick}
               icon="bi bi-arrow-right"

@@ -79,7 +79,7 @@ const GuideContent: React.FC<GuideContentProps> = ({ title, children, DrawerTitl
                 {drawerChildren && (
                     <>
                         <MoreLinkWrapper>
-                            <Button variant="link" onClick={toggleDrawer} type="button">
+                            <Button variant="tertiary" noBackground noPadding onClick={toggleDrawer} type="button">
                                 En savoir plus
                                 <i className="bi bi-arrow-right" aria-hidden="true" />
                             </Button>

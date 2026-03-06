@@ -1,202 +1,186 @@
 import React, { forwardRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, LinkProps } from "react-router-dom";
 import styled, { css } from "styled-components";
 import { theme } from "@theme";
 
-type ButtonVariant = "primary" | "secondary" | "link" | "outline";
-type ButtonSize = "default" | "small";
+type ButtonVariant = "primary" | "secondary" | "tertiary";
+type ButtonSize = "md" | "sm";
 
-type ButtonBaseProps = {
+interface BaseProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   icon?: string;
   iconPosition?: "left" | "right";
+  noBackground?: boolean;
+  noPadding?: boolean;
   children?: React.ReactNode;
-};
+  className?: string;
+}
 
-type ButtonAsButton = ButtonBaseProps &
-  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof ButtonBaseProps> & {
-    as?: "button";
-    href?: never;
+type ButtonAsButton = BaseProps &
+  Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps> & {
     to?: never;
   };
 
-type ButtonAsAnchor = ButtonBaseProps &
-  Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof ButtonBaseProps> & {
-    as: "a";
-    href: string;
-    to?: never;
+type ButtonAsLink = BaseProps &
+  Omit<LinkProps, keyof BaseProps> & {
+    to: string;
   };
 
-type ButtonAsRouterLink = ButtonBaseProps & {
-  as?: "link";
-  to: string;
-  href?: never;
-};
+type ButtonProps = ButtonAsButton | ButtonAsLink;
 
-type ButtonProps = ButtonAsButton | ButtonAsAnchor | ButtonAsRouterLink;
-
-const baseStyles = css`
-  display: inline-flex;
-  align-items: center;
-  border-radius: ${theme.radius.default};
-  cursor: pointer;
-  transition: background 0.15s ease, gap 0.2s ease;
-  text-decoration: none;
-
-  &:disabled {
-    background: ${theme.colors.backgroundAlt};
-    color: ${theme.colors.textMuted};
-    border-color: ${theme.colors.border};
-    cursor: not-allowed;
-  }
-`;
-
-const sizeStyles = {
-  default: css`
-    gap: 0.35rem;
+const sizeMap = {
+  md: css`
+    padding: 0.5rem 1rem;
     font-size: ${theme.fontSize.sm};
-    font-weight: ${theme.fontWeight.normal};
-
-    i {
-      font-size: ${theme.fontSize.xs};
-    }
+    gap: 0.5rem;
   `,
-  small: css`
-    gap: 0.25rem;
+  sm: css`
+    padding: 0.375rem 0.75rem;
     font-size: ${theme.fontSize.xs};
-    font-weight: ${theme.fontWeight.medium};
-
-    i {
-      font-size: 0.65rem;
-    }
+    gap: 0.375rem;
   `,
 };
 
-const variantStyles = {
-  primary: css<{ $size: ButtonSize }>`
-    padding: ${({ $size }) => ($size === "small" ? "0.3rem 0.6rem" : "0.5rem 0.9rem")};
+const variantMap = {
+  primary: css`
     background: ${theme.button.primary.background};
     color: ${theme.button.primary.color};
-    border: none;
 
     &:hover:not(:disabled) {
-      background: ${theme.colors.primaryHover};
+      background: ${theme.button.primary.backgroundHover};
+      color: ${theme.button.primary.color};
     }
   `,
-  secondary: css<{ $size: ButtonSize }>`
-    padding: ${({ $size }) => ($size === "small" ? "0.25rem 0.5rem" : "0.4rem 0.7rem")};
-    background: ${theme.button.secondary.background};
-    color: ${theme.button.secondary.color};
-    border: none;
+  secondary: css`
+    border: 1px solid ${theme.button.secondary.border};
 
     &:hover:not(:disabled) {
-      background: ${theme.colors.primaryHover};
-      color: ${theme.colors.background};
+      background: ${theme.button.secondary.backgroundHover};
+      border: 1px solid ${theme.button.secondary.borderHover};
     }
   `,
-  link: css`
-    padding: 0;
-    background: none;
-    color: ${theme.button.link.color};
-    border: none;
-    font-size: inherit;
-    font-weight: inherit;
+  tertiary: css`
+    background: ${theme.button.tertiary.background};
+    color: ${theme.button.tertiary.color};
 
     &:hover:not(:disabled) {
-      background: none;
-      color: ${theme.colors.primaryHover};
-    }
-  `,
-  outline: css<{ $size: ButtonSize }>`
-    padding: ${({ $size }) => ($size === "small" ? "0.25rem 0.5rem" : "0.4rem 0.7rem")};
-    background: ${theme.button.outline.background};
-    color: ${theme.button.outline.color};
-    border: 1px solid ${theme.button.outline.border};
-
-    &:hover:not(:disabled) {
-      background: ${theme.colors.primaryHover};
-      color: ${theme.colors.background};
-      border-color: ${theme.colors.primaryHover};
+      background: ${theme.button.tertiary.backgroundHover};
     }
   `,
 };
 
-const StyledButton = styled.button<{ $variant: ButtonVariant; $size: ButtonSize }>`
-  ${baseStyles}
-  ${({ $size }) => sizeStyles[$size]}
-  ${({ $variant }) => variantStyles[$variant]}
+const baseStyles = css<{
+  $variant: ButtonVariant;
+  $size: ButtonSize;
+  $noBackground?: boolean;
+  $noPadding?: boolean;
+}>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: ${theme.fontWeight.medium};
+  text-decoration: none;
+  border: none;
+  border-radius: ${theme.radius.default};
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  ${({ $size, $noPadding }) =>
+    $noPadding
+      ? css`
+          padding: 0;
+          gap: 0.25rem;
+        `
+      : sizeMap[$size]}
+
+  ${({ $variant }) => variantMap[$variant]}
+
+  ${({ $noBackground }) =>
+    $noBackground &&
+    css`
+      background: transparent;
+
+      &:hover:not(:disabled) {
+        background: transparent;
+        text-decoration: underline;
+      }
+    `}
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  i {
+    font-size: 1.1em;
+  }
 `;
 
-const StyledAnchor = styled.a<{ $variant: ButtonVariant; $size: ButtonSize }>`
+const StyledButton = styled.button<{
+  $variant: ButtonVariant;
+  $size: ButtonSize;
+  $noBackground?: boolean;
+  $noPadding?: boolean;
+}>`
   ${baseStyles}
-  ${({ $size }) => sizeStyles[$size]}
-  ${({ $variant }) => variantStyles[$variant]}
 `;
 
-const StyledRouterLink = styled(Link)<{ $variant: ButtonVariant; $size: ButtonSize }>`
+const StyledLink = styled(Link)<{
+  $variant: ButtonVariant;
+  $size: ButtonSize;
+  $noBackground?: boolean;
+  $noPadding?: boolean;
+}>`
   ${baseStyles}
-  ${({ $size }) => sizeStyles[$size]}
-  ${({ $variant }) => variantStyles[$variant]}
 `;
 
-const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  (props, ref) => {
-    const { variant = "primary", size = "default", icon, iconPosition = "left", children, ...rest } = props;
+const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((props, ref) => {
+  const {
+    variant = "primary",
+    size = "md",
+    icon,
+    iconPosition = "left",
+    noBackground = false,
+    noPadding = false,
+    children,
+    className,
+  } = props;
 
-    const content = (
-      <>
-        {icon && iconPosition === "left" && <i className={icon} aria-hidden="true" />}
-        {children}
-        {icon && iconPosition === "right" && <i className={icon} aria-hidden="true" />}
-      </>
-    );
+  const content = (
+    <>
+      {icon && iconPosition === "left" && <i className={icon} aria-hidden="true" />}
+      {children}
+      {icon && iconPosition === "right" && <i className={icon} aria-hidden="true" />}
+    </>
+  );
 
-    // React Router Link
-    if ("to" in props && props.to) {
-      const { as: _, to, ...linkProps } = rest as ButtonAsRouterLink;
-      return (
-        <StyledRouterLink
-          ref={ref as React.Ref<HTMLAnchorElement>}
-          $variant={variant}
-          $size={size}
-          to={to}
-          {...linkProps}
-        >
-          {content}
-        </StyledRouterLink>
-      );
-    }
+  const styleProps = {
+    $variant: variant,
+    $size: size,
+    $noBackground: noBackground,
+    $noPadding: noPadding,
+  };
 
-    // Standard anchor
-    if (props.as === "a") {
-      const { as: _, ...anchorProps } = rest as ButtonAsAnchor;
-      return (
-        <StyledAnchor
-          ref={ref as React.Ref<HTMLAnchorElement>}
-          $variant={variant}
-          $size={size}
-          {...anchorProps}
-        >
-          {content}
-        </StyledAnchor>
-      );
-    }
-
-    // Default button
-    const { as: _, ...buttonProps } = rest as ButtonAsButton;
+  if ("to" in props && props.to) {
+    const { to, variant: _, size: __, icon: ___, iconPosition: ____, noBackground: _____, noPadding: ______, ...linkProps } =
+      props as ButtonAsLink;
     return (
-      <StyledButton
-        ref={ref as React.Ref<HTMLButtonElement>}
-        $variant={variant}
-        $size={size}
-        {...buttonProps}
-      >
+      <StyledLink to={to} ref={ref as React.Ref<HTMLAnchorElement>} className={className} {...styleProps} {...linkProps}>
         {content}
-      </StyledButton>
+      </StyledLink>
     );
   }
-);
+
+  const { variant: _, size: __, icon: ___, iconPosition: ____, noBackground: _____, noPadding: ______, ...buttonProps } =
+    props as ButtonAsButton;
+  return (
+    <StyledButton ref={ref as React.Ref<HTMLButtonElement>} className={className} {...styleProps} {...buttonProps}>
+      {content}
+    </StyledButton>
+  );
+});
 
 Button.displayName = "Button";
 

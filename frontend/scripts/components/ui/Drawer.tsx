@@ -1,5 +1,6 @@
 import React, { useEffect, ReactNode } from 'react';
 import styled from 'styled-components';
+import Button from '@components/ui/Button';
 
 const DrawerContainer = styled.div<{ $isOpen: boolean }>`
     position: fixed;
@@ -14,6 +15,11 @@ const DrawerContainer = styled.div<{ $isOpen: boolean }>`
     transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
     transition: transform 0.3s ease-in-out;
     z-index: 1001;
+`;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: flex-end;
 `;
 
 const DrawerTitle = styled.h4`
@@ -67,7 +73,18 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, title, children, onClose }) => 
         <>
             <Overlay $isOpen={isOpen} onClick={onClose} />
             <DrawerContainer $isOpen={isOpen}>
-                <button onClick={onClose} className="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-1">Fermer</button>
+                <ButtonContainer>
+                    <Button
+                        type="button"
+                        variant="tertiary" noBackground noPadding
+                        icon="bi bi-x-lg"
+                        onClick={onClose}
+                        title="Fermer la fenêtre modale"
+                        aria-controls="fr-modal-1"
+                    >
+                        Fermer
+                    </Button>
+                </ButtonContainer>
                 <DrawerTitle>{title}<Icon className="bi bi-info-circle" /></DrawerTitle>
                 <div>{children}</div>
             </DrawerContainer>

@@ -27,7 +27,7 @@ export const OcsgeMillesimeSelector: React.FC<OcsgeMillesimeSelectorProps> = ({
 			<Button
 				key={m.index}
 				type="button"
-				variant={m.index === index ? "primary" : "outline"}
+				variant={m.index === index ? "primary" : "tertiary"}
 				onClick={() => setIndex(m.index)}
 				title={m.years}
 			>

@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
+import Button from "@components/ui/Button";
 import { MenuItem } from '@services/types/project';
 import { LandDetailResultType } from '@services/types/land';
 
@@ -111,7 +112,7 @@ const Icon = styled.i`
     margin-right: 0.7em;
 `;
 
-const DownloadLink = styled(Link)`
+const DownloadButton = styled(Button)`
     width: 90%;
     font-size: 0.85em;
     margin: 1em;
@@ -125,7 +126,7 @@ const NavContainer = styled.div`
 
 const NavbarHeader = styled.div`
     display: flex;
-    padding: 1.5rem 1rem;
+    padding: 1rem;
     padding-bottom: 0.5rem;
 `;
 
@@ -196,12 +197,13 @@ interface DownloadItemsProps {
 }
 
 const DownloadItems: React.FC<DownloadItemsProps> = ({ downloadsUrl }) => (
-    <DownloadLink 
+    <DownloadButton 
         to={downloadsUrl}
-        className="fr-btn fr-btn--icon-left fr-icon-download-line"
+        icon="bi bi-download"
+        iconPosition="right"
     >
         Générer un rapport
-    </DownloadLink>
+    </DownloadButton>
 );
 
 interface NavbarProps {

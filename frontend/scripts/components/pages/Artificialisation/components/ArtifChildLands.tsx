@@ -75,8 +75,8 @@ export const ArtifChildLands: React.FC = () => {
           {childLandTypes.map((child_land_type) => (
             <Button
               key={child_land_type}
-              variant={childLandType === child_land_type ? "primary" : "outline"}
-              size="small"
+              variant={childLandType === child_land_type ? "primary" : "tertiary"}
+              size="sm"
               onClick={() => handleChildLandTypeChange(child_land_type)}
             >
               {getLandTypeLabel(child_land_type)}

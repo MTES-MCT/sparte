@@ -12,7 +12,6 @@ import { NomenclatureType } from "../types/ocsge";
 import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
 import type { ControlsManager } from "../controls/ControlsManager";
 import { MODE_CONFIG } from "../constants/modeConfig";
-import ChartDetails from "@components/charts/ChartDetails";
 import { ZonageUrbanismeSidePanel, type SurfaceUnit } from "./sidePanel";
 
 const OcsgeTooltip = styled.div`

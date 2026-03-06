@@ -556,8 +556,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                 <React.Fragment key={dest}>
                 {index === 1 && <ButtonSeparator />}
                 <Button
-                    variant={selectedDestination === dest ? 'primary' : 'outline'}
-                    size="small"
+                    variant={selectedDestination === dest ? 'primary' : 'tertiary'}
+                    size="sm"
                     className="fr-mr-1w fr-mb-1w"
                     onClick={() => setSelectedDestination(dest)}
                 >
