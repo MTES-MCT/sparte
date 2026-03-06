@@ -63,7 +63,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           }}
           action={{
             label: "Simuler une trajectoire de réduction",
-            to: urls.consommation,
+            to: urls.trajectoires,
           }}
         />
       </div>

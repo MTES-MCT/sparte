@@ -203,7 +203,6 @@ const PeriodRow = styled.div<{ $centered?: boolean }>`
 const PeriodLabel = styled.div`
   font-size: ${theme.fontSize.sm};
   color: ${theme.colors.textLight};
-  text-transform: uppercase;
   letter-spacing: 0.3px;
   font-weight: ${theme.fontWeight.semibold};
 `;
