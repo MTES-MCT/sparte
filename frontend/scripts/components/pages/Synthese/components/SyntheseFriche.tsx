@@ -5,7 +5,7 @@ import { formatNumber, pluralize } from "@utils/formatUtils";
 import Kpi from "@components/ui/Kpi";
 import GuideContent from "@components/ui/GuideContent";
 import FricheStatus from "@components/features/status/FricheStatus";
-import { FricheAbstractContent } from "@components/features/friches/FricheAbstractContent";
+import { FricheAbstract } from "@components/features/friches";
 
 interface SyntheseFricheProps {
   landData: LandDetailResultType;
@@ -60,10 +60,11 @@ const SyntheseFriche: React.FC<SyntheseFricheProps> = ({
       </div>
       <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
         <GuideContent title="Les friches : un levier pour la sobriété foncière">
-          <FricheAbstractContent
+          <FricheAbstract
             friche_status={landData.friche_status}
             friche_status_details={landData.friche_status_details}
             name={landData.name}
+            contentOnly
           />
         </GuideContent>
       </div>

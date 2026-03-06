@@ -5,7 +5,7 @@ import { useArtificialisationZonage } from "@hooks/useArtificialisationZonage";
 import { useGetLandArtifFluxIndexQuery } from "@services/api";
 import { LandArtifStockIndex, defautLandArtifStockIndex } from "@services/types/landartifstockindex";
 import { LandArtifFluxIndex } from "@services/types/landartiffluxindex";
-import { ZonageData } from "@components/features/ocsge/ArtificialisationZonage";
+import { ZonageData } from "../components/ArtificialisationZonage";
 
 interface ArtificialisationContextValue {
   landData: LandDetailResultType;

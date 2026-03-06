@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import GenericChart from "@components/charts/GenericChart";
+import Button from "@components/ui/Button";
 
 interface RSMapProps {
   landId: string;
@@ -17,13 +18,15 @@ export const RSMap: React.FC<RSMapProps> = ({ landId, landType, childLandType })
       <h3>Carte des résidences secondaires</h3>
       <div className="fr-mb-2w">
         {AVAILABLE_YEARS.map((year) => (
-          <button
+          <Button
             key={year}
-            className={`fr-btn ${rsYear === year ? "fr-btn--primary" : "fr-btn--tertiary"} fr-btn--sm fr-mr-1w`}
+            variant={rsYear === year ? "primary" : "tertiary"}
+            size="sm"
             onClick={() => setRsYear(year)}
+            className="fr-mr-1w"
           >
             {year}
-          </button>
+          </Button>
         ))}
       </div>
       <GenericChart

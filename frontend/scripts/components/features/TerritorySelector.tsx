@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import SearchBar from '@components/ui/SearchBar';
 import Tag from '@components/ui/Tag';
+import Button from '@components/ui/Button';
 import { LandDetailResultType } from '@services/types/land';
 
 interface TerritorySelectorProps {
@@ -72,12 +73,13 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
 
             {!isDefaultSelection && (
                 <div className={compact ? "fr-mb-2w" : "fr-my-3w"}>
-                    <button
-                        className="fr-btn fr-btn--sm fr-btn--secondary"
+                    <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={onReset}
                     >
                         Remettre la sélection par défaut
-                    </button>
+                    </Button>
                 </div>
             )}
 

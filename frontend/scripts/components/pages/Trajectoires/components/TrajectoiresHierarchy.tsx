@@ -4,6 +4,7 @@ import { TerritorialisationHierarchyItem } from "@services/types/land";
 import GenericChart from "@components/charts/GenericChart";
 import GuideContent from "@components/ui/GuideContent";
 import BaseCard from "@components/ui/BaseCard";
+import Button from "@components/ui/Button";
 import { getLandTypeLabel } from "@utils/landUtils";
 
 type TrajectoiresHierarchyProps = {
@@ -401,9 +402,9 @@ export const TrajectoiresHierarchy: React.FC<TrajectoiresHierarchyProps> = ({
                     })
                     .join(" / ")}
                 </ChildrenLabel>
-                <button className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-mt-1v">
+                <Button variant="tertiary" noBackground noPadding size="sm">
                   {showMap ? "Masquer la carte" : "Voir la carte"}
-                </button>
+                </Button>
               </ChildrenCard>
             </TimelineItem>
           </>

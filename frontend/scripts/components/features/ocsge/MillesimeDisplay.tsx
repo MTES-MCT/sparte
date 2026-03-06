@@ -24,7 +24,7 @@ export const MillesimeDisplay: React.FC<MillesimeDisplayProps> = ({
         if (drawerContext) {
             return (
                 <Button
-                    variant="link"
+                    variant="tertiary" noBackground noPadding
                     onClick={drawerContext.openDrawer}
                     title="Voir le détail des millésimes"
                 >

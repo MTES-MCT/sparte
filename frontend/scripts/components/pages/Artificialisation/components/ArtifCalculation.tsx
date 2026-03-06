@@ -1,7 +1,7 @@
 import React from "react";
 import BaseCard from "@components/ui/BaseCard";
 import Notice from "@components/ui/Notice";
-import { SeuilsSchemas } from "@components/features/ocsge/SeuilsSchemas";
+import { SeuilsSchemas } from "./SeuilsSchemas";
 import OcsgeMatricePNG from "@images/ocsge_matrice_passage.png";
 
 export const ArtifCalculation: React.FC = () => {

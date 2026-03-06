@@ -11,9 +11,10 @@ interface ActionCardProps {
   description: string;
   to?: string;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-const Card = styled(BaseCard)<{ $interactive: boolean }>`
+const Card = styled(BaseCard)<{ $interactive: boolean; $disabled?: boolean }>`
 border-radius: ${theme.radius.default};
   && {
     display: flex;
@@ -27,14 +28,15 @@ border-radius: ${theme.radius.default};
     font-family: inherit;
     font-size: inherit;
     border: 1px solid ${theme.colors.border};
-    cursor: ${({ $interactive }) => ($interactive ? "pointer" : "default")};
+    cursor: ${({ $interactive, $disabled }) => ($disabled ? "not-allowed" : $interactive ? "pointer" : "default")};
+    opacity: ${({ $disabled }) => ($disabled ? 0.6 : 1)};
     transition: all 0.2s ease;
   }
 
   &&:hover {
     background: ${theme.colors.background};
-    ${({ $interactive }) =>
-      $interactive &&
+    ${({ $interactive, $disabled }) =>
+      $interactive && !$disabled &&
       `
         border-color: ${theme.colors.primary};
         box-shadow: ${theme.shadow.lg};
@@ -86,8 +88,9 @@ const ActionCard: React.FC<ActionCardProps> = ({
   description,
   to,
   onClick,
+  disabled = false,
 }) => {
-  const interactive = !!(to || onClick);
+  const interactive = !!(to || onClick) && !disabled;
 
   const content = (
     <>
@@ -104,7 +107,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
     </>
   );
 
-  if (to) {
+  if (to && !disabled) {
     return (
       <Card as={Link} to={to} $interactive>
         {content}
@@ -114,13 +117,13 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
   if (onClick) {
     return (
-      <Card as="button" onClick={onClick} $interactive>
+      <Card as="button" onClick={disabled ? undefined : onClick} $interactive={interactive} $disabled={disabled} disabled={disabled}>
         {content}
       </Card>
     );
   }
 
-  return <Card $interactive={false}>{content}</Card>;
+  return <Card $interactive={false} $disabled={disabled}>{content}</Card>;
 };
 
 export default ActionCard;

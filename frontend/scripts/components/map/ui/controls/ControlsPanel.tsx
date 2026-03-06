@@ -145,7 +145,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 				iconId={isOpen ? "fr-icon-arrow-down-s-fill" : "fr-icon-arrow-up-s-fill"}
 				iconPosition="right"
 				onClick={() => setIsOpen(!isOpen)}
-				size="small"
+				size="sm"
 			>
 				<i className="bi bi-layers-fill fr-mr-1w"></i> Calques
 			</ToggleButton>
@@ -189,7 +189,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 										<Button
 											iconId="fr-icon-arrow-left-line"
 											priority="tertiary no outline"
-											size="small"
+											size="sm"
 											onClick={() => setSelectedGroupId(null)}
 										>
 											Retour à la liste

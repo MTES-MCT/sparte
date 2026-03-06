@@ -1,5 +1,5 @@
 import React from "react";
-import { ImpermeabilisationZonage } from "@components/features/ocsge/ImpermeabilisationZonage";
+import { ImpermeabilisationZonage } from "./ImpermeabilisationZonage";
 import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 import { LandType } from "@services/types/land";

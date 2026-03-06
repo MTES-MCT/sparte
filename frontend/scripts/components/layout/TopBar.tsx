@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { selectIsNavbarOpen } from "@store/navbarSlice";
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
+import Button from "@components/ui/Button";
 import { useGetUserLandPreferenceQuery, useToggleFavoriteMutation } from '@services/api';
 import { useGetLandQuery } from '@services/api';
 
@@ -57,22 +58,16 @@ const Title = styled.div`
     font-weight: 600;
 `;
 
-const FavoriteButton = styled.button<{ $active: boolean }>`
-    background: none;
-    border: none;
-    cursor: pointer;
+const FavoriteButton = styled(Button)<{ $active: boolean }>`
     font-size: 1.5rem;
     line-height: 1;
-    padding: 0.25rem;
     color: ${({ $active }) => ($active ? '#FFD700' : '#ccc')};
-    transition: color 0.2s ease;
 
     &:hover {
         color: #FFD700;
     }
 
     &:disabled {
-        cursor: default;
         opacity: 0.5;
     }
 `;
@@ -106,6 +101,7 @@ const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
                 <Title>{ name }</Title>
                 {landType && landId && (
                     <FavoriteButton
+                        variant="tertiary" noBackground noPadding
                         $active={isFavorited}
                         onClick={handleToggleFavorite}
                         disabled={isToggling}

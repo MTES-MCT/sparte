@@ -5,7 +5,7 @@ import { formatNumber } from "@utils/formatUtils";
 import Kpi from "@components/ui/Kpi";
 import GuideContent from "@components/ui/GuideContent";
 import LogementVacantStatus from "@components/features/status/LogementVacantStatus";
-import { LogementVacantAbstractContent } from "@components/features/logementVacant";
+import { LogementVacantAbstract } from "@components/features/logementVacant";
 
 interface SyntheseLogementVacantProps {
   landData: LandDetailResultType;
@@ -62,10 +62,11 @@ const SyntheseLogementVacant: React.FC<SyntheseLogementVacantProps> = ({
       </div>
       <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
         <GuideContent title="Les logements vacants : un levier pour la sobriété foncière">
-          <LogementVacantAbstractContent
+          <LogementVacantAbstract
             logements_vacants_status={landData.logements_vacants_status}
             logements_vacants_status_details={landData.logements_vacants_status_details}
             name={landData.name}
+            contentOnly
           />
         </GuideContent>
       </div>

@@ -84,7 +84,7 @@ export const ConsommationControls: React.FC = () => {
 					<Button
 						onClick={handleReset}
 						variant="secondary"
-						size="small"
+						size="sm"
 						icon="bi bi-arrow-clockwise"
 						title={`Réinitialiser à la période ${defaultStartYear}-${defaultEndYear}`}
 					/>

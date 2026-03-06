@@ -21,8 +21,8 @@ export const LogementVacantMaps: React.FC = () => {
           {childLandTypes.map((clt) => (
             <Button
               key={clt}
-              variant={childType === clt ? "primary" : "outline"}
-              size="small"
+              variant={childType === clt ? "primary" : "tertiary"}
+              size="sm"
               className="fr-mr-1w"
               onClick={() => setChildType(clt)}
             >

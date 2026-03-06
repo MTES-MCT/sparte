@@ -5,7 +5,7 @@ import { useImpermeabilisationZonage } from "@hooks/useImpermeabilisationZonage"
 import { useGetLandImperFluxIndexQuery } from "@services/api";
 import { LandImperStockIndex, defautLandImperStockIndex } from "@services/types/landimperstockindex";
 import { LandImperFluxIndex } from "@services/types/landimperfluxindex";
-import { ImperZonageData } from "@components/features/ocsge/ImpermeabilisationZonage";
+import { ImperZonageData } from "../components/ImpermeabilisationZonage";
 
 interface ImpermeabilisationContextValue {
   landData: LandDetailResultType;

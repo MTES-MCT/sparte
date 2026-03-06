@@ -1,5 +1,5 @@
 import React from "react";
-import { ArtificialisationZonage } from "@components/features/ocsge/ArtificialisationZonage";
+import { ArtificialisationZonage } from "./ArtificialisationZonage";
 import { ZonageUrbanismeMap } from "@components/map/ui/ZonageUrbanismeMap";
 import { ZoneTypeBadge } from "@components/ui/ZoneTypeBadge";
 import { LandType } from "@services/types/land";

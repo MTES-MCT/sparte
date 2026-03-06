@@ -19,7 +19,7 @@ import {
     useLazyGetExportStatusQuery,
 } from '@services/api';
 import { ReportType } from '@services/types/reportDraft';
-import { useCreateReportModal } from '@components/features/report';
+import { useCreateReportModal } from '@components/pages/Downloads/modals';
 
 const AUTOSAVE_DELAY = 100; // Délai minimal car ContentZone gère déjà le debounce
 

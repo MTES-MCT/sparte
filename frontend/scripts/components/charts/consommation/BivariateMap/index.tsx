@@ -173,7 +173,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
           <Button
             key={p.value}
             variant={period === p.value ? "primary" : "secondary"}
-            size="small"
+            size="sm"
             onClick={() => setPeriod(p.value)}
           >
             {p.label}
@@ -186,7 +186,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
               <Button
                 key={clt}
                 variant={childLandType === clt ? "primary" : "secondary"}
-                size="small"
+                size="sm"
                 onClick={() => handleChildLandTypeChange(clt)}
               >
                 {getLandTypeLabel(clt)}

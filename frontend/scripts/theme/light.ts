@@ -4,13 +4,13 @@
 // ─── Palette de base ───
 const palette = {
   // DSFR Core
-  primary: "#000091",
-  primaryHover: "#4318FF",
-  primaryBg: "#e3e3fd",
+  primary: "var(--background-active-blue-france)",
+  primaryHover: "#292aa4",
+  primaryBg: "#e8ecfe",
   primaryBorder: "#c5c5f7",
 
   // Interactions
-  accent: "#4318FF",
+  accent: "#0000d6",
   accentBg: "#e8edff",
 
   // Neutres
@@ -96,20 +96,18 @@ export const theme = {
   button: {
     primary: {
       background: palette.primary,
+      backgroundHover: palette.primaryHover,
       color: palette.white,
     },
     secondary: {
-      background: palette.primaryBg,
-      color: palette.primary,
+      backgroundHover: palette.grey100,
+      border: palette.grey300,
+      borderHover: palette.grey400,
     },
-    link: {
+    tertiary: {
       background: "transparent",
+      backgroundHover: palette.grey200,
       color: palette.primary,
-    },
-    outline: {
-      background: "transparent",
-      color: palette.primary,
-      border: palette.primary,
     },
   },
 
@@ -120,7 +118,7 @@ export const theme = {
 
   // ─── Typographie ───
   fontSize: {
-    xs: "0.7rem",
+    xs: "0.75rem",
     sm: "0.82rem",
     md: "0.92rem",
     lg: "1.15rem",
@@ -147,7 +145,7 @@ export const theme = {
 
   // ─── Radius ───
   radius: {
-    default: "7px",
+    default: "6px",
     tag: "100px",
     round: "50%",
   },

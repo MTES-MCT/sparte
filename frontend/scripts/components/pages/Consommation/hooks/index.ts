@@ -1,3 +1,3 @@
 export { useConsoData } from "./useConsoData";
-export { useNearestTerritories } from "./useNearestTerritories";
-export { useComparisonTerritories } from "./useComparisonTerritories";
+export { useNearestTerritories } from "@hooks/useNearestTerritories";
+export { useComparisonTerritories } from "@hooks/useComparisonTerritories";

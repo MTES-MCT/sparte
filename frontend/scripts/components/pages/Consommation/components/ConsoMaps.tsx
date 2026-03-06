@@ -36,7 +36,7 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
             <Button
               key={childLandType}
               variant={childType === childLandType ? "primary" : "secondary"}
-              size="small"
+              size="sm"
               onClick={() => setChildType(childLandType)}
             >
               {landTypeLabels[childLandType] || childLandType}

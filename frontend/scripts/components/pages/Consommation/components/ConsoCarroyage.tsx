@@ -33,7 +33,7 @@ export const ConsoCarroyage: React.FC<ConsoCarroyageProps> = ({ landData }) => {
             <Button
               key={child_land_type}
               variant={childType === child_land_type ? "primary" : "secondary"}
-              size="small"
+              size="sm"
               onClick={() => setChildType(child_land_type)}
             >
               {landTypeLabels[child_land_type] || child_land_type}

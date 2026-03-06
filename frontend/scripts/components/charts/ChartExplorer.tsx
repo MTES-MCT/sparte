@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
+import Button from '@components/ui/Button';
 import ChartDataSource from './ChartDataSource';
 import ChartDataTable from './ChartDataTable';
 
@@ -169,23 +170,27 @@ const ChartExplorer: React.FC<ChartExplorerProps> = ({
             >
                 <Header>
                     <Title>{chartTitle || 'Explorer les données'}</Title>
-                    <button
+                    <Button
+                        type="button"
+                        variant="tertiary"
+                        icon="bi bi-x"
                         onClick={onClose}
-                        className="fr-btn--close fr-btn"
                         title="Fermer"
                     >
                         Fermer
-                    </button>
+                    </Button>
                 </Header>
 
                 <Body>
                     <Toolbar>
-                        <button
-                            className="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm fr-btn--icon-left"
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            icon="bi bi-download"
                             onClick={handleDownloadPNG}
                         >
-                            Télécharger
-                        </button>
+                            PNG
+                        </Button>
                     </Toolbar>
 
                     <ChartContainer>

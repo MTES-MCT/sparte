@@ -21,7 +21,7 @@ const ButtonToggleNavbar: React.FC = () => {
     return (
         <>
             <ToggleButton
-                variant="outline"
+                variant="secondary"
                 icon="bi bi-layout-sidebar"
                 onClick={() => dispatch(toggleNavbar())}
                 data-tooltip-id="tooltip-close-sidebar"
