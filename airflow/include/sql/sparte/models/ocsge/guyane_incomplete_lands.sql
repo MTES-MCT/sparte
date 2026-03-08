@@ -38,8 +38,9 @@ lands_guyane as (
         land_type,
         geom
     from {{ ref('land') }}
-    where '973' = ANY(departements)  -- pour EPCI, SCOT, REGION
-       OR departements = string_to_array('973', '')  -- pour COMMUNE, DEPARTEMENT (string_to_array split chaque caractère)
+    where ('973' = ANY(departements)  -- pour EPCI, SCOT, REGION
+       OR departements = string_to_array('973', ''))  -- pour COMMUNE, DEPARTEMENT (string_to_array split chaque caractère)
+       and land_type != '{{ var("NATION") }}'  --  exclure la nation qui couvre tout le territoire et fausserait les résultats
 ),
 nb_years as (
     select count(*) as total from ocsge_years
