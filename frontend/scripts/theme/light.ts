@@ -21,6 +21,7 @@ const palette = {
   grey400: "#dddddd",
   grey600: "#666666",
   grey800: "#3a3a3a",
+  purple: "#4318FF",
 
   // Sémantiques
   success: "#059669",
@@ -54,6 +55,7 @@ export const theme = {
     // Accent
     accent: palette.accent,
     accentBg: palette.accentBg,
+    purple: palette.purple,
 
     // Texte
     text: "var(--text-title-grey)",

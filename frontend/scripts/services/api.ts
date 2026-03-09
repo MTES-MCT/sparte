@@ -1,5 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { isRejectedWithValue, Middleware } from "@reduxjs/toolkit";
 import getCsrfToken from "@utils/csrf";
+import { showAuthRequiredToast } from "@components/ui/Toast";
 import { UserLandPreferenceResultType } from "./types/project";
 import { UseLandDetailType } from "./types/land";
 import { ArtifZonageIndexType } from "./types/artif_zonage";
@@ -342,6 +344,16 @@ export const djangoApi = createApi({
 	}),
 	tagTypes: ['ReportDraft', 'Preference'],
 });
+
+export const authErrorMiddleware: Middleware = () => (next) => (action) => {
+	if (isRejectedWithValue(action)) {
+		const payload = action.payload as { status?: number };
+		if (payload?.status === 401) {
+			showAuthRequiredToast("Votre session a expiré. Veuillez vous reconnecter.");
+		}
+	}
+	return next(action);
+};
 
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery;

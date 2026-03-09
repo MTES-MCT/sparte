@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { djangoApi } from '@services/api';
+import { djangoApi, authErrorMiddleware } from '@services/api';
 import navbarReducer from '@store/navbarSlice';
 import pdfExportReducer from '@store/pdfExportSlice';
 
@@ -11,7 +11,9 @@ const store = configureStore({
     pdfExport: pdfExportReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(djangoApi.middleware),
+    getDefaultMiddleware()
+      .concat(djangoApi.middleware)
+      .concat(authErrorMiddleware),
 });
 
 setupListeners(store.dispatch);

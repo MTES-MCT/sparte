@@ -1,0 +1,54 @@
+import React from 'react';
+import { LandDetailResultType } from '@services/types/land';
+import { ContentZoneMode } from '../editor/ContentZone';
+import { CalloutEditInfo } from '../styles';
+import Button from '@components/ui/Button';
+
+interface ComparisonTerritoriesCalloutProps {
+    territories: LandDetailResultType[];
+    landName: string;
+    isDefaultSelection: boolean;
+    mode: ContentZoneMode;
+    onSettingsClick: () => void;
+}
+
+const ComparisonTerritoriesCallout: React.FC<ComparisonTerritoriesCalloutProps> = ({
+    territories,
+    landName,
+    isDefaultSelection,
+    mode,
+    onSettingsClick,
+}) => {
+    return (
+        <div className="fr-callout">
+            <p className="fr-callout__text">
+                {isDefaultSelection ? (
+                    <>
+                        <i className="bi bi-info-circle fr-mr-1w" /> Les <strong>territoires de comparaison</strong> ont été automatiquement sélectionnés en fonction de leur proximité géographique avec le territoire de <strong>{landName}</strong>.
+                    </>
+                ) : (
+                    <>
+                        <i className="bi bi-check-circle text-success fr-mr-1w" /> Territoires de comparaison sélectionnés : <strong>{territories.map(t => t.name).join(', ') || 'Aucun'}</strong>
+                    </>
+                )}
+            </p>
+            {mode === 'edit' && (
+                <CalloutEditInfo>
+                    <div className="fr-mb-0">
+                        <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
+                        Les territoires de comparaison peuvent être modifiés dans les paramètres du rapport.
+                    </div>
+                    <Button
+                        size="small"
+                        onClick={onSettingsClick}
+                        title="Modifier les territoires"
+                    >
+                        Modifier
+                    </Button>
+                </CalloutEditInfo>
+            )}
+        </div>
+    );
+};
+
+export default ComparisonTerritoriesCallout;

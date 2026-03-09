@@ -10,6 +10,8 @@ import SearchBar from '@components/ui/SearchBar'
 import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
 import CookieConsentManager from '@components/ui/CookieConsent'
 import { FooterConsentManagementItem } from './hooks/useConsentManagement';
+import { ToastContainer } from '@components/ui/Toast';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Gestionnaire de consentement des cookies
 const cookieConsentRoot = document.createElement('div');
@@ -21,6 +23,11 @@ createRoot(cookieConsentRoot).render(
     <CookieConsentManager />
   </Provider>,
 );
+
+const toastRoot = document.createElement('div');
+toastRoot.id = 'toast-root';
+document.body.appendChild(toastRoot);
+createRoot(toastRoot).render(<ToastContainer />);
 
 const footerConsent = document.getElementById('react-footer-consent');
 if (footerConsent) {

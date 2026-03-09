@@ -4,18 +4,19 @@ import styled from 'styled-components';
 import { selectIsNavbarOpen } from "@store/navbarSlice";
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 import Button from "@components/ui/Button";
+import { Tooltip } from "react-tooltip";
 import { useGetUserLandPreferenceQuery, useToggleFavoriteMutation } from '@services/api';
-import { useGetLandQuery } from '@services/api';
-
-const activeColor = '#4318FF';
+import { theme } from '@theme';
+import { useAuthGuard } from '@hooks/useAuthGuard';
+import { showSuccessToast } from '@components/ui/Toast';
 
 const Container = styled.div`
     position: sticky;
     top: 0;
     background: rgba(255, 255, 255, 0.8);
-    border-bottom: 1px solid #EBEBEC;
+    border-bottom: 1px solid ${theme.colors.border};
     z-index: 997;
-    padding: 1rem 1.5rem;
+    padding: ${theme.spacing.md} ${theme.spacing.lg};
     min-height: 4.6rem;
     backdrop-filter: blur(8px);
     display: flex;
@@ -25,7 +26,7 @@ const Container = styled.div`
     @media (max-width: 768px) {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
+        gap: ${theme.spacing.md};
     }
 `;
 
@@ -41,7 +42,7 @@ const LeftSection = styled.div`
 const RightSection = styled.div`
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: ${theme.spacing.md};
 
     @media (max-width: 768px) {
         width: 100%;
@@ -50,21 +51,21 @@ const RightSection = styled.div`
 `;
 
 const Title = styled.div`
-    color: ${activeColor};
+    color: ${theme.colors.purple};
     margin: 0;
     padding: 0;
-    font-size: 1.75em;
+    font-size: ${theme.fontSize.xxl};
     line-height: 1.2em;
-    font-weight: 600;
+    font-weight: ${theme.fontWeight.semibold};
 `;
 
 const FavoriteButton = styled(Button)<{ $active: boolean }>`
-    font-size: 1.5rem;
+    font-size: ${theme.fontSize.xl};
     line-height: 1;
-    color: ${({ $active }) => ($active ? '#FFD700' : '#ccc')};
+    color: ${({ $active }) => ($active ? theme.colors.star : theme.colors.textMuted)};
 
     &:hover {
-        color: #FFD700;
+        color: ${theme.colors.star};
     }
 
     &:disabled {
@@ -85,12 +86,22 @@ const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
         { skip: !landType || !landId },
     );
     const [toggleFavorite, { isLoading: isToggling }] = useToggleFavoriteMutation();
+    const { guardedAction } = useAuthGuard({
+        message: "Connectez-vous pour ajouter ce territoire à vos territoires favoris.",
+    });
 
     const handleToggleFavorite = useCallback(() => {
-        if (landType && landId) {
-            toggleFavorite({ land_type: landType, land_id: landId });
-        }
-    }, [landType, landId, toggleFavorite]);
+        if (!landType || !landId) return;
+        guardedAction(() => {
+            toggleFavorite({ land_type: landType, land_id: landId })
+                .unwrap()
+                .then((result) => {
+                    showSuccessToast(
+                        result.is_favorited ? "Ajouté aux territoires favoris" : "Retiré des territoires favoris",
+                    );
+                });
+        });
+    }, [landType, landId, toggleFavorite, guardedAction]);
 
     const isFavorited = preference?.is_favorited ?? false;
 
@@ -101,13 +112,16 @@ const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
                 <Title>{ name }</Title>
                 {landType && landId && (
                     <FavoriteButton
-                        variant="tertiary" noBackground noPadding
+                        variant="tertiary" noBackground
                         $active={isFavorited}
                         onClick={handleToggleFavorite}
                         disabled={isToggling}
-                        title={isFavorited ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+                        data-tooltip-id="tooltip-favorite"
+                        data-tooltip-content={isFavorited ? 'Retirer des territoires favoris' : 'Ajouter aux territoires favoris'}
+                        aria-label={isFavorited ? 'Retirer des territoires favoris' : 'Ajouter aux territoires favoris'}
                     >
-                        {isFavorited ? '\u2605' : '\u2606'}
+                        {isFavorited ? <i className='bi bi-star-fill'></i> : <i className='bi bi-star'></i>}
+                        <Tooltip id="tooltip-favorite" className="fr-text--xs" place="right" />
                     </FavoriteButton>
                 )}
             </LeftSection>
