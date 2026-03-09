@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, useMemo } from "react";
+import React, { createContext, useContext, useState, useMemo, useCallback } from "react";
 import { LandDetailResultType } from "@services/types/land";
 import { UserLandPreferenceResultType } from "@services/types/project";
 import { useUpdatePreferenceTarget2031Mutation, useGetCurrentUserQuery } from "@services/api";
 import { getLandTypeLabel } from "@utils/landUtils";
+import { useAuthGuard } from "@hooks/useAuthGuard";
 
 interface TrajectoiresContextValue {
   landData: LandDetailResultType;
@@ -77,6 +78,10 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
   const { data: currentUser } = useGetCurrentUserQuery();
   const isDGALNMember = currentUser?.groups?.includes("DGALN") ?? false;
 
+  const { guardedAction } = useAuthGuard({
+    message: "Connectez-vous pour définir un objectif personnalisé.",
+  });
+
   const conso2011_2020 = conso_details?.conso_2011_2020 ?? 0;
   const annualConsoSince2021 = conso_details?.annual_conso_since_2021 ?? 0;
 
@@ -121,10 +126,12 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
     })
     .join(" / ");
 
-  const openModal = () => {
-    setModalTargetInput(targetCustom != null ? String(targetCustom) : "");
-    setShowCustomTargetModal(true);
-  };
+  const openModal = useCallback(() => {
+    guardedAction(() => {
+      setModalTargetInput(targetCustom != null ? String(targetCustom) : "");
+      setShowCustomTargetModal(true);
+    });
+  }, [guardedAction, targetCustom]);
 
   const handleSaveCustomTarget = () => {
     if (modalTargetInput === "") {
