@@ -7,6 +7,8 @@ import Button from "@components/ui/Button";
 import { Tooltip } from "react-tooltip";
 import { useGetUserLandPreferenceQuery, useToggleFavoriteMutation } from '@services/api';
 import { theme } from '@theme';
+import { useAuthGuard } from '@hooks/useAuthGuard';
+import { showSuccessToast } from '@components/ui/Toast';
 
 const Container = styled.div`
     position: sticky;
@@ -84,12 +86,22 @@ const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
         { skip: !landType || !landId },
     );
     const [toggleFavorite, { isLoading: isToggling }] = useToggleFavoriteMutation();
+    const { guardedAction } = useAuthGuard({
+        message: "Connectez-vous pour ajouter ce territoire à vos territoires favoris.",
+    });
 
     const handleToggleFavorite = useCallback(() => {
-        if (landType && landId) {
-            toggleFavorite({ land_type: landType, land_id: landId });
-        }
-    }, [landType, landId, toggleFavorite]);
+        if (!landType || !landId) return;
+        guardedAction(() => {
+            toggleFavorite({ land_type: landType, land_id: landId })
+                .unwrap()
+                .then((result) => {
+                    showSuccessToast(
+                        result.is_favorited ? "Ajouté aux territoires favoris" : "Retiré des territoires favoris",
+                    );
+                });
+        });
+    }, [landType, landId, toggleFavorite, guardedAction]);
 
     const isFavorited = preference?.is_favorited ?? false;
 
