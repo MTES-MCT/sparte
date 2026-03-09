@@ -44,12 +44,6 @@ with
             and zonage.departement = ocsge.departement
             and zonage.geom && ocsge.geom
             and st_intersects(zonage.geom, ocsge.geom)
-
-    ),
-    occupation_du_sol_zonage_urbanisme_without_surface_with_duplicates_marked as (
-        select *, row_number() over (partition by geom, year, departement) as rn
-        from occupation_du_sol_zonage_urbanisme_without_surface
     )
 select *, st_area(geom) as surface
-from occupation_du_sol_zonage_urbanisme_without_surface_with_duplicates_marked
-where rn = 1
+from occupation_du_sol_zonage_urbanisme_without_surface

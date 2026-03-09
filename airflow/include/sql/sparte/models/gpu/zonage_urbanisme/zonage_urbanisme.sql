@@ -28,9 +28,8 @@ SELECT
     id_document_urbanisme,
     checksum,
     geom,
-    commune_code,
     departement,
     srid_source,
-    surface
+    round(st_area(geom)::numeric, 4) as surface
 FROM
-    {{ ref("5_zonage_urbanisme_with_surface") }}
+    {{ ref("4_zonage_urbanisme_deduplicated") }}
