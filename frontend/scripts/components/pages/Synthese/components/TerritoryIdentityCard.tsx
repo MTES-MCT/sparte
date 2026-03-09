@@ -121,8 +121,6 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
     year: 2022,
   });
 
-  console.log(landData);
-
   const population = populationData?.[0]?.population || null;
   const hasCompetenceUrba = true; // TODO: remove this once we have the competence urbanisme data
 
