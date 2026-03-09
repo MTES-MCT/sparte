@@ -8,7 +8,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
-hello world
 """
 
 import sys
@@ -79,7 +78,6 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "crispy_bootstrap5",
-    "django_app_parameter",
     "sri",
     "simple_history",
     "corsheaders",
@@ -149,7 +147,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
-                "django_app_parameter.context_processors.add_global_parameter_context",
                 "csp.context_processors.nonce",
                 "config.context_processors.add_settings_to_context",
             ],
@@ -265,7 +262,7 @@ AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
-AWS_S3_ENDPOINT_URL = "https://s3.fr-par.scw.cloud"
+AWS_S3_ENDPOINT_URL = env.str("AWS_S3_ENDPOINT_URL", default="https://s3.fr-par.scw.cloud")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -723,5 +720,20 @@ CRISP_API_KEY = env.str("CRISP_API_KEY", default="")
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]
+
+# App parameters (previously stored in database via django_app_parameter)
+MAINTENANCE_MODE = env.bool("MAINTENANCE_MODE", default=False)
+TEAM_EMAIL = env.str("TEAM_EMAIL", default="equipe@support.mondiagartif.beta.gouv.fr")
+METABASE_URL = env.str("METABASE_URL", default="https://sparte-metabase.osc-secnum-fr1.scalingo.io/")
+STATS_HEIGHT = env.str("STATS_HEIGHT", default="5240")
+STATS_URL = env.str(
+    "STATS_URL",
+    default="https://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/8dc81856-e117-4431-8c5d-1ec7b04887b3",
+)
+WEBINAIRE_URL = env.str(
+    "WEBINAIRE_URL",
+    default="https://app.livestorm.co/mte/mon-diag-artif-webinaire-de-presentation?s=7425e75c-4336-47c8-acd2-5459b8261af6",  # noqa: E501
+)
+FAQ_URL = env.str("FAQ_URL", default="https://faq.mondiagartif.beta.gouv.fr/fr/")
 
 IS_TEST = "test" in sys.argv

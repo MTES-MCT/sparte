@@ -5,5 +5,4 @@ interface Window {
     bootstrap?: any;
     _paq?: any[];
     dataLayer?: any[];
-    gtag?: Function;
 }

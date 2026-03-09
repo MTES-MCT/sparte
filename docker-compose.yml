@@ -1,8 +1,6 @@
-version: "3.7"
-
 services:
   db:
-    image: kartoza/postgis:14-3.3--v2022.08.30
+    image: kartoza/postgis:17-3.5
     shm_size: 1gb
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -16,6 +14,19 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+    networks:
+      - app-network
+
+  s3:
+    image: versity/versitygw:latest
+    command: ["posix", "/data"]
+    environment:
+      - ROOT_ACCESS_KEY=localaccess
+      - ROOT_SECRET_KEY=localsecret
+    ports:
+      - "7070:7070"
+    volumes:
+      - s3_data:/data
     networks:
       - app-network
 
@@ -46,7 +57,7 @@ services:
   django:
     build: .
     image: sparte/backend:latest
-    command: ["sh", "-c", "python manage.py runserver 0.0.0.0:8080 --nothreading"]
+    command: ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8080 --nothreading"]
     volumes:
       - .:/app
     env_file: .env
@@ -54,11 +65,13 @@ services:
       - SCALINGO_REDIS_URL=redis://redis:6379/0
       - EXPORT_SERVER_URL=http://export-server:3000
       - EXPORT_BASE_URL=http://django:8080
+      - AWS_S3_ENDPOINT_URL=http://s3:7070
     ports:
       - "8080:8080"
     depends_on:
       - db
       - redis
+      - s3
       - export-server
     networks:
       - app-network
@@ -69,3 +82,4 @@ networks:
 
 volumes:
   db_data:
+  s3_data:
