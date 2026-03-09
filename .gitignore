@@ -15,6 +15,9 @@ build/
 develop-eggs/
 dist/
 downloads/
+# Exception : composant React Downloads (évite que "downloads/" ignore pages/Downloads/ sur FS insensible à la casse)
+!frontend/scripts/components/pages/Downloads/
+!frontend/scripts/components/pages/Downloads/**
 eggs/
 .eggs/
 lib/
