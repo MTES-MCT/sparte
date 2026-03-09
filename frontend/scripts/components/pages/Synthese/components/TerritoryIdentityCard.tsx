@@ -4,20 +4,14 @@ import { LandDetailResultType } from "@services/types/land";
 import { useGetLandPopDensityQuery } from "@services/api";
 import { formatNumber } from "@utils/formatUtils";
 import { theme } from "@theme";
-import Kpi from "@components/ui/Kpi";
+import BaseCard from "@components/ui/BaseCard";
 import Badge from "@components/ui/Badge";
+import IconBadge from "@components/ui/IconBadge";
 
 interface TerritoryIdentityCardProps {
   landData: LandDetailResultType;
   className?: string;
 }
-
-const getMockedData = (landData: LandDetailResultType) => ({
-  hasCompetenceUrba: landData.land_type === "COMM" || landData.land_type === "EPCI" ? true : null,
-  hasObjectifTerritorialise: true,
-  objectifPercent: 50,
-  hasRecentCogChange: false,
-});
 
 const getLandTypeLabel = (type: string): string => {
   const labels: Record<string, string> = {
@@ -34,6 +28,73 @@ const Section = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+`;
+
+const IdentityCard = styled(BaseCard)`
+  padding: 1rem 1.5rem;
+  background: ${theme.colors.primaryBg};
+`;
+
+const IdentityRow = styled.div`
+  display: flex;
+  align-items: stretch;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: ${theme.spacing.md};
+  }
+`;
+
+const IdentityItem = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+
+  &:not(:last-child) {
+    border-right: 1px solid ${theme.colors.primaryBorder};
+
+    @media (max-width: 768px) {
+      border-right: none;
+      border-bottom: 1px solid ${theme.colors.primaryBorder};
+      padding-bottom: ${theme.spacing.md};
+    }
+  }
+`;
+
+const ItemContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+`;
+
+const ItemLabel = styled.span`
+  font-size: ${theme.fontSize.sm};
+  color: ${theme.colors.textLight};
+  font-weight: ${theme.fontWeight.medium};
+`;
+
+const ItemValue = styled.span<{ $color?: string }>`
+  font-size: ${theme.fontSize.lg};
+  font-weight: ${theme.fontWeight.bold};
+  color: ${({ $color }) => $color || theme.colors.text};
+`;
+
+const CompetenceIcon = styled.div<{ $hasCompetence: boolean }>`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: ${({ $hasCompetence }) => ($hasCompetence ? theme.colors.success : theme.colors.error)};
+  color: white;
+
+  i {
+    font-size: 1rem;
+  }
 `;
 
 const DataSection = styled.div`
@@ -60,8 +121,28 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
     year: 2022,
   });
 
+  console.log(landData);
+
   const population = populationData?.[0]?.population || null;
-  const mock = getMockedData(landData);
+  const hasCompetenceUrba = true; // TODO: remove this once we have the competence urbanisme data
+
+  const identityItems = [
+    {
+      icon: "bi bi-geo-alt-fill",
+      label: "Type de territoire",
+      value: getLandTypeLabel(landData.land_type),
+    },
+    {
+      icon: "bi bi-bounding-box-circles",
+      label: "Surface",
+      value: `${formatNumber({ number: landData.surface, decimals: 0 })} ha`,
+    },
+    {
+      icon: "bi bi-people-fill",
+      label: "Population",
+      value: population ? `${formatNumber({ number: population, decimals: 0 })} hab` : "—",
+    },
+  ];
 
   const dataCoverage = [
     { key: "conso", label: "Consommation d'espaces NAF", available: landData.has_conso },
@@ -74,54 +155,30 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
 
   return (
     <Section className={className}>
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
-          <Kpi
-            icon="bi bi-geo-alt-fill"
-            label={getLandTypeLabel(landData.land_type)}
-            value={landData.name}
-            variant="default"
-            footer={{
-              type: "metric",
-              items: [
-                {
-                  icon: "bi bi-bounding-box-circles",
-                  label: "Surface",
-                  value: `${formatNumber({ number: landData.surface, decimals: 0 })} ha`,
-                },
-                {
-                  icon: "bi bi-people-fill",
-                  label: "Population",
-                  value: population ? `${formatNumber({ number: population, decimals: 0 })} hab` : "—",
-                },
-              ],
-            }}
-          />
-        </div>
-        <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
-          <Kpi
-            icon={mock.hasObjectifTerritorialise ? "bi bi-check-lg" : "bi bi-x-lg"}
-            label="Objectif territorialisé (loi ZAN)"
-            value={mock.hasObjectifTerritorialise ? `-${mock.objectifPercent}%` : "Non défini"}
-            variant={mock.hasObjectifTerritorialise ? "success" : "error"}
-            footer={{
-              type: "metric",
-              items: [
-                {
-                  icon: mock.hasCompetenceUrba ? "bi bi-check-lg" : "bi bi-x-lg",
-                  label: "Compétence urbanisme",
-                  value: mock.hasCompetenceUrba ? "Oui" : "Non",
-                },
-                {
-                  icon: mock.hasRecentCogChange ? "bi bi-exclamation-lg" : "bi bi-check-lg",
-                  label: "Changement COG récent",
-                  value: mock.hasRecentCogChange ? "Oui" : "Non",
-                },
-              ],
-            }}
-          />
-        </div>
-      </div>
+      <IdentityCard>
+        <IdentityRow>
+          {identityItems.map((item) => (
+            <IdentityItem key={item.label}>
+              <IconBadge icon={item.icon} size={36} variant="dark" />
+              <ItemContent>
+                <ItemLabel>{item.label}</ItemLabel>
+                <ItemValue>{item.value}</ItemValue>
+              </ItemContent>
+            </IdentityItem>
+          ))}
+          <IdentityItem>
+            <CompetenceIcon $hasCompetence={hasCompetenceUrba}>
+              <i className={hasCompetenceUrba ? "bi bi-check-lg" : "bi bi-x-lg"} />
+            </CompetenceIcon>
+            <ItemContent>
+              <ItemLabel>Compétence urbanisme</ItemLabel>
+              <ItemValue $color={hasCompetenceUrba ? theme.colors.success : theme.colors.error}>
+                {hasCompetenceUrba ? "Oui" : "Non"}
+              </ItemValue>
+            </ItemContent>
+          </IdentityItem>
+        </IdentityRow>
+      </IdentityCard>
 
       <DataSection>
         <DataSectionLabel>Données disponibles pour ce territoire :</DataSectionLabel>
