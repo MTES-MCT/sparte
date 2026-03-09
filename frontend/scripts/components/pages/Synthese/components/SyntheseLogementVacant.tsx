@@ -49,7 +49,7 @@ const SyntheseLogementVacant: React.FC<SyntheseLogementVacantProps> = ({
               },
               {
                 icon: "bi bi-houses",
-                label: "Bailleurs sociaux",
+                label: "Parc bailleurs sociaux",
                 value: hasSocialData ? formatNumber({ number: logements_vacants_parc_social, decimals: 0 }) : "—",
               },
             ],

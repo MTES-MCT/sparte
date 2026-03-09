@@ -124,7 +124,7 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
   console.log(landData);
 
   const population = populationData?.[0]?.population || null;
-  const hasCompetenceUrba = landData.land_type === "COMM" || landData.land_type === "EPCI";
+  const hasCompetenceUrba = true; // TODO: remove this once we have the competence urbanisme data
 
   const identityItems = [
     {
