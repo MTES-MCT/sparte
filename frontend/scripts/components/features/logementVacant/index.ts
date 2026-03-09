@@ -1,1 +1,1 @@
-export { default as LogementVacantAbstract } from './LogementVacantAbstract';
+export { default as LogementVacantAbstract } from './logementVacantAbstract';
