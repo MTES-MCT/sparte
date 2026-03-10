@@ -182,6 +182,7 @@ from public_data.models import (
     LandModelViewset,
     LandPopStatsViewset,
     LandPopulationDensityViewset,
+    LandSocioEconomicStatsViewset,
     NearestTerritoriesViewset,
 )
 from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
@@ -430,6 +431,7 @@ urlpatterns = [
     path("landconsostats/", LandConsoStatsViewset.as_view(), name="consostats"),
     path("landpopstats/", LandPopStatsViewset.as_view(), name="popstats"),
     path("landpopulationdensity/", LandPopulationDensityViewset.as_view(), name="populationdensity"),
+    path("landsocioeconomicstats/", LandSocioEconomicStatsViewset.as_view(), name="socioeconomicstats"),
     path("nearestterritories/", NearestTerritoriesViewset.as_view(), name="nearestterritories"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),

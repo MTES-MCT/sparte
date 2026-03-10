@@ -11,6 +11,7 @@ interface SearchBarProps {
     excludeTerritories?: LandDetailResultType[];
     disableOverlay?: boolean;
     label?: string;
+    dropdownPosition?: "below" | "above";
 }
 
 const defaultBehavior = (territory: LandDetailResultType) => {
@@ -31,7 +32,7 @@ const SearchContainer = styled.div<{ $useHighZIndex: boolean }>`
     padding: 0.5rem;
     background: #fff;
     position: relative;
-    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1001' : 'auto')};
+    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1001' : '10')};
 `;
 
 const Icon = styled.i`
@@ -50,9 +51,9 @@ const Input = styled.input`
     }
 `;
 
-const ResultsContainer = styled.div<{ $useHighZIndex: boolean }>`
+const ResultsContainer = styled.div<{ $useHighZIndex: boolean; $position: "below" | "above" }>`
     position: absolute;
-    top: 120%;
+    ${({ $position }) => $position === "above" ? "bottom: 120%;" : "top: 120%;"}
     left: 0;
     right: 0;
     background: white;
@@ -60,7 +61,7 @@ const ResultsContainer = styled.div<{ $useHighZIndex: boolean }>`
     border-radius: 6px;
     max-height: 30vh;
     overflow-y: auto;
-    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1002' : 'auto')};
+    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1002' : '11')};
 `;
 
 const Overlay = styled.div<{ $visible: boolean }>`
@@ -131,6 +132,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     excludeTerritories = [],
     disableOverlay = false,
     label = "",
+    dropdownPosition = "below",
 }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
@@ -218,7 +220,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 />
                 {isFetching && <Loader size={25} wrap={false} />}
                 {data && (
-                    <ResultsContainer $useHighZIndex={!disableOverlay}>
+                    <ResultsContainer $useHighZIndex={!disableOverlay} $position={dropdownPosition}>
                         {data.length > 0 ? (
                             data.map((territory: LandDetailResultType) => {
                                 const isDisabled = territory.surface === 0;

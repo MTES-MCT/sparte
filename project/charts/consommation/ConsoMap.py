@@ -95,6 +95,7 @@ class ConsoMap(DiagnosticChart):
             data.append(
                 {
                     "land_id": land_id,
+                    "land_type": self.params.get("child_land_type"),
                     "total_conso_ha": stats.total / 10000,
                     "conso_density_percent": conso_density_percent,
                     "activite_ha": (stats.activite or 0) / 10000,

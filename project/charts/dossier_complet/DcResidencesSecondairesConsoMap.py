@@ -36,9 +36,10 @@ class DcResidencesSecondairesConsoMap(DcBivariateConsoMap):
 
     @property
     def period_years(self):
-        if self.period == "2011_2016":
-            return ("logements_16", "residences_secondaires_16", 2011, 2016)
-        return ("logements_22", "residences_secondaires_22", 2016, 2022)
+        s, e = self.start_date, self.end_date
+        if e <= 2016:
+            return ("logements_16", "residences_secondaires_16", s, e)
+        return ("logements_22", "residences_secondaires_22", s, e)
 
     def compute_indicator_value(self, obj, start_field, end_field):
         """Secondary residence rate = residences_secondaires / logements × 100."""

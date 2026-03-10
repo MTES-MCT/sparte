@@ -9,6 +9,7 @@ from .LandPopulationDensity import (  # noqa : F401
     LandPopulationDensitySerializer,
     LandPopulationDensityViewset,
 )
+from .LandSocioEconomicStats import LandSocioEconomicStatsViewset  # noqa : F401
 from .NearestTerritories import (  # noqa : F401
     NearestTerritories,
     NearestTerritoriesSerializer,

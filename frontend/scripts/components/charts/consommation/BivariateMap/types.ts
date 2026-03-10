@@ -15,14 +15,29 @@ export interface BivariateConfig {
   colorGrid: string[][] | null;
 }
 
+export interface MapNavEntry {
+  land_id: string;
+  land_type: string;
+  name: string;
+  child_land_type: string;
+}
+
+export interface MapDrilldown {
+  navStack: MapNavEntry[];
+  push: (entry: MapNavEntry) => void;
+  navigateTo: (index: number) => void;
+}
+
 export interface BivariateMapProps {
   chartId: string;
   landId: string;
   landType: string;
   landName?: string;
   childLandType: string;
-  childLandTypes?: string[];
-  onChildLandTypeChange?: (type: string) => void;
+  startYear?: number;
+  endYear?: number;
+  drilldown?: MapDrilldown;
+  highlightedLandId?: string;
 }
 
 export interface BivariateLegendProps {
@@ -33,6 +48,6 @@ export interface BivariateLegendProps {
   indicUnit: string;
   indicRanges: string[] | null;
   indicQualif: string[];
-  verdicts: string[][];
   adjectives: { faible: string; moyen: string; fort: string };
+  highlightedCell?: { row: number; col: number } | null;
 }

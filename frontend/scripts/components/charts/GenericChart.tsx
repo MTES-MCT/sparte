@@ -65,6 +65,8 @@ type GenericChartProps = {
   compactDataTable?: boolean;
   hideDetails?: boolean;
   onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
+  onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string } | null) => void;
+  highlightedLandId?: string;
 }
 
 const ChartCard = styled.div`
@@ -121,6 +123,8 @@ const GenericChart = ({
   compactDataTable = false,
   hideDetails = false,
   onPointClick,
+  onPointHover,
+  highlightedLandId,
 } : GenericChartProps) => {
   const chartRef = useRef<any>(null);
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
@@ -172,6 +176,17 @@ const GenericChart = ({
 
   const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
 
+  if (highlightedLandId) {
+    mutableChartOptions.series?.forEach((s: any) => {
+      s.data?.forEach((pt: any) => {
+        if (pt.land_id === highlightedLandId) {
+          pt.borderWidth = 3
+          pt.borderColor = '#000000'
+        }
+      })
+    })
+  }
+
   const pieSeries = mutableChartOptions._pieSeries
   delete mutableChartOptions._pieSeries
 
@@ -213,6 +228,31 @@ const GenericChart = ({
         })
       })
     }
+
+    if (onPointHover) {
+      const attachHoverEvents = () => {
+        chart.series.forEach((series) => {
+          series.points?.forEach((point) => {
+            Highcharts.addEvent(point, 'mouseOver', () => {
+              const opts = point.options as any
+              onPointHover({
+                color: point.color as string,
+                name: point.name || '',
+                value: point.value ?? (point as any).y ?? 0,
+                land_id: opts?.land_id,
+                land_type: opts?.land_type,
+              })
+            })
+            Highcharts.addEvent(point, 'mouseOut', () => {
+              onPointHover(null)
+            })
+          })
+        })
+      }
+      attachHoverEvents()
+      Highcharts.addEvent(chart, 'render', attachHoverEvents)
+    }
+
   }
 
   const shouldRedraw = true
@@ -272,7 +312,7 @@ const GenericChart = ({
           updateArgs={[shouldRedraw, oneToOne, animation]}
           containerProps={{ ...defaultContainerProps, ...containerProps }}
           constructorType={isMap ? 'mapChart' : 'chart'}
-          callback={(pieSeries || onPointClick) ? handleChartCallback : undefined}
+          callback={(pieSeries || onPointClick || onPointHover) ? handleChartCallback : undefined}
         />
       </ChartBody>
 

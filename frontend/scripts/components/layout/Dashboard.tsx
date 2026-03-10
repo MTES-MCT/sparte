@@ -16,7 +16,6 @@ import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import { Impermeabilisation } from '@components/pages/Impermeabilisation';
-import Downloads from '@components/pages/Downloads';
 import { Friches } from '@components/pages/Friches';
 import { ResidencesSecondaires } from '@components/pages/ResidencesSecondaires';
 import RouteWrapper from '@components/ui/RouteWrapper';
@@ -224,28 +223,6 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     landData={landData}
                                                 >
                                                     <RapportLocal landData={landData} />
-                                                </RouteWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path={urls.downloads}
-                                            element={
-                                                <RouteWrapper
-                                                    title="Générer un rapport"
-                                                    showFeedback={false}
-                                                >
-                                                    <Downloads landData={landData} />
-                                                </RouteWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path={`${urls.downloads}/:draftId`}
-                                            element={
-                                                <RouteWrapper
-                                                    title="Générer un rapport"
-                                                    showFeedback={false}
-                                                >
-                                                    <Downloads landData={landData} />
                                                 </RouteWrapper>
                                             }
                                         />

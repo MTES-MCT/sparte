@@ -1,17 +1,15 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import { ComparisonLand, UserLandPreferenceResultType } from "@services/types/project";
-import { useConsoData, useNearestTerritories, useComparisonTerritories } from "./hooks";
+import { useNearestTerritories, useComparisonTerritories } from "./hooks";
 import { ConsommationControlsProvider, useConsommationControls } from "./context/ConsommationControlsContext";
 import { TopBarContent } from "@components/layout/TopBarContent";
 import Triptych from "@components/ui/Triptych";
 import {
   ConsommationControls,
   ConsoAnnuelle,
-  ConsoMaps,
   ConsoCarroyage,
   ConsoDemography,
-  ConsoInsee,
   ConsoComparison,
 } from "./components";
 
@@ -27,14 +25,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
     startYear,
     endYear,
     childType,
-    setChildType,
-    populationEvolution,
-    populationEvolutionPercent,
-    isLoadingPop,
-    populationCardRef,
   } = useConsommationControls();
-
-  const { populationDensity, populationStock } = useConsoData(land_id, land_type, startYear, endYear);
 
   const { territories: nearestTerritories } = useNearestTerritories(land_id, land_type);
 
@@ -110,13 +101,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
           }}
         />
 
-        <ConsoAnnuelle landId={land_id} landType={land_type} />
-
-        <ConsoMaps
-          landId={land_id}
-          landType={land_type}
-          childLandTypes={child_land_types || []}
-        />
+        <ConsoAnnuelle landId={land_id} landType={land_type} landName={name} childLandTypes={child_land_types || []} />
 
         <ConsoCarroyage landData={landData} />
 
@@ -126,34 +111,8 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
           landName={name}
           startYear={startYear}
           endYear={endYear}
-          populationEvolution={populationEvolution}
-          populationEvolutionPercent={populationEvolutionPercent}
-          populationDensity={populationDensity}
-          populationStock={populationStock}
-          isLoadingPop={isLoadingPop}
-          populationCardRef={populationCardRef}
           childLandTypes={child_land_types}
           childType={childType}
-          onChildLandTypeChange={setChildType}
-        />
-
-        <ConsoInsee
-          landId={land_id}
-          landType={land_type}
-          landName={name}
-          startYear={startYear}
-          endYear={endYear}
-          childLandTypes={child_land_types}
-          childType={childType}
-          onChildLandTypeChange={setChildType}
-          logements={landData.logements_22}
-          evolutionLogementsPercent={landData.evolution_logements_percent}
-          evolutionLogementsAbsolute={landData.evolution_logements_absolute}
-          densiteLogements={landData.densite_logements}
-          emplois={landData.emplois_22}
-          evolutionEmploisPercent={landData.evolution_emplois_percent}
-          evolutionEmploisAbsolute={landData.evolution_emplois_absolute}
-          densiteEmplois={landData.densite_emplois}
         />
 
         <ConsoComparison

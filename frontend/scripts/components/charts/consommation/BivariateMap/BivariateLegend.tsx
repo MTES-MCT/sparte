@@ -123,13 +123,15 @@ const GridRow = styled.div`
   gap: 3px;
 `;
 
-const Cell = styled.div<{ $color: string }>`
+const Cell = styled.div<{ $color: string; $highlighted?: boolean }>`
   width: 100%;
   height: clamp(32px, 8vw, 55px);
   border-radius: 6px;
   background: ${({ $color }) => $color};
   border: none;
-  transition: filter 0.15s ease;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: ${({ $highlighted }) => $highlighted ? '0 0 0 3px rgba(0,0,0,0.4)' : 'none'};
+  filter: ${({ $highlighted }) => $highlighted ? 'brightness(1.1)' : 'none'};
 
   &:hover {
     filter: brightness(1.1);
@@ -241,16 +243,6 @@ const MetricLabel = styled.div`
   flex: 1;
 `;
 
-const VerdictText = styled.p`
-  margin: 0;
-  margin-top: auto;
-  padding-top: ${theme.spacing.sm};
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
-  font-size: ${theme.fontSize.sm};
-  font-style: italic;
-  line-height: 1.5;
-`;
-
 const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
@@ -284,9 +276,10 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
   indicUnit,
   indicRanges,
   indicQualif,
-  verdicts,
+  highlightedCell,
 }) => {
-  const [activeCell, setActiveCell] = useState<{ row: number; col: number } | null>(null);
+  const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
+  const activeCell = hoveredCell ?? highlightedCell ?? null;
 
   const getDetailBgColor = () => {
     if (!activeCell) return theme.colors.backgroundAlt;
@@ -308,7 +301,6 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
     const color = colorGrid[row]?.[col] || theme.colors.textMuted;
     const consoQualif = CONSO_QUALIF[row];
     const indicQualifText = indicQualif[col];
-    const verdict = verdicts[row]?.[col];
 
     const consoDisplay = consoRanges ? `${consoRanges[row]} %` : consoQualif;
     const indicDisplay = indicRanges 
@@ -342,7 +334,6 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
           </MetricRow>
         </MetricList>
 
-        {verdict && <VerdictText>{verdict}</VerdictText>}
       </>
     );
   };
@@ -372,7 +363,9 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
                       <Cell
                         key={`${rowIndex}-${colIndex}`}
                         $color={color}
-                        onMouseEnter={() => setActiveCell({ row: rowIndex, col: colIndex })}
+                        $highlighted={activeCell?.row === rowIndex && activeCell?.col === colIndex}
+                        onMouseEnter={() => setHoveredCell({ row: rowIndex, col: colIndex })}
+                        onMouseLeave={() => setHoveredCell(null)}
                       />
                     ))}
                   </GridRow>

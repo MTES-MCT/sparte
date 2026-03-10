@@ -36,9 +36,12 @@ class DcCreationsEntreprisesConsoMap(DcBivariateConsoMap):
 
     @property
     def period_years(self):
-        if self.period == "2011_2016":
-            return ("2012_2015", "2016_2019", 2011, 2016)
-        return ("2016_2019", "2020_2023", 2016, 2022)
+        s, e = self.start_date, self.end_date
+        if e <= 2016:
+            return ("2012_2015", "2016_2019", s, e)
+        if s >= 2016:
+            return ("2016_2019", "2020_2023", s, e)
+        return ("2012_2015", "2020_2023", s, e)
 
     def _sum_creations(self, obj, year_range_key):
         """Sum creations_entreprises over a year range like '2016_2019'."""

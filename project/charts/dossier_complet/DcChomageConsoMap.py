@@ -36,9 +36,10 @@ class DcChomageConsoMap(DcBivariateConsoMap):
 
     @property
     def period_years(self):
-        if self.period == "2011_2016":
-            return ("chomeurs_15_64_11", "actifs_15_64_11", 2011, 2016)
-        return ("chomeurs_15_64_22", "actifs_15_64_22", 2016, 2022)
+        s, e = self.start_date, self.end_date
+        if e <= 2016:
+            return ("chomeurs_15_64_11", "actifs_15_64_11", s, e)
+        return ("chomeurs_15_64_22", "actifs_15_64_22", s, e)
 
     def compute_indicator_value(self, obj, start_field, end_field):
         """Unemployment rate = chomeurs / actifs × 100."""

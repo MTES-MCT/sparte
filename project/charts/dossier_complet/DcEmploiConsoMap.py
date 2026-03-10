@@ -35,9 +35,12 @@ class DcEmploiConsoMap(DcBivariateConsoMap):
 
     @property
     def period_years(self):
-        if self.period == "2011_2016":
-            return ("actifs_occupes_15_64_11", "actifs_occupes_15_64_16", 2011, 2016)
-        return ("actifs_occupes_15_64_16", "actifs_occupes_15_64_22", 2016, 2022)
+        s, e = self.start_date, self.end_date
+        if e <= 2016:
+            return ("actifs_occupes_15_64_11", "actifs_occupes_15_64_16", s, e)
+        if s >= 2016:
+            return ("actifs_occupes_15_64_16", "actifs_occupes_15_64_22", s, e)
+        return ("actifs_occupes_15_64_11", "actifs_occupes_15_64_22", s, e)
 
     def compute_indicator_value(self, obj, start_field, end_field):
         if obj is None:
