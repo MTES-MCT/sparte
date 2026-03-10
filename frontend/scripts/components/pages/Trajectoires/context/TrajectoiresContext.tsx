@@ -3,16 +3,19 @@ import { LandDetailResultType } from "@services/types/land";
 import { UserLandPreferenceResultType } from "@services/types/project";
 import { useUpdatePreferenceTarget2031Mutation, useGetCurrentUserQuery } from "@services/api";
 import { getLandTypeLabel } from "@utils/landUtils";
+import { buildUrls, ProjectUrls } from "@utils/projectUrls";
 import { useAuthGuard } from "@hooks/useAuthGuard";
 
 interface TrajectoiresContextValue {
   landData: LandDetailResultType;
+  urls: ProjectUrls;
   landId: string;
   landType: string;
   name: string;
 
   conso2011_2020: number;
   annualConsoSince2021: number;
+  consoSince2021: number;
 
   hasTerritorialisation: boolean;
   isFromParent: boolean;
@@ -71,6 +74,7 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
   children,
 }) => {
   const { land_id, land_type, name, conso_details, territorialisation } = landData;
+  const urls = buildUrls(landData.land_type_slug, landData.slug);
   const [updateTarget2031, { isLoading: isUpdating }] = useUpdatePreferenceTarget2031Mutation();
   const [showCustomTargetModal, setShowCustomTargetModal] = useState(false);
   const [modalTargetInput, setModalTargetInput] = useState<string>("");
@@ -84,6 +88,7 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
 
   const conso2011_2020 = conso_details?.conso_2011_2020 ?? 0;
   const annualConsoSince2021 = conso_details?.annual_conso_since_2021 ?? 0;
+  const consoSince2021 = conso_details?.conso_since_2021 ?? 0;
 
   const hasTerritorialisation = isDGALNMember && (territorialisation?.has_objectif ?? false);
   const isFromParent = territorialisation?.is_from_parent ?? false;
@@ -99,7 +104,7 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
 
   const objectifLabel = getObjectifLabel();
   const objectifType = isFromParent || !hasTerritorialisation ? "suggéré" : "réglementaire";
-  const objectifTypeBadge = isFromParent || !hasTerritorialisation ? "objectif suggéré" : "objectif réglementaire";
+  const objectifTypeBadge = isFromParent || !hasTerritorialisation ? "objectif national (-50%)" : "objectif réglementaire";
 
   const sourceDocument = territorialisation?.source_document ?? null;
   const currentDocument = territorialisation?.hierarchy?.at(-1) ?? null;
@@ -148,13 +153,14 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
   const value = useMemo<TrajectoiresContextValue>(
     () => ({
       landData,
+      urls,
       landId: land_id ?? "",
       landType: land_type ?? "",
       name: name ?? "",
 
       conso2011_2020,
       annualConsoSince2021,
-
+      consoSince2021,
       hasTerritorialisation,
       isFromParent,
       objectifReduction,
@@ -191,6 +197,7 @@ export const TrajectoiresProvider: React.FC<TrajectoiresProviderProps> = ({
     }),
     [
       landData,
+      urls,
       land_id,
       land_type,
       name,

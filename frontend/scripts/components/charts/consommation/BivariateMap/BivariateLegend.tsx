@@ -129,8 +129,8 @@ const Cell = styled.div<{ $color: string; $highlighted?: boolean }>`
   border-radius: 6px;
   background: ${({ $color }) => $color};
   border: none;
-  transition: filter 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: ${({ $highlighted }) => $highlighted ? '0 0 0 3px rgba(0,0,0,0.4)' : 'none'};
+  transition: filter 0.15s ease, transform 0.2s ease;
+  transform: ${({ $highlighted }) => $highlighted ? 'scale(.95)' : 'scale(1)'};
   filter: ${({ $highlighted }) => $highlighted ? 'brightness(1.1)' : 'none'};
 
   &:hover {
@@ -322,7 +322,7 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
               <IconBadge icon={`bi ${LEVEL_ICONS[row]}`} size={22} variant="light" />
               <span>{consoLabel}</span>
             </MetricLabel>
-            <Badge variant="highlight" size="sm">{consoDisplay}</Badge>
+            <Badge variant="primary" size="sm">{consoDisplay}</Badge>
           </MetricRow>
 
           <MetricRow>
@@ -330,7 +330,7 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
               <IconBadge icon={`bi ${LEVEL_ICONS[col]}`} size={22} variant="light" />
               <span>{indicName}</span>
             </MetricLabel>
-            <Badge variant="highlight" size="sm">{indicDisplay}</Badge>
+            <Badge variant="primary" size="sm">{indicDisplay}</Badge>
           </MetricRow>
         </MetricList>
 

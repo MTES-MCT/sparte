@@ -5,6 +5,7 @@ import { formatNumber } from "@utils/formatUtils";
 import Kpi from "@components/ui/Kpi";
 import GuideContent from "@components/ui/GuideContent";
 import ConsoCorrectionStatus from "@components/features/status/ConsoCorrectionStatus";
+import Badge from "@components/ui/Badge";
 
 interface SyntheseConsoProps {
   landData: LandDetailResultType;
@@ -32,16 +33,18 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
           <Kpi
             icon="bi bi-archive"
-            label="Consommation d'espaces NAF"
-            description="Base de calcul pour définir l'objectif de réduction"
-            value={<>{formatNumber({ number: conso_2011_2020 })} <span>ha</span></>}
+            label="Consommation d'espaces NAF observée"
+            value={
+              <>
+                <div>{formatNumber({ number: conso_2011_2020 })} <span>ha</span></div>
+                <Badge variant="primary"><strong>{formatNumber({ number: conso_2011_2020 / 10 })} ha / an</strong></Badge>
+              </>
+            }
             variant="default"
             footer={{
               type: "period",
-              periods: [
-                { label: "2011", active: true },
-                { label: "2020" },
-              ],
+              from: "2011",
+              to: "2020",
             }}
             action={{
               label: "Voir le diagnostic de consommation",
@@ -50,7 +53,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           />
         </div>
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
-          <GuideContent title="Pourquoi cette période de référence ?">
+          <GuideContent title="Comprendre la période de référence">
             <p className="fr-text--sm">
               La consommation d'espaces NAF entre 2011 et 2021 constitue
               la base de calcul pour définir la trajectoire de réduction fixée
@@ -75,16 +78,18 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-check"
-          label="Consommation d'espaces NAF"
-          description="Consommation réelle observée"
-          value={<>{formatNumber({ number: conso_since_2021 })} <span>ha</span></>}
+          label="Consommation d'espaces NAF observée"
+          value={
+            <>
+              <div>{formatNumber({ number: conso_since_2021 })} <span>ha</span></div>
+              <Badge variant="primary"><strong>{formatNumber({ number: conso_since_2021 / 3 })} ha / an</strong></Badge>
+            </>
+          }
           variant="default"
           footer={{
             type: "period",
-            periods: [
-              { label: "2021", active: true },
-              { label: "2023" },
-            ],
+            from: "2021",
+            to: "2023",
           }}
           action={{
             label: "Voir le diagnostic de consommation",
@@ -94,17 +99,20 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       </div>
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
-          icon="bi bi-arrow-right"
-          label="Consommation d'espaces NAF"
-          description="Consommation à ne pas dépasser"
-          value={<>{formatNumber({ number: allowed_conso_2021_2030 })} <span>ha</span></>}
-          variant="default"
+          icon="bi bi-bullseye"
+          label="Consommation d'espaces NAF à ne pas dépasser"
+          value={
+            <>
+              <div>{formatNumber({ number: allowed_conso_2021_2030 })} <span>ha</span></div>
+              <Badge variant="success"><strong>{formatNumber({ number: allowed_conso_2021_2030 / 10 })} ha / an</strong></Badge>
+            </>
+          }
+          variant="success"
+          badge="Objectif national (-50%)"
           footer={{
             type: "period",
-            periods: [
-              { label: "2021", active: false },
-              { label: "2031" },
-            ],
+            from: "2021",
+            to: "2031",
           }}
           action={{
             label: "Simuler une trajectoire",

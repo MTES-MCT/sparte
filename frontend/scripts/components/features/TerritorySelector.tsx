@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import SearchBar from '@components/ui/SearchBar';
 import Button from '@components/ui/Button';
 import { LandDetailResultType } from '@services/types/land';
+import Tag from '@components/ui/Tag';
+
 
 interface TerritorySelectorProps {
     territories: LandDetailResultType[];
@@ -60,16 +62,13 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                     <p className="fr-text--sm fr-text--alt">{emptyText}</p>
                 ) : (
                     territories.map((territory) => (
-                        <Button
+                        <Tag
                             key={`${territory.land_type}_${territory.land_id}`}
-                            size="sm"
-                            variant="secondary"
-                            icon="bi bi-x-lg"
-                            iconPosition="right"
-                            onClick={() => onRemoveTerritory(territory)}
+                            variant="primary"
+                            onDismiss={() => onRemoveTerritory(territory)}
                         >
                             {territory.name}
-                        </Button>
+                        </Tag>
                     ))
                 )}
             </TerritoryList>

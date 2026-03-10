@@ -7,6 +7,7 @@ import Button from "@components/ui/Button";
 import { formatNumber } from "@utils/formatUtils";
 import { djangoApi, useGetSocioEconomicStatsQuery } from "@services/api";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
+import Badge from "@components/ui/Badge";
 
 interface ConsoDemographyProps {
   landId: string;
@@ -96,15 +97,17 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
           <Kpi
             icon="bi bi-people"
             label="Évolution annuelle de la population"
-            value={formatAnnualValue(stats?.population_annual_evolution, "hab / an", loading)}
-            description={formatAnnualPercent(stats?.population_annual_evolution_percent, loading)}
+            value={
+              <>
+                <div>{formatAnnualValue(stats?.population_annual_evolution, "hab / an", loading)}</div>
+                <Badge variant="primary"><strong>{formatAnnualPercent(stats?.population_annual_evolution_percent, loading)}</strong></Badge>
+              </>
+            }
             variant="default"
             footer={{
               type: "period",
-              periods: [
-                { label: String(startYear), active: true },
-                { label: String(Math.min(endYear, 2022)) },
-              ],
+              from: String(startYear),
+              to: String(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -112,15 +115,17 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
           <Kpi
             icon="bi bi-house-door"
             label="Évolution annuelle du nombre de ménages"
-            value={formatAnnualValue(stats?.menages_annual_evolution, "ménages / an", loading)}
-            description={formatAnnualPercent(stats?.menages_annual_evolution_percent, loading)}
+            value={
+              <>
+                <div>{formatAnnualValue(stats?.menages_annual_evolution, "ménages / an", loading)}</div>
+                <Badge variant="primary"><strong>{formatAnnualPercent(stats?.menages_annual_evolution_percent, loading)}</strong></Badge>
+              </>
+            }
             variant="default"
             footer={{
               type: "period",
-              periods: [
-                { label: String(startYear), active: true },
-                { label: String(Math.min(endYear, 2022)) },
-              ],
+              from: String(startYear),
+              to: String(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -128,15 +133,17 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
           <Kpi
             icon="bi bi-briefcase"
             label="Évolution annuelle du nombre d'emplois"
-            value={formatAnnualValue(stats?.emplois_annual_evolution, "emplois / an", loading)}
-            description={formatAnnualPercent(stats?.emplois_annual_evolution_percent, loading)}
+            value={
+              <>
+                <div>{formatAnnualValue(stats?.emplois_annual_evolution, "emplois / an", loading)}</div>
+                <Badge variant="primary"><strong>{formatAnnualPercent(stats?.emplois_annual_evolution_percent, loading)}</strong></Badge>
+              </>
+            }
             variant="default"
             footer={{
               type: "period",
-              periods: [
-                { label: String(startYear), active: true },
-                { label: String(Math.min(endYear, 2022)) },
-              ],
+              from: String(startYear),
+              to: String(Math.min(endYear, 2022)),
             }}
           />
         </div>

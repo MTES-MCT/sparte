@@ -1,5 +1,4 @@
 import React, { ReactNode } from "react";
-import { Notice as DSFRNotice } from "@codegouvfr/react-dsfr/Notice";
 import BaseCard from "@components/ui/BaseCard";
 
 type NoticeType = "info" | "warning" | "alert";
@@ -11,19 +10,18 @@ interface NoticeProps {
     withCard?: boolean;
 }
 
-const SEVERITY_MAP: Record<NoticeType, "info" | "warning" | "alert"> = {
-    info: "info",
-    warning: "warning",
-    alert: "alert",
-};
-
 const Notice: React.FC<NoticeProps> = ({ type, title, description, withCard = true }) => {
     const notice = (
-        <DSFRNotice
-            severity={SEVERITY_MAP[type]}
-            title={<span className="fr-text--sm">{title}</span>}
-            description={<span className="fr-text--sm">{description}</span>}
-        />
+        <div className={`fr-notice fr-notice--${type}`}>
+            <div className="fr-px-3w">
+                <div className="fr-notice__body">
+                    <p>
+                        <span className="fr-notice__title fr-text--sm">{title}</span>
+                        <span className="fr-notice__desc fr-text--sm">{description}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 
     if (withCard) {

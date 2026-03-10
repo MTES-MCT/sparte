@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import styled from "styled-components";
 import { theme } from "@theme";
 
-type BadgeVariant = "neutral" | "highlight";
+type BadgeVariant = "neutral" | "primary" | "highlight" | "success";
 type BadgeSize = "sm" | "md";
 
 interface BadgeProps {
@@ -19,7 +19,9 @@ const sizeConfig: Record<BadgeSize, { padding: string; fontSize: string }> = {
 
 const variantConfig: Record<BadgeVariant, { background: string; color: string }> = {
   neutral: { background: theme.colors.backgroundMuted, color: theme.colors.text },
-  highlight: { background: theme.colors.primaryBg, color: theme.colors.primaryHover },
+  primary: { background: theme.colors.primaryBg, color: theme.colors.primaryHover },
+  highlight: { background: theme.colors.purpleBg, color: theme.colors.purple },
+  success: { background: theme.colors.successBg, color: theme.colors.success },
 };
 
 const StyledBadge = styled.span<{ $variant: BadgeVariant; $size: BadgeSize }>`
