@@ -1,8 +1,7 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
-import Button from "@components/ui/Button";
 import GuideContent from "@components/ui/GuideContent";
 import { getLandTypeLabel } from "@utils/landUtils";
 import { useImpermeabilisationContext } from "../context/ImpermeabilisationContext";
@@ -21,13 +20,16 @@ export const ImperChildLands: React.FC = () => {
     name,
     childLandTypes,
     childLandType,
-    setChildLandType,
     defaultStockIndex,
   } = useImpermeabilisationContext();
 
   const [mapNavStack, setMapNavStack] = useState<
     { land_id: string; land_type: string; name: string; child_land_type: string }[]
   >([]);
+
+  useEffect(() => {
+    setMapNavStack([]);
+  }, [childLandType]);
 
   const handleMapPointClick = useCallback(
     (point: { land_id: string; land_type: string; name: string }) => {
@@ -50,14 +52,6 @@ export const ImperChildLands: React.FC = () => {
     setMapNavStack((prev) => prev.slice(0, index));
   }, []);
 
-  const handleChildLandTypeChange = useCallback(
-    (newType: string) => {
-      setChildLandType(newType);
-      setMapNavStack([]);
-    },
-    [setChildLandType]
-  );
-
   const currentMapLand = mapNavStack.length > 0 ? mapNavStack[mapNavStack.length - 1] : null;
   const mapLandId = currentMapLand?.land_id ?? land_id;
   const mapLandType = currentMapLand?.land_type ?? land_type;
@@ -72,19 +66,6 @@ export const ImperChildLands: React.FC = () => {
       </h2>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
-          <div className="fr-mb-2w d-flex align-items-center gap-2">
-            {childLandTypes.length > 1 &&
-              childLandTypes.map((child_land_type) => (
-                <Button
-                  key={child_land_type}
-                  variant={childLandType === child_land_type ? "primary" : "tertiary"}
-                  size="sm"
-                  onClick={() => handleChildLandTypeChange(child_land_type)}
-                >
-                  {getLandTypeLabel(child_land_type)}
-                </Button>
-              ))}
-          </div>
           {mapNavStack.length > 0 && (
             <Breadcrumb
               className="fr-mb-1w"
@@ -132,6 +113,7 @@ export const ImperChildLands: React.FC = () => {
             }}
             sources={["ocsge"]}
             showDataTable={true}
+            showMailleIndicator={childLandTypes.length > 1}
             onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
           >
             <DetailsCalculationOcsge />

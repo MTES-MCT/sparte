@@ -6,7 +6,6 @@ import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { useGetCarroyageBoundsQuery, useGetCarroyageDestinationConfigQuery, useGetLandChildrenGeomQuery } from "@services/api";
 import Loader from "@components/ui/Loader";
-import Button from "@components/ui/Button";
 import type { ExpressionSpecification } from "maplibre-gl";
 import { CarroyageLeaSidePanel } from "./sidePanel";
 
@@ -88,26 +87,6 @@ const OverlayLoader = styled.div`
             transform: rotate(360deg);
         }
     }
-`;
-
-const ButtonSeparator = styled.span`
-    display: inline-block;
-    width: 1px;
-    height: 24px;
-    background-color: #ccc;
-    margin-right: 8px;
-    vertical-align: middle;
-`;
-
-const ColorDot = styled.span<{ $color: string; $active: boolean }>`
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: ${({ $color }) => $color};
-    margin-right: 6px;
-    vertical-align: middle;
-    border: 1px solid ${({ $active }) => ($active ? 'white' : '#ccc')};
 `;
 
 function buildCumulativeExpression(
@@ -212,6 +191,7 @@ interface CarroyageLeaMapProps {
     landData: LandDetailResultType;
     startYear: number;
     endYear: number;
+    selectedDestination: DestinationType;
     childLandType?: string;
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
@@ -221,6 +201,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     landData,
     startYear,
     endYear,
+    selectedDestination,
     childLandType,
     center,
     onMapLoad
@@ -243,7 +224,6 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     }, [boundsData]);
 
     const mapRef = useRef<maplibregl.Map | null>(null);
-    const [selectedDestination, setSelectedDestination] = useState<DestinationType>("total");
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [hoveredValue, setHoveredValue] = useState<number | null>(null);
@@ -550,23 +530,6 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     const formatLegend = (v: number) => v >= 1 ? Math.round(v).toString() : v.toFixed(2).replace('.', ',');
 
     return (
-        <>
-        <div className="fr-mb-2w">
-            {Object.keys(destinationConfig).map((dest, index) => (
-                <React.Fragment key={dest}>
-                {index === 1 && <ButtonSeparator />}
-                <Button
-                    variant={selectedDestination === dest ? 'primary' : 'tertiary'}
-                    size="sm"
-                    className="fr-mr-1w fr-mb-1w"
-                    onClick={() => setSelectedDestination(dest)}
-                >
-                    <ColorDot $color={destinationConfig[dest].color} $active={selectedDestination === dest} />
-                    {destinationConfig[dest].label}
-                </Button>
-                </React.Fragment>
-            ))}
-        </div>
         <BaseMap
             id="carroyage-lea-map"
             config={config}
@@ -615,6 +578,5 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                 </LegendLabels>
             </LegendContainer>
         </BaseMap>
-        </>
     );
 };

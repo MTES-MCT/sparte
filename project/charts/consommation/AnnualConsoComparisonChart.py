@@ -42,10 +42,9 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
     @property
     def series(self):
         """
-        Génère les séries principales et les séries de drilldown.
+        Génère les séries principales (une par territoire pour les couleurs).
         """
         main_series = []
-        drilldown_series = []
         highlighted_land_id = self.land.land_id
 
         for land_conso in self.data:
@@ -54,7 +53,14 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             main_series.append(
                 {
                     "name": "Tous les territoires",
-                    "data": [{"name": land_conso.land.name, "y": total_conso, "drilldown": land_conso.land.land_id}],
+                    "data": [
+                        {
+                            "name": land_conso.land.name,
+                            "y": total_conso,
+                            "land_id": land_conso.land.land_id,
+                            "land_type": land_conso.land.land_type,
+                        }
+                    ],
                     "color": HIGHLIGHT_COLOR if land_conso.land.land_id == highlighted_land_id else None,
                     "grouping": False,
                     "tooltip": {
@@ -68,30 +74,10 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                 }
             )
 
-            drilldown_series.append(
-                {
-                    "id": land_conso.land.land_id,
-                    "name": land_conso.land.name,
-                    "data": [
-                        {
-                            "name": annual_conso.year,
-                            "y": annual_conso.total,
-                        }
-                        for annual_conso in land_conso.consommation
-                    ],
-                    "custom": {"parentName": land_conso.land.name},
-                    "tooltip": {
-                        "headerFormat": "<b>{point.series.options.custom.parentName}</b><br/>",
-                        "pointFormat": "Consommation d'espaces NAF en {point.name} : <b>{point.y:.2f} ha</b><br/>",
-                    },
-                }
-            )
-        return main_series, drilldown_series
+        return main_series
 
     @property
     def param(self):
-        main_series, drilldown_series = self.series
-
         return super().param | {
             "chart": {"type": "column", "height": 500},
             "title": {
@@ -113,13 +99,10 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "legend": {
                 "enabled": False,
             },
-            "series": main_series,
-            "drilldown": {
-                "series": drilldown_series,
-                "breadcrumbs": {
-                    "showFullPath": True,
-                    "format": "{level.name}",
-                    "buttonTheme": {"style": {"color": "#4318FF", "textDecoration": "none"}},
+            "series": self.series,
+            "plotOptions": {
+                "series": {
+                    "cursor": "pointer",
                 },
             },
         }
@@ -188,6 +171,15 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
                 "align": "center",
                 "verticalAlign": "bottom",
             },
+            "title": {
+                "text": (
+                    f"Consommation d'espaces NAF de {self.land.name} "
+                    "et des territoires de comparaison "
+                    f"({self.params['start_date']} et {self.params['end_date']})"
+                )
+            },
+            "subtitle": {"text": ""},
+            "series": self.export_series,
             "plotOptions": {
                 "column": {
                     "dataLabels": {
@@ -198,16 +190,7 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
                             "fontWeight": "bold",
                         },
                     },
+                    "cursor": "default",
                 },
             },
-            "title": {
-                "text": (
-                    f"Consommation d'espaces NAF de {self.land.name} "
-                    "et des territoires de comparaison "
-                    f"({self.params['start_date']} et {self.params['end_date']})"
-                )
-            },
-            "subtitle": {"text": ""},
-            "series": self.export_series,
-            "drilldown": {"series": []},  # Désactiver le drilldown pour l'export
         }

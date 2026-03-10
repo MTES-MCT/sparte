@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import SearchBar from '@components/ui/SearchBar';
-import Tag from '@components/ui/Tag';
 import Button from '@components/ui/Button';
 import { LandDetailResultType } from '@services/types/land';
 
@@ -17,6 +16,7 @@ interface TerritorySelectorProps {
     infoText?: string;
     showCount?: boolean;
     compact?: boolean;
+    dropdownPosition?: "below" | "above";
 }
 
 const TerritoryList = styled.div`
@@ -45,6 +45,7 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
     infoText,
     showCount = false,
     compact = false,
+    dropdownPosition = "below",
 }) => {
     return (
         <>
@@ -59,14 +60,16 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                     <p className="fr-text--sm fr-text--alt">{emptyText}</p>
                 ) : (
                     territories.map((territory) => (
-                        <Tag
+                        <Button
                             key={`${territory.land_type}_${territory.land_id}`}
                             size="sm"
-                            onDismiss={() => onRemoveTerritory(territory)}
-                            variant="primary"
+                            variant="secondary"
+                            icon="bi bi-x-lg"
+                            iconPosition="right"
+                            onClick={() => onRemoveTerritory(territory)}
                         >
                             {territory.name}
-                        </Tag>
+                        </Button>
                     ))
                 )}
             </TerritoryList>
@@ -88,6 +91,7 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                 onTerritorySelect={onAddTerritory}
                 excludeTerritories={excludedTerritories}
                 disableOverlay={true}
+                dropdownPosition={dropdownPosition}
             />
 
             {infoText && <InfoText>{infoText}</InfoText>}

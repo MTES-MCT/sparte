@@ -61,6 +61,16 @@ export const djangoApi = createApi({
 				})}`
 			},
 		}),
+		getSocioEconomicStats: builder.query({
+			query: ({ land_type, land_id, from_year, to_year }) => {
+				return `/api/landsocioeconomicstats/?${new URLSearchParams({
+					land_type,
+					land_id,
+					from_year: from_year.toString(),
+					to_year: to_year.toString()
+				})}`
+			},
+		}),
 		getChartConfig: builder.query({
 			query: ({ id, land_type, land_id, ...params }) => {
 				const queryParams = new URLSearchParams(params)
@@ -382,6 +392,7 @@ const {
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
+	useGetSocioEconomicStatsQuery,
 	useGetSimilarTerritoriesQuery,
 	useGetLogementVacantAutorisationStatsQuery,
 	useGetCarroyageBoundsQuery,
@@ -411,6 +422,7 @@ export {
 	useGetLandConsoStatsQuery,
 	useGetLandPopStatsQuery,
 	useGetLandPopDensityQuery,
+	useGetSocioEconomicStatsQuery,
 	useGetSimilarTerritoriesQuery,
 	useGetUserLandPreferenceQuery,
 	useUpdatePreferenceTarget2031Mutation,

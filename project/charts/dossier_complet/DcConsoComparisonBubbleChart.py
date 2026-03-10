@@ -3,7 +3,7 @@ Abstract base for bubble comparison charts crossing an INSEE indicator
 with land consumption across comparison territories.
 
 x = indicator evolution (%)
-y = consumption (ha)
+y = consumption relative to territory surface (%)
 z = population (bubble size)
 """
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
     """
     Abstract base for bubble charts crossing a DC indicator evolution (%)
-    with land consumption (ha) across comparison territories.
+    with land consumption relative to territory surface (%) across comparison territories.
     Bubble size = population.
 
     Subclasses must define:
@@ -41,7 +41,7 @@ class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
     indicator_name = ""
     indicator_unit = "%"
     conso_field = "habitat"
-    conso_label = "Consommation habitat (ha)"
+    conso_label = "Consommation habitat relative à la surface (%)"
     start_field_11 = ""
     end_field_16 = ""
     start_field_16 = ""
@@ -88,6 +88,16 @@ class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
         )
         conso_by_land = {row["land_id"]: round((row["total_conso"] or 0) / 10000, 2) for row in conso_qs}
 
+        # Surface for proportional consumption
+        surface_by_land = {land.land_id: land.surface for land in comparison_lands}
+
+        # Consumption proportional to surface (%)
+        conso_proportional_by_land = {}
+        for lid in land_ids:
+            surface = surface_by_land.get(lid, 0)
+            conso = conso_by_land.get(lid, 0)
+            conso_proportional_by_land[lid] = round(conso / surface * 100, 4) if surface > 0 else 0
+
         # Indicator values
         start_field, end_field = self._get_period_fields()
         indic_objs = {
@@ -110,6 +120,7 @@ class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
         return {
             "lands": comparison_lands,
             "conso": conso_by_land,
+            "conso_proportional": conso_proportional_by_land,
             "indicator": indicator_by_land,
             "population": pop_by_land,
         }
@@ -125,7 +136,7 @@ class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
                 "data": [
                     {
                         "x": self.data["indicator"].get(land.land_id, 0) or 0,
-                        "y": self.data["conso"].get(land.land_id, 0),
+                        "y": self.data["conso_proportional"].get(land.land_id, 0),
                         "z": self.data["population"].get(land.land_id, 0),
                     }
                 ],
@@ -181,7 +192,7 @@ class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
             "tooltip": {
                 "pointFormat": (
                     f"{self.conso_label} : "
-                    "<span class='fr-text--bold'>{point.y} ha</span><br />"
+                    "<span class='fr-text--bold'>{point.y:.4f} %</span><br />"
                     f"{self.indicator_name} : "
                     "<span class='fr-text--bold'>{point.x} %</span><br />"
                     "Population : "
@@ -202,12 +213,13 @@ class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
         rows = []
         for land in self.data["lands"]:
             indic = self.data["indicator"].get(land.land_id)
+            conso_prop = self.data["conso_proportional"].get(land.land_id, 0)
             rows.append(
                 {
                     "name": land.name,
                     "data": [
                         land.name,
-                        self.data["conso"].get(land.land_id, 0),
+                        f"{conso_prop:.4f} %",
                         f"{indic:+.2f}%" if indic is not None else "n.d.",
                         f"{self.data['population'].get(land.land_id, 0):,.0f}",
                     ],

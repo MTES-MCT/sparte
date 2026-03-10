@@ -1,4 +1,4 @@
-from public_data.models import LandDcActiviteChomage
+from public_data.models import AdminRef, LandDcActiviteChomage
 
 from .DcBivariateConsoMap import PALETTE_DIVERGING, DcBivariateConsoMap
 
@@ -36,9 +36,10 @@ class DcChomageConsoMap(DcBivariateConsoMap):
 
     @property
     def period_years(self):
-        if self.period == "2011_2016":
-            return ("chomeurs_15_64_11", "actifs_15_64_11", 2011, 2016)
-        return ("chomeurs_15_64_22", "actifs_15_64_22", 2016, 2022)
+        s, e = self.start_date, self.end_date
+        if e <= 2016:
+            return ("chomeurs_15_64_11", "actifs_15_64_11", s, e)
+        return ("chomeurs_15_64_22", "actifs_15_64_22", s, e)
 
     def compute_indicator_value(self, obj, start_field, end_field):
         """Unemployment rate = chomeurs / actifs × 100."""
@@ -58,9 +59,15 @@ class DcChomageConsoMap(DcBivariateConsoMap):
     def get_chart_title(self):
         _, _, conso_start, conso_end = self.period_years
         child_label = self.formatted_child_land_type
+        container = self._container_land
+        if self.land.land_type == AdminRef.COMMUNE:
+            return (
+                f"Taux de chômage et consommation d'espaces pour l'activité des {child_label}s"
+                f" - {self.land.name} ({container.name}, {conso_start}-{conso_end})"
+            )
         return (
             f"Taux de chômage et consommation d'espaces pour l'activité des {child_label}s"
-            f" - {self.land.name} ({conso_start}-{conso_end})"
+            f" - {container.name} ({conso_start}-{conso_end})"
         )
 
     def get_chart_subtitle(self):

@@ -1,15 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
+import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
 import { CarroyageLeaMap } from "@components/map";
 import Button from "@components/ui/Button";
+import { useGetCarroyageDestinationConfigQuery } from "@services/api";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
+
+const ColorDot = styled.span<{ $color: string; $active: boolean }>`
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: ${({ $color }) => $color};
+  margin-right: 6px;
+  vertical-align: middle;
+  border: 1px solid ${({ $active }) => ($active ? "white" : "#ccc")};
+`;
+
+const ButtonSeparator = styled.span`
+  display: inline-block;
+  width: 1px;
+  height: 24px;
+  background-color: #ccc;
+  vertical-align: middle;
+`;
 
 interface ConsoCarroyageProps {
   landData: LandDetailResultType;
 }
 
 export const ConsoCarroyage: React.FC<ConsoCarroyageProps> = ({ landData }) => {
-  const { startYear, endYear, childType, setChildType, childLandTypes, landTypeLabels } = useConsommationControls();
+  const { startYear, endYear, childType } = useConsommationControls();
+  const { data: destinationConfig } = useGetCarroyageDestinationConfigQuery(undefined);
+  const [selectedDestination, setSelectedDestination] = useState("total");
 
   return (
     <div className="fr-mb-7w fr-mt-5w">
@@ -27,22 +50,25 @@ export const ConsoCarroyage: React.FC<ConsoCarroyageProps> = ({ landData }) => {
         </p>
       </div>
 
-      {childLandTypes && childLandTypes.length > 1 && (
-        <div className="fr-mb-2w d-flex gap-2">
-          {childLandTypes.map((child_land_type) => (
-            <Button
-              key={child_land_type}
-              variant={childType === child_land_type ? "primary" : "secondary"}
-              size="sm"
-              onClick={() => setChildType(child_land_type)}
-            >
-              {landTypeLabels[child_land_type] || child_land_type}
-            </Button>
+      {destinationConfig && (
+        <div className="fr-mb-2w d-flex gap-2" style={{ flexWrap: "wrap", background: "white", borderRadius: "0.5rem", padding: "0.5rem 0.75rem", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", width: "fit-content" }}>
+          {Object.keys(destinationConfig).map((dest, index) => (
+            <React.Fragment key={dest}>
+              {index === 1 && <ButtonSeparator />}
+              <Button
+                variant={selectedDestination === dest ? "primary" : "tertiary"}
+                size="sm"
+                onClick={() => setSelectedDestination(dest)}
+              >
+                <ColorDot $color={destinationConfig[dest].color} $active={selectedDestination === dest} />
+                {destinationConfig[dest].label}
+              </Button>
+            </React.Fragment>
           ))}
         </div>
       )}
 
-      <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} childLandType={childType} />
+      <CarroyageLeaMap landData={landData} startYear={startYear} endYear={endYear} selectedDestination={selectedDestination} childLandType={childType} />
     </div>
   );
 };

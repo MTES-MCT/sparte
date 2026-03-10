@@ -43,6 +43,7 @@ const RightSection = styled.div`
     display: flex;
     align-items: center;
     gap: ${theme.spacing.md};
+    min-width: 0;
 
     @media (max-width: 768px) {
         width: 100%;

@@ -20,11 +20,16 @@ class DcEmploiVsConsoChart(DiagnosticChart):
         ).first()
 
     @property
+    def effective_start_date(self):
+        # Créations d'entreprises disponibles à partir de 2012
+        return max(int(self.params["start_date"]), 2012)
+
+    @property
     def conso_data(self):
         return LandConso.objects.filter(
             land_id=self.land.land_id,
             land_type=self.land.land_type,
-            year__gte=int(self.params["start_date"]),
+            year__gte=self.effective_start_date,
             year__lte=int(self.params["end_date"]),
         ).order_by("year")
 
@@ -51,7 +56,7 @@ class DcEmploiVsConsoChart(DiagnosticChart):
             "title": {
                 "text": (
                     f"Créations d'entreprises et consommation d'espaces - {self.land.name} "
-                    f"({self.params['start_date']} - {self.params['end_date']})"
+                    f"({self.effective_start_date} - {self.params['end_date']})"
                 )
             },
             "credits": INSEE_CREDITS,

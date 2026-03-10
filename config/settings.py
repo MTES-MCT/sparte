@@ -278,7 +278,7 @@ MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/{PUBLIC_MEDI
 if ENVIRONMENT == "production":
     VECTOR_TILES_LOCATION = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/vector_tiles"
 else:
-    VECTOR_TILES_LOCATION = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles"
+    VECTOR_TILES_LOCATION = "https://airflow-dev-alexis.s3.fr-par.scw.cloud/vector_tiles"
 
 
 MATOMO_CONTAINER_SRC = env.str("MATOMO_CONTAINER_SRC", default="https://stats.beta.gouv.fr/js/container_26e5XOBD.js")

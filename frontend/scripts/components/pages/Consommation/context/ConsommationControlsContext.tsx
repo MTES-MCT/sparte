@@ -35,6 +35,8 @@ const getHighestLandType = (landTypes: string[]): string => {
 };
 
 interface ConsommationControlsContextType {
+  landId: string;
+  landType: string;
   startYear: number;
   endYear: number;
   setStartYear: (year: number) => void;
@@ -59,6 +61,8 @@ interface ConsommationControlsContextType {
   childType?: string;
   setChildType: (childType: string) => void;
   landTypeLabels: Record<string, string>;
+  activeBivariateChartId: string;
+  setActiveBivariateChartId: (id: string) => void;
 }
 
 const ConsommationControlsContext = createContext<ConsommationControlsContextType | undefined>(undefined);
@@ -90,6 +94,7 @@ export const ConsommationControlsProvider: React.FC<ConsommationControlsProvider
   const [childType, setChildType] = useState<string | undefined>(
     childLandTypes && childLandTypes.length > 0 ? getHighestLandType(childLandTypes) : undefined
   );
+  const [activeBivariateChartId, setActiveBivariateChartId] = useState("dc_population_conso_map");
 
   const { totalConsoHa, populationEvolution, populationEvolutionPercent, isLoadingConso, isLoadingPop } =
     useConsoData(land_id, land_type, startYear, endYear);
@@ -134,6 +139,8 @@ export const ConsommationControlsProvider: React.FC<ConsommationControlsProvider
 
   const value: ConsommationControlsContextType = useMemo(
     () => ({
+      landId: land_id,
+      landType: land_type,
       startYear,
       endYear,
       setStartYear,
@@ -158,8 +165,12 @@ export const ConsommationControlsProvider: React.FC<ConsommationControlsProvider
       childType,
       setChildType,
       landTypeLabels: LAND_TYPE_LABELS,
+      activeBivariateChartId,
+      setActiveBivariateChartId,
     }),
     [
+      land_id,
+      land_type,
       startYear,
       endYear,
       minYear,
@@ -177,6 +188,7 @@ export const ConsommationControlsProvider: React.FC<ConsommationControlsProvider
       isLoadingPop,
       childLandTypes,
       childType,
+      activeBivariateChartId,
     ]
   );
 

@@ -23,6 +23,7 @@ import Button from '@components/ui/Button';
 import ChartDataSource from './ChartDataSource';
 import ChartDataTable from './ChartDataTable';
 import ChartExplorer from './ChartExplorer';
+import MailleIndicator from '@components/ui/MailleIndicator';
 import { useGetChartConfigQuery } from '@services/api';
 
 // Initialize the modules
@@ -64,7 +65,9 @@ type GenericChartProps = {
   hideToggle?: boolean;
   compactDataTable?: boolean;
   hideDetails?: boolean;
+  showMailleIndicator?: boolean;
   onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
+  onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string } | null) => void;
 }
 
 const ChartCard = styled.div`
@@ -120,7 +123,9 @@ const GenericChart = ({
   dataTableOnly = false,
   compactDataTable = false,
   hideDetails = false,
+  showMailleIndicator = false,
   onPointClick,
+  onPointHover,
 } : GenericChartProps) => {
   const chartRef = useRef<any>(null);
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
@@ -213,6 +218,31 @@ const GenericChart = ({
         })
       })
     }
+
+    if (onPointHover) {
+      const attachHoverEvents = () => {
+        chart.series.forEach((series) => {
+          series.points?.forEach((point) => {
+            Highcharts.addEvent(point, 'mouseOver', () => {
+              const opts = point.options as any
+              onPointHover({
+                color: point.color as string,
+                name: point.name || '',
+                value: point.value ?? (point as any).y ?? 0,
+                land_id: opts?.land_id,
+                land_type: opts?.land_type,
+              })
+            })
+            Highcharts.addEvent(point, 'mouseOut', () => {
+              onPointHover(null)
+            })
+          })
+        })
+      }
+      attachHoverEvents()
+      Highcharts.addEvent(chart, 'render', attachHoverEvents)
+    }
+
   }
 
   const shouldRedraw = true
@@ -272,18 +302,19 @@ const GenericChart = ({
           updateArgs={[shouldRedraw, oneToOne, animation]}
           containerProps={{ ...defaultContainerProps, ...containerProps }}
           constructorType={isMap ? 'mapChart' : 'chart'}
-          callback={(pieSeries || onPointClick) ? handleChartCallback : undefined}
+          callback={(pieSeries || onPointClick || onPointHover) ? handleChartCallback : undefined}
         />
       </ChartBody>
 
       {showFooter && (
         <>
           <ChartFooter>
-            {sources.length > 0 ? (
-              <ChartDataSource sources={sources} displayMode="tag" />
-            ) : (
-              <div />
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {sources.length > 0 && (
+                <ChartDataSource sources={sources} displayMode="tag" />
+              )}
+              {showMailleIndicator && <MailleIndicator />}
+            </div>
             <Button variant="tertiary" size="sm" icon="bi bi-chevron-right" iconPosition="right" onClick={() => setIsExplorerOpen(true)} type="button">
               Détails données et calculs
             </Button>

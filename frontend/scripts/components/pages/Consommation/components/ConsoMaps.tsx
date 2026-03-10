@@ -1,6 +1,5 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
-import Button from "@components/ui/Button";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
 interface ConsoMapsProps {
@@ -18,8 +17,6 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
     startYear,
     endYear,
     childType,
-    setChildType,
-    landTypeLabels,
   } = useConsommationControls();
 
   if (!childLandTypes || childLandTypes.length === 0) {
@@ -29,21 +26,6 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
   return (
     <div className="fr-mb-7w fr-mt-5w">
       <h3 id="conso-map">Cartes de consommation d'espaces</h3>
-
-      {childLandTypes.length > 1 && (
-        <div className="fr-mb-3w d-flex gap-2">
-          {childLandTypes.map((childLandType) => (
-            <Button
-              key={childLandType}
-              variant={childType === childLandType ? "primary" : "secondary"}
-              size="sm"
-              onClick={() => setChildType(childLandType)}
-            >
-              {landTypeLabels[childLandType] || childLandType}
-            </Button>
-          ))}
-        </div>
-      )}
 
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
@@ -59,6 +41,7 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
             }}
             sources={["majic"]}
             showDataTable={true}
+            showMailleIndicator={childLandTypes.length > 1}
             isMap={true}
           >
             <div>
@@ -92,6 +75,7 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
             }}
             sources={["majic"]}
             showDataTable={true}
+            showMailleIndicator={childLandTypes.length > 1}
             isMap={true}
           >
             <div>

@@ -66,6 +66,10 @@ services:
       - EXPORT_SERVER_URL=http://export-server:3000
       - EXPORT_BASE_URL=http://django:8080
       - AWS_S3_ENDPOINT_URL=http://s3:7070
+      - AWS_S3_REGION_NAME=us-east-1
+      - AWS_ACCESS_KEY_ID=localaccess
+      - AWS_SECRET_ACCESS_KEY=localsecret
+      - AWS_STORAGE_BUCKET_NAME=sparte-local
     ports:
       - "8080:8080"
     depends_on:

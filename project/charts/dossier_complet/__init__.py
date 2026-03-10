@@ -21,7 +21,10 @@ from .DcLogementConsoMap import DcLogementConsoMap
 from .DcLogementConstructionChart import DcLogementConstructionChart
 from .DcLogementParcChart import DcLogementParcChart
 from .DcLogementVsConsoChart import DcLogementVsConsoChart
-from .DcMenagesConsoComparisonChart import DcMenagesConsoComparisonChart
+from .DcMenagesConsoComparisonChart import (
+    DcMenagesConsoComparisonChart,
+    DcMenagesConsoComparisonChartExport,
+)
 from .DcMenagesConsoMap import DcMenagesConsoMap
 from .DcMenagesEvolutionChart import DcMenagesEvolutionChart
 from .DcPopulationConsoMap import DcPopulationConsoMap
@@ -53,6 +56,7 @@ __all__ = [
     "DcLogementVacantMap",
     "DcLogementVsConsoChart",
     "DcMenagesConsoComparisonChart",
+    "DcMenagesConsoComparisonChartExport",
     "DcMenagesConsoMap",
     "DcMenagesEvolutionChart",
     "DcPauvreteMap",

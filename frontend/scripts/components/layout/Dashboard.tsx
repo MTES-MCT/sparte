@@ -14,9 +14,9 @@ import { Consommation } from '@components/pages/Consommation';
 import LogementVacant from '@components/pages/LogementVacant';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
+import Downloads from '@components/pages/Downloads';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import { Impermeabilisation } from '@components/pages/Impermeabilisation';
-import Downloads from '@components/pages/Downloads';
 import { Friches } from '@components/pages/Friches';
 import { ResidencesSecondaires } from '@components/pages/ResidencesSecondaires';
 import RouteWrapper from '@components/ui/RouteWrapper';
@@ -231,8 +231,8 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             path={urls.downloads}
                                             element={
                                                 <RouteWrapper
-                                                    title="Générer un rapport"
-                                                    showFeedback={false}
+                                                    title="Téléchargements"
+                                                    landData={landData}
                                                 >
                                                     <Downloads landData={landData} />
                                                 </RouteWrapper>
@@ -242,8 +242,8 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             path={`${urls.downloads}/:draftId`}
                                             element={
                                                 <RouteWrapper
-                                                    title="Générer un rapport"
-                                                    showFeedback={false}
+                                                    title="Téléchargements"
+                                                    landData={landData}
                                                 >
                                                     <Downloads landData={landData} />
                                                 </RouteWrapper>

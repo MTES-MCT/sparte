@@ -1,6 +1,6 @@
 from public_data.models import LandDcLogement
 
-from .DcBivariateConsoMap import PALETTE_DIVERGING, DcBivariateConsoMap
+from .DcBivariateConsoMap import PALETTE_TEAL, DcBivariateConsoMap
 
 
 class DcVacanceConsoMap(DcBivariateConsoMap):
@@ -14,7 +14,7 @@ class DcVacanceConsoMap(DcBivariateConsoMap):
     """
 
     name = "dc vacance conso map"
-    bivariate_colors = PALETTE_DIVERGING
+    bivariate_colors = PALETTE_TEAL
     conso_field = "habitat"
     indicator_name = "Taux de vacance des logements"
     indicator_short = "taux vacance"
@@ -42,10 +42,10 @@ class DcVacanceConsoMap(DcBivariateConsoMap):
 
     @property
     def period_years(self):
-        # Vacancy rate is a snapshot, not an evolution – we use the end year data
-        if self.period == "2011_2016":
-            return ("logements_16", "logements_vacants_16", 2011, 2016)
-        return ("logements_22", "logements_vacants_22", 2016, 2022)
+        s, e = self.start_date, self.end_date
+        if e <= 2016:
+            return ("logements_16", "logements_vacants_16", s, e)
+        return ("logements_22", "logements_vacants_22", s, e)
 
     def compute_indicator_value(self, obj, start_field, end_field):
         """Vacancy rate = logements_vacants / logements × 100."""

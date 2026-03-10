@@ -1,12 +1,5 @@
 import React from "react";
 import Button from "@components/ui/Button";
-import styled from "styled-components";
-import { theme } from "@theme";
-
-const Container = styled.div`
-	display: flex;
-	gap: ${theme.spacing.sm};
-`;
 
 interface DepartmentSelectorProps {
 	byDepartement: boolean;
@@ -18,11 +11,12 @@ export const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
 	setByDepartement,
 }) => {
 	return (
-		<Container>
+		<div className="d-flex gap-2" style={{ flexWrap: "wrap", background: "white", borderRadius: "0.5rem", padding: "0.5rem 0.75rem", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", width: "fit-content" }}>
 			<Button
 				onClick={() => setByDepartement(!byDepartement)}
 				type="button"
-				variant="tertiary"
+				variant="secondary"
+				size="sm"
 			>
 				<span>
 					{byDepartement
@@ -35,10 +29,10 @@ export const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
 					aria-describedby="tooltip-multi-dpt"
 					data-fr-js-tooltip-referent="true"
 				/>
-				<span 
-					id="tooltip-multi-dpt" 
-					className="fr-tooltip fr-placement" 
-					role="tooltip" 
+				<span
+					id="tooltip-multi-dpt"
+					className="fr-tooltip fr-placement"
+					role="tooltip"
 					aria-hidden="true"
 				>
 					{byDepartement
@@ -47,6 +41,6 @@ export const DepartmentSelector: React.FC<DepartmentSelectorProps> = ({
 					}
 				</span>
 			</Button>
-		</Container>
+		</div>
 	);
 };

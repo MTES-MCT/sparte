@@ -74,6 +74,7 @@ from project.charts.consommation.AnnualConsoProportionalComparisonChart import (
 )
 from project.charts.demography.PopulationConsoComparisonChart import (
     PopulationConsoComparisonChart,
+    PopulationConsoComparisonChartExport,
 )
 from project.charts.demography.PopulationConsoProgressionChart import (
     PopulationConsoProgressionChart,
@@ -97,6 +98,7 @@ from project.charts.dossier_complet import (
     DcLogementVacantMap,
     DcLogementVsConsoChart,
     DcMenagesConsoComparisonChart,
+    DcMenagesConsoComparisonChartExport,
     DcMenagesConsoMap,
     DcMenagesEvolutionChart,
     DcPauvreteMap,
@@ -182,6 +184,7 @@ from public_data.models import (
     LandModelViewset,
     LandPopStatsViewset,
     LandPopulationDensityViewset,
+    LandSocioEconomicStatsViewset,
     NearestTerritoriesViewset,
 )
 from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
@@ -277,6 +280,7 @@ def get_chart_klass_or_404(chart_id):
         "surface_proportional_chart_export": AnnualConsoProportionalComparisonChartExport,
         "population_conso_progression_chart": PopulationConsoProgressionChart,
         "population_conso_comparison_chart": PopulationConsoComparisonChart,
+        "population_conso_comparison_chart_export": PopulationConsoComparisonChartExport,
         # Objective chart
         "objective_chart": ObjectiveChart,
         "objective_chart_export": ObjectiveChartExport,
@@ -329,6 +333,7 @@ def get_chart_klass_or_404(chart_id):
         "dc_menages_conso_map": DcMenagesConsoMap,
         "dc_logement_conso_comparison_chart": DcLogementConsoComparisonChart,
         "dc_menages_conso_comparison_chart": DcMenagesConsoComparisonChart,
+        "dc_menages_conso_comparison_chart_export": DcMenagesConsoComparisonChartExport,
         "dc_emploi_conso_comparison_chart": DcEmploiConsoComparisonChart,
         "dc_residences_secondaires": DcResidencesSecondairesChart,
         "dc_residences_secondaires_conso_map": DcResidencesSecondairesConsoMap,
@@ -430,6 +435,7 @@ urlpatterns = [
     path("landconsostats/", LandConsoStatsViewset.as_view(), name="consostats"),
     path("landpopstats/", LandPopStatsViewset.as_view(), name="popstats"),
     path("landpopulationdensity/", LandPopulationDensityViewset.as_view(), name="populationdensity"),
+    path("landsocioeconomicstats/", LandSocioEconomicStatsViewset.as_view(), name="socioeconomicstats"),
     path("nearestterritories/", NearestTerritoriesViewset.as_view(), name="nearestterritories"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),

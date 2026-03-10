@@ -1,17 +1,9 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import GenericChart from "@components/charts/GenericChart";
+import React, { useCallback, useEffect, useState, useMemo, useRef } from "react";
+import GenericChart, { DataSource } from "@components/charts/GenericChart";
 import Button from "@components/ui/Button";
-import { getLandTypeLabel } from "@utils/landUtils";
 import { useGetChartConfigQuery } from "@services/api";
-import { theme } from "@theme";
 import { BivariateLegend } from "./BivariateLegend";
-import { BivariateMapProps } from "./types";
-
-const PERIODS = [
-  { value: "2011_2016", label: "2011 - 2016" },
-  { value: "2016_2022", label: "2016 - 2022" },
-];
+import { BivariateMapProps, MapDrilldown, MapNavEntry } from "./types";
 
 const CHILD_LAND_TYPE_MAP: Record<string, string> = {
   REGION: "DEPART",
@@ -20,25 +12,32 @@ const CHILD_LAND_TYPE_MAP: Record<string, string> = {
   EPCI: "COMM",
 };
 
-const styles = {
-  buttonGroup: {
-    display: "flex",
-    alignItems: "center",
-    gap: theme.spacing.sm,
-    flexWrap: "wrap" as const,
-  },
-  separator: {
-    borderLeft: `1px solid ${theme.colors.border}`,
-    height: 24,
-  },
-} as const;
+const SOURCES: DataSource[] = ["insee", "majic"];
 
-const formatNumber = (v: number) => parseFloat(v.toFixed(2)).toString();
+const formatNumber = (v: number) => Number.parseFloat(v.toFixed(2)).toString();
 
 const formatIndicator = (v: number, unit: string) => {
   if (unit === "%") return v > 0 ? `+${formatNumber(v)}` : formatNumber(v);
   return formatNumber(v);
 };
+
+export function useMapDrilldown(childLandType: string): MapDrilldown {
+  const [navStack, setNavStack] = useState<MapNavEntry[]>([]);
+
+  useEffect(() => {
+    setNavStack([]);
+  }, [childLandType]);
+
+  const push = useCallback((entry: MapNavEntry) => {
+    setNavStack((prev) => [...prev, entry]);
+  }, []);
+
+  const navigateTo = useCallback((index: number) => {
+    setNavStack((prev) => prev.slice(0, index));
+  }, []);
+
+  return { navStack, push, navigateTo };
+}
 
 export const BivariateMap: React.FC<BivariateMapProps> = ({
   chartId,
@@ -46,51 +45,35 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   landType,
   landName,
   childLandType,
-  childLandTypes,
-  onChildLandTypeChange,
+  startYear = 2011,
+  endYear = 2022,
+  drilldown: externalDrilldown,
+  showMailleIndicator = false,
 }) => {
-  const [period, setPeriod] = useState("2016_2022");
+  const internalDrilldown = useMapDrilldown(childLandType);
+  const drilldown = externalDrilldown ?? internalDrilldown;
 
-  const [mapNavStack, setMapNavStack] = useState<
-    { land_id: string; land_type: string; name: string; child_land_type: string }[]
-  >([]);
+  const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
+  const hoveredCellRef = useRef(hoveredCell);
 
-  const currentMapLand = mapNavStack.length > 0 ? mapNavStack[mapNavStack.length - 1] : null;
-  const mapLandId = currentMapLand?.land_id ?? landId;
-  const mapLandType = currentMapLand?.land_type ?? landType;
-  const mapChildLandType = currentMapLand?.child_land_type ?? childLandType;
+  const currentEntry = drilldown.navStack.at(-1) ?? null;
+  const mapLandId = currentEntry?.land_id ?? landId;
+  const mapLandType = currentEntry?.land_type ?? landType;
+  const mapChildLandType = currentEntry?.child_land_type ?? childLandType;
 
   const handleMapPointClick = useCallback(
     (point: { land_id: string; land_type: string; name: string }) => {
       const pointLandType = point.land_type || mapChildLandType;
       const nextChildType = CHILD_LAND_TYPE_MAP[pointLandType];
       if (!nextChildType) return;
-      setMapNavStack((prev) => [
-        ...prev,
-        {
-          land_id: point.land_id,
-          land_type: pointLandType,
-          name: point.name,
-          child_land_type: nextChildType,
-        },
-      ]);
+      drilldown.push({
+        land_id: point.land_id,
+        land_type: pointLandType,
+        name: point.name,
+        child_land_type: nextChildType,
+      });
     },
-    [mapChildLandType]
-  );
-
-  const handleMapBreadcrumbClick = useCallback((index: number) => {
-    setMapNavStack((prev) => prev.slice(0, index));
-  }, []);
-
-  useEffect(() => {
-    setMapNavStack([]);
-  }, [childLandType]);
-
-  const handleChildLandTypeChange = useCallback(
-    (type: string) => {
-      onChildLandTypeChange?.(type);
-    },
-    [onChildLandTypeChange]
+    [mapChildLandType, drilldown]
   );
 
   const { data: config } = useGetChartConfigQuery({
@@ -98,7 +81,8 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
     land_type: mapLandType,
     land_id: mapLandId,
     child_land_type: mapChildLandType,
-    period,
+    start_date: String(startYear),
+    end_date: String(endYear),
   });
 
   const custom = config?.highcharts_options?.custom;
@@ -118,7 +102,6 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
     const indicName = custom.indicator_name || "Indicateur";
     const indicUnit = custom.indicator_unit || "";
     const indicGender = custom.indicator_gender || "m";
-    const verdicts: string[][] = custom.verdicts || [["", "", ""], ["", "", ""], ["", "", ""]];
     const colorGrid: string[][] | null = custom.colors || null;
 
     const fem = indicGender === "f";
@@ -160,83 +143,85 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
       indicUnit,
       indicRanges,
       indicQualif,
-      verdicts,
       colorGrid,
       adjectives: adj,
     };
   }, [custom]);
 
+  const chartParams = useMemo(
+    () => ({ child_land_type: mapChildLandType, start_date: String(startYear), end_date: String(endYear) }),
+    [mapChildLandType, startYear, endYear]
+  );
+  const colorGridRef = useRef(bivariateConfig?.colorGrid);
+  colorGridRef.current = bivariateConfig?.colorGrid;
+
+  const handlePointHover = useCallback(
+    (point: { color: string; name: string; value: number } | null) => {
+      const colorGrid = colorGridRef.current;
+      if (!point || !colorGrid) {
+        if (hoveredCellRef.current !== null) {
+          hoveredCellRef.current = null;
+          setHoveredCell(null);
+        }
+        return;
+      }
+      const normalizedColor = point.color.toLowerCase();
+      for (let row = 0; row < colorGrid.length; row++) {
+        for (let col = 0; col < colorGrid[row].length; col++) {
+          if (colorGrid[row][col].toLowerCase() === normalizedColor) {
+            if (hoveredCellRef.current?.row !== row || hoveredCellRef.current?.col !== col) {
+              hoveredCellRef.current = { row, col };
+              setHoveredCell({ row, col });
+            }
+            return;
+          }
+        }
+      }
+      if (hoveredCellRef.current !== null) {
+        hoveredCellRef.current = null;
+        setHoveredCell(null);
+      }
+    },
+    []
+  );
+
   return (
     <div className="fr-mb-5w">
-      <div className="fr-mb-2w" style={styles.buttonGroup}>
-        {PERIODS.map((p) => (
-          <Button
-            key={p.value}
-            variant={period === p.value ? "primary" : "secondary"}
-            size="sm"
-            onClick={() => setPeriod(p.value)}
-          >
-            {p.label}
+      {drilldown.navStack.length > 0 && (
+        <nav className="fr-mb-1w" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }} aria-label="Fil d'ariane de la carte">
+          <i className="bi bi-geo-alt" aria-hidden="true" style={{ opacity: 0.4, fontSize: "0.85rem" }} />
+          <Button variant="tertiary" noBackground noPadding size="sm" onClick={() => drilldown.navigateTo(0)}>
+            {landName || landId}
           </Button>
-        ))}
-        {childLandTypes && childLandTypes.length > 1 && (
-          <>
-            <span style={styles.separator} />
-            {childLandTypes.map((clt) => (
-              <Button
-                key={clt}
-                variant={childLandType === clt ? "primary" : "secondary"}
-                size="sm"
-                onClick={() => handleChildLandTypeChange(clt)}
-              >
-                {getLandTypeLabel(clt)}
-              </Button>
-            ))}
-          </>
-        )}
-      </div>
-
-      {mapNavStack.length > 0 && (
-        <Breadcrumb
-          className="fr-mb-1w"
-          segments={[
-            {
-              label: landName || landId,
-              linkProps: {
-                href: "#",
-                onClick: (e: React.MouseEvent) => {
-                  e.preventDefault();
-                  handleMapBreadcrumbClick(0);
-                },
-              },
-            },
-            ...mapNavStack.slice(0, -1).map((entry, i) => ({
-              label: entry.name,
-              linkProps: {
-                href: "#",
-                onClick: (e: React.MouseEvent) => {
-                  e.preventDefault();
-                  handleMapBreadcrumbClick(i + 1);
-                },
-              },
-            })),
-          ]}
-          currentPageLabel={mapNavStack[mapNavStack.length - 1].name}
-        />
+          {drilldown.navStack.map((entry, i) => (
+            <React.Fragment key={entry.land_id}>
+              <span aria-hidden="true" style={{ opacity: 0.4 }}>/</span>
+              {i < drilldown.navStack.length - 1 ? (
+                <Button variant="tertiary" noBackground noPadding size="sm" onClick={() => drilldown.navigateTo(i + 1)}>
+                  {entry.name}
+                </Button>
+              ) : (
+                <span style={{ fontSize: "0.82rem", fontWeight: 500 }}>{entry.name}</span>
+              )}
+            </React.Fragment>
+          ))}
+        </nav>
       )}
 
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-lg-8 fr-grid-row">
           <GenericChart
-            key={`${chartId}-${mapLandId}-${mapChildLandType}-${period}`}
+            key={`${chartId}-${mapLandId}-${mapChildLandType}-${startYear}-${endYear}`}
             id={chartId}
             land_id={mapLandId}
             land_type={mapLandType}
-            params={{ child_land_type: mapChildLandType, period }}
-            sources={["insee", "majic"]}
+            params={chartParams}
+            sources={SOURCES}
             showDataTable={true}
             isMap={true}
+            showMailleIndicator={showMailleIndicator}
             onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
+            onPointHover={handlePointHover}
           />
         </div>
 
@@ -250,8 +235,8 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
               indicUnit={bivariateConfig.indicUnit}
               indicRanges={bivariateConfig.indicRanges}
               indicQualif={bivariateConfig.indicQualif}
-              verdicts={bivariateConfig.verdicts}
               adjectives={bivariateConfig.adjectives}
+              highlightedCell={hoveredCell}
             />
           </div>
         )}
@@ -260,4 +245,4 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   );
 };
 
-export type { BivariateMapProps } from "./types";
+export type { BivariateMapProps, MapDrilldown } from "./types";

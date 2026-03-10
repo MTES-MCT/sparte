@@ -8,7 +8,7 @@ intersecte plusieurs polygones de communes.
 
 */
 select
-    commune.code as commune,
+    zc.commune_code as commune,
     commune.departement,
     commune.region,
     commune.epci,

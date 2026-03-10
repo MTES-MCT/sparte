@@ -50,7 +50,7 @@ select
     stats.flux_imper_usage_composition,
     Box2D(st_transform(zonage.geom, 4326))::text as extent,
     st_transform(zonage.geom, 4326) as geom,
-    zonage.commune_code as "{{ var('COMMUNE') }}",
+    zc.commune_code as "{{ var('COMMUNE') }}",
     commune.epci as "{{ var('EPCI') }}",
     commune.departement as "{{ var('DEPARTEMENT') }}",
     commune.region as "{{ var('REGION') }}",
@@ -61,17 +61,20 @@ from
 left join
     {{ ref("zonage_urbanisme_artif_imper_stats") }} as stats
     on zonage.checksum = stats.zonage_checksum
+left join
+    {{ ref("zonage_commune") }} as zc
+    on zc.zonage_checksum = zonage.checksum
 left join lateral (
     select *
     from
         {{ ref('commune') }} as commune
     where
-        commune.code = zonage.commune_code
+        commune.code = zc.commune_code
 ) commune on true
 left join lateral (
     select array_agg(custom_land_id) as custom_lands
     from
         {{ ref('commune_custom_land') }} as ccl
     where
-        ccl.commune_code = zonage.commune_code
+        ccl.commune_code = zc.commune_code
 ) custom_land on true

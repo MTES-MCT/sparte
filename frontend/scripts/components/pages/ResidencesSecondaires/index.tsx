@@ -1,5 +1,6 @@
 import React from "react";
 import GuideContent from "@components/ui/GuideContent";
+import { BivariateMap } from "@components/charts/consommation/BivariateMap";
 import { LandDetailResultType } from "@services/types/land";
 import { RSKpis, RSEvolution, RSMap } from "./components";
 
@@ -44,7 +45,19 @@ export const ResidencesSecondaires: React.FC<ResidencesSecondairesProps> = ({ la
       <RSEvolution landId={land_id} landType={land_type} />
 
       {hasChildren && mapChildType && (
-        <RSMap landId={land_id} landType={land_type} childLandType={mapChildType} />
+        <>
+          <RSMap landId={land_id} landType={land_type} childLandType={mapChildType} />
+
+          <div className="fr-mt-5w">
+            <BivariateMap
+              chartId="dc_residences_secondaires_conso_map"
+              landId={land_id}
+              landType={land_type}
+              landName={landData?.name}
+              childLandType={mapChildType}
+            />
+          </div>
+        </>
       )}
     </div>
   );
