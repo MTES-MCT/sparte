@@ -8,7 +8,7 @@ Mes territoires
 
 {% block content %}
 <div class="fr-container">
-    <h1 class="fr-mb-2w">Mes territoires</h1>
+    <h1 class="fr-mb-2w">Mes territoires favoris <span class="bi bi-star-fill fr-ml-1w" style="color: #FFD700;" aria-hidden="true"></span></h1>
 
     {% if main_pref %}
     <div class="fr-mb-4w">
@@ -72,7 +72,6 @@ Mes territoires
     </div>
     {% endif %}
 
-    <h2 class="fr-h4 fr-mb-1w"><span class="bi bi-star-fill" style="color: #FFD700;" aria-hidden="true"></span> Territoires favoris</h2>
     <div class="fr-grid-row fr-grid-row--gutters">
         {% for pref in preferences %}
         {% if pref.land and not pref.is_favorite %}

@@ -91,7 +91,7 @@ export function buildHeader(isAuthenticated: boolean) {
             label: "Mon compte",
             shouldDisplay: isAuthenticated,
             subMenu: [
-                { label: "Mes territoires", url: "/diagnostic/mes-territoires" },
+                { label: "Mes territoires favoris", url: "/diagnostic/mes-territoires" },
                 { label: "Profil", url: "/users/profile/" },
                 { label: "Déconnexion", url: "/users/signout/" },
             ],

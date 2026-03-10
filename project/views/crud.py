@@ -46,6 +46,8 @@ class UserLandPreferenceListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        from types import SimpleNamespace
+
         from public_data.models import LandModel
 
         for pref in context["preferences"]:
@@ -54,8 +56,23 @@ class UserLandPreferenceListView(LoginRequiredMixin, ListView):
             except LandModel.DoesNotExist:
                 pref.land = None
 
-        # Find the favorite pref (main_land) among the already-enriched preferences
-        context["main_pref"] = next((p for p in context["preferences"] if p.is_favorite and p.land), None)
+        user = self.request.user
+        main_pref = next((p for p in context["preferences"] if p.is_favorite and p.land), None)
+
+        if not main_pref and user.main_land_type and user.main_land_id:
+            land = LandModel.objects.filter(land_type=user.main_land_type, land_id=user.main_land_id).first()
+            if land:
+                main_pref = SimpleNamespace(
+                    land=land,
+                    target_2031=None,
+                    report_count=ReportDraft.objects.filter(
+                        land_type=user.main_land_type,
+                        land_id=user.main_land_id,
+                        user=user,
+                    ).count(),
+                )
+
+        context["main_pref"] = main_pref
         context["has_other_favorites"] = any(p for p in context["preferences"] if not p.is_favorite and p.land)
 
         return context
