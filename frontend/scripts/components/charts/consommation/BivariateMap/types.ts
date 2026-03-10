@@ -37,7 +37,6 @@ export interface BivariateMapProps {
   startYear?: number;
   endYear?: number;
   drilldown?: MapDrilldown;
-  highlightedLandId?: string;
 }
 
 export interface BivariateLegendProps {

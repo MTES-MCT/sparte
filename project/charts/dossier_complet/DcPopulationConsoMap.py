@@ -103,9 +103,15 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
     def get_chart_title(self):
         _, _, conso_start, conso_end = self.period_years
         child_label = self.formatted_child_land_type
+        container = self._container_land
+        if self.land.land_type == AdminRef.COMMUNE:
+            return (
+                f"Population et consommation d'espaces des {child_label}s - "
+                f"{self.land.name} ({container.name}, {conso_start}-{conso_end})"
+            )
         return (
             f"Population et consommation d'espaces des {child_label}s - "
-            f"{self.land.name} ({conso_start}-{conso_end})"
+            f"{container.name} ({conso_start}-{conso_end})"
         )
 
 

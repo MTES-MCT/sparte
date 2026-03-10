@@ -163,6 +163,21 @@ class DcBivariateConsoMap(DiagnosticChart):
         return int(self.params.get("end_date", 2022))
 
     @property
+    def _container_land(self):
+        """The land used as container for child territories.
+        For communes, returns the parent EPCI so the map shows all communes of the EPCI."""
+        if self.land.land_type != AdminRef.COMMUNE:
+            return self.land
+        if hasattr(self, "_cached_container_land"):
+            return self._cached_container_land
+        epci_key = next(
+            (k for k in self.land.parent_keys if k.startswith(f"{AdminRef.EPCI}_")),
+            None,
+        )
+        self._cached_container_land = LandModel.objects.filter(key=epci_key).first() if epci_key else self.land
+        return self._cached_container_land
+
+    @property
     def period_years(self):
         """Return (indic_start_field, indic_end_field, conso_start, conso_end)."""
         raise NotImplementedError
@@ -175,8 +190,9 @@ class DcBivariateConsoMap(DiagnosticChart):
 
     @property
     def lands(self):
+        container = self._container_land
         return LandModel.objects.filter(
-            parent_keys__contains=[f"{self.land.land_type}_{self.land.land_id}"],
+            parent_keys__contains=[f"{container.land_type}_{container.land_id}"],
             land_type=self.child_land_type,
         )
 
@@ -278,6 +294,12 @@ class DcBivariateConsoMap(DiagnosticChart):
         return labels
 
     @property
+    def highlight_land_id(self):
+        if self.land.land_type == AdminRef.COMMUNE:
+            return self.land.land_id
+        return self.params.get("highlight_land_id")
+
+    @property
     def data(self):
         rows, conso_t1, conso_t2, indic_t1, indic_t2 = self._raw_data
         labels = self._category_labels()
@@ -293,18 +315,17 @@ class DcBivariateConsoMap(DiagnosticChart):
                 indic_t2,
             )
             verdict = self.verdicts[cat_id // 3][cat_id % 3] if self.verdicts else ""
-            result.append(
-                {
-                    **row,
-                    "category_id": cat_id,
-                    "color": self.bivariate_colors[cat_id],
-                    "category_label": labels[cat_id],
-                    "verdict": verdict,
-                    "conso_fmt": f"{row['conso_ha']:.2f}",
-                    "conso_pct_fmt": f"{row['conso_pct']:.2f}",
-                    "indic_fmt": self.format_indicator(row["indic_val"]),
-                }
-            )
+            point = {
+                **row,
+                "category_id": cat_id,
+                "color": self.bivariate_colors[cat_id],
+                "category_label": labels[cat_id],
+                "verdict": verdict,
+                "conso_fmt": f"{row['conso_ha']:.2f}",
+                "conso_pct_fmt": f"{row['conso_pct']:.2f}",
+                "indic_fmt": self.format_indicator(row["indic_val"]),
+            }
+            result.append(point)
 
         return result
 
@@ -339,14 +360,68 @@ class DcBivariateConsoMap(DiagnosticChart):
     def get_chart_title(self):
         _, _, conso_start, conso_end = self.period_years
         child_label = self.formatted_child_land_type
+        container = self._container_land
+        if self.land.land_type == AdminRef.COMMUNE:
+            return (
+                f"{self.indicator_name} et {self.conso_label.lower()}"
+                f" des {child_label}s"
+                f" - {self.land.name} ({container.name}, {conso_start}-{conso_end})"
+            )
         return (
             f"{self.indicator_name} et {self.conso_label.lower()}"
             f" des {child_label}s"
-            f" - {self.land.name} ({conso_start}-{conso_end})"
+            f" - {container.name} ({conso_start}-{conso_end})"
         )
 
     def get_chart_subtitle(self):
         return f"Croisement entre {self.indicator_name.lower()} " f"et la {self.conso_label.lower()} NAF"
+
+    def _build_series(self):
+        tooltip_format = {
+            "headerFormat": "",
+            "pointFormat": (
+                "<b>{point.name}</b><br/>"
+                f"{self.indicator_name} : "
+                "<b>{point.indic_fmt}</b><br/>"
+                "Consommation annuelle : <b>{point.conso_pct_fmt}%/an</b>"
+            ),
+        }
+        main_series = {
+            "name": "Territoires",
+            "data": self.data,
+            "joinBy": ["land_id"],
+            "colorKey": "category_id",
+            "opacity": 1,
+            **({"cursor": "pointer"} if self.child_land_type != AdminRef.COMMUNE else {}),
+            "borderColor": "#999999",
+            "borderWidth": 1,
+            "dataLabels": {"enabled": False},
+            "tooltip": tooltip_format,
+        }
+
+        highlighted = self.highlight_land_id
+        if not highlighted:
+            return [main_series]
+
+        highlight_point = next((p for p in self.data if p["land_id"] == highlighted), None)
+        if not highlight_point:
+            return [main_series]
+
+        highlight_series = {
+            "name": "Territoire sélectionné",
+            "data": [highlight_point],
+            "joinBy": ["land_id"],
+            "colorKey": "category_id",
+            "allAreas": False,
+            "opacity": 1,
+            "borderColor": "#000000",
+            "borderWidth": 3,
+            "dataLabels": {"enabled": False},
+            "tooltip": tooltip_format,
+            "showInLegend": False,
+        }
+
+        return [main_series, highlight_series]
 
     @property
     def param(self):
@@ -394,26 +469,5 @@ class DcBivariateConsoMap(DiagnosticChart):
                 ],
             },
             "legend": {"enabled": False},
-            "series": [
-                {
-                    "name": "Territoires",
-                    "data": self.data,
-                    "joinBy": ["land_id"],
-                    "colorKey": "category_id",
-                    "opacity": 1,
-                    **({"cursor": "pointer"} if self.child_land_type != AdminRef.COMMUNE else {}),
-                    "borderColor": "#999999",
-                    "borderWidth": 1,
-                    "dataLabels": {"enabled": False},
-                    "tooltip": {
-                        "headerFormat": "",
-                        "pointFormat": (
-                            "<b>{point.name}</b><br/>"
-                            f"{self.indicator_name} : "
-                            "<b>{point.indic_fmt}</b><br/>"
-                            "Consommation annuelle : <b>{point.conso_pct_fmt}%/an</b>"
-                        ),
-                    },
-                },
-            ],
+            "series": self._build_series(),
         }

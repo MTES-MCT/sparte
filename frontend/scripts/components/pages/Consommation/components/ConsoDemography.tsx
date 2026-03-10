@@ -48,8 +48,9 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
   childLandTypes,
   childType,
 }) => {
+  const isCommune = landType === "COMM";
   const hasChildren = childLandTypes && childLandTypes.length > 0;
-  const mapChildType = childType || (childLandTypes && childLandTypes[0]);
+  const mapChildType = childType || (childLandTypes && childLandTypes[0]) || (isCommune ? "COMM" : undefined);
   const { activeBivariateChartId, setActiveBivariateChartId } = useConsommationControls();
   const drilldown = useMapDrilldown(mapChildType || "");
 
@@ -163,7 +164,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
         </GenericChart>
       </div>
 
-      {hasChildren && mapChildType && (
+      {(hasChildren || isCommune) && mapChildType && (
         <div className="fr-mt-5w">
           <div className="fr-mb-2w d-flex gap-2" style={{ flexWrap: "wrap" }}>
             {BIVARIATE_MAPS.map((map) => (

@@ -204,47 +204,6 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
 
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
-          <GenericChart
-            id="surface_proportional_chart"
-            land_id={landId}
-            land_type={landType}
-            params={chartParams}
-            sources={["majic"]}
-            showDataTable={true}
-          >
-            <div>
-              <h6 className="fr-mb-0">À propos</h6>
-              <p className="fr-text--xs fr-mb-0">
-                Ce graphique compare la consommation d'espaces NAF
-                proportionnelle à la surface totale du territoire. Les
-                territoires sont représentés sous forme de treemap où la taille
-                reflète la surface du territoire.
-              </p>
-            </div>
-          </GenericChart>
-        </div>
-
-        <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
-          <GuideContent title="Comprendre les données">
-            <p className="fr-text--xs fr-mb-0">
-              Ce graphique représente chaque territoire par un rectangle, dont
-              la taille est proportionnelle à sa surface. Plus le rectangle est
-              grand, plus le territoire est vaste. La couleur des rectangles
-              reflète le rapport entre la surface d'espaces NAF consommée et la
-              surface totale du territoire. Plus la couleur est foncée, plus la
-              consommation d'espaces NAF est intense.
-            </p>
-            <p className="fr-text--xs fr-mb-0">
-              Par exemple, un rectangle de petite taille et de couleur intense
-              correspond à un territoire peu étendu ayant consommé une part
-              significative de ses espaces NAF.
-            </p>
-          </GuideContent>
-        </div>
-      </div>
-
-      <div className="fr-grid-row fr-grid-row--gutters fr-mt-3w">
-        <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
           <TreemapSVG
             chartId="surface_proportional_chart"
             landId={landId}
@@ -267,12 +226,19 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
         </div>
 
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
-          <GuideContent title="Comprendre les données (SVG)">
+          <GuideContent title="Comprendre les données">
             <p className="fr-text--xs fr-mb-0">
-              Version SVG du treemap ci-dessus. Chaque territoire est
-              représenté par un rectangle dont la taille est proportionnelle
-              à sa surface. La couleur reflète la consommation d'espaces NAF
-              relative à la surface du territoire.
+              Ce graphique représente chaque territoire par un rectangle, dont
+              la taille est proportionnelle à sa surface. Plus le rectangle est
+              grand, plus le territoire est vaste. La couleur des rectangles
+              reflète le rapport entre la surface d'espaces NAF consommée et la
+              surface totale du territoire. Plus la couleur est foncée, plus la
+              consommation d'espaces NAF est intense.
+            </p>
+            <p className="fr-text--xs fr-mb-0">
+              Par exemple, un rectangle de petite taille et de couleur intense
+              correspond à un territoire peu étendu ayant consommé une part
+              significative de ses espaces NAF.
             </p>
           </GuideContent>
         </div>

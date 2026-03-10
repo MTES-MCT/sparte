@@ -102,12 +102,13 @@ const development = {
     output: {
         path: path.resolve(__dirname, 'static'),
         filename: 'assets/scripts/bundle.dev.js',
+        publicPath: 'http://localhost:3002/',
     },
     devtool: 'cheap-module-source-map',
     devServer: {
         hot: true,
         open: false,
-        liveReload: false,
+        liveReload: true,
         static: path.resolve(__dirname, 'static'),
         host: '0.0.0.0',
         port: 3000,

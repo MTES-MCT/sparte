@@ -66,7 +66,6 @@ type GenericChartProps = {
   hideDetails?: boolean;
   onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
   onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string } | null) => void;
-  highlightedLandId?: string;
 }
 
 const ChartCard = styled.div`
@@ -124,7 +123,6 @@ const GenericChart = ({
   hideDetails = false,
   onPointClick,
   onPointHover,
-  highlightedLandId,
 } : GenericChartProps) => {
   const chartRef = useRef<any>(null);
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
@@ -175,17 +173,6 @@ const GenericChart = ({
   }
 
   const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
-
-  if (highlightedLandId) {
-    mutableChartOptions.series?.forEach((s: any) => {
-      s.data?.forEach((pt: any) => {
-        if (pt.land_id === highlightedLandId) {
-          pt.borderWidth = 3
-          pt.borderColor = '#000000'
-        }
-      })
-    })
-  }
 
   const pieSeries = mutableChartOptions._pieSeries
   delete mutableChartOptions._pieSeries

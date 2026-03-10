@@ -48,7 +48,6 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   startYear = 2011,
   endYear = 2022,
   drilldown: externalDrilldown,
-  highlightedLandId,
 }) => {
   const internalDrilldown = useMapDrilldown(childLandType);
   const drilldown = externalDrilldown ?? internalDrilldown;

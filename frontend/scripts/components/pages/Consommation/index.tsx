@@ -114,7 +114,6 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
           childLandTypes={child_land_types}
           childType={childType}
         />
-
         <ConsoComparison
           landId={land_id}
           landType={land_type}
