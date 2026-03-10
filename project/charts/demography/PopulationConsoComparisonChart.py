@@ -2,7 +2,7 @@ import logging
 from functools import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import HIGHLIGHT_COLOR
+from project.charts.constants import HIGHLIGHT_COLOR, INSEE_CREDITS
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
 from public_data.domain.containers import PublicDataContainer
 
@@ -183,4 +183,13 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         return {
             "headers": headers,
             "rows": rows,
+        }
+
+
+class PopulationConsoComparisonChartExport(PopulationConsoComparisonChart):
+    @property
+    def param(self):
+        return super().param | {
+            "credits": INSEE_CREDITS,
+            "chart": {"type": "bubble", "height": 500},
         }

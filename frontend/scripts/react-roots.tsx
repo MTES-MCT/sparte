@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
+import { ReportPrintPage } from '@components/pages/Downloads/templates';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/ui/SearchBar'
 import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
@@ -78,5 +79,21 @@ if (dashboard) {
       </Provider>
     </ErrorBoundary>,
   );
+}
+
+// Entry point pour le rendu PDF des rapports (utilisé par Puppeteer)
+const reportPrintRoot = document.getElementById('react-rapport-draft');
+if (reportPrintRoot) {
+  const draftId = reportPrintRoot.dataset.draftId;
+
+  if (draftId) {
+    createRoot(reportPrintRoot).render(
+      <ErrorBoundary>
+        <Provider store={store}>
+          <ReportPrintPage draftId={draftId} />
+        </Provider>
+      </ErrorBoundary>,
+    );
+  }
 }
 

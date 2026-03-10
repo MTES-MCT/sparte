@@ -13,3 +13,7 @@ class DcMenagesConsoComparisonChart(DcConsoComparisonBubbleChart):
     start_field_16 = "menages_16"
     end_field_22 = "menages_22"
     x_axis_label = "Évolution du nombre de ménages (%)"
+
+
+class DcMenagesConsoComparisonChartExport(DcMenagesConsoComparisonChart):
+    pass

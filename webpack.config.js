@@ -102,7 +102,7 @@ const development = {
     output: {
         path: path.resolve(__dirname, 'static'),
         filename: 'assets/scripts/bundle.dev.js',
-        publicPath: 'http://localhost:3002/',
+        publicPath: '/webpack-dev/',
     },
     devtool: 'cheap-module-source-map',
     devServer: {
