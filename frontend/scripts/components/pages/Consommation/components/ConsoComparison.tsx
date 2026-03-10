@@ -6,6 +6,8 @@ import GuideContent from "@components/ui/GuideContent";
 import Button from "@components/ui/Button";
 import { djangoApi } from "@services/api";
 import BaseCard from "@components/ui/BaseCard";
+import Notice from "@components/ui/Notice";
+import Badge from "@components/ui/Badge";
 
 const BUBBLE_CHARTS = [
   {
@@ -96,18 +98,23 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
     <div className="fr-mt-7w">
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }} className="fr-mb-2w">
         <h3 id="conso-comparaison" className="fr-mb-0">Comparaison avec d'autres territoires</h3>
-        <span className="fr-badge fr-badge--info fr-badge--no-icon">
+        <Badge variant="highlight">
           {territories.length} territoire{territories.length > 1 ? "s" : ""} sélectionné{territories.length > 1 ? "s" : ""}
-        </span>
+        </Badge>
       </div>
 
       <BaseCard style={{ padding: "1.25rem", overflow: "visible" }} className="fr-mb-3w">
-        <div className="fr-notice fr-notice--info fr-mb-2w" style={{ padding: "0.75rem 1rem" }}>
-          <div className="fr-notice__body" style={{ marginLeft: 0 }}>
-            <p className="fr-notice__title fr-text--xs fr-mb-0" style={{ fontWeight: 400 }}>
-              Par défaut, les territoires de comparaison ont été automatiquement sélectionnés en fonction de leur proximité géographique avec <strong>{landName}</strong>.
-            </p>
-          </div>
+        <div className="fr-mb-2w">
+          <Notice
+            type="info"
+            title=""
+            description={
+              <>
+                Par défaut, les territoires de comparaison ont été automatiquement sélectionnés en fonction de leur proximité géographique avec <strong>{landName}</strong>.
+              </>
+            }
+            withCard={false}
+          />
         </div>
 
         <TerritorySelector

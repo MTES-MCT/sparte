@@ -129,8 +129,8 @@ const Cell = styled.div<{ $color: string; $highlighted?: boolean }>`
   border-radius: 6px;
   background: ${({ $color }) => $color};
   border: none;
-  transition: filter 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: ${({ $highlighted }) => $highlighted ? '0 0 0 3px rgba(0,0,0,0.4)' : 'none'};
+  transition: filter 0.15s ease, transform 0.2s ease;
+  transform: ${({ $highlighted }) => $highlighted ? 'scale(.95)' : 'scale(1)'};
   filter: ${({ $highlighted }) => $highlighted ? 'brightness(1.1)' : 'none'};
 
   &:hover {

@@ -16,7 +16,7 @@ export interface KpiMetricItem {
 
 type KpiFooter =
   | { type: "metric"; items: [KpiMetricItem, KpiMetricItem] }
-  | { type: "period"; from: string; to: string };
+  | { type: "period"; from: string; to?: string };
 
 interface KpiAction {
   label: string;
@@ -284,23 +284,39 @@ const MetricFooter: React.FC<{
   );
 };
 
+const SingleDateRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const PeriodFooter: React.FC<{
   from: string;
-  to: string;
+  to?: string;
   color: string;
   border: string;
-}> = ({ from, to, color, border }) => (
-  <PeriodRow>
-    <PeriodLabel>{from}</PeriodLabel>
-    <ConnectorWrapper>
-      <ConnectorLine $border={border} />
-      <ConnectorBadge $color={color}>
-        <i className="bi bi-chevron-right" />
-      </ConnectorBadge>
-    </ConnectorWrapper>
-    <PeriodLabel>{to}</PeriodLabel>
-  </PeriodRow>
-);
+}> = ({ from, to, color, border }) => {
+  if (!to) {
+    return (
+      <SingleDateRow>
+        <PeriodLabel>{from}</PeriodLabel>
+      </SingleDateRow>
+    );
+  }
+
+  return (
+    <PeriodRow>
+      <PeriodLabel>{from}</PeriodLabel>
+      <ConnectorWrapper>
+        <ConnectorLine $border={border} />
+        <ConnectorBadge $color={color}>
+          <i className="bi bi-chevron-right" />
+        </ConnectorBadge>
+      </ConnectorWrapper>
+      <PeriodLabel>{to}</PeriodLabel>
+    </PeriodRow>
+  );
+};
 
 const Kpi: React.FC<KpiProps> = ({
   icon,
