@@ -1,8 +1,10 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
+import { TopBarContent } from "@components/layout/TopBarContent";
 import { OcsgeDrawerProvider, useOcsgeDrawer } from "@components/features/ocsge/OcsgeDrawerContext";
 import { ArtificialisationProvider, useArtificialisationContext } from "./context/ArtificialisationContext";
+import { ArtifControls } from "./components/ArtifControls";
 import {
   ArtifKpiCards,
   ArtifNetFlux,
@@ -22,6 +24,10 @@ const ArtificialisationPageContent: React.FC = () => {
   const ocsgeDrawer = useOcsgeDrawer();
 
   return (
+    <>
+    <TopBarContent>
+      <ArtifControls />
+    </TopBarContent>
     <div className="fr-container--fluid fr-p-3w">
       <Triptych
         className="fr-mb-5w"
@@ -57,6 +63,7 @@ const ArtificialisationPageContent: React.FC = () => {
       <ArtifExplorer />
       <ArtifCalculation />
     </div>
+    </>
   );
 };
 

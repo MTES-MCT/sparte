@@ -245,7 +245,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
       </div>
 
       <div className="fr-mt-5w">
-        <div className="fr-mb-2w d-flex gap-2" style={{ flexWrap: "wrap" }}>
+        <div className="fr-mb-2w d-flex gap-2" style={{ flexWrap: "wrap", background: "white", borderRadius: "0.5rem", padding: "0.5rem 0.75rem", boxShadow: "0 1px 4px rgba(0,0,0,0.08)", width: "fit-content" }}>
           {BUBBLE_CHARTS.map((chart) => (
             <Button
               key={chart.chartId}

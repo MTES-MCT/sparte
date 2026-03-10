@@ -1,8 +1,10 @@
 import React from "react";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
+import { TopBarContent } from "@components/layout/TopBarContent";
 import { OcsgeDrawerProvider, useOcsgeDrawer } from "@components/features/ocsge/OcsgeDrawerContext";
 import { ImpermeabilisationProvider, useImpermeabilisationContext } from "./context/ImpermeabilisationContext";
+import { ImperControls } from "./components/ImperControls";
 import {
   ImperKpiCards,
   ImperNetFlux,
@@ -22,6 +24,10 @@ const ImpermeabilisationPageContent: React.FC = () => {
   const ocsgeDrawer = useOcsgeDrawer();
 
   return (
+    <>
+    <TopBarContent>
+      <ImperControls />
+    </TopBarContent>
     <div className="fr-container--fluid fr-p-3w">
       <Triptych
         className="fr-mb-5w"
@@ -59,6 +65,7 @@ const ImpermeabilisationPageContent: React.FC = () => {
       {childLandTypes.length > 0 && <ImperChildLands />}
       <ImperExplorer />
     </div>
+    </>
   );
 };
 

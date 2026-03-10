@@ -37,6 +37,7 @@ export interface BivariateMapProps {
   startYear?: number;
   endYear?: number;
   drilldown?: MapDrilldown;
+  showMailleIndicator?: boolean;
 }
 
 export interface BivariateLegendProps {

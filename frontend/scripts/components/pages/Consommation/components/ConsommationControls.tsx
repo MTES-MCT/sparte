@@ -72,6 +72,7 @@ export const ConsommationControls: React.FC = () => {
 					<>
 						<Separator>|</Separator>
 						<ControlLabel>
+							<i className="bi bi-grid-3x3-gap fr-mr-1v" aria-hidden="true" />
 							Maille d'analyse
 						</ControlLabel>
 						{childLandTypes.map((type) => (

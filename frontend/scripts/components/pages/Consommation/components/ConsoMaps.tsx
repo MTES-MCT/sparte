@@ -41,6 +41,7 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
             }}
             sources={["majic"]}
             showDataTable={true}
+            showMailleIndicator={childLandTypes.length > 1}
             isMap={true}
           >
             <div>
@@ -74,6 +75,7 @@ export const ConsoMaps: React.FC<ConsoMapsProps> = ({
             }}
             sources={["majic"]}
             showDataTable={true}
+            showMailleIndicator={childLandTypes.length > 1}
             isMap={true}
           >
             <div>

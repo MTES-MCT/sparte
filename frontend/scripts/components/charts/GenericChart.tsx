@@ -23,6 +23,7 @@ import Button from '@components/ui/Button';
 import ChartDataSource from './ChartDataSource';
 import ChartDataTable from './ChartDataTable';
 import ChartExplorer from './ChartExplorer';
+import MailleIndicator from '@components/ui/MailleIndicator';
 import { useGetChartConfigQuery } from '@services/api';
 
 // Initialize the modules
@@ -64,6 +65,7 @@ type GenericChartProps = {
   hideToggle?: boolean;
   compactDataTable?: boolean;
   hideDetails?: boolean;
+  showMailleIndicator?: boolean;
   onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
   onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string } | null) => void;
 }
@@ -121,6 +123,7 @@ const GenericChart = ({
   dataTableOnly = false,
   compactDataTable = false,
   hideDetails = false,
+  showMailleIndicator = false,
   onPointClick,
   onPointHover,
 } : GenericChartProps) => {
@@ -306,11 +309,12 @@ const GenericChart = ({
       {showFooter && (
         <>
           <ChartFooter>
-            {sources.length > 0 ? (
-              <ChartDataSource sources={sources} displayMode="tag" />
-            ) : (
-              <div />
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {sources.length > 0 && (
+                <ChartDataSource sources={sources} displayMode="tag" />
+              )}
+              {showMailleIndicator && <MailleIndicator />}
+            </div>
             <Button variant="tertiary" size="sm" icon="bi bi-chevron-right" iconPosition="right" onClick={() => setIsExplorerOpen(true)} type="button">
               Détails données et calculs
             </Button>

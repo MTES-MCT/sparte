@@ -162,6 +162,7 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
               }}
               sources={["majic"]}
               showDataTable={true}
+              showMailleIndicator={childLandTypes.length > 1}
               isMap={true}
               onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType || ""] ? handleMapPointClick : undefined}
             >

@@ -1,7 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
-import Button from "@components/ui/Button";
 import GuideContent from "@components/ui/GuideContent";
 import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { getLandTypeLabel } from "@utils/landUtils";
@@ -21,13 +20,16 @@ export const ArtifChildLands: React.FC = () => {
     name,
     childLandTypes,
     childLandType,
-    setChildLandType,
     defaultStockIndex,
   } = useArtificialisationContext();
 
   const [mapNavStack, setMapNavStack] = useState<
     { land_id: string; land_type: string; name: string; child_land_type: string }[]
   >([]);
+
+  useEffect(() => {
+    setMapNavStack([]);
+  }, [childLandType]);
 
   const handleMapPointClick = useCallback(
     (point: { land_id: string; land_type: string; name: string }) => {
@@ -50,14 +52,6 @@ export const ArtifChildLands: React.FC = () => {
     setMapNavStack((prev) => prev.slice(0, index));
   }, []);
 
-  const handleChildLandTypeChange = useCallback(
-    (newType: string) => {
-      setChildLandType(newType);
-      setMapNavStack([]);
-    },
-    [setChildLandType]
-  );
-
   const currentMapLand = mapNavStack.length > 0 ? mapNavStack[mapNavStack.length - 1] : null;
   const mapLandId = currentMapLand?.land_id ?? landId;
   const mapLandType = currentMapLand?.land_type ?? landType;
@@ -70,20 +64,6 @@ export const ArtifChildLands: React.FC = () => {
   return (
     <div className="fr-mb-5w">
       <h2>Artificialisation des {getLandTypeLabel(childLandType, true)}</h2>
-      {childLandTypes.length > 1 && (
-        <div className="fr-mb-2w d-flex align-items-center gap-2">
-          {childLandTypes.map((child_land_type) => (
-            <Button
-              key={child_land_type}
-              variant={childLandType === child_land_type ? "primary" : "tertiary"}
-              size="sm"
-              onClick={() => handleChildLandTypeChange(child_land_type)}
-            >
-              {getLandTypeLabel(child_land_type)}
-            </Button>
-          ))}
-        </div>
-      )}
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
             {mapNavStack.length > 0 && (
@@ -133,6 +113,7 @@ export const ArtifChildLands: React.FC = () => {
               }}
               sources={["ocsge"]}
               showDataTable={true}
+              showMailleIndicator={childLandTypes.length > 1}
               onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
             >
               <DetailsCalculationOcsge />

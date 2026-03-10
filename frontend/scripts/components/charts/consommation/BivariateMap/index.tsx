@@ -48,6 +48,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   startYear = 2011,
   endYear = 2022,
   drilldown: externalDrilldown,
+  showMailleIndicator = false,
 }) => {
   const internalDrilldown = useMapDrilldown(childLandType);
   const drilldown = externalDrilldown ?? internalDrilldown;
@@ -218,6 +219,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
             sources={SOURCES}
             showDataTable={true}
             isMap={true}
+            showMailleIndicator={showMailleIndicator}
             onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
             onPointHover={handlePointHover}
           />
