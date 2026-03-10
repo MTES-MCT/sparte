@@ -101,10 +101,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              periods: [
-                { label: String(startYear), active: true },
-                { label: String(Math.min(endYear, 2022)) },
-              ],
+              from: String(startYear),
+              to: String(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -117,10 +115,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              periods: [
-                { label: String(startYear), active: true },
-                { label: String(Math.min(endYear, 2022)) },
-              ],
+              from: String(startYear),
+              to: String(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -133,10 +129,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              periods: [
-                { label: String(startYear), active: true },
-                { label: String(Math.min(endYear, 2022)) },
-              ],
+              from: String(startYear),
+              to: String(Math.min(endYear, 2022)),
             }}
           />
         </div>

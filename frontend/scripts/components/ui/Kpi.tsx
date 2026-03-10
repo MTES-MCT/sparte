@@ -5,7 +5,7 @@ import BaseCard from "@components/ui/BaseCard";
 import Button from "@components/ui/Button";
 import Tag from "@components/ui/Tag";
 
-type KpiVariant = "default" | "success" | "error";
+type KpiVariant = "default" | "success" | "error" | "highlight";
 
 export interface KpiMetricItem {
   icon: string;
@@ -14,20 +14,9 @@ export interface KpiMetricItem {
   iconVariant?: KpiVariant;
 }
 
-interface KpiPeriodItem {
-  label: string;
-  active?: boolean;
-}
-
-interface KpiMiniChartBar {
-  label: string;
-  value: number | null;
-}
-
 type KpiFooter =
   | { type: "metric"; items: [KpiMetricItem, KpiMetricItem] }
-  | { type: "period"; periods: KpiPeriodItem[] }
-  | { type: "minichart"; bars: [KpiMiniChartBar, KpiMiniChartBar]; unit?: string };
+  | { type: "period"; from: string; to: string };
 
 interface KpiAction {
   label: string;
@@ -51,6 +40,7 @@ const variantConfig: Record<KpiVariant, { color: string; bg: string; border: str
   default: { color: theme.colors.primary, bg: theme.colors.primaryBg, border: theme.colors.primaryBorder },
   success: { color: theme.colors.success, bg: theme.colors.successBg, border: theme.colors.successBorder },
   error: { color: theme.colors.error, bg: theme.colors.errorBg, border: theme.colors.errorBorder },
+  highlight: { color: theme.colors.purple, bg: theme.colors.purpleBg, border: theme.colors.purpleBorder },
 };
 
 const Card = styled(BaseCard)`
@@ -194,10 +184,10 @@ const MetricValueText = styled.span`
   color: ${theme.colors.text};
 `;
 
-const PeriodRow = styled.div<{ $centered?: boolean }>`
+const PeriodRow = styled.div`
   display: flex;
   align-items: center;
-  justify-content: ${({ $centered }) => ($centered ? "center" : "space-between")};
+  justify-content: space-between;
 `;
 
 const PeriodLabel = styled.div`
@@ -295,123 +285,22 @@ const MetricFooter: React.FC<{
 };
 
 const PeriodFooter: React.FC<{
-  periods: KpiPeriodItem[];
+  from: string;
+  to: string;
   color: string;
   border: string;
-}> = ({ periods, color, border }) => {
-  const isSinglePeriod = periods.length === 1;
-
-  return (
-    <PeriodRow $centered={isSinglePeriod}>
-      {periods.map((period, index) => {
-        const isLast = index === periods.length - 1;
-        const badgeColor = period.active !== false ? color : border;
-
-        return (
-          <React.Fragment key={index}>
-            <PeriodLabel>{period.label}</PeriodLabel>
-            {!isLast && (
-              <ConnectorWrapper>
-                <ConnectorLine $border={border} />
-                <ConnectorBadge $color={badgeColor}>
-                  <i className="bi bi-chevron-right" />
-                </ConnectorBadge>
-              </ConnectorWrapper>
-            )}
-          </React.Fragment>
-        );
-      })}
-    </PeriodRow>
-  );
-};
-
-const MiniChartWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.md};
-`;
-
-const MiniChartRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${theme.spacing.xs};
-`;
-
-const MiniChartLabel = styled.span`
-  font-size: ${theme.fontSize.xs};
-  color: ${theme.colors.textLight};
-`;
-
-const MiniChartBarRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${theme.spacing.sm};
-`;
-
-const MiniChartTrack = styled.div`
-  flex: 1;
-  min-width: 0;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: ${theme.radius.tag};
-  overflow: hidden;
-`;
-
-const MiniChartValue = styled.span<{ $color: string }>`
-  font-size: ${theme.fontSize.sm};
-  font-weight: ${theme.fontWeight.bold};
-  color: ${({ $color }) => $color};
-  flex-shrink: 0;
-  min-width: 70px;
-  text-align: right;
-`;
-
-const MiniChartBar = styled.div<{ $width: number; $color: string; $hidden?: boolean }>`
-  height: 100%;
-  width: ${({ $width, $hidden }) => ($hidden ? 0 : Math.max($width, 3))}%;
-  background: ${({ $color }) => $color};
-  border-radius: ${theme.radius.tag};
-  transition: width 0.4s ease;
-`;
-
-const MiniChartFooter: React.FC<{
-  bars: [KpiMiniChartBar, KpiMiniChartBar];
-  unit?: string;
-  color: string;
-}> = ({ bars, unit = "", color }) => {
-  const validValues = bars.map((b) => b.value).filter((v): v is number => v !== null);
-  const maxValue = Math.max(...validValues, 0.001);
-
-  const formatValue = (value: number | null) => {
-    if (value === null) return "—";
-    const formatted = value.toLocaleString("fr-FR", { maximumFractionDigits: 1 });
-    return unit ? `${formatted} ${unit}` : formatted;
-  };
-
-  const barColors = [theme.colors.textMuted, color];
-
-  return (
-    <MiniChartWrapper>
-      {bars.map((bar, index) => (
-        <MiniChartRow key={index}>
-          <MiniChartLabel>{bar.label}</MiniChartLabel>
-          <MiniChartBarRow>
-            <MiniChartTrack>
-              <MiniChartBar
-                $width={bar.value !== null ? (bar.value / maxValue) * 100 : 0}
-                $color={barColors[index]}
-                $hidden={bar.value === null}
-              />
-            </MiniChartTrack>
-            <MiniChartValue $color={barColors[index]}>
-              {formatValue(bar.value)}
-            </MiniChartValue>
-          </MiniChartBarRow>
-        </MiniChartRow>
-      ))}
-    </MiniChartWrapper>
-  );
-};
+}> = ({ from, to, color, border }) => (
+  <PeriodRow>
+    <PeriodLabel>{from}</PeriodLabel>
+    <ConnectorWrapper>
+      <ConnectorLine $border={border} />
+      <ConnectorBadge $color={color}>
+        <i className="bi bi-chevron-right" />
+      </ConnectorBadge>
+    </ConnectorWrapper>
+    <PeriodLabel>{to}</PeriodLabel>
+  </PeriodRow>
+);
 
 const Kpi: React.FC<KpiProps> = ({
   icon,
@@ -431,7 +320,7 @@ const Kpi: React.FC<KpiProps> = ({
         {badge && (
           <TagWrapper>
             <Tag
-              variant={variant === "default" ? "primary" : variant}
+              variant={variant === "default" ? "primary" : variant === "highlight" ? "highlight" : variant}
               size="sm"
               icon="bi bi-lightning-charge-fill"
             >
@@ -452,10 +341,7 @@ const Kpi: React.FC<KpiProps> = ({
             <MetricFooter items={footer.items} color={config.color} border={config.border} />
           )}
           {footer.type === "period" && (
-            <PeriodFooter periods={footer.periods} color={config.color} border={config.border} />
-          )}
-          {footer.type === "minichart" && (
-            <MiniChartFooter bars={footer.bars} unit={footer.unit} color={config.color} />
+            <PeriodFooter from={footer.from} to={footer.to} color={config.color} border={config.border} />
           )}
         </FooterWrapper>
       )}

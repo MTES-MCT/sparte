@@ -35,10 +35,8 @@ export const RSKpis: React.FC<RSKpisProps> = ({
           badge="Donnée clé"
           footer={{
             type: "period",
-            periods: [
-              { label: "2011", active: true },
-              { label: "2022" },
-            ],
+            from: "2011",
+            to: "2022",
           }}
         />
       </div>
@@ -50,7 +48,8 @@ export const RSKpis: React.FC<RSKpisProps> = ({
           variant="default"
           footer={{
             type: "period",
-            periods: [{ label: "2022" }],
+            from: "2022",
+            to: "2022",
           }}
         />
       </div>
@@ -62,7 +61,8 @@ export const RSKpis: React.FC<RSKpisProps> = ({
           variant="default"
           footer={{
             type: "period",
-            periods: [{ label: "2022" }],
+            from: "2022",
+            to: "2022",
           }}
         />
       </div>

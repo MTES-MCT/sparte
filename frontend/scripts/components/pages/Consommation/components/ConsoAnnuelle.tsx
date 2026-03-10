@@ -81,10 +81,8 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
             badge="Donnée clé"
             footer={{
               type: "period",
-              periods: [
-                { label: String(startYear), active: true },
-                { label: String(endYear) },
-              ],
+              from: String(startYear),
+              to: String(endYear),
             }}
           />
         </div>

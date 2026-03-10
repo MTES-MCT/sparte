@@ -322,7 +322,7 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
               <IconBadge icon={`bi ${LEVEL_ICONS[row]}`} size={22} variant="light" />
               <span>{consoLabel}</span>
             </MetricLabel>
-            <Badge variant="highlight" size="sm">{consoDisplay}</Badge>
+            <Badge variant="primary" size="sm">{consoDisplay}</Badge>
           </MetricRow>
 
           <MetricRow>
@@ -330,7 +330,7 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
               <IconBadge icon={`bi ${LEVEL_ICONS[col]}`} size={22} variant="light" />
               <span>{indicName}</span>
             </MetricLabel>
-            <Badge variant="highlight" size="sm">{indicDisplay}</Badge>
+            <Badge variant="primary" size="sm">{indicDisplay}</Badge>
           </MetricRow>
         </MetricList>
 

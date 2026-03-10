@@ -56,6 +56,8 @@ export const theme = {
     accent: palette.accent,
     accentBg: palette.accentBg,
     purple: palette.purple,
+    purpleBg: "#f3f0ff",
+    purpleBorder: "#d8ccff",
 
     // Texte
     text: "var(--text-title-grey)",

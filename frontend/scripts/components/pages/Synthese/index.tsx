@@ -18,6 +18,7 @@ interface SyntheseProps {
 
 const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
   const urls = buildUrls(landData.land_type_slug, landData.slug);
+  console.log(landData);
 
   return (
     <div className="fr-container--fluid fr-p-3w">
@@ -39,21 +40,21 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
 
         <Timeline phases={[
             {
-              badge: <Badge variant="highlight">2011-2020</Badge>,
+              badge: <Badge variant="primary">2011-2020</Badge>,
               title: "Période de référence",
               description:
                 "La consommation d'espaces NAF de cette décennie sert de base pour calculer l'objectif de réduction.",
               content: <SyntheseConso landData={landData} urls={urls} phase="reference" />,
             },
             {
-              badge: <Badge variant="highlight">2021-2031</Badge>,
+              badge: <Badge variant="primary">2021-2031</Badge>,
               title: "Période de réduction",
               description:
                 "À l'échelle nationale, l'objectif est de diviser par deux la consommation d'espaces NAF par rapport à la période de référence.",
               content: <SyntheseConso landData={landData} urls={urls} phase="reduction" />,
             },
             {
-              badge: <Badge variant="highlight">2031-2050</Badge>,
+              badge: <Badge variant="primary">2031-2050</Badge>,
               title: "Zéro Artificialisation Nette",
               description:
                 "L'objectif est de compenser toute nouvelle artificialisation par la désartificialisation d'une surface équivalente.",

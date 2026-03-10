@@ -37,24 +37,16 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
           <Kpi
             icon={data.flux_surface > 0 ? "bi bi-arrow-up" : data.flux_surface < 0 ? "bi bi-arrow-down" : "bi bi-dash"}
             label="Artificialisation nette observée"
-            description="Dernières données OCS GE disponibles"
             value={<>{data.flux_surface > 0 ? "+" : ""}{formatNumber({ number: data.flux_surface })} <span>ha</span></>}
             variant={data.flux_surface > 0 ? "error" : data.flux_surface < 0 ? "success" : "default"}
             footer={{
               type: "period",
-              periods: [
-                {
-                  label: landData.is_interdepartemental
-                    ? `Millésime n°${data.millesime_index - 1}`
-                    : data.flux_previous_years.length > 0 ? data.flux_previous_years.join("-") : "—",
-                  active: true,
-                },
-                {
-                  label: landData.is_interdepartemental
-                    ? `Millésime n°${data.millesime_index}`
-                    : data.years.length > 0 ? data.years.join("-") : "—",
-                },
-              ],
+              from: landData.is_interdepartemental
+                ? `Millésime n°${data.millesime_index - 1}`
+                : data.flux_previous_years.length > 0 ? data.flux_previous_years.join("-") : "—",
+              to: landData.is_interdepartemental
+                ? `Millésime n°${data.millesime_index}`
+                : data.years.length > 0 ? data.years.join("-") : "—",
             }}
             action={{
               label: "Voir le diagnostic d'artificialisation",

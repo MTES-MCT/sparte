@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import styled, { css } from "styled-components";
 import { theme } from "@theme";
 
-type TagVariant = "neutral" | "primary" | "success" | "error";
+type TagVariant = "neutral" | "primary" | "success" | "error" | "highlight";
 type TagSize = "sm" | "md";
 
 interface TagProps {
@@ -24,6 +24,7 @@ const variantConfig: Record<TagVariant, { background: string; backgroundHover: s
   primary: { background: theme.colors.primary, backgroundHover: theme.colors.primaryHover, color: "white" },
   success: { background: theme.colors.success, backgroundHover: theme.colors.successHover, color: "white" },
   error: { background: theme.colors.error, backgroundHover: theme.colors.errorHover, color: "white" },
+  highlight: { background: theme.colors.purple, backgroundHover: theme.colors.purple, color: "white" },
 };
 
 const tagStyles = css<{ $variant: TagVariant; $size: TagSize; $clickable: boolean }>`
