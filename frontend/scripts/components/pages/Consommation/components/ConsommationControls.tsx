@@ -43,12 +43,12 @@ export const ConsommationControls: React.FC = () => {
 	};
 
 	return (
-		<div className="d-flex align-items-center gap-3">
+		<div className="d-flex align-items-center gap-3" style={{ flexWrap: "wrap" }}>
 			<ControlLabel>
 				Période d'analyse
 			</ControlLabel>
 
-			<div className="d-flex align-items-center gap-2">
+			<div className="d-flex align-items-center gap-2" style={{ flexWrap: "wrap" }}>
 				<PeriodSelector
 					startYear={startYear}
 					endYear={endYear}

@@ -5,7 +5,7 @@ import GenericChart from "@components/charts/GenericChart";
 import GuideContent from "@components/ui/GuideContent";
 import Button from "@components/ui/Button";
 import { djangoApi } from "@services/api";
-import { TreemapSVG } from "@components/charts/consommation/TreemapSVG";
+import BaseCard from "@components/ui/BaseCard";
 
 const BUBBLE_CHARTS = [
   {
@@ -101,15 +101,15 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
         </span>
       </div>
 
-      <div className="fr-notice fr-notice--info fr-mb-3w" style={{ padding: "0.75rem 1rem" }}>
-        <div className="fr-notice__body" style={{ marginLeft: 0 }}>
-          <p className="fr-notice__title fr-text--xs fr-mb-0" style={{ fontWeight: 400 }}>
-            Par défaut, les territoires de comparaison ont été automatiquement sélectionnés en fonction de leur proximité géographique avec <strong>{landName}</strong>.
-          </p>
+      <BaseCard style={{ padding: "1.25rem", overflow: "visible" }} className="fr-mb-3w">
+        <div className="fr-notice fr-notice--info fr-mb-2w" style={{ padding: "0.75rem 1rem" }}>
+          <div className="fr-notice__body" style={{ marginLeft: 0 }}>
+            <p className="fr-notice__title fr-text--xs fr-mb-0" style={{ fontWeight: 400 }}>
+              Par défaut, les territoires de comparaison ont été automatiquement sélectionnés en fonction de leur proximité géographique avec <strong>{landName}</strong>.
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="fr-mb-3w">
         <TerritorySelector
           territories={territories}
           excludedTerritories={excludedTerritories}
@@ -121,7 +121,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
           showCount={false}
           compact={true}
         />
-      </div>
+      </BaseCard>
 
       <div className="fr-grid-row fr-grid-row--gutters fr-mb-3w">
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
@@ -204,14 +204,13 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
 
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
-          <TreemapSVG
-            chartId="surface_proportional_chart"
-            landId={landId}
-            landType={landType}
-            startYear={startYear}
-            endYear={endYear}
-            comparisonLandIds={comparisonLandIds}
+          <GenericChart
+            id="surface_proportional_chart"
+            land_id={landId}
+            land_type={landType}
+            params={chartParams}
             sources={["majic"]}
+            showDataTable={true}
           >
             <div>
               <h6 className="fr-mb-0">À propos</h6>
@@ -222,7 +221,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
                 reflète la surface du territoire.
               </p>
             </div>
-          </TreemapSVG>
+          </GenericChart>
         </div>
 
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row">

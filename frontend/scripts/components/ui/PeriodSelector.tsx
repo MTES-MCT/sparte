@@ -58,7 +58,7 @@ const Dropdown = styled.div`
   gap: 2px;
   padding: 0.375rem;
   width: max-content;
-  max-width: 240px;
+  max-width: 200px;
 `;
 
 const YearOption = styled.button<{ $selected?: boolean; $disabled?: boolean }>`
@@ -124,7 +124,7 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
       </YearButton>
 
       {open === "start" && (
-        <Dropdown style={{ left: 0 }}>
+        <Dropdown style={{ right: 0 }}>
           {years.map((year) => {
             const disabled = year >= endYear;
             return (
