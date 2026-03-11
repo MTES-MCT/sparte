@@ -4,6 +4,7 @@ import Button from "@components/ui/Button";
 import { useGetChartConfigQuery } from "@services/api";
 import { BivariateLegend } from "./BivariateLegend";
 import { BivariateMapProps, MapDrilldown, MapNavEntry } from "./types";
+import { getLandTypeLabel } from "@utils/landUtils";
 
 const CHILD_LAND_TYPE_MAP: Record<string, string> = {
   REGION: "DEPART",
@@ -61,19 +62,20 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   const mapLandType = currentEntry?.land_type ?? landType;
   const mapChildLandType = currentEntry?.child_land_type ?? childLandType;
 
+  const drilldownPush = drilldown.push;
   const handleMapPointClick = useCallback(
     (point: { land_id: string; land_type: string; name: string }) => {
       const pointLandType = point.land_type || mapChildLandType;
       const nextChildType = CHILD_LAND_TYPE_MAP[pointLandType];
       if (!nextChildType) return;
-      drilldown.push({
+      drilldownPush({
         land_id: point.land_id,
         land_type: pointLandType,
         name: point.name,
         child_land_type: nextChildType,
       });
     },
-    [mapChildLandType, drilldown]
+    [mapChildLandType, drilldownPush]
   );
 
   const { data: config } = useGetChartConfigQuery({
@@ -131,9 +133,9 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
         : null;
 
     const indicQualif = [
-      `${indicName} ${adj.faible}`,
-      `${indicName} ${adj.moyen}`,
-      `${indicName} ${adj.fort}`,
+      `${indicName} 1er tercile`,
+      `${indicName} 2e tercile`,
+      `${indicName} 3e tercile`,
     ];
 
     return {
@@ -152,37 +154,86 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
     () => ({ child_land_type: mapChildLandType, start_date: String(startYear), end_date: String(endYear) }),
     [mapChildLandType, startYear, endYear]
   );
-  const colorGridRef = useRef(bivariateConfig?.colorGrid);
-  colorGridRef.current = bivariateConfig?.colorGrid;
-
   const handlePointHover = useCallback(
-    (point: { color: string; name: string; value: number } | null) => {
-      const colorGrid = colorGridRef.current;
-      if (!point || !colorGrid) {
+    (point: { color: string; name: string; value: number; pointOptions?: Record<string, any> } | null) => {
+      if (!point) {
         if (hoveredCellRef.current !== null) {
           hoveredCellRef.current = null;
           setHoveredCell(null);
         }
         return;
       }
-      const normalizedColor = point.color.toLowerCase();
-      for (let row = 0; row < colorGrid.length; row++) {
-        for (let col = 0; col < colorGrid[row].length; col++) {
-          if (colorGrid[row][col].toLowerCase() === normalizedColor) {
-            if (hoveredCellRef.current?.row !== row || hoveredCellRef.current?.col !== col) {
-              hoveredCellRef.current = { row, col };
-              setHoveredCell({ row, col });
-            }
-            return;
-          }
+
+      const categoryId = point.pointOptions?.category_id;
+      if (categoryId != null && typeof categoryId === "number") {
+        const row = Math.floor(categoryId / 3);
+        const col = categoryId % 3;
+        if (hoveredCellRef.current?.row !== row || hoveredCellRef.current?.col !== col) {
+          hoveredCellRef.current = { row, col };
+          setHoveredCell({ row, col });
         }
+        return;
       }
+
       if (hoveredCellRef.current !== null) {
         hoveredCellRef.current = null;
         setHoveredCell(null);
       }
     },
     []
+  );
+
+  const chartChildren = useMemo(() => (
+    <div style={{ fontSize: "0.875rem", lineHeight: 1.6 }}>
+      <p>
+        Cette carte bivariée croise deux axes : la <strong>consommation d'espaces NAF</strong> (fichiers fonciers)
+        et un <strong>indicateur socio-économique</strong> (INSEE, dossier complet). Chaque territoire est classé
+        dans une grille 3×3 = 9 catégories, selon sa position sur chacun des deux axes.
+      </p>
+      <p>
+        <strong>Méthode de classification : terciles nationaux.</strong><br />
+        Pour chaque axe, l'ensemble des territoires de même échelle (communes, EPCI, etc.) au niveau national
+        sont triés par valeur croissante puis répartis en trois groupes de taille égale :
+      </p>
+      <ul>
+        <li><strong>1er tercile</strong> : le tiers des territoires ayant les valeurs les plus faibles.</li>
+        <li><strong>2e tercile</strong> : le tiers intermédiaire.</li>
+        <li><strong>3e tercile</strong> : le tiers des territoires ayant les valeurs les plus élevées.</li>
+      </ul>
+      <p>
+        Les seuils sont calculés à l'échelle nationale pour la période sélectionnée, ce qui garantit
+        qu'un territoire conserve la même classification quel que soit le territoire parent dans lequel
+        il est observé. Par exemple, une commune classée dans le 1er tercile de consommation au niveau
+        national restera dans le 1er tercile qu'elle soit vue depuis son EPCI, son département ou sa région.
+      </p>
+      <p>
+        <strong>Sources et millésimes.</strong><br />
+        L'axe consommation est calculé année par année à partir des fichiers fonciers (Cerema).
+        L'axe indicateur socio-économique provient du recensement INSEE (dossier complet),
+        disponible aux millésimes <strong>2011</strong>, <strong>2016</strong> et <strong>2022</strong>.
+        L'évolution de l'indicateur est exprimée en rythme annuel moyen (% par an),
+        obtenu en divisant la variation totale par le nombre d'années entre les deux millésimes :
+      </p>
+      <ul>
+        <li>Période se terminant avant 2016 : évolution 2011→2016, divisée par 5 ans.</li>
+        <li>Période débutant après 2016 : évolution 2016→2022, divisée par 6 ans.</li>
+        <li>Sinon : évolution 2011→2022, divisée par 11 ans.</li>
+      </ul>
+      <p>
+        Les années <strong>2009</strong>, <strong>2010</strong> et <strong>2023</strong> ne disposent
+        pas de données INSEE propres. Pour les périodes incluant ces années, le rythme annuel
+        utilisé est celui du couple de millésimes le plus proche (par exemple,
+        2009–2012 utilise le rythme annuel 2011→2016). L'indicateur « résidences secondaires »
+        est un taux (% du parc de logements) et non une évolution ; il n'est pas annualisé.
+        L'axe consommation, lui, est toujours calculé sur les années réelles de la période
+        grâce aux fichiers fonciers annuels.
+      </p>
+    </div>
+  ), []);
+
+  const handlePointClick = useMemo(
+    () => CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined,
+    [mapChildLandType, handleMapPointClick]
   );
 
   return (
@@ -220,9 +271,11 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
             showDataTable={true}
             isMap={true}
             showMailleIndicator={showMailleIndicator}
-            onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
+            onPointClick={handlePointClick}
             onPointHover={handlePointHover}
-          />
+          >
+            {chartChildren}
+          </GenericChart>
         </div>
 
         {bivariateConfig?.colorGrid && (
@@ -236,6 +289,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
               indicRanges={bivariateConfig.indicRanges}
               indicQualif={bivariateConfig.indicQualif}
               adjectives={bivariateConfig.adjectives}
+              childLandTypeLabel={getLandTypeLabel(mapChildLandType, true).toLowerCase()}
               highlightedCell={hoveredCell}
             />
           </div>

@@ -1,5 +1,3 @@
-from public_data.models import LandDcActiviteChomage
-
 from .DcBivariateConsoMap import PALETTE_PURPLE, DcBivariateConsoMap
 
 
@@ -7,13 +5,13 @@ class DcEmploiConsoMap(DcBivariateConsoMap):
     """Bivariate map: employment evolution × land consumption for activity."""
 
     name = "dc emploi conso map"
+    indicator_key = "emploi"
     bivariate_colors = PALETTE_PURPLE
     conso_field = "activite"
-    indicator_name = "Évolution de l'emploi"
-    indicator_short = "évol. emploi"
+    indicator_name = "Évolution annuelle de l'emploi"
+    indicator_short = "évol. ann. emploi"
     indicator_unit = "%"
     indicator_gender = "f"
-    indicator_model = LandDcActiviteChomage
 
     verdicts = [
         [
@@ -32,26 +30,3 @@ class DcEmploiConsoMap(DcBivariateConsoMap):
             "Forte consommation accompagnée d'une forte dynamique d'emploi : croissance économique consommatrice.",
         ],
     ]
-
-    @property
-    def period_years(self):
-        s, e = self.start_date, self.end_date
-        if e <= 2016:
-            return ("actifs_occupes_15_64_11", "actifs_occupes_15_64_16", s, e)
-        if s >= 2016:
-            return ("actifs_occupes_15_64_16", "actifs_occupes_15_64_22", s, e)
-        return ("actifs_occupes_15_64_11", "actifs_occupes_15_64_22", s, e)
-
-    def compute_indicator_value(self, obj, start_field, end_field):
-        if obj is None:
-            return None
-        start = getattr(obj, start_field, None)
-        end = getattr(obj, end_field, None)
-        if start and end and start > 0:
-            return round((end - start) / start * 100, 2)
-        return None
-
-    def format_indicator(self, value):
-        if value is None:
-            return "n.d."
-        return f"{value:+.1f}%"

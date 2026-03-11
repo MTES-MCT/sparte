@@ -6,8 +6,13 @@ import BaseCard from "@components/ui/BaseCard";
 import Badge from "@components/ui/Badge";
 import IconBadge from "@components/ui/IconBadge";
 
-const CONSO_QUALIF = ["Faible", "Moyenne", "Forte"];
+const CONSO_QUALIF = ["1er tercile", "2e tercile", "3e tercile"];
 const LEVEL_ICONS = ["bi-arrow-down", "bi-dash", "bi-arrow-up"];
+const tercileHints = (label: string) => [
+  `parmi le tiers des ${label} ayant les valeurs les plus faibles`,
+  `parmi le tiers intermédiaire des ${label}`,
+  `parmi le tiers des ${label} ayant les valeurs les plus élevées`,
+];
 
 const LegendCard = styled(BaseCard)`
   display: flex;
@@ -243,6 +248,14 @@ const MetricLabel = styled.div`
   flex: 1;
 `;
 
+const MetricHint = styled.div`
+  font-size: ${theme.fontSize.xs};
+  color: ${theme.colors.textMuted};
+  font-style: italic;
+  padding-left: 30px;
+  margin-top: -2px;
+`;
+
 const EmptyState = styled.div`
   display: flex;
   flex-direction: column;
@@ -276,8 +289,10 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
   indicUnit,
   indicRanges,
   indicQualif,
+  childLandTypeLabel,
   highlightedCell,
 }) => {
+  const hints = tercileHints(childLandTypeLabel);
   const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
   const activeCell = hoveredCell ?? highlightedCell ?? null;
 
@@ -312,7 +327,7 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
         <DetailHeader>
           <DetailSwatch $color={color} />
           <DetailTitle>
-            Consommation {consoQualif.toLowerCase()}, {indicName.toLowerCase()} {indicQualifText.split(" ").pop()}
+            Consommation {consoQualif}, {indicName.toLowerCase()} {indicQualifText.split(" ").slice(-2).join(" ")}
           </DetailTitle>
         </DetailHeader>
 
@@ -324,6 +339,7 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
             </MetricLabel>
             <Badge variant="primary" size="sm">{consoDisplay}</Badge>
           </MetricRow>
+          <MetricHint>{hints[row]}</MetricHint>
 
           <MetricRow>
             <MetricLabel>
@@ -332,6 +348,7 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
             </MetricLabel>
             <Badge variant="primary" size="sm">{indicDisplay}</Badge>
           </MetricRow>
+          <MetricHint>{hints[col]}</MetricHint>
         </MetricList>
 
       </>
@@ -351,9 +368,9 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
 
             <GridLayout>
               <YAxisLabels>
-                <YAxisLabel>Faible</YAxisLabel>
+                <YAxisLabel>1er tercile</YAxisLabel>
                 <YAxisArrow aria-hidden="true" />
-                <YAxisLabel>Élevée</YAxisLabel>
+                <YAxisLabel>3e tercile</YAxisLabel>
               </YAxisLabels>
 
               <GridWrapper>
@@ -373,9 +390,9 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
               </GridWrapper>
 
               <XAxisLabels>
-                <XAxisLabel>Faible</XAxisLabel>
+                <XAxisLabel>1er tercile</XAxisLabel>
                 <XAxisArrow aria-hidden="true" />
-                <XAxisLabel>Élevé</XAxisLabel>
+                <XAxisLabel>3e tercile</XAxisLabel>
               </XAxisLabels>
 
               <XAxisTitle>{indicName}{indicUnit ? ` (${indicUnit})` : ""}</XAxisTitle>

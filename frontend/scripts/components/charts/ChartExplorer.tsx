@@ -14,6 +14,7 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
     background-color: rgba(0, 0, 0, 0.5);
     opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
     visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
+    pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
     transition: opacity 0.25s ease, visibility 0.25s ease;
     z-index: 1000;
 `;
@@ -34,6 +35,7 @@ const Panel = styled.div<{ $isOpen: boolean }>`
     z-index: 1001;
     opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
     visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
+    pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
     transition: opacity 0.25s ease, visibility 0.25s ease;
 `;
 

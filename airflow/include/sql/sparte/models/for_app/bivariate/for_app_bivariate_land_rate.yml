@@ -1,0 +1,56 @@
+models:
+  - name: for_app_bivariate_land_rate
+    columns:
+      - name: indicator
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - population
+                - logement
+                - menages
+                - emploi
+                - residences_secondaires
+      - name: conso_field
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - total
+                - habitat
+                - activite
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: land_type
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - COMM
+                - EPCI
+                - SCOT
+                - DEPART
+                - REGION
+      - name: start_year
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: end_year
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: conso_rate
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: conso_ha
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: indic_rate
+        data_type: numeric

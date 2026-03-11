@@ -69,6 +69,7 @@ SELECT
         'trajectoire_conso_is_territorialise', false
     ) as conso_details,
     land.consommation_correction_status,
+    land.competence_planification,
     land.logements_22,
     CASE
         WHEN land.logements_11 > 0

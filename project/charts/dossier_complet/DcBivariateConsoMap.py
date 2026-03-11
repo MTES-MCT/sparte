@@ -10,11 +10,15 @@ Colors are obtained by bilinear interpolation of 4 corner colors.
 import json
 
 from django.core.serializers import serialize
-from django.db.models import Max, Sum
 
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
-from public_data.models import AdminRef, LandConso, LandModel
+from public_data.models import AdminRef, LandModel
+from public_data.models.bivariate import (
+    BivariateConsoThreshold,
+    BivariateIndicThreshold,
+    BivariateLandRate,
+)
 
 # ---------------------------------------------------------------------------
 # Bivariate palette generation
@@ -70,24 +74,11 @@ PALETTE_BLUE = bilinear_palette("#9ecae1", "#084594", "#e34a33", "#fdbe85")
 PALETTE_PURPLE = bilinear_palette("#b5b8d9", "#4a1486", "#e34a33", "#fdbe85")
 # Teal – used by DcMenagesConsoMap
 PALETTE_TEAL = bilinear_palette("#99d8c9", "#00695c", "#e34a33", "#fdcc8a")
-# Diverging green→red – used by DcVacanceConsoMap (both axes bad when high)
-PALETTE_DIVERGING = bilinear_palette("#006d2c", "#fee08b", "#fc8d59", "#b30000")
 # Orange – used by DcResidencesSecondairesConsoMap
 PALETTE_ORANGE = bilinear_palette("#fdd49e", "#d94701", "#e34a33", "#fdcc8a")
-# Créations d'entreprises: vert=sobre, rouge=gaspillage
-PALETTE_CREATIONS = bilinear_palette("#e0e0e0", "#1a9850", "#d73027", "#5e4fa2")
 
-CONSO_LABELS = ["faible", "moyenne", "forte"]
-INDIC_LABELS = ["faible", "moyen(ne)", "fort(e)"]
-
-
-def compute_terciles(values):
-    """Return (t1, t2) thresholds splitting sorted values into 3 equal groups."""
-    sorted_vals = sorted(values)
-    n = len(sorted_vals)
-    if n < 3:
-        return (sorted_vals[0], sorted_vals[-1])
-    return (sorted_vals[n // 3], sorted_vals[2 * n // 3])
+CONSO_LABELS = ["1er tercile", "2e tercile", "3e tercile"]
+INDIC_LABELS = ["1er tercile", "2e tercile", "3e tercile"]
 
 
 def classify_3x3(conso_val, indic_val, conso_t1, conso_t2, indic_t1, indic_t2):
@@ -115,30 +106,31 @@ class DcBivariateConsoMap(DiagnosticChart):
     """
     Abstract base for bivariate maps: consumption × <indicator>.
 
-    Subclasses must define:
+    Data (rates and thresholds) is pre-computed in dbt tables
+    (BivariateLandRate, BivariateConsoThreshold, BivariateIndicThreshold).
+
+    Subclasses define:
+      - indicator_key: str           (e.g. "population", "logement")
       - indicator_name: str          (e.g. "Évolution de la population")
       - indicator_short: str         (e.g. "Évol. pop.")
       - indicator_unit: str          (e.g. "%")
-      - indicator_model              (Django model class for the indicator)
-      - compute_indicator_value(obj_or_none, start_field, end_field) -> float|None
-      - indicator_fields: tuple      (start_field, end_field per period)
-      - chart_title(child_label, period_label) -> str
-      - chart_subtitle() -> str
-      - tooltip_indicator_section(point_prefix) -> str  (HTML for tooltip)
+      - indicator_gender: str        ("m" or "f")
+      - bivariate_colors: list       (9 hex colors from bilinear_palette)
+      - conso_field: str             ("total", "habitat", "activite")
       - verdicts: list[list[str]]    (3×3 qualitative descriptions)
     """
 
     required_params = ["child_land_type"]
 
     # --- To override in subclasses ---
+    indicator_key = ""
     indicator_name = ""
     indicator_short = ""
     indicator_unit = ""
-    indicator_gender = "m"  # "m" or "f"
-    indicator_model = None
+    indicator_gender = "m"
     verdicts = [[""] * 3] * 3
     bivariate_colors = PALETTE_GREEN
-    conso_field = "total"  # override with "activite" etc.
+    conso_field = "total"
 
     CONSO_LABELS = {
         "total": "Consommation annuelle totale",
@@ -178,11 +170,6 @@ class DcBivariateConsoMap(DiagnosticChart):
         return self._cached_container_land
 
     @property
-    def period_years(self):
-        """Return (indic_start_field, indic_end_field, conso_start, conso_end)."""
-        raise NotImplementedError
-
-    @property
     def formatted_child_land_type(self):
         if self.child_land_type in [AdminRef.SCOT, AdminRef.EPCI]:
             return AdminRef.get_label(self.child_land_type)
@@ -195,10 +182,6 @@ class DcBivariateConsoMap(DiagnosticChart):
             parent_keys__contains=[f"{container.land_type}_{container.land_id}"],
             land_type=self.child_land_type,
         )
-
-    def compute_indicator_value(self, obj, start_field, end_field):
-        """Compute the indicator value from the model object. Return float or None."""
-        raise NotImplementedError
 
     def format_indicator(self, value):
         """Format indicator value for display."""
@@ -216,67 +199,49 @@ class DcBivariateConsoMap(DiagnosticChart):
         if hasattr(self, "_cached_raw"):
             return self._cached_raw
 
-        indic_start_field, indic_end_field, conso_start, conso_end = self.period_years
+        conso_start = self.start_date
+        conso_end = self.end_date
         child_land_ids = list(self.lands.values_list("land_id", flat=True))
         child_type = self.child_land_type
 
-        # Indicator data
-        indic_data = {}
-        if self.indicator_model:
-            indic_data = {
-                obj.land_id: obj
-                for obj in self.indicator_model.objects.filter(
-                    land_id__in=child_land_ids,
-                    land_type=child_type,
-                )
-            }
-
-        # Consumption + surface
-        conso_qs = (
-            LandConso.objects.filter(
+        # Read pre-computed rates from dbt
+        rates = list(
+            BivariateLandRate.objects.filter(
+                indicator=self.indicator_key,
                 land_id__in=child_land_ids,
                 land_type=child_type,
-                year__gte=conso_start,
-                year__lt=conso_end,
-            )
-            .values("land_id")
-            .annotate(
-                total_conso=Sum(self.conso_field),
-                surface=Max("surface"),
+                start_year=conso_start,
+                end_year=conso_end,
             )
         )
-        conso_data = {row["land_id"]: (row["total_conso"], row["surface"]) for row in conso_qs}
 
-        rows = []
-        for land_id in child_land_ids:
-            indic_obj = indic_data.get(land_id)
-            indic_val = self.compute_indicator_value(indic_obj, indic_start_field, indic_end_field)
+        rows = [
+            {
+                "land_id": r.land_id,
+                "land_type": r.land_type,
+                "conso_ha": float(r.conso_ha or 0),
+                "conso_pct": float(r.conso_rate or 0),
+                "indic_val": float(r.indic_rate) if r.indic_rate is not None else None,
+            }
+            for r in rates
+        ]
 
-            total_conso_m2, surface_m2 = conso_data.get(land_id, (0, 0))
-            total_conso_m2 = total_conso_m2 or 0
-            surface_m2 = surface_m2 or 0
-            nb_years = conso_end - conso_start
-            conso_ha = round(total_conso_m2 / 10000 / nb_years, 2) if nb_years > 0 else 0
-            conso_pct = (
-                round(total_conso_m2 / surface_m2 * 100 / nb_years, 4) if surface_m2 > 0 and nb_years > 0 else 0
-            )
+        # Read national thresholds
+        conso_th = BivariateConsoThreshold.objects.get(
+            land_type=child_type,
+            conso_field=self.conso_field,
+            start_year=conso_start,
+            end_year=conso_end,
+        )
+        conso_t1, conso_t2 = float(conso_th.t1_max), float(conso_th.t2_max)
 
-            rows.append(
-                {
-                    "land_id": land_id,
-                    "land_type": child_type,
-                    "conso_ha": conso_ha,
-                    "conso_pct": conso_pct,
-                    "indic_val": indic_val,
-                }
-            )
-
-        # Terciles (on relative consumption %)
-        indic_values = [r["indic_val"] for r in rows if r["indic_val"] is not None]
-        conso_values = [r["conso_pct"] for r in rows]
-
-        indic_t1, indic_t2 = compute_terciles(indic_values) if len(indic_values) >= 3 else (0, 0)
-        conso_t1, conso_t2 = compute_terciles(conso_values) if len(conso_values) >= 3 else (0, 0)
+        indic_th = BivariateIndicThreshold.objects.get(
+            indicator=self.indicator_key,
+            land_type=child_type,
+            start_year=conso_start,
+            end_year=conso_end,
+        )
+        indic_t1, indic_t2 = float(indic_th.t1_max), float(indic_th.t2_max)
 
         self._cached_raw = (rows, conso_t1, conso_t2, indic_t1, indic_t2)
         return self._cached_raw
@@ -331,7 +296,6 @@ class DcBivariateConsoMap(DiagnosticChart):
 
     @property
     def data_table(self):
-        _, _, conso_start, conso_end = self.period_years
         land_names = {land.land_id: land.name for land in self.lands}
         labels = self._category_labels()
 
@@ -339,7 +303,7 @@ class DcBivariateConsoMap(DiagnosticChart):
             "headers": [
                 AdminRef.get_label(self.child_land_type),
                 self.indicator_short,
-                f"{self.conso_label} {conso_start}-{conso_end} (%/an)",
+                f"{self.conso_label} {self.start_date}-{self.end_date} (%/an)",
                 "Catégorie",
             ],
             "boldFirstColumn": True,
@@ -358,23 +322,22 @@ class DcBivariateConsoMap(DiagnosticChart):
         }
 
     def get_chart_title(self):
-        _, _, conso_start, conso_end = self.period_years
         child_label = self.formatted_child_land_type
         container = self._container_land
         if self.land.land_type == AdminRef.COMMUNE:
             return (
                 f"{self.indicator_name} et {self.conso_label.lower()}"
                 f" des {child_label}s"
-                f" - {self.land.name} ({container.name}, {conso_start}-{conso_end})"
+                f" - {self.land.name} ({container.name}, {self.start_date}-{self.end_date})"
             )
         return (
             f"{self.indicator_name} et {self.conso_label.lower()}"
             f" des {child_label}s"
-            f" - {container.name} ({conso_start}-{conso_end})"
+            f" - {container.name} ({self.start_date}-{self.end_date})"
         )
 
     def get_chart_subtitle(self):
-        return f"Croisement entre {self.indicator_name.lower()} " f"et la {self.conso_label.lower()} NAF"
+        return f"Croisement entre {self.indicator_name.lower()} et la {self.conso_label.lower()} NAF"
 
     def _build_series(self):
         tooltip_format = {

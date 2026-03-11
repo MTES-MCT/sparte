@@ -176,6 +176,14 @@ models:
                 - données_partiellement_coriggées
                 - données_coriggées_avec_données_manquantes
                 - données_partiellement_coriggées_avec_données_manquantes
+      - name: competence_planification
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
       - name: has_conso
         data_type: boolean
         tests:

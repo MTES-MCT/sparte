@@ -67,7 +67,7 @@ type GenericChartProps = {
   hideDetails?: boolean;
   showMailleIndicator?: boolean;
   onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
-  onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string } | null) => void;
+  onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string; pointOptions?: Record<string, any> } | null) => void;
 }
 
 const ChartCard = styled.div`
@@ -231,6 +231,7 @@ const GenericChart = ({
                 value: point.value ?? (point as any).y ?? 0,
                 land_id: opts?.land_id,
                 land_type: opts?.land_type,
+                pointOptions: opts,
               })
             })
             Highcharts.addEvent(point, 'mouseOut', () => {

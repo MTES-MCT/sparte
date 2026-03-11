@@ -49,5 +49,6 @@ export interface BivariateLegendProps {
   indicRanges: string[] | null;
   indicQualif: string[];
   adjectives: { faible: string; moyen: string; fort: string };
+  childLandTypeLabel: string;
   highlightedCell?: { row: number; col: number } | null;
 }

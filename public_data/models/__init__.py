@@ -1,5 +1,6 @@
 from .administration import *  # noqa: F401, F403
 from .artificialisation import *  # noqa: F401, F403
+from .bivariate import *  # noqa: F401, F403
 from .consommation import *  # noqa: F401, F403
 from .demography import *  # noqa: F401, F403
 from .dossier_complet import *  # noqa: F401, F403

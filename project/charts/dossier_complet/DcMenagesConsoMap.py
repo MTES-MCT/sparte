@@ -1,5 +1,3 @@
-from public_data.models import LandDcMenages
-
 from .DcBivariateConsoMap import PALETTE_TEAL, DcBivariateConsoMap
 
 
@@ -7,13 +5,13 @@ class DcMenagesConsoMap(DcBivariateConsoMap):
     """Bivariate map: household evolution × land consumption."""
 
     name = "dc menages conso map"
+    indicator_key = "menages"
     bivariate_colors = PALETTE_TEAL
     conso_field = "habitat"
-    indicator_name = "Évolution du nombre de ménages"
-    indicator_short = "évol. ménages"
+    indicator_name = "Évolution annuelle du nombre de ménages"
+    indicator_short = "évol. ann. ménages"
     indicator_unit = "%"
     indicator_gender = "f"
-    indicator_model = LandDcMenages
 
     verdicts = [
         [
@@ -32,26 +30,3 @@ class DcMenagesConsoMap(DcBivariateConsoMap):
             "Forte consommation accompagnée d'une forte croissance des ménages : dynamique consommatrice.",
         ],
     ]
-
-    @property
-    def period_years(self):
-        s, e = self.start_date, self.end_date
-        if e <= 2016:
-            return ("menages_11", "menages_16", s, e)
-        if s >= 2016:
-            return ("menages_16", "menages_22", s, e)
-        return ("menages_11", "menages_22", s, e)
-
-    def compute_indicator_value(self, obj, start_field, end_field):
-        if obj is None:
-            return None
-        start = getattr(obj, start_field, None)
-        end = getattr(obj, end_field, None)
-        if start and end and start > 0:
-            return round((end - start) / start * 100, 2)
-        return None
-
-    def format_indicator(self, value):
-        if value is None:
-            return "n.d."
-        return f"{value:+.1f}%"

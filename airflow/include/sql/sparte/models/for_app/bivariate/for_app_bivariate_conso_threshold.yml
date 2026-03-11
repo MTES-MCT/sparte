@@ -1,0 +1,55 @@
+models:
+  - name: for_app_bivariate_conso_threshold
+    columns:
+      - name: land_type
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - COMM
+                - EPCI
+                - SCOT
+                - DEPART
+                - REGION
+      - name: conso_field
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - total
+                - habitat
+                - activite
+      - name: start_year
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: end_year
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: t1_min
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: t1_max
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: t2_min
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: t2_max
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: t3_min
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: t3_max
+        data_type: numeric
+        data_tests:
+          - not_null

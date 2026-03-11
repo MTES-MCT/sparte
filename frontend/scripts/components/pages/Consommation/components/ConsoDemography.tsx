@@ -24,8 +24,6 @@ const BIVARIATE_MAPS = [
   { chartId: "dc_menages_conso_map", label: "Ménages" },
   { chartId: "dc_logement_conso_map", label: "Logements" },
   { chartId: "dc_emploi_conso_map", label: "Emploi" },
-  // { chartId: "dc_creations_entreprises_conso_map", label: "Créations d'entreprises" },
-  // { chartId: "dc_chomage_conso_map", label: "Chômage" },
 ];
 
 const formatAnnualValue = (value: number | null | undefined, unit: string, isLoading: boolean) => {

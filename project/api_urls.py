@@ -80,9 +80,7 @@ from project.charts.demography.PopulationConsoProgressionChart import (
     PopulationConsoProgressionChart,
 )
 from project.charts.dossier_complet import (
-    DcChomageConsoMap,
     DcCreationsEntreprisesChart,
-    DcCreationsEntreprisesConsoMap,
     DcCspRepartitionChart,
     DcEmploiChomageChart,
     DcEmploiConsoComparisonChart,
@@ -113,7 +111,6 @@ from project.charts.dossier_complet import (
     DcRevenusMap,
     DcRevenusPauvreteChart,
     DcTourismeChart,
-    DcVacanceConsoMap,
 )
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
@@ -327,9 +324,6 @@ def get_chart_klass_or_404(chart_id):
         "dc_population_conso_map": DcPopulationConsoMap,
         "dc_logement_conso_map": DcLogementConsoMap,
         "dc_emploi_conso_map": DcEmploiConsoMap,
-        "dc_chomage_conso_map": DcChomageConsoMap,
-        "dc_creations_entreprises_conso_map": DcCreationsEntreprisesConsoMap,
-        "dc_vacance_conso_map": DcVacanceConsoMap,
         "dc_menages_conso_map": DcMenagesConsoMap,
         "dc_logement_conso_comparison_chart": DcLogementConsoComparisonChart,
         "dc_menages_conso_comparison_chart": DcMenagesConsoComparisonChart,

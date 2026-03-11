@@ -1,0 +1,45 @@
+models:
+  - name: for_app_bivariate_indic_threshold
+    columns:
+      - name: indicator
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - population
+                - logement
+                - menages
+                - emploi
+                - residences_secondaires
+      - name: land_type
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - COMM
+                - EPCI
+                - SCOT
+                - DEPART
+                - REGION
+      - name: start_year
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: end_year
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: t1_min
+        data_type: numeric
+      - name: t1_max
+        data_type: numeric
+      - name: t2_min
+        data_type: numeric
+      - name: t2_max
+        data_type: numeric
+      - name: t3_min
+        data_type: numeric
+      - name: t3_max
+        data_type: numeric

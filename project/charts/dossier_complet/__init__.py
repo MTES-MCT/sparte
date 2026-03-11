@@ -1,6 +1,4 @@
-from .DcChomageConsoMap import DcChomageConsoMap
 from .DcCreationsEntreprisesChart import DcCreationsEntreprisesChart
-from .DcCreationsEntreprisesConsoMap import DcCreationsEntreprisesConsoMap
 from .DcCspRepartitionChart import DcCspRepartitionChart
 from .DcEmploiChomageChart import DcEmploiChomageChart
 from .DcEmploiConsoComparisonChart import DcEmploiConsoComparisonChart
@@ -35,13 +33,10 @@ from .DcResidencesSecondairesChart import DcResidencesSecondairesChart
 from .DcResidencesSecondairesConsoMap import DcResidencesSecondairesConsoMap
 from .DcRevenusPauvreteChart import DcRevenusPauvreteChart
 from .DcTourismeChart import DcTourismeChart
-from .DcVacanceConsoMap import DcVacanceConsoMap
 
 __all__ = [
     "DcCreationsEntreprisesChart",
-    "DcCreationsEntreprisesConsoMap",
     "DcCspRepartitionChart",
-    "DcChomageConsoMap",
     "DcEmploiChomageChart",
     "DcEmploiMap",
     "DcEmploiConsoComparisonChart",
@@ -71,5 +66,4 @@ __all__ = [
     "DcRevenusMap",
     "DcRevenusPauvreteChart",
     "DcTourismeChart",
-    "DcVacanceConsoMap",
 ]
