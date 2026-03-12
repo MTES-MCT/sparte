@@ -8,8 +8,8 @@ class DcMenagesConsoMap(DcBivariateConsoMap):
     indicator_key = "menages"
     bivariate_colors = PALETTE_TEAL
     conso_field = "habitat"
-    indicator_name = "Évolution annuelle du nombre de ménages"
-    indicator_short = "évol. ann. ménages"
+    indicator_name = "Évolution du nombre de ménages"
+    indicator_short = "évolution annuelle ménages"
     indicator_unit = "%"
     indicator_gender = "f"
 

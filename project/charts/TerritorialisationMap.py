@@ -126,15 +126,8 @@ class TerritorialisationMap(DiagnosticChart):
                 "series": [],
             }
 
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
+        geojson = json.loads(
+            serialize("geojson", self.lands, geometry_field="simple_geom", fields=("land_id", "name"), srid=3857)
         )
 
         data_with_values = self.data
@@ -144,7 +137,7 @@ class TerritorialisationMap(DiagnosticChart):
 
         return super().param | {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
             "title": {
                 "text": f"Objectifs de réduction de la consommation d'espaces NAF des {self.get_children_land_types_label()} territorialisés dans le {self.get_document_name()} de {self.land.name}",  # noqa

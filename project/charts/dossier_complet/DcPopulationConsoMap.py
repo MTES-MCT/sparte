@@ -1,4 +1,4 @@
-from public_data.models import AdminRef, LandDcPopulation
+from public_data.models import AdminRef
 
 from .DcBivariateConsoMap import DcBivariateConsoMap
 
@@ -6,8 +6,8 @@ from .DcBivariateConsoMap import DcBivariateConsoMap
 class DcPopulationConsoMap(DcBivariateConsoMap):
     name = "dc population conso map"
     indicator_key = "population"
-    indicator_name = "Évolution annuelle de la population"
-    indicator_short = "évol. ann. pop."
+    indicator_name = "Évolution de la population"
+    indicator_short = "évolution annuelle population"
     indicator_unit = "%"
     indicator_gender = "f"
 
@@ -49,16 +49,7 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
     def data_table(self):
         """Extended data table with population start/end values."""
         land_names = {land.land_id: land.name for land in self.lands}
-        labels = self._category_labels()
-        start_field, end_field = self._population_fields
-
-        indic_data = {
-            obj.land_id: obj
-            for obj in LandDcPopulation.objects.filter(
-                land_id__in=[land.land_id for land in self.lands],
-                land_type=self.child_land_type,
-            )
-        }
+        labels = self._category_labels
 
         def fmt(v):
             return f"{v:,.0f}" if v is not None else "-"
@@ -66,10 +57,8 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
         return {
             "headers": [
                 AdminRef.get_label(self.child_land_type),
-                "Pop. début",
-                "Pop. fin",
-                "Évolution pop.",
-                f"Conso. {self.start_date}-{self.end_date} (ha)",
+                "Évolution de la population (%/an)",
+                f"Consommation {self.start_date}-{self.end_date} (ha/an)",
                 "Catégorie",
             ],
             "boldFirstColumn": True,
@@ -78,8 +67,6 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
                     "name": "",
                     "data": [
                         land_names.get(d["land_id"], d["land_id"]),
-                        fmt(getattr(indic_data.get(d["land_id"]), start_field, None)),
-                        fmt(getattr(indic_data.get(d["land_id"]), end_field, None)),
                         d["indic_fmt"],
                         d["conso_fmt"],
                         labels[d["category_id"]],
@@ -88,16 +75,3 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
                 for d in self.data
             ],
         }
-
-    def get_chart_title(self):
-        child_label = self.formatted_child_land_type
-        container = self._container_land
-        if self.land.land_type == AdminRef.COMMUNE:
-            return (
-                f"Population et consommation d'espaces des {child_label}s - "
-                f"{self.land.name} ({container.name}, {self.start_date}-{self.end_date})"
-            )
-        return (
-            f"Population et consommation d'espaces des {child_label}s - "
-            f"{container.name} ({self.start_date}-{self.end_date})"
-        )

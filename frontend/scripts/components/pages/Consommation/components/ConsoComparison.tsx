@@ -16,11 +16,6 @@ const BUBBLE_CHARTS = [
     description: "Ce graphique compare la consommation d'espaces NAF au regard de l'évolution démographique.",
   },
   {
-    chartId: "dc_logement_conso_comparison_chart",
-    label: "Logements",
-    description: "Ce graphique compare la consommation d'espaces NAF à destination de l'habitat au regard de l'évolution du parc de logements.",
-  },
-  {
     chartId: "dc_menages_conso_comparison_chart",
     label: "Ménages",
     description: "Ce graphique compare la consommation d'espaces NAF à destination de l'habitat au regard de l'évolution du nombre de ménages.",

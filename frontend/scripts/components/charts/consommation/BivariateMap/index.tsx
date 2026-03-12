@@ -133,9 +133,9 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
         : null;
 
     const indicQualif = [
-      `${indicName} 1er tercile`,
-      `${indicName} 2e tercile`,
-      `${indicName} 3e tercile`,
+      `${indicName} parmi les plus faibles`,
+      `${indicName} intermédiaire`,
+      `${indicName} parmi les plus élevées`,
     ];
 
     return {
@@ -208,7 +208,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
       </p>
       <p>
         <strong>Sources et millésimes.</strong><br />
-        L'axe consommation est calculé année par année à partir des fichiers fonciers (Cerema).
+        L'axe consommation est issu des fichiers fonciers (Cerema), annualisé pour afficher un rythme.
         L'axe indicateur socio-économique provient du recensement INSEE (dossier complet),
         disponible aux millésimes <strong>2011</strong>, <strong>2016</strong> et <strong>2022</strong>.
         L'évolution de l'indicateur est exprimée en rythme annuel moyen (% par an),
@@ -223,10 +223,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
         Les années <strong>2009</strong>, <strong>2010</strong> et <strong>2023</strong> ne disposent
         pas de données INSEE propres. Pour les périodes incluant ces années, le rythme annuel
         utilisé est celui du couple de millésimes le plus proche (par exemple,
-        2009–2012 utilise le rythme annuel 2011→2016). L'indicateur « résidences secondaires »
-        est un taux (% du parc de logements) et non une évolution ; il n'est pas annualisé.
-        L'axe consommation, lui, est toujours calculé sur les années réelles de la période
-        grâce aux fichiers fonciers annuels.
+        2009–2012 utilise le rythme annuel 2011→2016).
       </p>
     </div>
   ), []);

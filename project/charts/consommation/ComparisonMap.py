@@ -164,15 +164,8 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
+        geojson = json.loads(
+            serialize("geojson", self.lands, geometry_field="simple_geom", fields=("land_id", "name"), srid=3857)
         )
 
         # Filter out territories with no data
@@ -180,7 +173,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
 
         return super().param | {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
             "title": {
                 "text": (
