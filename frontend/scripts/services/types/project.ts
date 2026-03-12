@@ -70,6 +70,7 @@ export type UserLandPreferenceResultType = {
   is_favorited: boolean;
   target_2031: number | null;
   comparison_lands: ComparisonLand[];
+  is_main: boolean;
 };
 
 type ProjectDetailQueryArg = string | FetchArgs

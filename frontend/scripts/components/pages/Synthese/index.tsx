@@ -18,7 +18,6 @@ interface SyntheseProps {
 
 const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
   const urls = buildUrls(landData.land_type_slug, landData.slug);
-  console.log(landData);
 
   return (
     <div className="fr-container--fluid fr-p-3w">
