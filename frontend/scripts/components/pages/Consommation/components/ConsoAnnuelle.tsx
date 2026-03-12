@@ -37,7 +37,8 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
   } = useConsommationControls();
 
   const hasChildren = childLandTypes && childLandTypes.length > 0;
-  const mapChildType = childType || (childLandTypes && childLandTypes[0]);
+  const isCommune = landType === "COMM";
+  const mapChildType = childType || (childLandTypes && childLandTypes[0]) || (isCommune ? "COMM" : undefined);
   const drilldown = useMapDrilldown(mapChildType || "");
 
   const currentEntry = drilldown.navStack.at(-1) ?? null;
@@ -126,7 +127,7 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
           </GenericChart>
         </div>
 
-        {hasChildren && (
+        {(hasChildren || isCommune) && (
           <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
             {drilldown.navStack.length > 0 && (
               <nav className="fr-mb-1w" style={{ display: "flex", alignItems: "center", gap: "0.25rem" }} aria-label="Fil d'ariane de la carte">

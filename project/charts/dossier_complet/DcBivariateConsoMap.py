@@ -8,6 +8,7 @@ Colors are obtained by bilinear interpolation of 4 corner colors.
 """
 
 import json
+import time
 
 from django.core.serializers import serialize
 
@@ -77,8 +78,8 @@ PALETTE_TEAL = bilinear_palette("#99d8c9", "#00695c", "#e34a33", "#fdcc8a")
 # Orange – used by DcResidencesSecondairesConsoMap
 PALETTE_ORANGE = bilinear_palette("#fdd49e", "#d94701", "#e34a33", "#fdcc8a")
 
-CONSO_LABELS = ["1er tercile", "2e tercile", "3e tercile"]
-INDIC_LABELS = ["1er tercile", "2e tercile", "3e tercile"]
+CONSO_LABELS = ["parmi les plus faibles", "intermédiaire", "parmi les plus élevées"]
+INDIC_LABELS = ["parmi les plus faibles", "intermédiaire", "parmi les plus élevées"]
 
 
 def classify_3x3(conso_val, indic_val, conso_t1, conso_t2, indic_t1, indic_t2):
@@ -255,7 +256,7 @@ class DcBivariateConsoMap(DiagnosticChart):
         labels = []
         for clabel in CONSO_LABELS:
             for ilabel in INDIC_LABELS:
-                labels.append(f"Conso {clabel}, {self.indicator_short} {ilabel}")
+                labels.append(f"Consommation {clabel}, {self.indicator_short} {ilabel}")
         return labels
 
     @property
@@ -302,7 +303,7 @@ class DcBivariateConsoMap(DiagnosticChart):
         return {
             "headers": [
                 AdminRef.get_label(self.child_land_type),
-                self.indicator_short,
+                f"{self.indicator_short} ({self.indicator_unit}/an)" if self.indicator_unit else self.indicator_short,
                 f"{self.conso_label} {self.start_date}-{self.end_date} (%/an)",
                 "Catégorie",
             ],
@@ -326,12 +327,12 @@ class DcBivariateConsoMap(DiagnosticChart):
         container = self._container_land
         if self.land.land_type == AdminRef.COMMUNE:
             return (
-                f"{self.indicator_name} et {self.conso_label.lower()}"
+                f"Rythmes annuels de consommation et {self.indicator_name.lower()}"
                 f" des {child_label}s"
                 f" - {self.land.name} ({container.name}, {self.start_date}-{self.end_date})"
             )
         return (
-            f"{self.indicator_name} et {self.conso_label.lower()}"
+            f"Rythmes annuels de consommation et {self.indicator_name.lower()}"
             f" des {child_label}s"
             f" - {container.name} ({self.start_date}-{self.end_date})"
         )
@@ -388,6 +389,7 @@ class DcBivariateConsoMap(DiagnosticChart):
 
     @property
     def param(self):
+        _t0 = time.time()
         geojson = serialize(
             "geojson",
             self.lands,
@@ -395,6 +397,7 @@ class DcBivariateConsoMap(DiagnosticChart):
             fields=("land_id", "name"),
             srid=3857,
         )
+        _geojson_time = time.time() - _t0
 
         labels = self._category_labels()
         conso_t1, conso_t2, indic_t1, indic_t2 = self.thresholds
@@ -403,10 +406,12 @@ class DcBivariateConsoMap(DiagnosticChart):
         conso_values = [r["conso_pct"] for r in rows]
         indic_values = [r["indic_val"] for r in rows if r["indic_val"] is not None]
 
+        _total_time = time.time() - _t0
+
         return super().param | {
             "chart": {"map": json.loads(geojson)},
             "title": {"text": self.get_chart_title()},
-            "subtitle": {"text": ""},
+            "subtitle": {"text": f"[DEBUG] geojson: {_geojson_time:.3f}s | total param: {_total_time:.3f}s"},
             "credits": INSEE_CREDITS,
             "custom": {
                 "conso_t1": round(conso_t1, 4),

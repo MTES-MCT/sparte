@@ -22,14 +22,14 @@ interface ConsoDemographyProps {
 const BIVARIATE_MAPS = [
   { chartId: "dc_population_conso_map", label: "Population" },
   { chartId: "dc_menages_conso_map", label: "Ménages" },
-  { chartId: "dc_logement_conso_map", label: "Logements" },
   { chartId: "dc_emploi_conso_map", label: "Emploi" },
 ];
 
 const formatAnnualValue = (value: number | null | undefined, unit: string, isLoading: boolean) => {
   if (isLoading || value == null) return <Loader size={32} />;
   const sign = value > 0 ? "+" : "";
-  return <>{sign}{formatNumber({ number: value, decimals: 0 })} <span>{unit}</span></>;
+  const decimals = Math.abs(value) < 100 ? 1 : 0;
+  return <>{sign}{formatNumber({ number: value, decimals })} <span>{unit}</span></>;
 };
 
 const formatAnnualPercent = (value: number | null | undefined, isLoading: boolean) => {

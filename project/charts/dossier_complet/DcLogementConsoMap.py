@@ -9,7 +9,7 @@ class DcLogementConsoMap(DcBivariateConsoMap):
     bivariate_colors = PALETTE_BLUE
     conso_field = "habitat"
     indicator_name = "Évolution annuelle du parc de logements"
-    indicator_short = "évol. ann. logements"
+    indicator_short = "évolution annuelle logements"
     indicator_unit = "%"
     indicator_gender = "f"
 

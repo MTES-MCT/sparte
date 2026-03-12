@@ -8,8 +8,8 @@ class DcEmploiConsoMap(DcBivariateConsoMap):
     indicator_key = "emploi"
     bivariate_colors = PALETTE_PURPLE
     conso_field = "activite"
-    indicator_name = "Évolution annuelle de l'emploi"
-    indicator_short = "évol. ann. emploi"
+    indicator_name = "Évolution de l'emploi"
+    indicator_short = "évolution annuelle emploi"
     indicator_unit = "%"
     indicator_gender = "f"
 

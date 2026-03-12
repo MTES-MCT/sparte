@@ -9,7 +9,7 @@ class DcResidencesSecondairesConsoMap(DcBivariateConsoMap):
     bivariate_colors = PALETTE_ORANGE
     conso_field = "habitat"
     indicator_name = "Taux de résidences secondaires"
-    indicator_short = "taux rés. sec."
+    indicator_short = "taux résidences secondaires"
     indicator_unit = "%"
 
     verdicts = [
