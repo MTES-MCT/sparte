@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import Lottie from 'lottie-react';
+import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { theme } from '@theme';
 import Button from '@components/ui/Button';
 import BaseCard from '@components/ui/BaseCard';
@@ -36,7 +36,7 @@ const Wrapper = styled(BaseCard)`
 
 const AnimationSide = styled.div`
   position: relative;
-  width: 35%;
+  width: 25%;
   min-width: 200px;
   background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryHover} 100%);
 
@@ -50,7 +50,7 @@ const AnimationWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 50%;
+  width: 60%;
   height: auto;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
 
@@ -182,6 +182,17 @@ const Feedback: React.FC<FeedbackProps> = ({ context }) => {
   const [animatedStar, setAnimatedStar] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitFeedback, { isLoading }] = useSubmitFeedbackMutation();
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+
+  useEffect(() => {
+    lottieRef.current?.goToAndPlay(0);
+  }, []);
+
+  useEffect(() => {
+    setRating(0);
+    setComment('');
+    setSubmitted(false);
+  }, [context?.pageName, context?.landId]);
 
   const handleStarClick = (star: number) => {
     setRating(star);
@@ -206,6 +217,7 @@ const Feedback: React.FC<FeedbackProps> = ({ context }) => {
 
       await submitFeedback(payload as any).unwrap();
 
+      lottieRef.current?.goToAndPlay(0);
       setSubmitted(true);
     } catch {
       setSubmitted(true);
@@ -219,8 +231,10 @@ const Feedback: React.FC<FeedbackProps> = ({ context }) => {
       <AnimationSide>
         <AnimationWrapper>
           <Lottie
+            lottieRef={lottieRef}
             animationData={animation}
-            loop={true}
+            loop={false}
+            autoplay={false}
             style={{ width: '100%', height: '100%' }}
           />
         </AnimationWrapper>
