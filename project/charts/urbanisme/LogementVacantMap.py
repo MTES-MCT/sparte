@@ -1,6 +1,3 @@
-import json
-
-from django.core.serializers import serialize
 from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
@@ -10,6 +7,7 @@ from project.charts.constants import (
     LOGEMENT_VACANT_COLOR_SOCIAL,
 )
 from public_data.models import AdminRef, LandModel
+from public_data.models.administration import LandGeoJSON
 from public_data.models.urbanisme import LogementVacant
 
 
@@ -114,18 +112,7 @@ class LogementVacantMapPercent(LogementVacantMapBase):
 
     @property
     def param(self):
-        geojson = json.loads(
-            serialize(
-                "geojson",
-                self.lands,
-                geometry_field="simple_geom",
-                fields=(
-                    "land_id",
-                    "name",
-                ),
-                srid=3857,
-            )
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.params.get("child_land_type"))
 
         # Données avec pourcentage valide (non secrétisées et pourcentage non null)
         data_with_values = [
@@ -218,15 +205,7 @@ class LogementVacantMapAbsolute(LogementVacantMapBase):
 
     @property
     def param(self):
-        geojson = json.loads(
-            serialize(
-                "geojson",
-                self.lands,
-                geometry_field="simple_geom",
-                fields=("land_id", "name"),
-                srid=3857,
-            )
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.params.get("child_land_type"))
 
         data_with_values = [
             d

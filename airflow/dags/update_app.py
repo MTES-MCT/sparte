@@ -144,6 +144,7 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landartiffluxusagecomposition",
                 "copy_public_data_landartiffluxusagecompositionindex",
                 "copy_public_data_land",
+                "copy_public_data_land_geojson",
                 "copy_public_data_landfrichepollution",
                 "copy_public_data_landfrichestatut",
                 "copy_public_data_landfrichesurfacerank",
@@ -621,6 +622,20 @@ def update_app():  # noqa: C901
         )
 
     @task.python
+    def copy_public_data_land_geojson(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_land_geojson",
+            to_table="public.public_data_land_geojson",
+            environment=context["params"]["environment"],
+            custom_columns_type={
+                "geojson": "jsonb",
+            },
+            btree_index_columns=[
+                ["land_id", "land_type", "child_land_type"],
+            ],
+        )
+
+    @task.python
     def copy_public_data_landfrichepollution(**context):
         return copy_table_from_dw_to_app(
             from_table="public_for_app.for_app_landfrichepollution",
@@ -902,6 +917,7 @@ def update_app():  # noqa: C901
         copy_public_data_landartiffluxusagecomposition(),
         copy_public_data_landartiffluxusagecompositionindex(),
         copy_public_data_land(),
+        copy_public_data_land_geojson(),
         copy_public_data_landfrichepollution(),
         copy_public_data_landfrichestatut(),
         copy_public_data_landfrichesurfacerank(),

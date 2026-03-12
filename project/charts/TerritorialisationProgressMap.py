@@ -83,13 +83,7 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
 
     def get_geojson(self):
         return json.loads(
-            serialize(
-                "geojson",
-                self.lands,
-                geometry_field="simple_geom",
-                fields=("land_id", "name"),
-                srid=3857,
-            )
+            serialize("geojson", self.lands, geometry_field="simple_geom", fields=("land_id", "name"), srid=3857)
         )
 
 

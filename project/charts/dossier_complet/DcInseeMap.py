@@ -1,10 +1,7 @@
-import json
-
-from django.core.serializers import serialize
-
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
 from public_data.models import AdminRef, LandModel
+from public_data.models.administration import LandGeoJSON
 
 
 class DcInseeMap(DiagnosticChart):
@@ -98,13 +95,7 @@ class DcInseeMap(DiagnosticChart):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=("land_id", "name"),
-            srid=3857,
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.child_land_type)
 
         data_values = [d[self.color_key] for d in self.data if d[self.color_key] is not None]
 
@@ -112,7 +103,7 @@ class DcInseeMap(DiagnosticChart):
         title = self.map_title.format(child_label=child_label, land_name=self.land.name)
 
         return super().param | {
-            "chart": {"map": json.loads(geojson)},
+            "chart": {"map": geojson},
             "title": {"text": title},
             "credits": INSEE_CREDITS,
             "mapNavigation": {"enabled": True},
@@ -363,17 +354,11 @@ class DcResidencesSecondairesMap(DcInseeMap):
         title = f"Part des résidences secondaires des {child_label}s - {self.land.name} ({self.year})"
 
         base = super(DcInseeMap, self).param  # skip DcInseeMap.param, go to DiagnosticChart
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=("land_id", "name"),
-            srid=3857,
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.child_land_type)
         data_values = [d[self.color_key] for d in self.data if d[self.color_key] is not None]
 
         return base | {
-            "chart": {"map": json.loads(geojson)},
+            "chart": {"map": geojson},
             "title": {"text": title},
             "credits": INSEE_CREDITS,
             "mapNavigation": {"enabled": True},

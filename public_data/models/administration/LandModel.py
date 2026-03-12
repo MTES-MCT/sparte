@@ -1,10 +1,8 @@
-import json
 from functools import cached_property
 
 from django.contrib.gis.db.models import MultiPolygonField
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import TrigramSimilarity
-from django.core.serializers import serialize
 from django.db import models
 from django.db.models.functions import Lower
 from django.http import JsonResponse
@@ -478,20 +476,10 @@ class LandChildrenGeomViewset(viewsets.ViewSet):
     """Retourne les géométries des territoires enfants au format GeoJSON FeatureCollection."""
 
     def retrieve(self, request, land_type, land_id, child_land_type):
-        land = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        from public_data.models.administration import LandGeoJSON
+
         child_land_type = AdminRef.slug_to_code(child_land_type)
-        children = LandModel.objects.filter(
-            parent_keys__contains=[land.key],
-            land_type=child_land_type,
-        )
-        geojson = json.loads(
-            serialize(
-                "geojson",
-                children,
-                geometry_field="simple_geom",
-                fields=("land_id", "name"),
-            )
-        )
+        geojson = LandGeoJSON.for_parent(land_id, land_type, child_land_type)
         return JsonResponse(geojson)
 
 

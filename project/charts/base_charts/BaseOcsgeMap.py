@@ -1,6 +1,3 @@
-import json
-
-from django.core.serializers import serialize
 from django.utils.functional import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
@@ -11,6 +8,7 @@ from project.charts.constants import (
     OCSGE_CREDITS,
 )
 from public_data.models import AdminRef, LandModel
+from public_data.models.administration import LandGeoJSON
 
 
 class BaseOcsgeMap(DiagnosticChart):
@@ -184,13 +182,7 @@ class BaseOcsgeMap(DiagnosticChart):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=("land_id", "name"),
-            srid=3857,
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.params.get("child_land_type"))
 
         child_land_type = self.params.get("child_land_type")
         is_drillable = child_land_type != AdminRef.COMMUNE
@@ -221,7 +213,7 @@ class BaseOcsgeMap(DiagnosticChart):
 
         return super().param | {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
                 "backgroundColor": "transparent",
             },
             "title": {

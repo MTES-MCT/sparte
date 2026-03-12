@@ -7,14 +7,12 @@ Grid: 3 rows (conso terciles) × 3 cols (indicator terciles) = 9 categories.
 Colors are obtained by bilinear interpolation of 4 corner colors.
 """
 
-import json
-import time
-
-from django.core.serializers import serialize
+from functools import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
 from public_data.models import AdminRef, LandModel
+from public_data.models.administration import LandGeoJSON
 from public_data.models.bivariate import (
     BivariateConsoThreshold,
     BivariateIndicThreshold,
@@ -129,7 +127,7 @@ class DcBivariateConsoMap(DiagnosticChart):
     indicator_short = ""
     indicator_unit = ""
     indicator_gender = "m"
-    verdicts = [[""] * 3] * 3
+    verdicts = [["", "", ""], ["", "", ""], ["", "", ""]]
     bivariate_colors = PALETTE_GREEN
     conso_field = "total"
 
@@ -155,20 +153,17 @@ class DcBivariateConsoMap(DiagnosticChart):
     def end_date(self):
         return int(self.params.get("end_date", 2022))
 
-    @property
+    @cached_property
     def _container_land(self):
         """The land used as container for child territories.
         For communes, returns the parent EPCI so the map shows all communes of the EPCI."""
         if self.land.land_type != AdminRef.COMMUNE:
             return self.land
-        if hasattr(self, "_cached_container_land"):
-            return self._cached_container_land
         epci_key = next(
             (k for k in self.land.parent_keys if k.startswith(f"{AdminRef.EPCI}_")),
             None,
         )
-        self._cached_container_land = LandModel.objects.filter(key=epci_key).first() if epci_key else self.land
-        return self._cached_container_land
+        return LandModel.objects.filter(key=epci_key).first() if epci_key else self.land
 
     @property
     def formatted_child_land_type(self):
@@ -176,12 +171,14 @@ class DcBivariateConsoMap(DiagnosticChart):
             return AdminRef.get_label(self.child_land_type)
         return AdminRef.get_label(self.child_land_type).lower()
 
-    @property
+    @cached_property
     def lands(self):
         container = self._container_land
-        return LandModel.objects.filter(
-            parent_keys__contains=[f"{container.land_type}_{container.land_id}"],
-            land_type=self.child_land_type,
+        return list(
+            LandModel.objects.filter(
+                parent_keys__contains=[f"{container.land_type}_{container.land_id}"],
+                land_type=self.child_land_type,
+            )
         )
 
     def format_indicator(self, value):
@@ -195,14 +192,11 @@ class DcBivariateConsoMap(DiagnosticChart):
 
     # ----- Data computation (cached) -----
 
-    @property
+    @cached_property
     def _raw_data(self):
-        if hasattr(self, "_cached_raw"):
-            return self._cached_raw
-
         conso_start = self.start_date
         conso_end = self.end_date
-        child_land_ids = list(self.lands.values_list("land_id", flat=True))
+        child_land_ids = [land.land_id for land in self.lands]
         child_type = self.child_land_type
 
         # Read pre-computed rates from dbt
@@ -244,20 +238,20 @@ class DcBivariateConsoMap(DiagnosticChart):
         )
         indic_t1, indic_t2 = float(indic_th.t1_max), float(indic_th.t2_max)
 
-        self._cached_raw = (rows, conso_t1, conso_t2, indic_t1, indic_t2)
-        return self._cached_raw
+        return (rows, conso_t1, conso_t2, indic_t1, indic_t2)
 
     @property
     def thresholds(self):
         _, conso_t1, conso_t2, indic_t1, indic_t2 = self._raw_data
         return conso_t1, conso_t2, indic_t1, indic_t2
 
+    @cached_property
     def _category_labels(self):
-        labels = []
-        for clabel in CONSO_LABELS:
-            for ilabel in INDIC_LABELS:
-                labels.append(f"Consommation {clabel}, {self.indicator_short} {ilabel}")
-        return labels
+        return [
+            f"Consommation {clabel}, {self.indicator_short} {ilabel}"
+            for clabel in CONSO_LABELS
+            for ilabel in INDIC_LABELS
+        ]
 
     @property
     def highlight_land_id(self):
@@ -265,10 +259,10 @@ class DcBivariateConsoMap(DiagnosticChart):
             return self.land.land_id
         return self.params.get("highlight_land_id")
 
-    @property
+    @cached_property
     def data(self):
         rows, conso_t1, conso_t2, indic_t1, indic_t2 = self._raw_data
-        labels = self._category_labels()
+        labels = self._category_labels
 
         result = []
         for row in rows:
@@ -298,7 +292,7 @@ class DcBivariateConsoMap(DiagnosticChart):
     @property
     def data_table(self):
         land_names = {land.land_id: land.name for land in self.lands}
-        labels = self._category_labels()
+        labels = self._category_labels
 
         return {
             "headers": [
@@ -389,29 +383,20 @@ class DcBivariateConsoMap(DiagnosticChart):
 
     @property
     def param(self):
-        _t0 = time.time()
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=("land_id", "name"),
-            srid=3857,
-        )
-        _geojson_time = time.time() - _t0
+        container = self._container_land
+        geojson = LandGeoJSON.for_parent(container.land_id, container.land_type, self.child_land_type)
 
-        labels = self._category_labels()
+        labels = self._category_labels
         conso_t1, conso_t2, indic_t1, indic_t2 = self.thresholds
 
-        rows = self._raw_data[0]
-        conso_values = [r["conso_pct"] for r in rows]
-        indic_values = [r["indic_val"] for r in rows if r["indic_val"] is not None]
-
-        _total_time = time.time() - _t0
+        data = self.data
+        conso_values = [d["conso_pct"] for d in data]
+        indic_values = [d["indic_val"] for d in data if d["indic_val"] is not None]
 
         return super().param | {
-            "chart": {"map": json.loads(geojson)},
+            "chart": {"map": geojson},
             "title": {"text": self.get_chart_title()},
-            "subtitle": {"text": f"[DEBUG] geojson: {_geojson_time:.3f}s | total param: {_total_time:.3f}s"},
+            "subtitle": {"text": self.get_chart_subtitle()},
             "credits": INSEE_CREDITS,
             "custom": {
                 "conso_t1": round(conso_t1, 4),

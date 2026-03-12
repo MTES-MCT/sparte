@@ -49,7 +49,7 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
     def data_table(self):
         """Extended data table with population start/end values."""
         land_names = {land.land_id: land.name for land in self.lands}
-        labels = self._category_labels()
+        labels = self._category_labels
 
         def fmt(v):
             return f"{v:,.0f}" if v is not None else "-"

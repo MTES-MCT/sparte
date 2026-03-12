@@ -1,7 +1,3 @@
-import json
-
-from django.core.serializers import serialize
-
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import (
     CEREMA_CREDITS,
@@ -10,6 +6,7 @@ from project.charts.constants import (
     MAP_NORTH_INDICATOR,
 )
 from public_data.models import AdminRef, LandConsoStats, LandModel
+from public_data.models.administration import LandGeoJSON
 
 
 class ConsoMap(DiagnosticChart):
@@ -157,23 +154,14 @@ class ConsoMap(DiagnosticChart):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.params.get("child_land_type"))
 
         # Filter out territories with no data
         data_with_values = self.data
 
         return super().param | {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
             "title": {
                 "text": (
@@ -385,21 +373,11 @@ class ConsoMapRelative(ConsoMap):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
-        )
+        container = self._container_land
+        geojson = LandGeoJSON.for_parent(container.land_id, container.land_type, self.params.get("child_land_type"))
 
         # Filter out territories with no data
         data_with_values = [d for d in self.data if d["total_conso_ha"] > 0]
-
-        container = self._container_land
         if self.land.land_type == AdminRef.COMMUNE:
             title_text = (
                 f"Consommation relative à la surface des {self.formatted_child_land_type}s "
@@ -413,7 +391,7 @@ class ConsoMapRelative(ConsoMap):
 
         base_param = {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
             "title": {"text": title_text},
             "mapNavigation": {"enabled": True},
@@ -514,20 +492,11 @@ class ConsoMapBubble(ConsoMap):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.params.get("child_land_type"))
 
         base_param = {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
             "title": {
                 "text": (

@@ -4,7 +4,8 @@
         indexes=[
             {'columns': ['land_id'], 'type': 'btree'},
             {'columns': ['land_type'], 'type': 'btree'},
-            {'columns': ['geom'], 'type': 'gist'}
+            {'columns': ['geom'], 'type': 'gist'},
+            {'columns': ['parent_keys'], 'type': 'gin'},
         ])
 }}
 
