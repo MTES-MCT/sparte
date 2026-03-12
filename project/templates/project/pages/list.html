@@ -12,18 +12,20 @@ Mes territoires
 
     {% if main_pref %}
     <div class="fr-mb-4w">
-        <h2 class="fr-h4 fr-mb-1w">Territoire principal d'intérêt</h2>
-        <div class="fr-card fr-card--horizontal fr-card--sm fr-card--shadow">
+        <div class="fr-card fr-card--horizontal fr-card--sm fr-card--shadow" style="background-color: #f5f5fe;">
             <div class="fr-card__body">
                 <div class="fr-card__content fr-pb-1w">
                     <div class="fr-card__title d-flex justify-content-between align-items-center">
-                        <h3 class="fr-mb-0">{{ main_pref.land.name }}</h3>
+                        <div class="d-flex align-items-center gap-2">
+                            <h3 class="fr-mb-0">{{ main_pref.land.name }}</h3>
+                            <p class="fr-badge fr-badge--sm fr-badge--new fr-badge--no-icon">Territoire principal d'intérêt</p>
+                        </div>
                         <p class="fr-badge fr-badge--sm fr-badge--search">{{ main_pref.land.land_type_label }}</p>
                     </div>
                     <div class="fr-card__end fr-mt-0">
                         <ul class="fr-badges-group">
                             <li>
-                                <p class="fr-badge fr-badge--sm fr-badge--purple-glycine">
+                                <p class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">
                                     <span class="bi bi-bounding-box-circles fr-mr-1v" aria-hidden="true"></span>
                                     {{ main_pref.land.surface|floatformat:0 }} ha
                                 </p>
@@ -76,7 +78,7 @@ Mes territoires
         {% for pref in preferences %}
         {% if pref.land and not pref.is_favorite %}
         <div class="fr-col-12 fr-col-md-12 diagnostic-list-item">
-            <div class="fr-card fr-card--horizontal fr-card--sm">
+            <div class="fr-card fr-card--horizontal fr-card--sm fr-card--shadow">
                 <div class="fr-card__body">
                     <div class="fr-card__content fr-pb-1w">
                         <div class="fr-card__title d-flex justify-content-between align-items-center">
@@ -86,7 +88,7 @@ Mes territoires
                         <div class="fr-card__end fr-mt-0">
                             <ul class="fr-badges-group">
                                 <li>
-                                    <p class="fr-badge fr-badge--sm fr-badge--purple-glycine">
+                                    <p class="fr-badge fr-badge--sm  fr-badge--info fr-badge--no-icon">
                                         <span class="bi bi-bounding-box-circles fr-mr-1v" aria-hidden="true"></span>
                                         {{ pref.land.surface|floatformat:0 }} ha
                                     </p>
