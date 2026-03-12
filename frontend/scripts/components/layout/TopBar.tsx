@@ -104,7 +104,8 @@ const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
         });
     }, [landType, landId, toggleFavorite, guardedAction]);
 
-    const isFavorited = preference?.is_favorited ?? false;
+    const isMain = preference?.is_main ?? false;
+    const isFavorited = isMain || (preference?.is_favorited ?? false);
 
     return (
         <Container>
@@ -115,11 +116,23 @@ const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
                     <FavoriteButton
                         variant="tertiary" noBackground
                         $active={isFavorited}
-                        onClick={handleToggleFavorite}
+                        onClick={isMain ? undefined : handleToggleFavorite}
                         disabled={isToggling}
                         data-tooltip-id="tooltip-favorite"
-                        data-tooltip-content={isFavorited ? 'Retirer des territoires favoris' : 'Ajouter aux territoires favoris'}
-                        aria-label={isFavorited ? 'Retirer des territoires favoris' : 'Ajouter aux territoires favoris'}
+                        data-tooltip-content={
+                            isMain
+                                ? "Territoire principal d'intérêt, vous ne pouvez pas le retirer des favoris"
+                                : isFavorited
+                                    ? "Retirer des territoires favoris"
+                                    : "Ajouter aux territoires favoris"
+                        }
+                        aria-label={
+                            isMain
+                                ? "Territoire principal d'intérêt, vous ne pouvez pas le retirer des favoris"
+                                : isFavorited
+                                    ? "Retirer des territoires favoris"
+                                    : "Ajouter aux territoires favoris"
+                        }
                     >
                         {isFavorited ? <i className='bi bi-star-fill'></i> : <i className='bi bi-star'></i>}
                         <Tooltip id="tooltip-favorite" className="fr-text--xs" place="right" />

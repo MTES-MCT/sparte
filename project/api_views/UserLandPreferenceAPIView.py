@@ -15,8 +15,22 @@ class UserLandPreferenceAPIView(View):
 
     def get(self, request, land_type, land_id):
         land_type = AdminRef.slug_to_code(land_type)
+        is_main = bool(
+            request.user
+            and request.user.is_authenticated
+            and request.user.main_land_type == land_type
+            and request.user.main_land_id == land_id
+        )
+
         if not request.user or not request.user.is_authenticated:
-            return JsonResponse({"is_favorited": False, "target_2031": None, "comparison_lands": []})
+            return JsonResponse(
+                {
+                    "is_favorited": False,
+                    "target_2031": None,
+                    "comparison_lands": [],
+                    "is_main": False,
+                }
+            )
 
         try:
             pref = UserLandPreference.objects.get(
@@ -29,10 +43,18 @@ class UserLandPreferenceAPIView(View):
                     "is_favorited": True,
                     "target_2031": float(pref.target_2031) if pref.target_2031 is not None else None,
                     "comparison_lands": pref.comparison_lands,
+                    "is_main": is_main,
                 }
             )
         except UserLandPreference.DoesNotExist:
-            return JsonResponse({"is_favorited": False, "target_2031": None, "comparison_lands": []})
+            return JsonResponse(
+                {
+                    "is_favorited": False,
+                    "target_2031": None,
+                    "comparison_lands": [],
+                    "is_main": is_main,
+                }
+            )
 
 
 class UpdatePreferenceTarget2031APIView(View):
