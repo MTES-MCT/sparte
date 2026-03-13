@@ -161,6 +161,7 @@ class LandModel(models.Model):
     evolution_residences_secondaires_percent = models.FloatField(null=True)
     evolution_residences_secondaires_absolute = models.FloatField(null=True)
     densite_residences_secondaires = models.FloatField(null=True)
+    competence_planification = models.BooleanField()
 
     class Meta:
         managed = False
