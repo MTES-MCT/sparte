@@ -1,4 +1,5 @@
 import React from 'react';
+import Loader from '@components/ui/Loader';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import { buildUrls } from '@utils/projectUrls';
@@ -145,8 +146,7 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
 
                             {isDraftsLoading ? (
                                 <EmptyDrafts>
-                                    <span className="fr-spinner fr-spinner--sm" aria-hidden="true" />
-                                    Chargement...
+                                    <Loader size={32} />
                                 </EmptyDrafts>
                             ) : drafts.length === 0 ? (
                                 <EmptyDrafts>

@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef } from 'react';
+import Loader from '@components/ui/Loader';
 import { useEditor, EditorContent } from '@tiptap/react';
 import Document from '@tiptap/extension-document';
 import Paragraph from '@tiptap/extension-paragraph';
@@ -218,7 +219,7 @@ const EditableContent: React.FC<{
                     <Label className="fr-label">Commentaire</Label>
                 </ZoneHeader>
                 <EditorArea>
-                    <p style={{ color: 'var(--text-mention-grey)', fontStyle: 'italic' }}>Chargement...</p>
+                    <Loader size={32} />
                 </EditorArea>
             </ZoneWrapper>
         );
