@@ -179,6 +179,7 @@ export type LandDetailResultType = {
     evolution_residences_secondaires_percent: number | null;
     evolution_residences_secondaires_absolute: number | null;
     densite_residences_secondaires: number | null;
+    competence_planification: boolean;
 };
 
 type LandDetailQueryArg = string | FetchArgs | {

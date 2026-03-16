@@ -1,4 +1,5 @@
 import React from "react";
+import Loader from "@components/ui/Loader";
 import { LandDetailResultType } from "@services/types/land";
 import Triptych from "@components/ui/Triptych";
 import { TopBarContent } from "@components/layout/TopBarContent";
@@ -71,7 +72,7 @@ const ArtificialisationContent: React.FC = () => {
   const { isLoading, error, name, millesimes, isInterdepartemental } = useArtificialisationContext();
 
   if (isLoading) {
-    return <div role="status" aria-live="polite">Chargement...</div>;
+    return <Loader wrap={true} />;
   }
 
   if (error) {

@@ -49,7 +49,7 @@ const DIAGNOSTICS = [
 ];
 
 const Container = styled(BaseCard)`
-  background: linear-gradient(135deg, ${theme.colors.primaryBg} 0%, white 100%);
+  background: ${theme.colors.primaryBg};
 `;
 
 const Title = styled.h4`

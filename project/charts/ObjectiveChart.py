@@ -134,12 +134,11 @@ class ObjectiveChart(DiagnosticChart):
                 reference_label = f"suggéré ({target_reference}%)"
             else:
                 reference_label = f"réglementaire ({target_reference}%)"
-            color_bar = "#A558A0"  # Violet
-            color_line = "#8B4789"  # Violet foncé
         else:
             reference_label = "national (50%)"
-            color_bar = "#b6c1ea"  # Bleu
-            color_line = "#8c9ace"  # Bleu foncé
+
+        color_bar = "#bce3d5"
+        color_line = "#059669"
 
         series = [
             {
@@ -180,7 +179,7 @@ class ObjectiveChart(DiagnosticChart):
                         "name": f"Consommation annualisée selon objectif personnalisé ({target_custom}%)",
                         "yAxis": 1,
                         "data": list(),
-                        "color": "#B6DFDE",
+                        "color": "#d8ccff",  # Violet clair (purpleBorder)
                         "zIndex": 1,
                     },
                     {
@@ -188,7 +187,7 @@ class ObjectiveChart(DiagnosticChart):
                         "data": list(),
                         "type": "line",
                         "dashStyle": "Dash",
-                        "color": "#98cecc",
+                        "color": "#4318FF",  # Violet (purple)
                         "zIndex": 4,
                     },
                 ]

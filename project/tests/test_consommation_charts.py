@@ -307,6 +307,8 @@ class PopulationConsoComparisonChartTest(BaseChartTestCase):
         """Set up with comparison lands."""
         super().setUp()
         self.params["comparison_lands"] = []
+        # Add surface for consumption calculation
+        self.mock_land.surface = 100
 
     @patch("public_data.domain.containers.PublicDataContainer.population_progression_service")
     @patch("public_data.domain.containers.PublicDataContainer.consommation_comparison_service")
@@ -326,6 +328,7 @@ class PopulationConsoComparisonChartTest(BaseChartTestCase):
         mock_pop_stats = Mock()
         mock_pop_stats.land = mock_land_item
         mock_pop_stats.evolution = 100.0  # Non-zero for max() calculation
+        mock_pop_stats.evolution_percent = 10.0  # Numeric value for rounding
 
         mock_conso_stats = Mock()
         mock_conso_stats.land = mock_land_item
@@ -342,6 +345,7 @@ class PopulationConsoComparisonChartTest(BaseChartTestCase):
         # Mock comparison service with proper attributes
         mock_comparison_land = Mock()
         mock_comparison_land.name = "Test Territory"
+        mock_comparison_land.surface = 100  # Numeric surface for proportional consumption
 
         mock_comparison = Mock()
         mock_comparison.land = mock_comparison_land
@@ -419,6 +423,7 @@ class ChartIntegrationTest(BaseChartTestCase):
         mock_pop_stat_item = Mock()
         mock_pop_stat_item.land = mock_land_item
         mock_pop_stat_item.evolution = 100.0
+        mock_pop_stat_item.evolution_percent = 10.0  # Numeric value for rounding
 
         mock_conso_stat_item = Mock()
         mock_conso_stat_item.land = mock_land_item

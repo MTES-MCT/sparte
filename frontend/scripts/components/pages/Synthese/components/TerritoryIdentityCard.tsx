@@ -122,8 +122,8 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
   });
 
   const population = populationData?.[0]?.population || null;
-  const hasCompetenceUrba = true; // TODO: remove this once we have the competence urbanisme data
-
+  const hasCompetenceUrba = landData.competence_planification;
+console.log(landData.competence_planification)
   const identityItems = [
     {
       icon: "bi bi-geo-alt-fill",
