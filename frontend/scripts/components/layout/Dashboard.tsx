@@ -23,7 +23,6 @@ import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
 import LogementVacantStatus from '@components/features/status/LogementVacantStatus';
-import { LogementVacantStatusEnum } from '@services/types/land';
 import FricheStatus from '@components/features/status/FricheStatus';
 
 interface DashboardProps {
@@ -233,6 +232,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                 <RouteWrapper
                                                     title="Téléchargements"
                                                     landData={landData}
+                                                    showFeedback={false}
                                                 >
                                                     <Downloads landData={landData} />
                                                 </RouteWrapper>
@@ -244,6 +244,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                 <RouteWrapper
                                                     title="Téléchargements"
                                                     landData={landData}
+                                                    showFeedback={false}
                                                 >
                                                     <Downloads landData={landData} />
                                                 </RouteWrapper>
