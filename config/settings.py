@@ -719,6 +719,9 @@ CRISP_API_KEY = env.str("CRISP_API_KEY", default="")
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
+# Allow Referer header for cross-origin requests (required by OSM tile servers)
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]
 
 # App parameters (previously stored in database via django_app_parameter)
