@@ -307,6 +307,8 @@ class PopulationConsoComparisonChartTest(BaseChartTestCase):
         """Set up with comparison lands."""
         super().setUp()
         self.params["comparison_lands"] = []
+        # Add surface for consumption calculation
+        self.mock_land.surface = 100
 
     @patch("public_data.domain.containers.PublicDataContainer.population_progression_service")
     @patch("public_data.domain.containers.PublicDataContainer.consommation_comparison_service")
@@ -343,6 +345,7 @@ class PopulationConsoComparisonChartTest(BaseChartTestCase):
         # Mock comparison service with proper attributes
         mock_comparison_land = Mock()
         mock_comparison_land.name = "Test Territory"
+        mock_comparison_land.surface = 100  # Numeric surface for proportional consumption
 
         mock_comparison = Mock()
         mock_comparison.land = mock_comparison_land
