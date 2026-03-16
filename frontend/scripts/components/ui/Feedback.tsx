@@ -32,25 +32,44 @@ const starPop = keyframes`
 const Wrapper = styled(BaseCard)`
   display: flex;
   align-items: stretch;
+  background: ${theme.colors.primaryBg};
 `;
 
 const AnimationSide = styled.div`
   position: relative;
-  width: 25%;
-  min-width: 200px;
-  background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryHover} 100%);
+  flex: 0 0 220px;
+  overflow: visible;
 
   @media (max-width: 768px) {
     display: none;
   }
 `;
 
+const AnimationBackground = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, ${theme.colors.primary} 0%, ${theme.colors.primaryHover} 100%);
+  clip-path: ellipse(48% 40% at 26% 85%);
+  z-index: 0;
+  max-width: 300px;
+`;
+
+const AnimationSideInner = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  z-index: 1;
+`;
+
 const AnimationWrapper = styled.div`
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60%;
+  bottom: -7%;
+  left: -5%;
+  width: 115%;
+  max-width: 300px;
   height: auto;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
 
@@ -60,8 +79,7 @@ const AnimationWrapper = styled.div`
 `;
 
 const ContentSide = styled.div`
-  flex: 1;
-  padding: 2vw 2vw 2vw 3vw;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -229,17 +247,20 @@ const Feedback: React.FC<FeedbackProps> = ({ context }) => {
   return (
     <Wrapper>
       <AnimationSide>
-        <AnimationWrapper>
-          <Lottie
-            lottieRef={lottieRef}
-            animationData={animation}
-            loop={false}
-            autoplay={false}
-            style={{ width: '100%', height: '100%' }}
-          />
-        </AnimationWrapper>
+        <AnimationBackground />
+        <AnimationSideInner>
+          <AnimationWrapper>
+            <Lottie
+              lottieRef={lottieRef}
+              animationData={animation}
+              loop={false}
+              autoplay={false}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </AnimationWrapper>
+        </AnimationSideInner>
       </AnimationSide>
-      <ContentSide>
+      <ContentSide className="fr-p-3w">
         {submitted ? (
           <>
             <Title>Votre avis a bien été envoyé !</Title>
