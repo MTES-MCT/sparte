@@ -3,6 +3,7 @@ from .LandGeoJSON import LandGeoJSON
 from .LandModel import (
     LandChildrenGeomViewset,
     LandModel,
+    LandModelFullGeomViewset,
     LandModelGeomViewset,
     LandModelSearchSerializer,
     LandModelSerializer,
@@ -17,5 +18,6 @@ __all__ = [
     "LandModelSerializer",
     "LandModelSearchSerializer",
     "LandModelGeomViewset",
+    "LandModelFullGeomViewset",
     "LandChildrenGeomViewset",
 ]

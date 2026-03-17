@@ -463,13 +463,29 @@ class LandModelGeomSerializer(serializers.ModelSerializer):
         fields = ("simple_geom",)
 
 
+class LandModelFullGeomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LandModel
+        fields = ("geom",)
+
+
 class LandModelGeomViewset(viewsets.ViewSet):
     queryset = LandModel.objects.all()
     serializer_class = LandModelGeomSerializer
 
     def retrieve(self, request, land_type, land_id):
-        queryset = LandModel.objects.get(land_id=land_id, land_type=land_type)
-        serializer = LandModelGeomSerializer(queryset)
+        obj = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        serializer = LandModelGeomSerializer(obj)
+        return Response(serializer.data)
+
+
+class LandModelFullGeomViewset(viewsets.ViewSet):
+    queryset = LandModel.objects.all()
+    serializer_class = LandModelFullGeomSerializer
+
+    def retrieve(self, request, land_type, land_id):
+        obj = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        serializer = LandModelFullGeomSerializer(obj)
         return Response(serializer.data)
 
 

@@ -13,6 +13,7 @@ import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
 import type { ControlsManager } from "../controls/ControlsManager";
 import { MODE_CONFIG } from "../constants/modeConfig";
 import { ZonageUrbanismeSidePanel, type SurfaceUnit } from "./sidePanel";
+import { createTerritoryClipLayers } from "../layers/territoryClipLayers";
 
 const OcsgeTooltip = styled.div`
 	position: absolute;
@@ -146,6 +147,23 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		mapRef.current = map;
 		onMapReady?.(map);
 
+		// Add territory clip layers (ortho snapshot + FBO mask compositing)
+		const clipPair = createTerritoryClipLayers(landData);
+		clipPair.loadGeometry().then(() => {
+			// Snapshot layer: captures ortho framebuffer, placed right after orthophoto
+			const firstDataLayer = map.getStyle()?.layers.find(
+				l => l.id !== "background" && l.id !== "orthophoto-layer"
+					&& l.id !== "ortho-snapshot-layer"
+			);
+			map.addLayer(clipPair.snapshotLayer, firstDataLayer?.id);
+
+			// Clip layer: composites ortho outside territory, placed before emprise
+			map.addLayer(clipPair.clipLayer, "emprise-layer");
+			map.triggerRepaint();
+		}).catch((err) => {
+			console.error("Failed to load territory clip geometry:", err);
+		});
+
 		// Offset the map center to account for the side panel (33% on the right)
 		requestAnimationFrame(() => {
 			const containerWidth = map.getContainer().clientWidth;
@@ -158,6 +176,18 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				});
 			}
 		});
+
+		// Add invisible emprise fill layer for point-in-territory hit testing
+		map.addLayer({
+			id: "emprise-fill-hittest",
+			type: "fill",
+			source: "emprise-source",
+			paint: { "fill-color": "transparent", "fill-opacity": 0 },
+		});
+
+		const isInsideTerritory = (point: maplibregl.PointLike): boolean => {
+			return map.queryRenderedFeatures(point, { layers: ["emprise-fill-hittest"] }).length > 0;
+		};
 
 		const zonageLayerPrefix = "zonage-urbanisme-layer";
 		let hoveredChecksum: string | null = null;
@@ -217,7 +247,8 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 			const lowZoom = map.getZoom() < 10;
 
-			const features = queryZonageFeatures(e.point);
+			// Disable interactions outside territory
+			const features = isInsideTerritory(e.point) ? queryZonageFeatures(e.point) : [];
 			if (features.length > 0) {
 				map.getCanvas().style.cursor = "pointer";
 				const feature = features[0];
@@ -273,7 +304,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		});
 
 		map.on("click", (e) => {
-			const features = queryZonageFeatures(e.point);
+			const features = isInsideTerritory(e.point) ? queryZonageFeatures(e.point) : [];
 			if (features.length > 0) {
 				const feature = features[0];
 				const checksum = feature.properties?.checksum ?? null;
@@ -352,9 +383,9 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		],
 		layers: [
 			{ type: "orthophoto" },
-			{ type: "emprise" },
 			{ type: layerType, nomenclature },
 			{ type: "zonage-urbanisme", mode },
+			{ type: "emprise" },
 		],
 		controlGroups: [
 			{

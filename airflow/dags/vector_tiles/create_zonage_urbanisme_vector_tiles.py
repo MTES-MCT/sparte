@@ -78,7 +78,7 @@ def create_zonage_urbanisme_vector_tiles():  # noqa: C901
                     public_for_vector_tiles.for_vector_tiles_zonage_urbanisme
                 WHERE
                     year_index = {index} AND
-                    departement = '{dept}'
+                    \\"DEPART\\" = '{dept}'
             """
             Container().sql_to_geojsonseq_on_s3_handler().export_sql_result_to_geojsonseq_on_s3(
                 sql=multiline_string_to_single_line(sql),

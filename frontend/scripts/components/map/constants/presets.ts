@@ -3,12 +3,12 @@ import type { ControlGroup } from "../types/controls";
 
 export const BASE_SOURCES: SourceConfig[] = [
     { type: "orthophoto" },
-    { type: "emprise" }
+    { type: "emprise" },
 ];
 
 export const BASE_LAYERS: LayerConfig[] = [
     { type: "orthophoto" },
-    { type: "emprise" }
+    { type: "emprise" },
 ];
 
 export const BASE_CONTROLS: ControlGroup[] = [

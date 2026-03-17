@@ -1,6 +1,7 @@
 import { BaseLayer } from "../layers/baseLayer";
 import { EmpriseLayer } from "../layers/empriseLayer";
 import { OrthophotoLayer } from "../layers/orthophotoLayer";
+import { OrthophotoOverlayLayer } from "../layers/orthophotoOverlayLayer";
 import { ImpermeabilisationLayer } from "../layers/impermeabilisationLayer";
 import { ArtificialisationLayer } from "../layers/artificialisationLayer";
 import { ImpermeabilisationDiffLayer } from "../layers/impermeabilisationDiffLayer";
@@ -103,6 +104,7 @@ const layerRegistry: Record<string, LayerFactory> = {
     "carroyage-lea": (_cfg, landData) => new CarroyageLeaLayer(landData),
     "carroyage-lea-outline": (_cfg, landData) => new CarroyageLeaOutlineLayer(landData),
     "osm": () => new OsmLayer(),
+    "orthophoto-overlay": () => new OrthophotoOverlayLayer(),
     "zonage-urbanisme": (cfg, landData) => {
         const config = cfg as ZonageUrbanismeLayerConfig;
         const millesimeIndex = getLastMillesimeIndex(landData.millesimes);

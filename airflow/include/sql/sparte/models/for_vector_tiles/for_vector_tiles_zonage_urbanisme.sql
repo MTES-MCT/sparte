@@ -17,7 +17,6 @@ select
     zonage.date_validation,
     zonage.id_document_urbanisme,
     zonage.surface as zonage_surface,
-    zonage.departement,
     zonage.srid_source,
     commune.name as commune_name,
     stats.year,

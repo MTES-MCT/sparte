@@ -188,6 +188,9 @@ export const djangoApi = createApi({
 		getLandGeom: builder.query({
 			query: ({ land_type, land_id }) => `/api/landsgeom/${land_type}/${land_id}`,
 		}),
+		getLandFullGeom: builder.query({
+			query: ({ land_type, land_id }) => `/api/landsfullgeom/${land_type}/${land_id}`,
+		}),
 		getLandChildrenGeom: builder.query({
 			query: ({ land_type, land_id, child_land_type }) => `/api/landchildrengeom/${land_type}/${land_id}/${child_land_type}`,
 		}),

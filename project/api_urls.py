@@ -177,6 +177,7 @@ from public_data.models import (
     LandImperStockUsageCompositionViewset,
     LandImperStockViewset,
     LandModel,
+    LandModelFullGeomViewset,
     LandModelGeomViewset,
     LandModelViewset,
     LandPopStatsViewset,
@@ -521,6 +522,11 @@ urlpatterns = [
     path("lands/<str:land_type>/<str:land_id>", LandModelViewset.as_view({"get": "retrieve"}), name="land"),
     path(
         "landsgeom/<str:land_type>/<str:land_id>", LandModelGeomViewset.as_view({"get": "retrieve"}), name="land_geom"
+    ),
+    path(
+        "landsfullgeom/<str:land_type>/<str:land_id>",
+        LandModelFullGeomViewset.as_view({"get": "retrieve"}),
+        name="land_full_geom",
     ),
     path(
         "landchildrengeom/<str:land_type>/<str:land_id>/<str:child_land_type>",
