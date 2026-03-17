@@ -244,6 +244,7 @@ class BaseOcsgeMap(DiagnosticChart):
                 "minColor": "#FFFFFF",
                 "maxColor": "#6a6af4",
                 "showInLegend": True,
+                "width": 120,
             },
             "series": [
                 {

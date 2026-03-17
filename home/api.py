@@ -3,13 +3,19 @@ import logging
 from rest_framework import serializers
 from rest_framework.mixins import CreateModelMixin
 from rest_framework.permissions import AllowAny
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.viewsets import GenericViewSet
 
 from crisp.services import send_feedback_to_crisp
 from home.models import PageFeedback
+from public_data.models.administration import AdminRef, LandModel
 from utils.mattermost import Mattermost
 
 logger = logging.getLogger(__name__)
+
+
+class FeedbackThrottle(AnonRateThrottle):
+    rate = "5/minute"
 
 
 class PageFeedbackSerializer(serializers.ModelSerializer):
@@ -27,6 +33,29 @@ class PageFeedbackSerializer(serializers.ModelSerializer):
             "page_name",
             "crisp_session_id",
         ]
+
+    def validate_land_type(self, value):
+        valid_types = [code for code, _ in AdminRef.CHOICES]
+        if value not in valid_types:
+            raise serializers.ValidationError("Type de territoire invalide.")
+        return value
+
+    def validate_page_url(self, value):
+        if not value.startswith("/"):
+            raise serializers.ValidationError("URL invalide.")
+        return value
+
+    def validate(self, data):
+        land_type = data.get("land_type")
+        land_id = data.get("land_id")
+
+        if not land_id or not land_type:
+            raise serializers.ValidationError("Un territoire est requis.")
+
+        if not LandModel.objects.filter(land_id=land_id, land_type=land_type).exists():
+            raise serializers.ValidationError("Territoire introuvable.")
+
+        return data
 
     def create(self, validated_data):
         validated_data.pop("crisp_session_id", None)
@@ -56,6 +85,7 @@ class PageFeedbackViewSet(GenericViewSet, CreateModelMixin):
     queryset = PageFeedback.objects.all()
     serializer_class = PageFeedbackSerializer
     permission_classes = [AllowAny]
+    throttle_classes = [FeedbackThrottle]
 
     def perform_create(self, serializer):
         user = self.request.user if self.request.user.is_authenticated else None

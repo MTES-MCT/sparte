@@ -52,14 +52,14 @@ const LogementVacantAbstract: React.FC<LogementVacantAbstractProps> = ({
         [LogementVacantStatusEnum.GISEMENT_NUL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES]: (
             <p className="fr-text--sm fr-mb-0">
                 Le parc social ne compte <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.{" "}
-                <strong>Le gisement est nul dans le parc social. Il n'est pas possible de conclure pour le parc privé (données indisponibles).</strong>
+                <strong>Il n'est pas possible de conclure pour le parc privé (données indisponibles).</strong>
             </p>
         ),
 
         [LogementVacantStatusEnum.GISEMENT_NUL_DANS_LE_PRIVE_DONNEES_SOCIALES_INDISPONIBLES]: (
             <p className="fr-text--sm fr-mb-0">
                 Le parc privé ne compte <strong>aucun logement vacant</strong> sur le territoire de <strong>{name}</strong>.{" "}
-                <strong>Le gisement est nul dans le parc privé. Il n'est pas possible de conclure pour le parc social (données indisponibles).</strong>
+                <strong>Il n'est pas possible de conclure pour le parc social (données indisponibles).</strong>
             </p>
         ),
 

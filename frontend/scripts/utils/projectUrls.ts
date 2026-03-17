@@ -57,7 +57,7 @@ export function buildNavbar(landType: string, landSlug: string, isDGALNMember: b
             subMenu: [
                 { label: "Consommation d'espaces NAF", url: urls.consommation },
                 { label: "Artificialisation", url: urls.artificialisation },
-                { label: "Imperméabilisation", url: urls.impermeabilisation, new: true },
+                { label: "Imperméabilisation", url: urls.impermeabilisation },
             ],
         },
         {

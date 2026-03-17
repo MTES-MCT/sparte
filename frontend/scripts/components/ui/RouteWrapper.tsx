@@ -77,7 +77,11 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
                 </div>
             </div>
             <PageContent>{showPage && children}</PageContent>
-            {showFeedback && <div className="fr-p-3w"><Feedback context={feedbackContext} /></div>}
+            {showFeedback && showPage && (
+                <div className="fr-p-3w">
+                    <Feedback context={feedbackContext} />
+                </div>
+            )}
         </PageLayout>
     );
 };

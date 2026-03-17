@@ -37,10 +37,9 @@ const DetailsFricheZonageEnvironnemental: React.FC = () => (
 
 const DetailsFricheBySize: React.FC = () => (
   <div>
-    <h6 className="fr-mb-1w">Calcul</h6>
     <p className="fr-text--xs">
       Les 4 catégories de taille sont déterminées à partir de l'ensemble des
-      tailles des friches à l'échelle nationale, d'après les friches incluent
+      tailles des friches à l'échelle nationale, d'après les friches incluses
       dans les données <strong>Cartofriches</strong>.
     </p>
   </div>
@@ -69,6 +68,12 @@ const DetailsFricheByZonageType: React.FC = () => (
   </div>
 );
 
+const FRICHE_DETAILS: Partial<Record<string, React.ReactNode>> = {
+  friche_zonage_environnemental: <DetailsFricheZonageEnvironnemental />,
+  friche_surface: <DetailsFricheBySize />,
+  friche_zonage_type: <DetailsFricheByZonageType />,
+};
+
 export const FrichesCharts: React.FC = () => {
   const { landId, landType, showCharts } = useFrichesContext();
 
@@ -86,13 +91,7 @@ export const FrichesCharts: React.FC = () => {
               sources={chart.sources}
               showDataTable={true}
             >
-              {chart.id === "friche_zonage_environnemental" && (
-                <DetailsFricheZonageEnvironnemental />
-              )}
-              {chart.id === "friche_surface" && <DetailsFricheBySize />}
-              {chart.id === "friche_zonage_type" && (
-                <DetailsFricheByZonageType />
-              )}
+              {FRICHE_DETAILS[chart.id]}
             </FrichesChart>
           </BaseCard>
         </div>

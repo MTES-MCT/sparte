@@ -79,10 +79,6 @@ const ChartContainer = styled.div`
     min-height: 450px;
 `;
 
-const TableSection = styled.div`
-    margin-top: 1.5rem;
-`;
-
 const Separator = styled.div`
     margin-top: 1.5rem;
     padding-top: 1.25rem;
@@ -205,24 +201,25 @@ const ChartExplorer: React.FC<ChartExplorerProps> = ({
                     </ChartContainer>
 
                     {hasTable && (
-                        <TableSection>
-                            <h6 className="fr-mb-1w">Données du graphique</h6>
+                        <Separator>
+                            <h6>Données du graphique</h6>
                             <ChartDataTable
                                 data={dataTable}
                                 title={chartTitle || ''}
                             />
-                        </TableSection>
+                        </Separator>
                     )}
 
                     {sources.length > 0 && (
                         <Separator>
+                            <h6>Sources</h6>
                             <ChartDataSource sources={sources} displayMode="text" />
                         </Separator>
                     )}
 
                     {children && (
                         <Separator>
-                            <h6 className="fr-mb-1w">Détails du calcul</h6>
+                            <h6>Détails du calcul</h6>
                             {children}
                         </Separator>
                     )}

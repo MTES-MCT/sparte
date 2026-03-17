@@ -8,9 +8,24 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
+        <meta name="description" content="Analysez et maitrisez la consommation d'espaces et l'artificialisation des sols de votre territoire." />
+        <meta name="author" content="Mon Diagnostic Artificialisation" />
         <meta name="htmx-config" content='{"inlineScriptNonce":"[NONCE_PLACEHOLDER]"}'>
+
+        <!-- Open Graph (Facebook, LinkedIn, WhatsApp, etc.) -->
+        <meta property="og:type" content="website">
+        <meta property="og:locale" content="fr_FR">
+        <meta property="og:site_name" content="Mon Diagnostic Artificialisation">
+        <meta property="og:title" content="Mon Diagnostic Artificialisation">
+        <meta property="og:description" content="Analysez et maitrisez la consommation d'espaces et l'artificialisation des sols de votre territoire.">
+        <meta property="og:image" content="{% static 'img/og-image.png' %}">
+        <meta property="og:url" content="{{ request.build_absolute_uri }}">
+
+        <!-- Twitter/X -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="Mon Diagnostic Artificialisation">
+        <meta name="twitter:description" content="Analysez et maitrisez la consommation d'espaces et l'artificialisation des sols de votre territoire.">
+        <meta name="twitter:image" content="{% static 'img/og-image.png' %}">
 
         <title>{% block pagetitle %}{{ page_title }}{% endblock %}</title>
 

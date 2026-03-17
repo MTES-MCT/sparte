@@ -26,7 +26,7 @@ interface KpiAction {
 
 export interface KpiProps {
   icon: string;
-  label: string;
+  label?: string;
   value: ReactNode;
   description?: ReactNode;
   detail?: ReactNode;

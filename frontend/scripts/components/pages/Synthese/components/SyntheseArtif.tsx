@@ -62,8 +62,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
               Cela implique de <strong>renaturer des espaces</strong> pour compenser les nouvelles constructions.
             </p>
             <p className="fr-text--sm fr-mb-0">
-              A titre d'exemple,
-              Sur le territoire de {landData.name},{" "}
+              A titre d'exemple, sur le territoire de {landData.name},{" "}
               <MillesimeDisplay
                 is_interdepartemental={landData.is_interdepartemental}
                 landArtifStockIndex={data}

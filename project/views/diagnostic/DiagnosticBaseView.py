@@ -53,6 +53,14 @@ class DiagnosticBaseView(DetailView):
             return f"{base} - {self.page_section}."
         return f"{base} : consommation d'espaces, artificialisation, trajectoire ZAN."
 
+    def get_og_title(self, land: LandModel) -> str:
+        """Titre Open Graph pour le partage"""
+        return f"Diagnostic de {land.name} | Mon Diagnostic Artificialisation"
+
+    def get_og_description(self, land: LandModel) -> str:
+        """Description Open Graph pour le partage"""
+        return f"Consultez les données d'artificialisation et de consommation d'espaces du territoire de {land.name}."
+
     def get_context_data(self, **kwargs):
         land = self.object
         page_title = self.get_page_title(land)
@@ -65,8 +73,8 @@ class DiagnosticBaseView(DetailView):
                 "page_title": page_title,
                 "meta_description": meta_description,
                 "canonical_url": canonical_url,
-                "og_title": page_title,
-                "og_description": meta_description,
+                "og_title": self.get_og_title(land),
+                "og_description": self.get_og_description(land),
                 "og_url": canonical_url,
             }
         )
