@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
 import GuideContent from "@components/ui/GuideContent";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { getLandTypeLabel } from "@utils/landUtils";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
@@ -116,7 +115,6 @@ export const ArtifChildLands: React.FC = () => {
               showMailleIndicator={childLandTypes.length > 1}
               onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
             >
-              <DetailsCalculationOcsge />
             </GenericChart>
         </div>
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row">

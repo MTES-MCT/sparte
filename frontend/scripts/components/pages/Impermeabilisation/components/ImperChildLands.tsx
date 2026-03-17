@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import GuideContent from "@components/ui/GuideContent";
 import { getLandTypeLabel } from "@utils/landUtils";
 import { useImpermeabilisationContext } from "../context/ImpermeabilisationContext";
@@ -116,7 +115,6 @@ export const ImperChildLands: React.FC = () => {
             showMailleIndicator={childLandTypes.length > 1}
             onPointClick={CHILD_LAND_TYPE_MAP[mapChildLandType] ? handleMapPointClick : undefined}
           >
-            <DetailsCalculationOcsge />
           </GenericChart>
         </div>
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row">

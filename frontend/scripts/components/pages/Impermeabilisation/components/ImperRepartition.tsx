@@ -1,6 +1,5 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
@@ -65,7 +64,6 @@ export const ImperRepartition: React.FC = () => {
                   sources={["ocsge"]}
                   showDataTable={true}
                 >
-                  <DetailsCalculationOcsge />
                 </GenericChart>
                 <GenericChart
                   id="pie_imper_by_usage"
@@ -78,7 +76,6 @@ export const ImperRepartition: React.FC = () => {
                   sources={["ocsge"]}
                   showDataTable={true}
                 >
-                  <DetailsCalculationOcsge />
                 </GenericChart>
               </div>
             ))
@@ -95,7 +92,6 @@ export const ImperRepartition: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
             <div className="fr-col-12 fr-col-xl-6">
@@ -109,7 +105,6 @@ export const ImperRepartition: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
           </>

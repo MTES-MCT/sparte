@@ -4,7 +4,6 @@ import { theme } from "@theme";
 import GenericChart from "@components/charts/GenericChart";
 import BaseCard from "@components/ui/BaseCard";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
 const FlexColumn = styled.div`
@@ -52,7 +51,6 @@ export const ArtifFluxDetail: React.FC = () => {
                     sources={["ocsge"]}
                     showDataTable={true}
                   >
-                    <DetailsCalculationOcsge />
                   </GenericChart>
                   <GenericChart
                     id="artif_flux_by_usage"
@@ -66,7 +64,6 @@ export const ArtifFluxDetail: React.FC = () => {
                     sources={["ocsge"]}
                     showDataTable={true}
                   >
-                    <DetailsCalculationOcsge />
                   </GenericChart>
                 </FlexColumn>
               </div>
@@ -85,7 +82,6 @@ export const ArtifFluxDetail: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
             <div className="fr-col-12">
@@ -100,7 +96,6 @@ export const ArtifFluxDetail: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
           </>

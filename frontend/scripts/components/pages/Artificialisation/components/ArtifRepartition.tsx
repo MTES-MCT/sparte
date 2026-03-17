@@ -6,7 +6,6 @@ import BaseCard from "@components/ui/BaseCard";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
 const FlexColumn = styled.div`
@@ -75,7 +74,6 @@ export const ArtifRepartition: React.FC = () => {
                     sources={["ocsge"]}
                     showDataTable={true}
                   >
-                    <DetailsCalculationOcsge />
                   </GenericChart>
                   <GenericChart
                     id="pie_artif_by_usage"
@@ -88,7 +86,6 @@ export const ArtifRepartition: React.FC = () => {
                     sources={["ocsge"]}
                     showDataTable={true}
                   >
-                    <DetailsCalculationOcsge />
                   </GenericChart>
                 </FlexColumn>
               </div>
@@ -104,7 +101,6 @@ export const ArtifRepartition: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
             <div className="fr-col-12 fr-col-xl-6">
@@ -116,7 +112,6 @@ export const ArtifRepartition: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
           </>
