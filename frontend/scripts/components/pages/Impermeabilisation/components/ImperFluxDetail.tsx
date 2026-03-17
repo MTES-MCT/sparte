@@ -1,6 +1,5 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import BaseCard from "@components/ui/BaseCard";
 import { useImpermeabilisationContext } from "../context/ImpermeabilisationContext";
@@ -46,7 +45,6 @@ export const ImperFluxDetail: React.FC = () => {
                   sources={["ocsge"]}
                   showDataTable={true}
                 >
-                  <DetailsCalculationOcsge />
                 </GenericChart>
                 <GenericChart
                   id="imper_flux_by_usage"
@@ -60,7 +58,6 @@ export const ImperFluxDetail: React.FC = () => {
                   sources={["ocsge"]}
                   showDataTable={true}
                 >
-                  <DetailsCalculationOcsge />
                 </GenericChart>
               </div>
             ))
@@ -78,7 +75,6 @@ export const ImperFluxDetail: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
             <div className="fr-col-12">
@@ -93,7 +89,6 @@ export const ImperFluxDetail: React.FC = () => {
                 sources={["ocsge"]}
                 showDataTable={true}
               >
-                <DetailsCalculationOcsge />
               </GenericChart>
             </div>
           </>

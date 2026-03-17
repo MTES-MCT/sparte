@@ -4,7 +4,6 @@ import { LandType } from "@services/types/land";
 import BaseCard from "@components/ui/BaseCard";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { ArtificialisationDiffMap } from "@components/map/ui/ArtificialisationDiffMap";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
@@ -61,7 +60,6 @@ export const ArtifNetFlux: React.FC = () => {
                   sources={["ocsge"]}
                   showDataTable={true}
                 >
-                  <DetailsCalculationOcsge />
                 </GenericChart>
               </div>
             ))
@@ -78,7 +76,6 @@ export const ArtifNetFlux: React.FC = () => {
               sources={["ocsge"]}
               showDataTable={true}
             >
-              <DetailsCalculationOcsge />
             </GenericChart>
           </div>
         )}

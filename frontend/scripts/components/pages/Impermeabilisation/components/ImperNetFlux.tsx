@@ -1,6 +1,5 @@
 import React from "react";
 import GenericChart from "@components/charts/GenericChart";
-import { DetailsCalculationOcsge } from "@components/features/ocsge/DetailsCalculationOcsge";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ImpermeabilisationDiffMap } from "@components/map/ui/ImpermeabilisationDiffMap";
@@ -61,7 +60,6 @@ export const ImperNetFlux: React.FC = () => {
                   sources={["ocsge"]}
                   showDataTable={true}
                 >
-                  <DetailsCalculationOcsge />
                 </GenericChart>
               </div>
             ))
@@ -78,7 +76,6 @@ export const ImperNetFlux: React.FC = () => {
               sources={["ocsge"]}
               showDataTable={true}
             >
-              <DetailsCalculationOcsge />
             </GenericChart>
           </div>
         )}
