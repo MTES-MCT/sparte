@@ -154,7 +154,7 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
           land_type={landType}
           params={{
             start_date: String(startYear),
-            end_date: String(endYear - 1),
+            end_date: String(endYear),
           }}
           sources={["majic", "insee"]}
           showDataTable={true}
