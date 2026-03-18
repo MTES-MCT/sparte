@@ -11,10 +11,10 @@ class ImperZonage(models.Model):
     departement = models.CharField()
     year = models.IntegerField()
     zonage_surface = models.FloatField()
-    impermeablesurface = models.FloatField()
+    impermeable_surface = models.FloatField()
     zonage_type = models.CharField()
     zonage_count = models.IntegerField()
-    impermeablepercent = models.FloatField()
+    impermeable_percent = models.FloatField()
     millesime_index = models.IntegerField()
 
     class Meta:

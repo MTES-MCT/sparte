@@ -39,13 +39,14 @@ class LandFriche(models.Model):
     surface = models.FloatField()
     point_on_surface = PointField(srid=4326)
 
-    surface_artif = models.FloatField()
-    percent_artif = models.FloatField()
-    years_artif = ArrayField(base_field=models.IntegerField())
+    # Null quand le croisement avec l'OCS GE n'a pas pu être fait pour cette friche
+    surface_artif = models.FloatField(null=True)
+    percent_artif = models.FloatField(null=True)
+    years_artif = ArrayField(base_field=models.IntegerField(), null=True)
 
-    surface_imper = models.FloatField()
-    percent_imper = models.FloatField()
-    years_imper = ArrayField(base_field=models.IntegerField())
+    surface_imper = models.FloatField(null=True)
+    percent_imper = models.FloatField(null=True)
+    years_imper = ArrayField(base_field=models.IntegerField(), null=True)
 
     class Meta:
         managed = False
