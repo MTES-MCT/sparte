@@ -29,7 +29,7 @@ export type CurrentUserResponse = {
 
 export const djangoApi = createApi({
 	reducerPath: "djangoApi",
-	baseQuery: fetchBaseQuery({ credentials: "include" }),
+	baseQuery: fetchBaseQuery({ credentials: "same-origin" }),
 	keepUnusedDataFor: 600,
 	endpoints: (builder) => ({
 		getLandConsoStats: builder.query({
