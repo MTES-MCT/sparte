@@ -93,3 +93,7 @@ jobs:
         run: pipenv run python -Wa manage.py test
         env:
           DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}
+      - name: Run backend tests (pytest)
+        run: pipenv run pytest
+        env:
+          DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}
