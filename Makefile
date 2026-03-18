@@ -75,7 +75,7 @@ start: ## Démarre tous les services
 	docker compose up -d
 
 stop: ## Arrête tous les services
-	docker compose down
+	docker compose stop
 
 restart: ## Redémarre tous les services
 	docker compose restart
@@ -116,9 +116,7 @@ createsuperuser: ## Crée un superutilisateur Django
 build: ## Rebuild les images Docker
 	docker compose build
 
-test: ## Lance les tests Python et JS
-	docker compose exec django pytest
-	docker compose exec frontend npm test
+test: test-backend test-frontend test-airflow ## Lance tous les tests
 
 test-backend: ## Lance les tests Python
 	docker compose exec django pytest
@@ -126,7 +124,7 @@ test-backend: ## Lance les tests Python
 test-frontend: ## Lance les tests JS
 	docker compose exec frontend npm test
 
-test-airflow: ## Lance les tests Airflow
+test-airflow: install-astro-cli ## Lance les tests Airflow
 	cd airflow && astro dev pytest
 
 lint: ## Lance le linter frontend

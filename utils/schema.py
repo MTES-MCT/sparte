@@ -51,6 +51,23 @@ from public_data.models import (
     LogementVacant,
     NearestTerritories,
 )
+from public_data.models.administration.LandGeoJSON import LandGeoJSON
+from public_data.models.bivariate import (
+    BivariateConsoThreshold,
+    BivariateIndicThreshold,
+    BivariateLandRate,
+)
+from public_data.models.dossier_complet import (
+    LandDcActiviteChomage,
+    LandDcCategoriesSocioprofessionnelles,
+    LandDcCreationsEntreprises,
+    LandDcEquipementsBpe,
+    LandDcLogement,
+    LandDcMenages,
+    LandDcPopulation,
+    LandDcRevenusPauvrete,
+    LandDcTourisme,
+)
 
 
 class NotInTestEnvironmentError(Exception):
@@ -58,7 +75,8 @@ class NotInTestEnvironmentError(Exception):
 
 
 def drop_and_create_model(model, schema_editor: BaseDatabaseSchemaEditor) -> None:
-    sql = f"DROP TABLE IF EXISTS {model._meta.db_table} CASCADE;"
+    table = model._meta.db_table
+    sql = f"DROP TABLE IF EXISTS {table} CASCADE;"
     for field in model._meta.local_many_to_many:
         sql += f"DROP TABLE IF EXISTS {field.remote_field.through._meta.db_table} CASCADE;"
     schema_editor.execute(sql)
@@ -84,6 +102,7 @@ def init_unmanaged_schema_for_tests() -> None:
     with connection.schema_editor() as schema_editor:
         # Administration
         drop_and_create_model(LandModel, schema_editor)
+        drop_and_create_model(LandGeoJSON, schema_editor)
 
         # Consommation
         drop_and_create_model(LandConso, schema_editor)
@@ -145,3 +164,19 @@ def init_unmanaged_schema_for_tests() -> None:
         # Urbanisme - Autres
         drop_and_create_model(AutorisationLogement, schema_editor)
         drop_and_create_model(LogementVacant, schema_editor)
+
+        # Dossier Complet
+        drop_and_create_model(LandDcPopulation, schema_editor)
+        drop_and_create_model(LandDcLogement, schema_editor)
+        drop_and_create_model(LandDcMenages, schema_editor)
+        drop_and_create_model(LandDcActiviteChomage, schema_editor)
+        drop_and_create_model(LandDcCreationsEntreprises, schema_editor)
+        drop_and_create_model(LandDcCategoriesSocioprofessionnelles, schema_editor)
+        drop_and_create_model(LandDcEquipementsBpe, schema_editor)
+        drop_and_create_model(LandDcRevenusPauvrete, schema_editor)
+        drop_and_create_model(LandDcTourisme, schema_editor)
+
+        # Bivariate
+        drop_and_create_model(BivariateLandRate, schema_editor)
+        drop_and_create_model(BivariateConsoThreshold, schema_editor)
+        drop_and_create_model(BivariateIndicThreshold, schema_editor)

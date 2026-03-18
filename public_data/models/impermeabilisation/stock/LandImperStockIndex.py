@@ -14,8 +14,9 @@ class LandImperStockIndex(models.Model):
     surface = models.FloatField()
     percent = models.FloatField()
     millesime_index = models.IntegerField()
-    flux_surface = models.FloatField()
-    flux_percent = models.FloatField()
+    # Null pour le premier millésime (index=1) car il n'y a pas de millésime précédent pour calculer le flux
+    flux_surface = models.FloatField(null=True)
+    flux_percent = models.FloatField(null=True)
     flux_previous_years = ArrayField(base_field=models.IntegerField())
 
     class Meta:
