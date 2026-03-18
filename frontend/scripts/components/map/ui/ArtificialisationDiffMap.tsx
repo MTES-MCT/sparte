@@ -161,6 +161,7 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 	return (
 		<BaseMap
 			id="artificialisation-diff-map"
+			mapHeight="85vh"
 			config={config}
 			landData={landData}
 			onMapLoad={handleMapLoad}

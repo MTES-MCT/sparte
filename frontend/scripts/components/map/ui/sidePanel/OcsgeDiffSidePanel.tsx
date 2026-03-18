@@ -212,7 +212,7 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 	const sameMatrixClass = oldByMatrix === newByMatrix;
 	const isBySeuil = hasMatrix && (isPositive || isNegative) && sameMatrixClass;
 
-	const title = isPositive ? positiveLabel : isNegative ? negativeLabel : "Flux OCS GE";
+	const title = `${isPositive ? positiveLabel : isNegative} - ${formatNumber({ number: surface / 10000 })} ha (${formatNumber({ number: surface })} m²)`;
 
 	return (
 		<>
@@ -226,22 +226,6 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 			</SidePanelHeader>
 			<SidePanelContent>
 				<Section>
-					<InfoRow>
-						<InfoLabel>Type</InfoLabel>
-						<InfoValue>
-							<Badge noIcon severity={isPositive ? "error" : isNegative ? "success" : "info"} small>
-								{isPositive ? positiveLabel : isNegative ? negativeLabel : "Inconnu"}
-							</Badge>
-						</InfoValue>
-					</InfoRow>
-					<InfoRow>
-						<InfoLabel>Surface</InfoLabel>
-						<InfoValue>
-							{surface > 0
-								? `${formatNumber({ number: surface / 10000 })} ha (${formatNumber({ number: surface })} m²)`
-								: "\u2014"}
-						</InfoValue>
-					</InfoRow>
 					{csOld && csNew && (
 						<>
 							<InfoRow>
@@ -282,7 +266,6 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 					<>
 						<Separator />
 						<Section>
-							<SectionTitle>Matrice de passage</SectionTitle>
 							<MiniMatrixWrapper ref={wrapperRef}>
 								<MiniMatrixLabel>Couverture</MiniMatrixLabel>
 								<MiniMatrixOuter>
@@ -341,7 +324,7 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 										/>
 									</ArrowSvg>
 								)}
-								<Tooltip id={tooltipId} className="fr-text--xs" />
+								<Tooltip style={{zIndex: 100}} id={tooltipId} className="fr-text--xs" />
 								<MiniMatrixLegend>
 									<MiniMatrixLegendItem>
 										<MiniMatrixLegendDot $color="#FA4B42" />
