@@ -9,6 +9,10 @@ def generate_token() -> str:
     return Signer().sign(str(int(time.time())))
 
 
+def generate_past_token() -> str:
+    return Signer().sign(str(int(time.time()) - 10))
+
+
 def validate_token(token: str) -> bool:
     try:
         ts = int(Signer().unsign(token))
