@@ -98,7 +98,7 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
     } = useReportDrafts({
         landType: landData.land_type,
         landId: landData.land_id,
-        downloadsUrl: urls.downloads,
+        downloadsUrl: urls.generateReport,
         isAuthenticated,
     });
 
@@ -110,12 +110,6 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
                         <p className="fr-text--sm">
                             Créez et téléchargez facilement des rapports à partir de nos trames pré-remplies, personnalisez-les et retrouvez les à tout moment.
                         </p>
-
-                        <SectionHeader>
-                            <SectionTitle>
-                                Créer un nouveau rapport
-                            </SectionTitle>
-                        </SectionHeader>
 
                         <CardsGrid>
                             <ActionCard

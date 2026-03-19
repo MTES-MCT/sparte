@@ -63,16 +63,22 @@ urlpatterns = [
         views.diagnostic.DiagnostictRapportLocalView.as_view(),
         name="report_local",
     ),
-    # DOWNLOAD
+    # DATA GOUV
     path(
         "<str:land_type>/<str:land_slug>/telechargements",
+        views.diagnostic.DiagnosticDataGouvView.as_view(),
+        name="data_gouv",
+    ),
+    # DOWNLOAD
+    path(
+        "<str:land_type>/<str:land_slug>/generer-un-rapport",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
-        name="report_downloads",
+        name="report_generate",
     ),
     path(
-        "<str:land_type>/<str:land_slug>/telechargements/<uuid:draft_id>",
+        "<str:land_type>/<str:land_slug>/generer-un-rapport/<uuid:draft_id>",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
-        name="report_downloads_draft",
+        name="report_generate_draft",
     ),
 ]
 

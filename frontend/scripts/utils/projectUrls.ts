@@ -12,7 +12,8 @@ export type ProjectUrls = {
     logementVacant: string;
     friches: string;
     residencesSecondaires: string;
-    downloads: string;
+    generateReport: string;
+    dataGouv: string;
 };
 
 export function buildUrls(landType: string, landSlug: string): ProjectUrls {
@@ -27,7 +28,8 @@ export function buildUrls(landType: string, landSlug: string): ProjectUrls {
         logementVacant: `${base}/vacance-des-logements`,
         friches: `${base}/friches`,
         residencesSecondaires: `${base}/residences-secondaires`,
-        downloads: `${base}/telechargements`,
+        generateReport: `${base}/generer-un-rapport`,
+        dataGouv: `${base}/telechargements`,
     };
 }
 
@@ -68,6 +70,11 @@ export function buildNavbar(landType: string, landSlug: string, isDGALNMember: b
                 { label: "Friches", url: urls.friches },
                 { label: "Résidences secondaires", url: urls.residencesSecondaires, dgaln_only: true },
             ]),
+        },
+        {
+            label: "Téléchargements",
+            url: urls.dataGouv,
+            icon: "bi bi-download",
         },
     ];
     return { menuItems };

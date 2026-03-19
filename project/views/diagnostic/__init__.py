@@ -1,6 +1,7 @@
 from .DiagnosticArtificialisationView import DiagnosticArtificialisationView
 from .DiagnosticBaseView import DiagnosticBaseView
 from .DiagnosticConsoView import DiagnosticConsoView
+from .DiagnosticDataGouvView import DiagnosticDataGouvView
 from .DiagnosticDownloadsView import DiagnosticDownloadsView
 from .DiagnosticFrichesView import DiagnosticFrichesView
 from .DiagnosticImpermeabilisationView import DiagnosticImpermeabilisationView
@@ -13,6 +14,7 @@ from .DiagnostictRapportLocalView import DiagnostictRapportLocalView
 __all__ = [
     "DiagnosticBaseView",
     "DiagnosticConsoView",
+    "DiagnosticDataGouvView",
     "DiagnosticLogementVacantView",
     "DiagnosticSynthesisView",
     "DiagnostictRapportLocalView",

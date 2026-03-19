@@ -14,6 +14,7 @@ import { Consommation } from '@components/pages/Consommation';
 import LogementVacant from '@components/pages/LogementVacant';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
+import DataGouv from '@components/pages/DataGouv';
 import Downloads from '@components/pages/Downloads';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import { Impermeabilisation } from '@components/pages/Impermeabilisation';
@@ -227,10 +228,21 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             }
                                         />
                                         <Route
-                                            path={urls.downloads}
+                                            path={urls.dataGouv}
                                             element={
                                                 <RouteWrapper
                                                     title="Téléchargements"
+                                                    landData={landData}
+                                                >
+                                                    <DataGouv landData={landData} />
+                                                </RouteWrapper>
+                                            }
+                                        />
+                                        <Route
+                                            path={urls.generateReport}
+                                            element={
+                                                <RouteWrapper
+                                                    title="Générer un rapport"
                                                     landData={landData}
                                                     showFeedback={false}
                                                 >
@@ -239,10 +251,10 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             }
                                         />
                                         <Route
-                                            path={`${urls.downloads}/:draftId`}
+                                            path={`${urls.generateReport}/:draftId`}
                                             element={
                                                 <RouteWrapper
-                                                    title="Téléchargements"
+                                                    title="Générer un rapport"
                                                     landData={landData}
                                                     showFeedback={false}
                                                 >

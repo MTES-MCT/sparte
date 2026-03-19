@@ -97,8 +97,8 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
         text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
         actions={[
           {
-            label: "Accéder aux téléchargements",
-            to: urls.downloads,
+            label: "Générer un rapport",
+            to: urls.generateReport,
           },
         ]}
       />

@@ -199,7 +199,7 @@ interface DownloadItemsProps {
 const DownloadItems: React.FC<DownloadItemsProps> = ({ downloadsUrl }) => (
     <DownloadButton 
         to={downloadsUrl}
-        icon="bi bi-download"
+        icon="bi bi-file-earmark-text"
         iconPosition="right"
     >
         Générer un rapport
@@ -208,7 +208,7 @@ const DownloadItems: React.FC<DownloadItemsProps> = ({ downloadsUrl }) => (
 
 interface NavbarProps {
     navbar: { menuItems: MenuItem[] };
-    urls: { downloads: string };
+    urls: { generateReport: string };
     landData: LandDetailResultType;
 }
 
@@ -296,8 +296,8 @@ const Navbar: React.FC<NavbarProps> = ({ navbar, urls, landData }) => {
                         ))}
                     </MenuList>
                 </NavContainer>
-                {shouldDisplayDownloads && urls.downloads && (
-                    <DownloadItems downloadsUrl={urls.downloads} />
+                {shouldDisplayDownloads && urls.generateReport && (
+                    <DownloadItems downloadsUrl={urls.generateReport} />
                 )}
             </Container>
         </>

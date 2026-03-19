@@ -1,6 +1,6 @@
 from .DiagnosticBaseView import DiagnosticBaseView
 
 
-class DiagnosticDownloadsView(DiagnosticBaseView):
+class DiagnosticDataGouvView(DiagnosticBaseView):
     template_name = "project/pages/downloads.html"
-    page_section = "Générer un rapport"
+    page_section = "Téléchargement"
