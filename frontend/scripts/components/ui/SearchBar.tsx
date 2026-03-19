@@ -1,4 +1,4 @@
-import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
+import React, { useEffect, ChangeEvent, useState, useRef, useMemo } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 
@@ -144,11 +144,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
         skip: shouldQueryBeSkipped,
     });
 
+    const stableExcludeTerritories = useMemo(() => excludeTerritories, 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [JSON.stringify(excludeTerritories)]
+    );
+
     const shouldExcludeTerritoryFromResults = (territory: LandDetailResultType): boolean => {
-        if (excludeTerritories.length === 0) {
+        if (stableExcludeTerritories.length === 0) {
             return false;
         }
-        return excludeTerritories.some(
+        return stableExcludeTerritories.some(
             (excludedTerritory: LandDetailResultType) =>
                 territory.land_id === excludedTerritory.land_id &&
                 territory.land_type === excludedTerritory.land_type
@@ -159,14 +164,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
         if (shouldQueryBeSkipped || isFetching) {
             setData(undefined);
         } else {
-            // Filter out excluded territories
-            let filteredData = queryData;
-            if (queryData) {
-                filteredData = queryData.filter((territory: LandDetailResultType) => !shouldExcludeTerritoryFromResults(territory));
-            }
+            const filteredData = queryData
+                ? queryData.filter((territory: LandDetailResultType) => !shouldExcludeTerritoryFromResults(territory))
+                : undefined;
             setData(filteredData);
         }
-    }, [isFetching, queryData, query, shouldQueryBeSkipped, excludeTerritories]);
+    }, [isFetching, queryData, query, shouldQueryBeSkipped, stableExcludeTerritories]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
