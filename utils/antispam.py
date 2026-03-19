@@ -18,7 +18,7 @@ def validate_token(token: str) -> bool:
         return False
 
 
-class AntispamFormMixin:
+class HoneypotFormMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["website"] = forms.CharField(
@@ -26,11 +26,22 @@ class AntispamFormMixin:
             label="Ne pas remplir",
             widget=forms.TextInput(attrs={"autocomplete": "off", "tabindex": "-1", "class": "fr-hidden"}),
         )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("website"):
+            raise forms.ValidationError("Erreur de validation")
+        return cleaned_data
+
+
+class AntispamFormMixin(HoneypotFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.fields["_token"] = forms.CharField(widget=forms.HiddenInput(), initial=generate_token())
 
     def clean(self):
         cleaned_data = super().clean()
-        if cleaned_data.get("website") or not validate_token(cleaned_data.get("_token", "")):
+        if not validate_token(cleaned_data.get("_token", "")):
             raise forms.ValidationError("Erreur de validation")
         return cleaned_data
 

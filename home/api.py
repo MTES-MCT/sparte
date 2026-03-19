@@ -9,6 +9,7 @@ from rest_framework.viewsets import GenericViewSet
 from crisp.services import send_feedback_to_crisp
 from home.models import PageFeedback
 from public_data.models.administration import AdminRef, LandModel
+from utils.antispam import AntispamSerializerMixin
 from utils.mattermost import Mattermost
 
 logger = logging.getLogger(__name__)
@@ -18,7 +19,7 @@ class FeedbackThrottle(AnonRateThrottle):
     rate = "5/minute"
 
 
-class PageFeedbackSerializer(serializers.ModelSerializer):
+class PageFeedbackSerializer(AntispamSerializerMixin, serializers.ModelSerializer):
     crisp_session_id = serializers.CharField(required=False, allow_blank=True, write_only=True)
 
     class Meta:
@@ -46,6 +47,7 @@ class PageFeedbackSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        data = super().validate(data)
         land_type = data.get("land_type")
         land_id = data.get("land_id")
 

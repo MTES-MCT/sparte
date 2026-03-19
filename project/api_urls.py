@@ -186,12 +186,18 @@ from public_data.models import (
     NearestTerritoriesViewset,
 )
 from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
+from utils.antispam import generate_token
 
 app_name = "api"
 
 router = DefaultRouter()
 router.register(r"report-drafts", ReportDraftViewSet, basename="report-draft")
 router.register(r"feedback", PageFeedbackViewSet, basename="feedback")
+
+
+@api_view(["GET"])
+def antispam_token_view(request):
+    return Response({"token": generate_token()})
 
 
 @api_view(["GET"])
@@ -396,6 +402,7 @@ def chart_view(request, id, land_type, land_id):
 urlpatterns = [
     path("", include(router.urls)),
     path("me/", me_view, name="me"),
+    path("token/", antispam_token_view, name="antispam-token"),
     path(
         "preference/<str:land_type>/<str:land_id>/",
         UserLandPreferenceAPIView.as_view(),

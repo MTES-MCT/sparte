@@ -334,6 +334,9 @@ export const djangoApi = createApi({
 		getCurrentUser: builder.query<CurrentUserResponse, void>({
 			query: () => '/api/me/',
 		}),
+		getAntispamToken: builder.query<{ token: string }, void>({
+			query: () => '/api/token/',
+		}),
 		submitFeedback: builder.mutation<void, {
 			rating: number;
 			comment: string;
@@ -343,6 +346,7 @@ export const djangoApi = createApi({
 			land_name: string;
 			page_name: string;
 			crisp_session_id?: string;
+			_token: string;
 		}>({
 			query: (body) => {
 				const csrfToken = getCsrfToken();
@@ -383,6 +387,7 @@ const useStartExportPdfMutation = djangoApi.useStartExportPdfMutation;
 const useLazyGetExportStatusQuery = djangoApi.useLazyGetExportStatusQuery;
 
 const useSubmitFeedbackMutation = djangoApi.useSubmitFeedbackMutation;
+const useGetAntispamTokenQuery = djangoApi.useGetAntispamTokenQuery;
 
 const {
 	useGetDepartementListQuery,
@@ -448,4 +453,5 @@ export {
 	useDeleteReportDraftMutation,
 	useGetCurrentUserQuery,
 	useSubmitFeedbackMutation,
+	useGetAntispamTokenQuery,
 };
