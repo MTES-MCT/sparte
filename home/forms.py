@@ -1,10 +1,12 @@
 from django import forms
 from django.templatetags.static import static
 
+from utils.antispam import AntispamFormMixin
+
 from .models import Newsletter, SatisfactionFormEntry
 
 
-class NewsletterForm(forms.ModelForm):
+class NewsletterForm(AntispamFormMixin, forms.ModelForm):
     class Meta:
         model = Newsletter
         fields = ("email",)

@@ -1,3 +1,4 @@
+{% load utils_tags %}
 <div class="fr-follow">
   <div class="fr-container">
     <div class="fr-grid-row">
@@ -10,6 +11,10 @@
           <div>
             <form hx-post="{% url 'home:nwl-confirmation' %}">
               {% csrf_token %}
+              <input type="hidden" name="_token" value="{% antispam_token %}">
+              <div style="position:absolute;left:-9999px" aria-hidden="true">
+                <input type="text" name="website" autocomplete="off" tabindex="-1">
+              </div>
               <div class="fr-input-group">
                 <label class="fr-label" for="newsletter-email">
                   Votre adresse électronique (ex. : nom@domaine.fr)
