@@ -65,6 +65,7 @@
               	</div>
               	<p class="fr-hr-or">ou</p>
                 <div>
+                    <style>#div_id_website{position:absolute;left:-9999px}</style>
                     <form {% if next %}action="?next={{ next }}"{% endif %} method="post">
                         {% csrf_token %}
                         {{ form|crispy }}

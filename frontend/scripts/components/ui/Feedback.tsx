@@ -4,7 +4,7 @@ import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import { theme } from '@theme';
 import Button from '@components/ui/Button';
 import BaseCard from '@components/ui/BaseCard';
-import { useSubmitFeedbackMutation } from '@services/api';
+import { useSubmitFeedbackMutation, useGetAntispamTokenQuery } from '@services/api';
 
 import animation from '@animations/cup.json';
 
@@ -200,6 +200,7 @@ const Feedback: React.FC<FeedbackProps> = ({ context }) => {
   const [animatedStar, setAnimatedStar] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [submitFeedback, { isLoading }] = useSubmitFeedbackMutation();
+  const { data: tokenData, refetch: refetchToken } = useGetAntispamTokenQuery();
   const lottieRef = useRef<LottieRefCurrentProps>(null);
 
   useEffect(() => {
@@ -219,7 +220,7 @@ const Feedback: React.FC<FeedbackProps> = ({ context }) => {
   };
 
   const handleSubmit = async () => {
-    if (rating === 0 || isLoading) return;
+    if (rating === 0 || isLoading || !tokenData?.token) return;
 
     try {
       const payload = {
@@ -231,15 +232,17 @@ const Feedback: React.FC<FeedbackProps> = ({ context }) => {
         land_name: context?.landName ?? '',
         page_name: context?.pageName ?? '',
         crisp_session_id: getCrispSessionId(),
+        _token: tokenData.token,
       };
 
-      await submitFeedback(payload as any).unwrap();
+      await submitFeedback(payload).unwrap();
 
       lottieRef.current?.goToAndPlay(0);
       setSubmitted(true);
     } catch {
       setSubmitted(true);
     }
+    refetchToken();
   };
 
   const displayRating = hoveredRating || rating;

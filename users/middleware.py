@@ -19,6 +19,9 @@ class ProfileCompletionMiddleware:
             "/admin/",
             "/public/",
             "/api/",
+            "/webpack-dev/",
+            "/static/",
+            "/media/",
         ]
 
         # Vérifier si l'utilisateur est connecté et si son profil est incomplet
