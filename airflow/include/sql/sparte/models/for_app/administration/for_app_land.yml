@@ -15,8 +15,27 @@ models:
           - relationships:
               field: land_type
               to: ref('land')
+      - name: land_type_slug
+        description: URL-friendly slug for land_type (e.g., 'commune', 'departement', 'epci').
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - commune
+                - epci
+                - departement
+                - scot
+                - region
+                - nation
+                - custom
       - name: name
         data_type: character varying
+        data_tests:
+          - not_null
+      - name: slug
+        description: URL-friendly slug combining land_id and slugified name (e.g., '69123-lyon', '200046977-metropole-de-lyon').
+        data_type: text
         data_tests:
           - not_null
       - name: surface
@@ -155,6 +174,16 @@ models:
                 - données_inchangées_avec_données_manquantes
                 - données_manquantes
                 - données_partiellement_coriggées
+                - données_coriggées_avec_données_manquantes
+                - données_partiellement_coriggées_avec_données_manquantes
+      - name: competence_planification
+        data_type: boolean
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - "true"
+                - "false"
       - name: has_conso
         data_type: boolean
         tests:

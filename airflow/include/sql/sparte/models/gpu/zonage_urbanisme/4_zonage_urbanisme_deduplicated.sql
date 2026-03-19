@@ -32,7 +32,6 @@ select
     id_document_urbanisme,
     checksum,
     geom,
-    commune_code,
     departement,
     srid_source
 FROM

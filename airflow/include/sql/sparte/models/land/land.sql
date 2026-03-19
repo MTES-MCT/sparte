@@ -4,7 +4,8 @@
         indexes=[
             {'columns': ['land_id'], 'type': 'btree'},
             {'columns': ['land_type'], 'type': 'btree'},
-            {'columns': ['geom'], 'type': 'gist'}
+            {'columns': ['geom'], 'type': 'gist'},
+            {'columns': ['parent_keys'], 'type': 'gin'},
         ])
 }}
 
@@ -59,6 +60,7 @@ SELECT
     {{ common_fields }},
     {{ admin_express_common_fields }},
     ARRAY[
+        '{{ var("COMMUNE") }}',
         '{{ var("EPCI") }}',
         '{{ var("SCOT") }}'
     ] as child_land_types,
@@ -76,9 +78,10 @@ SELECT
     {{ common_fields }},
     {{ admin_express_common_fields }},
     ARRAY[
+        '{{ var("DEPARTEMENT") }}',
+        '{{ var("COMMUNE") }}',
         '{{ var("EPCI") }}',
-        '{{ var("SCOT") }}',
-        '{{ var("DEPARTEMENT") }}'
+        '{{ var("SCOT") }}'
     ] as child_land_types,
     ARRAY[
         '{{ var("NATION") }}_' || '{{ var("NATION") }}'
@@ -113,6 +116,24 @@ SELECT
     parent_keys
 FROM
     {{ ref('custom_land') }}
+UNION ALL
+SELECT
+    '{{ var("NATION") }}' as land_id,
+    '{{ var("NATION") }}' as land_type,
+    (SELECT array_agg(distinct code) FROM {{ ref('departement') }}) as departements,
+    ST_Union(geom) as geom,
+    ST_Union(simple_geom) as simple_geom,
+    sum(surface) as surface,
+    'France' as name,
+    ARRAY[
+        '{{ var("REGION") }}',
+        '{{ var("DEPARTEMENT") }}',
+        '{{ var("EPCI") }}',
+        '{{ var("SCOT") }}'
+    ] as child_land_types,
+    array[]::varchar[] as parent_keys
+FROM
+    {{ ref('region') }}
 
 ORDER BY land_type
 DESC

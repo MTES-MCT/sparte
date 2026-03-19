@@ -12,6 +12,7 @@ export type SubMenuItem = {
   label: string;
   url?: string;
   new?: boolean;
+  dgaln_only?: boolean;
 };
 
 export type MenuItem = {
@@ -23,6 +24,7 @@ export type MenuItem = {
   shouldDisplay?: boolean;
   new?: boolean;
   soon?: boolean;
+  dgaln_only?: boolean;
 };
 
 export type ComparisonLand = {
@@ -33,25 +35,10 @@ export type ComparisonLand = {
 
 export type ProjectDetailResultType = {
   id: number;
-  created_date: string;
-  level_label: string;
-  analyse_start_date: string;
-  analyse_end_date: string;
-  territory_name: string;
-  has_zonage_urbanisme: boolean;
-  autorisation_logement_available: boolean;
-  logements_vacants_available: boolean;
   land_id: string;
   land_type: string;
-  departements: string[];
-  bounds: [number, number, number, number];
-  max_bounds: [number, number, number, number];
   target_2031: number | null;
   comparison_lands: ComparisonLand[];
-  centroid: {
-    latitude: number;
-    longitude: number;
-  };
   urls: {
     synthese: string;
     artificialisation: string;
@@ -74,11 +61,16 @@ export type ProjectDetailResultType = {
   };
   header: {
     logos: Logo[];
-    search: {
-      createUrl: string;
-    };
+    search: Record<string, never>;
     menuItems: MenuItem[];
   };
+};
+
+export type UserLandPreferenceResultType = {
+  is_favorited: boolean;
+  target_2031: number | null;
+  comparison_lands: ComparisonLand[];
+  is_main: boolean;
 };
 
 type ProjectDetailQueryArg = string | FetchArgs

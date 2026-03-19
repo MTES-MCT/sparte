@@ -11,8 +11,6 @@ testing_middleware = [m for m in settings.MIDDLEWARE if "csrf" not in m.lower()]
 
 
 class SigninTest(TestCase):
-    fixtures = ["users/tests/parameters.json"]
-
     def setUp(self):
         self.credentials = {
             "first_name": "John",
@@ -56,7 +54,7 @@ class SigninTest(TestCase):
     @override_settings(MIDDLEWARE=testing_middleware)
     def test_signin_does_not_redirect_to_external_next_param(self) -> None:
         next_url = "https://malicious-site.com"
-        default_success_url = "/project/mes-diagnostics"
+        default_success_url = "/diagnostic/mes-territoires"
         response = self.client.post(
             path=f"/users/signin/?next={next_url}",
             data=urlencode(

@@ -107,6 +107,7 @@ export const FrichesOcsgeCouvertureMap: React.FC<FrichesOcsgeCouvertureMapProps>
             config={config}
             landData={extendedLandData}
             center={center}
+            mapHeight="65vh"
             onMapLoad={onMapLoad}
         />
     );

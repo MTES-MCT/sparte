@@ -85,11 +85,11 @@ export class ControlsManager implements ControlsManagerInterface {
 
         if (!control || !controlInstance) return;
 
+        this.stateManager.setControlValue(controlId, value);
+
         const context = this.buildContext(controlId);
         const targetLayers = control.targetLayers || [];
         await controlInstance.apply(targetLayers, value, context);
-
-        this.stateManager.setControlValue(controlId, value);
     }
 
     getControlValue(controlId: string): ControlValue {
@@ -126,6 +126,7 @@ export class ControlsManager implements ControlsManagerInterface {
     updateControlValue(controlId: string, value: ControlValue): void {
         this.stateManager.setControlValue(controlId, value);
     }
+
 
     private buildContext(controlId: string): ControlContext {
         const control = this.findControl(controlId);

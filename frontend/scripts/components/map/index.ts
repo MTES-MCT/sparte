@@ -1,13 +1,14 @@
 export { BaseMap } from './ui/BaseMap';
 export { ImpermeabilisationMap } from './ui/ImpermeabilisationMap';
 export { ImpermeabilisationDiffMap } from './ui/ImpermeabilisationDiffMap';
-export { ArtificialisationMap } from './ui/ArtificialisationMap';
 export { ArtificialisationDiffMap } from './ui/ArtificialisationDiffMap';
 export { FrichesOcsgeCouvertureMap } from './ui/FrichesOcsgeCouvertureMap';
 export { FrichesImpermeableMap } from './ui/FrichesImpermeableMap';
 export { FrichesArtificialMap } from './ui/FrichesArtificialMap';
 export { FrichesMap } from './ui/FrichesMap';
 export { CarroyageLeaMap } from './ui/CarroyageLeaMap';
+export { OcsgeObjectMap } from './ui/OcsgeObjectMap';
+export { ZonageUrbanismeMap } from './ui/ZonageUrbanismeMap';
 
 export { ControlsPanel } from './ui/controls/ControlsPanel';
 export { ControlsGroup } from './ui/controls/ControlsGroup';

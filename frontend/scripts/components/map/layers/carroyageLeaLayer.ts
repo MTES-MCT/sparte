@@ -55,16 +55,18 @@ export class CarroyageLeaLayer extends BaseLayer {
     getOptions(): LayerSpecification[] {
         const cumulativeExpression = this.buildCumulativeExpression();
 
-        // Gradient based on cumulative consumption
+        // Gradient based on cumulative consumption (matches "total" destination color #6a6af4)
+        // Thresholds in m² — will be overridden by dynamic styling from CarroyageLeaMap
         const colorExpression = [
             "interpolate",
             ["linear"],
             cumulativeExpression,
-            0, "#fee5d9",
-            100, "#fcae91",
-            500, "#fb6a4a",
-            1000, "#de2d26",
-            5000, "#a50f15"
+            0, "#ffffff",
+            1000, "#b3b3f9",
+            5000, "#8a8af6",
+            10000, "#6a6af4",
+            25000, "#5252c4",
+            50000, "#4a4aab"
         ];
 
         const territoryFilter = this.getTerritoryFilter();

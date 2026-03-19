@@ -9,7 +9,7 @@ export type Millesime = {
     departement: string;
     departement_name?: string;
 }
-  
+
 export type MillesimeByIndex = {
     index: number;
     years: string;
@@ -114,7 +114,10 @@ export type TerritorialisationHierarchyItem = {
 export type LandDetailResultType = {
     land_id: string;
     land_type: LandType;
+    land_type_slug: string;
+    land_type_label: string;
     name: string;
+    slug: string;
     surface: number;
     surface_unit: string;
     surface_artif: number | null;
@@ -164,6 +167,19 @@ export type LandDetailResultType = {
     max_bounds: [number, number, number, number];
     conso_details: ConsoDetails;
     consommation_correction_status: ConsoCorrectionStatusEnum;
+    logements_22: number | null;
+    evolution_logements_percent: number | null;
+    evolution_logements_absolute: number | null;
+    densite_logements: number | null;
+    emplois_22: number | null;
+    evolution_emplois_percent: number | null;
+    evolution_emplois_absolute: number | null;
+    densite_emplois: number | null;
+    residences_secondaires_22: number | null;
+    evolution_residences_secondaires_percent: number | null;
+    evolution_residences_secondaires_absolute: number | null;
+    densite_residences_secondaires: number | null;
+    competence_planification: boolean;
 };
 
 type LandDetailQueryArg = string | FetchArgs | {
@@ -172,9 +188,9 @@ type LandDetailQueryArg = string | FetchArgs | {
 }
 
 type LandDetailBaseQuery = BaseQueryFn<LandDetailQueryArg, unknown, FetchBaseQueryError>;
-  
+
 export type UseLandDetailType = TypedUseQuery<
     LandDetailResultType,
     LandDetailQueryArg,
     LandDetailBaseQuery
- >;
+>;

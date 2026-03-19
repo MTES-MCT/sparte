@@ -10,3 +10,13 @@ export async function fetchLandGeom(land_type: string, land_id: string) {
     }
     return result.data;
 }
+
+export async function fetchLandFullGeom(land_type: string, land_id: string) {
+    const result = await store.dispatch(
+        djangoApi.endpoints.getLandFullGeom.initiate({ land_type, land_id })
+    );
+    if ("error" in result) {
+        throw result.error;
+    }
+    return result.data;
+}

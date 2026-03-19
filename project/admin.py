@@ -3,14 +3,8 @@ from django.urls import exceptions, reverse
 from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
-from project.models import (
-    ExportJob,
-    Project,
-    ReportDraft,
-    Request,
-    RNUPackage,
-    RNUPackageRequest,
-)
+from project.models import ExportJob, Project, ReportDraft, Request
+from public_data.models import AdminRef
 
 
 @admin.register(ExportJob)
@@ -48,7 +42,6 @@ class ReportDraftAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "user",
-        "project",
         "report_type",
         "land_type",
         "land_id",
@@ -58,7 +51,7 @@ class ReportDraftAdmin(admin.ModelAdmin):
     list_filter = ("report_type", "land_type", "created_at")
     search_fields = ("name", "user__email", "land_id")
     readonly_fields = ("id", "created_at", "updated_at")
-    list_select_related = ("user", "project")
+    list_select_related = ("user",)
 
 
 @admin.register(Project)
@@ -160,9 +153,13 @@ class RequestAdmin(admin.ModelAdmin):
 
     def link_to_project(self, obj):
         try:
-            link = reverse("project:home", args=[obj.project_id])
+            project = Project.objects.get(id=obj.project_id)
+            link = reverse(
+                "project:home",
+                kwargs={"land_type": AdminRef.code_to_slug(project.land_type), "land_slug": project.land_slug},
+            )
             return format_html(f'<a href="{link}">Accès à la fiche</a>')
-        except exceptions.NoReverseMatch:
+        except (Project.DoesNotExist, exceptions.NoReverseMatch):
             return format_html("Diagnostic inconnu")
 
     link_to_project.short_description = "Projet public"  # type: ignore
@@ -175,29 +172,3 @@ class RequestAdmin(admin.ModelAdmin):
             return format_html("Diagnostic inconnu")
 
     link_to_project.short_description = "Projet admin"  # type: ignore
-
-
-@admin.register(RNUPackage)
-class RNUPackageAdmin(admin.ModelAdmin):
-    model = RNUPackage
-    list_display = (
-        "departement_official_id",
-        "created_at",
-        "updated_at",
-    )
-    search_fields = ("departement_official_id",)
-    readonly_fields = (
-        "created_at",
-        "updated_at",
-    )
-
-
-@admin.register(RNUPackageRequest)
-class RNUPackageRequestAdmin(admin.ModelAdmin):
-    model = RNUPackageRequest
-    list_display = (
-        "user",
-        "rnu_package",
-        "departement_official_id",
-    )
-    search_fields = ("email",)

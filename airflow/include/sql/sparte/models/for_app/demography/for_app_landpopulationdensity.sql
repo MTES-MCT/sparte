@@ -160,4 +160,32 @@ LEFT JOIN
     ) as custom_land_surface
     ON flux.custom_land_code = custom_land_surface.custom_land_id
 
+UNION ALL
+
+-- Nation density
+SELECT
+    flux.nation as land_id,
+    '{{ var('NATION') }}' as land_type,
+    flux.year,
+    flux.population,
+    nation_surface.surface,
+    CASE
+        WHEN nation_surface.surface > 0 THEN ROUND((flux.population::numeric / (nation_surface.surface::numeric / 10000)), 2)
+        ELSE 0
+    END as density_ha,
+    CASE
+        WHEN nation_surface.surface > 0 THEN ROUND((flux.population::numeric / (nation_surface.surface::numeric / 1000000)), 2)
+        ELSE 0
+    END as density_km2
+FROM
+    {{ ref('flux_population_nation') }} as flux
+LEFT JOIN
+    (
+        SELECT
+            SUM(surface) as surface
+        FROM
+            {{ ref('region') }}
+    ) as nation_surface
+    ON true
+
 ORDER BY density_km2 DESC

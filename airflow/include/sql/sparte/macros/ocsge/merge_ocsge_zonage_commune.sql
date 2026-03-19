@@ -3,14 +3,14 @@
 with
     without_percent as (
         select
-            commune,
-            departement,
-            index,
-            region,
-            epci,
-            ept,
-            scot,
-            count(distinct land_zonage.zonage_checksum)::integer as zonage_count,
+            zc.commune_code as commune,
+            commune.departement,
+            zonage_couverture_et_usage.index,
+            commune.region,
+            commune.epci,
+            commune.ept,
+            scot_communes.id_scot as scot,
+            count(distinct zc.zonage_checksum)::integer as zonage_count,
             sum(zonage_couverture_et_usage.surface) as zonage_surface,
             sum(
                 case
@@ -22,12 +22,14 @@ with
             ) as indicateur_surface,
             zonage_type,
             year
-        from {{ ref("commune_zonage") }} as land_zonage
+        from {{ ref("zonage_commune") }} as zc
+        inner join {{ ref("commune") }} as commune on commune.code = zc.commune_code
+        left join {{ ref("scot_communes") }} as scot_communes on commune.code = scot_communes.commune_code
         left join
             {{ ref("zonage_couverture_et_usage") }}
-            on land_zonage.zonage_checksum = zonage_couverture_et_usage.zonage_checksum
+            on zc.zonage_checksum = zonage_couverture_et_usage.zonage_checksum
         where zonage_type is not null
-        group by commune, zonage_type, year, departement, index, region, epci, ept, scot
+        group by zc.commune_code, zonage_type, year, commune.departement, zonage_couverture_et_usage.index, commune.region, commune.epci, commune.ept, scot_communes.id_scot
     )
 select
     commune as code,
@@ -44,5 +46,8 @@ select
     zonage_count,
     indicateur_surface / zonage_surface * 100 as indicateur_percent
 from without_percent
+-- certains zonages PLU ont une surface nulle (géométrie dégénérée ou intersection
+-- vide avec l'OCS GE), on les ignore car marginaux (2 sur ~159 000)
+where zonage_surface > 0
 
 {% endmacro %}

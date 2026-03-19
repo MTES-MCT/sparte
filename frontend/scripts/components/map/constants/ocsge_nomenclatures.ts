@@ -91,3 +91,62 @@ export const OCSGE_LAYER_NOMENCLATURES = {
         usage: ALL_OCSGE_USAGE_CODES
     }
 } as const;
+
+// Matrice de passage OCS GE — Décret du 29 avril 2022
+// Pour chaque couverture, liste des usages dont le croisement est considéré comme artificialisé
+const USAGES_ARTIF_VEGETALISE: Usage[] = ["US2", "US235", "US3", "US5", "US4.1.1", "US4.1.2", "US4.1.3", "US4.1.4", "US4.1.5", "US4.2", "US4.3"];
+
+export const ARTIFICIALISATION_MATRIX: Record<Couverture, Usage[]> = {
+    // CS1.1 — Surfaces anthropisées : artificialisé pour tous les usages
+    "CS1.1.1.1": ALL_OCSGE_USAGE_CODES,
+    "CS1.1.1.2": ALL_OCSGE_USAGE_CODES,
+    "CS1.1.2.1": ALL_OCSGE_USAGE_CODES.filter(u => u !== "US1.3"), // sauf carrières (US1.3)
+    "CS1.1.2.2": ALL_OCSGE_USAGE_CODES,
+    // CS1.2 — Surfaces naturelles : jamais artificialisé
+    "CS1.2.1": [],
+    "CS1.2.2": [],
+    "CS1.2.3": [],
+    // CS2.1 — Végétation ligneuse : jamais artificialisé
+    "CS2.1.1.1": [],
+    "CS2.1.1.2": [],
+    "CS2.1.1.3": [],
+    "CS2.1.2": [],
+    "CS2.1.3": [],
+    // CS2.2 — Végétation non ligneuse : artificialisé uniquement pour certains usages
+    "CS2.2.1": USAGES_ARTIF_VEGETALISE,
+    "CS2.2.2": USAGES_ARTIF_VEGETALISE,
+};
+
+/**
+ * Vérifie si un croisement couverture × usage est considéré comme artificialisé
+ * selon la matrice de passage OCS GE (décret du 29 avril 2022).
+ *
+ * ⚠ Cette fonction ne tient pas compte des seuils d'interprétation (critere_seuil)
+ * définis par le décret du 27 novembre 2023 (surfaces < 2500 m²).
+ * Pour un résultat conforme au décret, vérifier également le champ critere_seuil.
+ */
+export function isArtifMatrice(codeCs: Couverture, codeUs: Usage): boolean {
+    return ARTIFICIALISATION_MATRIX[codeCs]?.includes(codeUs) ?? false;
+}
+
+// Matrice d'imperméabilisation — CS1.1.1.1 et CS1.1.1.2 (zones imperméables) pour tous les usages
+export const IMPERMEABILISATION_MATRIX: Record<Couverture, Usage[]> = {
+    "CS1.1.1.1": ALL_OCSGE_USAGE_CODES,
+    "CS1.1.1.2": ALL_OCSGE_USAGE_CODES,
+    "CS1.1.2.1": [],
+    "CS1.1.2.2": [],
+    "CS1.2.1": [],
+    "CS1.2.2": [],
+    "CS1.2.3": [],
+    "CS2.1.1.1": [],
+    "CS2.1.1.2": [],
+    "CS2.1.1.3": [],
+    "CS2.1.2": [],
+    "CS2.1.3": [],
+    "CS2.2.1": [],
+    "CS2.2.2": [],
+};
+
+export function isImperMatrice(codeCs: Couverture, codeUs: Usage): boolean {
+    return IMPERMEABILISATION_MATRIX[codeCs]?.includes(codeUs) ?? false;
+}

@@ -9,7 +9,6 @@ export interface ReportTypeOption {
 
 export interface ReportDraft {
     id: string;
-    project: number;
     report_type: ReportType;
     report_type_display: string;
     name: string;
@@ -23,7 +22,6 @@ export interface ReportDraft {
 
 export interface ReportDraftListItem {
     id: string;
-    project: number;
     report_type: ReportType;
     report_type_display: string;
     name: string;
@@ -32,12 +30,11 @@ export interface ReportDraftListItem {
 }
 
 export interface CreateReportDraftPayload {
-    project: number;
     report_type: ReportType;
     name: string;
     content: Record<string, string>;
-    land_type?: string;
-    land_id?: string;
+    land_type: string;
+    land_id: string;
     comparison_lands?: ComparisonLand[];
 }
 

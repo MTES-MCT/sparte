@@ -11,6 +11,23 @@
         <meta name="htmx-config" content='{"inlineScriptNonce":"[NONCE_PLACEHOLDER]"}'>
 
         <title>{% block pagetitle %}{{ page_title }}{% endblock %}</title>
+        {% if meta_description %}<meta name="description" content="{{ meta_description }}">{% endif %}
+        {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
+
+        <!-- Open Graph (Facebook, LinkedIn, WhatsApp, etc.) -->
+        <meta property="og:type" content="website">
+        <meta property="og:locale" content="fr_FR">
+        <meta property="og:site_name" content="Mon Diagnostic Artificialisation">
+        {% if og_title %}<meta property="og:title" content="{{ og_title }}">{% endif %}
+        {% if og_description %}<meta property="og:description" content="{{ og_description }}">{% endif %}
+        {% if og_url %}<meta property="og:url" content="{{ og_url }}">{% endif %}
+        <meta property="og:image" content="{% static 'img/og-image.png' %}">
+
+        <!-- Twitter/X -->
+        <meta name="twitter:card" content="summary_large_image">
+        {% if og_title %}<meta name="twitter:title" content="{{ og_title }}">{% endif %}
+        {% if og_description %}<meta name="twitter:description" content="{{ og_description }}">{% endif %}
+        <meta name="twitter:image" content="{% static 'img/og-image.png' %}">
 
         <link crossorigin="anonymous" rel="icon" href="{% static 'favicon/favicon.svg' %}" integrity="sha256-9XtIvlxcpnXef29DOD0o+agM++e/ZB8xYC5vGqDiTLI=">
         <link crossorigin="anonymous" rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}" integrity="sha256-U4nRN5qiI5h+9kMtFZh/GkuJqlklIU4HLH999+7seYc=">
@@ -36,7 +53,7 @@
     </head>
     
     <body>
-        <div id="react-root" data-project-id="{{ project_id|safe }}"></div>
+        <div id="react-root" data-land-type="{{ land.land_type }}" data-land-id="{{ land.land_id }}" data-land-slug="{{ land.slug }}"></div>
 
         <dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal">
             <div class="fr-container fr-container--fluid fr-container-md">

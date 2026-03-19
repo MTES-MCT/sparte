@@ -11,13 +11,10 @@
     )
 }}
 
-SELECT
+{% set friche_fields = """
     friche.site_id,
     friche.site_nom,
     friche.geom,
-    land.land_type AS land_type,
-    land.land_id as land_id,
-    land.name AS land_name,
     friche.friche_sol_pollution,
     friche.friche_statut,
     friche.friche_is_in_zone_activite,
@@ -28,11 +25,31 @@ SELECT
     friche.surface,
     friche.source_producteur,
     friche.nature
+""" %}
+
+SELECT
+    {{ friche_fields }},
+    land.land_type AS land_type,
+    land.land_id as land_id,
+    land.name AS land_name
 FROM
     {{ ref('friche') }}
 LEFT JOIN
     {{ ref('land') }}
 ON
     ST_Intersects(friche.geom, land.geom)
+WHERE
+    land.land_type != '{{ var("NATION") }}'
+
+UNION ALL
+
+SELECT
+    {{ friche_fields }},
+    '{{ var("NATION") }}' AS land_type,
+    '{{ var("NATION") }}' AS land_id,
+    'France' AS land_name
+FROM
+    {{ ref('friche') }}
+
 ORDER BY
     site_id

@@ -16,6 +16,9 @@ import type { LandDetailResultType } from "@services/types/land";
 import type { LayerId } from "../types/registry";
 import type { BaseSource } from "../sources/baseSource";
 import type { BaseLayer } from "../layers/baseLayer";
+import type { Control } from "../types/controls";
+import { ConfigurableControlsBar } from "./controls/ConfigurableControlsBar";
+import { SidePanel, MapWithSidePanel } from "./sidePanel";
 
 const MapWrapper = styled.div`
 	position: relative;
@@ -39,8 +42,8 @@ const MapWrapper = styled.div`
 	}
 `;
 
-const MapContainer = styled.div<{ $isLoaded: boolean }>`
-	height: 65vh;
+const MapContainer = styled.div<{ $isLoaded: boolean; $height: string }>`
+	height: ${({ $height }) => $height};
 	width: 100%;
 	opacity: ${({ $isLoaded }) => ($isLoaded ? 1 : 0)};
 	transition: opacity 0.3s ease-in-out;
@@ -64,16 +67,22 @@ interface BaseMapProps {
     config?: MapConfig;
     landData: LandDetailResultType;
     center?: [number, number] | null;
+    mapHeight?: string;
+    sidePanel?: React.ReactNode;
     onMapLoad?: (map: maplibregl.Map) => void;
+    onControlsReady?: (manager: ControlsManager) => void;
 }
 
-export const BaseMap: React.FC<BaseMapProps> = ({
+export const BaseMap: React.FC<BaseMapProps> = React.memo(({
     id = "map",
     children,
     config,
     landData,
     center,
+    mapHeight = "80vh",
+    sidePanel,
     onMapLoad,
+    onControlsReady,
 }) => {
     const mapDiv = useRef<HTMLDivElement>(null);
     const isInitialized = useRef(false);
@@ -184,6 +193,7 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         );
         if (controlsMgr) {
             setControlsManager(controlsMgr);
+            onControlsReady?.(controlsMgr);
         }
 
         // Initialiser le gestionnaire d'info panels si des info panels sont définis
@@ -238,14 +248,38 @@ export const BaseMap: React.FC<BaseMapProps> = ({
         return new Map(memoizedConfig.infoPanels.map(config => [config.layerId, config]));
     }, [memoizedConfig?.infoPanels]);
 
+    const configurableControls = useMemo(() => {
+        if (!memoizedConfig?.controlGroups) return [];
+        const controls: Control[] = [];
+        for (const group of memoizedConfig.controlGroups) {
+            for (const control of group.controls) {
+                if (control.addControlsAboveMap) {
+                    controls.push(control);
+                }
+            }
+        }
+        return controls;
+    }, [memoizedConfig]);
+
+    const Wrapper = sidePanel ? MapWithSidePanel : React.Fragment;
+
     return (
+        <Wrapper>
         <MapWrapper id={`${id}-wrapper`}>
+            {controlsManager && configurableControls.length > 0 && (
+                <ConfigurableControlsBar
+                    controls={configurableControls}
+                    manager={controlsManager}
+                />
+            )}
             <MapContainer
                 id={id}
                 ref={mapDiv}
                 $isLoaded={isMapLoaded}
+                $height={mapHeight}
             />
             {children}
+            {sidePanel && <SidePanel>{sidePanel}</SidePanel>}
             {controlsManager && memoizedConfig?.controlGroups && memoizedConfig.controlGroups.length > 0 && (
                 <ControlsPanel
                     config={{
@@ -259,10 +293,11 @@ export const BaseMap: React.FC<BaseMapProps> = ({
                 configs={infoPanelConfigs}
             />
             {statsState.isVisible && statsState.categories.length > 0 && (
-                <StatsBar 
+                <StatsBar
                     categories={statsState.categories}
                 />
             )}
         </MapWrapper>
+        </Wrapper>
     );
-};
+});

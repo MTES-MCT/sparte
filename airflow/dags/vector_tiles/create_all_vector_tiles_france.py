@@ -10,9 +10,10 @@ Pour chaque département, il génère :
 3. GeoJSON centroïdes de différence d'artificialisation
 4. Tuiles PMTiles de différence d'imperméabilisation
 5. GeoJSON centroïdes de différence d'imperméabilisation
+6. Tuiles PMTiles de zonages d'urbanisme (millésimes 1 et 2)
 
 En plus, il génère pour toute la France :
-6. Tuiles PMTiles d'occupation du sol des friches (millésimes 1 et 2)
+7. Tuiles PMTiles d'occupation du sol des friches (millésimes 1 et 2)
 """
 
 import json
@@ -128,7 +129,24 @@ def create_all_vector_tiles_france():
         for dept in DEPARTEMENTS
     ]
 
-    # 6. Occupation du sol des friches (national) par millésime
+    # 6. Zonages d'urbanisme par département et millésime
+    zonage_urbanisme_tasks = [
+        TriggerDagRunOperator(
+            task_id=f"trigger_zonage_urbanisme_{millesime}_{dept}",
+            trigger_dag_id="create_zonage_urbanisme_vector_tiles",
+            conf={
+                "index": millesime,
+                "departement": dept,
+                "refresh_existing": refresh_existing_value,
+            },
+            wait_for_completion=True,
+            poke_interval=30,
+        )
+        for dept in DEPARTEMENTS
+        for millesime in MILLESIMES
+    ]
+
+    # 7. Occupation du sol des friches (national) par millésime
     friche_tasks = [
         TriggerDagRunOperator(
             task_id=f"trigger_friche_{millesime}",
@@ -150,6 +168,7 @@ def create_all_vector_tiles_france():
         + artif_diff_centroid_tasks
         + diff_tasks
         + diff_centroid_tasks
+        + zonage_urbanisme_tasks
         + friche_tasks
     )
 

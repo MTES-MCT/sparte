@@ -1,68 +1,84 @@
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
-from django.urls import reverse
-from django.utils import timezone
-from django.views.generic import DetailView, ListView, RedirectView
+from django.db.models import BooleanField, Case, Count, OuterRef, Subquery, Value, When
+from django.db.models.functions import Coalesce
+from django.shortcuts import redirect
+from django.views import View
+from django.views.generic import ListView
 
-from project.models import Project
-from project.models.enums import ProjectChangeReason
-
-from .mixins import GroupMixin
-
-
-class ClaimProjectView(LoginRequiredMixin, RedirectView):
-    def get(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs["pk"])
-        self.url = project.get_absolute_url()
-        if project.user is not None:
-            messages.error(request, "Erreur : ce diagnostic est appartient déjà à quelqu'un")
-        else:
-            messages.success(
-                request,
-                (
-                    "Vous pouvez retrouver ce diagnostic en cliquant sur le bouton 'Mon compte' "
-                    "en haut à droite de la page, puis 'Mes diagnostics'."
-                ),
-            )
-            project.user = request.user
-            project._change_reason = ProjectChangeReason.USER_CLAIMED_PROJECT
-            project.save()
-        return super().get(request, *args, **kwargs)
+from project.models.report_draft import ReportDraft
+from project.models.user_land_preference import UserLandPreference
 
 
-class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
+class UserLandPreferenceListView(LoginRequiredMixin, ListView):
     template_name = "project/pages/list.html"
-    context_object_name = "projects"  # override to add an "s"
+    context_object_name = "preferences"
+    paginate_by = 10
 
     def get_queryset(self):
-        return Project.objects.filter(user=self.request.user).prefetch_related("report_drafts")
-
-
-class SplashScreenView(GroupMixin, DetailView):
-    model = Project
-    template_name = "project/pages/splash_screen.html"
-    context_object_name = "diagnostic"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs += [
-            {"href": None, "title": "Création du diagnostic"},
-        ]
-        return breadcrumbs
-
-
-class SplashProgressionView(GroupMixin, DetailView):
-    model = Project
-    template_name = "project/components/widgets/fragment_splash_progress.html"
-    context_object_name = "diagnostic"
-
-    def dispatch(self, *args, **kwargs):
-        response = super().dispatch(*args, **kwargs)
-        if self.object.is_ready_to_be_displayed:
-            response["HX-Redirect"] = reverse("project:home", kwargs=self.kwargs)
-        return response
+        user = self.request.user
+        report_count_subquery = (
+            ReportDraft.objects.filter(
+                land_type=OuterRef("land_type"),
+                land_id=OuterRef("land_id"),
+                user=user,
+            )
+            .order_by()
+            .values("land_type", "land_id")
+            .annotate(cnt=Count("id"))
+            .values("cnt")
+        )
+        return (
+            UserLandPreference.objects.filter(user=user)
+            .annotate(
+                report_count=Coalesce(Subquery(report_count_subquery), 0),
+                is_favorite=Case(
+                    When(
+                        land_type=user.main_land_type,
+                        land_id=user.main_land_id,
+                        then=Value(True),
+                    ),
+                    default=Value(False),
+                    output_field=BooleanField(),
+                ),
+            )
+            .order_by("-is_favorite", "-id")
+        )
 
     def get_context_data(self, **kwargs):
-        kwargs["last_update"] = timezone.now()
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        from types import SimpleNamespace
+
+        from public_data.models import LandModel
+
+        for pref in context["preferences"]:
+            try:
+                pref.land = LandModel.objects.get(land_type=pref.land_type, land_id=pref.land_id)
+            except LandModel.DoesNotExist:
+                pref.land = None
+
+        user = self.request.user
+        main_pref = next((p for p in context["preferences"] if p.is_favorite and p.land), None)
+
+        if not main_pref and user.main_land_type and user.main_land_id:
+            land = LandModel.objects.filter(land_type=user.main_land_type, land_id=user.main_land_id).first()
+            if land:
+                main_pref = SimpleNamespace(
+                    land=land,
+                    target_2031=None,
+                    report_count=ReportDraft.objects.filter(
+                        land_type=user.main_land_type,
+                        land_id=user.main_land_id,
+                        user=user,
+                    ).count(),
+                )
+
+        context["main_pref"] = main_pref
+        context["has_other_favorites"] = any(p for p in context["preferences"] if not p.is_favorite and p.land)
+
+        return context
+
+
+class RemoveFavoriteView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        UserLandPreference.objects.filter(pk=pk, user=request.user).delete()
+        return redirect("project:list")

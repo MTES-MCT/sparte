@@ -1,12 +1,14 @@
 import React from "react";
 import styled from "styled-components";
+import Button from "@components/ui/Button";
+import PeriodSelector from "@components/ui/PeriodSelector";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
 const ControlLabel = styled.span`
 	font-weight: 500;
 	font-size: 0.8rem;
 	flex-shrink: 0;
-	
+
 	@media (max-width: 1280px) {
 		display: none;
 	}
@@ -33,8 +35,6 @@ export const ConsommationControls: React.FC = () => {
 		landTypeLabels,
 	} = useConsommationControls();
 
-	const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
-
 	const hasChangedFromDefault = startYear !== defaultStartYear || endYear !== defaultEndYear;
 
 	const handleReset = () => {
@@ -42,76 +42,52 @@ export const ConsommationControls: React.FC = () => {
 		setEndYear(defaultEndYear);
 	};
 
-	const controlsContent = (
-		<div className="d-flex align-items-center gap-3">
+	return (
+		<div className="d-flex align-items-center gap-3" style={{ flexWrap: "wrap" }}>
 			<ControlLabel>
 				Période d'analyse
 			</ControlLabel>
 
-			<div className="d-flex align-items-center gap-2">
-				<select
-					className="fr-select fr-select--sm"
-					id="start-year"
-					value={startYear}
-					onChange={(e) => setStartYear(Number(e.target.value))}
-					aria-label="Année de début"
-				>
-					{yearOptions.map((year) => (
-						<option key={year} value={year} disabled={year >= endYear}>
-							{year}
-						</option>
-					))}
-				</select>
-
-				<Separator>-</Separator>
-
-				<select
-					className="fr-select fr-select--sm"
-					id="end-year"
-					value={endYear}
-					onChange={(e) => setEndYear(Number(e.target.value))}
-					aria-label="Année de fin"
-				>
-					{yearOptions.map((year) => (
-						<option key={year} value={year} disabled={year <= startYear}>
-							{year}
-						</option>
-					))}
-				</select>
+			<div className="d-flex align-items-center gap-2" style={{ flexWrap: "wrap" }}>
+				<PeriodSelector
+					startYear={startYear}
+					endYear={endYear}
+					minYear={minYear}
+					maxYear={maxYear}
+					onStartYearChange={setStartYear}
+					onEndYearChange={setEndYear}
+				/>
 
 				{hasChangedFromDefault && (
-					<button
+					<Button
 						onClick={handleReset}
-						className="fr-btn fr-btn--sm fr-btn--tertiary-no-outline fr-icon-refresh-line flex-shrink-0"
+						variant="secondary"
+						size="sm"
+						icon="bi bi-arrow-clockwise"
 						title={`Réinitialiser à la période ${defaultStartYear}-${defaultEndYear}`}
-					>
-					</button>
+					/>
 				)}
 
 				{childLandTypes && childLandTypes.length > 1 && (
 					<>
 						<Separator>|</Separator>
 						<ControlLabel>
+							<i className="bi bi-grid-3x3-gap fr-mr-1v" aria-hidden="true" />
 							Maille d'analyse
 						</ControlLabel>
-						<select
-							className="fr-select fr-select--sm"
-							id="child-type"
-							value={childType || ''}
-							onChange={(e) => setChildType(e.target.value)}
-							aria-label="Maille d'analyse"
-						>
-							{childLandTypes.map((type) => (
-								<option key={type} value={type}>
-									{landTypeLabels[type] || type}
-								</option>
-							))}
-						</select>
+						{childLandTypes.map((type) => (
+							<Button
+								key={type}
+								variant={childType === type ? "primary" : "secondary"}
+								size="sm"
+								onClick={() => setChildType(type)}
+							>
+								{landTypeLabels[type] || type}
+							</Button>
+						))}
 					</>
 				)}
 			</div>
 		</div>
 	);
-
-	return controlsContent;
 };

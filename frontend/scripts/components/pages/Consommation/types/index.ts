@@ -1,18 +1,4 @@
-/**
- * Types for Consommation page components
- */
-
-import { Territory } from "@components/ui/SearchBar";
-
-export interface SimilarTerritory {
-  land_id: string;
-  land_name: string;
-  land_type: string;
-  nearest_land_id: string;
-  nearest_land_name: string;
-  distance_km: number;
-  distance_rank: number;
-}
+import { LandDetailResultType } from "@services/types/land";
 
 export interface ConsoStats {
   total: number;
@@ -30,4 +16,4 @@ export interface ConsommationProps {
   surface: number;
 }
 
-export type { Territory };
+export type { LandDetailResultType };

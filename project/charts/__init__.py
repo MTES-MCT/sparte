@@ -19,6 +19,7 @@ __all__ = [
     "ObjectiveChartExport",
     "PopulationConsoProgressionChart",
     "PopulationConsoComparisonChart",
+    "PopulationConsoComparisonChartExport",
     "LogementVacantAutorisationLogementRatioProgressionChart",
     "LogementVacantConsoProgressionChart",
     "LogementVacantMapPercent",
@@ -84,7 +85,10 @@ from .consommation.AnnualConsoProportionalComparisonChart import (
     AnnualConsoProportionalComparisonChart,
     AnnualConsoProportionalComparisonChartExport,
 )
-from .demography.PopulationConsoComparisonChart import PopulationConsoComparisonChart
+from .demography.PopulationConsoComparisonChart import (
+    PopulationConsoComparisonChart,
+    PopulationConsoComparisonChartExport,
+)
 from .demography.PopulationConsoProgressionChart import PopulationConsoProgressionChart
 from .impermeabilisation import (
     ImperByCouverturePieChart,

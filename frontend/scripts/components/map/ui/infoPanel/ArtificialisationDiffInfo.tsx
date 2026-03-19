@@ -14,7 +14,7 @@ interface ArtificialisationDiffInfoProps {
 
 export const ArtificialisationDiffInfo: React.FC<ArtificialisationDiffInfoProps> = ({ feature }) => {
     const properties = feature?.properties;
-	
+
     if (!properties) {
         return (
             <InfoContent>
@@ -51,7 +51,7 @@ export const ArtificialisationDiffInfo: React.FC<ArtificialisationDiffInfoProps>
         const usNew = properties.us_new;
         const csOld = properties.cs_old;
         const csNew = properties.cs_new;
-        
+
         return {
             period: `${yearOld} → ${yearNew}`,
             usage: `${usOld} (${getUsageLabel(usOld)}) → ${usNew} (${getUsageLabel(usNew)})`,
@@ -65,7 +65,7 @@ export const ArtificialisationDiffInfo: React.FC<ArtificialisationDiffInfoProps>
         {
             label: "Type",
             value: (
-                <Badge 
+                <Badge
 					noIcon
                     severity={isArtificial ? "error" : "success"}
                     small
@@ -103,4 +103,3 @@ export const ArtificialisationDiffInfo: React.FC<ArtificialisationDiffInfoProps>
         </InfoContent>
     );
 };
-

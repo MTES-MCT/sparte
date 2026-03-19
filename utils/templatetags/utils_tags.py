@@ -1,7 +1,14 @@
 from django import template
 from django.conf import settings
 
+from utils.antispam import generate_token
+
 register = template.Library()
+
+
+@register.simple_tag
+def antispam_token():
+    return generate_token()
 
 
 @register.inclusion_tag("utils/matomo_code.html", takes_context=True)

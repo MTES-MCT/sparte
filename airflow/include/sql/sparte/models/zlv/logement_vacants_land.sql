@@ -129,6 +129,25 @@ ON
     logements_vacants_custom_land.code_custom_land = rpls_custom_land.custom_land_code
 AND
     logements_vacants_custom_land.year = rpls_custom_land.year
+
+-- Nation
+UNION
+SELECT
+    code_nation as land_id,
+    '{{ var('NATION') }}' as land_type,
+    logements_vacants_nation.year as year,
+    logements_parc_prive,
+    logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
+    rpls_nation.total as logements_parc_social,
+    rpls_nation.vacants as logements_vacants_parc_social,
+    logements_vacants_nation.is_secretise,
+    logements_vacants_nation.secretisation_status
+FROM
+    {{ ref('logements_vacants_nation') }} as logements_vacants_nation
+LEFT JOIN
+    {{ ref('rpls_nation') }} as rpls_nation
+ON
+    logements_vacants_nation.year = rpls_nation.year
 ), with_parc_general as (
 SELECT
     *,

@@ -1,0 +1,27 @@
+models:
+  - name: for_app_land_geojson
+    columns:
+      - name: land_id
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_id
+              to: ref('land')
+      - name: land_type
+        data_tests:
+          - not_null
+          - relationships:
+              field: land_type
+              to: ref('land')
+      - name: child_land_type
+        data_tests:
+          - not_null
+      - name: geojson
+        data_tests:
+          - not_null
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - land_id
+            - land_type
+            - child_land_type

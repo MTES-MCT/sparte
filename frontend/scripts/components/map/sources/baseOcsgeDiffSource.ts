@@ -45,5 +45,28 @@ export abstract class BaseOcsgeDiffSource extends BaseOcsgeSource implements Sou
     getAvailableMillesimePairs(): Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number; departement?: string; departementName?: string }> {
         return getAvailableMillesimePairs(this.landData);
     }
+
+    getAvailableMillesimePairsByIndex(): Array<{ value: string; label: string }> {
+        const pairs = this.getAvailableMillesimePairs();
+        const byKey = new Map<string, { startYear?: number; endYear?: number; departement: string }>();
+
+        for (const pair of pairs) {
+            const key = `${pair.startIndex}_${pair.endIndex}`;
+            if (!byKey.has(key)) {
+                byKey.set(key, {
+                    startYear: pair.startYear,
+                    endYear: pair.endYear,
+                    departement: pair.departement || this.departements[0],
+                });
+            }
+        }
+
+        return Array.from(byKey.entries()).map(([key, { startYear, endYear, departement }]) => ({
+            value: `${key}_${departement}`,
+            label: startYear && endYear
+                ? `${startYear} - ${endYear}`
+                : key.replace('_', ' - '),
+        }));
+    }
 }
 

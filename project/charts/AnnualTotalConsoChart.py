@@ -47,7 +47,7 @@ class AnnualTotalConsoChart(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "chart": {"type": "column"},
+            "chart": {"type": "column", "height": 280},
             "title": {
                 "text": f"Consommation annuelle d'espaces NAF - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
             },

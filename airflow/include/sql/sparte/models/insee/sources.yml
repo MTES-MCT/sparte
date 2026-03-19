@@ -3,4 +3,5 @@ sources:
   - name: public
     tables:
     - name: insee_cog_changes_2025
+    - name: insee_dossier_complet
     - name: insee_population

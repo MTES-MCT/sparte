@@ -1,41 +1,21 @@
-import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
+import React, { useEffect, ChangeEvent, useState, useRef, useMemo } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
+
 import useDebounce from '@hooks/useDebounce';
 import Loader from '@components/ui/Loader';
-import getCsrfToken from '@utils/csrf';
+import { LandDetailResultType } from '@services/types/land';
 
 interface SearchBarProps {
-    onTerritorySelect?: (territory: Territory) => void;
-    excludeTerritories?: Territory[];
+    onTerritorySelect?: (territory: LandDetailResultType) => void;
+    excludeTerritories?: LandDetailResultType[];
     disableOverlay?: boolean;
     label?: string;
+    dropdownPosition?: "below" | "above";
 }
 
-export interface Territory {
-    id: number;
-    name: string;
-    source_id: string;
-    public_key: string;
-    area: number;
-    land_type_label: string;
-    land_type: string;
-}
-
-const defaultBehavior = async (territory: Territory) => {
-    const response = await fetch("/project/nouveau", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCsrfToken(),
-        },
-        body: JSON.stringify({
-            land_id: territory.source_id,
-            land_type: territory.land_type,
-        }),
-    })
-    const { id } = await response.json()
-    window.location.href = `/project/${id}/tableau-de-bord/synthesis`
+const defaultBehavior = (territory: LandDetailResultType) => {
+    window.location.href = `/diagnostic/${territory.land_type_slug}/${territory.slug}`
 }
 
 
@@ -52,7 +32,7 @@ const SearchContainer = styled.div<{ $useHighZIndex: boolean }>`
     padding: 0.5rem;
     background: #fff;
     position: relative;
-    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1001' : 'auto')};
+    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1001' : '10')};
 `;
 
 const Icon = styled.i`
@@ -71,9 +51,9 @@ const Input = styled.input`
     }
 `;
 
-const ResultsContainer = styled.div<{ $useHighZIndex: boolean }>`
+const ResultsContainer = styled.div<{ $useHighZIndex: boolean; $position: "below" | "above" }>`
     position: absolute;
-    top: 120%;
+    ${({ $position }) => $position === "above" ? "bottom: 120%;" : "top: 120%;"}
     left: 0;
     right: 0;
     background: white;
@@ -81,7 +61,7 @@ const ResultsContainer = styled.div<{ $useHighZIndex: boolean }>`
     border-radius: 6px;
     max-height: 30vh;
     overflow-y: auto;
-    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1002' : 'auto')};
+    z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1002' : '11')};
 `;
 
 const Overlay = styled.div<{ $visible: boolean }>`
@@ -152,24 +132,30 @@ const SearchBar: React.FC<SearchBarProps> = ({
     excludeTerritories = [],
     disableOverlay = false,
     label = "",
+    dropdownPosition = "below",
 }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
-    const [data, setData] = useState<Territory[] | undefined>(undefined);
+    const [data, setData] = useState<LandDetailResultType[] | undefined>(undefined);
     const minimumCharCountForSearch = 2;
     const shouldQueryBeSkipped = query.length < minimumCharCountForSearch;
     const { data: queryData, isFetching } = useSearchTerritoryQuery(query, {
         skip: shouldQueryBeSkipped,
     });
 
-    const shouldExcludeTerritoryFromResults = (territory: Territory): boolean => {
-        if (excludeTerritories.length === 0) {
+    const stableExcludeTerritories = useMemo(() => excludeTerritories, 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [JSON.stringify(excludeTerritories)]
+    );
+
+    const shouldExcludeTerritoryFromResults = (territory: LandDetailResultType): boolean => {
+        if (stableExcludeTerritories.length === 0) {
             return false;
         }
-        return excludeTerritories.some(
-            (excludedTerritory: Territory) =>
-                territory.source_id === excludedTerritory.source_id &&
+        return stableExcludeTerritories.some(
+            (excludedTerritory: LandDetailResultType) =>
+                territory.land_id === excludedTerritory.land_id &&
                 territory.land_type === excludedTerritory.land_type
         );
     };
@@ -178,14 +164,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
         if (shouldQueryBeSkipped || isFetching) {
             setData(undefined);
         } else {
-            // Filter out excluded territories
-            let filteredData = queryData;
-            if (queryData) {
-                filteredData = queryData.filter((territory: Territory) => !shouldExcludeTerritoryFromResults(territory));
-            }
+            const filteredData = queryData
+                ? queryData.filter((territory: LandDetailResultType) => !shouldExcludeTerritoryFromResults(territory))
+                : undefined;
             setData(filteredData);
         }
-    }, [isFetching, queryData, query, shouldQueryBeSkipped, excludeTerritories]);
+    }, [isFetching, queryData, query, shouldQueryBeSkipped, stableExcludeTerritories]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -216,7 +200,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         setData(undefined);
     };
 
-    const handleTerritoryClick = (territory: Territory) => {
+    const handleTerritoryClick = (territory: LandDetailResultType) => {
         onTerritorySelect ? onTerritorySelect(territory) : defaultBehavior(territory);
         handleReset();
     };
@@ -239,13 +223,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 />
                 {isFetching && <Loader size={25} wrap={false} />}
                 {data && (
-                    <ResultsContainer $useHighZIndex={!disableOverlay}>
+                    <ResultsContainer $useHighZIndex={!disableOverlay} $position={dropdownPosition}>
                         {data.length > 0 ? (
-                            data.map((territory: Territory) => {
-                                const isDisabled = territory.area === 0;
+                            data.map((territory: LandDetailResultType) => {
+                                const isDisabled = territory.surface === 0;
                                 return (
                                     <ResultItem
-                                        key={territory.source_id}
+                                        key={territory.land_id}
                                         $disabled={isDisabled}
                                         onMouseDown={(e) => e.preventDefault()}
                                         onClick={() => handleTerritoryClick(territory)}
@@ -256,7 +240,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                                                 <Badge className="fr-badge">{territory.land_type_label}</Badge>
                                             </TerritoryTitle>
                                             <TerritoryDetails>
-                                                <div>Code INSEE: {territory.source_id}</div>
+                                                <div>Code INSEE: {territory.land_id}</div>
                                                 {isDisabled && 
                                                     <div><i className="bi bi-info-circle fr-mr-1w"></i>Données indisponibles: Territoire supprimé en 2024</div>
                                                 }

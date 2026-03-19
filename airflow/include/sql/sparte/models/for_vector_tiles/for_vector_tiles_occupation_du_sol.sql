@@ -13,6 +13,8 @@ SELECT
     code_us,
     is_artificial,
     is_impermeable,
+    ocsge_commune_id,
+    critere_seuil,
     occupation_du_sol_commune.srid_source,
     st_transform(occupation_du_sol_commune.geom, 4326) as geom,
     occupation_du_sol_commune.surface,

@@ -4,11 +4,10 @@ import type maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import ChartDataTable from "@components/charts/ChartDataTable";
-import { formatNumber } from "@utils/formatUtils";
-import { useGetCarroyageDestinationConfigQuery, useGetLandChildrenGeomQuery } from "@services/api";
+import { useGetCarroyageBoundsQuery, useGetCarroyageDestinationConfigQuery, useGetLandChildrenGeomQuery } from "@services/api";
 import Loader from "@components/ui/Loader";
 import type { ExpressionSpecification } from "maplibre-gl";
+import { CarroyageLeaSidePanel } from "./sidePanel";
 
 type DestinationType = string;
 type DestinationConfig = Record<string, { label: string; suffix: string; color: string; light_text: boolean }>;
@@ -90,93 +89,45 @@ const OverlayLoader = styled.div`
     }
 `;
 
-const ButtonSeparator = styled.span`
-    display: inline-block;
-    width: 1px;
-    height: 24px;
-    background-color: #ccc;
-    margin-right: 8px;
-    vertical-align: middle;
-`;
-
-const ColorDot = styled.span<{ $color: string; $active: boolean }>`
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: ${({ $color }) => $color};
-    margin-right: 6px;
-    vertical-align: middle;
-    border: 1px solid ${({ $active }) => ($active ? 'white' : '#ccc')};
-`;
-
-const SidePanel = styled.div`
-    background: #f6f6f6;
-    border-radius: 4px;
-    padding: 1rem;
-    height: 100%;
-    font-size: 0.85rem;
-    overflow-y: auto;
-`;
-
-const SidePanelPlaceholder = styled.div`
-    color: #666;
-    font-style: italic;
-    text-align: center;
-    padding: 2rem 1rem;
-`;
-
-const SidePanelHeader = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 1rem;
-`;
-
-const SidePanelCoords = styled.span`
-    font-size: 0.75rem;
-    color: #666;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-`;
-
-const ColorSwatch = styled.span<{ $color: string }>`
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    background-color: ${({ $color }) => $color};
-    border: 1px solid #ccc;
-    flex-shrink: 0;
-`;
-
-function buildCumulativeColorExpression(
+function buildCumulativeExpression(
     startYear: number,
     endYear: number,
-    destination: DestinationType,
-    config: DestinationConfig
+    suffix: string
 ): ExpressionSpecification {
     const minYear = Math.max(startYear, 2011);
     const maxYear = Math.min(endYear, 2023);
-    const suffix = config[destination].suffix;
-    const baseColor = config[destination].color;
 
     const yearFields: ExpressionSpecification[] = [];
     for (let year = minYear; year <= maxYear; year++) {
         yearFields.push(["coalesce", ["get", `conso_${year}${suffix}`], 0] as ExpressionSpecification);
     }
 
-    let cumulativeExpression: ExpressionSpecification;
-    if (yearFields.length === 0) {
-        cumulativeExpression = ["literal", 0] as ExpressionSpecification;
-    } else if (yearFields.length === 1) {
-        cumulativeExpression = yearFields[0];
-    } else {
-        cumulativeExpression = ["+", ...yearFields] as ExpressionSpecification;
-    }
+    if (yearFields.length === 0) return ["literal", 0] as ExpressionSpecification;
+    if (yearFields.length === 1) return yearFields[0];
+    return ["+", ...yearFields] as ExpressionSpecification;
+}
 
-    const colorStops = buildColorStops(baseColor).flatMap(([threshold, color]) => [threshold, color]);
+function buildCumulativeFilter(
+    startYear: number,
+    endYear: number,
+    suffix: string
+): ExpressionSpecification {
+    return [">", buildCumulativeExpression(startYear, endYear, suffix), 0] as ExpressionSpecification;
+}
+
+function buildCumulativeColorExpression(
+    startYear: number,
+    endYear: number,
+    destination: DestinationType,
+    config: DestinationConfig,
+    bounds: { min_value: number; max_value: number } | null
+): ExpressionSpecification {
+    const suffix = config[destination].suffix;
+    const baseColor = config[destination].color;
+    const stops = buildColorStops(baseColor, bounds);
+    if (!stops) return null;
+    const cumulativeExpression = buildCumulativeExpression(startYear, endYear, suffix);
+    const colorStops = stops.flatMap(([threshold, color]) => [threshold, color]);
 
     return [
         "interpolate",
@@ -212,51 +163,35 @@ function darkenColor(hex: string, factor: number): string {
     );
 }
 
-function lerpColor(c1: string, c2: string, t: number): string {
-    const [r1, g1, b1] = parseHex(c1);
-    const [r2, g2, b2] = parseHex(c2);
-    return toHex(
-        Math.round(r1 + (r2 - r1) * t),
-        Math.round(g1 + (g2 - g1) * t),
-        Math.round(b1 + (b2 - b1) * t),
-    );
+// Opacities for the 6 color stops (from white to darkened)
+const OPACITY_STOPS: number[] = [0, 0.3, 0.5, 0.7, 1, -0.3];
+// Relative positions of stops (non-linear)
+const STOP_RATIOS: number[] = [0, 0.02, 0.1, 0.2, 0.5, 1];
+
+function buildDynamicColorStops(bounds: { min_value: number; max_value: number } | null): number[] | null {
+    if (!bounds || bounds.max_value <= 0) return null;
+    // Convert max from ha to m² for the map expression (tile data is in m²)
+    const maxM2 = bounds.max_value * 10000;
+    return STOP_RATIOS.map((ratio) => Math.round(ratio * maxM2));
 }
 
-const COLOR_STOPS: [number, number][] = [
-    [0, 0],
-    [100, 0.3],
-    [500, 0.5],
-    [1000, 0.7],
-    [2500, 1],
-    [5000, -0.3],
-];
-
-function buildColorStops(baseColor: string): [number, string][] {
-    return COLOR_STOPS.map(([threshold, opacity]) => {
-        if (opacity === 0) return [threshold, "#ffffff"];
-        if (opacity < 0) return [threshold, darkenColor(baseColor, -opacity)];
-        if (opacity === 1) return [threshold, baseColor];
-        return [threshold, adjustColorOpacity(baseColor, opacity)];
+function buildColorStops(baseColor: string, bounds: { min_value: number; max_value: number } | null): [number, string][] | null {
+    const thresholds = buildDynamicColorStops(bounds);
+    if (!thresholds) return null;
+    return thresholds.map((threshold, i) => {
+        const opacity = OPACITY_STOPS[i];
+        if (opacity === 0) return [threshold, "#ffffff"] as [number, string];
+        if (opacity < 0) return [threshold, darkenColor(baseColor, -opacity)] as [number, string];
+        if (opacity === 1) return [threshold, baseColor] as [number, string];
+        return [threshold, adjustColorOpacity(baseColor, opacity)] as [number, string];
     });
-}
-
-function getColorForValue(value: number, baseColor: string): string {
-    const stops = buildColorStops(baseColor);
-    if (value <= stops[0][0]) return stops[0][1];
-    if (value >= stops.at(-1)![0]) return stops.at(-1)![1];
-    for (let i = 0; i < stops.length - 1; i++) {
-        if (value >= stops[i][0] && value < stops[i + 1][0]) {
-            const t = (value - stops[i][0]) / (stops[i + 1][0] - stops[i][0]);
-            return lerpColor(stops[i][1], stops[i + 1][1], t);
-        }
-    }
-    return baseColor;
 }
 
 interface CarroyageLeaMapProps {
     landData: LandDetailResultType;
     startYear: number;
     endYear: number;
+    selectedDestination: DestinationType;
     childLandType?: string;
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
@@ -266,19 +201,29 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     landData,
     startYear,
     endYear,
+    selectedDestination,
     childLandType,
     center,
     onMapLoad
 }) => {
     const { data: destinationConfig } = useGetCarroyageDestinationConfigQuery(undefined);
     const { land_type, land_id } = landData || {};
-    const geomChildType = (childLandType === "EPCI" || childLandType === "SCOT") ? "COMM" : childLandType;
+    const { data: boundsData } = useGetCarroyageBoundsQuery(
+        { land_type, land_id, start_year: startYear, end_year: endYear },
+        { skip: !land_type || !land_id || startYear >= endYear }
+    );
+    const geomChildType = childLandType;
     const { data: childrenGeom } = useGetLandChildrenGeomQuery(
         geomChildType ? { land_type, land_id, child_land_type: geomChildType } : undefined,
         { skip: !geomChildType }
     );
+    const getBoundsForDestination = useCallback((dest: string): { min_value: number; max_value: number } | null => {
+        if (!boundsData || !Array.isArray(boundsData)) return null;
+        const entry = boundsData.find((b: { destination: string }) => b.destination === dest);
+        return entry ? { min_value: entry.min_value, max_value: entry.max_value } : null;
+    }, [boundsData]);
+
     const mapRef = useRef<maplibregl.Map | null>(null);
-    const [selectedDestination, setSelectedDestination] = useState<DestinationType>("total");
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [hoveredValue, setHoveredValue] = useState<number | null>(null);
@@ -302,17 +247,30 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         setIsUpdating(true);
 
         requestAnimationFrame(() => {
-            const colorExpression = buildCumulativeColorExpression(startYear, endYear, selectedDestination, destinationConfig);
-            map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            const bounds = getBoundsForDestination(selectedDestination);
+            const suffix = destinationConfig[selectedDestination].suffix;
+            const colorExpression = buildCumulativeColorExpression(startYear, endYear, selectedDestination, destinationConfig, bounds);
+            const nonZeroFilter = buildCumulativeFilter(startYear, endYear, suffix);
+            const territoryFilter = ["in", land_id, ["get", land_type]] as ExpressionSpecification;
+            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as ExpressionSpecification;
+            if (colorExpression) {
+                map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            }
+            map.setFilter("carroyage-lea-layer", combinedFilter);
+            if (map.getLayer("carroyage-lea-layer-outline")) {
+                map.setFilter("carroyage-lea-layer-outline", combinedFilter);
+            }
 
             map.once("idle", () => {
                 setIsUpdating(false);
             });
         });
-    }, [startYear, endYear, selectedDestination, destinationConfig]);
+    }, [startYear, endYear, selectedDestination, destinationConfig, boundsData, getBoundsForDestination, land_type, land_id, isMapLoaded]);
 
     const getIndicatorPosition = useCallback((value: number): number => {
-        const thresholds = COLOR_STOPS.map(([t]) => t);
+        const bounds = getBoundsForDestination(selectedDestination);
+        const thresholds = buildDynamicColorStops(bounds);
+        if (!thresholds) return 0;
         const step = 100 / (thresholds.length - 1);
         const positions = thresholds.map((_, i) => i * step);
 
@@ -326,7 +284,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             }
         }
         return 100;
-    }, []);
+    }, [getBoundsForDestination, selectedDestination]);
 
     // Calculer la valeur cumulée pour une feature
     const calculateCumulativeValue = useCallback((properties: Record<string, unknown>) => {
@@ -433,12 +391,14 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
                 const value = calculateCumulativeValue(properties);
                 setHoveredValue(value);
                 setHoveredFeature(feature);
+                setHoveredCoords({ lng: e.lngLat.lng, lat: e.lngLat.lat });
             }
         };
 
         const handleMouseLeave = () => {
             setHoveredValue(null);
             setHoveredFeature(null);
+            setHoveredCoords(null);
         };
 
         map.on("mousemove", "carroyage-lea-layer", handleMouseMove);
@@ -453,50 +413,39 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     const handleMapLoad = useCallback((map: maplibregl.Map) => {
         mapRef.current = map;
 
+        // Offset the map center to account for the side panel
+        requestAnimationFrame(() => {
+            const containerWidth = map.getContainer().clientWidth;
+            const remInPx = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const sidePanelWidth = Math.round(containerWidth * 0.33 + 1.5 * remInPx);
+            map.setPadding({ top: 0, bottom: 0, left: 0, right: sidePanelWidth });
+            if (landData.bounds) {
+                map.fitBounds(landData.bounds, {
+                    padding: { top: 120, bottom: 120, left: 60, right: 60 }, animate: false,
+                });
+            }
+        });
+
         // Appliquer immédiatement le style avec la destination par défaut
         if (destinationConfig) {
-            const colorExpression = buildCumulativeColorExpression(startYear, endYear, "total", destinationConfig);
-            map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            const bounds = getBoundsForDestination("total");
+            const suffix = destinationConfig["total"].suffix;
+            const colorExpression = buildCumulativeColorExpression(startYear, endYear, "total", destinationConfig, bounds);
+            const nonZeroFilter = buildCumulativeFilter(startYear, endYear, suffix);
+            const territoryFilter = ["in", land_id, ["get", land_type]] as ExpressionSpecification;
+            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as ExpressionSpecification;
+            if (colorExpression) {
+                map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
+            }
+            map.setFilter("carroyage-lea-layer", combinedFilter);
+            if (map.getLayer("carroyage-lea-layer-outline")) {
+                map.setFilter("carroyage-lea-layer-outline", combinedFilter);
+            }
         }
 
         setIsMapLoaded(true);
         onMapLoad?.(map);
-    }, [onMapLoad, startYear, endYear, destinationConfig]);
-
-    const sidePanelData = useMemo(() => {
-        if (!hoveredFeature || !destinationConfig) return null;
-        const props = hoveredFeature.properties || {};
-        const suffix = destinationConfig[selectedDestination].suffix;
-        const minYear = Math.max(startYear, 2011);
-        const maxYear = Math.min(endYear, 2023);
-        const yearlyData: { year: number; valueHa: number; raw: number }[] = [];
-        let total = 0;
-        for (let year = minYear; year <= maxYear; year++) {
-            const key = `conso_${year}${suffix}`;
-            const value = typeof props[key] === 'number' ? props[key] : 0;
-            const valueHa = Math.round((value / 10000) * 100) / 100;
-            total += value;
-            yearlyData.push({ year, valueHa, raw: value });
-        }
-        const totalHa = Math.round((total / 10000) * 100) / 100;
-        const fmt = (v: number) => formatNumber({ number: v, decimals: 2, addSymbol: true });
-        const rows: Array<{ name: string; data: any[] }> = yearlyData.map(({ year, valueHa, raw }) => {
-            const isSignificant = total > 0 && (raw / total) * 100 > 10;
-            if (isSignificant) {
-                return { name: '', data: [
-                    <strong key={`y-${year}`}>{year}</strong>,
-                    <strong key={`v-${year}`}>{fmt(valueHa)}</strong>,
-                ] };
-            }
-            return { name: '', data: [String(year), fmt(valueHa)] };
-        });
-        rows.push({ name: '', data: ['Total', fmt(totalHa)] });
-        return {
-            headers: ['Année', 'Consommation (ha)'],
-            rows,
-            boldLastRow: true,
-        };
-    }, [hoveredFeature, destinationConfig, selectedDestination, startYear, endYear]);
+    }, [onMapLoad, startYear, endYear, destinationConfig, getBoundsForDestination, landData.bounds, land_id, land_type]);
 
     const config = useMemo(() => defineMapConfig({
         sources: [
@@ -571,95 +520,63 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
         ],
     }), []);
 
-    if (!destinationConfig) {
+    if (!destinationConfig || !boundsData) {
         return <Loader size={32} />;
     }
 
+    const currentBounds = getBoundsForDestination(selectedDestination);
+    const maxHa = currentBounds?.max_value ?? 0.5;
+    const midHa = maxHa / 2;
+    const formatLegend = (v: number) => v >= 1 ? Math.round(v).toString() : v.toFixed(2).replace('.', ',');
+
     return (
-        <>
-        <div className="fr-mb-2w">
-            {Object.keys(destinationConfig).map((dest, index) => (
-                <React.Fragment key={dest}>
-                {index === 1 && <ButtonSeparator />}
-                <button
-                    className={`fr-btn ${
-                        selectedDestination === dest ? 'fr-btn--primary' : 'fr-btn--tertiary'
-                    } fr-btn--sm fr-mr-1w fr-mb-1w`}
-                    onClick={() => setSelectedDestination(dest)}
-                >
-                    <ColorDot $color={destinationConfig[dest].color} $active={selectedDestination === dest} />
-                    {destinationConfig[dest].label}
-                </button>
-                </React.Fragment>
-            ))}
-        </div>
-        <div className="fr-grid-row fr-grid-row--gutters">
-            <div className="fr-col-12 fr-col-lg-8">
-                <BaseMap
-                    id="carroyage-lea-map"
-                    config={config}
-                    landData={extendedLandData}
-                    center={center}
-                    onMapLoad={handleMapLoad}
-                >
-                    {(!isMapLoaded || isUpdating) && (
-                        <MapOverlay>
-                            <OverlayLoader />
-                        </MapOverlay>
+        <BaseMap
+            id="carroyage-lea-map"
+            config={config}
+            landData={extendedLandData}
+            center={center}
+            onMapLoad={handleMapLoad}
+            sidePanel={
+                <CarroyageLeaSidePanel
+                    feature={hoveredFeature}
+                    hoveredChildName={hoveredChildName}
+                    hoveredCoords={hoveredCoords}
+                    hoveredValue={hoveredValue}
+                    destinationConfig={destinationConfig}
+                    selectedDestination={selectedDestination}
+                    startYear={startYear}
+                    endYear={endYear}
+                />
+            }
+        >
+            {(!isMapLoaded || isUpdating) && (
+                <MapOverlay>
+                    <OverlayLoader />
+                </MapOverlay>
+            )}
+            <LegendContainer>
+                <LegendTitle>Consommation (ha)</LegendTitle>
+                <LegendGradientContainer>
+                    <LegendGradient
+                        $colors={[
+                            "#ffffff",
+                            adjustColorOpacity(destinationConfig[selectedDestination].color, 0.3),
+                            adjustColorOpacity(destinationConfig[selectedDestination].color, 0.5),
+                            adjustColorOpacity(destinationConfig[selectedDestination].color, 0.7),
+                            destinationConfig[selectedDestination].color,
+                            darkenColor(destinationConfig[selectedDestination].color, 0.3),
+                        ]}
+                    />
+                    {hoveredValue !== null && (
+                        <LegendIndicator $position={getIndicatorPosition(hoveredValue)} />
                     )}
-                    <LegendContainer>
-                        <LegendTitle>Consommation (ha)</LegendTitle>
-                        <LegendGradientContainer>
-                            <LegendGradient
-                                $colors={[
-                                    "#ffffff",
-                                    adjustColorOpacity(destinationConfig[selectedDestination].color, 0.3),
-                                    adjustColorOpacity(destinationConfig[selectedDestination].color, 0.5),
-                                    adjustColorOpacity(destinationConfig[selectedDestination].color, 0.7),
-                                    destinationConfig[selectedDestination].color,
-                                    darkenColor(destinationConfig[selectedDestination].color, 0.3),
-                                ]}
-                            />
-                            {hoveredValue !== null && (
-                                <LegendIndicator $position={getIndicatorPosition(hoveredValue)} />
-                            )}
-                        </LegendGradientContainer>
-                        <LegendLabels>
-                            <span>0</span>
-                            <span>0,1</span>
-                            <span>0,5+</span>
-                        </LegendLabels>
-                    </LegendContainer>
-                </BaseMap>
-            </div>
-            <div className="fr-col-12 fr-col-lg-4">
-                <SidePanel>
-                    {hoveredChildName && hoveredCoords && (
-                        <SidePanelHeader>
-                            <strong>{hoveredChildName}</strong>
-                            <SidePanelCoords>
-                                {hoveredCoords.lat.toFixed(5)}, {hoveredCoords.lng.toFixed(5)}
-                                {hoveredValue !== null && (
-                                    <ColorSwatch $color={getColorForValue(hoveredValue, destinationConfig[selectedDestination].color)} />
-                                )}
-                            </SidePanelCoords>
-                        </SidePanelHeader>
-                    )}
-                    {sidePanelData && (
-                        <ChartDataTable
-                            title={`Consommation - ${destinationConfig[selectedDestination].label}`}
-                            compact
-                            data={sidePanelData}
-                        />
-                    )}
-                    {!sidePanelData && !hoveredChildName && (
-                        <SidePanelPlaceholder>
-                            Survolez une cellule sur la carte pour afficher le détail de la consommation
-                        </SidePanelPlaceholder>
-                    )}
-                </SidePanel>
-            </div>
-        </div>
-        </>
+                </LegendGradientContainer>
+                <LegendLabels>
+                    <span>0</span>
+                    <span>{formatLegend(midHa)}</span>
+                    <span>{formatLegend(maxHa)}</span>
+                </LegendLabels>
+            </LegendContainer>
+        </BaseMap>
     );
 };

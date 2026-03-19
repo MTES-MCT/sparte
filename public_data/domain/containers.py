@@ -1,5 +1,4 @@
 from dependency_injector import containers, providers
-from django.core.cache import cache as django_cache
 
 from public_data.infra.consommation.progression import ConsommationProgressionService
 from public_data.infra.consommation.stats import (
@@ -12,7 +11,6 @@ from public_data.infra.demography.population.progression import (
 from public_data.infra.demography.population.stats.PopulationStatsService import (
     PopulationStatsService,
 )
-from public_data.infra.PickleClassCacher import PickleClassCacher
 from public_data.infra.urbanisme.autorisation_logement.progression.AutorisationLogementProgressionService import (
     AutorisationLogementProgressionService,
 )
@@ -24,10 +22,6 @@ from public_data.infra.urbanisme.logement_vacant.progression.LogementVacantProgr
 class PublicDataContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    class_cacher = providers.Factory(
-        PickleClassCacher,
-        cache=django_cache,
-    )
     # consommation
 
     consommation_progression_service = providers.Factory(

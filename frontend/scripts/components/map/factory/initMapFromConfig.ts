@@ -43,5 +43,12 @@ export async function initMapFromConfig(
         layers.set(layer.getId(), layer);
     }
 
+    // Post-init: allow sources to add extra department sources now that layers exist
+    for (const source of sources.values()) {
+        if ('addExtraDepartmentSourcesOnInit' in source && typeof (source as any).addExtraDepartmentSourcesOnInit === 'function') {
+            await (source as any).addExtraDepartmentSourcesOnInit();
+        }
+    }
+
     return { sources, layers };
 }

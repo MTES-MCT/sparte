@@ -1,7 +1,3 @@
-import json
-
-from django.core.serializers import serialize
-
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import (
     CEREMA_CREDITS,
@@ -10,6 +6,7 @@ from project.charts.constants import (
     MAP_NORTH_INDICATOR,
 )
 from public_data.models import AdminRef, LandConsoStats, LandModel
+from public_data.models.administration import LandGeoJSON
 
 
 class ConsoMap(DiagnosticChart):
@@ -95,6 +92,7 @@ class ConsoMap(DiagnosticChart):
             data.append(
                 {
                     "land_id": land_id,
+                    "land_type": self.params.get("child_land_type"),
                     "total_conso_ha": stats.total / 10000,
                     "conso_density_percent": conso_density_percent,
                     "activite_ha": (stats.activite or 0) / 10000,
@@ -156,23 +154,14 @@ class ConsoMap(DiagnosticChart):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.params.get("child_land_type"))
 
         # Filter out territories with no data
         data_with_values = self.data
 
         return super().param | {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
             "title": {
                 "text": (
@@ -308,31 +297,103 @@ class ConsoMapRelative(ConsoMap):
     """Carte de consommation relative à la surface (sans bulles)"""
 
     @property
-    def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
+    def _container_land(self):
+        """For communes, show at EPCI level to give context."""
+        if self.land.land_type != AdminRef.COMMUNE:
+            return self.land
+        if hasattr(self, "_cached_container_land"):
+            return self._cached_container_land
+        epci_key = next(
+            (k for k in self.land.parent_keys if k.startswith(f"{AdminRef.EPCI}_")),
+            None,
         )
+        self._cached_container_land = LandModel.objects.filter(key=epci_key).first() if epci_key else self.land
+        return self._cached_container_land
+
+    @property
+    def lands(self):
+        container = self._container_land
+        return LandModel.objects.filter(
+            parent_keys__contains=[f"{container.land_type}_{container.land_id}"],
+            land_type=self.params.get("child_land_type"),
+        )
+
+    @property
+    def highlight_land_id(self):
+        if self.land.land_type == AdminRef.COMMUNE:
+            return self.land.land_id
+        return self.params.get("highlight_land_id")
+
+    def _build_series(self):
+        tooltip_format = {
+            "valueDecimals": 1,
+            "pointFormat": (
+                "<b>{point.name}</b>:<br/>"
+                "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
+                "Total: {point.total_conso_ha:,.1f} ha<br/>"
+            ),
+        }
+
+        main_series = {
+            "name": "Consommation relative à la surface",
+            "data": self.data,
+            "joinBy": ["land_id"],
+            "colorKey": "conso_density_percent",
+            "opacity": 1,
+            "showInLegend": False,
+            "borderColor": "#999999",
+            "borderWidth": 1,
+            "dataLabels": {"enabled": False},
+            "tooltip": tooltip_format,
+        }
+
+        highlighted = self.highlight_land_id
+        if not highlighted:
+            return [main_series]
+
+        highlight_point = next((p for p in self.data if p["land_id"] == highlighted), None)
+        if not highlight_point:
+            return [main_series]
+
+        highlight_series = {
+            "name": "Territoire sélectionné",
+            "data": [highlight_point],
+            "joinBy": ["land_id"],
+            "colorKey": "conso_density_percent",
+            "allAreas": False,
+            "opacity": 1,
+            "borderColor": "#000000",
+            "borderWidth": 3,
+            "dataLabels": {"enabled": False},
+            "tooltip": tooltip_format,
+            "showInLegend": False,
+        }
+
+        return [main_series, highlight_series]
+
+    @property
+    def param(self):
+        container = self._container_land
+        geojson = LandGeoJSON.for_parent(container.land_id, container.land_type, self.params.get("child_land_type"))
 
         # Filter out territories with no data
         data_with_values = [d for d in self.data if d["total_conso_ha"] > 0]
+        if self.land.land_type == AdminRef.COMMUNE:
+            title_text = (
+                f"Consommation relative à la surface des {self.formatted_child_land_type}s "
+                f"- {self.land.name} ({container.name}, {self.start_year}-{self.end_year})"
+            )
+        else:
+            title_text = (
+                f"Consommation relative à la surface des {self.formatted_child_land_type}s "
+                f"entre {self.start_year} et {self.end_year}"
+            )
 
         base_param = {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
-            "title": {
-                "text": (
-                    f"Consommation relative à la surface des {self.formatted_child_land_type}s "
-                    f"entre {self.start_year} et {self.end_year}"
-                )
-            },
+            "title": {"text": title_text},
             "mapNavigation": {"enabled": True},
             "legend": {
                 "title": {"text": "Consommation relative à la surface (%)"},
@@ -348,29 +409,7 @@ class ConsoMapRelative(ConsoMap):
                 "maxColor": "#6a6af4",
                 "dataClassColor": "category",
             },
-            "series": [
-                {
-                    "name": "Consommation relative à la surface",
-                    "data": self.data,
-                    "joinBy": ["land_id"],
-                    "colorKey": "conso_density_percent",
-                    "opacity": 1,
-                    "showInLegend": False,
-                    "borderColor": "#999999",
-                    "borderWidth": 1,
-                    "dataLabels": {
-                        "enabled": False,
-                    },
-                    "tooltip": {
-                        "valueDecimals": 1,
-                        "pointFormat": (
-                            "<b>{point.name}</b>:<br/>"
-                            "Consommation relative à la surface: {point.conso_density_percent:,.2f} %<br/>"
-                            "Total: {point.total_conso_ha:,.1f} ha<br/>"
-                        ),
-                    },
-                },
-            ],
+            "series": self._build_series(),
         }
 
         return DiagnosticChart.param.fget(self) | base_param
@@ -453,20 +492,11 @@ class ConsoMapBubble(ConsoMap):
 
     @property
     def param(self):
-        geojson = serialize(
-            "geojson",
-            self.lands,
-            geometry_field="simple_geom",
-            fields=(
-                "land_id",
-                "name",
-            ),
-            srid=3857,
-        )
+        geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.params.get("child_land_type"))
 
         base_param = {
             "chart": {
-                "map": json.loads(geojson),
+                "map": geojson,
             },
             "title": {
                 "text": (

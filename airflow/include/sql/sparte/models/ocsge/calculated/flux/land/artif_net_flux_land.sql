@@ -61,3 +61,10 @@ SELECT
    {{ common_fields | join(", ") }}
 FROM
     {{ ref('artif_net_flux_custom_land')}}
+UNION ALL
+SELECT
+    code as land_id,
+    '{{ var('NATION')}}' AS land_type,
+   {{ common_fields | join(", ") }}
+FROM
+    {{ ref('artif_net_flux_nation')}}

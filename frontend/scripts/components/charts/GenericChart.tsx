@@ -1,38 +1,43 @@
-import React, { useRef } from 'react'
-import styled from 'styled-components'
+import React, { useRef, useState } from 'react';
+import styled from 'styled-components';
 
-import HighchartsReact from 'highcharts-react-official'
-import * as Highcharts from 'highcharts'
+import HighchartsReact from 'highcharts-react-official';
+import * as Highcharts from 'highcharts';
 
-import HighchartsMore from 'highcharts/highcharts-more'
-import HCSoldGauge from 'highcharts/modules/solid-gauge'
+import HighchartsMore from 'highcharts/highcharts-more';
+import HCSoldGauge from 'highcharts/modules/solid-gauge';
 
-import HighchartsMap from 'highcharts/modules/map'
-import HighchartsHeatmap from 'highcharts/modules/heatmap'
-import HighchartsTilemap from 'highcharts/modules/tilemap'
-import HighchartsTreemap from 'highcharts/modules/treemap'
-import Drilldown from 'highcharts/modules/drilldown'
-import Exporting from 'highcharts/modules/exporting'
-import Fullscreen from 'highcharts/modules/full-screen'
-import NoDataToDisplay from 'highcharts/modules/no-data-to-display'
-import SeriesOnPoint from 'highcharts/modules/series-on-point'
+import HighchartsMap from 'highcharts/modules/map';
+import HighchartsHeatmap from 'highcharts/modules/heatmap';
+import HighchartsTilemap from 'highcharts/modules/tilemap';
+import HighchartsTreemap from 'highcharts/modules/treemap';
+import Drilldown from 'highcharts/modules/drilldown';
+import Exporting from 'highcharts/modules/exporting';
+import Fullscreen from 'highcharts/modules/full-screen';
+import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
+import SeriesOnPoint from 'highcharts/modules/series-on-point';
 
-import Loader from '@components/ui/Loader'
-import { useGetChartConfigQuery } from '@services/api'
-import ChartDetails from './ChartDetails'
+import { theme } from '@theme';
+import Loader from '@components/ui/Loader';
+import Button from '@components/ui/Button';
+import ChartDataSource from './ChartDataSource';
+import ChartDataTable from './ChartDataTable';
+import ChartExplorer from './ChartExplorer';
+import MailleIndicator from '@components/ui/MailleIndicator';
+import { useGetChartConfigQuery } from '@services/api';
 
 // Initialize the modules
-HighchartsMore(Highcharts) // Required for gauge charts
+HighchartsMore(Highcharts);
 HighchartsMap(Highcharts)
 HighchartsHeatmap(Highcharts)
 HighchartsTilemap(Highcharts)
 HighchartsTreemap(Highcharts)
-Drilldown(Highcharts) // Required for drilldown functionality
+Drilldown(Highcharts)
 Exporting(Highcharts)
 Fullscreen(Highcharts)
 NoDataToDisplay(Highcharts)
-HCSoldGauge(Highcharts) // Required for solid gauge charts
-SeriesOnPoint(Highcharts) // Required for pie-on-map charts
+HCSoldGauge(Highcharts)
+SeriesOnPoint(Highcharts)
 
 export type DataSource =
   | 'insee'
@@ -45,33 +50,63 @@ export type DataSource =
   | 'cartofriches';
 
 type GenericChartProps = {
-    // Props pour le fetch automatique
-    id: string;
-    land_id: string;
-    land_type: string;
-    params?: object;
-
-    // Options de rendu
-    containerProps?: React.HTMLAttributes<HTMLDivElement>;
-    isMap?: boolean;
-    showToolbar?: boolean;
-    sources?: DataSource[];
-    children?: React.ReactNode;
-    showDataTable?: boolean;
-    dataTableHeader?: React.ReactNode;
-    dataTableOnly?: boolean;
-    hideToggle?: boolean;
-    compactDataTable?: boolean;
-    hideDetails?: boolean;
+  id: string;
+  land_id: string;
+  land_type: string;
+  params?: object;
+  containerProps?: React.HTMLAttributes<HTMLDivElement>;
+  isMap?: boolean;
+  showToolbar?: boolean;
+  sources?: DataSource[];
+  children?: React.ReactNode;
+  showDataTable?: boolean;
+  dataTableHeader?: React.ReactNode;
+  dataTableOnly?: boolean;
+  hideToggle?: boolean;
+  compactDataTable?: boolean;
+  hideDetails?: boolean;
+  showMailleIndicator?: boolean;
+  onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
+  onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string; pointOptions?: Record<string, any> } | null) => void;
 }
 
+const ChartCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: ${theme.colors.background};
+  border-radius: ${theme.radius.default};
+  box-shadow: ${theme.shadow.md};
+  overflow: hidden;
+  width: 100%;
+`;
+
 const LoaderContainer = styled.div`
-    height: 400px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`
+  height: 400px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ChartBody = styled.div`
+  flex: 1;
+  padding: ${theme.spacing.lg};
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: ${theme.spacing.sm};
+  margin-bottom: ${theme.spacing.md};
+`;
+
+const ChartFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: ${theme.spacing.sm};
+  border-top: 1px solid ${theme.colors.border};
+`;
 
 const GenericChart = ({
   id,
@@ -88,11 +123,13 @@ const GenericChart = ({
   dataTableOnly = false,
   compactDataTable = false,
   hideDetails = false,
-} : GenericChartProps) =>
-{
-  const chartRef = useRef<any>(null)
+  showMailleIndicator = false,
+  onPointClick,
+  onPointHover,
+} : GenericChartProps) => {
+  const chartRef = useRef<any>(null);
+  const [isExplorerOpen, setIsExplorerOpen] = useState(false);
 
-  // Fetch des données du graphique
   const {
     data: chartOptions, isLoading, isFetching, error,
   } = useGetChartConfigQuery({
@@ -100,97 +137,119 @@ const GenericChart = ({
     land_id,
     land_type,
     ...params,
-  })
+  });
 
-  // Combiner isLoading et isFetching pour un meilleur UX
   const isLoadingOrFetching = isLoading || isFetching
-
-  // Si dataTableOnly est true, showDataTable doit aussi être true
   const effectiveShowDataTable = dataTableOnly || showDataTable
 
-  const handleDownloadPNG = () =>
-  {
-    if (chartRef.current?.chart)
-    {
-      chartRef.current.chart.exportChart({
-        type: 'image/png',
-      })
+  const handleDownloadPNG = () => {
+    if (chartRef.current?.chart) {
+      chartRef.current.chart.exportChart({ type: 'image/png' })
     }
   }
 
-  const handleFullscreen = () =>
-  {
-    if (chartRef.current?.chart)
-    {
+  const handleFullscreen = () => {
+    if (chartRef.current?.chart) {
       chartRef.current.chart.fullscreen.toggle()
     }
   }
 
-  if (isLoadingOrFetching)
-  {
-    return <LoaderContainer>
-            <Loader />
+  if (isLoadingOrFetching) {
+    return (
+      <ChartCard>
+        <LoaderContainer>
+          <Loader />
         </LoaderContainer>
+      </ChartCard>
+    )
   }
 
-  if (error || !chartOptions?.highcharts_options)
-  {
-    return <div>Erreur lors du chargement des données</div>
+  if (error || !chartOptions?.highcharts_options) {
+    return (
+      <ChartCard>
+        <ChartBody className="fr-text--sm fr-text-mention--grey fr-py-4w">
+          <i className="bi bi-exclamation-triangle fr-mr-1w" />
+          Erreur lors du chargement des données
+        </ChartBody>
+      </ChartCard>
+    )
   }
 
-  /*
-    Highcharts fait parfois des mutations sur les options du graphique, ce qui peut causer des problèmes
-    avec l'environnement qui ne supporte pas les mutations. Pour éviter cela, on clone les options du graphique
-    avant de les passer à HighchartsReact.
-    */
   const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
 
-  // Extraire les séries pie pour les ajouter après le rendu de la carte
   const pieSeries = mutableChartOptions._pieSeries
   delete mutableChartOptions._pieSeries
 
-  // Ajoute un formatter pour filtrer les points marqués avec skipTooltip
-  if (mutableChartOptions.tooltip?.shared)
-  {
-    mutableChartOptions.tooltip.formatter = function tooltipFormatter(this: Highcharts.TooltipFormatterContextObject)
-    {
+  if (mutableChartOptions.tooltip?.shared) {
+    mutableChartOptions.tooltip.formatter = function tooltipFormatter(this: Highcharts.TooltipFormatterContextObject) {
       const points = this.points?.filter((p) => !p.point.options.custom?.skipTooltip)
       if (!points || points.length === 0) return false
 
       let tooltip = `<b>${this.x}</b><br/>`
-      points.forEach((p) =>
-      {
-        const suffix = p.series.tooltipOptions?.valueSuffix || ''
+      points.forEach((p) => {
+        const seriesTooltipOptions = (p.series as Highcharts.Series & { tooltipOptions?: Highcharts.TooltipOptions }).tooltipOptions
+        const suffix = seriesTooltipOptions?.valueSuffix || ''
         tooltip += `<span style="color:${p.color}">●</span> ${p.series.name}: <b>${Highcharts.numberFormat(p.y || 0, 0, ',', ' ')}${suffix}</b><br/>`
       })
       return tooltip
     }
   }
 
-  // Génère un ID basé sur le titre du graphique (utilisé pour l'accessibilité des dataTable)
-  const chartId = `chart-${String(mutableChartOptions.title?.text || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-+)|(-+$)/g, '')}`
+  const handleChartCallback = (chart: Highcharts.Chart) => {
+    if (pieSeries && pieSeries.length > 0) {
+      pieSeries.forEach((series: Highcharts.SeriesOptionsType) => {
+        chart.addSeries(series, false)
+      })
+      chart.redraw()
+    }
 
-  const handleChartCallback = (chart: Highcharts.Chart) =>
-  {
-    if (!pieSeries || pieSeries.length === 0) return
+    if (onPointClick) {
+      chart.series.forEach((series) => {
+        Highcharts.addEvent(series, 'click', (e: any) => {
+          const opts = e?.point?.options
+          const pt = e?.point
+          if (opts?.land_id) {
+            onPointClick({
+              land_id: opts.land_id,
+              land_type: opts.land_type || '',
+              name: pt?.name || opts?.name || '',
+            })
+          }
+        })
+      })
+    }
 
-    pieSeries.forEach((series: Highcharts.SeriesOptionsType) =>
-    {
-      chart.addSeries(series, false)
-    })
+    if (onPointHover) {
+      const attachHoverEvents = () => {
+        chart.series.forEach((series) => {
+          series.points?.forEach((point) => {
+            Highcharts.addEvent(point, 'mouseOver', () => {
+              const opts = point.options as any
+              onPointHover({
+                color: point.color as string,
+                name: point.name || '',
+                value: point.value ?? (point as any).y ?? 0,
+                land_id: opts?.land_id,
+                land_type: opts?.land_type,
+                pointOptions: opts,
+              })
+            })
+            Highcharts.addEvent(point, 'mouseOut', () => {
+              onPointHover(null)
+            })
+          })
+        })
+      }
+      attachHoverEvents()
+      Highcharts.addEvent(chart, 'render', attachHoverEvents)
+    }
 
-    chart.redraw()
   }
 
   const shouldRedraw = true
   const oneToOne = true
   const animation = !isMap
 
-  // Si le chart a un height défini (y compris null), on l'utilise
-  // Sinon on applique le height par défaut de 400px
   const chartHeight = mutableChartOptions.chart?.height
   const shouldUseDefaultHeight = chartHeight === undefined
 
@@ -207,50 +266,74 @@ const GenericChart = ({
     boldFirstColumn: chartOptions.data_table?.boldFirstColumn,
     boldLastColumn: chartOptions.data_table?.boldLastColumn,
     boldLastRow: chartOptions.data_table?.boldLastRow,
+    formatFirstColumn: chartOptions.data_table?.formatFirstColumn,
   } : undefined
 
+  const showFooter = !dataTableOnly && !hideDetails && (sources.length > 0 || effectiveShowDataTable);
+
+  if (dataTableOnly && effectiveShowDataTable && dataTable) {
+    return (
+      <ChartCard>
+        <ChartBody>
+          {dataTableHeader}
+          <ChartDataTable data={dataTable} title={mutableChartOptions.title?.text} compact={compactDataTable} />
+          {children}
+        </ChartBody>
+      </ChartCard>
+    )
+  }
+
   return (
-        <div>
-            {!dataTableOnly && showToolbar && (
-                <div className="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <button
-                        className="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm fr-mr-2w"
-                        onClick={handleDownloadPNG}
-                        title="Télécharger en PNG"
-                    />
-                    <button
-                        className="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm"
-                        onClick={handleFullscreen}
-                        title="Plein écran"
-                    />
-                </div>
-            )}
-            {!dataTableOnly && (
-                <HighchartsReact
-                    ref={chartRef}
-                    highcharts={Highcharts}
-                    options={mutableChartOptions}
-                    updateArgs={[shouldRedraw, oneToOne, animation]}
-                    containerProps={{ ...defaultContainerProps, ...containerProps }}
-                    constructorType={isMap ? 'mapChart' : 'chart'}
-                    callback={pieSeries ? handleChartCallback : undefined}
-                />
-            )}
-            {!hideDetails && (
-                <ChartDetails
-                    sources={sources}
-                    showDataTable={effectiveShowDataTable}
-                    chartId={chartId}
-                    dataTable={dataTable}
-                    chartTitle={mutableChartOptions.title?.text}
-                    dataTableHeader={dataTableHeader}
-                    dataTableOnly={dataTableOnly}
-                    compactDataTable={compactDataTable}
-                >
-                    {children}
-                </ChartDetails>
-            )}
-        </div>
+    <ChartCard>
+      <ChartBody>
+        {showToolbar && (
+          <Toolbar>
+            <Button variant="secondary" size="sm" icon="bi bi-download" onClick={handleDownloadPNG} title="Télécharger en PNG">
+              PNG
+            </Button>
+            <Button variant="secondary" size="sm" icon="bi bi-fullscreen" onClick={handleFullscreen} title="Plein écran">
+              Plein écran
+            </Button>
+          </Toolbar>
+        )}
+        <HighchartsReact
+          ref={chartRef}
+          highcharts={Highcharts}
+          options={mutableChartOptions}
+          updateArgs={[shouldRedraw, oneToOne, animation]}
+          containerProps={{ ...defaultContainerProps, ...containerProps }}
+          constructorType={isMap ? 'mapChart' : 'chart'}
+          callback={(pieSeries || onPointClick || onPointHover) ? handleChartCallback : undefined}
+        />
+      </ChartBody>
+
+      {showFooter && (
+        <>
+          <ChartFooter>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {sources.length > 0 && (
+                <ChartDataSource sources={sources} displayMode="tag" />
+              )}
+              {showMailleIndicator && <MailleIndicator />}
+            </div>
+            <Button variant="tertiary" size="sm" icon="bi bi-chevron-right" iconPosition="right" onClick={() => setIsExplorerOpen(true)} type="button">
+              Détails données et calculs
+            </Button>
+          </ChartFooter>
+          <ChartExplorer
+            isOpen={isExplorerOpen}
+            onClose={() => setIsExplorerOpen(false)}
+            chartTitle={mutableChartOptions.title?.text}
+            chartOptions={chartOptions.highcharts_options}
+            sources={sources}
+            dataTable={dataTable}
+            isMap={isMap}
+          >
+            {children}
+          </ChartExplorer>
+        </>
+      )}
+    </ChartCard>
   )
 }
 

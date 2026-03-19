@@ -1,10 +1,8 @@
 import React from 'react';
 import { LandArtifStockIndex } from "@services/types/landartifstockindex";
-import styled from 'styled-components';
+import Button from '@components/ui/Button';
+import { useOcsgeDrawer } from './OcsgeDrawerContext';
 
-const MillesimeDisplayContainer = styled.span<{ capitalize?: boolean }>`
-    text-transform: ${props => props.capitalize ? 'capitalize' : 'none'};
-`;
 interface MillesimeDisplayProps {
     is_interdepartemental: boolean;
     landArtifStockIndex: LandArtifStockIndex;
@@ -20,30 +18,49 @@ export const MillesimeDisplay: React.FC<MillesimeDisplayProps> = ({
     className,
     capitalize = false
 }) => {
-    const getMillesimeContent = () => {
-        if (is_interdepartemental) {
-            if (between) {
-                return (
-                    <>{capitalize ? 'Entre' : 'entre'} le <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index - 1}</a> et le <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index}</a></>
-                );
-            }
-            return (
-                <>{capitalize ? 'Au' : 'au'} <a href="#millesimes-table">millésime n°{landArtifStockIndex.millesime_index}</a></>
-            );
-        }
-        
-        if (between) {
-            return (
-                <>{capitalize ? 'Entre' : 'entre'} {landArtifStockIndex.flux_previous_years?.[0]} et {landArtifStockIndex.years?.[0]}</>
-            );
-        }
+    const drawerContext = useOcsgeDrawer();
 
-        return `${capitalize ? 'En' : 'en'} ${landArtifStockIndex.years?.[0]}`;
+    const renderMillesimeRef = (label: string) => {
+        if (drawerContext) {
+            return (
+                <Button
+                    variant="tertiary" noBackground noPadding
+                    onClick={drawerContext.openDrawer}
+                    title="Voir le détail des millésimes"
+                >
+                    {label}<sup><i className="bi bi-info-circle" aria-hidden="true" /></sup>
+                </Button>
+            );
+        }
+        return <a href="#millesimes-table">{label}</a>;
     };
 
+    if (is_interdepartemental) {
+        if (between) {
+            return (
+                <span className={className}>
+                    {capitalize ? 'Entre' : 'entre'} le {renderMillesimeRef(`millésime n°${landArtifStockIndex.millesime_index - 1}`)} et le {renderMillesimeRef(`millésime n°${landArtifStockIndex.millesime_index}`)}
+                </span>
+            );
+        }
+        return (
+            <span className={className}>
+                {capitalize ? 'Au' : 'au'} {renderMillesimeRef(`millésime n°${landArtifStockIndex.millesime_index}`)}
+            </span>
+        );
+    }
+    
+    if (between) {
+        return (
+            <span className={className}>
+                {capitalize ? 'Entre' : 'entre'} {landArtifStockIndex.flux_previous_years?.[0]} et {landArtifStockIndex.years?.[0]}
+            </span>
+        );
+    }
+
     return (
-        <MillesimeDisplayContainer className={className}>
-            {getMillesimeContent()}
-        </MillesimeDisplayContainer>
+        <span className={className}>
+            {capitalize ? 'En' : 'en'} {landArtifStockIndex.years?.[0]}
+        </span>
     );
-}; 
+};

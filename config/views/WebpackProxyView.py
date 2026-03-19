@@ -14,7 +14,7 @@ class WebpackProxyView(View):
 
     def get(self, request, path: str) -> HttpResponse:
         # En développement, le frontend est accessible via frontend:3000 depuis Docker
-        frontend_url = f"http://frontend:3000/{path}"
+        frontend_url = f"http://frontend:3000/webpack-dev/{path}"
 
         try:
             with urllib.request.urlopen(frontend_url, timeout=10) as response:

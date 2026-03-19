@@ -1,15 +1,13 @@
-import json
 from functools import cached_property
 
 from django.contrib.gis.db.models import MultiPolygonField
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import TrigramSimilarity
-from django.core.serializers import serialize
 from django.db import models
 from django.db.models.functions import Lower
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_control, cache_page
+from django.views.decorators.cache import cache_control
 from rest_framework import serializers, viewsets
 from rest_framework.response import Response
 
@@ -17,6 +15,19 @@ from .AdminRef import AdminRef
 
 
 class LandModelManager(models.Manager):
+    def _normalize_land_type(self, kwargs):
+        from public_data.models import AdminRef
+
+        if "land_type" in kwargs:
+            kwargs["land_type"] = AdminRef.slug_to_code(kwargs["land_type"])
+        return kwargs
+
+    def get(self, *args, **kwargs):
+        return super().get(*args, **self._normalize_land_type(kwargs))
+
+    def filter(self, *args, **kwargs):
+        return super().filter(*args, **self._normalize_land_type(kwargs))
+
     def get_by_natural_key(self, land_id, land_type):
         return self.get(land_id=land_id, land_type=land_type)
 
@@ -97,10 +108,16 @@ class LandModel(models.Model):
         DONNEES_PARTIELLEMENT_CORRIGEES = "données_partiellement_coriggées", "données_partiellement_coriggées"
         DONNEES_INCHANGEES = "données_inchangées", "données_inchangées"
         DONNEES_MANQUANTES = "données_manquantes", "données_manquantes"
+        DONNEES_CORRIGEES_AVEC_DONNEES_MANQUANTES = (
+            "données_coriggées_avec_données_manquantes",
+            "données_coriggées_avec_données_manquantes",
+        )
 
     land_id = models.CharField()
     land_type = models.CharField()
+    land_type_slug = models.CharField()
     name = models.CharField()
+    slug = models.CharField()
     surface = models.FloatField()
     surface_unit = models.CharField()
     geom = MultiPolygonField()
@@ -132,6 +149,19 @@ class LandModel(models.Model):
     max_bounds = ArrayField(base_field=models.FloatField())
     conso_details = models.JSONField()
     consommation_correction_status = models.TextField(choices=ConsommationCorrectionStatus.choices)
+    logements_22 = models.FloatField(null=True)
+    evolution_logements_percent = models.FloatField(null=True)
+    evolution_logements_absolute = models.FloatField(null=True)
+    densite_logements = models.FloatField(null=True)
+    emplois_22 = models.FloatField(null=True)
+    evolution_emplois_percent = models.FloatField(null=True)
+    evolution_emplois_absolute = models.FloatField(null=True)
+    densite_emplois = models.FloatField(null=True)
+    residences_secondaires_22 = models.FloatField(null=True)
+    evolution_residences_secondaires_percent = models.FloatField(null=True)
+    evolution_residences_secondaires_absolute = models.FloatField(null=True)
+    densite_residences_secondaires = models.FloatField(null=True)
+    competence_planification = models.BooleanField()
 
     class Meta:
         managed = False
@@ -146,6 +176,18 @@ class LandModel(models.Model):
     @cached_property
     def territorialisation(self):
         from public_data.models.territorialisation import TerritorialisationObjectif
+
+        if self.land_type == AdminRef.NATION:
+            return {
+                "has_objectif": False,
+                "objectif": None,
+                "hierarchy": [],
+                "has_children": False,
+                "children_land_types": [],
+                "children_stats": None,
+                "is_from_parent": False,
+                "parent_land_name": None,
+            }
 
         objectif = TerritorialisationObjectif.objects.filter(
             land__land_id=self.land_id,
@@ -355,35 +397,14 @@ class LandModel(models.Model):
         # Limit to 20 results
         return qs[:20]
 
-    # -------------------------------------------------------------------------
-    # DEPRECATED: Compatibility properties for Land search migration
-    # These properties exist to maintain compatibility with LandSerializer
-    # which was originally designed to work with the Land class.
-    # See public_data/models/administration/Land.py for the original implementation.
-    # -------------------------------------------------------------------------
-
     @property
     def land_type_label(self):
-        """DEPRECATED: Use AdminRef.get_label(land_type) instead."""
         return AdminRef.CHOICES_DICT.get(self.land_type, self.land_type)
-
-    @property
-    def public_key(self):
-        """DEPRECATED: Use 'key' field instead."""
-        return self.key
-
-    @property
-    def area(self):
-        """DEPRECATED: Use 'surface' field instead."""
-        return self.surface
-
-    def get_official_id(self):
-        """DEPRECATED: Use 'land_id' field instead."""
-        return self.land_id
 
 
 class LandModelSerializer(serializers.ModelSerializer):
     territorialisation = serializers.DictField(read_only=True)
+    land_type_label = serializers.CharField(read_only=True)
 
     class Meta:
         model = LandModel
@@ -393,10 +414,59 @@ class LandModelSerializer(serializers.ModelSerializer):
         )
 
 
+class LandModelListSerializer(serializers.ModelSerializer):
+    land_type_label = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = LandModel
+        fields = (
+            "id",
+            "land_id",
+            "land_type",
+            "land_type_slug",
+            "land_type_label",
+            "name",
+            "slug",
+            "key",
+            "surface",
+            "has_ocsge",
+            "has_conso",
+            "has_zonage",
+            "has_friche",
+            "millesimes",
+            "departements",
+            "is_interdepartemental",
+        )
+
+
+class LandModelSearchSerializer(serializers.ModelSerializer):
+    land_type_label = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = LandModel
+        fields = (
+            "id",
+            "land_id",
+            "land_type",
+            "land_type_slug",
+            "land_type_label",
+            "name",
+            "slug",
+            "key",
+            "surface",
+        )
+
+
 class LandModelGeomSerializer(serializers.ModelSerializer):
     class Meta:
         model = LandModel
         fields = ("simple_geom",)
+
+
+class LandModelFullGeomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LandModel
+        fields = ("geom",)
 
 
 class LandModelGeomViewset(viewsets.ViewSet):
@@ -404,8 +474,18 @@ class LandModelGeomViewset(viewsets.ViewSet):
     serializer_class = LandModelGeomSerializer
 
     def retrieve(self, request, land_type, land_id):
-        queryset = LandModel.objects.get(land_id=land_id, land_type=land_type)
-        serializer = LandModelGeomSerializer(queryset)
+        obj = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        serializer = LandModelGeomSerializer(obj)
+        return Response(serializer.data)
+
+
+class LandModelFullGeomViewset(viewsets.ViewSet):
+    queryset = LandModel.objects.all()
+    serializer_class = LandModelFullGeomSerializer
+
+    def retrieve(self, request, land_type, land_id):
+        obj = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        serializer = LandModelFullGeomSerializer(obj)
         return Response(serializer.data)
 
 
@@ -413,35 +493,29 @@ class LandChildrenGeomViewset(viewsets.ViewSet):
     """Retourne les géométries des territoires enfants au format GeoJSON FeatureCollection."""
 
     def retrieve(self, request, land_type, land_id, child_land_type):
-        land = LandModel.objects.get(land_id=land_id, land_type=land_type)
-        children = LandModel.objects.filter(
-            parent_keys__contains=[land.key],
-            land_type=child_land_type,
-        )
-        geojson = json.loads(
-            serialize(
-                "geojson",
-                children,
-                geometry_field="simple_geom",
-                fields=("land_id", "name"),
-            )
-        )
+        from public_data.models.administration import LandGeoJSON
+
+        child_land_type = AdminRef.slug_to_code(child_land_type)
+        geojson = LandGeoJSON.for_parent(land_id, land_type, child_land_type)
         return JsonResponse(geojson)
 
 
 @method_decorator(cache_control(public=True, max_age=3600), name="retrieve")
 @method_decorator(cache_control(public=True, max_age=3600), name="list")
 class LandModelViewset(viewsets.ViewSet):
-    queryset = LandModel.objects.all()
+    queryset = LandModel.objects.defer("geom", "simple_geom")
     serializer_class = LandModelSerializer
 
-    @method_decorator(cache_page(60 * 10))
     def list(self, request):
-        queryset = LandModel.objects.all()
-        serializer = LandModelSerializer(queryset, many=True)
+        queryset = LandModel.objects.defer("geom", "simple_geom").all()
+        land_type = request.query_params.get("land_type")
+        if land_type:
+            land_type = AdminRef.slug_to_code(land_type)
+            queryset = queryset.filter(land_type=land_type)
+        serializer = LandModelListSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, land_type, land_id):
-        queryset = LandModel.objects.get(land_id=land_id, land_type=land_type)
+        queryset = LandModel.objects.defer("geom", "simple_geom").get(land_id=land_id, land_type=land_type)
         serializer = LandModelSerializer(queryset)
         return Response(serializer.data)

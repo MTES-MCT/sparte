@@ -1,60 +1,58 @@
 import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components';
+import { theme } from '@theme';
 import Drawer from '@components/ui/Drawer';
-import InformationIcon from '@images/information.svg';
+import BaseCard from '@components/ui/BaseCard';
+import IconBadge from '@components/ui/IconBadge';
+import Button from '@components/ui/Button';
 
-const StyledInformationIcon = styled(InformationIcon)`
-    max-width: 75px;
-    height: auto;
-    fill:rgb(155, 186, 224);
-`;
-
-const Container = styled.div<{ $column: boolean }>`
+const Container = styled.div`
+    padding: 1.25rem ${theme.spacing.lg};
+    border-radius: ${theme.radius.default};
+    background: ${theme.colors.background};
     display: flex;
-    align-items: start;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    border-radius: 6px;
-    background:#E6EEFE;
-    margin-bottom: 2rem;
-
-    ${({ $column }) => $column && `
-        flex-direction: column;
-        align-items: center;
-        height: 100%;
-    `}
-
-    img {
-        width: 75px;
-        height: auto;
-    }
+    flex-direction: column;
+    height: 100%;
 `;
 
-const Title = styled.div`
-    font-weight: 600;
-    font-size: 1em;
-    margin-bottom: 0.8rem;
+const Header = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: ${theme.spacing.lg};
+`;
+
+const TitleLabel = styled.span`
+    font-weight: ${theme.fontWeight.bold};
+    font-size: ${theme.fontSize.md};
+    color: ${theme.colors.text};
+    letter-spacing: -0.01em;
 `;
 
 const Content = styled.div`
-    margin-bottom: 1rem;
-    font-size: 0.85rem;
-    line-height: 1.5rem;
-    margin-bottom: 0.5rem;
-    
-    & > p {
-        font-size: 0.85rem;
-        line-height: 1.5rem;
-        margin-bottom: 0.5rem;
+    font-size: ${theme.fontSize.sm};
+    line-height: 1.7;
+    color: ${theme.colors.textLight};
+    flex: 1;
+
+    p {
+        margin-bottom: ${theme.spacing.sm};
+        font-size: ${theme.fontSize.sm};
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    strong {
+        color: ${theme.colors.text};
     }
 `;
 
-const Button = styled.button`
-    transition: color .3s ease, background .3s ease;
-    &:hover {
-        background: #000091 !important;
-        color: #fff !important;
-    }
+const MoreLinkWrapper = styled.div`
+    align-self: flex-end;
+    margin-top: auto;
+    padding-top: ${theme.spacing.md};
 `;
 
 interface GuideContentProps {
@@ -62,30 +60,30 @@ interface GuideContentProps {
     children: ReactNode;
     DrawerTitle?: string;
     drawerChildren?: ReactNode;
-    column?: boolean;
 }
 
-const GuideContent: React.FC<GuideContentProps> = ({ title, children, DrawerTitle, drawerChildren, column = false }) => {
+const GuideContent: React.FC<GuideContentProps> = ({ title, children, DrawerTitle, drawerChildren }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-    const toggleDrawer = () => {
-        setIsDrawerOpen(!isDrawerOpen);
-    };
+    const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
     return (
-        <Container $column={column}>
-            <StyledInformationIcon />
-            <div>
-                <Title>{ title }</Title>
+        <BaseCard>
+            <Container>
+                <Header>
+                    <IconBadge icon="bi bi-lightbulb" size={40} />
+                    <TitleLabel>{title}</TitleLabel>
+                </Header>
                 <Content>
                     {children}
                 </Content>
                 {drawerChildren && (
                     <>
-                        <Button onClick={toggleDrawer} className="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
-                            En savoir plus
-                        </Button>
-
+                        <MoreLinkWrapper>
+                            <Button variant="tertiary" noBackground noPadding onClick={toggleDrawer} type="button">
+                                En savoir plus
+                                <i className="bi bi-arrow-right" aria-hidden="true" />
+                            </Button>
+                        </MoreLinkWrapper>
                         <Drawer
                             isOpen={isDrawerOpen}
                             title={DrawerTitle}
@@ -95,8 +93,8 @@ const GuideContent: React.FC<GuideContentProps> = ({ title, children, DrawerTitl
                         </Drawer>
                     </>
                 )}
-            </div>
-        </Container>
+            </Container>
+        </BaseCard>
     );
 };
 

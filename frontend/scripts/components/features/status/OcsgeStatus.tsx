@@ -1,58 +1,56 @@
 import React from 'react';
-import styled from 'styled-components';
-
-const NoticeBody = styled.div`
-    flex-direction: column;
-    display: flex;
-    gap: 0.5rem;
-`;
+import Notice from '@components/ui/Notice';
 
 export enum OcsgeStatusEnum {
-    COMPLETE_UNIFORM = "COMPLETE_UNIFORM",
-    COMPLETE_NOT_UNIFORM = "COMPLETE_NOT_UNIFORM",
-    PARTIAL = "PARTIAL",
-    PARTIAL_DUE_TO_PRODUCTOR_ISSUE = "PARTIAL_DUE_TO_PRODUCTOR_ISSUE",
-    NO_DATA = "NO_DATA",
-    UNDEFINED = "UNDEFINED",
+  COMPLETE_UNIFORM = "COMPLETE_UNIFORM",
+  COMPLETE_NOT_UNIFORM = "COMPLETE_NOT_UNIFORM",
+  PARTIAL = "PARTIAL",
+  PARTIAL_DUE_TO_PRODUCTOR_ISSUE = "PARTIAL_DUE_TO_PRODUCTOR_ISSUE",
+  NO_DATA = "NO_DATA",
+  UNDEFINED = "UNDEFINED",
 }
 
-export interface OcsgeStatusProps {
-    status: OcsgeStatusEnum;
+interface StatusMessage {
+  title: string;
+  description: string;
 }
 
 const defaultMessage = "Les données OCS GE ne sont pas encore disponibles sur ce territoire.";
 const detailMessage = "Vous n'avez donc pas accès aux informations relatives à l'artificialisation.";
 const errorMessage = `${defaultMessage} ${detailMessage}`;
 
-const statusMessages: { [key in OcsgeStatusEnum]?: string } = {
-    COMPLETE_NOT_UNIFORM: `Les données OCS GE sont disponibles sur ce territoire, mais les dates des millésimes ne sont pas uniformes entre toutes les collectivités.`,
-    PARTIAL: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire. ${detailMessage}`,
-    PARTIAL_DUE_TO_PRODUCTOR_ISSUE: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire en raison d'un problème lié à la production de la donnée. ${detailMessage}`,
-    NO_DATA: errorMessage,
-    UNDEFINED: errorMessage,
+const statusMessages: Partial<Record<OcsgeStatusEnum, StatusMessage>> = {
+  [OcsgeStatusEnum.COMPLETE_NOT_UNIFORM]: {
+    title: "Données OCS GE disponibles mais non uniformes.",
+    description: "Les données OCS GE sont disponibles sur ce territoire, mais les dates des millésimes ne sont pas uniformes entre toutes les collectivités."
+  },
+  [OcsgeStatusEnum.PARTIAL]: {
+    title: "Données OCS GE partiellement disponibles.",
+    description: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire. ${detailMessage}`
+  },
+  [OcsgeStatusEnum.PARTIAL_DUE_TO_PRODUCTOR_ISSUE]: {
+    title: "Données OCS GE partiellement disponibles.",
+    description: `Les données OCS GE ne sont que partiellement disponibles sur ce territoire en raison d'un problème lié à la production de la donnée. ${detailMessage}`
+  },
+  [OcsgeStatusEnum.NO_DATA]: {
+    title: "Données OCS GE non disponibles.",
+    description: errorMessage
+  },
+  [OcsgeStatusEnum.UNDEFINED]: {
+    title: "Données OCS GE non disponibles.",
+    description: errorMessage
+  },
 };
 
-const titleMessages: { [key in OcsgeStatusEnum]?: string } = {
-    COMPLETE_NOT_UNIFORM: "Données OCS GE disponibles mais non uniformes",
-    PARTIAL: "Données OCS GE partiellement disponibles",
-    PARTIAL_DUE_TO_PRODUCTOR_ISSUE: "Données OCS GE partiellement disponibles en raison d'un problème lié à la production de la donnée",
-    NO_DATA: "Données OCS GE non disponibles",
-    UNDEFINED: "Données OCS GE non disponibles",
-};
+export interface OcsgeStatusProps {
+  status: OcsgeStatusEnum;
+}
 
 const OcsgeStatus: React.FC<OcsgeStatusProps> = ({ status }) => {
-    const message = statusMessages[status]
-    const title = titleMessages[status]
-    return (
-        <div className="fr-notice fr-notice--info fr-mt-3w">
-            <div className="fr-container--fluid fr-p-3w">
-                <NoticeBody className="fr-notice__body flex-column">
-                    <p className="fr-notice__title">{ title }</p>
-                    <p className="fr-notice__desc fr-text--sm">{ message }</p>
-                </NoticeBody>
-            </div>
-        </div>
-    );
+  const content = statusMessages[status];
+  if (!content) return null;
+
+  return <Notice type="warning" title={content.title} description={content.description} />;
 };
 
 export default OcsgeStatus;

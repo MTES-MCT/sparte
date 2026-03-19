@@ -8,6 +8,8 @@ from django.contrib.auth.password_validation import validate_password
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
+from utils.antispam import AntispamFormMixin
+
 from .models import User
 
 
@@ -23,7 +25,7 @@ class CustomUserChangeForm(UserChangeForm):
         fields = ("email",)
 
 
-class SignupForm(forms.ModelForm):
+class SignupForm(AntispamFormMixin, forms.ModelForm):
     accept_privacy = forms.BooleanField(label="", required=True)
     password1 = forms.CharField(
         label="Mot de passe", widget=forms.PasswordInput(), validators=[validate_password], max_length=50

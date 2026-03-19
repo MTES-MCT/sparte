@@ -1,6 +1,6 @@
 import { BaseSource } from "./baseSource";
 import type { FeatureCollection } from "geojson";
-import { fetchLandGeom } from "@services/fetchers";
+import { fetchLandFullGeom } from "@services/fetchers";
 import { LandDetailResultType } from "@services/types/land";
 
 export class EmpriseSource extends BaseSource {
@@ -19,8 +19,8 @@ export class EmpriseSource extends BaseSource {
     }
 
     async load(): Promise<void> {
-        const { simple_geom } = await fetchLandGeom(this.land_type, this.land_id);
-        this.data = simple_geom;
+        const { geom } = await fetchLandFullGeom(this.land_type, this.land_id);
+        this.data = geom;
         this.loaded = true;
     }
 

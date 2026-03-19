@@ -10,6 +10,12 @@
     )
 }}
 
+/*
+La jointure avec la table commune sert uniquement à déterminer le SRID de projection
+(chaque département a son propre système de coordonnées projetées).
+L'appartenance des zonages aux territoires (commune, EPCI, etc.) est gérée
+par les tables de mapping dédiées (zonage_commune, etc.).
+*/
 select
     gpu_doc_id,
     gpu_status,
@@ -30,21 +36,17 @@ select
             "ST_transform(zonage.geom, commune.srid_source)"
         )
     }} as geom,
-    commune.code as commune_code,
     commune.departement as departement,
     commune.srid_source as srid_source
 FROM
     {{ ref("2_zonage_urbanisme_normalized") }} as zonage
 LEFT JOIN LATERAL (
     SELECT
-        code,
         departement,
         srid_source
     FROM
         {{ ref("commune") }} as commune
     WHERE
-        commune.geom_4326 && zonage.geom
-        AND st_contains(
-            commune.geom_4326, st_pointonsurface(zonage.geom)
-        )
+        st_intersects(commune.geom_4326, zonage.geom)
+    LIMIT 1
 ) commune ON true

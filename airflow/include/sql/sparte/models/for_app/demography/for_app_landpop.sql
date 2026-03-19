@@ -54,3 +54,10 @@ select
     {{ fields_to_query }}
 from
     {{ ref('flux_population_custom_land') }}
+union
+select
+    nation as land_id,
+    '{{ var('NATION') }}' as land_type,
+    {{ fields_to_query }}
+from
+    {{ ref('flux_population_nation') }}

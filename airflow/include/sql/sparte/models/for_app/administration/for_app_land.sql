@@ -9,7 +9,12 @@ SELECT
     land.land_type || '_' || land.land_id as key,
     land.land_id,
     land.land_type,
+    {{ land_type_to_slug('land.land_type') }} as land_type_slug,
     name,
+    CASE
+        WHEN land.land_type = '{{ var("NATION") }}' THEN 'france'
+        ELSE land.land_id || '-' || {{ slugify('name') }}
+    END as slug,
     {{ m2_to_ha('land.surface') }} as surface,
     'ha' as surface_unit,
     ARRAY[
@@ -63,7 +68,56 @@ SELECT
         'projected_percent_use_by_2030', land.projected_percent_use_by_2030,
         'trajectoire_conso_is_territorialise', false
     ) as conso_details,
-    land.consommation_correction_status
+    land.consommation_correction_status,
+    land.competence_planification,
+    land.logements_22,
+    CASE
+        WHEN land.logements_11 > 0
+        THEN round(((land.logements_22 - land.logements_11) / land.logements_11 * 100)::numeric, 1)
+        ELSE NULL
+    END as evolution_logements_percent,
+    CASE
+        WHEN land.logements_11 IS NOT NULL AND land.logements_22 IS NOT NULL
+        THEN round((land.logements_22 - land.logements_11)::numeric, 0)
+        ELSE NULL
+    END as evolution_logements_absolute,
+    CASE
+        WHEN {{ m2_to_ha('land.surface') }} > 0
+        THEN round((land.logements_22 / {{ m2_to_ha('land.surface') }})::numeric, 1)
+        ELSE NULL
+    END as densite_logements,
+    land.emplois_22,
+    CASE
+        WHEN land.emplois_11 > 0
+        THEN round(((land.emplois_22 - land.emplois_11) / land.emplois_11 * 100)::numeric, 1)
+        ELSE NULL
+    END as evolution_emplois_percent,
+    CASE
+        WHEN land.emplois_11 IS NOT NULL AND land.emplois_22 IS NOT NULL
+        THEN round((land.emplois_22 - land.emplois_11)::numeric, 0)
+        ELSE NULL
+    END as evolution_emplois_absolute,
+    CASE
+        WHEN {{ m2_to_ha('land.surface') }} > 0
+        THEN round((land.emplois_22 / {{ m2_to_ha('land.surface') }})::numeric, 1)
+        ELSE NULL
+    END as densite_emplois,
+    land.residences_secondaires_22,
+    CASE
+        WHEN land.residences_secondaires_11 > 0
+        THEN round(((land.residences_secondaires_22 - land.residences_secondaires_11) / land.residences_secondaires_11 * 100)::numeric, 1)
+        ELSE NULL
+    END as evolution_residences_secondaires_percent,
+    CASE
+        WHEN land.residences_secondaires_11 IS NOT NULL AND land.residences_secondaires_22 IS NOT NULL
+        THEN round((land.residences_secondaires_22 - land.residences_secondaires_11)::numeric, 0)
+        ELSE NULL
+    END as evolution_residences_secondaires_absolute,
+    CASE
+        WHEN {{ m2_to_ha('land.surface') }} > 0
+        THEN round((land.residences_secondaires_22 / {{ m2_to_ha('land.surface') }})::numeric, 1)
+        ELSE NULL
+    END as densite_residences_secondaires
 FROM
     {{ ref('land_details') }} as land
 JOIN {{ ref('land_geom_4326') }} as land_geom

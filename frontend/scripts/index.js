@@ -6,5 +6,8 @@ import '../styles/index.css'
 // Import dsfr
 import '@gouvfr/dsfr/dist/dsfr.module.min.js'
 
+// HTMX
+import 'htmx.org'
+
 // React
 import './react-roots.tsx'

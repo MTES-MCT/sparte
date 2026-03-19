@@ -1,13 +1,20 @@
+import hashlib
+import json
+
+from django.core.cache import cache
 from django.http import FileResponse, Http404, JsonResponse
 from django.urls import include, path
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 
+from home.api import PageFeedbackViewSet
 from project.api_views import (
     ReportDraftViewSet,
-    UpdateProjectComparisonLandsAPIView,
-    UpdateProjectTarget2031APIView,
+    ToggleFavoriteAPIView,
+    UpdatePreferenceComparisonLandsAPIView,
+    UpdatePreferenceTarget2031APIView,
+    UserLandPreferenceAPIView,
 )
 from project.charts import (
     AnnualConsoByDeterminantChart,
@@ -67,9 +74,43 @@ from project.charts.consommation.AnnualConsoProportionalComparisonChart import (
 )
 from project.charts.demography.PopulationConsoComparisonChart import (
     PopulationConsoComparisonChart,
+    PopulationConsoComparisonChartExport,
 )
 from project.charts.demography.PopulationConsoProgressionChart import (
     PopulationConsoProgressionChart,
+)
+from project.charts.dossier_complet import (
+    DcCreationsEntreprisesChart,
+    DcCspRepartitionChart,
+    DcEmploiChomageChart,
+    DcEmploiConsoComparisonChart,
+    DcEmploiConsoMap,
+    DcEmploiMap,
+    DcEmploiVsConsoChart,
+    DcEquipementsBpeChart,
+    DcLogementConsoComparisonChart,
+    DcLogementConsoMap,
+    DcLogementConstructionChart,
+    DcLogementMap,
+    DcLogementParcChart,
+    DcLogementVacantMap,
+    DcLogementVsConsoChart,
+    DcMenagesConsoComparisonChart,
+    DcMenagesConsoComparisonChartExport,
+    DcMenagesConsoMap,
+    DcMenagesEvolutionChart,
+    DcPauvreteMap,
+    DcPopulationConsoMap,
+    DcPopulationEvolutionChart,
+    DcPopulationMap,
+    DcPopulationPyramidChart,
+    DcPopulationVsConsoChart,
+    DcResidencesSecondairesChart,
+    DcResidencesSecondairesConsoMap,
+    DcResidencesSecondairesMap,
+    DcRevenusMap,
+    DcRevenusPauvreteChart,
+    DcTourismeChart,
 )
 from project.charts.impermeabilisation import (
     ImperByCouverturePieChart,
@@ -116,6 +157,7 @@ from public_data.models import (
     LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
+    LandCarroyageBoundsViewset,
     LandChildrenGeomViewset,
     LandConsoStatsViewset,
     LandFricheCentroidViewset,
@@ -128,24 +170,34 @@ from public_data.models import (
     LandFricheZonageEnvironnementaleViewset,
     LandFricheZonageTypeViewset,
     LandFricheZoneActiviteViewset,
+    LandImperFluxIndexViewset,
     LandImperFluxViewset,
     LandImperStockCouvertureCompositionViewset,
     LandImperStockIndexViewset,
     LandImperStockUsageCompositionViewset,
     LandImperStockViewset,
     LandModel,
+    LandModelFullGeomViewset,
     LandModelGeomViewset,
     LandModelViewset,
     LandPopStatsViewset,
     LandPopulationDensityViewset,
+    LandSocioEconomicStatsViewset,
     NearestTerritoriesViewset,
 )
 from public_data.models.urbanisme import LogementVacantAutorisationStatsViewset
+from utils.antispam import generate_token
 
 app_name = "api"
 
 router = DefaultRouter()
 router.register(r"report-drafts", ReportDraftViewSet, basename="report-draft")
+router.register(r"feedback", PageFeedbackViewSet, basename="feedback")
+
+
+@api_view(["GET"])
+def antispam_token_view(request):
+    return Response({"token": generate_token()})
 
 
 @api_view(["GET"])
@@ -232,6 +284,7 @@ def get_chart_klass_or_404(chart_id):
         "surface_proportional_chart_export": AnnualConsoProportionalComparisonChartExport,
         "population_conso_progression_chart": PopulationConsoProgressionChart,
         "population_conso_comparison_chart": PopulationConsoComparisonChart,
+        "population_conso_comparison_chart_export": PopulationConsoComparisonChartExport,
         # Objective chart
         "objective_chart": ObjectiveChart,
         "objective_chart_export": ObjectiveChartExport,
@@ -253,6 +306,39 @@ def get_chart_klass_or_404(chart_id):
         "logement_vacant_taux_progression_chart": LogementVacantTauxProgressionChart,
         "logement_vacant_map_percent": LogementVacantMapPercent,
         "logement_vacant_map_absolute": LogementVacantMapAbsolute,
+        # Dossier complet INSEE charts
+        "dc_population_evolution": DcPopulationEvolutionChart,
+        "dc_population_pyramid": DcPopulationPyramidChart,
+        "dc_logement_parc": DcLogementParcChart,
+        "dc_logement_construction": DcLogementConstructionChart,
+        "dc_menages_evolution": DcMenagesEvolutionChart,
+        "dc_emploi_chomage": DcEmploiChomageChart,
+        "dc_csp_repartition": DcCspRepartitionChart,
+        "dc_revenus_pauvrete": DcRevenusPauvreteChart,
+        "dc_creations_entreprises": DcCreationsEntreprisesChart,
+        "dc_equipements_bpe": DcEquipementsBpeChart,
+        "dc_tourisme": DcTourismeChart,
+        "dc_population_vs_conso": DcPopulationVsConsoChart,
+        "dc_logement_vs_conso": DcLogementVsConsoChart,
+        "dc_emploi_vs_conso": DcEmploiVsConsoChart,
+        # Dossier complet INSEE maps
+        "dc_population_map": DcPopulationMap,
+        "dc_logement_map": DcLogementMap,
+        "dc_logement_vacant_map": DcLogementVacantMap,
+        "dc_emploi_map": DcEmploiMap,
+        "dc_revenus_map": DcRevenusMap,
+        "dc_pauvrete_map": DcPauvreteMap,
+        "dc_population_conso_map": DcPopulationConsoMap,
+        "dc_logement_conso_map": DcLogementConsoMap,
+        "dc_emploi_conso_map": DcEmploiConsoMap,
+        "dc_menages_conso_map": DcMenagesConsoMap,
+        "dc_logement_conso_comparison_chart": DcLogementConsoComparisonChart,
+        "dc_menages_conso_comparison_chart": DcMenagesConsoComparisonChart,
+        "dc_menages_conso_comparison_chart_export": DcMenagesConsoComparisonChartExport,
+        "dc_emploi_conso_comparison_chart": DcEmploiConsoComparisonChart,
+        "dc_residences_secondaires": DcResidencesSecondairesChart,
+        "dc_residences_secondaires_conso_map": DcResidencesSecondairesConsoMap,
+        "dc_residences_secondaires_map": DcResidencesSecondairesMap,
     }
 
     if chart_id not in charts:
@@ -278,27 +364,64 @@ def chart_view_file_response(chart, id, land_type, land_id):
     )
 
 
-def chart_view(request, id, land_type, land_id):
-    land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+def _chart_cache_key(id, land_type, land_id, params):
+    params_str = json.dumps(params, sort_keys=True)
+    h = hashlib.md5(params_str.encode()).hexdigest()
+    return f"chart:{id}:{land_type}:{land_id}:{h}"
 
-    chart_klass = get_chart_klass_or_404(id)
+
+def chart_view(request, id, land_type, land_id):
     chart_params = request.GET.dict()
+
+    # PNG responses are not cached
+    if chart_params.get("format") == "png":
+        land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+        chart_klass = get_chart_klass_or_404(id)
+        user = request.user if request.user.is_authenticated else None
+        chart = chart_klass(land=land, params=chart_params, user=user)
+        return chart_view_file_response(chart=chart, id=id, land_type=land_type, land_id=land_id)
+
+    cache_key = _chart_cache_key(id, land_type, land_id, chart_params)
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return JsonResponse(data=cached)
+
+    land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+    chart_klass = get_chart_klass_or_404(id)
     user = request.user if request.user.is_authenticated else None
     chart = chart_klass(land=land, params=chart_params, user=user)
 
-    if "format" in chart_params and chart_params["format"] == "png":
-        return chart_view_file_response(chart=chart, id=id, land_type=land_type, land_id=land_id)
-    return chart_view_json_response(chart=chart)
+    data = {
+        "highcharts_options": chart.chart,
+        "data_table": getattr(chart, "data_table", None),
+    }
+    cache.set(cache_key, data, timeout=60 * 60 * 24)  # 24 hours
+    return JsonResponse(data=data)
 
 
 urlpatterns = [
     path("", include(router.urls)),
     path("me/", me_view, name="me"),
-    path("project/<int:pk>/target-2031/", UpdateProjectTarget2031APIView.as_view(), name="update-target-2031"),
+    path("token/", antispam_token_view, name="antispam-token"),
     path(
-        "project/<int:pk>/comparison-lands/",
-        UpdateProjectComparisonLandsAPIView.as_view(),
-        name="update-comparison-lands",
+        "preference/<str:land_type>/<str:land_id>/",
+        UserLandPreferenceAPIView.as_view(),
+        name="user-land-preference",
+    ),
+    path(
+        "preference/<str:land_type>/<str:land_id>/target-2031/",
+        UpdatePreferenceTarget2031APIView.as_view(),
+        name="update-preference-target-2031",
+    ),
+    path(
+        "preference/<str:land_type>/<str:land_id>/comparison-lands/",
+        UpdatePreferenceComparisonLandsAPIView.as_view(),
+        name="update-preference-comparison-lands",
+    ),
+    path(
+        "preference/<str:land_type>/<str:land_id>/toggle-favorite/",
+        ToggleFavoriteAPIView.as_view(),
+        name="toggle-favorite",
     ),
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path(
@@ -310,15 +433,18 @@ urlpatterns = [
     path("landimperstock/", LandImperStockViewset.as_view(), name="imperstock"),
     path("landartifstockindex/", LandArtifStockIndexViewset.as_view(), name="artifstockindex"),
     path("landimperstockindex/", LandImperStockIndexViewset.as_view(), name="imperstockindex"),
+    path("landcarroyagebounds/", LandCarroyageBoundsViewset.as_view(), name="landcarroyagebounds"),
     path("landconsostats/", LandConsoStatsViewset.as_view(), name="consostats"),
     path("landpopstats/", LandPopStatsViewset.as_view(), name="popstats"),
     path("landpopulationdensity/", LandPopulationDensityViewset.as_view(), name="populationdensity"),
+    path("landsocioeconomicstats/", LandSocioEconomicStatsViewset.as_view(), name="socioeconomicstats"),
     path("nearestterritories/", NearestTerritoriesViewset.as_view(), name="nearestterritories"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("imperzonageindex/", ImperZonageIndexViewset.as_view(), name="imperzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
     path("imperzonage/", ImperZonageViewset.as_view(), name="imperzonageindex"),
     path("landimperflux/", LandImperFluxViewset.as_view(), name="imperflux"),
+    path("landimperfluxindex/", LandImperFluxIndexViewset.as_view(), name="imperfluxindex"),
     path("landartifflux/", LandArtifFluxViewset.as_view(), name="artifflux"),
     path("landartiffluxindex/", LandArtifFluxIndexViewset.as_view(), name="artiffluxindex"),
     path(
@@ -403,6 +529,11 @@ urlpatterns = [
     path("lands/<str:land_type>/<str:land_id>", LandModelViewset.as_view({"get": "retrieve"}), name="land"),
     path(
         "landsgeom/<str:land_type>/<str:land_id>", LandModelGeomViewset.as_view({"get": "retrieve"}), name="land_geom"
+    ),
+    path(
+        "landsfullgeom/<str:land_type>/<str:land_id>",
+        LandModelFullGeomViewset.as_view({"get": "retrieve"}),
+        name="land_full_geom",
     ),
     path(
         "landchildrengeom/<str:land_type>/<str:land_id>/<str:child_land_type>",

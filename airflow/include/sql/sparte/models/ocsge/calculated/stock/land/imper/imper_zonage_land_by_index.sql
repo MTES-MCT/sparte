@@ -32,3 +32,5 @@ SELECT
     indicateur_surface * 100 / zonage_surface  as indicateur_percent
 FROM
     without_percent
+WHERE
+    zonage_surface > 0

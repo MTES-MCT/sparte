@@ -1,13 +1,13 @@
 from dataclasses import dataclass
 
-from public_data.models import Land
+from public_data.models import LandModel
 
 from .AnnualPopulation import AnnualPopulation
 
 
 @dataclass(frozen=True, slots=True)
 class AnnualPopulationCollection:
-    land: Land
+    land: LandModel
     start_date: int
     end_date: int
     population: list[AnnualPopulation]

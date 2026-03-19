@@ -5,7 +5,8 @@ import styled, { css } from 'styled-components';
 import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
-import { MenuItem, ProjectDetailResultType } from '@services/types/project';
+import Button from "@components/ui/Button";
+import { MenuItem } from '@services/types/project';
 import { LandDetailResultType } from '@services/types/land';
 
 const primaryColor = '#313178';
@@ -111,7 +112,7 @@ const Icon = styled.i`
     margin-right: 0.7em;
 `;
 
-const DownloadLink = styled(Link)`
+const DownloadButton = styled(Button)`
     width: 90%;
     font-size: 0.85em;
     margin: 1em;
@@ -125,7 +126,7 @@ const NavContainer = styled.div`
 
 const NavbarHeader = styled.div`
     display: flex;
-    padding: 1.5rem 1rem;
+    padding: 1rem;
     padding-bottom: 0.5rem;
 `;
 
@@ -152,6 +153,7 @@ const MenuItemContent: React.FC<{ item: MenuItem }> = ({ item }) => (
         <div className="d-flex flex-column items-center">
             {item.new && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
             {item.soon && (<p className="fr-badge fr-badge--sm fr-badge--info">Bientôt</p>)}
+            {item.dgaln_only && (<p className="fr-badge fr-badge--sm fr-badge--purple-glycine" title="Page réservée aux membres du groupe DGALN">DGALN</p>)}
             <MenuText $disabled={!item.url}>{item.label}</MenuText>
         </div>
     </>
@@ -195,17 +197,23 @@ interface DownloadItemsProps {
 }
 
 const DownloadItems: React.FC<DownloadItemsProps> = ({ downloadsUrl }) => (
-    <DownloadLink 
+    <DownloadButton 
         to={downloadsUrl}
-        className="fr-btn fr-btn--icon-left fr-icon-download-line"
+        icon="bi bi-download"
+        iconPosition="right"
     >
         Générer un rapport
-    </DownloadLink>
+    </DownloadButton>
 );
 
-const Navbar: React.FC<{ projectData: ProjectDetailResultType, landData: LandDetailResultType }> = ({ projectData, landData }) => {
+interface NavbarProps {
+    navbar: { menuItems: MenuItem[] };
+    urls: { downloads: string };
+    landData: LandDetailResultType;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ navbar, urls, landData }) => {
     const location = useLocation();
-    const { navbar, urls } = projectData
 
     const dispatch = useDispatch();
     const isOpen = useSelector(selectIsNavbarOpen);

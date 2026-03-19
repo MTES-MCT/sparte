@@ -2,7 +2,7 @@ import logging
 from functools import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
-from project.charts.constants import HIGHLIGHT_COLOR
+from project.charts.constants import HIGHLIGHT_COLOR, INSEE_CREDITS
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
 from public_data.domain.containers import PublicDataContainer
 
@@ -60,18 +60,27 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         highlighted_land_id = self.land.land_id
 
         consommation_total = {c.land.land_id: round(c.total, 2) for c in self.data["consommation_stats"]}
-        population_evolution_total = {p.land.land_id: p.evolution for p in self.data["population_stats"]}
+        population_evolution_percent = {
+            p.land.land_id: round(p.evolution_percent, 2) for p in self.data["population_stats"]
+        }
         last_year_populations = {
             p.land.land_id: p.last_year_population.population for p in self.data["population_progression"]
         }
+
+        # Consumption proportional to surface (%)
+        conso_proportional = {}
+        for land in lands:
+            conso = consommation_total.get(land.land_id, 0)
+            surface = land.surface
+            conso_proportional[land.land_id] = round(conso / surface * 100, 4) if surface > 0 else 0
 
         return [
             {
                 "name": land.name,
                 "data": [
                     {
-                        "x": population_evolution_total[land.land_id],
-                        "y": consommation_total[land.land_id],
+                        "x": population_evolution_percent[land.land_id],
+                        "y": conso_proportional[land.land_id],
                         "z": last_year_populations[land.land_id],
                     }
                 ],
@@ -79,7 +88,6 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                 "marker": {
                     "lineWidth": 3 if land.land_id == highlighted_land_id else 1,
                 },
-                # La couleur du territoire diagnostiqué est précisée, les autres sont aléatoires (valeur None)
             }
             for land in lands
         ]
@@ -115,18 +123,18 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             },
             "xAxis": {
                 "gridLineWidth": 1,
-                "title": {"text": "Évolution démographique (hab)"},
+                "title": {"text": "Évolution démographique (%)"},
                 "plotLines": [{"color": "#000", "width": 1, "value": 0, "zIndex": 3}],
             },
             "yAxis": {
-                "title": {"text": "Consommation d'espaces (ha)"},
+                "title": {"text": "Consommation d'espaces relative à la surface (%)"},
                 "maxPadding": 0.2,
                 "min": 0,
             },
             "tooltip": {
                 "pointFormat": (
-                    "Consommation : <span class='fr-text--bold'>{point.y} ha</span><br />"
-                    "Évolution démographique : <span class='fr-text--bold'>{point.x} hab</span><br />"
+                    "Consommation relative à la surface : <span class='fr-text--bold'>{point.y:.4f} %%</span><br />"
+                    "Évolution démographique : <span class='fr-text--bold'>{point.x} %%</span><br />"
                     "Population totale (%s) : <span class='fr-text--bold'>{point.z} hab</span>"
                     % self.params["end_date"]
                 ),
@@ -139,8 +147,8 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         """Generate data table showing consumption and population by territory."""
         headers = [
             "Territoire",
-            "Consommation totale (ha)",
-            "Évolution démographique (hab)",
+            "Consommation relative à la surface (%)",
+            "Évolution démographique (%)",
             f"Population {self.params['end_date']} (hab)",
         ]
         rows = []
@@ -148,19 +156,25 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         lands = self.data["lands"]
 
         consommation_total = {c.land.land_id: c.total for c in self.data["consommation_stats"]}
-        population_evolution_total = {p.land.land_id: p.evolution for p in self.data["population_stats"]}
+        population_evolution_percent = {
+            p.land.land_id: round(p.evolution_percent, 2) for p in self.data["population_stats"]
+        }
         last_year_populations = {
             p.land.land_id: p.last_year_population.population for p in self.data["population_progression"]
         }
 
         for land in lands:
+            conso = consommation_total.get(land.land_id, 0)
+            surface = land.surface
+            conso_prop = round(conso / surface * 100, 4) if surface > 0 else 0
+
             rows.append(
                 {
                     "name": land.name,
                     "data": [
                         land.name,
-                        consommation_total[land.land_id],
-                        population_evolution_total[land.land_id],
+                        f"{conso_prop:.4f} %",
+                        f"{population_evolution_percent.get(land.land_id, 0):+.2f} %",
                         last_year_populations[land.land_id],
                     ],
                 }
@@ -169,4 +183,13 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
         return {
             "headers": headers,
             "rows": rows,
+        }
+
+
+class PopulationConsoComparisonChartExport(PopulationConsoComparisonChart):
+    @property
+    def param(self):
+        return super().param | {
+            "credits": INSEE_CREDITS,
+            "chart": {"type": "bubble", "height": 500},
         }

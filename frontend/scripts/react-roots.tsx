@@ -4,12 +4,14 @@ import { Provider } from 'react-redux';
 import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
-import { ReportPrintPage } from '@components/features/report';
+import { ReportPrintPage } from '@components/pages/Downloads/templates';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/ui/SearchBar'
 import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
 import CookieConsentManager from '@components/ui/CookieConsent'
 import { FooterConsentManagementItem } from './hooks/useConsentManagement';
+import { ToastContainer } from '@components/ui/Toast';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Gestionnaire de consentement des cookies
 const cookieConsentRoot = document.createElement('div');
@@ -21,6 +23,11 @@ createRoot(cookieConsentRoot).render(
     <CookieConsentManager />
   </Provider>,
 );
+
+const toastRoot = document.createElement('div');
+toastRoot.id = 'toast-root';
+document.body.appendChild(toastRoot);
+createRoot(toastRoot).render(<ToastContainer />);
 
 const footerConsent = document.getElementById('react-footer-consent');
 if (footerConsent) {
@@ -63,12 +70,12 @@ if (ocsgeImplementationMap)
 
 const dashboard = document.getElementById('react-root');
 if (dashboard) {
-  const projectId = dashboard.dataset.projectId;
+  const { landType, landId, landSlug } = dashboard.dataset;
 
   createRoot(dashboard).render(
     <ErrorBoundary>
       <Provider store={store}>
-        <Dashboard projectId={projectId} />
+        <Dashboard landType={landType} landId={landId} landSlug={landSlug} />
       </Provider>
     </ErrorBoundary>,
   );
@@ -89,3 +96,4 @@ if (reportPrintRoot) {
     );
   }
 }
+

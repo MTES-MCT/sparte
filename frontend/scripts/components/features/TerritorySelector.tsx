@@ -1,20 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
-import SearchBar, { Territory } from '@components/ui/SearchBar';
-import { TerritoryBadge } from '@components/pages/Consommation/components/ConsoComparison/TerritoryBadge';
+import SearchBar from '@components/ui/SearchBar';
+import Button from '@components/ui/Button';
+import { LandDetailResultType } from '@services/types/land';
+import Tag from '@components/ui/Tag';
+
 
 interface TerritorySelectorProps {
-    territories: Territory[];
-    excludedTerritories: Territory[];
+    territories: LandDetailResultType[];
+    excludedTerritories: LandDetailResultType[];
     isDefaultSelection: boolean;
-    onAddTerritory: (territory: Territory) => void;
-    onRemoveTerritory: (territory: Territory) => void;
+    onAddTerritory: (territory: LandDetailResultType) => void;
+    onRemoveTerritory: (territory: LandDetailResultType) => void;
     onReset: () => void;
     searchLabel?: string;
     emptyText?: string;
     infoText?: string;
     showCount?: boolean;
     compact?: boolean;
+    dropdownPosition?: "below" | "above";
 }
 
 const TerritoryList = styled.div`
@@ -43,6 +47,7 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
     infoText,
     showCount = false,
     compact = false,
+    dropdownPosition = "below",
 }) => {
     return (
         <>
@@ -57,23 +62,26 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                     <p className="fr-text--sm fr-text--alt">{emptyText}</p>
                 ) : (
                     territories.map((territory) => (
-                        <TerritoryBadge
-                            key={`${territory.land_type}_${territory.source_id}`}
-                            territory={territory}
-                            onRemove={onRemoveTerritory}
-                        />
+                        <Tag
+                            key={`${territory.land_type}_${territory.land_id}`}
+                            variant="primary"
+                            onDismiss={() => onRemoveTerritory(territory)}
+                        >
+                            {territory.name}
+                        </Tag>
                     ))
                 )}
             </TerritoryList>
 
             {!isDefaultSelection && (
                 <div className={compact ? "fr-mb-2w" : "fr-my-3w"}>
-                    <button
-                        className="fr-btn fr-btn--sm fr-btn--secondary"
+                    <Button
+                        variant="secondary"
+                        size="sm"
                         onClick={onReset}
                     >
                         Remettre la sélection par défaut
-                    </button>
+                    </Button>
                 </div>
             )}
 
@@ -82,6 +90,7 @@ const TerritorySelector: React.FC<TerritorySelectorProps> = ({
                 onTerritorySelect={onAddTerritory}
                 excludeTerritories={excludedTerritories}
                 disableOverlay={true}
+                dropdownPosition={dropdownPosition}
             />
 
             {infoText && <InfoText>{infoText}</InfoText>}

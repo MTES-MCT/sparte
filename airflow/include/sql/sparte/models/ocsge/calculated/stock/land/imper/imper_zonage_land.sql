@@ -53,3 +53,8 @@ select
     '{{ var("CUSTOM") }}' as land_type,
     {{ common_fields }}
 from {{ ref("imper_zonage_custom_land") }}
+union all
+select
+    '{{ var("NATION") }}' as land_type,
+    {{ common_fields }}
+from {{ ref("imper_zonage_nation") }}

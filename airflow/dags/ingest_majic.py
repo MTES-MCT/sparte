@@ -66,10 +66,6 @@ def load_shapefile_to_postgres(source: dict):
     tags=["Majic", "Cerema"],
 )
 def ingest_majic():
-    # Les fichiers de consommation d'espace sont sur le dropbox du Cerema
-    # Ils ne sont pas acessibles programmatiquement, donc il faut les télécharger manuellement
-    # et les mettre dans le bucket airflow-staging, dans le dossier majic
-
     ingest_tasks: List[PythonOperator] = []
 
     for source in sources:

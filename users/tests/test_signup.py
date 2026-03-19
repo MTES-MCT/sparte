@@ -1,6 +1,7 @@
 from django.test import TestCase
 
 from users.models import User
+from utils.antispam import generate_past_token
 from utils.validators import MISSING_SPECIAL_CHAR_ERROR
 
 valid_payload = {
@@ -10,6 +11,8 @@ valid_payload = {
     "password1": "ycvqB:U7aj%umbG3H<f8@D",
     "password2": "ycvqB:U7aj%umbG3H<f8@D",
     "accept_privacy": True,
+    "website": "",
+    "_token": generate_past_token(),
 }
 
 form_url = "/users/signup/"
@@ -17,8 +20,6 @@ success_url = "/users/signin/"
 
 
 class SignupTest(TestCase):
-    fixtures = ["users/tests/parameters.json"]
-
     def test_signup_form_with_working_payload(self) -> None:
         self.client.post(path=form_url, data=valid_payload)
         self.assertTrue(User.objects.filter(email=valid_payload["email"]).exists())

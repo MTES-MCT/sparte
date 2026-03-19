@@ -9,16 +9,18 @@ export const OcsgeDiffMillesimeControl: React.FC<ControlUIProps> = (props) => {
     let options: Array<{ value: string; label: string }> = [];
     if (props.context?.sources) {
         const source = props.context.sources.get(control.sourceId) as SourceInterface;
-        if (source?.getAvailableMillesimePairs) {
+        if (source?.getAvailableMillesimePairsByIndex) {
+            options = source.getAvailableMillesimePairsByIndex();
+        } else if (source?.getAvailableMillesimePairs) {
             const pairs = source.getAvailableMillesimePairs();
             options = pairs.map((pair) => {
-                const baseLabel = pair.startYear && pair.endYear 
-                    ? `${pair.startYear} - ${pair.endYear}` 
+                const baseLabel = pair.startYear && pair.endYear
+                    ? `${pair.startYear} - ${pair.endYear}`
                     : `Index ${pair.startIndex} - ${pair.endIndex}`;
-                const label = pair.departementName 
-                    ? `${baseLabel} (${pair.departementName})` 
+                const label = pair.departementName
+                    ? `${baseLabel} (${pair.departementName})`
                     : baseLabel;
-                
+
                 return {
                     value: `${pair.startIndex}_${pair.endIndex}_${pair.departement || ''}`,
                     label
