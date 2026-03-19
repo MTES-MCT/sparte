@@ -1,4 +1,3 @@
-{% load utils_tags %}
 <div class="fr-follow">
   <div class="fr-container">
     <div class="fr-grid-row">
@@ -9,9 +8,8 @@
             <p class="fr-text--sm">Ne ratez rien de notre actualité.</p>
           </div>
           <div>
-            <form hx-post="{% url 'home:nwl-confirmation' %}">
+            <form hx-post="{% url 'home:nwl-confirmation' %}" hx-target="this" hx-swap="outerHTML">
               {% csrf_token %}
-              <input type="hidden" name="_token" value="{% antispam_token %}">
               <div style="position:absolute;left:-9999px" aria-hidden="true">
                 <input type="text" name="website" autocomplete="off" tabindex="-1">
               </div>
