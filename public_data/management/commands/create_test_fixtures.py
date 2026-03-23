@@ -1,3 +1,4 @@
+import gzip
 import json
 
 from django.core.management.base import BaseCommand
@@ -146,7 +147,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--output",
-            default="public_data/fixtures/test_data.json",
+            default="public_data/fixtures/test_data.json.gz",
             help="Chemin du fichier de sortie",
         )
 
@@ -180,11 +181,45 @@ class Command(BaseCommand):
         self.stdout.write(f"Territoires trouvés: {len(land_pairs)}")
         return all_lands, land_pairs
 
+    @staticmethod
+    def simplify_land_geometries(land_data):
+        """Remplace les géométries de LandModel par un simple carré."""
+        simple_geom = "SRID=4326;MULTIPOLYGON (((4.8 45.7, 4.9 45.7, 4.9 45.8, 4.8 45.8, 4.8 45.7)))"
+        for item in land_data:
+            fields = item.get("fields", {})
+            for key in ["geom", "simple_geom"]:
+                if key in fields and fields[key]:
+                    fields[key] = simple_geom
+
     def serialize_land_territories(self, all_lands):
-        """Sérialise les objets LandModel (EPCI + communes)."""
+        """Sérialise les objets LandModel (EPCI + communes) avec géométries simplifiées."""
         land_data = json.loads(serialize("json", all_lands))
+        self.simplify_land_geometries(land_data)
         self.stdout.write(f"  LandModel: {len(land_data)} objets")
         return land_data
+
+    @staticmethod
+    def simplify_geojson(objects):
+        """Simplifie les géométries dans les objets LandGeoJSON."""
+        simple_coords = [
+            [
+                [540000.0, 5730000.0],
+                [541000.0, 5730000.0],
+                [541000.0, 5731000.0],
+                [540000.0, 5731000.0],
+                [540000.0, 5730000.0],
+            ]
+        ]
+        for item in objects:
+            if item.get("model") != "public_data.landgeojson":
+                continue
+            geojson = item.get("fields", {}).get("geojson")
+            if not isinstance(geojson, dict):
+                continue
+            for feat in geojson.get("features", []):
+                geom = feat.get("geometry", {})
+                if "coordinates" in geom:
+                    geom["coordinates"] = simple_coords
 
     def serialize_land_models(self, land_pairs):
         """Sérialise les données thématiques (conso, artif, friches...) liées aux territoires."""
@@ -198,6 +233,7 @@ class Command(BaseCommand):
             if count > 0:
                 objects.extend(json.loads(serialize("json", qs)))
             self.stdout.write(f"  {model.__name__}: {count} objets")
+        self.simplify_geojson(objects)
         return objects
 
     def serialize_global_models(self):
@@ -212,7 +248,7 @@ class Command(BaseCommand):
         return objects
 
     def write_fixtures(self, output_path, all_objects):
-        """Écrit toutes les données sérialisées dans le fichier JSON."""
-        with open(output_path, "w") as f:
-            json.dump(all_objects, f, indent=2, ensure_ascii=False)
+        """Écrit toutes les données sérialisées dans le fichier JSON gzippé."""
+        with gzip.open(output_path, "wt", encoding="utf-8") as f:
+            json.dump(all_objects, f, ensure_ascii=False)
         self.stdout.write(self.style.SUCCESS(f"\nFixtures écrites dans {output_path} ({len(all_objects)} objets)"))

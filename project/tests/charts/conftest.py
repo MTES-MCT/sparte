@@ -11,7 +11,7 @@ def django_db_setup(django_db_setup, django_db_blocker):
         init_unmanaged_schema_for_tests()
         from django.core.management import call_command
 
-        call_command("loaddata", "public_data/fixtures/test_data.json", verbosity=0)
+        call_command("loaddata", "public_data/fixtures/test_data.json.gz", verbosity=0)
 
 
 @pytest.fixture()
