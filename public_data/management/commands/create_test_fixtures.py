@@ -136,13 +136,13 @@ GLOBAL_MODELS = [
 
 
 class Command(BaseCommand):
-    help = "Crée des fixtures de test en filtrant les données par département."
+    help = "Crée des fixtures de test en filtrant les données par EPCI."
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--departement",
-            default="75",
-            help="Code du département à extraire (défaut: 75 = Paris)",
+            "--epci",
+            default="200046977",
+            help="Code SIREN de l'EPCI à extraire (défaut: 200046977)",
         )
         parser.add_argument(
             "--output",
@@ -151,30 +151,44 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        dept_code = options["departement"]
+        epci_code = options["epci"]
         output_path = options["output"]
-        dept_key = f"DEPART_{dept_code}"
+        epci_key = f"EPCI_{epci_code}"
 
-        # 1. Récupérer le département + tous ses enfants
-        dept = LandModel.objects.filter(key=dept_key).first()
-        if not dept:
-            self.stderr.write(f"Département {dept_code} introuvable.")
+        all_lands, land_pairs = self.get_lands(epci_key, epci_code)
+        if all_lands is None:
             return
 
-        children = LandModel.objects.filter(parent_keys__contains=[dept_key])
-        all_lands = LandModel.objects.filter(key=dept_key) | children
+        all_objects = []
+        all_objects.extend(self.serialize_land_territories(all_lands))
+        all_objects.extend(self.serialize_land_models(land_pairs))
+        all_objects.extend(self.serialize_global_models())
+        self.write_fixtures(output_path, all_objects)
+
+    def get_lands(self, epci_key, epci_code):
+        """Récupère l'EPCI et tous ses territoires enfants (communes)."""
+        epci = LandModel.objects.filter(key=epci_key).first()
+        if not epci:
+            self.stderr.write(f"EPCI {epci_code} introuvable.")
+            return None, None
+
+        children = LandModel.objects.filter(parent_keys__contains=[epci_key])
+        all_lands = LandModel.objects.filter(key=epci_key) | children
         land_pairs = set(all_lands.values_list("land_id", "land_type"))
 
-        self.stdout.write(f"Département: {dept.name} ({dept_key})")
+        self.stdout.write(f"EPCI: {epci.name} ({epci_key})")
         self.stdout.write(f"Territoires trouvés: {len(land_pairs)}")
+        return all_lands, land_pairs
 
-        # 2. Sérialiser LandModel (sans geom pour alléger)
-        all_objects = []
+    def serialize_land_territories(self, all_lands):
+        """Sérialise les objets LandModel (EPCI + communes)."""
         land_data = json.loads(serialize("json", all_lands))
-        all_objects.extend(land_data)
         self.stdout.write(f"  LandModel: {len(land_data)} objets")
+        return land_data
 
-        # 3. Sérialiser les tables liées
+    def serialize_land_models(self, land_pairs):
+        """Sérialise les données thématiques (conso, artif, friches...) liées aux territoires."""
+        objects = []
         for model in LAND_MODELS:
             qs = model.objects.none()
             for land_id, land_type in land_pairs:
@@ -182,21 +196,23 @@ class Command(BaseCommand):
 
             count = qs.count()
             if count > 0:
-                model_data = json.loads(serialize("json", qs))
-                all_objects.extend(model_data)
+                objects.extend(json.loads(serialize("json", qs)))
             self.stdout.write(f"  {model.__name__}: {count} objets")
+        return objects
 
-        # 4. Sérialiser les tables globales (sans filtre land_id)
+    def serialize_global_models(self):
+        """Sérialise les tables de référence globales (seuils bivariés)."""
+        objects = []
         for model in GLOBAL_MODELS:
             qs = model.objects.all()
             count = qs.count()
             if count > 0:
-                model_data = json.loads(serialize("json", qs))
-                all_objects.extend(model_data)
+                objects.extend(json.loads(serialize("json", qs)))
             self.stdout.write(f"  {model.__name__}: {count} objets")
+        return objects
 
-        # 5. Écrire le fichier
+    def write_fixtures(self, output_path, all_objects):
+        """Écrit toutes les données sérialisées dans le fichier JSON."""
         with open(output_path, "w") as f:
             json.dump(all_objects, f, indent=2, ensure_ascii=False)
-
         self.stdout.write(self.style.SUCCESS(f"\nFixtures écrites dans {output_path} ({len(all_objects)} objets)"))

@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_logement_construction_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/dc_logement_construction/DEPART/92")
+
+def test_dc_logement_construction_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/dc_logement_construction/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -20,7 +22,7 @@ def test_dc_logement_construction_chart(client, hauts_de_seine):
                 },
                 "legend": {"enabled": False},
                 "chart": {"type": "column"},
-                "title": {"text": "Résidences principales par époque de construction - Hauts-de-Seine (2022)"},
+                "title": {"text": "Résidences principales par époque de construction - Métropole de Lyon (2022)"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -29,7 +31,7 @@ def test_dc_logement_construction_chart(client, hauts_de_seine):
                     "href": "https://mondiagartif.beta.gouv.fr/",
                 },
                 "xAxis": {
-                    "categories": ["Avant 1919", "1919-1945", "1946-1970", "1971-1990", "1991-2005", "2006-2019"]
+                    "categories": ["1919-1945", "1946-1970", "1971-1990", "1991-2005", "2006-2019", "Avant 1919"]
                 },
                 "yAxis": {"title": {"text": "Nombre de résidences principales"}},
                 "tooltip": {"headerFormat": "<b>{point.key}</b><br/>", "pointFormat": "{series.name}: {point.y:,.0f}"},
@@ -37,12 +39,12 @@ def test_dc_logement_construction_chart(client, hauts_de_seine):
                     {
                         "name": "Résidences principales",
                         "data": [
-                            42673.9270205334,
-                            96988.9985943795,
-                            212328.186858859,
-                            189152.95871354,
-                            112326.015546028,
-                            82017.8630502364,
+                            107222.394993517,
+                            112026.345460754,
+                            158184.663948298,
+                            182731.960091985,
+                            43171.8233155696,
+                            55786.5928635026,
                         ],
                         "color": "#6A6AF4",
                     }
@@ -59,34 +61,34 @@ def test_dc_logement_construction_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Résidences principales par époque de construction - Hauts-de-Seine (2022)",
+                    "filename": "Résidences principales par époque de construction - Métropole de Lyon (2022)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": ["Période", "Résidences principales"],
                 "rows": [
-                    {"name": "", "data": ["Avant 1919", "42,674"]},
-                    {"name": "", "data": ["1919-1945", "96,989"]},
-                    {"name": "", "data": ["1946-1970", "212,328"]},
-                    {"name": "", "data": ["1971-1990", "189,153"]},
-                    {"name": "", "data": ["1991-2005", "112,326"]},
-                    {"name": "", "data": ["2006-2019", "82,018"]},
+                    {"name": "", "data": ["107,222", "1991-2005"]},
+                    {"name": "", "data": ["112,026", "2006-2019"]},
+                    {"name": "", "data": ["158,185", "1946-1970"]},
+                    {"name": "", "data": ["182,732", "1971-1990"]},
+                    {"name": "", "data": ["1919-1945", "43,172"]},
+                    {"name": "", "data": ["55,787", "Avant 1919"]},
                 ],
             },
         }

@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_logement_conso_comparison_chart(client, hauts_de_seine):
+
+def test_dc_logement_conso_comparison_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/dc_logement_conso_comparison_chart/DEPART/92",
+        "/api/chart/dc_logement_conso_comparison_chart/EPCI/200046977",
         {"start_date": 2015, "end_date": 2020},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -43,7 +45,7 @@ def test_dc_logement_conso_comparison_chart(client, hauts_de_seine):
                     "href": "https://mondiagartif.beta.gouv.fr/",
                 },
                 "title": {
-                    "text": "Consommation habitat relative à la surface (%) au regard de évolution du parc de logements de Hauts-de-Seine et des territoires de comparaison (2015 - 2020)"
+                    "text": "Consommation habitat relative à la surface (%) au regard de évolution du parc de logements de Métropole de Lyon et des territoires de comparaison (2015 - 2020)"
                 },
                 "xAxis": {
                     "gridLineWidth": 1,
@@ -60,8 +62,8 @@ def test_dc_logement_conso_comparison_chart(client, hauts_de_seine):
                 },
                 "series": [
                     {
-                        "name": "Hauts-de-Seine",
-                        "data": [{"x": 3.6, "y": 0.0228, "z": 1647435.0}],
+                        "name": "Métropole de Lyon",
+                        "data": [{"x": 8.3, "y": 0.2774, "z": 1433613.0}],
                         "color": "#FA4B42",
                         "marker": {"lineWidth": 3},
                     }
@@ -78,33 +80,35 @@ def test_dc_logement_conso_comparison_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Consommation habitat relative à la surface (%) au regard de évolution du parc de logements de Hauts-de-Seine et des territoires de comparaison (2015 - 2020)",
+                    "filename": "Consommation habitat relative à la surface (%) au regard de évolution du parc de logements de Métropole de Lyon et des territoires de comparaison (2015 - 2020)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
-                    "Territoire",
                     "Consommation habitat relative à la surface (%)",
-                    "Évolution du parc de logements",
                     "Population (hab)",
+                    "Territoire",
+                    "Évolution du parc de logements",
                 ],
-                "rows": [{"name": "Hauts-de-Seine", "data": ["Hauts-de-Seine", "0.0228 %", "+3.60%", "1,647,435"]}],
+                "rows": [
+                    {"name": "Métropole de Lyon", "data": ["+8.30%", "0.2774 %", "1,433,613", "Métropole de Lyon"]}
+                ],
             },
         }
     )

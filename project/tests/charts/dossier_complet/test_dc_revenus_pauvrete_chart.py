@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_revenus_pauvrete_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/dc_revenus_pauvrete/DEPART/92")
+
+def test_dc_revenus_pauvrete_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/dc_revenus_pauvrete/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -20,7 +22,7 @@ def test_dc_revenus_pauvrete_chart(client, hauts_de_seine):
                 },
                 "legend": {"enabled": False},
                 "chart": {"type": "column"},
-                "title": {"text": "Revenus et pauvreté - Hauts-de-Seine"},
+                "title": {"text": "Revenus et pauvreté - Métropole de Lyon"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -28,17 +30,21 @@ def test_dc_revenus_pauvrete_chart(client, hauts_de_seine):
                     "position": {"y": -3, "align": "right", "verticalAlign": "bottom"},
                     "href": "https://mondiagartif.beta.gouv.fr/",
                 },
-                "xAxis": {"categories": ["Médiane niveau de vie", "1er décile (D1)", "9e décile (D9)"]},
+                "xAxis": {"categories": ["1er décile (D1)", "9e décile (D9)", "Médiane niveau de vie"]},
                 "yAxis": {"title": {"text": "Euros (€)"}},
                 "tooltip": {
                     "headerFormat": "<b>{point.key}</b><br/>",
                     "pointFormat": "{series.name}: {point.y:,.0f} €",
                 },
                 "series": [
-                    {"name": "Montant", "data": [31355.0, 13828.8571428571, 62703.4285714286], "color": "#6A6AF4"}
+                    {
+                        "name": "Montant",
+                        "data": [14387.1698113208, 27952.5862068966, 49928.8679245283],
+                        "color": "#6A6AF4",
+                    }
                 ],
                 "subtitle": {
-                    "text": "Taux de pauvreté : 11.5% | Part des ménages imposés : 70.8% | Rapport interdécile (D9/D1) : 4.5"
+                    "text": "Taux de pauvreté : 13.4% | Part des ménages imposés : 63.4% | Rapport interdécile (D9/D1) : 3.5"
                 },
                 "navigation": {"buttonOptions": {"enabled": False}},
                 "responsive": {
@@ -52,35 +58,35 @@ def test_dc_revenus_pauvrete_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Revenus et pauvreté - Hauts-de-Seine",
+                    "filename": "Revenus et pauvreté - Métropole de Lyon",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": ["Indicateur", "Valeur"],
                 "rows": [
-                    {"name": "", "data": ["Médiane du niveau de vie (€)", "31,355"]},
-                    {"name": "", "data": ["1er décile D1 (€)", "13,829"]},
-                    {"name": "", "data": ["9e décile D9 (€)", "62,703"]},
-                    {"name": "", "data": ["Rapport interdécile D9/D1", "4.5"]},
-                    {"name": "", "data": ["Taux de pauvreté", "11.5%"]},
-                    {"name": "", "data": ["Part des ménages imposés", "70.8%"]},
-                    {"name": "", "data": ["Nb ménages fiscaux", "695,869"]},
+                    {"name": "", "data": ["13.4%", "Taux de pauvreté"]},
+                    {"name": "", "data": ["14,387", "1er décile D1 (€)"]},
+                    {"name": "", "data": ["27,953", "Médiane du niveau de vie (€)"]},
+                    {"name": "", "data": ["3.5", "Rapport interdécile D9/D1"]},
+                    {"name": "", "data": ["49,929", "9e décile D9 (€)"]},
+                    {"name": "", "data": ["597,348", "Nb ménages fiscaux"]},
+                    {"name": "", "data": ["63.4%", "Part des ménages imposés"]},
                 ],
             },
         }

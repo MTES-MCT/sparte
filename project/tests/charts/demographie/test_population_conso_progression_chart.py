@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_population_conso_progression_chart(client, hauts_de_seine):
+
+def test_population_conso_progression_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/population_conso_progression_chart/DEPART/92",
+        "/api/chart/population_conso_progression_chart/EPCI/200046977",
         {"start_date": 2011, "end_date": 2022},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -29,7 +31,7 @@ def test_population_conso_progression_chart(client, hauts_de_seine):
                     "verticalAlign": "bottom",
                 },
                 "title": {
-                    "text": "Évolution de la consommation d'espaces NAF et de la population - Hauts-de-Seine (2011 - 2022)"
+                    "text": "Évolution de la consommation d'espaces NAF et de la population - Métropole de Lyon (2011 - 2022)"
                 },
                 "credits": {"enabled": False},
                 "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
@@ -53,39 +55,65 @@ def test_population_conso_progression_chart(client, hauts_de_seine):
                 ],
                 "yAxis": [
                     {
-                        "title": {"text": "Population totale (hab)", "style": {"color": "#fa4b42"}},
-                        "labels": {"style": {"color": "#fa4b42"}},
-                        "opposite": True,
+                        "title": {"text": "Consommation d'espaces NAF (ha)", "style": {"color": "#6a6af4"}},
+                        "labels": {"style": {"color": "#6a6af4"}},
                     },
                     {
-                        "labels": {"style": {"color": "#6a6af4"}},
-                        "title": {"text": "Consommation d'espaces NAF (ha)", "style": {"color": "#6a6af4"}},
+                        "labels": {"style": {"color": "#fa4b42"}},
+                        "title": {"text": "Population totale (hab)", "style": {"color": "#fa4b42"}},
+                        "opposite": True,
                     },
                 ],
                 "tooltip": {"shared": True},
                 "series": [
                     {
-                        "name": "Consommation totale ",
-                        "type": "column",
-                        "yAxis": 1,
-                        "data": [1.5, 3.81, 3.32, 2.55, 23.83, 0.69, 1.15, 2.5, 1.01, 2.15, 0.38, 0.42],
-                        "tooltip": {"valueSuffix": " ha"},
-                        "color": "#CFD1E5",
-                        "id": "main",
-                    },
-                    {
                         "name": "Consommation à destination de l'habitat ",
                         "type": "column",
                         "yAxis": 1,
-                        "data": [0.37, 0.73, 0.59, 0.39, 0.85, 0.22, 0.71, 1.39, 0.83, 1.5, 0.24, 0.32],
+                        "data": [
+                            20.58,
+                            23.2,
+                            27.76,
+                            27.76,
+                            28.46,
+                            33.44,
+                            35.37,
+                            36.23,
+                            38.29,
+                            40.12,
+                            55.24,
+                            56.17,
+                        ],
                         "tooltip": {"valueSuffix": " ha"},
                         "color": "#6a6af4",
                         "linkTo": "main",
                     },
                     {
+                        "name": "Consommation totale ",
+                        "type": "column",
+                        "yAxis": 1,
+                        "data": [
+                            107.93,
+                            116.13,
+                            123.89,
+                            32.31,
+                            44.28,
+                            64.65,
+                            65.43,
+                            68.88,
+                            73.66,
+                            80.32,
+                            81.18,
+                            82.58,
+                        ],
+                        "tooltip": {"valueSuffix": " ha"},
+                        "color": "#CFD1E5",
+                        "id": "main",
+                    },
+                    {
                         "name": "Population",
                         "type": "spline",
-                        "data": [1581628, None, None, None, None, 1603268, None, None, None, None, None, 1647435],
+                        "data": [1310082, 1381249, 1433613, None, None, None, None, None, None, None, None, None],
                         "tooltip": {"valueSuffix": " hab"},
                         "color": "#fa4b42",
                         "connectNulls": True,
@@ -103,40 +131,40 @@ def test_population_conso_progression_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Évolution de la consommation d'espaces NAF et de la population - Hauts-de-Seine (2011 - 2022)",
+                    "filename": "Évolution de la consommation d'espaces NAF et de la population - Métropole de Lyon (2011 - 2022)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Année", "Population", "Consommation totale (ha)", "Consommation habitat (ha)"],
+                "headers": ["Année", "Consommation habitat (ha)", "Consommation totale (ha)", "Population"],
                 "rows": [
-                    {"name": "", "data": ["2011", "1,581,628", "1.50", "0.37"]},
-                    {"name": "", "data": ["2012", "-", "3.81", "0.73"]},
-                    {"name": "", "data": ["2013", "-", "3.32", "0.59"]},
-                    {"name": "", "data": ["2014", "-", "2.55", "0.39"]},
-                    {"name": "", "data": ["2015", "-", "23.83", "0.85"]},
-                    {"name": "", "data": ["2016", "1,603,268", "0.69", "0.22"]},
-                    {"name": "", "data": ["2017", "-", "1.15", "0.71"]},
-                    {"name": "", "data": ["2018", "-", "2.50", "1.39"]},
-                    {"name": "", "data": ["2019", "-", "1.01", "0.83"]},
-                    {"name": "", "data": ["2020", "-", "2.15", "1.50"]},
-                    {"name": "", "data": ["2021", "-", "0.38", "0.24"]},
-                    {"name": "", "data": ["2022", "1,647,435", "0.42", "0.32"]},
+                    {"name": "", "data": ["-", "107.93", "2012", "56.17"]},
+                    {"name": "", "data": ["-", "116.13", "2015", "36.23"]},
+                    {"name": "", "data": ["-", "123.89", "2013", "55.24"]},
+                    {"name": "", "data": ["-", "2014", "35.37", "82.58"]},
+                    {"name": "", "data": ["-", "2017", "23.20", "65.43"]},
+                    {"name": "", "data": ["-", "2018", "33.44", "68.88"]},
+                    {"name": "", "data": ["-", "2019", "27.76", "44.28"]},
+                    {"name": "", "data": ["-", "2020", "27.76", "64.65"]},
+                    {"name": "", "data": ["-", "2021", "38.29", "81.18"]},
+                    {"name": "", "data": ["1,310,082", "2011", "40.12", "80.32"]},
+                    {"name": "", "data": ["1,381,249", "2016", "28.46", "73.66"]},
+                    {"name": "", "data": ["1,433,613", "20.58", "2022", "32.31"]},
                 ],
                 "boldFirstColumn": True,
             },

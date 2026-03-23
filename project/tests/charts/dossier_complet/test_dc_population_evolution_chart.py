@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_population_evolution_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/dc_population_evolution/DEPART/92")
+
+def test_dc_population_evolution_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/dc_population_evolution/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -26,7 +28,7 @@ def test_dc_population_evolution_chart(client, hauts_de_seine):
                     "verticalAlign": "middle",
                 },
                 "chart": {"type": "column"},
-                "title": {"text": "Évolution de la population - Hauts-de-Seine"},
+                "title": {"text": "Évolution de la population - Métropole de Lyon"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -39,7 +41,7 @@ def test_dc_population_evolution_chart(client, hauts_de_seine):
                 "tooltip": {"headerFormat": "<b>{point.key}</b><br/>", "pointFormat": "{series.name}: {point.y:,.0f}"},
                 "plotOptions": {"column": {"dataLabels": {"enabled": True, "format": "{point.y:,.0f}"}}},
                 "series": [
-                    {"name": "Population totale", "data": [1581628.0, 1603268.0, 1647435.0], "color": "#6A6AF4"}
+                    {"name": "Population totale", "data": [1310082.0, 1381249.0, 1433613.0], "color": "#6A6AF4"}
                 ],
                 "navigation": {"buttonOptions": {"enabled": False}},
                 "responsive": {
@@ -53,31 +55,31 @@ def test_dc_population_evolution_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Évolution de la population - Hauts-de-Seine",
+                    "filename": "Évolution de la population - Métropole de Lyon",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": ["Année", "Population totale"],
                 "rows": [
-                    {"name": "2011", "data": ["2011", "1,581,628"]},
-                    {"name": "2016", "data": ["2016", "1,603,268"]},
-                    {"name": "2022", "data": ["2022", "1,647,435"]},
+                    {"name": "2011", "data": ["1,310,082", "2011"]},
+                    {"name": "2016", "data": ["1,381,249", "2016"]},
+                    {"name": "2022", "data": ["1,433,613", "2022"]},
                 ],
             },
         }

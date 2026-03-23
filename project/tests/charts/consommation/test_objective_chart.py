@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_objective_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/objective_chart/DEPART/92")
+
+def test_objective_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/objective_chart/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -22,12 +24,12 @@ def test_objective_chart(client, hauts_de_seine):
                 "chart": {"type": "column"},
                 "title": {"text": ""},
                 "yAxis": [
+                    {"title": {"text": "Consommation annualisée"}, "labels": {"format": "{value} Ha"}, "min": 0},
                     {
                         "title": {"text": "Consommation cumulée (en ha)"},
                         "labels": {"format": "{value} Ha"},
                         "opposite": True,
                     },
-                    {"title": {"text": "Consommation annualisée"}, "labels": {"format": "{value} Ha"}, "min": 0},
                 ],
                 "xAxis": {
                     "type": "category",
@@ -42,24 +44,43 @@ def test_objective_chart(client, hauts_de_seine):
                 },
                 "series": [
                     {
+                        "name": "Consommation cumulée selon objectif national (50%)",
+                        "type": "line",
+                        "dashStyle": "ShortDash",
+                        "data": [
+                            {"name": "2021", "y": 41.38727, "progression": 41.38727},
+                            {"name": "2022", "y": 82.77454, "progression": 41.38727},
+                            {"name": "2023", "y": 124.16181, "progression": 41.38727},
+                            {"name": "2024", "y": 165.54908, "progression": 41.38727},
+                            {"name": "2025", "y": 206.93635, "progression": 41.38727},
+                            {"name": "2026", "y": 248.32362, "progression": 41.38727},
+                            {"name": "2027", "y": 289.71089, "progression": 41.38727},
+                            {"name": "2028", "y": 331.09816, "progression": 41.38727},
+                            {"name": "2029", "y": 372.48543, "progression": 41.38727},
+                            {"name": "2030", "y": 413.8727, "progression": 41.38727},
+                        ],
+                        "color": "#059669",
+                        "zIndex": 5,
+                    },
+                    {
                         "name": "Consommation annuelle réelle",
                         "yAxis": 1,
                         "data": [
-                            {"name": "2021", "y": 0.3791},
-                            {"name": "2022", "y": 0.4198},
-                            {"name": "2023", "y": 1.168},
+                            {"name": "2021", "y": 81.1762},
+                            {"name": "2022", "y": 32.31},
+                            {"name": "2023", "y": 36.4082},
                         ],
                         "color": "#D9D9D9",
                         "zIndex": 3,
                     },
                     {
                         "name": "Consommation cumulée réelle",
-                        "data": [
-                            {"name": "2021", "y": 0.3791, "progression": 0.3791},
-                            {"name": "2022", "y": 0.7988999999999999, "progression": 0.4198},
-                            {"name": "2023", "y": 1.9668999999999999, "progression": 1.168},
-                        ],
                         "type": "line",
+                        "data": [
+                            {"name": "2021", "y": 81.1762, "progression": 81.1762},
+                            {"name": "2022", "y": 113.4862, "progression": 32.31},
+                            {"name": "2023", "y": 149.8944, "progression": 36.4082},
+                        ],
                         "color": "#b5b5b5",
                         "zIndex": 6,
                     },
@@ -67,38 +88,19 @@ def test_objective_chart(client, hauts_de_seine):
                         "name": "Consommation annualisée selon objectif national (50%)",
                         "yAxis": 1,
                         "data": [
-                            {"name": "2021", "y": 2.1256549999999996},
-                            {"name": "2022", "y": 2.1256549999999996},
-                            {"name": "2023", "y": 2.1256549999999996},
-                            {"name": "2024", "y": 2.1256549999999996},
-                            {"name": "2025", "y": 2.1256549999999996},
-                            {"name": "2026", "y": 2.1256549999999996},
-                            {"name": "2027", "y": 2.1256549999999996},
-                            {"name": "2028", "y": 2.1256549999999996},
-                            {"name": "2029", "y": 2.1256549999999996},
-                            {"name": "2030", "y": 2.1256549999999996},
+                            {"name": "2021", "y": 41.38727},
+                            {"name": "2022", "y": 41.38727},
+                            {"name": "2023", "y": 41.38727},
+                            {"name": "2024", "y": 41.38727},
+                            {"name": "2025", "y": 41.38727},
+                            {"name": "2026", "y": 41.38727},
+                            {"name": "2027", "y": 41.38727},
+                            {"name": "2028", "y": 41.38727},
+                            {"name": "2029", "y": 41.38727},
+                            {"name": "2030", "y": 41.38727},
                         ],
                         "color": "#bce3d5",
                         "zIndex": 2,
-                    },
-                    {
-                        "name": "Consommation cumulée selon objectif national (50%)",
-                        "data": [
-                            {"name": "2021", "y": 2.1256549999999996, "progression": 2.1256549999999996},
-                            {"name": "2022", "y": 4.251309999999999, "progression": 2.1256549999999996},
-                            {"name": "2023", "y": 6.376964999999998, "progression": 2.1256549999999996},
-                            {"name": "2024", "y": 8.502619999999999, "progression": 2.1256549999999996},
-                            {"name": "2025", "y": 10.628274999999999, "progression": 2.1256549999999996},
-                            {"name": "2026", "y": 12.753929999999999, "progression": 2.1256549999999996},
-                            {"name": "2027", "y": 14.879584999999999, "progression": 2.1256549999999996},
-                            {"name": "2028", "y": 17.005239999999997, "progression": 2.1256549999999996},
-                            {"name": "2029", "y": 19.130894999999995, "progression": 2.1256549999999996},
-                            {"name": "2030", "y": 21.256549999999994, "progression": 2.1256549999999996},
-                        ],
-                        "type": "line",
-                        "dashStyle": "ShortDash",
-                        "color": "#059669",
-                        "zIndex": 5,
                     },
                 ],
                 "navigation": {"buttonOptions": {"enabled": False}},
@@ -119,45 +121,45 @@ def test_objective_chart(client, hauts_de_seine):
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
                     "Année",
+                    "Consommation annualisée selon objectif national (50%) (ha)",
                     "Consommation annuelle réelle (ha)",
                     "Consommation cumulée réelle (ha)",
-                    "Consommation annualisée selon objectif national (50%) (ha)",
                     "Consommation cumulée selon objectif national (50%) (ha)",
                 ],
                 "rows": [
-                    {"name": "2021", "data": ["2021", 0.3791, 0.3791, 2.1256549999999996, 2.1256549999999996]},
+                    {"name": "2024", "data": ["-", "-", "2024", 165.54908, 41.38727]},
                     {
-                        "name": "2022",
-                        "data": ["2022", 0.4198, 0.7988999999999999, 2.1256549999999996, 4.251309999999999],
+                        "name": "2025",
+                        "data": ["-", "-", "2025", 206.93635, 41.38727],
                     },
                     {
-                        "name": "2023",
-                        "data": ["2023", 1.168, 1.9668999999999999, 2.1256549999999996, 6.376964999999998],
+                        "name": "2026",
+                        "data": ["-", "-", "2026", 248.32362, 41.38727],
                     },
-                    {"name": "2024", "data": ["2024", "-", "-", 2.1256549999999996, 8.502619999999999]},
-                    {"name": "2025", "data": ["2025", "-", "-", 2.1256549999999996, 10.628274999999999]},
-                    {"name": "2026", "data": ["2026", "-", "-", 2.1256549999999996, 12.753929999999999]},
-                    {"name": "2027", "data": ["2027", "-", "-", 2.1256549999999996, 14.879584999999999]},
-                    {"name": "2028", "data": ["2028", "-", "-", 2.1256549999999996, 17.005239999999997]},
-                    {"name": "2029", "data": ["2029", "-", "-", 2.1256549999999996, 19.130894999999995]},
-                    {"name": "2030", "data": ["2030", "-", "-", 2.1256549999999996, 21.256549999999994]},
+                    {"name": "2027", "data": ["-", "-", "2027", 289.71089, 41.38727]},
+                    {"name": "2028", "data": ["-", "-", "2028", 331.09816, 41.38727]},
+                    {"name": "2029", "data": ["-", "-", "2029", 372.48543, 41.38727]},
+                    {"name": "2030", "data": ["-", "-", "2030", 41.38727, 413.8727]},
+                    {"name": "2021", "data": ["2021", 41.38727, 41.38727, 81.1762, 81.1762]},
+                    {"name": "2022", "data": ["2022", 113.4862, 32.31, 41.38727, 82.77454]},
+                    {"name": "2023", "data": ["2023", 124.16181, 149.8944, 36.4082, 41.38727]},
                 ],
             },
         }

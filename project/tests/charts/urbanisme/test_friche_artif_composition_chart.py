@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_friche_artif_composition_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/friche_artif_composition/DEPART/92")
+
+def test_friche_artif_composition_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/friche_artif_composition/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -30,8 +32,8 @@ def test_friche_artif_composition_chart(client, hauts_de_seine):
                     {
                         "name": "Composition artificialisation",
                         "data": [
-                            {"name": "Artificialisé", "y": 6.93591948, "color": "#FA4B42"},
-                            {"name": "Non artificialisé", "y": 7.3540603252545695, "color": "#00E272"},
+                            {"name": "Non artificialisé", "y": 22.9854740005497, "color": "#00E272"},
+                            {"name": "Artificialisé", "y": 94.22000614, "color": "#FA4B42"},
                         ],
                     }
                 ],
@@ -70,25 +72,25 @@ def test_friche_artif_composition_chart(client, hauts_de_seine):
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Type", "Surface (ha)", "Pourcentage (%)"],
+                "headers": ["Pourcentage (%)", "Surface (ha)", "Type"],
                 "rows": [
-                    {"name": "Artificialisé", "data": ["Artificialisé", 6.94, 48.54]},
-                    {"name": "Non artificialisé", "data": ["Non artificialisé", 7.35, 51.46]},
+                    {"name": "Artificialisé", "data": ["Artificialisé", 80.39, 94.22]},
+                    {"name": "Non artificialisé", "data": ["Non artificialisé", 19.61, 22.99]},
                 ],
             },
         }

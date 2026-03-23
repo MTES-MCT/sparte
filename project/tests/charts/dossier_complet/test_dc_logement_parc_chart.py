@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_logement_parc_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/dc_logement_parc/DEPART/92")
+
+def test_dc_logement_parc_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/dc_logement_parc/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -26,7 +28,7 @@ def test_dc_logement_parc_chart(client, hauts_de_seine):
                     "verticalAlign": "middle",
                 },
                 "chart": {"type": "column"},
-                "title": {"text": "Parc de logements - Hauts-de-Seine"},
+                "title": {"text": "Parc de logements - Métropole de Lyon"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -41,17 +43,17 @@ def test_dc_logement_parc_chart(client, hauts_de_seine):
                 "series": [
                     {
                         "name": "Résidences principales",
-                        "data": [695436.720460573, 709070.037695418, 746653.126341685],
+                        "data": [586267.734803164, 625859.89792237, 668374.017018543],
                         "color": "#6A6AF4",
                     },
                     {
                         "name": "Résidences secondaires",
-                        "data": [20003.1364108669, 26519.4767348543, 33246.2150631888],
+                        "data": [10941.2424960025, 19178.8191120115, 26931.7622697791],
                         "color": "#8ecac7",
                     },
                     {
                         "name": "Logements vacants",
-                        "data": [46960.0587746351, 54219.433076146, 55350.1310051538],
+                        "data": [45994.9846354564, 51541.4815662277, 58064.7405069441],
                         "color": "#D6AE73",
                     },
                 ],
@@ -67,31 +69,31 @@ def test_dc_logement_parc_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Parc de logements - Hauts-de-Seine",
+                    "filename": "Parc de logements - Métropole de Lyon",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Année", "Rés. principales", "Rés. secondaires", "Logements vacants", "Total"],
+                "headers": ["Année", "Logements vacants", "Rés. principales", "Rés. secondaires", "Total"],
                 "rows": [
-                    {"name": "2011", "data": ["2011", "695,437", "20,003", "46,960", "762,400"]},
-                    {"name": "2016", "data": ["2016", "709,070", "26,519", "54,219", "789,809"]},
-                    {"name": "2022", "data": ["2022", "746,653", "33,246", "55,350", "835,249"]},
+                    {"name": "2011", "data": ["10,941", "2011", "45,995", "586,268", "643,204"]},
+                    {"name": "2016", "data": ["19,179", "2016", "51,541", "625,860", "696,580"]},
+                    {"name": "2022", "data": ["2022", "26,932", "58,065", "668,374", "753,371"]},
                 ],
             },
         }

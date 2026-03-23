@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_imper_net_flux_chart(client, hauts_de_seine):
+
+def test_imper_net_flux_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/imper_net_flux/DEPART/92",
-        {"millesime_new_index": 2, "millesime_old_index": 1, "departement": 92},
+        "/api/chart/imper_net_flux/EPCI/200046977",
+        {"millesime_new_index": 2, "millesime_old_index": 1, "departement": 69},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -16,7 +18,7 @@ def test_imper_net_flux_chart(client, hauts_de_seine):
                 },
                 "legend": {"enabled": False},
                 "chart": {"type": "column"},
-                "title": {"text": "Imperméabilisation nette (92)"},
+                "title": {"text": "Imperméabilisation nette (69)"},
                 "yAxis": {"title": {"text": "Surface (en ha)"}},
                 "tooltip": {
                     "pointFormat": "{point.y}",
@@ -35,9 +37,9 @@ def test_imper_net_flux_chart(client, hauts_de_seine):
                 "series": [
                     {
                         "data": [
-                            {"name": "Imperméabilisation", "y": 185.95673412, "color": "#FA4B42"},
-                            {"name": "Désimperméabilisation", "y": -97.36836597, "color": "#00E272"},
-                            {"name": "Imperméabilisation nette", "y": 88.58836815, "color": "#6A6AF4"},
+                            {"name": "Désimperméabilisation", "y": -149.59549094, "color": "#00E272"},
+                            {"name": "Imperméabilisation nette", "y": 329.5692815, "color": "#6A6AF4"},
+                            {"name": "Imperméabilisation", "y": 479.16477244, "color": "#FA4B42"},
                         ]
                     }
                 ],
@@ -57,32 +59,32 @@ def test_imper_net_flux_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Imperméabilisation nette (92)",
+                    "filename": "Imperméabilisation nette (69)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
-                    "Imperméabilisation (ha) - 2018-2021",
-                    "Désimperméabilisation (ha) - 2018-2021",
-                    "Imperméabilisation nette (ha) - 2018-2021",
+                    "Désimperméabilisation (ha) - 2017-2020",
+                    "Imperméabilisation (ha) - 2017-2020",
+                    "Imperméabilisation nette (ha) - 2017-2020",
                 ],
-                "rows": [{"name": "", "data": [185.96, 97.37, 88.59]}],
+                "rows": [{"name": "", "data": [149.6, 329.57, 479.16]}],
             },
         }
     )

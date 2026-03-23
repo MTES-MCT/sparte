@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_residences_secondaires_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/dc_residences_secondaires/DEPART/92")
+
+def test_dc_residences_secondaires_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/dc_residences_secondaires/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -26,7 +28,7 @@ def test_dc_residences_secondaires_chart(client, hauts_de_seine):
                     "verticalAlign": "middle",
                 },
                 "chart": {"type": "column"},
-                "title": {"text": "Résidences secondaires - Hauts-de-Seine"},
+                "title": {"text": "Résidences secondaires - Métropole de Lyon"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -40,7 +42,7 @@ def test_dc_residences_secondaires_chart(client, hauts_de_seine):
                 "series": [
                     {
                         "name": "Résidences secondaires",
-                        "data": [20003.1364108669, 26519.4767348543, 33246.2150631888],
+                        "data": [10941.2424960025, 19178.8191120115, 26931.7622697791],
                         "color": "#f4a582",
                     }
                 ],
@@ -56,31 +58,31 @@ def test_dc_residences_secondaires_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Résidences secondaires - Hauts-de-Seine",
+                    "filename": "Résidences secondaires - Métropole de Lyon",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": ["Année", "Rés. secondaires"],
                 "rows": [
-                    {"name": "2011", "data": ["2011", "20,003"]},
-                    {"name": "2016", "data": ["2016", "26,519"]},
-                    {"name": "2022", "data": ["2022", "33,246"]},
+                    {"name": "2011", "data": ["10,941", "2011"]},
+                    {"name": "2016", "data": ["19,179", "2016"]},
+                    {"name": "2022", "data": ["2022", "26,932"]},
                 ],
             },
         }

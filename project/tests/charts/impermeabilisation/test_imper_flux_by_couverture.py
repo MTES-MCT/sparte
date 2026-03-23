@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_imper_flux_by_couverture(client, hauts_de_seine):
+
+def test_imper_flux_by_couverture(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/imper_flux_by_couverture/DEPART/92",
-        {"millesime_new_index": 2, "departement": 92},
+        "/api/chart/imper_flux_by_couverture/EPCI/200046977",
+        {"millesime_new_index": 2, "departement": 69},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -16,7 +18,7 @@ def test_imper_flux_by_couverture(client, hauts_de_seine):
                 },
                 "legend": {"align": "center", "verticalAlign": "top", "layout": "horizontal"},
                 "chart": {"type": "column"},
-                "title": {"text": "Imperméabilisation par couverture (92)"},
+                "title": {"text": "Imperméabilisation par couverture (69)"},
                 "tooltip": {
                     "pointFormat": "{point.y}",
                     "valueSuffix": " Ha",
@@ -47,9 +49,9 @@ def test_imper_flux_by_couverture(client, hauts_de_seine):
                     }
                 },
                 "series": [
-                    {"name": "Imperméabilisation", "data": [110.48981547, 75.46691865], "color": "#FA4B42"},
-                    {"name": "Désimperméabilisation", "data": [-52.26506804, -45.10329793], "color": "#00E272"},
-                    {"name": "Imperméabilisation nette", "data": [58.22474743, 30.36362072], "color": "#6A6AF4"},
+                    {"name": "Désimperméabilisation", "data": [-62.12979277, -87.46569817], "color": "#00E272"},
+                    {"name": "Imperméabilisation nette", "data": [138.93275487, 190.63652663], "color": "#6A6AF4"},
+                    {"name": "Imperméabilisation", "data": [226.39845304, 252.7663194], "color": "#FA4B42"},
                 ],
                 "lang": {
                     "noData": "Aucun changement du sol n'est à l'origine d'imperméabilisation sur cette période."
@@ -67,36 +69,36 @@ def test_imper_flux_by_couverture(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Imperméabilisation par couverture (92)",
+                    "filename": "Imperméabilisation par couverture (69)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
                     "Code",
                     "Couverture",
-                    "Imperméabilisation (ha) - 2018-2021",
-                    "Désimperméabilisation (ha) - 2018-2021",
-                    "Imperméabilisation nette (ha) - 2018-2021",
+                    "Désimperméabilisation (ha) - 2017-2020",
+                    "Imperméabilisation (ha) - 2017-2020",
+                    "Imperméabilisation nette (ha) - 2017-2020",
                 ],
                 "rows": [
-                    {"name": "", "data": ["CS1.1.1.1", "Zones bâties", 110.49, 52.27, 58.22]},
-                    {"name": "", "data": ["CS1.1.1.2", "Zones non bâties", 75.47, 45.1, 30.36]},
+                    {"name": "", "data": ["CS1.1.1.1", "Zones bâties", 190.64, 252.77, 62.13]},
+                    {"name": "", "data": ["CS1.1.1.2", "Zones non bâties", 138.93, 226.4, 87.47]},
                 ],
             },
         }

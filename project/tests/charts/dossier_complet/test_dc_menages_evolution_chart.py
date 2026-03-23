@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_menages_evolution_chart(client, hauts_de_seine):
+
+def test_dc_menages_evolution_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/dc_menages_evolution/DEPART/92",
+        "/api/chart/dc_menages_evolution/EPCI/200046977",
         {"start_date": 2015, "end_date": 2020},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -29,7 +31,7 @@ def test_dc_menages_evolution_chart(client, hauts_de_seine):
                     "verticalAlign": "middle",
                 },
                 "chart": {"zoomType": "xy"},
-                "title": {"text": "Ménages et consommation d'espaces - Hauts-de-Seine (2015 - 2020)"},
+                "title": {"text": "Ménages et consommation d'espaces - Métropole de Lyon (2015 - 2020)"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -40,43 +42,43 @@ def test_dc_menages_evolution_chart(client, hauts_de_seine):
                 "xAxis": [{"categories": ["2015", "2016", "2017", "2018", "2019", "2020"]}],
                 "yAxis": [
                     {
-                        "title": {"text": "Nombre de ménages", "style": {"color": "#6A6AF4"}},
-                        "labels": {"style": {"color": "#6A6AF4"}},
-                    },
-                    {
                         "title": {"text": "Consommation d'espaces (ha)", "style": {"color": "#6A6AF4"}},
                         "labels": {"style": {"color": "#6A6AF4"}},
                         "opposite": True,
+                    },
+                    {
+                        "title": {"text": "Nombre de ménages", "style": {"color": "#6A6AF4"}},
+                        "labels": {"style": {"color": "#6A6AF4"}},
                     },
                 ],
                 "tooltip": {"shared": True},
                 "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
                 "series": [
                     {
-                        "name": "Consommation totale",
-                        "type": "column",
-                        "yAxis": 1,
-                        "data": [23.83, 0.69, 1.15, 2.5, 1.01, 2.15],
-                        "tooltip": {"valueSuffix": " ha"},
-                        "color": "#CFD1E5",
-                        "id": "main",
+                        "name": "Ménages",
+                        "type": "spline",
+                        "data": [625859.89792237, None, None, None, None, None],
+                        "tooltip": {"valueSuffix": " ménages"},
+                        "color": "#6A6AF4",
+                        "connectNulls": True,
                     },
                     {
                         "name": "Consommation habitat",
                         "type": "column",
                         "yAxis": 1,
-                        "data": [0.85, 0.22, 0.71, 1.39, 0.83, 1.5],
+                        "data": [23.2, 27.76, 27.76, 28.46, 33.44, 36.23],
                         "tooltip": {"valueSuffix": " ha"},
                         "color": "#6A6AF4",
                         "linkedTo": "main",
                     },
                     {
-                        "name": "Ménages",
-                        "type": "spline",
-                        "data": [None, 709070.037695418, None, None, None, None],
-                        "tooltip": {"valueSuffix": " ménages"},
-                        "color": "#6A6AF4",
-                        "connectNulls": True,
+                        "name": "Consommation totale",
+                        "type": "column",
+                        "yAxis": 1,
+                        "data": [116.13, 44.28, 64.65, 65.43, 68.88, 73.66],
+                        "tooltip": {"valueSuffix": " ha"},
+                        "color": "#CFD1E5",
+                        "id": "main",
                     },
                 ],
                 "navigation": {"buttonOptions": {"enabled": False}},
@@ -91,34 +93,34 @@ def test_dc_menages_evolution_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Ménages et consommation d'espaces - Hauts-de-Seine (2015 - 2020)",
+                    "filename": "Ménages et consommation d'espaces - Métropole de Lyon (2015 - 2020)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Année", "Conso. totale (ha)", "Conso. habitat (ha)", "Ménages"],
+                "headers": ["Année", "Conso. habitat (ha)", "Conso. totale (ha)", "Ménages"],
                 "rows": [
-                    {"name": "2015", "data": ["2015", "23.83", "0.85", "-"]},
-                    {"name": "2016", "data": ["2016", "0.69", "0.22", "709,070"]},
-                    {"name": "2017", "data": ["2017", "1.15", "0.71", "-"]},
-                    {"name": "2018", "data": ["2018", "2.50", "1.39", "-"]},
-                    {"name": "2019", "data": ["2019", "1.01", "0.83", "-"]},
-                    {"name": "2020", "data": ["2020", "2.15", "1.50", "-"]},
+                    {"name": "2015", "data": ["-", "116.13", "2015", "36.23"]},
+                    {"name": "2017", "data": ["-", "2017", "23.20", "65.43"]},
+                    {"name": "2018", "data": ["-", "2018", "33.44", "68.88"]},
+                    {"name": "2019", "data": ["-", "2019", "27.76", "44.28"]},
+                    {"name": "2020", "data": ["-", "2020", "27.76", "64.65"]},
+                    {"name": "2016", "data": ["2016", "28.46", "625,860", "73.66"]},
                 ],
             },
         }

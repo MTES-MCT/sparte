@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_logement_vacant_taux_progression_chart(client, hauts_de_seine):
+
+def test_logement_vacant_taux_progression_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/logement_vacant_taux_progression_chart/DEPART/92",
+        "/api/chart/logement_vacant_taux_progression_chart/EPCI/200046977",
         {"start_date": 2015, "end_date": 2020},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -58,16 +60,16 @@ function() {
                 "plotOptions": {"column": {"grouping": True, "borderWidth": 0}},
                 "series": [
                     {
-                        "name": "Taux de vacance de plus de 2 ans dans le parc privé",
-                        "type": "column",
-                        "data": [1.15],
-                        "color": "#E2D6BD",
-                    },
-                    {
                         "name": "Taux de vacance de plus de 3 mois dans le parc des bailleurs sociaux",
                         "type": "column",
-                        "data": [0.82],
+                        "data": [1.85],
                         "color": "#C09F6D",
+                    },
+                    {
+                        "name": "Taux de vacance de plus de 2 ans dans le parc privé",
+                        "type": "column",
+                        "data": [1.04],
+                        "color": "#E2D6BD",
                     },
                 ],
                 "navigation": {"buttonOptions": {"enabled": False}},
@@ -87,27 +89,27 @@ function() {
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Année", "2015", "2016", "2017", "2018", "2019", "2020"],
+                "headers": ["2015", "2016", "2017", "2018", "2019", "2020", "Année"],
                 "rows": [
-                    {"name": "", "data": ["Taux de vacance de plus de 2 ans dans le parc privé (%)", 1.15]},
+                    {"name": "", "data": ["Taux de vacance de plus de 2 ans dans le parc privé (%)", 1.04]},
                     {
                         "name": "",
-                        "data": ["Taux de vacance de plus de 3 mois dans le parc des bailleurs sociaux (%)", 0.82],
+                        "data": ["Taux de vacance de plus de 3 mois dans le parc des bailleurs sociaux (%)", 1.85],
                     },
                 ],
                 "boldFirstColumn": True,

@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_annual_conso_proportional_comparison_chart(client, hauts_de_seine):
+
+def test_annual_conso_proportional_comparison_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/surface_proportional_chart/DEPART/92",
+        "/api/chart/surface_proportional_chart/EPCI/200046977",
         {"start_date": 2015, "end_date": 2020},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -23,7 +25,7 @@ def test_annual_conso_proportional_comparison_chart(client, hauts_de_seine):
                 },
                 "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "bottom"},
                 "title": {
-                    "text": "Consommation d'espaces NAF relative à la surface de Hauts-de-Seine et des territoires de comparaison (2015 - 2020)"
+                    "text": "Consommation d'espaces NAF relative à la surface de Métropole de Lyon et des territoires de comparaison (2015 - 2020)"
                 },
                 "subtitle": {"text": "La taille des zones est proportionnelle à la surface des territoires."},
                 "tooltip": {
@@ -42,7 +44,9 @@ def test_annual_conso_proportional_comparison_chart(client, hauts_de_seine):
                             "format": "{point.name}<br />{point.colorValue:.2f} %",
                             "style": {"fontWeight": "bold", "textOutline": "none"},
                         },
-                        "data": [{"name": "Hauts-de-Seine", "value": 17557.496299, "colorValue": 0.178461094146918}],
+                        "data": [
+                            {"name": "Métropole de Lyon", "value": 53745.5425060001, "colorValue": 0.805705887054088}
+                        ],
                         "states": {"hover": {"enabled": False}},
                         "borderWidth": 1,
                         "borderColor": "#A1A1F8",
@@ -61,29 +65,32 @@ def test_annual_conso_proportional_comparison_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Consommation d'espaces NAF relative à la surface de Hauts-de-Seine et des territoires de comparaison (2015 - 2020)",
+                    "filename": "Consommation d'espaces NAF relative à la surface de Métropole de Lyon et des territoires de comparaison (2015 - 2020)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Territoire", "Surface (ha)", "Consommation totale (ha)", "Proportion (%)"],
+                "headers": ["Consommation totale (ha)", "Proportion (%)", "Surface (ha)", "Territoire"],
                 "rows": [
-                    {"name": "Hauts-de-Seine", "data": ["Hauts-de-Seine", 17557.496299, 31.3333, 0.178461094146918]}
+                    {
+                        "name": "Métropole de Lyon",
+                        "data": ["Métropole de Lyon", 0.805705887054088, 433.031, 53745.5425060001],
+                    }
                 ],
                 "boldFirstColumn": True,
             },

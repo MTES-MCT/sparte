@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_artif_net_flux_chart(client, hauts_de_seine):
+
+def test_artif_net_flux_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/artif_net_flux/DEPART/92",
-        {"millesime_new_index": 2, "millesime_old_index": 1, "departement": 92},
+        "/api/chart/artif_net_flux/EPCI/200046977",
+        {"millesime_new_index": 2, "millesime_old_index": 1, "departement": 69},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -16,7 +18,7 @@ def test_artif_net_flux_chart(client, hauts_de_seine):
                 },
                 "legend": {"enabled": False},
                 "chart": {"type": "column"},
-                "title": {"text": "Artificialisation nette entre 2018 et 2021 (92 - Hauts-de-Seine)"},
+                "title": {"text": "Artificialisation nette entre 2017 et 2020 (69)"},
                 "yAxis": {"title": {"text": "Surface (en ha)"}},
                 "tooltip": {
                     "pointFormat": "{point.y}",
@@ -35,9 +37,9 @@ def test_artif_net_flux_chart(client, hauts_de_seine):
                 "series": [
                     {
                         "data": [
-                            {"name": "Artificialisation", "y": 42.11889485, "color": "#FA4B42"},
-                            {"name": "Désartificialisation", "y": -11.25241946, "color": "#00E272"},
-                            {"name": "Artificialisation nette", "y": 30.86647539, "color": "#6A6AF4"},
+                            {"name": "Désartificialisation", "y": -52.5989836, "color": "#00E272"},
+                            {"name": "Artificialisation nette", "y": 149.2383057, "color": "#6A6AF4"},
+                            {"name": "Artificialisation", "y": 201.8372893, "color": "#FA4B42"},
                         ]
                     }
                 ],
@@ -55,32 +57,32 @@ def test_artif_net_flux_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Artificialisation nette entre 2018 et 2021 (92 - Hauts-de-Seine)",
+                    "filename": "Artificialisation nette entre 2017 et 2020 (69)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
-                    "Artificialisation (ha) - 2018-2021",
-                    "Désartificialisation (ha) - 2018-2021",
-                    "Artificialisation nette (ha) - 2018-2021",
+                    "Artificialisation (ha) - 2017-2020",
+                    "Artificialisation nette (ha) - 2017-2020",
+                    "Désartificialisation (ha) - 2017-2020",
                 ],
-                "rows": [{"name": "", "data": [42.12, "-11.25", 30.87]}],
+                "rows": [{"name": "", "data": ["-52.6", 149.24, 201.84]}],
             },
         }
     )

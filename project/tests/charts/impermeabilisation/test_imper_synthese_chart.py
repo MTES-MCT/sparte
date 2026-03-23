@@ -1,21 +1,23 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_imper_synthese_chart(client, hauts_de_seine):
+
+def test_imper_synthese_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/imper_synthese/DEPART/92",
-        {"departement": 92},
+        "/api/chart/imper_synthese/EPCI/200046977",
+        {"departement": 69},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "chart": {"type": "bar"},
                 "title": {
-                    "text": "Evolution du stock de surfaces imperméabilisées de Hauts-de-Seine entre 2018 et 2021"
+                    "text": "Evolution du stock de surfaces imperméabilisées de Métropole de Lyon entre 2017 et 2020"
                 },
-                "xAxis": {"categories": ["2018", "2021"], "title": {"text": None}},
+                "xAxis": {"categories": ["2017", "2020"], "title": {"text": None}},
                 "yAxis": {
                     "min": 0,
                     "title": {"text": "%", "align": "high"},
@@ -40,16 +42,16 @@ def test_imper_synthese_chart(client, hauts_de_seine):
                         "name": "Stock d'imperméabilisation",
                         "data": [
                             {
-                                "y": 56.4586670198221,
+                                "y": 32.2450591918116,
                                 "flux_percent_str": "",
                                 "flux_stock_str": "",
-                                "stock": 9912.72837247,
+                                "stock": 17330.28199402,
                             },
                             {
-                                "y": 56.9633811661952,
-                                "flux_percent_str": '<span style="color: var(--text-default-error)">(+0.5%)</span>',
-                                "flux_stock_str": "<span style='color: var(--text-default-error)'>(+88.62 ha)</span>",
-                                "stock": 10001.34354004,
+                                "y": 32.8670150780001,
+                                "flux_percent_str": '<span style="color: var(--text-default-error)">(+0.62%)</span>',
+                                "flux_stock_str": "<span style='color: var(--text-default-error)'>(+334.27 ha)</span>",
+                                "stock": 17664.5555592,
                             },
                         ],
                         "color": "#f4cfc4",
@@ -67,23 +69,23 @@ def test_imper_synthese_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Evolution du stock de surfaces imperméabilisées de Hauts-de-Seine entre 2018 et 2021",
+                    "filename": "Evolution du stock de surfaces imperméabilisées de Métropole de Lyon entre 2017 et 2020",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {"headers": [], "rows": []},

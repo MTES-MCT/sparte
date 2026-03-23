@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_population_conso_comparison_chart(client, hauts_de_seine):
+
+def test_population_conso_comparison_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/population_conso_comparison_chart/DEPART/92",
+        "/api/chart/population_conso_comparison_chart/EPCI/200046977",
         {"start_date": 2015, "end_date": 2020},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -37,7 +39,7 @@ def test_population_conso_comparison_chart(client, hauts_de_seine):
                 "chart": {"type": "bubble"},
                 "credits": {"enabled": False},
                 "title": {
-                    "text": "Consommation d'espaces au regard de l'évolution de la population de Hauts-de-Seine et des territoires de comparaison (2015 - 2020)"
+                    "text": "Consommation d'espaces au regard de l'évolution de la population de Métropole de Lyon et des territoires de comparaison (2015 - 2020)"
                 },
                 "xAxis": {
                     "gridLineWidth": 1,
@@ -54,8 +56,8 @@ def test_population_conso_comparison_chart(client, hauts_de_seine):
                 },
                 "series": [
                     {
-                        "name": "Hauts-de-Seine",
-                        "data": [{"x": 2.11, "y": 0.1784, "z": 1626213}],
+                        "name": "Métropole de Lyon",
+                        "data": [{"x": 3.9, "y": 0.8057, "z": 1416545}],
                         "color": "#FA4B42",
                         "marker": {"lineWidth": 3},
                     }
@@ -72,33 +74,33 @@ def test_population_conso_comparison_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Consommation d'espaces au regard de l'évolution de la population de Hauts-de-Seine et des territoires de comparaison (2015 - 2020)",
+                    "filename": "Consommation d'espaces au regard de l'évolution de la population de Métropole de Lyon et des territoires de comparaison (2015 - 2020)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
-                    "Territoire",
                     "Consommation relative à la surface (%)",
-                    "Évolution démographique (%)",
                     "Population 2020 (hab)",
+                    "Territoire",
+                    "Évolution démographique (%)",
                 ],
-                "rows": [{"name": "Hauts-de-Seine", "data": ["Hauts-de-Seine", "0.1785 %", "+2.11 %", 1626213]}],
+                "rows": [{"name": "Métropole de Lyon", "data": ["+3.90 %", "0.8057 %", "Métropole de Lyon", 1416545]}],
             },
         }
     )

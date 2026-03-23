@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_imper_by_couverture_pie_chart(client, hauts_de_seine):
+
+def test_imper_by_couverture_pie_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/pie_imper_by_couverture/DEPART/92",
+        "/api/chart/pie_imper_by_couverture/EPCI/200046977",
         {"index": 1},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -28,26 +30,26 @@ def test_imper_by_couverture_pie_chart(client, hauts_de_seine):
                     "align": "right",
                     "verticalAlign": "middle",
                 },
-                "title": {"text": "Surfaces imperméables par couverture  en 2018"},
+                "title": {"text": "Surfaces imperméables par couverture  en 2017"},
                 "series": [
                     {
                         "name": "Surface imperméable",
                         "data": [
                             {
                                 "name": "Zones bâties",
-                                "y": 5907.11390932,
+                                "y": 8326.41675987,
                                 "color": "#ff377a",
                                 "code": "CS1.1.1.1",
                                 "long_name": "Zones bâties",
-                                "surface": 5907.11390932,
+                                "surface": 8326.41675987,
                             },
                             {
                                 "name": "Zones non bâties",
-                                "y": 4005.61446315,
+                                "y": 9003.86523415,
                                 "color": "#ff9191",
                                 "code": "CS1.1.1.2",
                                 "long_name": "Zones non bâties (Routes; places; parking…)",
-                                "surface": 4005.61446315,
+                                "surface": 9003.86523415,
                             },
                         ],
                     }
@@ -83,38 +85,38 @@ def test_imper_by_couverture_pie_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Surfaces imperméables par couverture  en 2018",
+                    "filename": "Surfaces imperméables par couverture  en 2017",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
                     "Code",
                     "Couverture",
-                    "Surface (ha)",
                     "Pourcentage de la surface imperméable (%)",
                     "Pourcentage du territoire (%)",
+                    "Surface (ha)",
                 ],
                 "rows": [
-                    {"name": "", "data": ["CS1.1.1.1", "Zones bâties", 5907.11, 59.59, 33.64]},
+                    {"name": "", "data": ["CS1.1.1.1", "Zones bâties", 15.49, 48.05, 8326.42]},
                     {
                         "name": "",
-                        "data": ["CS1.1.1.2", "Zones non bâties (Routes; places; parking…)", 4005.61, 40.41, 22.81],
+                        "data": ["CS1.1.1.2", "Zones non bâties (Routes; places; parking…)", 16.75, 51.95, 9003.87],
                     },
                 ],
             },

@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_friche_surface_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/friche_surface/DEPART/92")
+
+def test_friche_surface_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/friche_surface/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -30,9 +32,9 @@ def test_friche_surface_chart(client, hauts_de_seine):
                     {
                         "name": "Répartition par catégorie de taille (en nombre)",
                         "data": [
-                            {"name": "[0.33 - 1.74] ha", "surface": 5.72723656014793, "y": 4, "count": 4},
-                            {"name": "> 1.74 ha", "surface": 8.37753346329095, "y": 3, "count": 3},
-                            {"name": "[0.08 - 0.33] ha", "surface": 0.185209781815681, "y": 1, "count": 1},
+                            {"name": "[0.08 - 0.33] ha", "surface": 0.114305634074937, "y": 1, "count": 1},
+                            {"name": "> 1.74 ha", "surface": 114.881750237161, "y": 15, "count": 15},
+                            {"name": "[0.33 - 1.74] ha", "surface": 2.2094242693138, "y": 2, "count": 2},
                         ],
                     }
                 ],
@@ -71,31 +73,31 @@ def test_friche_surface_chart(client, hauts_de_seine):
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
-                    "Répartition par catégorie de taille (en nombre)",
                     "Nombre de friches sans projet",
+                    "Répartition par catégorie de taille (en nombre)",
                     "Surface totale des friches sans projet (ha)",
                 ],
                 "rows": [
-                    {"name": "[0.33 - 1.74] ha", "data": ["[0.33 - 1.74] ha", 4, 5.72723656014793]},
-                    {"name": "> 1.74 ha", "data": ["> 1.74 ha", 3, 8.37753346329095]},
-                    {"name": "[0.08 - 0.33] ha", "data": ["[0.08 - 0.33] ha", 1, 0.185209781815681]},
                     {"name": "< 0.08 ha", "data": ["< 0.08 ha", 0, 0.0]},
+                    {"name": "> 1.74 ha", "data": ["> 1.74 ha", 114.881750237161, 15]},
+                    {"name": "[0.08 - 0.33] ha", "data": ["[0.08 - 0.33] ha", 0.114305634074937, 1]},
+                    {"name": "[0.33 - 1.74] ha", "data": ["[0.33 - 1.74] ha", 2, 2.2094242693138]},
                 ],
             },
         }

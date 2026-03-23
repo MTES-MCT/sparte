@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_logement_vacant_autorisation_logement_ratio_progression_chart(client, hauts_de_seine):
+
+def test_logement_vacant_autorisation_logement_ratio_progression_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/logement_vacant_autorisation_ratio_progression_chart/DEPART/92",
+        "/api/chart/logement_vacant_autorisation_ratio_progression_chart/EPCI/200046977",
         {"start_date": 2015, "end_date": 2020},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -40,10 +42,10 @@ def test_logement_vacant_autorisation_logement_ratio_progression_chart(client, h
                 },
                 "plotOptions": {"column": {"grouping": True}},
                 "series": [
-                    {"name": "Nombre de logements en vacance structurelle", "data": [8742], "color": "#D6AE73"},
+                    {"name": "Nombre de logements en vacance structurelle", "data": [8797], "color": "#D6AE73"},
                     {
                         "name": "Nombre d'autorisations de construction de logements",
-                        "data": [11781, 10558],
+                        "data": [7787, 8358],
                         "color": "#FF8E6E",
                     },
                 ],
@@ -65,25 +67,25 @@ def test_logement_vacant_autorisation_logement_ratio_progression_chart(client, h
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Année", "2015", "2016", "2017", "2018", "2019", "2020"],
+                "headers": ["2015", "2016", "2017", "2018", "2019", "2020", "Année"],
                 "rows": [
-                    {"name": "", "data": ["Nombre de logements en vacance structurelle", 8742]},
-                    {"name": "", "data": ["Nombre d'autorisations de construction de logements", 11781, 10558]},
+                    {"name": "", "data": ["Nombre d'autorisations de construction de logements", 7787, 8358]},
+                    {"name": "", "data": ["Nombre de logements en vacance structurelle", 8797]},
                 ],
                 "boldFirstColumn": True,
             },

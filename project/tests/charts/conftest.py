@@ -15,5 +15,5 @@ def django_db_setup(django_db_setup, django_db_blocker):
 
 
 @pytest.fixture()
-def hauts_de_seine(db):
-    return LandModel.objects.get(land_type="DEPART", land_id="92")
+def metropole_de_lyon(db):
+    return LandModel.objects.get(land_type="EPCI", land_id="200046977")

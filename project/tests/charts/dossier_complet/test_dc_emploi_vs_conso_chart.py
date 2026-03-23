@@ -1,14 +1,16 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_emploi_vs_conso_chart(client, hauts_de_seine):
+
+def test_dc_emploi_vs_conso_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/dc_emploi_vs_conso/DEPART/92",
+        "/api/chart/dc_emploi_vs_conso/EPCI/200046977",
         {"start_date": 2015, "end_date": 2020},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -29,7 +31,9 @@ def test_dc_emploi_vs_conso_chart(client, hauts_de_seine):
                     "verticalAlign": "middle",
                 },
                 "chart": {"zoomType": "xy"},
-                "title": {"text": "Créations d'entreprises et consommation d'espaces - Hauts-de-Seine (2015 - 2020)"},
+                "title": {
+                    "text": "Créations d'entreprises et consommation d'espaces - Métropole de Lyon (2015 - 2020)"
+                },
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -40,40 +44,40 @@ def test_dc_emploi_vs_conso_chart(client, hauts_de_seine):
                 "xAxis": [{"categories": ["2015", "2016", "2017", "2018", "2019", "2020"]}],
                 "yAxis": [
                     {
+                        "title": {"text": "Consommation d'espaces (ha)", "style": {"color": "#8ecac7"}},
+                        "labels": {"style": {"color": "#8ecac7"}},
+                    },
+                    {
                         "title": {"text": "Créations d'entreprises", "style": {"color": "#FA4B42"}},
                         "labels": {"style": {"color": "#FA4B42"}},
                         "opposite": True,
-                    },
-                    {
-                        "title": {"text": "Consommation d'espaces (ha)", "style": {"color": "#8ecac7"}},
-                        "labels": {"style": {"color": "#8ecac7"}},
                     },
                 ],
                 "tooltip": {"shared": True},
                 "plotOptions": {"column": {"stacking": "normal"}},
                 "series": [
                     {
-                        "name": "Consommation totale",
-                        "type": "column",
-                        "yAxis": 1,
-                        "data": [23.83, 0.69, 1.15, 2.5, 1.01, 2.15],
-                        "tooltip": {"valueSuffix": " ha"},
-                        "color": "#CFD1E5",
-                        "stack": "conso",
-                    },
-                    {
                         "name": "Consommation activité",
                         "type": "column",
                         "yAxis": 1,
-                        "data": [16.62, 0.3, 0.26, 0.26, 0.0, 0.54],
+                        "data": [24.53, 29.25, 31.76, 33.95, 62.44, 9.74],
                         "tooltip": {"valueSuffix": " ha"},
                         "color": "#8ecac7",
                         "stack": "conso",
                     },
                     {
+                        "name": "Consommation totale",
+                        "type": "column",
+                        "yAxis": 1,
+                        "data": [116.13, 44.28, 64.65, 65.43, 68.88, 73.66],
+                        "tooltip": {"valueSuffix": " ha"},
+                        "color": "#CFD1E5",
+                        "stack": "conso",
+                    },
+                    {
                         "name": "Créations d'entreprises",
                         "type": "column",
-                        "data": [19038.0, 22340.0, 25407.0, 29795.0, 32526.0, 32710.0],
+                        "data": [15777.0, 17863.0, 20949.0, 24735.0, 29960.0, 30326.0],
                         "tooltip": {"valueSuffix": " créations"},
                         "color": "#FA4B42",
                         "stack": "entreprises",
@@ -81,7 +85,7 @@ def test_dc_emploi_vs_conso_chart(client, hauts_de_seine):
                     {
                         "name": "Créations individuelles",
                         "type": "column",
-                        "data": [11640.0, 13826.0, 16616.0, 20803.0, 22841.0, 23270.0],
+                        "data": [10389.0, 11888.0, 14588.0, 18361.0, 22883.0, 23235.0],
                         "tooltip": {"valueSuffix": " créations"},
                         "color": "#FFB347",
                         "stack": "entreprises",
@@ -99,40 +103,40 @@ def test_dc_emploi_vs_conso_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Créations d'entreprises et consommation d'espaces - Hauts-de-Seine (2015 - 2020)",
+                    "filename": "Créations d'entreprises et consommation d'espaces - Métropole de Lyon (2015 - 2020)",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
                     "Année",
-                    "Conso. totale (ha)",
                     "Conso. activité (ha)",
+                    "Conso. totale (ha)",
                     "Créations entreprises",
                     "Créations individuelles",
                 ],
                 "rows": [
-                    {"name": "2015", "data": ["2015", "23.83", "16.62", "19,038", "11,640"]},
-                    {"name": "2016", "data": ["2016", "0.69", "0.30", "22,340", "13,826"]},
-                    {"name": "2017", "data": ["2017", "1.15", "0.26", "25,407", "16,616"]},
-                    {"name": "2018", "data": ["2018", "2.50", "0.26", "29,795", "20,803"]},
-                    {"name": "2019", "data": ["2019", "1.01", "0.00", "32,526", "22,841"]},
-                    {"name": "2020", "data": ["2020", "2.15", "0.54", "32,710", "23,270"]},
+                    {"name": "2015", "data": ["10,389", "116.13", "15,777", "2015", "62.44"]},
+                    {"name": "2016", "data": ["11,888", "17,863", "2016", "31.76", "73.66"]},
+                    {"name": "2017", "data": ["14,588", "20,949", "2017", "33.95", "65.43"]},
+                    {"name": "2018", "data": ["18,361", "2018", "24,735", "24.53", "68.88"]},
+                    {"name": "2019", "data": ["2019", "23,235", "30,326", "44.28", "9.74"]},
+                    {"name": "2020", "data": ["2020", "22,883", "29,960", "29.25", "64.65"]},
                 ],
             },
         }

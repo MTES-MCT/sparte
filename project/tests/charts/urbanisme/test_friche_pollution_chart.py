@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_friche_pollution_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/friche_pollution/DEPART/92")
+
+def test_friche_pollution_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/friche_pollution/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -30,12 +32,12 @@ def test_friche_pollution_chart(client, hauts_de_seine):
                     {
                         "name": "Type de pollution",
                         "data": [
-                            {"name": "inconnu", "surface": 14.1047700234389, "count": 7, "y": 14.1047700234389},
+                            {"name": "inconnu", "surface": 114.996055871236, "count": 16, "y": 114.996055871236},
                             {
                                 "name": "pollution supposée",
-                                "surface": 0.185209781815681,
-                                "count": 1,
-                                "y": 0.185209781815681,
+                                "surface": 2.2094242693138,
+                                "count": 2,
+                                "y": 2.2094242693138,
                             },
                         ],
                     }
@@ -75,34 +77,34 @@ def test_friche_pollution_chart(client, hauts_de_seine):
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
-                    "Type de pollution",
                     "Nombre de friches sans projet",
                     "Surface totale des friches sans projet (ha)",
+                    "Type de pollution",
                 ],
                 "rows": [
-                    {"name": "inconnu", "data": ["inconnu", 7, 14.1047700234389]},
-                    {"name": "pollution supposée", "data": ["pollution supposée", 1, 0.185209781815681]},
-                    {"name": "pollution inexistante", "data": ["pollution inexistante", 0, 0.0]},
-                    {"name": "pollution probable", "data": ["pollution probable", 0, 0.0]},
-                    {"name": "pollution traitée", "data": ["pollution traitée", 0, 0.0]},
-                    {"name": "pollution peu probable", "data": ["pollution peu probable", 0, 0.0]},
+                    {"name": "inconnu", "data": ["inconnu", 114.996055871236, 16]},
                     {"name": "pollution avérée", "data": ["pollution avérée", 0, 0.0]},
+                    {"name": "pollution inexistante", "data": ["pollution inexistante", 0, 0.0]},
+                    {"name": "pollution peu probable", "data": ["pollution peu probable", 0, 0.0]},
+                    {"name": "pollution probable", "data": ["pollution probable", 0, 0.0]},
+                    {"name": "pollution supposée", "data": ["pollution supposée", 2, 2.2094242693138]},
+                    {"name": "pollution traitée", "data": ["pollution traitée", 0, 0.0]},
                 ],
             },
         }

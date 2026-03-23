@@ -1,23 +1,25 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_artif_synthese_chart(client, hauts_de_seine):
+
+def test_artif_synthese_chart(client, metropole_de_lyon):
     response = client.get(
-        "/api/chart/artif_synthese/DEPART/92",
-        {"departement": 92},
+        "/api/chart/artif_synthese/EPCI/200046977",
+        {"departement": 69},
     )
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "chart": {"type": "column", "backgroundColor": "transparent"},
                 "title": {
-                    "text": "Evolution du stock de surfaces artificialisées de Hauts-de-Seine entre 2018 et 2021",
+                    "text": "Evolution du stock de surfaces artificialisées de Métropole de Lyon entre 2017 et 2020",
                     "style": {"fontSize": "14px", "fontWeight": "600"},
                 },
                 "xAxis": {
-                    "categories": ["2018", "2021"],
+                    "categories": ["2017", "2020"],
                     "title": {"text": None},
                     "labels": {"style": {"fontSize": "12px"}},
                     "lineColor": "#E5E7EB",
@@ -71,29 +73,17 @@ def test_artif_synthese_chart(client, hauts_de_seine):
                         "name": "Part artificialisée",
                         "type": "column",
                         "data": [
-                            {"y": 78.3714592559744, "surface": 13760.06605834},
-                            {"y": 78.5474202155205, "surface": 13790.9603973},
+                            {"y": 56.6079072688744, "surface": 30424.22686295},
+                            {"y": 56.8856776364604, "surface": 30573.51605393},
                         ],
                         "color": "#818CF8",
                         "borderRadius": 3,
                         "zIndex": 1,
                     },
                     {
-                        "name": "Flux",
-                        "type": "line",
-                        "data": [{"x": 0, "y": 78.3714592559744}, {"x": 1, "y": 78.5474202155205}],
-                        "color": "#F97316",
-                        "lineWidth": 2,
-                        "marker": {"enabled": False},
-                        "dataLabels": {"enabled": False},
-                        "enableMouseTracking": False,
-                        "showInLegend": True,
-                        "zIndex": 2,
-                    },
-                    {
                         "name": "Flux label 1",
                         "type": "scatter",
-                        "data": [{"x": 0.5, "y": 78.45943973574745, "name": "+30.9 ha"}],
+                        "data": [{"x": 0.5, "y": 56.7467924526674, "name": "+149.3 ha"}],
                         "color": "#F97316",
                         "marker": {"radius": 0},
                         "dataLabels": {
@@ -110,6 +100,18 @@ def test_artif_synthese_chart(client, hauts_de_seine):
                         "showInLegend": False,
                         "zIndex": 3,
                     },
+                    {
+                        "name": "Flux",
+                        "type": "line",
+                        "data": [{"x": 0, "y": 56.6079072688744}, {"x": 1, "y": 56.8856776364604}],
+                        "color": "#F97316",
+                        "lineWidth": 2,
+                        "marker": {"enabled": False},
+                        "dataLabels": {"enabled": False},
+                        "enableMouseTracking": False,
+                        "showInLegend": True,
+                        "zIndex": 2,
+                    },
                 ],
                 "navigation": {"buttonOptions": {"enabled": False}},
                 "responsive": {
@@ -123,23 +125,23 @@ def test_artif_synthese_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Evolution du stock de surfaces artificialisées de Hauts-de-Seine entre 2018 et 2021",
+                    "filename": "Evolution du stock de surfaces artificialisées de Métropole de Lyon entre 2017 et 2020",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {"headers": [], "rows": []},

@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_emploi_chomage_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/dc_emploi_chomage/DEPART/92")
+
+def test_dc_emploi_chomage_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/dc_emploi_chomage/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -26,7 +28,7 @@ def test_dc_emploi_chomage_chart(client, hauts_de_seine):
                     "verticalAlign": "middle",
                 },
                 "chart": {"type": "column"},
-                "title": {"text": "Activité et chômage (15-64 ans) - Hauts-de-Seine"},
+                "title": {"text": "Activité et chômage (15-64 ans) - Métropole de Lyon"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -41,18 +43,18 @@ def test_dc_emploi_chomage_chart(client, hauts_de_seine):
                 "series": [
                     {
                         "name": "Actifs occupés",
-                        "data": [738164.009926114, 737414.18072852, 779972.605250844],
+                        "data": [548650.30141093, 566227.637306366, 615601.737984702],
                         "color": "#00E272",
                     },
                     {
-                        "name": "Chômeurs",
-                        "data": [84407.5185229055, 92262.3400487511, 86532.8391511702],
-                        "color": "#FA4B42",
+                        "name": "Inactifs",
+                        "data": [240970.790347776, 241894.451833476, 244313.375136028],
+                        "color": "#CFD1E5",
                     },
                     {
-                        "name": "Inactifs",
-                        "data": [235091.432821525, 227370.248038266, 224810.473937565],
-                        "color": "#CFD1E5",
+                        "name": "Chômeurs",
+                        "data": [81363.9553999053, 82930.756244411, 92484.845700357],
+                        "color": "#FA4B42",
                     },
                 ],
                 "navigation": {"buttonOptions": {"enabled": False}},
@@ -67,31 +69,31 @@ def test_dc_emploi_chomage_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Activité et chômage (15-64 ans) - Hauts-de-Seine",
+                    "filename": "Activité et chômage (15-64 ans) - Métropole de Lyon",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Année", "Actifs occupés", "Chômeurs", "Inactifs", "Pop. 15-64 ans"],
+                "headers": ["Actifs occupés", "Année", "Chômeurs", "Inactifs", "Pop. 15-64 ans"],
                 "rows": [
-                    {"name": "2011", "data": ["2011", "738,164", "84,408", "235,091", "1,057,663"]},
-                    {"name": "2016", "data": ["2016", "737,414", "92,262", "227,370", "1,057,047"]},
-                    {"name": "2022", "data": ["2022", "779,973", "86,533", "224,810", "1,091,316"]},
+                    {"name": "2011", "data": ["2011", "240,971", "548,650", "81,364", "870,985"]},
+                    {"name": "2016", "data": ["2016", "244,313", "566,228", "903,026", "92,485"]},
+                    {"name": "2022", "data": ["2022", "241,894", "615,602", "82,931", "940,427"]},
                 ],
             },
         }

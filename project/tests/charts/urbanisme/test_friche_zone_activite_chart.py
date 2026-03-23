@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_friche_zone_activite_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/friche_zone_activite/DEPART/92")
+
+def test_friche_zone_activite_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/friche_zone_activite/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -30,8 +32,8 @@ def test_friche_zone_activite_chart(client, hauts_de_seine):
                     {
                         "name": "Répartition par intersection avec une zone d'activité économique (en surface)",
                         "data": [
-                            {"name": "oui", "surface": 14.1047700234389, "count": 7, "y": 14.1047700234389},
-                            {"name": "non", "surface": 0.185209781815681, "count": 1, "y": 0.185209781815681},
+                            {"name": "oui", "surface": 101.801399132136, "count": 11, "y": 101.801399132136},
+                            {"name": "non", "surface": 15.4040810084136, "count": 7, "y": 15.4040810084136},
                         ],
                     }
                 ],
@@ -70,29 +72,29 @@ def test_friche_zone_activite_chart(client, hauts_de_seine):
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
                 "headers": [
-                    "Répartition par intersection avec une zone d'activité économique (en surface)",
                     "Nombre de friches sans projet",
+                    "Répartition par intersection avec une zone d'activité économique (en surface)",
                     "Surface totale des friches sans projet (ha)",
                 ],
                 "rows": [
-                    {"name": "oui", "data": ["oui", 7, 14.1047700234389]},
-                    {"name": "non", "data": ["non", 1, 0.185209781815681]},
+                    {"name": "non", "data": ["non", 15.4040810084136, 7]},
+                    {"name": "oui", "data": ["oui", 101.801399132136, 11]},
                 ],
             },
         }

@@ -1,11 +1,13 @@
 # flake8: noqa: E501
 from inline_snapshot import snapshot
 
+from project.tests.charts.helpers import normalize
 
-def test_dc_tourisme_chart(client, hauts_de_seine):
-    response = client.get("/api/chart/dc_tourisme/DEPART/92")
+
+def test_dc_tourisme_chart(client, metropole_de_lyon):
+    response = client.get("/api/chart/dc_tourisme/EPCI/200046977")
     assert response.status_code == 200
-    assert response.json() == snapshot(
+    assert normalize(response.json()) == snapshot(
         {
             "highcharts_options": {
                 "noData": {
@@ -26,7 +28,7 @@ def test_dc_tourisme_chart(client, hauts_de_seine):
                     "verticalAlign": "middle",
                 },
                 "chart": {"type": "column"},
-                "title": {"text": "Hébergements touristiques - Hauts-de-Seine"},
+                "title": {"text": "Hébergements touristiques - Métropole de Lyon"},
                 "credits": {
                     "enabled": True,
                     "text": "Graphique : MonDiagnosticArtificialisation | Données : INSEE",
@@ -34,7 +36,7 @@ def test_dc_tourisme_chart(client, hauts_de_seine):
                     "position": {"y": -3, "align": "right", "verticalAlign": "bottom"},
                     "href": "https://mondiagartif.beta.gouv.fr/",
                 },
-                "xAxis": {"categories": ["Non classé", "1★", "2★", "3★", "4★", "5★"]},
+                "xAxis": {"categories": ["1★", "2★", "3★", "4★", "5★", "Non classé"]},
                 "yAxis": {"title": {"text": "Nombre d'établissements"}},
                 "tooltip": {"headerFormat": "<b>{point.key}</b><br/>", "pointFormat": "{series.name}: {point.y:,.0f}"},
                 "series": [
@@ -54,33 +56,33 @@ def test_dc_tourisme_chart(client, hauts_de_seine):
                     ]
                 },
                 "exporting": {
-                    "filename": "Hébergements touristiques - Hauts-de-Seine",
+                    "filename": "Hébergements touristiques - Métropole de Lyon",
                     "url": "https://highcharts-export.osc-fr1.scalingo.io",
                     "chartOptions": {"chart": {"style": {"fontSize": "8px"}}},
                 },
                 "colors": [
+                    "#4e9c79",
                     "#6a6af4",
-                    "#8ecac7",
-                    "#eeb088",
-                    "#cab8ee",
                     "#6b8abc",
                     "#86cdf2",
-                    "#fd8970",
-                    "#c9e7c9",
-                    "#f5d3b5",
+                    "#8ecac7",
                     "#91e8e1",
-                    "#4e9c79",
                     "#bce3f9",
+                    "#c9e7c9",
+                    "#cab8ee",
+                    "#eeb088",
+                    "#f5d3b5",
+                    "#fd8970",
                 ],
             },
             "data_table": {
-                "headers": ["Type", "Total", "Chambres/Emplacements"],
+                "headers": ["Chambres/Emplacements", "Total", "Type"],
                 "rows": [
-                    {"name": "", "data": ["Hôtels", "-", "-"]},
-                    {"name": "", "data": ["Campings", "-", "-"]},
-                    {"name": "", "data": ["Villages vacances", "-", "-"]},
-                    {"name": "", "data": ["Résidences de tourisme", "-", "-"]},
-                    {"name": "", "data": ["Auberges de jeunesse", "-", "-"]},
+                    {"name": "", "data": ["-", "-", "Auberges de jeunesse"]},
+                    {"name": "", "data": ["-", "-", "Campings"]},
+                    {"name": "", "data": ["-", "-", "Hôtels"]},
+                    {"name": "", "data": ["-", "-", "Résidences de tourisme"]},
+                    {"name": "", "data": ["-", "-", "Villages vacances"]},
                 ],
             },
         }
