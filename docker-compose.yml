@@ -9,6 +9,11 @@ services:
       - "5555:5432"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: "redis:alpine"
@@ -73,10 +78,14 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - db
-      - redis
-      - s3
-      - export-server
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      s3:
+        condition: service_started
+      export-server:
+        condition: service_started
     networks:
       - app-network
 
