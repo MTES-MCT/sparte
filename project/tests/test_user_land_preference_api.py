@@ -62,7 +62,7 @@ class TestGetPreference:
         assert resp.status_code == 200
         data = resp.json()
         assert data["is_favorited"] is True
-        assert data["target_2031"] == 50.0
+        assert data["target_2031"] == pytest.approx(50.0)
         assert data["is_main"] is True
 
     def test_is_main_false_for_different_land(self, auth_client, user):
@@ -94,9 +94,9 @@ class TestUpdateTarget2031:
         assert resp.status_code == 200
         data = resp.json()
         assert data["success"] is True
-        assert data["target_2031"] == 42.5
+        assert data["target_2031"] == pytest.approx(42.5)
         pref = UserLandPreference.objects.get(user=user, land_type="COMM", land_id="12345")
-        assert float(pref.target_2031) == 42.5
+        assert float(pref.target_2031) == pytest.approx(42.5)
 
     def test_missing_target_2031(self, auth_client):
         resp = auth_client.post(
