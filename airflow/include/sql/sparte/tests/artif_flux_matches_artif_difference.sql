@@ -6,7 +6,7 @@ Le test compare pour chaque territoire (land_id, land_type) et chaque millésime
 - flux_artif_net de for_app_landartiffluxindex (calculé avec artif_difference, nouvelle méthode)
 - flux_surface de for_app_landartifstockindex (calculé avec la différence de stocks, ancienne méthode)
 
-Le test retourne les lignes où la différence absolue est supérieure à 0.1 ha (tolérance pour les arrondis).
+Le test retourne les lignes où la différence absolue est supérieure à 0.5 ha (tolérance pour les arrondis).
 */
 
 {{ config(severity = 'warn') }}
