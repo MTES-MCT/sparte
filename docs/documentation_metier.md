@@ -13,9 +13,9 @@ Les données de consommation d'espaces proviennent du Cerema (source MAJIC). Ell
 | **UNCHANGED** | Données inchangées par rapport à la source. Cas par défaut pour les communes dont le code n'a pas changé. | Majorité des communes |
 | **COG_ERROR** | Le code commune source ne correspond pas au COG actuel. La consommation est redistribuée au prorata de la surface. | `60054` → scindée en `60054` (42.24%) + `60694` (57.76%) |
 | **DIVISION** | Les données sont divisées par un coefficient de surface basé sur les divisions du dernier COG. | Même mécanisme que COG_ERROR |
-| **MISSING_FROM_SOURCE** | Communes absentes de la source MAJIC. Toutes les consommations sont mises à 0. Concerne principalement des communes d'outre-mer. | `97601`–`97617` (communes ultramarines) |
+| **MISSING_FROM_SOURCE** | Communes absentes de la source MAJIC. Toutes les consommations sont mises à 0. | Mayotte (`97601`–`97617`), Suzan (`09304`), Île-de-Sein (`29083`), Île-Molène (`29084`) |
 
-**Mécanisme de répartition** : lors d'une scission, toutes les colonnes de consommation (par année et par destination) sont multipliées par le ratio de surface de chaque commune résultante. Lors d'une fusion, les consommations des communes fusionnées sont additionnées.
+**Mécanisme de répartition** : lors d'une scission, toutes les colonnes de consommation (par année et par destination) sont multipliées par un pourcentage choisi manuellement (actuellement basé sur la surface du territoire). Lors d'une fusion, les consommations des communes fusionnées sont additionnées. Lorsque ce mécanisme est appliqué, les diagnostics de consommation ne sont pas accessibles à l'échelle de la commune concernée, mais uniquement à l'échelle supérieure (EPCI, département, etc.).
 
 Cette méthode au prorata de la surface est imparfaite (une répartition par population ou par ménages serait plus représentative), mais elle concerne très peu de communes. Idéalement, la correction devrait être faite à la source par le Cerema.
 
@@ -44,6 +44,26 @@ Le modèle stocke pour chaque objectif territorialisé : le territoire concerné
 **Projection et suivi** : l'application projette la consommation à 2031 en se basant sur le rythme annuel observé depuis 2021, puis calcule un taux d'atteinte de l'objectif et un éventuel dépassement.
 
 **Accès** : la fonctionnalité de territorialisation est actuellement réservée aux membres DGALN. Les autres utilisateurs voient uniquement l'objectif national (-50%).
+
+### Quel COG est utilisé ?
+
+Le COG (Code Officiel Géographique) utilisé par l'application est celui de l'année de production des données de consommation d'espace (source MAJIC/Cerema), qui est la donnée la plus importante du site. Par exemple, si les données de consommation sont produites au 1er janvier 2024, le COG 2024 est utilisé. Un changement de COG implique de mettre à jour les limites administratives (Admin Express), de corriger les données de consommation et de population pour les communes ayant changé de code, puis de propager ces corrections à tous les niveaux territoriaux.
+
+### Mise à jour des millésimes de données
+
+#### Consommation d'espace
+
+L'ajout d'un nouveau millésime de consommation d'espace (source MAJIC/Cerema) est une opération transversale qui impacte l'ensemble de l'application. Elle nécessite :
+- La vérification de la cohérence des données avec le COG de l'année de production (correction des codes communes ayant changé)
+- La vérification de tous les croisements avec d'autres données (données démographiques INSEE, permis de construire SITADEL, logements vacants ZLV, logements sociaux RPLS) et l'anticipation de leur mise à jour coordonnée
+- La mise à jour de nombreuses références en dur au dernier millésime disponible, présentes dans l'ETL, le backend et le frontend
+
+#### Artificialisation (OCS GE)
+
+L'OCS GE fonctionne actuellement avec deux millésimes par département. L'arrivée d'un troisième millésime nécessitera :
+- L'adaptation du calcul du statut de couverture, qui suppose actuellement exactement 2 millésimes par département
+- Un possible réajustement des index de millésime pour certains départements, afin d'aligner les années sur des périodes plus cohérentes entre départements
+- Le calcul des flux (artificialisation/désartificialisation) se fera automatiquement entre chaque paire d'index consécutifs (1→2 et 2→3)
 
 ### Période de référence 2011-2020
 
