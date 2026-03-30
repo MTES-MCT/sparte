@@ -17,11 +17,3 @@ jobs:
           key: ${{ secrets.AIRFLOW_SSH_KEY }}
           port: ${{ secrets.AIRFLOW_SSH_PORT }}
           script: cd ~/sparte && git pull
-      - name: Generate DBT docs
-        uses: appleboy/ssh-action@master
-        with:
-            host: ${{ secrets.AIRFLOW_SSH_HOST }}
-            username: ${{ secrets.AIRFLOW_SSH_USER }}
-            key: ${{ secrets.AIRFLOW_SSH_KEY }}
-            port: ${{ secrets.AIRFLOW_SSH_PORT }}
-            script: cd ~/sparte/airflow/include/sql/sparte && dbt docs generate --static
