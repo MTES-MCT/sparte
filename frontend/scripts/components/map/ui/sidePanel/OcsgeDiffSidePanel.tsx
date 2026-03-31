@@ -212,7 +212,7 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 	const sameMatrixClass = oldByMatrix === newByMatrix;
 	const isBySeuil = hasMatrix && (isPositive || isNegative) && sameMatrixClass;
 
-	const title = `${isPositive ? positiveLabel : isNegative} - ${formatNumber({ number: surface / 10000 })} ha (${formatNumber({ number: surface })} m²)`;
+	const title = `${isPositive ? positiveLabel : negativeLabel} - ${formatNumber({ number: surface / 10000 })} ha (${formatNumber({ number: surface })} m²)`;
 
 	return (
 		<>
