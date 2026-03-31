@@ -75,7 +75,7 @@ start: ## Démarre tous les services
 	docker compose up -d
 
 stop: ## Arrête tous les services
-	docker compose down
+	docker compose stop
 
 restart: ## Redémarre tous les services
 	docker compose restart
