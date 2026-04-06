@@ -55,12 +55,7 @@
               <div class="fr-card__title">Suivez votre consommation</div>
               <p class="fr-card__desc">Visualisez les indicateurs détaillés de la consommation d’espaces NAF sur votre territoire.</p>
             </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/card-item-1.svg' %}" alt="">
-            </div>
-            <div class="home-product-card__badges-overlay">
+            <div class="fr-card__footer">
               <ul class="fr-badges-group">
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Détail par destinations</p>
@@ -77,6 +72,11 @@
               </ul>
             </div>
           </div>
+          <div class="fr-card__header">
+            <div class="fr-card__img">
+              <img class="fr-responsive-img" src="{% static 'home/img/card-item-1.svg' %}" alt="">
+            </div>
+          </div>
         </div>
       </div>
       <div class="fr-col-12 fr-col-lg-4">
@@ -86,12 +86,7 @@
               <div class="fr-card__title">Générez vos rapports</div>
               <p class="fr-card__desc">Editez et exportez en un clic vos rapports locaux triennaux, conformes aux obligations réglementaires.</p>
             </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/card-item-2.svg' %}" alt="">
-            </div>
-            <div class="home-product-card__badges-overlay">
+            <div class="fr-card__footer">
               <ul class="fr-badges-group">
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Rapports personnalisables</p>
@@ -108,7 +103,12 @@
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Trajectoire de sobriété foncière</p>
                 </li>
-              </ul>
+              </ul>    
+            </div>
+          </div>
+          <div class="fr-card__header">
+            <div class="fr-card__img">
+              <img class="fr-responsive-img" src="{% static 'home/img/card-item-2.svg' %}" alt="">
             </div>
           </div>
         </div>
@@ -120,12 +120,7 @@
               <div class="fr-card__title">Identifiez les leviers</div>
               <p class="fr-card__desc">Pilotez votre trajectoire de sobriété foncière en sélectionnant les leviers les plus pertinents sur votre territoire.</p>
             </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/card-item-3.svg' %}" alt="">
-            </div>
-            <div class="home-product-card__badges-overlay">
+            <div class="fr-card__footer">
               <ul class="fr-badges-group">
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Vacance des logements</p>
@@ -140,6 +135,11 @@
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Croisements (artificialisation, imperméabilisation)</p>
                 </li>
               </ul>
+            </div>
+          </div>
+          <div class="fr-card__header">
+            <div class="fr-card__img">
+              <img class="fr-responsive-img" src="{% static 'home/img/card-item-3.svg' %}" alt="">
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@
 
 <section class="fr-py-6w fr-py-md-8w section-adoption">
   <div class="fr-container">
-    <h2 class="fr-h3 fr-mb-4w" style="text-align: center;">Un outil déjà largement adopté par les collectivités</h2>
+    <h2 class="fr-h3 fr-mb-4w text-center">Un outil déjà largement adopté par les collectivités</h2>
     
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-mb-6w">
       <div class="fr-col-6 fr-col-md-3">
@@ -270,9 +270,9 @@
 
 <section class="fr-py-6w fr-py-md-8w section-features">
   <div class="fr-container">
-    <div class="fr-mb-4w" style="text-align: center;">
+    <div class="fr-mb-4w text-center">
       <h2 class="fr-h3 fr-mb-2w">Des données fiables, directement exploitables</h2>
-      <p class="fr-text--lg fr-mb-0" style="color: var(--text-mention-grey);">Tout ce dont vous avez besoin pour piloter votre trajectoire de sobriété foncière</p>
+      <p class="fr-text--lg fr-mb-0 section-features__intro">Tout ce dont vous avez besoin pour piloter votre trajectoire de sobriété foncière</p>
     </div>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
@@ -285,7 +285,7 @@
           </div>
           <div class="fr-tile__header">
             <div class="fr-tile__pictogram">
-              <i class="bi bi-database-check" style="font-size: 2rem; color: var(--text-action-high-blue-france);"></i>
+              <i class="bi bi-database-check"></i>
             </div>
           </div>
         </div>
@@ -300,7 +300,7 @@
           </div>
           <div class="fr-tile__header">
             <div class="fr-tile__pictogram">
-              <i class="bi bi-clipboard-check" style="font-size: 2rem; color: var(--text-action-high-blue-france);"></i>
+              <i class="bi bi-clipboard-check"></i>
             </div>
           </div>
         </div>
@@ -315,7 +315,7 @@
           </div>
           <div class="fr-tile__header">
             <div class="fr-tile__pictogram">
-              <i class="bi bi-download" style="font-size: 2rem; color: var(--text-action-high-blue-france);"></i>
+              <i class="bi bi-download"></i>
             </div>
           </div>
         </div>
@@ -330,7 +330,7 @@
           </div>
           <div class="fr-tile__header">
             <div class="fr-tile__pictogram">
-              <i class="bi bi-unlock" style="font-size: 2rem; color: var(--text-action-high-blue-france);"></i>
+              <i class="bi bi-unlock"></i>
             </div>
           </div>
         </div>

@@ -162,36 +162,12 @@ section {
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
 }
 
-.section-product::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0, 62, 203, 0.2), transparent);
-}
-
 .section-product .fr-badge {
     text-transform: none;
 }
 
-.section-product .home-product-card__badges-overlay {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
 .section-product .fr-card__content {
     padding: 1.5rem 2rem;
-}
-
-.section-product .fr-card__header .fr-badges-group {
-    bottom: 0;
-    top: auto;
-    margin: 0;
 }
 
 .section-product .fr-card__title {
@@ -371,6 +347,15 @@ section {
 .section-features h2 {
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 700;
+}
+
+.section-features__intro {
+    color: var(--text-mention-grey);
+}
+
+.section-features .fr-tile__pictogram i {
+    font-size: 2rem;
+    color: var(--text-action-high-blue-france);
 }
 
 /*
