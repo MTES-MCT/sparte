@@ -48,6 +48,16 @@ if (searchBar)
   )
 }
 
+const searchBarSticky = document.getElementById('react-search-bar-sticky')
+if (searchBarSticky)
+{
+  createRoot(searchBarSticky).render(
+    <Provider store={store}>
+      <SearchBar />
+    </Provider>,
+  )
+}
+
 const searchBarProfile = document.getElementById('react-search-bar-profile')
 if (searchBarProfile)
 {  

@@ -20,6 +20,38 @@ section {
 }
 
 /* 
+* Sticky Search Bar
+*/
+.sticky-search-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: linear-gradient(135deg, #000091 0%, #1a1a6b 50%, #2d1b69 100%);
+    padding: 0.75rem 0;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.sticky-search-bar.is-visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.sticky-search-bar .fr-container {
+    display: flex;
+    justify-content: center;
+}
+
+.sticky-search-bar #react-search-bar-sticky {
+    width: 100%;
+    max-width: 600px;
+}
+
+/* 
 * Section: Hero
 */
 .section-hero {

@@ -16,6 +16,12 @@
 {% endblock breadcrumbs %}
 
 {% block content %}
+<div class="sticky-search-bar" id="sticky-search-bar" aria-hidden="true">
+  <div class="fr-container">
+    <div id="react-search-bar-sticky" data-origin="home"></div>
+  </div>
+</div>
+
 <section class="section-hero">
   <div class="fr-container">
     <div class="fr-grid-row fr-py-8w fr-py-md-12w">
@@ -388,4 +394,36 @@
 
 {% include  "home/partials/newsletter_form.html" %}
 {% endblock content %}
+
+{% block bodyend %}
+<script nonce="[NONCE_PLACEHOLDER]">
+(function() {
+  const heroSearchBar = document.getElementById('react-search-bar');
+  const stickySearchBar = document.getElementById('sticky-search-bar');
+  
+  if (!heroSearchBar || !stickySearchBar) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          stickySearchBar.classList.remove('is-visible');
+          stickySearchBar.setAttribute('aria-hidden', 'true');
+        } else {
+          stickySearchBar.classList.add('is-visible');
+          stickySearchBar.setAttribute('aria-hidden', 'false');
+        }
+      });
+    },
+    {
+      root: null,
+      rootMargin: '-80px 0px 0px 0px',
+      threshold: 0
+    }
+  );
+
+  observer.observe(heroSearchBar);
+})();
+</script>
+{% endblock bodyend %}
 
