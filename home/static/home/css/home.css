@@ -89,7 +89,7 @@ section {
 
 .section-hero h1 {
     color: #fff;
-    font-size: clamp(2rem, 6vw, 4rem) !important;
+    font-size: clamp(2rem, 5vw, 3.5rem) !important;
     line-height: 1.1;
 }
 
@@ -118,7 +118,7 @@ section {
     position: absolute;
     bottom: -5%;
     right: max(0px, calc((100vw - 1200px) / 2));
-    width: min(46%, 600px);
+    width: min(46%, 630px);
     pointer-events: none;
     display: none;
     perspective: 1000px;
@@ -151,7 +151,7 @@ section {
 }
 
 .section-hero #react-search-bar {
-    max-width: 550px;
+    max-width: 520px;
 }
 
 /* 
