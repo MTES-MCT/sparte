@@ -550,7 +550,6 @@ section {
     
     .zan-timeline__item--final::before {
         border-color: #059669;
-        background: #059669;
     }
 }
 
@@ -570,7 +569,6 @@ section {
     
     .zan-timeline__item--final::before {
         border-color: #059669;
-        background: #059669;
     }
 }
 
@@ -596,5 +594,9 @@ section {
 
 .zan-timeline__item--final .zan-timeline__year {
     color: #059669;
+}
+
+.zan-timeline__item--past::before {
+    background: var(--text-action-high-blue-france);
 }
 
