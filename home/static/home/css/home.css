@@ -31,14 +31,12 @@ section {
     background: linear-gradient(135deg, #000091 0%, #1a1a6b 50%, #2d1b69 100%);
     padding: 0.75rem 0;
     transform: translateY(-100%);
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform 0.3s ease;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .sticky-search-bar.is-visible {
     transform: translateY(0);
-    opacity: 1;
 }
 
 .sticky-search-bar .fr-container {

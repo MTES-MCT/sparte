@@ -41,9 +41,10 @@ if (footerConsent) {
 const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
 {
+  const isHomePage = searchBar.dataset.origin === 'home';
   createRoot(searchBar).render(
     <Provider store={store}>
-      <SearchBar />
+      <SearchBar animatedPlaceholder={isHomePage} />
     </Provider>,
   )
 }
