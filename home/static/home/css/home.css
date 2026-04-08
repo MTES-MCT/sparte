@@ -104,6 +104,11 @@ section {
     color: #fff;
 }
 
+.section-hero .fr-text--sm {
+    opacity: 0.85;
+    color: #fff;
+}
+
 .hero-clip {
     position: absolute;
     inset: 0;
