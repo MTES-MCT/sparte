@@ -460,7 +460,7 @@ section {
 }
 
 .zan-objective__value {
-    font-size: clamp(3rem, 8vw, 5rem);
+    font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: 800;
     color: var(--text-action-high-blue-france);
     line-height: 1;
