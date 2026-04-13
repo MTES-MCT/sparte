@@ -18,7 +18,6 @@ import Downloads from '@components/pages/Downloads';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import { Impermeabilisation } from '@components/pages/Impermeabilisation';
 import { Friches } from '@components/pages/Friches';
-import { ResidencesSecondaires } from '@components/pages/ResidencesSecondaires';
 import RouteWrapper from '@components/ui/RouteWrapper';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum } from '@components/features/status/ConsoCorrectionStatus';
 import OcsgeStatus, { OcsgeStatusEnum } from '@components/features/status/OcsgeStatus';
@@ -197,17 +196,6 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                 >
                                                         <Friches landData={landData} />
                                                     </RouteWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path={urls.residencesSecondaires}
-                                            element={
-                                                <RouteWrapper
-                                                    title="Résidences secondaires"
-                                                    landData={landData}
-                                                >
-                                                    <ResidencesSecondaires landData={landData} />
-                                                </RouteWrapper>
                                             }
                                         />
                                         <Route
