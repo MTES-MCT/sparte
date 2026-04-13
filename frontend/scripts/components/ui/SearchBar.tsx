@@ -8,11 +8,16 @@ import Loader from '@components/ui/Loader';
 import { LandDetailResultType } from '@services/types/land';
 
 const ANIMATED_PLACEHOLDER_TEXTS = [
-    'Lyon',
-    'Bouches-du-Rhône',
-    'Gard',
-    'Métropole Lille Europe',
-    'SCOT Piémont des Vosges',
+    'SCOT de l\'Artois',
+    'SCOT du Pays d\'Apt',
+    'CA du Grand Angoulême',
+    'CC Coeur de Savoie',
+    'Blanquefort',
+    'Ajaccio',
+    'Normandie',
+    'Occitanie',
+    'Aveyron',
+    'Gironde',
 ];
 
 interface SearchBarProps {

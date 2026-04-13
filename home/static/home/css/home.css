@@ -28,7 +28,7 @@ section {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: linear-gradient(135deg, #000091 0%, #1a1a6b 50%, #2d1b69 100%);
+    background: #000091;
     padding: 0.75rem 0;
     transform: translateY(-100%);
     transition: transform 0.3s ease;
@@ -53,31 +53,7 @@ section {
 * Section: Hero
 */
 .section-hero {
-    background: linear-gradient(135deg, #000091 0%, #1a1a6b 50%, #2d1b69 100%);
-}
-
-.hero-clip::before {
-    content: '';
-    position: absolute;
-    top: -30%;
-    right: -15%;
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 60%);
-    pointer-events: none;
-    filter: blur(60px);
-}
-
-.hero-clip::after {
-    content: '';
-    position: absolute;
-    bottom: -20%;
-    left: -10%;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 60%);
-    pointer-events: none;
-    filter: blur(80px);
+    background: #000091;
 }
 
 .section-hero .fr-container {
@@ -361,6 +337,14 @@ section {
     color: var(--text-action-high-blue-france);
 }
 
+.section-features__logo {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    filter: grayscale(20%);
+    opacity: 0.85;
+}
+
 /*
 * Section: Loi ZAN
 */
@@ -460,7 +444,7 @@ section {
 }
 
 .zan-objective__value {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: 2rem;
     font-weight: 800;
     color: var(--text-action-high-blue-france);
     line-height: 1;
@@ -599,4 +583,3 @@ section {
 .zan-timeline__item--past::before {
     background: var(--text-action-high-blue-france);
 }
-
