@@ -53,7 +53,20 @@ section {
 * Section: Hero
 */
 .section-hero {
-    background: #000091;
+    background: linear-gradient(180deg, #faf8f5 0%, #f5f1eb 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.section-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 80%;
+    height: 150%;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 145, 0.03) 0%, transparent 70%);
+    pointer-events: none;
 }
 
 .section-hero .fr-container {
@@ -62,27 +75,33 @@ section {
 }
 
 .section-hero h1 {
-    color: #fff;
+    color: #1e1e2f;
     font-size: clamp(2rem, 5vw, 3.5rem) !important;
     line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
 }
 
 .section-hero h1 .highlight {
-    background: linear-gradient(90deg, #c084fc, #818cf8, #60a5fa);
+    background: linear-gradient(90deg, #000091, #6366f1, #8b5cf6);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 .section-hero .fr-text--lg {
-    opacity: 0.9;
     max-width: 540px;
-    color: #fff;
+    color: #4a4a5a;
+    line-height: 1.7;
 }
 
 .section-hero .fr-text--sm {
-    opacity: 0.85;
-    color: #fff;
+    color: #6b6b7a;
+}
+
+.section-hero .fr-text--sm strong {
+    color: #000091;
+    font-weight: 700;
 }
 
 .hero-clip {
@@ -114,8 +133,9 @@ section {
     width: 100%;
     border-radius: 16px 16px 0 0;
     box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
+        0 25px 60px -12px rgba(0, 0, 145, 0.15),
+        0 12px 24px -8px rgba(0, 0, 0, 0.08),
+        0 0 0 1px rgba(0, 0, 145, 0.08);
     transform: rotateY(-8deg) rotateX(4deg) translateY(0);
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
                 box-shadow 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -124,9 +144,10 @@ section {
 .section-hero:hover .hero-visual img {
     transform: rotateY(-2deg) rotateX(1deg) translateY(-20px);
     box-shadow:
-        0 50px 80px -12px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.15),
-        0 0 60px rgba(139, 92, 246, 0.3);
+        0 50px 80px -12px rgba(0, 0, 145, 0.2),
+        0 25px 40px -8px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(0, 0, 145, 0.1),
+        0 0 80px rgba(99, 102, 241, 0.15);
 }
 
 .section-hero #react-search-bar {
@@ -145,8 +166,23 @@ section {
     text-transform: none;
 }
 
+.section-product .home-product-card__badges-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.1) 40%, rgba(0, 0, 0, 0.05) 100%)
+}
+
 .section-product .fr-card__content {
     padding: 1.5rem 2rem;
+}
+
+.section-product .fr-card__header .fr-badges-group {
+    bottom: 0;
+    top: auto;
+    margin: 0;
 }
 
 .section-product .fr-card__title {

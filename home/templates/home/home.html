@@ -24,7 +24,7 @@
 
 <section class="section-hero">
   <div class="fr-container">
-    <div class="fr-grid-row fr-py-8w fr-py-md-12w">
+    <div class="fr-grid-row fr-pt-12w fr-pb-8w">
       <div class="fr-col-12 fr-col-lg-7">
         <h1 class="fr-mb-3w">Analysez <span class="highlight">l'artificialisation</span> de votre territoire</h1>
         <p class="fr-text--lg fr-mb-4w">
@@ -56,7 +56,12 @@
               <div class="fr-card__title">Suivez votre consommation</div>
               <p class="fr-card__desc">Visualisez les indicateurs détaillés de la consommation d’espaces NAF sur votre territoire.</p>
             </div>
-            <div class="fr-card__footer">
+          </div>
+          <div class="fr-card__header">
+            <div class="fr-card__img">
+              <img class="fr-responsive-img" src="{% static 'home/img/product-1.jpg' %}" alt="">
+            </div>
+            <div class="home-product-card__badges-overlay">
               <ul class="fr-badges-group">
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Détail par destinations</p>
@@ -73,11 +78,6 @@
               </ul>
             </div>
           </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/product-1.jpg' %}" alt="">
-            </div>
-          </div>
         </div>
       </div>
       <div class="fr-col-12 fr-col-lg-4">
@@ -87,7 +87,12 @@
               <div class="fr-card__title">Générez vos rapports</div>
               <p class="fr-card__desc">Editez et exportez en un clic vos rapports locaux triennaux, conformes aux obligations réglementaires.</p>
             </div>
-            <div class="fr-card__footer">
+          </div>
+          <div class="fr-card__header">
+            <div class="fr-card__img">
+              <img class="fr-responsive-img" src="{% static 'home/img/product-2.jpg' %}" alt="">
+            </div>
+            <div class="home-product-card__badges-overlay">
               <ul class="fr-badges-group">
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Rapports personnalisables</p>
@@ -101,12 +106,7 @@
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Imperméabilisation</p>
                 </li>
-              </ul>    
-            </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/product-2.jpg' %}" alt="">
+              </ul>
             </div>
           </div>
         </div>
@@ -118,7 +118,12 @@
               <div class="fr-card__title">Identifiez les leviers</div>
               <p class="fr-card__desc">Pilotez votre trajectoire de sobriété foncière en sélectionnant les leviers les plus pertinents sur votre territoire.</p>
             </div>
-            <div class="fr-card__footer">
+          </div>
+          <div class="fr-card__header">
+            <div class="fr-card__img">
+              <img class="fr-responsive-img" src="{% static 'home/img/product-3.jpg' %}" alt="">
+            </div>
+            <div class="home-product-card__badges-overlay">
               <ul class="fr-badges-group">
                 <li>
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Vacance des logements</p>
@@ -130,11 +135,6 @@
                   <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">trajectoire de sobriété fonciere</p>
                 </li>
               </ul>
-            </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/product-3.jpg' %}" alt="">
             </div>
           </div>
         </div>
@@ -271,7 +271,7 @@
     </div>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
-        <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
           <div class="fr-tile__body">
             <div class="fr-tile__content">
               <h3 class="fr-tile__title">Données de référence</h3>
@@ -286,7 +286,7 @@
         </div>
       </div>
       <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
-        <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
           <div class="fr-tile__body">
             <div class="fr-tile__content">
               <h3 class="fr-tile__title">Conformité réglementaire</h3>
@@ -301,7 +301,7 @@
         </div>
       </div>
       <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
-        <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
           <div class="fr-tile__body">
             <div class="fr-tile__content">
               <h3 class="fr-tile__title">Export simplifié</h3>
@@ -316,7 +316,7 @@
         </div>
       </div>
       <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
-        <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
           <div class="fr-tile__body">
             <div class="fr-tile__content">
               <h3 class="fr-tile__title">Accès simple et gratuit</h3>
@@ -331,7 +331,7 @@
         </div>
       </div>
     </div>
-    <div class="fr-mt-6w text-center section-features__logos">
+    <div class="fr-mt-6w fr-py-3w text-center section-features__logos">
       <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle" style="gap: 2rem;">
         <div class="fr-col-auto">
           <img src="{% static 'home/img/logoInseeFr.svg' %}" alt="INSEE" class="section-features__logo">
