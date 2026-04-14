@@ -55,7 +55,6 @@ section {
 .section-hero {
     background: linear-gradient(180deg, #faf8f5 0%, #f5f1eb 100%);
     position: relative;
-    overflow: hidden;
 }
 
 .section-hero::before {

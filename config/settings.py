@@ -271,6 +271,10 @@ STATICFILES_DIRS = [
 STATIC_URL = "/static/"
 STATIC_ROOT = str(BASE_DIR / "staticroot")
 
+# Cache busting
+if ENVIRONMENT != "local":
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/{PUBLIC_MEDIA_LOCATION}/"
 
