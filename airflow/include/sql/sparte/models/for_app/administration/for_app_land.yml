@@ -192,3 +192,5 @@ models:
               values:
                 - "true"
                 - "false"
+    data_tests:
+      - has_all_lands

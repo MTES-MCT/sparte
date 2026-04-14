@@ -66,7 +66,6 @@ export function buildNavbar(landType: string, landSlug: string, isDGALNMember: b
             subMenu: filterDgaln([
                 { label: "Vacance des logements", url: urls.logementVacant },
                 { label: "Friches", url: urls.friches },
-                { label: "Résidences secondaires", url: urls.residencesSecondaires, dgaln_only: true },
             ]),
         },
     ];

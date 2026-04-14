@@ -16,202 +16,422 @@
 {% endblock breadcrumbs %}
 
 {% block content %}
-<section class="section-blue section-main">
+<div class="sticky-search-bar" id="sticky-search-bar" aria-hidden="true">
   <div class="fr-container">
-    <div class="fr-grid-row fr-grid-row--gutters fr-py-6w">
-      <div class="fr-col fr-col-12 fr-col-md-9">
-        <h1 class="fr-mb-0">Mon Diagnostic Artificialisation vous aide à analyser et maitriser la consommation d'espaces et l'artificialisation des sols de votre territoire</h1>
-      </div>
-      <div class="fr-col fr-col-12 fr-col-md-8">
-        <div class="fr-notice fr-notice--info fr-mb-3w rounded">
-          <div class="fr-container">
-            <div class="fr-notice__body flex-column">
-              <p class="fr-badge fr-badge--new">Nouveau</p>
-              <p class="fr-text--sm">
-                Les indicateurs d'<strong>imperméabilisation</strong> sont désormais disponibles sur votre territoire.
-              </p>
-            </div>
-          </div>
+    <div id="react-search-bar-sticky" data-origin="home"></div>
+  </div>
+</div>
+
+<section class="section-hero">
+  <div class="fr-container">
+    <div class="fr-grid-row fr-pt-12w fr-pb-8w">
+      <div class="fr-col-12 fr-col-lg-7">
+        <h1 class="fr-mb-3w">Analysez <span class="highlight">l'artificialisation</span> de votre territoire</h1>
+        <p class="fr-text--lg fr-mb-4w">
+          Accédez à un diagnostic clair pour comprendre votre consommation d’espaces NAF, piloter votre trajectoire de sobriété foncière et appuyer vos décisions.
+        </p>
+        <div class="fr-mb-4w">
+          <div id="react-search-bar" data-origin="home"></div>
+          <p class="fr-text--sm fr-mt-2w fr-mb-0 fr-text--italic">Plus de <strong>175 000</strong> diagnostics déjà réalisés</p>
         </div>
-        <div id="react-search-bar" data-origin="home"></div>
       </div>
     </div>
   </div>
-  <div id="hero-anim-map-container">
-    <img src="{% static 'home/img/OCSGE.png' %}" id="hero-anim-map" alt="">
+  <div class="hero-clip" aria-hidden="true">
+    <div class="hero-visual">
+      <img src="{% static 'img/cover-image.png' %}" alt="">
+    </div>
   </div>
 </section>
 
-<section class="fr-py-6w section-product">
+<section class="fr-py-6w fr-py-md-10w section-product">
   <div class="fr-container">
-    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
-      <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card">
+    <h2 class="fr-mb-2w">Votre diagnostic de sobriété foncière prêt à l’emploi</h2>
+    <p class="fr-mb-4w">Tout ce dont vous avez besoin pour comprendre, mesurer et réduire votre consommation d’espaces NAF.</p>
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+      <div class="fr-col-12 fr-col-lg-4">
+        <div class="fr-card fr-card--no-border">
           <div class="fr-card__body">
             <div class="fr-card__content">
-              <div class="fr-card__title">Sélectionnez un territoire</div>
-              <p class="fr-card__desc">Nos diagnostics sont disponibles France entière à l'échelle de la commune, EPCI, SCoT, département ou région.</p>
+              <div class="fr-card__title">Suivez votre consommation</div>
+              <p class="fr-card__desc">Visualisez les indicateurs détaillés de la consommation d’espaces NAF sur votre territoire.</p>
             </div>
           </div>
           <div class="fr-card__header">
             <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/sparte-territoire.png' %}" alt="">
+              <img class="fr-responsive-img" src="{% static 'home/img/product-1.jpg' %}" alt="">
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <div class="fr-card__title">Analysez la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et l'artificialisation des sols via nos outils</div>
-              <p class="fr-card__desc">Graphiques, tableaux de données, cartes interactives et calculs recommandés par le décret, exportables au format Word ou Excel.</p>
-            </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/sparte-diagnostic.png' %}" alt="">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <div class="fr-card__title">Inscrivez votre collectivité dans la trajectoire de la loi Climat et Résilience</div>
-              <ul class="fr-card__desc">
-                <li>Simulateur d'objectif non-réglementaire de réduction de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) d'ici 2031.</li>
-                <li>Trame du rapport triennal local de suivi de l'artificialisation des sols</li>
+            <div class="home-product-card__badges-overlay">
+              <ul class="fr-badges-group">
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Détail par destinations</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Autorisations d'urbanisme</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Croisements (population, ménages, emplois)</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Comparaison avec d'autres territoires</p>
+                </li>
               </ul>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-lg-4">
+        <div class="fr-card fr-card--no-border">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <div class="fr-card__title">Générez vos rapports</div>
+              <p class="fr-card__desc">Editez et exportez en un clic vos rapports locaux triennaux, conformes aux obligations réglementaires.</p>
+            </div>
+          </div>
           <div class="fr-card__header">
             <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/sparte-pilotage.png' %}" alt="">
+              <img class="fr-responsive-img" src="{% static 'home/img/product-2.jpg' %}" alt="">
+            </div>
+            <div class="home-product-card__badges-overlay">
+              <ul class="fr-badges-group">
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Rapports personnalisables</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Rapport triennal local</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Artificialisation</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Imperméabilisation</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-lg-4">
+        <div class="fr-card fr-card--no-border">
+          <div class="fr-card__body">
+            <div class="fr-card__content">
+              <div class="fr-card__title">Identifiez les leviers</div>
+              <p class="fr-card__desc">Pilotez votre trajectoire de sobriété foncière en sélectionnant les leviers les plus pertinents sur votre territoire.</p>
+            </div>
+          </div>
+          <div class="fr-card__header">
+            <div class="fr-card__img">
+              <img class="fr-responsive-img" src="{% static 'home/img/product-3.jpg' %}" alt="">
+            </div>
+            <div class="home-product-card__badges-overlay">
+              <ul class="fr-badges-group">
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Vacance des logements</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Friches sans projet</p>
+                </li>
+                <li>
+                  <p class="fr-badge fr-badge--sm fr-badge fr-badge--new fr-badge--no-icon">Trajectoire de sobriété fonciere</p>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="d-flex justify-content-center fr-mt-4w">
-      <a href="{{ WEBINAIRE_URL }}" target="_blank" rel="noopener" class="fr-link--text-decoration-none">
-        <button class="fr-btn">
-          Participer au prochain webinaire de présentation
-        </button>
-      </a>
+  </div>
+</section>
+
+<section class="fr-py-6w fr-py-md-10w section-actors">
+  <div class="fr-container">
+    <div class="actors-split">
+      <div class="actors-split__left">
+        <img src="{% static 'home/img/actors.jpg' %}" alt="" class="actors-split__img">
+        <div class="actors-split__overlay">
+          <h2 class="actors-split__title">Pensé pour les <span class="actors-split__title-highlight">acteurs</span> du territoire</h2>
+        </div>
+      </div>
+      <div class="actors-split__right">
+        <div class="actors-split__cards">
+          <div class="actors-card">
+            <span class="actors-card__icon" aria-hidden="true"><i class="bi bi-bank"></i></span>
+            <div class="actors-card__content">
+              <h3 class="actors-card__title">Élus</h3>
+              <p class="actors-card__desc">Situer son territoire par rapport aux enjeux réglementaires et arbitrer les projets d'aménagement</p>
+            </div>
+          </div>
+          <div class="actors-card">
+            <span class="actors-card__icon" aria-hidden="true"><i class="bi bi-gear"></i></span>
+            <div class="actors-card__content">
+              <h3 class="actors-card__title">Techniciens</h3>
+              <p class="actors-card__desc">Analyser les dynamiques territoriales et produire les rapports réglementaires</p>
+            </div>
+          </div>
+          <div class="actors-card">
+            <span class="actors-card__icon" aria-hidden="true"><i class="bi bi-bar-chart-line"></i></span>
+            <div class="actors-card__content">
+              <h3 class="actors-card__title">Bureaux d'études</h3>
+              <p class="actors-card__desc">Accéder aux données de référence nationales et comparer plusieurs territoires</p>
+            </div>
+          </div>
+          <div class="actors-card">
+            <span class="actors-card__icon" aria-hidden="true"><i class="bi bi-building"></i></span>
+            <div class="actors-card__content">
+              <h3 class="actors-card__title">Services de l'État</h3>
+              <p class="actors-card__desc">Produire les rapports triennaux et accompagner les collectivités</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="fr-py-6w section-legal">
+<section class="fr-py-6w fr-py-md-8w section-adoption">
   <div class="fr-container">
-    <h2>Les implications de la loi climat et résilience</h2>
+    <h2 class="fr-h3 fr-mb-4w text-center">Un outil déjà largement adopté par les collectivités</h2>
+    
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-mb-6w">
+      <div class="fr-col-6 fr-col-md-3">
+        <div class="kpi-item">
+          <span class="kpi-value">77%</span>
+          <span class="kpi-label">des communes diagnostiquées</span>
+        </div>
+      </div>
+      <div class="fr-col-6 fr-col-md-3">
+        <div class="kpi-item">
+          <span class="kpi-value">22 000</span>
+          <span class="kpi-label">rapports locaux téléchargés</span>
+        </div>
+      </div>
+      <div class="fr-col-6 fr-col-md-3">
+        <div class="kpi-item">
+          <span class="kpi-value">5 655</span>
+          <span class="kpi-label">comptes utilisateurs créés</span>
+        </div>
+      </div>
+      <div class="fr-col-6 fr-col-md-3">
+        <div class="kpi-item">
+          <span class="kpi-value">1 581</span>
+          <span class="kpi-label">collectivités compétentes engagées</span>
+        </div>
+      </div>
+    </div>
+
     <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-md-12">
-        <p class="fr-pr-3w fw-bold"><span class="fr-icon-check-line fr-mr-1w" aria-hidden="true"></span>
-          L'article 192 de la
-          <a target="_blank" rel="noopener noreferrer" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924">loi Climat et Résilience</a>
-          fixe une trajectoire nationale de sobriété foncière en 2 étapes&nbsp;:
-        </p>
-        <ul class="fr-text--sm mb-2">
-          <li>D'ici 2031&nbsp;: diminution d'environ 50% du rythme de consommation d'espaces naturels, agricoles, et forestiers par rapport au bilan des 10 dernières années (2011-2020).</li>
-          <li>D'ici 2050&nbsp;: Zéro Artificialisation Nette (ZAN) grâce à l'équilibre entre le total des surfaces artificialisées et désartificialisées.</li>
-        </ul>
-        <p class="fr-text--sm">Cette trajectoire nationale doit être déclinée territorialement dans les documents de planification et d’urbanisme.</p>
-        <p class="fr-pr-3w fw-bold"><span class="fr-icon-check-line fr-mr-1w" aria-hidden="true"></span>
-          Pour les collectivités, cette loi, complétée par la
-          <a target="_blank" rel="noopener noreferrer" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047866733">loi du 20 juillet 2023</a>
-          se traduit notamment par&nbsp;:
-        </p>
-        <ul class="fr-text--sm">
-          <li>un diagnostic de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) sur la période 2011-2020, recommandé pour estimer l'objectif d'ici 2031.</li>
-          <li>un rapport triennal de l'artificalisation des sols, obligatoire pour suivre la réduction progressive des surfaces artificialisées.</li>
-          <li>un pilotage régulier, recommandé pour s'inscrire dans la trajectoire de la loi Climat et Résilience.</li>
-        </ul>
+      <div class="fr-col-12 fr-col-md-4">
+        <figure class="fr-quote">
+          <blockquote>
+            <p>En plus des données, obtenir la trame était très intéressant, cela a évité de l'externalisation.</p>
+          </blockquote>
+          <figcaption>
+            <p class="fr-quote__author">Responsable Urbanisme</p>
+            <ul class="fr-quote__source">
+              <li>EPCI</li>
+            </ul>
+          </figcaption>
+        </figure>
       </div>
-      <div id="legal-anim-logo"></div>
+      <div class="fr-col-12 fr-col-md-4">
+        <figure class="fr-quote">
+          <blockquote>
+            <p>Cet outil a été très important et permis de mobiliser de l'ingénierie numérique pour l'élaboration des rapports triennaux.</p>
+          </blockquote>
+          <figcaption>
+            <p class="fr-quote__author">Référent sobriété foncière</p>
+            <ul class="fr-quote__source">
+              <li>Département</li>
+            </ul>
+          </figcaption>
+        </figure>
+      </div>
+      <div class="fr-col-12 fr-col-md-4">
+        <figure class="fr-quote">
+          <blockquote>
+            <p>La plateforme est très complète. Sans Mon Diag Artif, impossible de produire notre rapport.</p>
+          </blockquote>
+          <figcaption>
+            <p class="fr-quote__author">Technicienne Urbanisme</p>
+            <ul class="fr-quote__source">
+              <li>Commune</li>
+            </ul>
+          </figcaption>
+        </figure>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="fr-py-9w section-data">
+<section class="fr-py-6w fr-py-md-8w section-features">
   <div class="fr-container">
-    <h3 class="text-center">D'où proviennent nos données ?</h3>
-    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
-      <div class="fr-col-12 fr-col-md-4">
-        <div class="card">
-          <div class="card_header">
-            <div class="card_logo card_logo--cerema"></div>
-          </div>
-          <div class="card_content">
-            <div class="card_title">
-              Données d'évolution des fichiers fonciers produites par le Cerema
-            </div>
-            <div class="card_description">
-              Données issues de sources fiscales (DGFIP), et notamment de la taxe foncière puis enrichis par le Cerema.
-              Disponible France entière et mis à jour chaque année. Production sous la maitrise d'ouvrage de la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature). 
-            </div>
-            <div class="card_footer fr-mt-3w">
-              <a href="https://doc-datafoncier.cerema.fr/doc/ff/" class="fr-tag fr-icon-external-link-line" target="_blank" rel="noopener">En savoir plus</a>
+    <div class="fr-mb-4w text-center">
+      <h2 class="fr-h3 fr-mb-2w">Des données fiables, directement exploitables</h2>
+      <p class="fr-text--lg fr-mb-0 section-features__intro">Tout ce dont vous avez besoin pour piloter votre trajectoire de sobriété foncière</p>
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h3 class="fr-tile__title">Données de référence</h3>
+              <p class="fr-tile__desc">Publiques, actualisées et issues des sources officielles (Cerema, IGN, INSEE)</p>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="fr-col-12 fr-col-md-4">
-        <div class="card">
-          <div class="card_header">
-            <div class="card_logo card_logo--ign"></div>
-          </div>
-          <div class="card_content">
-            <div class="card_title">
-              OCS GE (Occupation du Sol à Grande Echelle) produite par l'IGN
-            </div>
-            <div class="card_description">
-              Base de données vectorielle de description de l'occupation et de l'usage du sol. 
-              Disponible France entière à horizon 2025 et mis à jour tous les 3 ans.
-              Production en sous la maitrise d'ouvrage de la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).
-            </div>
-            <div class="card_footer fr-mt-3w">
-              <a href="https://geoservices.ign.fr/telechargement-api/OCSGE?format=SHP" class="fr-tag fr-icon-external-link-line" target="_blank" rel="noopener">En savoir plus</a>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <i class="bi bi-database-check"></i>
             </div>
           </div>
         </div>
       </div>
-      <div class="fr-col-12 fr-col-md-4">
-        <div class="card">
-          <div class="card_header">
-            <div class="card_logo">
-              <div class="card_logo card_logo--gpu"></div>
+      <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h3 class="fr-tile__title">Conformité réglementaire</h3>
+              <p class="fr-tile__desc">Indicateurs et trames de rapport alignés avec la loi</p>
             </div>
           </div>
-          <div class="card_content">
-            <div class="card_title">
-              Données complémentaires
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <i class="bi bi-clipboard-check"></i>
             </div>
-            <div class="card_description">
-              Mon Diagnostic Artificialisation propose des croisements avec les données de l'INSEE (population) et le Géoportail de l'urbanisme (PLU, PLUi).
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h3 class="fr-tile__title">Export simplifié</h3>
+              <p class="fr-tile__desc">Téléchargez vos rapports et données en un clic</p>
             </div>
-            <div class="card_footer fr-mt-3w">
-              <a href="https://www.geoportail-urbanisme.gouv.fr/" class="fr-tag fr-icon-external-link-line" target="_blank" rel="noopener">En savoir plus</a>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <i class="bi bi-download"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-sm-6 fr-col-lg-3">
+        <div class="fr-tile fr-tile--horizontal fr-tile--no-border fr-tile--vertical@md">
+          <div class="fr-tile__body">
+            <div class="fr-tile__content">
+              <h3 class="fr-tile__title">Accès simple et gratuit</h3>
+              <p class="fr-tile__desc">Aucune expertise technique requise</p>
+            </div>
+          </div>
+          <div class="fr-tile__header">
+            <div class="fr-tile__pictogram">
+              <i class="bi bi-unlock"></i>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="card fr-mt-3w">
-      <div class="card_content">
-        <div class="card_title">
-          Déploiement de l'OCS GE sur Mon diagnostic Artificialisation
-          <p class="fr-text--xs text-muted">(Nous intégrons sur Mon Diagnostic Artificialisation les millésimes OCS GE en version finalisée 1.1 et 2.0)</p>
+    <div class="fr-mt-6w fr-py-3w text-center section-features__logos">
+      <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle" style="gap: 2rem;">
+        <div class="fr-col-auto">
+          <img src="{% static 'home/img/logoInseeFr.svg' %}" alt="INSEE" class="section-features__logo">
         </div>
-        <div class="card_content">
-          <div id="react-highcharts-ocsge"></div>
+        <div class="fr-col-auto">
+          <img src="{% static 'home/img/logo-ign.svg' %}" alt="IGN" class="section-features__logo">
+        </div>
+        <div class="fr-col-auto">
+          <img src="{% static 'home/img/logo-cerema.svg' %}" alt="Cerema" class="section-features__logo">
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<section class="section-zan">
+  <div class="fr-container">
+    <div class="zan-header">
+      <h2 class="zan-header__title">La loi <span class="zan-header__highlight">ZAN</span>, en bref</h2>
+      <p class="zan-header__desc">Depuis le 22 août 2021, la loi Climat et Résilience impose aux territoires de réduire drastiquement l'artificialisation des sols pour atteindre le Zéro Artificialisation Nette (ZAN) d'ici 2050.</p>
+      <p class="zan-header__callout">Depuis 2024, toutes les collectivités ayant la compétence urbanisme doivent établir un rapport local de consommation d'espaces tous les trois ans.</p>
+    </div>
+
+    <div class="zan-objectives">
+      <div class="zan-objective">
+        <div class="zan-objective__badge">2021 – 2031</div>
+        <div class="zan-objective__value">-50%</div>
+        <p class="zan-objective__desc">Réduction de la consommation d'espaces naturels, agricoles et forestiers par rapport à la décennie précédente</p>
+      </div>
+      <div class="zan-objective zan-objective--final">
+        <div class="zan-objective__badge">2031 – 2050</div>
+        <div class="zan-objective__value">ZAN</div>
+        <p class="zan-objective__desc">Zéro Artificialisation Nette : toute artificialisation devra être compensée par une désartificialisation équivalente</p>
+      </div>
+    </div>
+
+    <div class="zan-timeline">
+      <div class="zan-timeline__track" aria-hidden="true"></div>
+      <div class="zan-timeline__items">
+        <div class="zan-timeline__item zan-timeline__item--past">
+          <span class="zan-timeline__year">2021</span>
+          <span class="zan-timeline__label">Promulgation de la loi</span>
+        </div>
+        <div class="zan-timeline__item zan-timeline__item--past">
+          <span class="zan-timeline__year">2022</span>
+          <span class="zan-timeline__label">Décret d'application</span>
+        </div>
+        <div class="zan-timeline__item zan-timeline__item--past">
+          <span class="zan-timeline__year">2024-2027</span>
+          <span class="zan-timeline__label">Révision SRADDET et SCoT</span>
+        </div>
+        <div class="zan-timeline__item">
+          <span class="zan-timeline__year">2028</span>
+          <span class="zan-timeline__label">Révision PLUs / PLUis</span>
+        </div>
+        <div class="zan-timeline__item">
+          <span class="zan-timeline__year">2031</span>
+          <span class="zan-timeline__label">Bilan de la première période</span>
+        </div>
+        <div class="zan-timeline__item zan-timeline__item--final">
+          <span class="zan-timeline__year">2050</span>
+          <span class="zan-timeline__label">Objectif ZAN</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 {% include  "home/partials/newsletter_form.html" %}
 {% endblock content %}
+
+{% block bodyend %}
+<script nonce="[NONCE_PLACEHOLDER]">
+(function() {
+  const heroSearchBar = document.getElementById('react-search-bar');
+  const stickySearchBar = document.getElementById('sticky-search-bar');
+  
+  if (!heroSearchBar || !stickySearchBar) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          stickySearchBar.classList.remove('is-visible');
+          stickySearchBar.setAttribute('aria-hidden', 'true');
+        } else {
+          stickySearchBar.classList.add('is-visible');
+          stickySearchBar.setAttribute('aria-hidden', 'false');
+        }
+      });
+    },
+    {
+      root: null,
+      rootMargin: '-80px 0px 0px 0px',
+      threshold: 0
+    }
+  );
+
+  observer.observe(heroSearchBar);
+})();
+</script>
+{% endblock bodyend %}
 

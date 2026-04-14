@@ -3,8 +3,22 @@ import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 
 import useDebounce from '@hooks/useDebounce';
+import useTypewriterAnimation from '@hooks/useTypewriterAnimation';
 import Loader from '@components/ui/Loader';
 import { LandDetailResultType } from '@services/types/land';
+
+const ANIMATED_PLACEHOLDER_TEXTS = [
+    'SCOT de l\'Artois',
+    'SCOT du Pays d\'Apt',
+    'CA du Grand Angoulême',
+    'CC Coeur de Savoie',
+    'Blanquefort',
+    'Ajaccio',
+    'Normandie',
+    'Occitanie',
+    'Aveyron',
+    'Gironde',
+];
 
 interface SearchBarProps {
     onTerritorySelect?: (territory: LandDetailResultType) => void;
@@ -12,6 +26,7 @@ interface SearchBarProps {
     disableOverlay?: boolean;
     label?: string;
     dropdownPosition?: "below" | "above";
+    animatedPlaceholder?: boolean;
 }
 
 const defaultBehavior = (territory: LandDetailResultType) => {
@@ -40,14 +55,55 @@ const Icon = styled.i`
     margin: 0 0.5rem;
 `;
 
+const InputWrapper = styled.div`
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+`;
+
 const Input = styled.input`
     flex-grow: 1;
     border: none;
     font-size: 0.9em;
     color: ${primaryColor};
+    background: transparent;
+    width: 100%;
 
     &:focus {
         outline: none;
+    }
+
+    &::placeholder {
+        color: #9ca3af;
+    }
+`;
+
+const AnimatedPlaceholder = styled.span<{ $visible: boolean }>`
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9em;
+    color: #9ca3af;
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    display: ${({ $visible }) => ($visible ? 'block' : 'none')};
+`;
+
+const Cursor = styled.span<{ $blinking: boolean }>`
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background-color: ${primaryColor};
+    margin-left: 1px;
+    vertical-align: middle;
+    animation: ${({ $blinking }) => ($blinking ? 'blink 1s step-end infinite' : 'none')};
+
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
     }
 `;
 
@@ -133,6 +189,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     disableOverlay = false,
     label = "",
     dropdownPosition = "below",
+    animatedPlaceholder = false,
 }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
@@ -142,6 +199,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const shouldQueryBeSkipped = query.length < minimumCharCountForSearch;
     const { data: queryData, isFetching } = useSearchTerritoryQuery(query, {
         skip: shouldQueryBeSkipped,
+    });
+
+    const shouldShowAnimatedPlaceholder = animatedPlaceholder && !isFocused && query === '';
+    const { displayText, isTyping } = useTypewriterAnimation({
+        texts: ANIMATED_PLACEHOLDER_TEXTS,
+        enabled: shouldShowAnimatedPlaceholder,
+        typingSpeed: 70,
+        deletingSpeed: 35,
+        pauseBeforeDelete: 1800,
+        pauseBeforeNext: 400,
     });
 
     const stableExcludeTerritories = useMemo(() => excludeTerritories, 
@@ -211,16 +278,22 @@ const SearchBar: React.FC<SearchBarProps> = ({
             {label && <Label htmlFor="search-bar-territory">{label}</Label>}
             <SearchContainer ref={searchContainerRef} $useHighZIndex={!disableOverlay}>
                 <Icon className="bi bi-search" />
-                <Input
-                    id="search-bar-territory"
-                    type="text"
-                    value={query}
-                    onChange={handleInputChange}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={handleBlur}
-                    placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)"
-                    aria-label="Rechercher un territoire"
-                />
+                <InputWrapper>
+                    <Input
+                        id="search-bar-territory"
+                        type="text"
+                        value={query}
+                        onChange={handleInputChange}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={handleBlur}
+                        placeholder={shouldShowAnimatedPlaceholder ? '' : 'Rechercher un territoire (Commune, EPCI, Département, Région...)'}
+                        aria-label="Rechercher un territoire"
+                    />
+                    <AnimatedPlaceholder $visible={shouldShowAnimatedPlaceholder}>
+                        {displayText}
+                        <Cursor $blinking={!isTyping} />
+                    </AnimatedPlaceholder>
+                </InputWrapper>
                 {isFetching && <Loader size={25} wrap={false} />}
                 {data && (
                     <ResultsContainer $useHighZIndex={!disableOverlay} $position={dropdownPosition}>

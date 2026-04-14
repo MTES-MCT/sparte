@@ -41,7 +41,18 @@ if (footerConsent) {
 const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
 {
+  const isHomePage = searchBar.dataset.origin === 'home';
   createRoot(searchBar).render(
+    <Provider store={store}>
+      <SearchBar animatedPlaceholder={isHomePage} />
+    </Provider>,
+  )
+}
+
+const searchBarSticky = document.getElementById('react-search-bar-sticky')
+if (searchBarSticky)
+{
+  createRoot(searchBarSticky).render(
     <Provider store={store}>
       <SearchBar />
     </Provider>,
