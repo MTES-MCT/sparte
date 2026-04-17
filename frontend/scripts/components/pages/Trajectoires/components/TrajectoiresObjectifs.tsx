@@ -82,7 +82,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
             <div className="fr-col-12 fr-col-md-6 fr-grid-row">
               <Kpi
                 icon="bi bi-bullseye"
-                label="Consommation d'espaces NAF à ne pas dépasser"
+                label="Consommation d'espaces NAF cible"
                 value={
                   <>
                     <div>{formatNumber({ number: allowedConso2021_2030 })} <span>ha</span></div>
@@ -101,7 +101,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
             <div className="fr-col-12 fr-col-md-6 fr-grid-row">
               <Kpi
                 icon="bi bi-sliders"
-                label="Consommation d'espaces NAF à ne pas dépasser"
+                label="Consommation d'espaces NAF cible"
                 value={
                   <>
                     <div>

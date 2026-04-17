@@ -100,7 +100,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-bullseye"
-          label="Consommation d'espaces NAF à ne pas dépasser"
+          label="Consommation d'espaces NAF cible"
           value={
             <>
               <div>{formatNumber({ number: allowed_conso_2021_2030 })} <span>ha</span></div>
