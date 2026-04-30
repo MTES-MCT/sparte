@@ -1,0 +1,42 @@
+FROM node:20-slim AS frontend-builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+COPY webpack.config.js tsconfig.json babel.config.js ./
+COPY frontend/ frontend/
+
+RUN npm run build
+
+FROM python:3.11-slim AS runtime
+
+# Pas de .pyc, logs temps réel, pas de cache pip
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    binutils \
+    gdal-bin \
+    libgdal-dev \
+    libgeos-dev \
+    libproj-dev \
+    proj-data \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY Pipfile Pipfile.lock ./
+RUN pip install pipenv \
+    && pipenv install --system --deploy
+
+COPY . .
+
+COPY --from=frontend-builder /app/static/ static/
+
+EXPOSE 8000
+
+ENTRYPOINT ["bash", "bin/entrypoint.sh"]
+CMD ["gunicorn", "config.wsgi", "--bind", "0.0.0.0:8000", "--workers", "9", "--timeout", "180", "--log-file", "-"]
