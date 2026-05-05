@@ -195,6 +195,7 @@ interface CarroyageLeaMapProps {
     childLandType?: string;
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
+    mapHeight?: string;
 }
 
 export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
@@ -204,7 +205,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     selectedDestination,
     childLandType,
     center,
-    onMapLoad
+    onMapLoad,
+    mapHeight,
 }) => {
     const { data: destinationConfig } = useGetCarroyageDestinationConfigQuery(undefined);
     const { land_type, land_id } = landData || {};
@@ -535,6 +537,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             config={config}
             landData={extendedLandData}
             center={center}
+            mapHeight={mapHeight}
             onMapLoad={handleMapLoad}
             sidePanel={
                 <CarroyageLeaSidePanel

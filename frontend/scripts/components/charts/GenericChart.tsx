@@ -55,6 +55,7 @@ type GenericChartProps = {
   land_type: string;
   params?: object;
   containerProps?: React.HTMLAttributes<HTMLDivElement>;
+  cardStyle?: React.CSSProperties;
   isMap?: boolean;
   showToolbar?: boolean;
   sources?: DataSource[];
@@ -114,6 +115,7 @@ const GenericChart = ({
   land_type,
   params,
   containerProps,
+  cardStyle,
   isMap = false,
   showToolbar = true,
   sources = [],
@@ -156,7 +158,7 @@ const GenericChart = ({
 
   if (isLoadingOrFetching) {
     return (
-      <ChartCard>
+      <ChartCard style={cardStyle}>
         <LoaderContainer>
           <Loader />
         </LoaderContainer>
@@ -166,7 +168,7 @@ const GenericChart = ({
 
   if (error || !chartOptions?.highcharts_options) {
     return (
-      <ChartCard>
+      <ChartCard style={cardStyle}>
         <ChartBody className="fr-text--sm fr-text-mention--grey fr-py-4w">
           <i className="bi bi-exclamation-triangle fr-mr-1w" />
           Erreur lors du chargement des données
@@ -273,7 +275,7 @@ const GenericChart = ({
 
   if (dataTableOnly && effectiveShowDataTable && dataTable) {
     return (
-      <ChartCard>
+      <ChartCard style={cardStyle}>
         <ChartBody>
           {dataTableHeader}
           <ChartDataTable data={dataTable} title={mutableChartOptions.title?.text} compact={compactDataTable} />
@@ -284,7 +286,7 @@ const GenericChart = ({
   }
 
   return (
-    <ChartCard>
+    <ChartCard style={cardStyle}>
       <ChartBody>
         {showToolbar && (
           <Toolbar>

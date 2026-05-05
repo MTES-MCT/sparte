@@ -34,6 +34,7 @@ export interface KpiProps {
   badge?: string;
   footer?: KpiFooter;
   action?: KpiAction;
+  compact?: boolean;
 }
 
 const variantConfig: Record<KpiVariant, { color: string; bg: string; border: string }> = {
@@ -51,9 +52,9 @@ const Card = styled(BaseCard)`
   height: 100%;
 `;
 
-const Header = styled.div`
-  padding: 1.5rem 1.75rem;
-  padding-top: 4rem;
+const Header = styled.div<{ $compact?: boolean }>`
+  padding: ${({ $compact }) => $compact ? '0.75rem 1rem' : '1.5rem 1.75rem'};
+  padding-top: ${({ $compact }) => $compact ? '0.75rem' : '4rem'};
   background: white;
   display: flex;
   flex-direction: column;
@@ -71,30 +72,30 @@ const TagWrapper = styled.div`
   text-transform: uppercase;
 `;
 
-const HeaderIcon = styled.div<{ $color: string }>`
-  width: 48px;
-  height: 48px;
+const HeaderIcon = styled.div<{ $color: string; $compact?: boolean }>`
+  width: ${({ $compact }) => $compact ? '32px' : '48px'};
+  height: ${({ $compact }) => $compact ? '32px' : '48px'};
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: ${({ $compact }) => $compact ? '0.4rem' : '0.75rem'};
   background: ${({ $color }) => $color};
   color: white;
-  font-size: 1.5rem;
+  font-size: ${({ $compact }) => $compact ? '1rem' : '1.5rem'};
 `;
 
-const ValueText = styled.div<{ $color: string }>`
-  font-size: 2rem;
+const ValueText = styled.div<{ $color: string; $compact?: boolean }>`
+  font-size: ${({ $compact }) => $compact ? '1.25rem' : '2rem'};
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.2;
   color: ${({ $color }) => $color};
 `;
 
-const LabelText = styled.div`
-  font-size: ${theme.fontSize.sm};
-  margin-top: 0.5rem;
+const LabelText = styled.div<{ $compact?: boolean }>`
+  font-size: ${({ $compact }) => $compact ? theme.fontSize.xs : theme.fontSize.sm};
+  margin-top: ${({ $compact }) => $compact ? '0.25rem' : '0.5rem'};
   font-weight: ${theme.fontWeight.medium};
 `;
 
@@ -104,8 +105,8 @@ const DescriptionText = styled.div`
   margin-top: 0.25rem;
 `;
 
-const FooterWrapper = styled.div<{ $bg: string }>`
-  padding: 1rem 1.5rem;
+const FooterWrapper = styled.div<{ $bg: string; $compact?: boolean }>`
+  padding: ${({ $compact }) => $compact ? '0.5rem 0.75rem' : '1rem 1.5rem'};
   background: ${({ $bg }) => $bg};
 `;
 
@@ -327,12 +328,13 @@ const Kpi: React.FC<KpiProps> = ({
   badge,
   footer,
   action,
+  compact,
 }) => {
   const config = variantConfig[variant];
 
   return (
     <Card>
-      <Header>
+      <Header $compact={compact}>
         {badge && (
           <TagWrapper>
             <Tag
@@ -344,15 +346,15 @@ const Kpi: React.FC<KpiProps> = ({
             </Tag>
           </TagWrapper>
         )}
-        <HeaderIcon $color={config.color}>
+        <HeaderIcon $color={config.color} $compact={compact}>
           <i className={icon} />
         </HeaderIcon>
-        <ValueText $color={config.color}>{value}</ValueText>
-        <LabelText>{label}</LabelText>
+        <ValueText $color={config.color} $compact={compact}>{value}</ValueText>
+        <LabelText $compact={compact}>{label}</LabelText>
         {description && <DescriptionText>{description}</DescriptionText>}
       </Header>
       {footer && (
-        <FooterWrapper $bg={config.bg}>
+        <FooterWrapper $bg={config.bg} $compact={compact}>
           {footer.type === "metric" && (
             <MetricFooter items={footer.items} color={config.color} border={config.border} />
           )}
