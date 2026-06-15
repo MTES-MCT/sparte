@@ -25,31 +25,31 @@ TMP_PATH = "/tmp/majic_2025"
 configs = [
     {
         "name": "France Métropolitaine",
-        "geopackage_on_s3": "majic/obs_artif_conso_com_2009_2025.gpkg",
+        "geopackage_on_s3": "conso_2025/conso_com_metro.gpkg",
         "srid": 2154,
         "table_name": "majic_france_metropolitaine_2025",
     },
     {
         "name": "Guadeloupe",
-        "geopackage_on_s3": "majic/obs_artif_conso_com_2009_2025_971.gpkg",
+        "geopackage_on_s3": "conso_2025/conso_com_971.gpkg",
         "srid": 32620,
         "table_name": "majic_guadeloupe_2025",
     },
     {
         "name": "Martinique",
-        "geopackage_on_s3": "majic/obs_artif_conso_com_2009_2025_972.gpkg",
+        "geopackage_on_s3": "conso_2025/conso_com_972.gpkg",
         "srid": 32620,
         "table_name": "majic_martinique_2025",
     },
     {
         "name": "Guyane",
-        "geopackage_on_s3": "majic/obs_artif_conso_com_2009_2025_973.gpkg",
+        "geopackage_on_s3": "conso_2025/conso_com_973.gpkg",
         "srid": 2972,
         "table_name": "majic_guyane_2025",
     },
     {
         "name": "La Réunion",
-        "geopackage_on_s3": "majic/obs_artif_conso_com_2009_2025_974.gpkg",
+        "geopackage_on_s3": "conso_2025/conso_com_974.gpkg",
         "srid": 2975,
         "table_name": "majic_la_reunion_2025",
     },
