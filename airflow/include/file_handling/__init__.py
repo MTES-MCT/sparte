@@ -1,3 +1,4 @@
+from .BaseArchiveHandler import BaseArchiveHandler
 from .BaseCSVFileIngestor import BaseCSVFileIngestor
 from .BaseHTTPFileHandler import BaseHTTPFileHandler
 from .BaseS3Handler import BaseS3Handler
@@ -11,9 +12,11 @@ from .RemoteToS3FileHandler import RemoteToS3FileHandler
 from .RemoteZipToS3FileHandler import RemoteZipToS3FileHandler
 from .S3CSVFileToDBTableHandler import S3CSVFileToDBTableHandler
 from .S3GeoJsonFileToDBTableHandler import S3GeoJsonFileToDBTableHandler
+from .S3GeopackageArchiveToDBTablesHandler import S3GeopackageArchiveToDBTablesHandler
 from .S3Handler import S3Handler
 from .S3ToDataGouvHandler import S3ToDataGouvHandler
 from .S3XLSXFileToDBTableHandler import S3XLSXFileToDBTableHandler
+from .SevenZArchiveHandler import SevenZArchiveHandler
 from .SQLToCSVOnS3Handler import SQLToCSVOnS3Handler
 from .SQLToGeoJsonOnS3Handler import SQLToGeoJsonOnS3Handler
 from .SQLToGeojsonSeqOnS3Handler import SQLToGeojsonSeqOnS3Handler
@@ -22,8 +25,10 @@ from .TmpPathGenerator import TmpPathGenerator
 from .XLSXFileIngestor import XLSXFileIngestor
 
 __all__ = [
+    "BaseArchiveHandler",
     "BaseHTTPFileHandler",
     "BaseS3Handler",
+    "SevenZArchiveHandler",
     "RemoteToS3FileHandler",
     "RemoteZipToS3FileHandler",
     "PaginatedJsonToS3Handler",
@@ -31,6 +36,7 @@ __all__ = [
     "BaseCSVFileIngestor",
     "S3CSVFileToDBTableHandler",
     "S3GeoJsonFileToDBTableHandler",
+    "S3GeopackageArchiveToDBTablesHandler",
     "S3XLSXFileToDBTableHandler",
     "SQLToGeoJsonOnS3Handler",
     "SQLToGeojsonSeqOnS3Handler",

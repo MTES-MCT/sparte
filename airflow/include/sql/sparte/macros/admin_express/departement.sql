@@ -5,17 +5,17 @@
             simplify(
                 source=source('public', source_table_name),
                 geo_field='geom',
-                id_field='insee_dep',
+                id_field='code_insee',
                 tolerance='1500'
             )
         }}
     )
     SELECT
-        id,
-        nom as name,
-        nom_m as name_uppercase,
-        insee_dep as code,
-        insee_reg as region,
+        cleabs as id,
+        nom_officiel as name,
+        nom_officiel_en_majuscules as name_uppercase,
+        code_insee as code,
+        code_insee_de_la_region as region,
         ST_Area(departement.geom) as surface,
         departement.geom,
         simplified.geom as simple_geom
@@ -24,5 +24,5 @@
     LEFT JOIN
         simplified
     ON
-        departement.insee_dep = simplified.id_field
+        departement.code_insee = simplified.id_field
 {% endmacro %}
