@@ -1,1 +1,1 @@
-{{ majic('majic_guyane_2025', '09', '25') }}
+{{ majic('majic_guyane_2025', '11', '25') }}

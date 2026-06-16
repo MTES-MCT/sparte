@@ -8,8 +8,9 @@ Contrairement au dag `ingest_majic` qui chargeait des shapefiles (zippés), les 
 la construction des modèles dbt est gérée séparément.
 """
 
-import os
+import shutil
 import subprocess
+import tempfile
 from typing import List
 
 from include.container import InfraContainer as Container
@@ -20,7 +21,6 @@ from airflow.decorators import dag
 from airflow.operators.python import PythonOperator
 
 BUCKET_NAME = Container().bucket_name()
-TMP_PATH = "/tmp/majic_2025"
 
 configs = [
     {
@@ -61,9 +61,9 @@ def load_geopackage_to_postgres(config: dict):
     srid = config["srid"]
     table_name = config["table_name"]
     path_on_bucket = f"{BUCKET_NAME}/{geopackage_on_s3}"
-    localpath = f"{TMP_PATH}/{table_name}.gpkg"
+    tmp_dir = tempfile.mkdtemp()
+    localpath = f"{tmp_dir}/{table_name}.gpkg"
 
-    os.makedirs(TMP_PATH, exist_ok=True)
     Container().s3().get_file(path_on_bucket, localpath)
 
     layer_name = get_shapefile_or_geopackage_first_layer_name(localpath)
@@ -92,7 +92,7 @@ def load_geopackage_to_postgres(config: dict):
     ]
     subprocess.run(" ".join(cmd), shell=True, check=True)
 
-    os.remove(localpath)
+    shutil.rmtree(tmp_dir)
     return config
 
 
