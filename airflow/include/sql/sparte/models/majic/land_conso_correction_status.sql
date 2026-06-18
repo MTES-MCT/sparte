@@ -11,7 +11,7 @@ SELECT
     unnest(array_agg(correction_status)) as correction_status,
     commune_code
 FROM
-    {{ ref('consommation_cog_2024') }}
+    {{ ref('consommation_cog_2025') }}
 GROUP BY
     commune_code
 ORDER BY

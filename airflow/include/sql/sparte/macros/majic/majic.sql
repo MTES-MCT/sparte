@@ -21,7 +21,8 @@
         art{{ from_year }}mix{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_mixte,
         art{{ from_year }}rou{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_route,
         art{{ from_year }}fer{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_ferroviaire,
-        art{{ from_year }}inc{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_inconnu
+        art{{ from_year }}inc{{ to_year }}::int as conso_20{{ from_year }}_20{{ to_year }}_inconnu,
+        geom
     FROM
         {{ source('public', source_table_name) }}
 {% endmacro %}
