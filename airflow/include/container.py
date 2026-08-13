@@ -22,6 +22,7 @@ from .file_handling import (
     S3CSVFileToDBTableHandler,
     S3GeoJsonFileToDBTableHandler,
     S3GeopackageArchiveToDBTablesHandler,
+    S3GeopackageFileToDBTableHandler,
     S3Handler,
     S3ToDataGouvHandler,
     S3XLSXFileToDBTableHandler,
@@ -264,6 +265,13 @@ class DomainContainer(containers.DeclarativeContainer):
 
     s3_geojson_file_to_db_table_handler = providers.Factory(
         provides=S3GeoJsonFileToDBTableHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+    )
+
+    s3_geopackage_file_to_db_table_handler = providers.Factory(
+        provides=S3GeopackageFileToDBTableHandler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
         db_connection=InfraContainer().gdal_dbt_conn().encode(),

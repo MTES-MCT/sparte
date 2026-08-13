@@ -78,7 +78,7 @@ def ingest_majic():
 
     @task.bash(pool=DBT_POOL)
     def dbt_build() -> str:
-        return get_dbt_command_from_directory(cmd="dbt build -s +consommation.sql+")
+        return get_dbt_command_from_directory(cmd="dbt build -s +consommation.sql+ --exclude tag:macro_unit_test")
 
     @task.bash()
     def cleanup() -> str:

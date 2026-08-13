@@ -25,8 +25,13 @@ with DAG(
     catchup=False,
     params={
         "command": Param(
-            default="dbt build -s",
+            default="dbt build -s --exclude tag:macro_unit_test",
             type="string",
+            description=(
+                "Les modèles taggés `macro_unit_test` n'existent que pour les tests unitaires "
+                "de macros : leurs colonnes ne correspondent pas aux vraies tables, il faut donc "
+                "garder `--exclude tag:macro_unit_test` sur tout build."
+            ),
         ),
     },
 ) as dag:

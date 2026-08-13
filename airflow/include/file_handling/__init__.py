@@ -13,6 +13,7 @@ from .RemoteZipToS3FileHandler import RemoteZipToS3FileHandler
 from .S3CSVFileToDBTableHandler import S3CSVFileToDBTableHandler
 from .S3GeoJsonFileToDBTableHandler import S3GeoJsonFileToDBTableHandler
 from .S3GeopackageArchiveToDBTablesHandler import S3GeopackageArchiveToDBTablesHandler
+from .S3GeopackageFileToDBTableHandler import S3GeopackageFileToDBTableHandler
 from .S3Handler import S3Handler
 from .S3ToDataGouvHandler import S3ToDataGouvHandler
 from .S3XLSXFileToDBTableHandler import S3XLSXFileToDBTableHandler
@@ -37,6 +38,7 @@ __all__ = [
     "S3CSVFileToDBTableHandler",
     "S3GeoJsonFileToDBTableHandler",
     "S3GeopackageArchiveToDBTablesHandler",
+    "S3GeopackageFileToDBTableHandler",
     "S3XLSXFileToDBTableHandler",
     "SQLToGeoJsonOnS3Handler",
     "SQLToGeojsonSeqOnS3Handler",
