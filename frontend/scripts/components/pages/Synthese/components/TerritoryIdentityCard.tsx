@@ -118,7 +118,7 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
   const { data: populationData } = useGetLandPopDensityQuery({
     land_id: landData.land_id,
     land_type: landData.land_type,
-    year: 2022,
+    year: 2023,
   });
 
   const population = populationData?.[0]?.population || null;
@@ -137,7 +137,7 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
     },
     {
       icon: "bi bi-people-fill",
-      label: "Population",
+      label: "Population (2023)",
       value: population ? `${formatNumber({ number: population, decimals: 0 })} hab` : "—",
     },
   ];

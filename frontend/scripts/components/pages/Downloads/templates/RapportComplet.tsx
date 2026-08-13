@@ -53,10 +53,10 @@ interface RapportCompletProps {
 }
 
 const DEFAULT_consoStartYear = 2011;
-const DEFAULT_consoEndYear = 2023;
+const DEFAULT_consoEndYear = 2024;
 
-// Années disponibles pour la sélection (fichiers fonciers disponibles depuis 2009)
-const AVAILABLE_YEARS = Array.from({ length: 15 }, (_, i) => 2009 + i);
+// Années disponibles pour la sélection (fichiers fonciers disponibles depuis 2011)
+const AVAILABLE_YEARS = Array.from({ length: 14 }, (_, i) => 2011 + i);
 
 const SettingsSection = styled.div`
     margin-bottom: 2.5rem;

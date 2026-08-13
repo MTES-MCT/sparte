@@ -3,7 +3,7 @@ import { formatNumber } from "@utils/formatUtils";
 import { useConsoData } from "../hooks";
 
 export const DEFAULT_START_YEAR = 2011;
-export const DEFAULT_END_YEAR = 2023;
+export const DEFAULT_END_YEAR = 2024;
 
 export const LAND_TYPE_LABELS: Record<string, string> = {
   COMM: "Commune",
@@ -83,8 +83,8 @@ export const ConsommationControlsProvider: React.FC<ConsommationControlsProvider
   land_id,
   land_type,
   childLandTypes,
-  minYear = 2009,
-  maxYear = 2023,
+  minYear = 2011,
+  maxYear = 2024,
   defaultStartYear = DEFAULT_START_YEAR,
   defaultEndYear = DEFAULT_END_YEAR,
 }) => {

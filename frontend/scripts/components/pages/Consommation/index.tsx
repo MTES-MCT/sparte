@@ -86,7 +86,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
               <>
                 <p>Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le <strong>CEREMA</strong> à partir des données d'évolution des <strong>fichiers fonciers</strong>.</p>
                 <p>Ces données sont disponibles à l'échelle de la commune.</p>
-                <p>Le dernier millésime (2023) correspond à la photographie du territoire au 1er janvier 2024, et intègre les évolutions réalisées au cours de l'année 2023.</p>
+                <p>Le dernier millésime (2024) correspond à la photographie du territoire au 1er janvier 2025, et intègre les évolutions réalisées au cours de l'année 2024.</p>
               </>
             ),
           }}
