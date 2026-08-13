@@ -2,7 +2,7 @@
     config(
         materialized="table",
         indexes=[
-            {"columns": ["year_index", "departement"], "type": "btree"},
+            {"columns": ["year_index", '"DEPART"'], "type": "btree"},
         ],
     )
 }}

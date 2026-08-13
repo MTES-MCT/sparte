@@ -1,4 +1,4 @@
-{% macro set_empty_data(commune_code, start_year=2009, end_year=2024, source_commune_code='76676') %}
+{% macro set_empty_data(commune_code, start_year=2011, end_year=2025, source_commune_code='76676') %}
 {#
     Emits a zero-consumption row for `commune_code` (a commune missing from the
     MAJIC source). It reuses divide_majic with percent=0: every conso column of

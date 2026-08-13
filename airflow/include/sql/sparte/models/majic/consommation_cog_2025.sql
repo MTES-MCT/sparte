@@ -28,42 +28,42 @@ with unchanged as (
     )
 ),
 divisions as (
-    -- 14712 split into 14712 (kept) and 14666 (new). Percentages to adjust.
-    {{ divide_majic('14712', '14666', percent=50, start_year=start_year, end_year=end_year) }}
+    -- 14712 split into 14712 (kept) and 14666 (new).
+    {{ divide_majic('14712', '14666', percent=31.15, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('14712', '14712', percent=50, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('14712', '14712', percent=68.85, start_year=start_year, end_year=end_year) }}
     union
-    -- 52031 split into 52031 (kept) and 52278 (new). Percentages to adjust.
-    {{ divide_majic('52031', '52278', percent=50, start_year=start_year, end_year=end_year) }}
+    -- 52031 split into 52031 (kept) and 52278 (new).
+    {{ divide_majic('52031', '52278', percent=24.87, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('52031', '52031', percent=50, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('52031', '52031', percent=75.13, start_year=start_year, end_year=end_year) }}
     union
-    -- 52332 split into 52332 (kept), 52033 and 52465 (new). Percentages to adjust.
-    {{ divide_majic('52332', '52033', percent=33.33, start_year=start_year, end_year=end_year) }}
+    -- 52332 split into 52332 (kept), 52033 and 52465 (new).
+    {{ divide_majic('52332', '52033', percent=8.18, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('52332', '52465', percent=33.33, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('52332', '52465', percent=8.78, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('52332', '52332', percent=33.34, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('52332', '52332', percent=83.04, start_year=start_year, end_year=end_year) }}
     union
-    -- 60054 split into 60054 (kept) and 60694 (new). Percentages to adjust.
-    {{ divide_majic('60054', '60694', percent=50, start_year=start_year, end_year=end_year) }}
+    -- 60054 split into 60054 (kept) and 60694 (new).
+    {{ divide_majic('60054', '60694', percent=57.76, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('60054', '60054', percent=50, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('60054', '60054', percent=42.24, start_year=start_year, end_year=end_year) }}
     union
-    -- 76676 split into 76676 (kept) and 76601 (new). Percentages to adjust.
-    {{ divide_majic('76676', '76601', percent=50, start_year=start_year, end_year=end_year) }}
+    -- 76676 split into 76676 (kept) and 76601 (new).
+    {{ divide_majic('76676', '76601', percent=33.31, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('76676', '76676', percent=50, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('76676', '76676', percent=66.69, start_year=start_year, end_year=end_year) }}
     union
-    -- 52504 split into 52504 (kept) and 52124 (new). Percentages to adjust.
-    {{ divide_majic('52504', '52124', percent=50, start_year=start_year, end_year=end_year) }}
+    -- 52504 split into 52504 (kept) and 52124 (new).
+    {{ divide_majic('52504', '52124', percent=45.75, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('52504', '52504', percent=50, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('52504', '52504', percent=54.25, start_year=start_year, end_year=end_year) }}
     union
-    -- 55298 split into 55298 (kept) and 55138 (new). Percentages to adjust.
-    {{ divide_majic('55298', '55138', percent=50, start_year=start_year, end_year=end_year) }}
+    -- 55298 split into 55298 (kept) and 55138 (new).
+    {{ divide_majic('55298', '55138', percent=44.99, start_year=start_year, end_year=end_year) }}
     union
-    {{ divide_majic('55298', '55298', percent=50, start_year=start_year, end_year=end_year) }}
+    {{ divide_majic('55298', '55298', percent=55.01, start_year=start_year, end_year=end_year) }}
 ),
 missing_from_source as (
     {{ set_empty_data('09304', start_year=start_year, end_year=end_year) }}
@@ -109,7 +109,7 @@ missing_from_source as (
 together as (
     select *, 'UNCHANGED' as correction_status from unchanged
     union all
-    select *, 'DIVISION' as correction_status from divisions
+    select *, 'COG_ERROR' as correction_status from divisions
     union all
     select *, 'MISSING_FROM_SOURCE' as correction_status from missing_from_source
 )

@@ -19,8 +19,8 @@
       - residences_secondaires (conso_field=habitat, taux et non évolution)
 #}
 
-{% set min_year = 2009 %}
-{% set max_year = 2023 %}
+{% set min_year = 2011 %}
+{% set max_year = 2024 %}
 {% set land_types = [var("COMMUNE"), var("EPCI"), var("SCOT"), var("DEPARTEMENT"), var("REGION")] %}
 
 WITH periods AS (
@@ -44,7 +44,7 @@ conso_agg AS (
     CROSS JOIN periods p
     WHERE c.land_id IS NOT NULL
       AND c.year >= p.start_year
-      AND c.year < p.end_year
+      AND c.year <= p.end_year
       AND c.land_type IN ('{{ land_types | join("', '") }}')
     GROUP BY c.land_id, c.land_type, p.start_year, p.end_year
 ),
@@ -56,10 +56,10 @@ indic_population AS (
         'total' AS conso_field,
         ca.land_id, ca.land_type, ca.start_year, ca.end_year,
         CASE WHEN ca.surface > 0 AND (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_total / ca.surface * 100 / (ca.end_year - ca.start_year))::numeric, 6)
+             THEN ROUND((ca.conso_total / ca.surface * 100 / (ca.end_year - ca.start_year + 1))::numeric, 6)
              ELSE 0 END AS conso_rate,
         CASE WHEN (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_total / 10000.0 / (ca.end_year - ca.start_year))::numeric, 2)
+             THEN ROUND((ca.conso_total / 10000.0 / (ca.end_year - ca.start_year + 1))::numeric, 2)
              ELSE 0 END AS conso_ha,
         CASE
             WHEN ca.end_year <= 2016 AND ind.population_11 > 0
@@ -82,10 +82,10 @@ indic_logement AS (
         'habitat' AS conso_field,
         ca.land_id, ca.land_type, ca.start_year, ca.end_year,
         CASE WHEN ca.surface > 0 AND (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_habitat / ca.surface * 100 / (ca.end_year - ca.start_year))::numeric, 6)
+             THEN ROUND((ca.conso_habitat / ca.surface * 100 / (ca.end_year - ca.start_year + 1))::numeric, 6)
              ELSE 0 END AS conso_rate,
         CASE WHEN (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_habitat / 10000.0 / (ca.end_year - ca.start_year))::numeric, 2)
+             THEN ROUND((ca.conso_habitat / 10000.0 / (ca.end_year - ca.start_year + 1))::numeric, 2)
              ELSE 0 END AS conso_ha,
         CASE
             WHEN ca.end_year <= 2016 AND ind.logements_11 > 0
@@ -108,10 +108,10 @@ indic_menages AS (
         'habitat' AS conso_field,
         ca.land_id, ca.land_type, ca.start_year, ca.end_year,
         CASE WHEN ca.surface > 0 AND (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_habitat / ca.surface * 100 / (ca.end_year - ca.start_year))::numeric, 6)
+             THEN ROUND((ca.conso_habitat / ca.surface * 100 / (ca.end_year - ca.start_year + 1))::numeric, 6)
              ELSE 0 END AS conso_rate,
         CASE WHEN (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_habitat / 10000.0 / (ca.end_year - ca.start_year))::numeric, 2)
+             THEN ROUND((ca.conso_habitat / 10000.0 / (ca.end_year - ca.start_year + 1))::numeric, 2)
              ELSE 0 END AS conso_ha,
         CASE
             WHEN ca.end_year <= 2016 AND ind.menages_11 > 0
@@ -134,10 +134,10 @@ indic_emploi AS (
         'activite' AS conso_field,
         ca.land_id, ca.land_type, ca.start_year, ca.end_year,
         CASE WHEN ca.surface > 0 AND (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_activite / ca.surface * 100 / (ca.end_year - ca.start_year))::numeric, 6)
+             THEN ROUND((ca.conso_activite / ca.surface * 100 / (ca.end_year - ca.start_year + 1))::numeric, 6)
              ELSE 0 END AS conso_rate,
         CASE WHEN (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_activite / 10000.0 / (ca.end_year - ca.start_year))::numeric, 2)
+             THEN ROUND((ca.conso_activite / 10000.0 / (ca.end_year - ca.start_year + 1))::numeric, 2)
              ELSE 0 END AS conso_ha,
         CASE
             WHEN ca.end_year <= 2016 AND ind.actifs_occupes_15_64_11 > 0
@@ -160,10 +160,10 @@ indic_res_secondaires AS (
         'habitat' AS conso_field,
         ca.land_id, ca.land_type, ca.start_year, ca.end_year,
         CASE WHEN ca.surface > 0 AND (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_habitat / ca.surface * 100 / (ca.end_year - ca.start_year))::numeric, 6)
+             THEN ROUND((ca.conso_habitat / ca.surface * 100 / (ca.end_year - ca.start_year + 1))::numeric, 6)
              ELSE 0 END AS conso_rate,
         CASE WHEN (ca.end_year - ca.start_year) > 0
-             THEN ROUND((ca.conso_habitat / 10000.0 / (ca.end_year - ca.start_year))::numeric, 2)
+             THEN ROUND((ca.conso_habitat / 10000.0 / (ca.end_year - ca.start_year + 1))::numeric, 2)
              ELSE 0 END AS conso_ha,
         CASE
             WHEN ca.end_year <= 2016 AND ind.logements_16 > 0

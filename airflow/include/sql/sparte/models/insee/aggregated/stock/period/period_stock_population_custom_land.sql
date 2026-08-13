@@ -2,6 +2,7 @@
 
 SELECT
     clc.custom_land_id as custom_land_code,
+    sum(population_2023) as population_2023,
     sum(population_2022) as population_2022,
     sum(population_2021) as population_2021,
     sum(population_2020) as population_2020,

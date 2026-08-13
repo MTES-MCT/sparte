@@ -8,28 +8,6 @@ models:
       data_tests:
       - not_null
       - unique
-  - name: consommation_cog_2024
-    columns:
-    - name: correction_status
-      data_tests:
-      - not_null
-      - accepted_values:
-          values: [
-            'UNCHANGED',
-            'DIVISION',
-            'FUSION',
-            'COG_ERROR',
-            'MISSING_FROM_SOURCE'
-          ]
-    - name: commune_code
-      data_tests:
-      - not_null
-      - unique
-      - has_all_communes:
-          severity: warn
-      - relationships:
-          to: ref('commune')
-          field: code
   - name: period_consommation_departement
     columns:
     - name: departement

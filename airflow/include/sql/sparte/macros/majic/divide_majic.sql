@@ -1,4 +1,4 @@
-{% macro divide_majic(initial_commune_code, final_commune_code, percent=none, start_year=2009, end_year=2024) %}
+{% macro divide_majic(initial_commune_code, final_commune_code, percent=none, start_year=2011, end_year=2025) %}
 {% set categories = ['', '_activite', '_habitat', '_mixte', '_route', '_ferroviaire', '_inconnu'] %}
 {#
     When `percent` is omitted, it is derived from the territories: the final
