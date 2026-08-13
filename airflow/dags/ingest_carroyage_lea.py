@@ -1,11 +1,19 @@
 """
 DAG pour ingérer le carroyage LEA de consommation d'espaces NAF.
 
-Source: data.gouv.fr - Consommation d'espaces naturels, agricoles et forestiers (2009-2024)
+Source: data.gouv.fr - Consommation d'espaces naturels, agricoles et forestiers
+du 1er janvier 2011 au 1er janvier 2025 (ressource `conso_carroyage.gpkg`).
+
+Le millésime 2025 est livré en **geopackage non archivé**, contrairement au millésime
+2009-2024 qui était un shapefile zippé : plus de dézippage ni de recherche de .shp, on
+lit directement la première couche du gpkg. Même famille de fichiers que les
+`conso_com_*.gpkg` ingérés par `ingest_majic_2025`.
+
+La projection n'est pas forcée : celle déclarée par le geopackage fait foi (l'ancien
+shapefile devait être annoté en EPSG:3035 à la main).
 """
 
 import subprocess
-from zipfile import ZipFile
 
 import requests
 from include.container import DomainContainer
@@ -13,17 +21,17 @@ from include.container import InfraContainer as Container
 from include.pools import DBT_POOL
 from include.utils import (
     get_dbt_command_from_directory,
-    get_first_shapefile_path_in_dir,
+    get_shapefile_or_geopackage_first_layer_name,
     multiline_string_to_single_line,
 )
 from pendulum import datetime
 
 from airflow.decorators import dag, task
 
-URL = "https://www.data.gouv.fr/api/1/datasets/r/088789cb-a9c0-4069-a4b4-7d8078911d38"
+URL = "https://www.data.gouv.fr/api/1/datasets/r/b11c843e-d73f-45e5-88b1-dcb5e9fc6e3b"
 TABLE_NAME = "majic_carroyage_lea"
 TMP_PATH = "/tmp/carroyage_lea"
-ZIP_FILENAME = "carroyage_lea.zip"
+GPKG_FILENAME = "carroyage_lea.gpkg"
 GEOJSON_FILENAME = "carroyage_lea.geojson"
 PMTILES_FILENAME = "carroyage_lea.pmtiles"
 VECTOR_TILES_DIR = "vector_tiles"
@@ -40,12 +48,12 @@ VECTOR_TILES_DIR = "vector_tiles"
 )
 def ingest_carroyage_lea():
     bucket_name = Container().bucket_name()
-    s3_key = f"majic/{ZIP_FILENAME}"
-    localpath = f"{TMP_PATH}/{ZIP_FILENAME}"
+    s3_key = f"majic/{GPKG_FILENAME}"
+    localpath = f"{TMP_PATH}/{GPKG_FILENAME}"
 
     @task.python
     def download() -> str:
-        """Télécharge le fichier zip depuis data.gouv.fr et l'upload sur S3."""
+        """Télécharge le geopackage depuis data.gouv.fr et l'upload sur S3."""
         import os
 
         os.makedirs(TMP_PATH, exist_ok=True)
@@ -61,7 +69,7 @@ def ingest_carroyage_lea():
 
     @task.python
     def ingest() -> None:
-        """Extrait le shapefile et l'ingère dans PostgreSQL."""
+        """Ingère la première couche du geopackage dans PostgreSQL."""
         import os
         import shutil
 
@@ -70,15 +78,9 @@ def ingest_carroyage_lea():
         # Download from S3
         Container().s3().get_file(f"{bucket_name}/{s3_key}", localpath)
 
-        # Extract zip
-        extract_path = f"{TMP_PATH}/extracted"
-        with ZipFile(localpath, "r") as zip_file:
-            zip_file.extractall(extract_path)
+        layer_name = get_shapefile_or_geopackage_first_layer_name(localpath)
 
-        # Find shapefile
-        shapefile_path = get_first_shapefile_path_in_dir(extract_path)
-
-        # Load to PostgreSQL with ogr2ogr (source is in EPSG:3035)
+        # Load to PostgreSQL with ogr2ogr (le SRS déclaré par le geopackage fait foi)
         cmd = [
             "ogr2ogr",
             "-f",
@@ -87,17 +89,14 @@ def ingest_carroyage_lea():
             "-overwrite",
             "-lco",
             "GEOMETRY_NAME=geom",
-            "-lco",
-            "SRID=3035",
-            "-a_srs",
-            "EPSG:3035",
             "-nlt",
             "MULTIPOLYGON",
             "-nlt",
             "PROMOTE_TO_MULTI",
             "-nln",
             TABLE_NAME,
-            shapefile_path,
+            localpath,
+            layer_name,
             "--config",
             "PG_USE_COPY",
             "YES",
@@ -109,7 +108,7 @@ def ingest_carroyage_lea():
 
     @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
     def dbt_build():
-        return get_dbt_command_from_directory(cmd="dbt build -s carroyage_lea for_vector_tiles_carroyage_lea")
+        return get_dbt_command_from_directory(cmd="dbt build -s carroyage_lea+")
 
     @task.python
     def postgis_to_geojson():

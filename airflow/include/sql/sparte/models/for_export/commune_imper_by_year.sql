@@ -25,7 +25,6 @@ select
     latest_imper_commune.surface as surface_imper,
     latest_imper_commune.year as ocsge_millesime,
     commune.population as population,
-    commune.canton as canton,
     commune.departement as departement,
     commune.region as region,
     commune.ept as ept,

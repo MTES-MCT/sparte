@@ -29,7 +29,7 @@ DEFAULT_HREF = "https://mondiagartif.beta.gouv.fr/"
 
 CEREMA_CREDITS = {
     "enabled": True,
-    "text": "Graphique : MonDiagnosticArtificialisation | Données : Fichiers fonciers au 1er janvier 2024 (Cerema)",
+    "text": "Graphique : MonDiagnosticArtificialisation | Données : Fichiers fonciers au 1er janvier 2025 (Cerema)",
     "style": DEFAULT_CREDIT_STYLE,
     "position": DEFAULT_CREDIT_POSITION,
     "href": DEFAULT_HREF,

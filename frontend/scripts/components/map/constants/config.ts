@@ -18,6 +18,11 @@ export const OCSGE_GEOJSON_BASE_URL = "https://airflow-staging.s3.fr-par.scw.clo
 
 export const CARROYAGE_LEA_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/carroyage_lea.pmtiles";
 
+// Bornes des colonnes conso_<année> présentes dans les tuiles carroyage LEA.
+// Millésime 2011-2025 du Cerema : conso_2011 … conso_2024.
+export const CARROYAGE_FIRST_YEAR = 2011;
+export const CARROYAGE_LAST_YEAR = 2024;
+
 export const ARTIFICIALISATION_COLOR = "#FA4B42"
 export const DESARTIFICIALISATION_COLOR = "#00ce67"
 export const IMPERMEABILISATION_COLOR = "#FA4B42"

@@ -31,13 +31,6 @@ models:
         data_type: numeric
         data_tests:
           - not_null
-      - name: departement
-        data_type: character varying
-        data_tests:
-          - not_null
-          - relationships:
-              field: code
-              to: ref('departement')
       - name: srid_source
         data_type: integer
         data_tests:

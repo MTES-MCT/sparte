@@ -51,10 +51,10 @@ const ButtonSeparator = styled.span`
 
 const DEFAULT_LAND_ID = '84';
 const DEFAULT_LAND_TYPE = 'REGION';
-const MIN_YEAR = 2009;
-const MAX_YEAR = 2023;
+const MIN_YEAR = 2011;
+const MAX_YEAR = 2024;
 const DEFAULT_START_YEAR = 2011;
-const DEFAULT_END_YEAR = 2023;
+const DEFAULT_END_YEAR = 2024;
 
 const DROM_COM = [
   { id: '971', name: 'Guadeloupe', landType: 'DEPART' },

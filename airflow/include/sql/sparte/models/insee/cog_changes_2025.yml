@@ -15,7 +15,8 @@ type_de_changement: &type_de_changement
     41, # Changement de code dû à un changement de département
     50, # Changement de code dû à un transfert de chef-lieu
     70, # Transformation de commune associée en commune déléguée
-    71  # 71 is not in the official list but is present in the data
+    71, # Rétablissement de commune déléguée
+    72  # Création de commune déléguée
   ]
 
 type_commune: &type_commune

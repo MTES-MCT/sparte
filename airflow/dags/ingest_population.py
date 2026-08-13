@@ -3,13 +3,11 @@ import os
 import pandas as pd
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
-from include.pools import DBT_POOL
-from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
 
 from airflow.decorators import dag, task
 
-URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques-1876-2022.xlsx"
+URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques-1876-2023.xlsx"
 
 
 @dag(
@@ -48,11 +46,7 @@ def ingest_population():
         os.remove(tmp_localpath)
         return row_count
 
-    @task.bash(pool=DBT_POOL)
-    def dbt_build() -> str:
-        return get_dbt_command_from_directory(cmd="dbt build -s +insee+")
-
-    (download() >> ingest() >> dbt_build())
+    (download() >> ingest())
 
 
 ingest_population()

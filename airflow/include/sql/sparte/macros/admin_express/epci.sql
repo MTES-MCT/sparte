@@ -11,8 +11,8 @@
         }}
     )
     SELECT
-        id,
-        nom as name,
+        cleabs as id,
+        nom_officiel as name,
         code_siren as code,
         nature,
         ST_Area(epci.geom) as surface,

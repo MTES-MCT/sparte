@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: scot
+    columns:
+    - name: id_scot
+      data_tests:
+      - not_null
+      - unique
+    - name: geom
+      data_tests:
+      - is_valid_geom

@@ -47,7 +47,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   landName,
   childLandType,
   startYear = 2011,
-  endYear = 2022,
+  endYear = 2024,
   drilldown: externalDrilldown,
   showMailleIndicator = false,
 }) => {
@@ -220,10 +220,10 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
         <li>Sinon : évolution 2011→2022, divisée par 11 ans.</li>
       </ul>
       <p>
-        Les années <strong>2009</strong>, <strong>2010</strong> et <strong>2023</strong> ne disposent
-        pas de données INSEE propres. Pour les périodes incluant ces années, le rythme annuel
-        utilisé est celui du couple de millésimes le plus proche (par exemple,
-        2009–2012 utilise le rythme annuel 2011→2016).
+        Les années <strong>2023</strong> et <strong>2024</strong> ne disposent pas encore de
+        millésime INSEE. Pour les périodes qui s'étendent au-delà de 2022, le rythme annuel
+        utilisé reste celui du dernier couple de millésimes disponible (par exemple,
+        2016–2024 utilise le rythme annuel 2016→2022).
       </p>
     </div>
   ), []);

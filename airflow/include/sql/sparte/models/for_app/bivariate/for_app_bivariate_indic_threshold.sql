@@ -10,8 +10,8 @@
     Le range [min, max] de chaque tercile est explicite.
 #}
 
-{% set min_year = 2009 %}
-{% set max_year = 2023 %}
+{% set min_year = 2011 %}
+{% set max_year = 2024 %}
 {% set land_types = [var("COMMUNE"), var("EPCI"), var("SCOT"), var("DEPARTEMENT"), var("REGION")] %}
 
 WITH periods AS (
@@ -31,7 +31,7 @@ conso_agg AS (
     CROSS JOIN periods p
     WHERE c.land_id IS NOT NULL
       AND c.year >= p.start_year
-      AND c.year < p.end_year
+      AND c.year <= p.end_year
       AND c.land_type IN ('{{ land_types | join("', '") }}')
     GROUP BY c.land_id, c.land_type, p.start_year, p.end_year
 ),

@@ -29,7 +29,7 @@ export const SOURCES_DETAILS: Record<string, { label: string; html: string }> = 
   },
   majic: {
     label: 'Cerema',
-    html: `Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2024, intégrant les évolutions réalisées au cours de l'année 2023.`
+    html: `Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2011 à partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2024 est la photographie du territoire au 1er janvier 2025, intégrant les évolutions réalisées au cours de l'année 2024.`
   },
   gpu: {
     label: 'GPU',

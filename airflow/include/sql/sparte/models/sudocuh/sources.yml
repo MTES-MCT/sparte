@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: public
+    tables:
+    - name: sudocuh_scot
+    - name: sudocuh_scot_communes
+    - name: sudocuh_commune
+    - name: sudocuh_epci

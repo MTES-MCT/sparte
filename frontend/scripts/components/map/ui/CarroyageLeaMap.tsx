@@ -8,6 +8,7 @@ import { useGetCarroyageBoundsQuery, useGetCarroyageDestinationConfigQuery, useG
 import Loader from "@components/ui/Loader";
 import type { ExpressionSpecification } from "maplibre-gl";
 import { CarroyageLeaSidePanel } from "./sidePanel";
+import { CARROYAGE_FIRST_YEAR, CARROYAGE_LAST_YEAR } from "../constants/config";
 
 type DestinationType = string;
 type DestinationConfig = Record<string, { label: string; suffix: string; color: string; light_text: boolean }>;
@@ -94,8 +95,8 @@ function buildCumulativeExpression(
     endYear: number,
     suffix: string
 ): ExpressionSpecification {
-    const minYear = Math.max(startYear, 2011);
-    const maxYear = Math.min(endYear, 2023);
+    const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+    const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
 
     const yearFields: ExpressionSpecification[] = [];
     for (let year = minYear; year <= maxYear; year++) {
@@ -292,8 +293,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     const calculateCumulativeValue = useCallback((properties: Record<string, unknown>) => {
         if (!destinationConfig) return 0;
         const suffix = destinationConfig[selectedDestination].suffix;
-        const minYear = Math.max(startYear, 2011);
-        const maxYear = Math.min(endYear, 2023);
+        const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+        const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
         let total = 0;
         for (let year = minYear; year <= maxYear; year++) {
             const key = `conso_${year}${suffix}`;
