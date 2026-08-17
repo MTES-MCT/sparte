@@ -121,7 +121,8 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                                     showPage={has_conso}
                                                     showStatus={![
                                                         ConsoCorrectionStatusEnum.DONNEES_INCHANGEES,
-                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES
+                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_CORRIGEES,
+                                                        ConsoCorrectionStatusEnum.DONNEES_PARTIELLEMENT_DIVISEES
                                                     ].includes(consommation_correction_status)}
                                                     status={
                                                         <ConsoCorrectionStatus status={consommation_correction_status} />

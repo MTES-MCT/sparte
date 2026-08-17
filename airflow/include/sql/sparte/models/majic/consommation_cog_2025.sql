@@ -109,7 +109,7 @@ missing_from_source as (
 together as (
     select *, 'UNCHANGED' as correction_status from unchanged
     union all
-    select *, 'COG_ERROR' as correction_status from divisions
+    select *, 'DIVISION' as correction_status from divisions
     union all
     select *, 'MISSING_FROM_SOURCE' as correction_status from missing_from_source
 )
