@@ -112,6 +112,20 @@ class LandModel(models.Model):
             "données_coriggées_avec_données_manquantes",
             "données_coriggées_avec_données_manquantes",
         )
+        DONNEES_PARTIELLEMENT_CORRIGEES_AVEC_DONNEES_MANQUANTES = (
+            "données_partiellement_coriggées_avec_données_manquantes",
+            "données_partiellement_coriggées_avec_données_manquantes",
+        )
+        DONNEES_DIVISEES = "données_divisées", "données_divisées"
+        DONNEES_PARTIELLEMENT_DIVISEES = "données_partiellement_divisées", "données_partiellement_divisées"
+        DONNEES_DIVISEES_AVEC_DONNEES_MANQUANTES = (
+            "données_divisées_avec_données_manquantes",
+            "données_divisées_avec_données_manquantes",
+        )
+        DONNEES_PARTIELLEMENT_DIVISEES_AVEC_DONNEES_MANQUANTES = (
+            "données_partiellement_divisées_avec_données_manquantes",
+            "données_partiellement_divisées_avec_données_manquantes",
+        )
 
     land_id = models.CharField()
     land_type = models.CharField()

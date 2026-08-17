@@ -176,6 +176,10 @@ models:
                 - données_partiellement_coriggées
                 - données_coriggées_avec_données_manquantes
                 - données_partiellement_coriggées_avec_données_manquantes
+                - données_divisées
+                - données_partiellement_divisées
+                - données_divisées_avec_données_manquantes
+                - données_partiellement_divisées_avec_données_manquantes
       - name: competence_planification
         data_type: boolean
         data_tests:

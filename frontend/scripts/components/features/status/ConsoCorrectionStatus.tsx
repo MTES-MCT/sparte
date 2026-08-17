@@ -8,7 +8,11 @@ export enum ConsoCorrectionStatusEnum {
     DONNEES_INCHANGEES = 'données_inchangées',
     DONNEES_MANQUANTES = 'données_manquantes',
     DONNEES_CORRIGEES_AVEC_DONNEES_MANQUANTES = 'données_coriggées_avec_données_manquantes',
-    DONNEES_PARTIELLEMENT_CORRIGEES_AVEC_DONNEES_MANQUANTES = 'données_partiellement_coriggées_avec_données_manquantes'
+    DONNEES_PARTIELLEMENT_CORRIGEES_AVEC_DONNEES_MANQUANTES = 'données_partiellement_coriggées_avec_données_manquantes',
+    DONNEES_DIVISEES = 'données_divisées',
+    DONNEES_PARTIELLEMENT_DIVISEES = 'données_partiellement_divisées',
+    DONNEES_DIVISEES_AVEC_DONNEES_MANQUANTES = 'données_divisées_avec_données_manquantes',
+    DONNEES_PARTIELLEMENT_DIVISEES_AVEC_DONNEES_MANQUANTES = 'données_partiellement_divisées_avec_données_manquantes'
 }
 
 interface StatusMessage {
@@ -44,6 +48,22 @@ export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]
     'données_partiellement_coriggées_avec_données_manquantes': {
         title: defaultTitle,
         message: `Certaines données de consommation d'espaces NAF ont été corrigées pour votre territoire, et certaines communes sont absentes du dernier millésime.`
+    },
+    'données_divisées': {
+        title: defaultTitle,
+        message: `La géométrie de votre territoire a changé récemment. Ses données de consommation d'espaces NAF ont été légèrement modifiées pour correspondre à sa géométrie au Code Officiel Géographique 2025.`
+    },
+    'données_partiellement_divisées': {
+        title: defaultTitle,
+        message: `La géométrie de certaines communes de votre territoire a changé récemment. Leurs données de consommation d'espaces NAF ont été légèrement modifiées pour correspondre à leur géométrie au Code Officiel Géographique 2025.`
+    },
+    'données_divisées_avec_données_manquantes': {
+        title: defaultTitle,
+        message: `La géométrie de votre territoire a changé récemment : ses données de consommation d'espaces NAF ont été légèrement modifiées pour correspondre à sa géométrie au Code Officiel Géographique 2025. Certaines communes sont par ailleurs absentes du dernier millésime.`
+    },
+    'données_partiellement_divisées_avec_données_manquantes': {
+        title: defaultTitle,
+        message: `La géométrie de certaines communes de votre territoire a changé récemment : leurs données de consommation d'espaces NAF ont été légèrement modifiées pour correspondre à leur géométrie au Code Officiel Géographique 2025. D'autres sont absentes du dernier millésime.`
     }
 };
 
