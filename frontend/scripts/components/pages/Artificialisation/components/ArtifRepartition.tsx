@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { theme } from "@theme";
 import GenericChart from "@components/charts/GenericChart";
 import BaseCard from "@components/ui/BaseCard";
-import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { OcsgeMillesimeSelector } from "@components/features/ocsge/OcsgeMillesimeSelector";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
@@ -14,6 +13,20 @@ const FlexColumn = styled.div`
   gap: ${theme.spacing.lg};
 `;
 
+// Le sélecteur de millésime tient lieu de complément au titre : c'est lui qui
+// dit de quelle année parlent les donuts, plutôt qu'un libellé figé à côté.
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: ${theme.spacing.md};
+  margin-bottom: ${theme.spacing.lg};
+
+  h2 {
+    margin-bottom: 0;
+  }
+`;
+
 export const ArtifRepartition: React.FC = () => {
   const {
     landId,
@@ -21,7 +34,6 @@ export const ArtifRepartition: React.FC = () => {
     millesimes,
     millesimesByIndex,
     isInterdepartemental,
-    landArtifStockIndex,
     selectedIndex,
     setSelectedIndex,
     byDepartementRepartition,
@@ -30,32 +42,25 @@ export const ArtifRepartition: React.FC = () => {
 
   return (
     <div className="fr-mb-5w">
-      <h2>
-        Artificialisation par type de couverture et d'usage{" "}
-        <MillesimeDisplay
-          is_interdepartemental={isInterdepartemental}
-          landArtifStockIndex={landArtifStockIndex}
-          between={true}
+      <TitleRow>
+        <h2>Surfaces artificialisées par type de couverture et d'usage</h2>
+        <OcsgeMillesimeSelector
+          millesimes_by_index={millesimesByIndex}
+          index={selectedIndex}
+          setIndex={setSelectedIndex}
+          isDepartemental={isInterdepartemental}
         />
-      </h2>
-      <div className="fr-grid-row fr-grid-row--gutters">
-        <div className="fr-col-auto">
-          <OcsgeMillesimeSelector
-            millesimes_by_index={millesimesByIndex}
-            index={selectedIndex}
-            setIndex={setSelectedIndex}
-            isDepartemental={isInterdepartemental}
-          />
-        </div>
-        {isInterdepartemental && (
+      </TitleRow>
+      {isInterdepartemental && (
+        <div className="fr-grid-row fr-grid-row--gutters fr-mb-2w">
           <div className="fr-col-auto">
             <DepartmentSelector
               byDepartement={byDepartementRepartition}
               setByDepartement={setByDepartementRepartition}
             />
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <div className="fr-grid-row fr-grid-row--gutters fr-mt-1w">
         {byDepartementRepartition ? (
           millesimes

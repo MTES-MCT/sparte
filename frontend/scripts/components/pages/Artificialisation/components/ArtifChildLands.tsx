@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import GenericChart from "@components/charts/GenericChart";
 import GuideContent from "@components/ui/GuideContent";
-import { getLandTypeLabel } from "@utils/landUtils";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
 const CHILD_LAND_TYPE_MAP: Record<string, string> = {
@@ -62,7 +61,6 @@ export const ArtifChildLands: React.FC = () => {
 
   return (
     <div className="fr-mb-5w">
-      <h2>Artificialisation des {getLandTypeLabel(childLandType, true)}</h2>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-8 fr-grid-row">
             {mapNavStack.length > 0 && (

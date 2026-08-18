@@ -81,7 +81,7 @@ const ItemValue = styled.span<{ $color?: string }>`
   color: ${({ $color }) => $color || theme.colors.text};
 `;
 
-const CompetenceIcon = styled.div<{ $hasCompetence: boolean }>`
+const CompetenceIcon = styled.div`
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -89,7 +89,7 @@ const CompetenceIcon = styled.div<{ $hasCompetence: boolean }>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: ${({ $hasCompetence }) => ($hasCompetence ? theme.colors.success : theme.colors.error)};
+  background: ${theme.colors.success};
   color: white;
 
   i {
@@ -164,17 +164,19 @@ export const TerritoryIdentityCard = ({ landData, className }: TerritoryIdentity
               </ItemContent>
             </IdentityItem>
           ))}
-          <IdentityItem>
-            <CompetenceIcon $hasCompetence={hasCompetenceUrba}>
-              <i className={hasCompetenceUrba ? "bi bi-check-lg" : "bi bi-x-lg"} />
-            </CompetenceIcon>
-            <ItemContent>
-              <ItemLabel>Compétence urbanisme</ItemLabel>
-              <ItemValue $color={hasCompetenceUrba ? theme.colors.success : theme.colors.error}>
-                {hasCompetenceUrba ? "Oui" : "Non"}
-              </ItemValue>
-            </ItemContent>
-          </IdentityItem>
+          {/* Compétence non détenue : on n'affiche rien plutôt qu'une croix rouge,
+              qui se lisait comme une donnée manquante ou un problème. */}
+          {hasCompetenceUrba && (
+            <IdentityItem>
+              <CompetenceIcon>
+                <i className="bi bi-check-lg" />
+              </CompetenceIcon>
+              <ItemContent>
+                <ItemLabel>Compétence urbanisme</ItemLabel>
+                <ItemValue $color={theme.colors.success}>Oui</ItemValue>
+              </ItemContent>
+            </IdentityItem>
+          )}
         </IdentityRow>
       </IdentityCard>
 

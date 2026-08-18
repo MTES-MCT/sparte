@@ -58,9 +58,9 @@ const ArtificialisationPageContent: React.FC = () => {
       <ArtifKpiCards />
       <ArtifNetFlux />
       <ArtifZonage />
-      <ArtifRepartition />
       <ArtifFluxDetail />
       <ArtifChildLands />
+      <ArtifRepartition />
       <ArtifExplorer />
       <ArtifCalculation />
     </div>
