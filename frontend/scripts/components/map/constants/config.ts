@@ -11,13 +11,6 @@ export const ORTHOPHOTO_TILES_URL = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQ
 
 export const OSM_TILES_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
-export const OCSGE_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/";
-export const ZONAGE_URBANISME_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/";
-export const OCSGE_GEOJSON_CENTROIDS_URL = "https://airflow-staging.s3.fr-par.scw.cloud/geojson/occupation_du_sol_diff_centroid_";
-export const OCSGE_GEOJSON_BASE_URL = "https://airflow-staging.s3.fr-par.scw.cloud/geojson/";
-
-export const CARROYAGE_LEA_TILES_URL = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles/carroyage_lea.pmtiles";
-
 // Bornes des colonnes conso_<année> présentes dans les tuiles carroyage LEA.
 // Millésime 2011-2025 du Cerema : conso_2011 … conso_2024.
 export const CARROYAGE_FIRST_YEAR = 2011;

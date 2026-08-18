@@ -184,7 +184,7 @@ export const ZonageUrbanismeInfo: React.FC<ZonageUrbanismeInfoProps> = ({ featur
 
     const typeZone = properties.type_zone as string;
     const libelle = properties.libelle as string;
-    const zonageSurface = properties.zonage_surface as number;
+    const zonageSurface = properties.part_surface as number;
     const zonageSurfaceHa = zonageSurface ? zonageSurface / 10000 : 0;
 
     const percentField = mode === "artif" ? "artif_percent" : "imper_percent";

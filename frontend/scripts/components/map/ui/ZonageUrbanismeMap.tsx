@@ -31,14 +31,14 @@ const OcsgeTooltip = styled.div`
 interface ZonageUrbanismeMapProps {
 	landData: LandDetailResultType;
 	mode: ZonageUrbanismeMode;
-	initialChecksum?: string;
+	initialPartId?: string;
 	onMapReady?: (map: maplibregl.Map) => void;
 }
 
 export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	landData,
 	mode,
-	initialChecksum,
+	initialPartId,
 	onMapReady,
 }) => {
 	const [nomenclature, setNomenclature] = useState<NomenclatureType>("couverture");
@@ -49,7 +49,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 
 	const [hoveredFeature, setHoveredFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
 	const [lockedFeature, setLockedFeature] = useState<maplibregl.MapGeoJSONFeature | null>(null);
-	const lockedChecksumRef = useRef<string | null>(null);
+	const lockedPartIdRef = useRef<string | null>(null);
 	const {
 		layerType, mapLabel, mapDescription, ocsgeLabel, ocsgeDescription,
 		nonArtifLabel, chartDescription,
@@ -75,16 +75,16 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	const label = mapLabel;
 	const description = mapDescription;
 
-	const updateOutline = useCallback((map: maplibregl.Map, hoveredChecksum: string | null) => {
-		const locked = lockedChecksumRef.current;
+	const updateOutline = useCallback((map: maplibregl.Map, hoveredPartId: string | null) => {
+		const locked = lockedPartIdRef.current;
 
 		const style = map.getStyle();
 		if (!style) return;
 
 		// Update highlight outline layers (only for locked/selected)
 		const highlightFilter: maplibregl.FilterSpecification = locked
-			? ["==", ["get", "checksum"], locked]
-			: ["==", ["get", "checksum"], ""];
+			? ["==", ["get", "part_id"], locked]
+			: ["==", ["get", "part_id"], ""];
 		const highlightLayers = style.layers
 			.filter(l => l.id.startsWith("zonage-urbanisme-layer-highlight"))
 			.map(l => l.id);
@@ -98,26 +98,26 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			.filter(l => !l.id.includes("outline") && !l.id.includes("highlight"))
 			.map(l => l.id);
 		for (const layerId of fillLayers) {
-			if (locked && hoveredChecksum && hoveredChecksum !== locked) {
+			if (locked && hoveredPartId && hoveredPartId !== locked) {
 				map.setPaintProperty(layerId, "fill-opacity", [
 					"case",
-					["==", ["get", "checksum"], locked],
+					["==", ["get", "part_id"], locked],
 					0,
-					["==", ["get", "checksum"], hoveredChecksum],
+					["==", ["get", "part_id"], hoveredPartId],
 					0.5,
 					1,
 				]);
 			} else if (locked) {
 				map.setPaintProperty(layerId, "fill-opacity", [
 					"case",
-					["==", ["get", "checksum"], locked],
+					["==", ["get", "part_id"], locked],
 					0,
 					1,
 				]);
-			} else if (hoveredChecksum) {
+			} else if (hoveredPartId) {
 				map.setPaintProperty(layerId, "fill-opacity", [
 					"case",
-					["==", ["get", "checksum"], hoveredChecksum],
+					["==", ["get", "part_id"], hoveredPartId],
 					0.5,
 					1,
 				]);
@@ -190,7 +190,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		};
 
 		const zonageLayerPrefix = "zonage-urbanisme-layer";
-		let hoveredChecksum: string | null = null;
+		let hoveredPartId: string | null = null;
 		let lastMoveTime = 0;
 
 		const getZonageLayers = (): string[] => {
@@ -252,17 +252,17 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			if (features.length > 0) {
 				map.getCanvas().style.cursor = "pointer";
 				const feature = features[0];
-				const checksum = feature.properties?.checksum ?? null;
-				if (checksum !== hoveredChecksum) {
-					hoveredChecksum = checksum;
+				const partId = feature.properties?.part_id ?? null;
+				if (partId !== hoveredPartId) {
+					hoveredPartId = partId;
 					setHoveredFeature(feature);
 					if (!lowZoom) {
-						updateOutline(map, checksum);
+						updateOutline(map, partId);
 					}
 				}
-			} else if (hoveredChecksum !== null) {
+			} else if (hoveredPartId !== null) {
 				map.getCanvas().style.cursor = "";
-				hoveredChecksum = null;
+				hoveredPartId = null;
 				setHoveredFeature(null);
 				if (!lowZoom) {
 					updateOutline(map, null);
@@ -275,10 +275,10 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			}
 
 			// OCSGE tooltip when a zonage is selected
-			if (lockedChecksumRef.current) {
+			if (lockedPartIdRef.current) {
 				// Only show tooltip if the topmost zonage at cursor IS the selected one
 				const topZonage = features.length > 0 ? features[0] : null;
-				const topIsLocked = topZonage?.properties?.checksum === lockedChecksumRef.current;
+				const topIsLocked = topZonage?.properties?.part_id === lockedPartIdRef.current;
 
 				if (topIsLocked) {
 					const ocsgeFeatures = queryOcsgeFeatures(e.point);
@@ -307,14 +307,14 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 			const features = isInsideTerritory(e.point) ? queryZonageFeatures(e.point) : [];
 			if (features.length > 0) {
 				const feature = features[0];
-				const checksum = feature.properties?.checksum ?? null;
-				lockedChecksumRef.current = checksum;
+				const partId = feature.properties?.part_id ?? null;
+				lockedPartIdRef.current = partId;
 				setLockedFeature(feature);
 				const bounds = getFeatureExtent(feature);
 				if (bounds) map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
-				updateOutline(map, checksum);
+				updateOutline(map, partId);
 			} else {
-				lockedChecksumRef.current = null;
+				lockedPartIdRef.current = null;
 				setLockedFeature(null);
 				updateOutline(map, null);
 				if (landData.bounds) {
@@ -324,17 +324,17 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 		});
 
 		map.on("sourcedata", (e) => {
-			const checksum = lockedChecksumRef.current;
-			if (!checksum || !e.isSourceLoaded) return;
+			const partId = lockedPartIdRef.current;
+			if (!partId || !e.isSourceLoaded) return;
 			const rendered = queryAllZonageRendered();
-			const match = rendered.find(f => f.properties?.checksum === checksum);
+			const match = rendered.find(f => f.properties?.part_id === partId);
 			if (match) {
 				setLockedFeature(match);
 			}
 		});
 
-		if (initialChecksum) {
-			const selectZonageByChecksum = () => {
+		if (initialPartId) {
+			const selectZonageByPartId = () => {
 				// Query all zonage sources (primary + extra department sources)
 				const style = map.getStyle();
 				const zonageSources = style ? Object.keys(style.sources).filter(s => s.startsWith("zonage-urbanisme-source")) : [];
@@ -346,15 +346,15 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					for (const sourceLayer of sourceLayers) {
 						const features = map.querySourceFeatures(sourceId, {
 							sourceLayer,
-							filter: ["==", ["get", "checksum"], initialChecksum],
+							filter: ["==", ["get", "part_id"], initialPartId],
 						});
 						if (features.length > 0) {
 							const feature = features[0];
-							lockedChecksumRef.current = initialChecksum;
+							lockedPartIdRef.current = initialPartId;
 							setLockedFeature(feature as unknown as maplibregl.MapGeoJSONFeature);
 							const bounds = getFeatureExtent(feature);
 							if (bounds) map.fitBounds(bounds, { padding: { top: 120, bottom: 120, left: 60, right: 60 }, maxZoom: 17 });
-							updateOutline(map, initialChecksum);
+							updateOutline(map, initialPartId);
 							return true;
 						}
 					}
@@ -362,16 +362,16 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 				return false;
 			};
 
-			if (!selectZonageByChecksum()) {
+			if (!selectZonageByPartId()) {
 				const onSourceData = () => {
-					if (selectZonageByChecksum()) {
+					if (selectZonageByPartId()) {
 						map.off("sourcedata", onSourceData);
 					}
 				};
 				map.on("sourcedata", onSourceData);
 			}
 		}
-	}, [landData.bounds, updateOutline, onMapReady, mode, initialChecksum, lastMillesimeIndex, firstDepartement]);
+	}, [landData.bounds, updateOutline, onMapReady, mode, initialPartId, lastMillesimeIndex, firstDepartement]);
 
 
 	const config = useMemo(() => defineMapConfig({
@@ -514,7 +514,7 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 					feature={displayedFeature}
 					isLocked={!!lockedFeature}
 					onClose={() => {
-						lockedChecksumRef.current = null;
+						lockedPartIdRef.current = null;
 						setLockedFeature(null);
 						if (mapRef.current) {
 							updateOutline(mapRef.current, null);
