@@ -13,7 +13,6 @@ import type { ZonageUrbanismeMode } from "../layers/zonageUrbanismeLayer";
 import type { ControlsManager } from "../controls/ControlsManager";
 import { MODE_CONFIG } from "../constants/modeConfig";
 import { ZonageUrbanismeSidePanel, type SurfaceUnit } from "./sidePanel";
-import { createTerritoryClipLayers } from "../layers/territoryClipLayers";
 
 const OcsgeTooltip = styled.div`
 	position: absolute;
@@ -146,23 +145,6 @@ export const ZonageUrbanismeMap: React.FC<ZonageUrbanismeMapProps> = ({
 	const handleMapLoad = useCallback((map: maplibregl.Map) => {
 		mapRef.current = map;
 		onMapReady?.(map);
-
-		// Add territory clip layers (ortho snapshot + FBO mask compositing)
-		const clipPair = createTerritoryClipLayers(landData);
-		clipPair.loadGeometry().then(() => {
-			// Snapshot layer: captures ortho framebuffer, placed right after orthophoto
-			const firstDataLayer = map.getStyle()?.layers.find(
-				l => l.id !== "background" && l.id !== "orthophoto-layer"
-					&& l.id !== "ortho-snapshot-layer"
-			);
-			map.addLayer(clipPair.snapshotLayer, firstDataLayer?.id);
-
-			// Clip layer: composites ortho outside territory, placed before emprise
-			map.addLayer(clipPair.clipLayer, "emprise-layer");
-			map.triggerRepaint();
-		}).catch((err) => {
-			console.error("Failed to load territory clip geometry:", err);
-		});
 
 		// Offset the map center to account for the side panel (33% on the right)
 		requestAnimationFrame(() => {
