@@ -2,7 +2,6 @@ import { BaseOcsgeSource } from "./baseOcsgeSource";
 import type { LandDetailResultType } from "@services/types/land";
 import type { SourceSpecification } from "maplibre-gl";
 import { getLastMillesimeIndex } from "../utils/ocsge";
-import { OCSGE_TILES_URL } from "../constants/config";
 
 export class OcsgeFrichesSource extends BaseOcsgeSource {
     private readonly millesimeIndex: number;
@@ -17,7 +16,7 @@ export class OcsgeFrichesSource extends BaseOcsgeSource {
     }
 
     getOptions(): SourceSpecification {
-        const tilesUrl = `${OCSGE_TILES_URL}occupation_du_sol_friche_${this.millesimeIndex}_national.pmtiles`;
+        const tilesUrl = `${this.vectorTilesUrl}occupation_du_sol_friche_${this.millesimeIndex}_national.pmtiles`;
 
         return {
             type: this.options.type as 'vector',

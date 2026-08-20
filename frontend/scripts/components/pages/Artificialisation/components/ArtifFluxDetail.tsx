@@ -4,6 +4,7 @@ import { theme } from "@theme";
 import GenericChart from "@components/charts/GenericChart";
 import BaseCard from "@components/ui/BaseCard";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
+import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
 const FlexColumn = styled.div`
@@ -18,6 +19,7 @@ export const ArtifFluxDetail: React.FC = () => {
     landType,
     millesimes,
     isInterdepartemental,
+    landArtifStockIndex,
     byDepartementFlux,
     setByDepartementFlux,
   } = useArtificialisationContext();
@@ -26,6 +28,14 @@ export const ArtifFluxDetail: React.FC = () => {
 
   return (
     <div className="fr-mb-5w">
+      <h2>
+        Artificialisation par type de couverture et d'usage{" "}
+        <MillesimeDisplay
+          is_interdepartemental={isInterdepartemental}
+          landArtifStockIndex={landArtifStockIndex}
+          between={true}
+        />
+      </h2>
       {isInterdepartemental && (
         <DepartmentSelector
           byDepartement={byDepartementFlux}

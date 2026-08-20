@@ -1,5 +1,4 @@
 import { BaseOcsgeSource } from "./baseOcsgeSource";
-import { ZONAGE_URBANISME_TILES_URL } from "../constants/config";
 import type { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
 import type { SourceSpecification, FilterSpecification, LayerSpecification } from "maplibre-gl";
@@ -23,7 +22,7 @@ export class ZonageUrbanismeSource extends BaseOcsgeSource implements SourceInte
 	}
 
 	getOptions(): SourceSpecification {
-		const tilesUrl = `${ZONAGE_URBANISME_TILES_URL}zonage_urbanisme_${this.millesimeIndex}_${this.departement}.pmtiles`;
+		const tilesUrl = `${this.vectorTilesUrl}zonage_urbanisme_${this.millesimeIndex}_${this.departement}.pmtiles`;
 
 		return {
 			type: this.options.type as 'vector',
@@ -96,7 +95,7 @@ export class ZonageUrbanismeSource extends BaseOcsgeSource implements SourceInte
 
 		for (const dept of deptsForIndex) {
 			const extraSourceId = `${this.sourceId}-dept-${dept}`;
-			const tilesUrl = `${ZONAGE_URBANISME_TILES_URL}zonage_urbanisme_${this.millesimeIndex}_${dept}.pmtiles`;
+			const tilesUrl = `${this.vectorTilesUrl}zonage_urbanisme_${this.millesimeIndex}_${dept}.pmtiles`;
 
 			this.map.addSource(extraSourceId, {
 				type: 'vector',

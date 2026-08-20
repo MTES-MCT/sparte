@@ -25,22 +25,12 @@ def deploy_static_files():
     @task.python
     def get_list_of_vector_tiles() -> list[str]:
         keys: list[str] = Container().s3_handler().list_files(s3_bucket=from_bucket_name, s3_key="vector_tiles")
-
-        return [
-            key.replace(from_bucket_name + "/", "")
-            for key in keys
-            if key.endswith(".pmtiles") and "occupation_du_sol" in key
-        ]
+        return [key.replace(from_bucket_name + "/", "") for key in keys if key.endswith(".pmtiles")]
 
     @task.python
     def get_list_of_geojson_files() -> list[str]:
         keys: list[str] = Container().s3_handler().list_files(s3_bucket=from_bucket_name, s3_key="geojson")
-
-        return [
-            key.replace(from_bucket_name + "/", "")
-            for key in keys
-            if key.endswith(".geojson.gz") and "occupation_du_sol" in key
-        ]
+        return [key.replace(from_bucket_name + "/", "") for key in keys if key.endswith(".geojson.gz")]
 
     @task.python
     def move_vector_tiles_from_airflow_bucket_to_prod(keys) -> str:
