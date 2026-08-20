@@ -1,5 +1,4 @@
 import { BaseOcsgeDiffSource } from "./baseOcsgeDiffSource";
-import { OCSGE_TILES_URL } from "../constants/config";
 import type { LandDetailResultType } from "@services/types/land";
 import type { SourceSpecification, LayerSpecification } from "maplibre-gl";
 
@@ -14,7 +13,7 @@ export class OcsgeDiffSource extends BaseOcsgeDiffSource {
     }
 
     getOptions(): SourceSpecification {
-        const tilesUrl = `${OCSGE_TILES_URL}occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.pmtiles`;
+        const tilesUrl = `${this.vectorTilesUrl}occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.pmtiles`;
 
         return {
             type: this.options.type as 'vector',
@@ -72,7 +71,7 @@ export class OcsgeDiffSource extends BaseOcsgeDiffSource {
 
         for (const dept of deptsForPair) {
             const extraSourceId = `${this.sourceId}-dept-${dept}`;
-            const tilesUrl = `${OCSGE_TILES_URL}occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${dept}.pmtiles`;
+            const tilesUrl = `${this.vectorTilesUrl}occupation_du_sol_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${dept}.pmtiles`;
 
             this.map.addSource(extraSourceId, {
                 type: 'vector',
