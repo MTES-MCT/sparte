@@ -8,6 +8,8 @@ import { formatNumber } from '@utils/formatUtils';
 import { LandMillesimeTable } from '@components/features/ocsge/LandMillesimeTable';
 import { MillesimeDisplay } from '@components/features/ocsge/MillesimeDisplay';
 import ContentZone, { ContentZoneMode } from '../editor/ContentZone';
+import Button from '@components/ui/Button';
+
 import {
     ReportContainer,
     PrintLayout,
@@ -357,16 +359,14 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     {mode === 'edit' && (
                         <CalloutEditInfo>
                             <p className="fr-mb-0">
-                                <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                                 L'objectif de réduction peut être modifié dans les paramètres du rapport
                             </p>
-                            <button 
-                                className="fr-btn fr-btn--sm fr-mt-0"
+                            <Button 
                                 onClick={() => setIsSettingsOpen(true)}
                                 title="Modifier l'objectif"
                             >
                                 Modifier
-                            </button>
+                            </Button>
                         </CalloutEditInfo>
                     )}
                 </div>
@@ -401,16 +401,14 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     {mode === 'edit' && (
                         <CalloutEditInfo>
                             <p className="fr-mb-0">
-                                <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                                 La période d'analyse peut être modifiée dans les paramètres du rapport
                             </p>
-                            <button 
-                                className="fr-btn fr-btn--sm fr-mt-0"
+                            <Button 
                                 onClick={() => setIsSettingsOpen(true)}
                                 title="Modifier la période"
                             >
                                 Modifier
-                            </button>
+                            </Button>
                         </CalloutEditInfo>
                     )}
                 </div>
