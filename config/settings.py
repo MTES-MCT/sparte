@@ -279,10 +279,27 @@ PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/{PUBLIC_MEDIA_LOCATION}/"
 
 
-if ENVIRONMENT == "local":
-    VECTOR_TILES_LOCATION = "https://airflow-dev-alexis.s3.fr-par.scw.cloud/vector_tiles"
+# Bucket S3 où Airflow publie les tuiles vectorielles et les exports GeoJSON.
+#
+#   production : `sparte`, le bucket de stockage Django, qui porte à la fois les
+#                médias sous `media/` et ces sorties sous `vector_tiles/` et
+#                `geojson/`
+#   staging    : `airflow-staging`, distinct du bucket de stockage
+#   local      : `airflow-dev-<prénom>`, propre à chaque développeur, donc pas de
+#                défaut possible — à poser dans son `.env`
+#
+# Toute valeur retenue ici alimente aussi la liste d'autorisation CSP plus bas :
+# le bucket servi et le bucket autorisé ne peuvent plus diverger.
+if ENVIRONMENT == "staging":
+    DEFAULT_AIRFLOW_S3_BUCKET_NAME = "airflow-staging"
 else:
-    VECTOR_TILES_LOCATION = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/vector_tiles"
+    DEFAULT_AIRFLOW_S3_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
+
+AIRFLOW_S3_BUCKET_NAME = env.str("AIRFLOW_S3_BUCKET_NAME", default=DEFAULT_AIRFLOW_S3_BUCKET_NAME)
+AIRFLOW_S3_BASE_URL = f"https://{AIRFLOW_S3_BUCKET_NAME}.s3.fr-par.scw.cloud"
+
+VECTOR_TILES_LOCATION = f"{AIRFLOW_S3_BASE_URL}/vector_tiles"
+GEOJSON_LOCATION = f"{AIRFLOW_S3_BASE_URL}/geojson"
 
 
 MATOMO_CONTAINER_SRC = env.str("MATOMO_CONTAINER_SRC", default="https://stats.beta.gouv.fr/js/container_26e5XOBD.js")
@@ -574,7 +591,7 @@ CSP_IMG_SRC = [
     "https://client.crisp.chat",
     "https://image.crisp.chat",
     "https://storage.crisp.chat",
-    "https://airflow-staging.s3.fr-par.scw.cloud",  # à remplacer
+    AIRFLOW_S3_BASE_URL,
 ]
 CSP_FRAME_SRC = (
     "'self'",
@@ -623,7 +640,7 @@ CSP_CONNECT_SRC = [
     "https://highcharts-export.osc-fr1.scalingo.io/",
     "ws://localhost:3000/ws",
     "http://localhost:3000",
-    "https://airflow-staging.s3.fr-par.scw.cloud",
+    AIRFLOW_S3_BASE_URL,
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io", "https://stats.beta.gouv.fr")
 

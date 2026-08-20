@@ -5,6 +5,7 @@ import type { MapConfig } from "../types/builder";
 import type { BaseSource } from "../sources/baseSource";
 import type { BaseLayer } from "../layers/baseLayer";
 import type { LandDetailResultType } from "@services/types/land";
+import type { MapDataLocations } from "../types/source";
 
 export interface InitMapResult {
     sources: Map<string, BaseSource>;
@@ -14,7 +15,8 @@ export interface InitMapResult {
 export async function initMapFromConfig(
     config: MapConfig,
     map: maplibregl.Map,
-    landData: LandDetailResultType
+    landData: LandDetailResultType,
+    dataLocations: MapDataLocations
 ): Promise<InitMapResult> {
     const sources = new Map<string, BaseSource>();
     const layers = new Map<string, BaseLayer>();
@@ -22,6 +24,7 @@ export async function initMapFromConfig(
     for (const src of config.sources || []) {
         const sourceId = `${src.type}-source`;
         const source = createSource(src, landData);
+        source.setDataLocations(dataLocations);
         await source.load();
 
         source.attach(map, sourceId);
