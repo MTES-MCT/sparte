@@ -6,7 +6,7 @@
 }}
 
 {%- set min_year = 2011 -%}
-{%- set max_year = 2023 -%}
+{%- set max_year = 2024 -%}
 {%- set years = range(min_year, max_year + 1) -%}
 {%- set destinations = [
     ('total', ''),

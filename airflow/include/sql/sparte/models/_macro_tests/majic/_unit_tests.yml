@@ -1,0 +1,41 @@
+version: 2
+
+unit_tests:
+  - name: divide_majic_assigns_surface_share
+    description: >
+      When `percent` is omitted, divide_majic must give the final commune the
+      share of its surface over the total surface of both communes, using
+      `commune` as the source of truth. Here 97601 (surface 10) over 76676
+      (surface 30) => 10 / (10 + 30) = 25%, so conso_2011 = 100 -> 25.
+    model: divide_majic_split
+    given:
+      - input: ref('consommation')
+        format: sql
+        rows: |
+          select
+            '76676' as commune_code,
+            100 as conso_2011,
+            0 as conso_2011_activite,
+            0 as conso_2011_habitat,
+            0 as conso_2011_mixte,
+            0 as conso_2011_route,
+            0 as conso_2011_ferroviaire,
+            0 as conso_2011_inconnu,
+            100 as conso_2011_2012,
+            0 as conso_2011_2012_activite,
+            0 as conso_2011_2012_habitat,
+            0 as conso_2011_2012_mixte,
+            0 as conso_2011_2012_route,
+            0 as conso_2011_2012_ferroviaire,
+            0 as conso_2011_2012_inconnu
+      - input: ref('commune')
+        format: sql
+        rows: |
+          select '76676' as code, 30.0 as surface,
+                 ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))', 2154) as geom
+          union all
+          select '97601' as code, 10.0 as surface,
+                 ST_GeomFromText('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 2154) as geom
+    expect:
+      rows:
+        - {commune_code: '97601', conso_2011: 25}

@@ -14,31 +14,12 @@
         ],
     )
 }}
-with without_scots as (
-select *, 32620 as srid_source
-from {{ ref("commune_guadeloupe") }}
-union all
-select *, 32620 as srid_source
-from {{ ref("commune_martinique") }}
-union all
-select *, 2972 as srid_source
-from {{ ref("commune_guyane") }}
-union all
-select *, 2975 as srid_source
-from {{ ref("commune_reunion") }}
-union all
-select *, 2154 as srid_source
-from {{ ref("commune_metropole") }}
-union all
-select *, 4471 as srid_source
-from {{ ref("commune_mayotte") }}
-)
 SELECT
-    without_scots.*,
+    commune_sans_scot.*,
     scot_communes.id_scot as scot
 FROM
-    without_scots
+    {{ ref('commune_sans_scot') }} as commune_sans_scot
 LEFT JOIN
-    {{ ref('scot_communes') }}
+    {{ ref('scot_communes') }} as scot_communes
 ON
-    without_scots.code = scot_communes.commune_code
+    commune_sans_scot.code = scot_communes.commune_code

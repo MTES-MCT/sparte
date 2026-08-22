@@ -9,6 +9,7 @@ models:
       - not_null
       - has_all_communes:
           severity: warn
+          store_failures: true
       - relationships:
           to: ref('commune')
           field: code

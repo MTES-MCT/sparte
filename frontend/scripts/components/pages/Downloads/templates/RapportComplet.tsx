@@ -8,6 +8,8 @@ import { formatNumber } from '@utils/formatUtils';
 import { LandMillesimeTable } from '@components/features/ocsge/LandMillesimeTable';
 import { MillesimeDisplay } from '@components/features/ocsge/MillesimeDisplay';
 import ContentZone, { ContentZoneMode } from '../editor/ContentZone';
+import Button from '@components/ui/Button';
+
 import {
     ReportContainer,
     PrintLayout,
@@ -53,10 +55,10 @@ interface RapportCompletProps {
 }
 
 const DEFAULT_consoStartYear = 2011;
-const DEFAULT_consoEndYear = 2023;
+const DEFAULT_consoEndYear = 2024;
 
-// Années disponibles pour la sélection (fichiers fonciers disponibles depuis 2009)
-const AVAILABLE_YEARS = Array.from({ length: 15 }, (_, i) => 2009 + i);
+// Années disponibles pour la sélection (fichiers fonciers disponibles depuis 2011)
+const AVAILABLE_YEARS = Array.from({ length: 14 }, (_, i) => 2011 + i);
 
 const SettingsSection = styled.div`
     margin-bottom: 2.5rem;
@@ -357,16 +359,14 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     {mode === 'edit' && (
                         <CalloutEditInfo>
                             <p className="fr-mb-0">
-                                <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                                 L'objectif de réduction peut être modifié dans les paramètres du rapport
                             </p>
-                            <button 
-                                className="fr-btn fr-btn--sm fr-mt-0"
+                            <Button 
                                 onClick={() => setIsSettingsOpen(true)}
                                 title="Modifier l'objectif"
                             >
                                 Modifier
-                            </button>
+                            </Button>
                         </CalloutEditInfo>
                     )}
                 </div>
@@ -401,16 +401,14 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     {mode === 'edit' && (
                         <CalloutEditInfo>
                             <p className="fr-mb-0">
-                                <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                                 La période d'analyse peut être modifiée dans les paramètres du rapport
                             </p>
-                            <button 
-                                className="fr-btn fr-btn--sm fr-mt-0"
+                            <Button 
                                 onClick={() => setIsSettingsOpen(true)}
                                 title="Modifier la période"
                             >
                                 Modifier
-                            </button>
+                            </Button>
                         </CalloutEditInfo>
                     )}
                 </div>

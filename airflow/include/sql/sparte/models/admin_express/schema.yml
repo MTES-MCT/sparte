@@ -5,8 +5,12 @@ version: 2
 code_is_unique_and_not_null: &code_is_unique_and_not_null
   - name: code
     data_tests:
-    - not_null
-    - unique
+    - not_null:
+        config:
+          store_failures: true
+    - unique:
+        config:
+          store_failures: true
   - name: simple_geom
     data_tests:
     - not_null

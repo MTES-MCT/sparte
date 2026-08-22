@@ -1,6 +1,7 @@
 import { BaseLayer } from "./baseLayer";
 import type { LayerSpecification, FilterSpecification, ExpressionSpecification } from "maplibre-gl";
 import type { LandDetailResultType } from "@services/types/land";
+import { CARROYAGE_FIRST_YEAR, CARROYAGE_LAST_YEAR } from "../constants/config";
 
 type ExtendedLandData = LandDetailResultType & { startYear?: number; endYear?: number };
 
@@ -27,12 +28,12 @@ export class CarroyageLeaLayer extends BaseLayer {
     }
 
     private buildCumulativeExpression(): ExpressionSpecification {
-        const startYear = this.landData.startYear || 2011;
-        const endYear = this.landData.endYear || 2023;
+        const startYear = this.landData.startYear || CARROYAGE_FIRST_YEAR;
+        const endYear = this.landData.endYear || CARROYAGE_LAST_YEAR;
 
         // Les données de carroyage commencent en 2011
-        const minYear = Math.max(startYear, 2011);
-        const maxYear = Math.min(endYear, 2023);
+        const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+        const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
 
         // Construire la somme des années
         const yearFields: ExpressionSpecification[] = [];

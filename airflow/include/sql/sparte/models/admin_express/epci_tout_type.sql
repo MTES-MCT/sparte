@@ -40,4 +40,3 @@ with together as (
     FROM {{ ref('epci_mayotte') }}
 )
 SELECT * FROM together
-WHERE is_ept = false

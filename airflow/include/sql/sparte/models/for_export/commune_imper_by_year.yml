@@ -27,7 +27,6 @@ models:
     - name: population
       data_tests:
       - not_null
-    - name: canton
     - name: departement
       data_tests:
       - not_null

@@ -98,7 +98,6 @@ PROJECT_APPS = [
     "utils.apps.UtilsConfig",
     "highcharts.apps.HighchartsConfig",
     "users.apps.UsersConfig",
-    "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
     "home.apps.HomeConfig",

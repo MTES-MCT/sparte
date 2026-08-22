@@ -12,3 +12,4 @@ models:
           - relationships:
               to: ref('commune')
               field: code
+              store_failures: true

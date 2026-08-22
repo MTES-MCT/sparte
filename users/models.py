@@ -102,7 +102,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS: List[str] = []
+    REQUIRED_FIELDS: List[str] = ["first_name", "last_name"]
 
     created_at = models.DateTimeField("Créé le", auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField("Mis à jour le", auto_now=True, blank=True, null=True)

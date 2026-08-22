@@ -8,6 +8,7 @@ import { useGetCarroyageBoundsQuery, useGetCarroyageDestinationConfigQuery, useG
 import Loader from "@components/ui/Loader";
 import type { ExpressionSpecification } from "maplibre-gl";
 import { CarroyageLeaSidePanel } from "./sidePanel";
+import { CARROYAGE_FIRST_YEAR, CARROYAGE_LAST_YEAR } from "../constants/config";
 
 type DestinationType = string;
 type DestinationConfig = Record<string, { label: string; suffix: string; color: string; light_text: boolean }>;
@@ -94,8 +95,8 @@ function buildCumulativeExpression(
     endYear: number,
     suffix: string
 ): ExpressionSpecification {
-    const minYear = Math.max(startYear, 2011);
-    const maxYear = Math.min(endYear, 2023);
+    const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+    const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
 
     const yearFields: ExpressionSpecification[] = [];
     for (let year = minYear; year <= maxYear; year++) {
@@ -195,6 +196,7 @@ interface CarroyageLeaMapProps {
     childLandType?: string;
     center?: [number, number] | null;
     onMapLoad?: (map: maplibregl.Map) => void;
+    mapHeight?: string;
 }
 
 export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
@@ -204,7 +206,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     selectedDestination,
     childLandType,
     center,
-    onMapLoad
+    onMapLoad,
+    mapHeight,
 }) => {
     const { data: destinationConfig } = useGetCarroyageDestinationConfigQuery(undefined);
     const { land_type, land_id } = landData || {};
@@ -290,8 +293,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
     const calculateCumulativeValue = useCallback((properties: Record<string, unknown>) => {
         if (!destinationConfig) return 0;
         const suffix = destinationConfig[selectedDestination].suffix;
-        const minYear = Math.max(startYear, 2011);
-        const maxYear = Math.min(endYear, 2023);
+        const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+        const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
         let total = 0;
         for (let year = minYear; year <= maxYear; year++) {
             const key = `conso_${year}${suffix}`;
@@ -535,6 +538,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             config={config}
             landData={extendedLandData}
             center={center}
+            mapHeight={mapHeight}
             onMapLoad={handleMapLoad}
             sidePanel={
                 <CarroyageLeaSidePanel

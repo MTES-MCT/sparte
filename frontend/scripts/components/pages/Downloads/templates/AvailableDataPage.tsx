@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import { LandDetailResultType } from "@services/types/land";
+import Button from '@components/ui/Button';
+
 import { FullPageContainer } from "../styles";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
 
@@ -121,16 +123,14 @@ const AvailableDataPage: React.FC<AvailableDataPageProps> = ({
                     {mode === 'edit' && onOpenSettings && landData.has_conso && (
                         <EditableInfo>
                             <EditableText>
-                                <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                                 La période d'analyse peut être modifiée dans les paramètres du rapport
                             </EditableText>
-                            <button 
-                                className="fr-btn fr-btn--sm"
+                            <Button 
                                 onClick={onOpenSettings}
                                 title="Modifier la période"
                             >
                                 Modifier
-                            </button>
+                            </Button>
                         </EditableInfo>
                     )}
                 </PeriodItem>
@@ -146,7 +146,6 @@ const AvailableDataPage: React.FC<AvailableDataPageProps> = ({
                     { landData.has_ocsge ? (
                         <LandMillesimeTable
                             millesimes={landData.millesimes}
-                            territory_name={landData.name}
                             is_interdepartemental={landData.is_interdepartemental}
                             compact={true}
                         />

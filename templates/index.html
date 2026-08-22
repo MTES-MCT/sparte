@@ -49,7 +49,7 @@
         <!-- Matomo -->
         {% tracking_code %}
         <!-- Crisp -->
-        {% if request.resolver_match.url_name not in 'map-urban-zones,theme-city-artif,theme-city-conso,theme-my-artif' %}
+        {% if request.resolver_match.url_name not in 'map-urban-zones,theme-city-artif,theme-city-conso,theme-my-artif,dashboard_portail_de_l_artif' %}
             {% crisp_tag_code %}
         {% endif %}
     </head>
@@ -62,7 +62,7 @@
             {% endblock top_navigation %}
 
             <!-- Page content-->
-            <main id="contenu" class="h-100 {% if request.resolver_match.url_name not in 'home,home_rapport_local,map-urban-zones,theme-city-artif,theme-city-conso,theme-my-artif' %}fr-py-7w {% endif %}">
+            <main id="contenu" class="h-100 {% if request.resolver_match.url_name not in 'home,home_rapport_local,map-urban-zones,theme-city-artif,theme-city-conso,theme-my-artif,dashboard_portail_de_l_artif' %}fr-py-7w {% endif %}">
                 {% if messages %}
                 <div class="fr-container fr-mt-2w fr-mb-5w">
                     <div class="fr-grid-row fr-grid-row--center">

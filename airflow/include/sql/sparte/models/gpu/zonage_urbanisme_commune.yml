@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: zonage_urbanisme_commune
+    description: >
+      Zonages d'urbanisme découpés aux emprises communales. Une ligne par couple
+      (zonage, commune). Grain de référence de la chaîne zonage : tous les
+      agrégats territoriaux se calculent en sommant ces parts, et les statistiques
+      du zonage entier en regroupant sur zonage_checksum.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - zonage_checksum
+            - commune_code
+    columns:
+      - name: part_id
+        description: Clé de la part, zonage_checksum || '_' || commune_code. Interne à dbt, non exposée à l'API.
+        data_type: text
+        data_tests:
+          - not_null
+          - unique
+
+      - name: zonage_checksum
+        description: Identifiant du zonage entier. Trace de l'unité, permet de recomposer les parts.
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('zonage_urbanisme')
+              field: checksum
+
+      - name: commune_code
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('commune')
+              field: code
+
+      - name: type_zone
+        data_type: character varying
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ["AU", "A", "N", "U"]
+
+      - name: departement
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+
+      - name: srid_source
+        data_type: integer
+        data_tests:
+          - not_null
+
+      - name: zonage_surface
+        description: >
+          Surface du zonage ENTIER, mer comprise. Conservée pour mémoire.
+          Ne pas l'utiliser comme dénominateur : c'est la somme des part_surface
+          qui fait foi (cf. zonages maritimes).
+        data_tests:
+          - not_null
+          - is_positive_number
+
+      - name: part_surface
+        description: Surface de la part, dans la projection srid_source. Strictement positive par construction.
+        data_tests:
+          - not_null
+          - is_positive_number
+
+      - name: geom
+        description: Géométrie du zonage restreinte à la commune, en srid_source.
+        data_tests:
+          - is_valid_geom
+          - is_not_empty_geom

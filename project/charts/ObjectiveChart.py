@@ -200,7 +200,7 @@ class ObjectiveChart(DiagnosticChart):
             land_id=self.land.land_id,
             land_type=self.land.land_type,
             year__gte=2011,
-            year__lte=2023,
+            year__lte=2024,
         ).order_by("year")
 
         for item in conso_data:

@@ -21,9 +21,12 @@ from .file_handling import (
     RemoteZipToS3FileHandler,
     S3CSVFileToDBTableHandler,
     S3GeoJsonFileToDBTableHandler,
+    S3GeopackageArchiveToDBTablesHandler,
+    S3GeopackageFileToDBTableHandler,
     S3Handler,
     S3ToDataGouvHandler,
     S3XLSXFileToDBTableHandler,
+    SevenZArchiveHandler,
     SQLToCSVOnS3Handler,
     SQLToGeoJsonOnS3Handler,
     SQLToGeojsonSeqOnS3Handler,
@@ -263,6 +266,23 @@ class DomainContainer(containers.DeclarativeContainer):
     s3_geojson_file_to_db_table_handler = providers.Factory(
         provides=S3GeoJsonFileToDBTableHandler,
         s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+    )
+
+    s3_geopackage_file_to_db_table_handler = providers.Factory(
+        provides=S3GeopackageFileToDBTableHandler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+    )
+
+    seven_z_archive_handler = providers.Factory(provides=SevenZArchiveHandler)
+
+    s3_geopackage_archive_to_db_tables_handler = providers.Factory(
+        provides=S3GeopackageArchiveToDBTablesHandler,
+        s3_handler=s3_handler,
+        archive_handler=seven_z_archive_handler,
         tmp_path_generator=tmp_path_generator,
         db_connection=InfraContainer().gdal_dbt_conn().encode(),
     )

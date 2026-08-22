@@ -11,6 +11,11 @@ export const ORTHOPHOTO_TILES_URL = "https://data.geopf.fr/wmts?SERVICE=WMTS&REQ
 
 export const OSM_TILES_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
+// Bornes des colonnes conso_<année> présentes dans les tuiles carroyage LEA.
+// Millésime 2011-2025 du Cerema : conso_2011 … conso_2024.
+export const CARROYAGE_FIRST_YEAR = 2011;
+export const CARROYAGE_LAST_YEAR = 2024;
+
 export const ARTIFICIALISATION_COLOR = "#FA4B42"
 export const DESARTIFICIALISATION_COLOR = "#00ce67"
 export const IMPERMEABILISATION_COLOR = "#FA4B42"
