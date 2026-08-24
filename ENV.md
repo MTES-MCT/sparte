@@ -53,8 +53,6 @@ Prérequis : [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`) installé (
 | `DEBUG` | Activer le mode debug Django | `1` |
 | `ALLOWED_HOSTS` | Hôtes autorisés à se connecter | `127.0.0.1,localhost,django,host.docker.internal` |
 | `DOMAIN_URL` | URL de l'application | `http://localhost:8080/` |
-| `MAINTENANCE_MODE` | Activer le mode maintenance | `0` |
-| `TZ` | Fuseau horaire | `Europe/Paris` |
 
 ## Base de données
 
@@ -67,14 +65,11 @@ Prérequis : [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`) installé (
 | `DATABASE_URL` | URL de connexion complète (construit à partir des variables ci-dessus) | `postgis://postgres:...@db:5432/postgres` |
 | `DB_LOGGING_LEVEL` | Niveau de log de la base de données | `WARNING` |
 
-## Redis / Celery
+## Redis
 
 | Variable | Description | Valeur par défaut |
 |----------|-------------|-------------------|
-| `CELERY_BROKER_URL` | URL du broker Celery (Redis) | `redis://127.0.0.1:6379/0` |
-| `CELERY_RESULT_BACKEND` | URL du backend de résultats Celery | `redis://127.0.0.1:6379/0` |
-| `CELERY_TASK_ALWAYS_EAGER` | Exécuter les tâches Celery de manière synchrone | `0` |
-| `SCALINGO_REDIS_URL` | URL Redis (utilisée en production sur Scalingo) | `redis://127.0.0.1:6379/0` |
+| `SCALINGO_REDIS_URL` | URL Redis | `redis://redis:6379/0` |
 
 ## Stockage S3
 
@@ -86,7 +81,7 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 | `AWS_SECRET_ACCESS_KEY` | Clé secrète S3 | `localsecret` |
 | `AWS_STORAGE_BUCKET_NAME` | Nom du bucket | `sparte-local` |
 | `AWS_S3_REGION_NAME` | Région S3 | `us-east-1` |
-| `AWS_S3_ENDPOINT_URL` | URL du endpoint S3 | `http://localhost:7070` |
+| `AWS_S3_ENDPOINT_URL` | URL du endpoint S3 | `http://s3:7070` |
 | `AWS_LOCATION` | Préfixe dans le bucket (évite les collisions entre instances) | `local` |
 | `LOCAL_FILE_DIRECTORY` | Répertoire local pour les fichiers (shapefiles, etc.) | `public_data/local_data` |
 
@@ -108,14 +103,14 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 | `CRISP_WEBSITE_ID` | Identifiant du site Crisp | `ASK_A_MAINTAINER` |
 | `CRISP_ACTIVATED` | Activer le widget Crisp | `0` |
 | `CRISP_WEBHOOK_SECRET_KEY` | Clé d'authentification des webhooks Crisp | `CREATE_A_SECRET_KEY` |
+| `CRISP_API_IDENTIFIER` | Identifiant API Crisp | _(vide)_ |
+| `CRISP_API_KEY` | Clé API Crisp | _(vide)_ |
 
 ## Analytics
 
 | Variable | Description | Valeur par défaut |
 |----------|-------------|-------------------|
 | `MATOMO_ACTIVATE` | Activer le tracking Matomo | `0` |
-| `MATOMO_SCRIPT_NAME` | Nom du script Matomo | _(vide)_ |
-| `MATOMO_TOKEN` | Token d'API Matomo | _(vide)_ |
 | `GOOGLE_ADWORDS_ACTIVATE` | Activer les Google Tags | `0` |
 
 ## Highcharts / Export
@@ -123,7 +118,7 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 | Variable | Description | Valeur par défaut |
 |----------|-------------|-------------------|
 | `HIGHCHART_SERVER` | URL du serveur d'export Highcharts | `https://highcharts-export.osc-fr1.scalingo.io` |
-| `EXPORT_SERVER_URL` | URL du serveur d'export PDF | `http://localhost:3001` |
+| `EXPORT_SERVER_URL` | URL du serveur d'export PDF | `http://export-server:3000` |
 | `EXPORT_BASE_URL` | URL de base utilisée par le serveur d'export pour accéder à Django | `http://django:8080` |
 
 ## Notifications
@@ -141,7 +136,6 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 |----------|-------------|-------------------|
 | `USE_SRI` | Activer les Subresource Integrity | `0` |
 | `USE_CSP` | Activer les Content Security Policy | `1` |
-| `DEBUG_TOOLBAR` | Activer la barre de debug Django | `1` |
 | `TWO_FACTOR_ENABLED` | Activer l'authentification 2FA | `0` |
 
 ## ProConnect (OIDC)
@@ -151,12 +145,6 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 | `PROCONNECT_DOMAIN` | Domaine ProConnect | `ASK_A_MAINTAINER` |
 | `PROCONNECT_CLIENT_ID` | Client ID ProConnect | `ASK_A_MAINTAINER` |
 | `PROCONNECT_SECRET` | Secret ProConnect | `ASK_A_MAINTAINER` |
-
-## GDAL
-
-| Variable | Description | Valeur par défaut |
-|----------|-------------|-------------------|
-| `GDAL_CONFIG_FILE` | Chemin du fichier de configuration GDAL | `/app/gdal_config` |
 
 ## Variables Scalingo (production)
 
