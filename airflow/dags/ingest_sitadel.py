@@ -1,7 +1,6 @@
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
-from include.pools import DBT_POOL
-from include.utils import get_dbt_command_from_directory
+from include.dbt import DbtBuild
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -79,13 +78,9 @@ def ingest_sitadel():
 
         return inserted_rows
 
-    @task.bash(pool=DBT_POOL)
-    def dbt_build(**context):
-        if context["params"].get("skip_dbt"):
-            return "echo 'Skipping dbt build'"
-        return get_dbt_command_from_directory(cmd="dbt build -s sitadel+")
+    dbt_build = DbtBuild(select=["sitadel+"], skip_if_param="skip_dbt")
 
-    download() >> ingest() >> dbt_build()
+    download() >> ingest() >> dbt_build
 
 
 ingest_sitadel()
