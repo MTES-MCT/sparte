@@ -65,11 +65,6 @@ urlpatterns = [
     ),
     # DOWNLOAD
     path(
-        "dashboard-portail-de-l-artif",
-        views.diagnostic.DiagnosticDashboardPortailDeLArtifView.as_view(),
-        name="dashboard_portail_de_l_artif",
-    ),
-    path(
         "<str:land_type>/<str:land_slug>/telechargements",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads",
