@@ -70,6 +70,8 @@ SELECT
     ) as conso_details,
     land.consommation_correction_status,
     land.competence_planification,
+    land.is_diagnosticable,
+    land.non_diagnosticable_motif,
     land.logements_22,
     CASE
         WHEN land.logements_11 > 0

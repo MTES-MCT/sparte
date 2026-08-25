@@ -35,6 +35,8 @@ SELECT
     logements_vacants.logements_vacants_status,
     logements_vacants.logements_vacants_secretisation_status_prive,
     coalesce(sudocuh.competence_planification, false) as competence_planification,
+    non_diagnosticable.is_listed IS NULL as is_diagnosticable,
+    non_diagnosticable.motif as non_diagnosticable_motif,
     CASE
         WHEN array_length(land.departements, 1) = 1
         THEN false
@@ -103,6 +105,14 @@ LEFT JOIN LATERAL (
         competence_plan_land.land_type = land.land_type
     LIMIT 1
 )  sudocuh ON true
+LEFT JOIN LATERAL (
+    SELECT true as is_listed, motif
+    FROM {{ ref('seed_land_non_diagnosticable') }}
+    WHERE
+        seed_land_non_diagnosticable.land_id = land.land_id AND
+        seed_land_non_diagnosticable.land_type = land.land_type
+    LIMIT 1
+) non_diagnosticable ON true
 LEFT JOIN LATERAL (
     SELECT
         has_logements_vacants_prive,
