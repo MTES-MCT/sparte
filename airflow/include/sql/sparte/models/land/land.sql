@@ -59,9 +59,10 @@ SELECT
     string_to_array(code, '') as departements,
     {{ common_fields }},
     {{ admin_express_common_fields }},
+    -- Le premier élément est la maille d'analyse par défaut affichée par le front.
     ARRAY[
-        '{{ var("COMMUNE") }}',
         '{{ var("EPCI") }}',
+        '{{ var("COMMUNE") }}',
         '{{ var("SCOT") }}'
     ] as child_land_types,
     ARRAY[

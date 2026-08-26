@@ -15,25 +15,6 @@ export const LAND_TYPE_LABELS: Record<string, string> = {
   COMP: "Composite",
 };
 
-const LAND_TYPE_HIERARCHY: Record<string, number> = {
-  REGION: 5,
-  DEPART: 4,
-  SCOT: 3,
-  EPCI: 2,
-  COMM: 1,
-  NATION: 6,
-  COMP: 0,
-};
-
-const getHighestLandType = (landTypes: string[]): string => {
-  if (!landTypes || landTypes.length === 0) return "";
-  return landTypes.reduce((highest, current) => {
-    const highestValue = LAND_TYPE_HIERARCHY[highest] || 0;
-    const currentValue = LAND_TYPE_HIERARCHY[current] || 0;
-    return currentValue > highestValue ? current : highest;
-  }, landTypes[0]);
-};
-
 interface ConsommationControlsContextType {
   landId: string;
   landType: string;
@@ -91,9 +72,9 @@ export const ConsommationControlsProvider: React.FC<ConsommationControlsProvider
   const [startYear, setStartYear] = useState(defaultStartYear);
   const [endYear, setEndYear] = useState(defaultEndYear);
 
-  const [childType, setChildType] = useState<string | undefined>(
-    childLandTypes && childLandTypes.length > 0 ? getHighestLandType(childLandTypes) : undefined
-  );
+  // La maille par défaut est le premier élément de child_land_types : l'ordre est
+  // fixé côté dbt (models/land/land.sql), qui fait autorité.
+  const [childType, setChildType] = useState<string | undefined>(childLandTypes?.[0]);
   const [activeBivariateChartId, setActiveBivariateChartId] = useState("dc_population_conso_map");
 
   const { totalConsoHa, populationEvolution, populationEvolutionPercent, isLoadingConso, isLoadingPop } =
