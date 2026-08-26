@@ -105,6 +105,14 @@ models:
               values:
                 - true
                 - false
+      - name: is_diagnosticable
+        description: Indique si le territoire peut faire l'objet d'un diagnostic. Vaut false lorsque le territoire est listé dans le seed 'seed_land_non_diagnosticable'. Utilisé pour masquer le territoire des résultats de recherche.
+        data_type: boolean
+        data_tests:
+          - not_null
+      - name: non_diagnosticable_motif
+        description: Motif expliquant pourquoi le territoire n'est pas diagnosticable. Null lorsque le territoire est diagnosticable.
+        data_type: text
       - name: is_interdepartemental
         description: Indicates whether the land spans multiple departments. If the array of departments associated with the land contains more than one element, this column will return TRUE; otherwise, it will return FALSE.
         data_type: boolean

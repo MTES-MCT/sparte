@@ -1,0 +1,3 @@
+"land_id","land_type","motif"
+"NATION","NATION","Pas de diagnostic à l'échelle nationale"
+"75","DEPART","Périmètre identique à la commune de Paris (75056), problème de représentation graphique : https://github.com/MTES-MCT/sparte/issues/1522"
