@@ -3,8 +3,7 @@ import os
 import pandas as pd
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
-from include.pools import DBT_POOL
-from include.utils import get_dbt_command_from_directory
+from include.dbt import DbtBuild
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -73,15 +72,11 @@ def ingest_rpls():
         os.remove(tmp_localpath)
         return row_count
 
-    @task.bash(pool=DBT_POOL)
-    def dbt_build(**context) -> str:
-        if context["params"].get("skip_dbt"):
-            return "echo 'Skipping dbt build'"
-        return get_dbt_command_from_directory(cmd="dbt build -s rpls+")
+    dbt_build = DbtBuild(select=["rpls+"], skip_if_param="skip_dbt")
 
     downloaded = download()
     ingested = ingest()
-    dbt = dbt_build()
+    dbt = dbt_build
 
     downloaded >> ingested >> dbt
 

@@ -7,8 +7,7 @@ Table destination: brevo_user_organism
 
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
-from include.pools import DBT_POOL
-from include.utils import get_dbt_command_from_directory
+from include.dbt import DbtBuild
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -40,11 +39,9 @@ def ingest_brevo_user_organism():
             )
         )
 
-    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
-    def dbt_build():
-        return get_dbt_command_from_directory(cmd="dbt build -s brevo_user_organism+")
+    dbt_build = DbtBuild(select=["brevo_user_organism+"], retries=0, trigger_rule="all_success")
 
-    ingest() >> dbt_build()
+    ingest() >> dbt_build
 
 
 ingest_brevo_user_organism()
