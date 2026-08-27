@@ -5,11 +5,8 @@ from zipfile import ZipFile
 
 from include.container import InfraContainer as Container
 from include.data.majic.sources import sources
-from include.pools import DBT_POOL
-from include.utils import (
-    get_dbt_command_from_directory,
-    get_first_shapefile_path_in_dir,
-)
+from include.dbt import DbtBuild
+from include.utils import get_first_shapefile_path_in_dir
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -76,9 +73,7 @@ def ingest_majic():
         )
         ingest_tasks.append(ingest_task)
 
-    @task.bash(pool=DBT_POOL)
-    def dbt_build() -> str:
-        return get_dbt_command_from_directory(cmd="dbt build -s +consommation.sql+ --exclude tag:macro_unit_test")
+    dbt_build = DbtBuild(select=["+consommation.sql+"])
 
     @task.bash()
     def cleanup() -> str:
@@ -87,7 +82,7 @@ def ingest_majic():
     for i in range(len(ingest_tasks) - 1):
         ingest_tasks[i] >> ingest_tasks[i + 1]
 
-    build = dbt_build()
+    build = dbt_build
     cleanup_task = cleanup()
 
     # Build the models and clean up the temporary files

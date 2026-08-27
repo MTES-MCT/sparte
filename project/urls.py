@@ -1,18 +1,9 @@
 from django.urls import path
-from rest_framework import routers
 
 from . import views
-from .api_views import (
-    EmpriseViewSet,
-    ExportStartView,
-    ExportStatusView,
-    RecordDownloadRequestAPIView,
-)
+from .api_views import ExportStartView, ExportStatusView, RecordDownloadRequestAPIView
 
 app_name = "project"
-
-
-# See below for DRF's router inclusions
 
 urlpatterns = [
     path("mes-territoires", views.UserLandPreferenceListView.as_view(), name="list"),
@@ -65,11 +56,6 @@ urlpatterns = [
     ),
     # DOWNLOAD
     path(
-        "dashboard-portail-de-l-artif",
-        views.diagnostic.DiagnosticDashboardPortailDeLArtifView.as_view(),
-        name="dashboard_portail_de_l_artif",
-    ),
-    path(
         "<str:land_type>/<str:land_slug>/telechargements",
         views.diagnostic.DiagnosticDownloadsView.as_view(),
         name="report_downloads",
@@ -80,10 +66,3 @@ urlpatterns = [
         name="report_downloads_draft",
     ),
 ]
-
-# Add API urls
-router = routers.DefaultRouter()
-router.register(r"geojson", EmpriseViewSet)
-
-
-urlpatterns += router.urls

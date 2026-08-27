@@ -6,6 +6,11 @@ apache-airflow-providers-postgres==5.11.2
 requests==2.32.3
 dbt-core==1.8.2
 dbt-postgres==1.8.2
+astronomer-cosmos==1.15.1
+# openlineage-integration-common doit rester aligné sur openlineage-python fourni
+# par l'image Astro : une version plus récente passe `dialect=` à SQLJobFacet,
+# ce qui fait échouer tout opérateur Cosmos (TypeError non rattrapé).
+openlineage-integration-common==1.34.0
 tqdm==4.66.5
 paramiko>=3
 pyarrow==17.0.0

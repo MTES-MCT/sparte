@@ -1,19 +1,6 @@
 from rest_framework import serializers
-from rest_framework_gis import serializers as gis_serializers
 
 from project.models import ReportDraft
-
-from .models import Emprise
-
-
-class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "project",
-        )
-        geo_field = "mpoly"
-        model = Emprise
 
 
 class ReportDraftSerializer(serializers.ModelSerializer):

@@ -18,9 +18,8 @@ import subprocess
 import requests
 from include.container import DomainContainer
 from include.container import InfraContainer as Container
-from include.pools import DBT_POOL
+from include.dbt import DbtBuild
 from include.utils import (
-    get_dbt_command_from_directory,
     get_shapefile_or_geopackage_first_layer_name,
     multiline_string_to_single_line,
 )
@@ -106,9 +105,7 @@ def ingest_carroyage_lea():
         # Cleanup
         shutil.rmtree(TMP_PATH)
 
-    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
-    def dbt_build():
-        return get_dbt_command_from_directory(cmd="dbt build -s carroyage_lea+")
+    dbt_build = DbtBuild(select=["carroyage_lea+"], retries=0, trigger_rule="all_success")
 
     @task.python
     def postgis_to_geojson():
@@ -176,7 +173,7 @@ def ingest_carroyage_lea():
     (
         download()
         >> ingest()
-        >> dbt_build()
+        >> dbt_build
         >> postgis_to_geojson()
         >> geojson_to_pmtiles()
         >> upload_pmtiles()
