@@ -12,6 +12,10 @@ interface NoticeContent {
 }
 
 const noticeContentMap: Partial<Record<LogementVacantStatusEnum, NoticeContent>> = {
+  [LogementVacantStatusEnum.GISEMENT_NUL]: {
+    title: "Données non disponibles.",
+    description: "Les données de logements vacants ne sont pas disponibles pour votre territoire."
+  },
   [LogementVacantStatusEnum.DONNEES_INDISPONIBLES]: {
     title: "Données non disponibles.",
     description: "Les données de logements vacants ne sont pas disponibles pour votre territoire en raison du secret statistique."
