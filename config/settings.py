@@ -40,7 +40,7 @@ if env_path.is_file():
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-ENVIRONMENT: Literal["local", "staging", "production"] = env.str("ENVIRONMENT")
+ENVIRONMENT: Literal["local", "staging", "production"] = env.str("ENVIRONMENT", default="local")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str("SECRET")
@@ -50,6 +50,8 @@ DEBUG = env.bool("DEBUG", default=False)
 USE_SRI = env.bool("USE_SRI", default=not DEBUG)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
+
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
 DOMAIN_URL = env.str("DOMAIN_URL")
 
@@ -323,11 +325,12 @@ else:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": env.str("SCALINGO_REDIS_URL"),
+            "LOCATION": env.str("CACHE_DB_URL"),
             "TIMEOUT": 60 * 15,  # 15 minutes
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "MAX_ENTRIES": 1000,
+                "PASSWORD": env.str("CACHE_DB_PASSWORD", default=""),
             },
         }
     }
@@ -431,7 +434,7 @@ HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highchart
 
 # Configuration for export server (PDF generation)
 
-EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3001")
+EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3000")
 EXPORT_BASE_URL = env.str("EXPORT_BASE_URL", default="http://django:8080")
 
 # EMAIL
@@ -459,8 +462,8 @@ elif EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp-relay.brevo.com"
-    EMAIL_PORT = 587
+    EMAIL_HOST = env.str("MAIL_SERVER", default="smtp-relay.brevo.com")
+    EMAIL_PORT = env.int("MAIL_PORT", default=587)
     EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY")
 
