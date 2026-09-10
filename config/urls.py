@@ -26,6 +26,7 @@ from two_factor.views import LoginView
 from config.views import (
     CarroyageDestinationConfigView,
     EnvironmentView,
+    LivenessView,
     WebpackProxyView,
 )
 from public_data.views import (
@@ -66,6 +67,7 @@ urlpatterns += [
     path("exports/pdf-header", PdfHeaderView.as_view(), name="pdf_header"),
     path("exports/pdf-footer", PdfFooterView.as_view(), name="pdf_footer"),
     path("env", view=EnvironmentView.as_view(), name="env"),
+    path("liveness", view=LivenessView.as_view(), name="liveness"),
     path(
         "carroyage-destination-config",
         view=CarroyageDestinationConfigView.as_view(),
