@@ -456,20 +456,22 @@ To set MailJet configuration, please add environment variables:
 """
 
 EMAIL_ENGINE = env.str("EMAIL_ENGINE", default="local")
-if EMAIL_ENGINE not in ["local", "sendinblue"]:
+if EMAIL_ENGINE not in ["local", "smtp", "sendinblue"]:
     raise ImproperlyConfigured("E-mail backend needs to be correctly set")
 elif EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-else:
+    EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
+elif EMAIL_ENGINE == "sendinblue":
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = env.str("MAIL_SERVER", default="smtp-relay.brevo.com")
     EMAIL_PORT = env.int("MAIL_PORT", default=587)
     EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
     EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY")
-
-
-EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
-SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
+    SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = env.str("MAIL_SERVER", default="smtp-relay.brevo.com")
+    EMAIL_PORT = env.int("MAIL_PORT", default=587)
 
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
