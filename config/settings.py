@@ -751,7 +751,7 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": False,
         }
-    },
+    }
 }
 
 # CRISP
