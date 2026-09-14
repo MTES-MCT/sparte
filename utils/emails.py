@@ -8,24 +8,7 @@ from requests import exceptions, post
 logger = logging.getLogger(__name__)
 
 
-class LocalLockMixin:
-    def get_text_content(self):
-        return (
-            f"Send email with template id = {self.template_id}\n\n"
-            "Parameters:\n"
-            "\n".join([f"{k}={v}" for k, v in self.params.items()])
-        )
-
-    def send(self):
-        if settings.EMAIL_ENGINE == "sendinblue":
-            return super().send()
-        msg = EmailMultiAlternatives(
-            self.subject, self.get_text_content(), "no sender", [_["email"] for _ in self.recipients]
-        )
-        msg.send()
-
-
-class SibTemplateEmail(LocalLockMixin):
+class BaseTemplateEmail:
     expected_params: List[str] = []
 
     def __init__(
@@ -36,12 +19,35 @@ class SibTemplateEmail(LocalLockMixin):
         params: Optional[Dict[str, Any]] = None,
         attachements: Optional[List[Dict[Literal["url", "name", "content"], str]]] = None,
     ):
-        self.url = "https://api.sendinblue.com/v3/smtp/email"
         self.template_id = template_id
-        self.subject = subject
+        self.subject = subject or ""
         self.recipients = recipients or []
         self.params = params or {}
         self.attachments = attachements or []
+
+    def get_text_content(self):
+        return (
+            f"Send email with template id = {self.template_id}\n\n"
+            "Parameters:\n"
+            "\n".join([f"{k}={v}" for k, v in self.params.items()])
+        )
+
+
+class SmtpTemplateEmail(BaseTemplateEmail):
+    def send(self):
+        msg = EmailMultiAlternatives(
+            self.subject,
+            self.get_text_content(),
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient["email"] for recipient in self.recipients],
+        )
+        return msg.send()
+
+
+class SibTemplateEmail(BaseTemplateEmail):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.url = "https://api.sendinblue.com/v3/smtp/email"
 
     def get_params(self) -> Dict[str, str]:
         if self.expected_params:

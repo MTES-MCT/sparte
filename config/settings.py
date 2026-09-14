@@ -466,12 +466,14 @@ elif EMAIL_ENGINE == "sendinblue":
     EMAIL_HOST = env.str("MAIL_SERVER", default="smtp-relay.brevo.com")
     EMAIL_PORT = env.int("MAIL_PORT", default=587)
     EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY", default="")
     SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = env.str("MAIL_SERVER", default="smtp-relay.brevo.com")
     EMAIL_PORT = env.int("MAIL_PORT", default=587)
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY", default="")
 
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")

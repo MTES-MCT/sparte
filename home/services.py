@@ -2,11 +2,13 @@ import logging
 
 from django.conf import settings
 
-from utils.emails import SibTemplateEmail
+from utils.emails import SibTemplateEmail, SmtpTemplateEmail
 
 from .models import ContactForm, Newsletter
 
 logger = logging.getLogger(__name__)
+
+TemplateEmail = SibTemplateEmail if settings.EMAIL_ENGINE == "sendinblue" else SmtpTemplateEmail
 
 
 def send_contact_form(contact_form_id):
@@ -14,9 +16,9 @@ def send_contact_form(contact_form_id):
     logger.info("contact_email_id=%s", contact_form_id)
     contact_form = ContactForm.objects.get(pk=contact_form_id)
     try:
-        email = SibTemplateEmail(
+        email = TemplateEmail(
             template_id=9,
-            recipients=[{"Name": "Equipe Mon Diagnostic Artificialisation", "email": settings.TEAM_EMAIL}],
+            recipients=[{"name": "Equipe Mon Diagnostic Artificialisation", "email": settings.TEAM_EMAIL}],
             params={
                 "content_html": contact_form.content.replace("\n", "<br/>"),
                 "sender": contact_form.email,
@@ -37,7 +39,7 @@ def send_nwl_confirmation(newsletter_id):
     logger.info("newsletter_id=%s", newsletter_id)
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
-        email = SibTemplateEmail(
+        email = TemplateEmail(
             template_id=7,
             recipients=[{"email": nwl.email}],
             params={"url": nwl.get_confirmation_url()},
@@ -55,7 +57,7 @@ def send_nwl_final(newsletter_id):
     logger.info("newsletter_id=%s", newsletter_id)
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
-        email = SibTemplateEmail(template_id=2, recipients=[{"email": nwl.email}])
+        email = TemplateEmail(template_id=2, recipients=[{"email": nwl.email}])
         logger.info(email.send())
     except Exception as exc:  # noqa: E722, B001
         logger.error("Failing sending nwl final")
