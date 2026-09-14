@@ -2,15 +2,15 @@ import logging
 
 from django.conf import settings
 
-from utils.emails import SibTemplateEmail, SmtpTemplateEmail, LocalTemplateEmail
+from utils.emails import LocalTemplateEmail, SibTemplateEmail, SmtpTemplateEmail
 
 from .models import ContactForm, Newsletter
 
 logger = logging.getLogger(__name__)
 
 TemplateEmail = {
-    "sendinblue": SibTemplateEmail,
     "local": LocalTemplateEmail,
+    "sendinblue": SibTemplateEmail,
     "smtp": SmtpTemplateEmail,
 }[settings.EMAIL_ENGINE]
 
