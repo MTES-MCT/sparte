@@ -51,7 +51,7 @@ USE_SRI = env.bool("USE_SRI", default=not DEBUG)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=['https://mondiagartif.mut-dev.ign.fr', 'https://qlf-mondiagartif.ign.fr/', 'https://mondiagartif.gouv.fr/'])
 
 DOMAIN_URL = env.str("DOMAIN_URL")
 
