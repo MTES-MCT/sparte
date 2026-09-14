@@ -2,13 +2,17 @@ import logging
 
 from django.conf import settings
 
-from utils.emails import SibTemplateEmail, SmtpTemplateEmail
+from utils.emails import SibTemplateEmail, SmtpTemplateEmail, LocalTemplateEmail
 
 from .models import ContactForm, Newsletter
 
 logger = logging.getLogger(__name__)
 
-TemplateEmail = SibTemplateEmail if settings.EMAIL_ENGINE == "sendinblue" else SmtpTemplateEmail
+TemplateEmail = {
+    "sendinblue": SibTemplateEmail,
+    "local": LocalTemplateEmail,
+    "smtp": SmtpTemplateEmail,
+}[settings.EMAIL_ENGINE]
 
 
 def send_contact_form(contact_form_id):

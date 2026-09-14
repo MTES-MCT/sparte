@@ -33,6 +33,13 @@ class BaseTemplateEmail:
         )
 
 
+class LocalTemplateEmail(BaseTemplateEmail):
+    def send(self):
+        msg = EmailMultiAlternatives(
+            self.subject, self.get_text_content(), "no sender", [_["email"] for _ in self.recipients]
+        )
+        msg.send()
+
 class SmtpTemplateEmail(BaseTemplateEmail):
     def send(self):
         msg = EmailMultiAlternatives(

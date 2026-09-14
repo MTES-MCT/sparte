@@ -10,4 +10,5 @@ def add_settings_to_context(request):
         "WEBINAIRE_URL": settings.WEBINAIRE_URL,
         "STATS_URL": settings.STATS_URL,
         "STATS_HEIGHT": settings.STATS_HEIGHT,
+        "SITE_CONFIG": settings.SITE_CONFIG,
     }

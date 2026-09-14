@@ -661,8 +661,13 @@ ALERT_DIAG_EMAIL_RECIPIENTS = env.list("ALERT_DIAG_EMAIL_RECIPIENTS", default=[]
 ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list("ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[])
 
 # LOGGING SETTINGS
-
+# DEBUG: Low level system information for debugging purposes
+# INFO: General system information
+# WARNING: Information describing a minor problem that has occurred.
+# ERROR: Information describing a major problem that has occurred.
+# CRITICAL: Information describing a critical problem that has occurred.
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
+DJANGO_LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
 DB_LOGGING_LEVEL = env.str("DB_LOGGING_LEVEL", default="INFO")
 
 LOGGING = {
@@ -700,6 +705,30 @@ LOGGING = {
         "level": "WARNING",
     },
     "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.core.mail": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "level": DB_LOGGING_LEVEL,
+            "handlers": ["console"],
+        },
         "config": {
             "handlers": ["console"],
             "level": LOGGING_LEVEL,
@@ -714,11 +743,7 @@ LOGGING = {
             "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
-        },
-        "django.db.backends": {
-            "level": DB_LOGGING_LEVEL,
-            "handlers": ["console"],
-        },
+        }
     },
 }
 
@@ -749,5 +774,12 @@ WEBINAIRE_URL = env.str(
     default="https://app.livestorm.co/mte/mon-diag-artif-webinaire-de-presentation?s=7425e75c-4336-47c8-acd2-5459b8261af6",  # noqa: E501
 )
 FAQ_URL = env.str("FAQ_URL", default="https://faq.mondiagartif.beta.gouv.fr/fr/")
+
+SITE_CONFIG = {
+    "footer_brand": env.str("FOOTER_BRAND", default="république française"),
+    "footer_brand_html": env.str("FOOTER_BRAND_HTML", default="république<br />française"),
+    "footer_description": env.str("FOOTER_DESCRIPTION", default=""),
+    "accessibility_status": env.str("ACCESSIBILITY_STATUS", default="non"),
+}
 
 IS_TEST = "test" in sys.argv
