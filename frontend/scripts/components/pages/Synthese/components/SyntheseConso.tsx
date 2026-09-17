@@ -82,7 +82,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           value={
             <>
               <div>{formatNumber({ number: conso_since_2021 })} <span>ha</span></div>
-              <Badge variant="primary"><strong>{formatNumber({ number: conso_since_2021 / 3 })} ha / an</strong></Badge>
+              <Badge variant="primary"><strong>{formatNumber({ number: conso_since_2021 / 4 })} ha / an</strong></Badge>
             </>
           }
           variant="default"
