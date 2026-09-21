@@ -18,7 +18,6 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
   urls,
   phase,
 }) => {
-  const ANNEES_ECOULEES = 4;
   const { has_conso, consommation_correction_status } = landData;
 
   if (!has_conso) {
@@ -83,7 +82,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           value={
             <>
               <div>{formatNumber({ number: conso_since_2021 })} <span>ha</span></div>
-              <Badge variant="primary"><strong>{formatNumber({ number: conso_since_2021 / ANNEES_ECOULEES })} ha / an</strong></Badge>
+              <Badge variant="primary"><strong>{formatNumber({ number: conso_since_2021 / 3 })} ha / an</strong></Badge>
             </>
           }
           variant="default"
