@@ -15,11 +15,8 @@ from pathlib import Path
 from typing import Any, Dict, Literal
 
 import environ
-import sentry_sdk
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
 
 OFFICIAL_VERSION = "9.0.0"
 
@@ -499,38 +496,6 @@ DECIMAL_SEPARATOR = ","
 THOUSAND_SEPARATOR = " "
 NUMBER_GROUPING = 3
 
-
-# SENTRY
-if ENVIRONMENT != "local":
-    sentry_sdk.init(  # type: ignore
-        # dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
-        dsn="https://b40bb226b8a148fdafff102baf5abf34@sentry.incubateur.net/21",
-        integrations=[
-            DjangoIntegration(
-                # available options:
-                # url (default) - formats based on the route
-                # function_name - formats based on the view function name
-                transaction_style="url",
-            ),
-            RedisIntegration(),
-        ],
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production.
-        traces_sample_rate=0.0,
-        # If you wish to associate users to errors (assuming you are using
-        # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True,
-        # By default the SDK will try to use the SENTRY_RELEASE
-        # environment variable, or infer a git commit
-        # SHA as release, however you may want to set
-        # something more human-readable.
-        release=f"MonDiagArtif@{OFFICIAL_VERSION}",
-        environment=ENVIRONMENT,
-        debug=False,
-    )
-
-
 # MATOMO
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 
@@ -674,7 +639,7 @@ ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list("ALERT_DIAG_MATTERMOST_RECIPIENTS", 
 # ERROR: Information describing a major problem that has occurred.
 # CRITICAL: Information describing a critical problem that has occurred.
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
-DJANGO_LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
+DJANGO_LOGGING_LEVEL = env.str("DJANGO_LOGGING_LEVEL", default="INFO")
 DB_LOGGING_LEVEL = env.str("DB_LOGGING_LEVEL", default="INFO")
 
 LOGGING = {
