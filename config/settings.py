@@ -741,10 +741,7 @@ STATS_URL = env.str(
     "STATS_URL",
     default="https://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/8dc81856-e117-4431-8c5d-1ec7b04887b3",
 )
-WEBINAIRE_URL = env.str(
-    "WEBINAIRE_URL",
-    default="https://app.livestorm.co/mte/mon-diag-artif-webinaire-de-presentation?s=7425e75c-4336-47c8-acd2-5459b8261af6",  # noqa: E501
-)
+
 FAQ_URL = env.str("FAQ_URL", default="https://faq.mondiagartif.beta.gouv.fr/fr/")
 
 SITE_CONFIG = {
