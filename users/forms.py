@@ -113,7 +113,7 @@ class UpdatePasswordForm(forms.Form):
         new_password = cleaned_data.get("new_password")
         new_password2 = cleaned_data.get("new_password2")
         if not self.user.check_password(old_password):
-            self.add_error("old_password", "Ancien mot de passe incorrecte.")
+            self.add_error("old_password", "Ancien mot de passe incorrect.")
         if new_password is None:
             self.add_error("new_password", "Votre mot de passe ne doit pas être vide.")
         if new_password != new_password2:
