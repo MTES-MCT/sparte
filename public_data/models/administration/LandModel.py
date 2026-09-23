@@ -112,6 +112,20 @@ class LandModel(models.Model):
             "données_coriggées_avec_données_manquantes",
             "données_coriggées_avec_données_manquantes",
         )
+        DONNEES_PARTIELLEMENT_CORRIGEES_AVEC_DONNEES_MANQUANTES = (
+            "données_partiellement_coriggées_avec_données_manquantes",
+            "données_partiellement_coriggées_avec_données_manquantes",
+        )
+        DONNEES_DIVISEES = "données_divisées", "données_divisées"
+        DONNEES_PARTIELLEMENT_DIVISEES = "données_partiellement_divisées", "données_partiellement_divisées"
+        DONNEES_DIVISEES_AVEC_DONNEES_MANQUANTES = (
+            "données_divisées_avec_données_manquantes",
+            "données_divisées_avec_données_manquantes",
+        )
+        DONNEES_PARTIELLEMENT_DIVISEES_AVEC_DONNEES_MANQUANTES = (
+            "données_partiellement_divisées_avec_données_manquantes",
+            "données_partiellement_divisées_avec_données_manquantes",
+        )
 
     land_id = models.CharField()
     land_type = models.CharField()
@@ -162,6 +176,8 @@ class LandModel(models.Model):
     evolution_residences_secondaires_absolute = models.FloatField(null=True)
     densite_residences_secondaires = models.FloatField(null=True)
     competence_planification = models.BooleanField()
+    is_diagnosticable = models.BooleanField()
+    non_diagnosticable_motif = models.TextField(null=True)
 
     class Meta:
         managed = False
@@ -385,10 +401,13 @@ class LandModel(models.Model):
             qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
             similarity_threshold = 0.15
 
-        # Filter by land types and similarity threshold
+        # Filter by land types and similarity threshold.
+        # Les territoires non diagnosticables (seed dbt seed_land_non_diagnosticable)
+        # sont exclus des résultats de recherche.
         qs = qs.filter(
             land_type__in=valid_land_types,
             similarity__gt=similarity_threshold,
+            is_diagnosticable=True,
         )
 
         # Order by similarity descending
@@ -454,6 +473,7 @@ class LandModelSearchSerializer(serializers.ModelSerializer):
             "slug",
             "key",
             "surface",
+            "is_diagnosticable",
         )
 
 

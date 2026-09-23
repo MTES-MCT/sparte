@@ -35,11 +35,9 @@ const ComparisonTerritoriesCallout: React.FC<ComparisonTerritoriesCalloutProps> 
             {mode === 'edit' && (
                 <CalloutEditInfo>
                     <div className="fr-mb-0">
-                        <i className="bi bi-exclamation-triangle text-danger fr-mr-1w" />
                         Les territoires de comparaison peuvent être modifiés dans les paramètres du rapport.
                     </div>
                     <Button
-                        size="small"
                         onClick={onSettingsClick}
                         title="Modifier les territoires"
                     >

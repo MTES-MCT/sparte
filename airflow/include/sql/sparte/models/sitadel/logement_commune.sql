@@ -15,7 +15,6 @@ ON
 WHERE
     commune.code is not null AND
     year >= 2019 AND
-    code_commune not in {{ commune_changed_since('2024') }} AND
     type_logement = 'Tous Logements'
 ORDER BY
     code_commune,

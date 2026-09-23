@@ -11,7 +11,7 @@ SELECT
     unnest(array_agg(correction_status)) as correction_status,
     commune_code
 FROM
-    {{ ref('consommation_cog_2024') }}
+    {{ ref('consommation_cog_2025') }}
 GROUP BY
     commune_code
 ORDER BY
@@ -88,14 +88,38 @@ FROM status_with_collectivite_fields
 SELECT
     land_type,
     land_id,
+    -- ⚠️ NE PAS RÉORDONNER CES BRANCHES.
+    -- `ARRAY[...] @> correction_status` teste l'inclusion, pas l'égalité : la condition
+    -- est vraie dès que correction_status est un SOUS-ENSEMBLE du tableau écrit. Une même
+    -- valeur satisfait donc plusieurs branches ({UNCHANGED} en satisfait 8 sur 15), et
+    -- CASE retient la première rencontrée.
+    -- Les branches sont triées par taille de tableau croissante, ce qui garantit qu'une
+    -- combinaison est toujours testée avant celles qui la contiennent. Remonter par
+    -- exemple ARRAY['UNCHANGED', 'COG_ERROR'] au-dessus de ARRAY['UNCHANGED'] étiquetterait
+    -- tous les territoires intacts en 'données_partiellement_coriggées', sans erreur SQL.
+    -- À taille égale l'ordre est indifférent.
+    --
+    -- DIVISION (commune reconstruite par découpage d'une commune source) a sa propre
+    -- famille de libellés `données_divisées*`, distincte de `données_coriggées*`
+    -- (COG_ERROR) : le message affiché à l'utilisateur n'est pas le même.
+    -- Quand les deux statuts cohabitent, la famille `coriggées` l'emporte, son message
+    -- couvrant déjà le cas.
     CASE
         WHEN ARRAY['UNCHANGED'] @> correction_status THEN 'données_inchangées'
         WHEN ARRAY['MISSING_FROM_SOURCE'] @> correction_status THEN 'données_manquantes'
         WHEN ARRAY['COG_ERROR'] @> correction_status THEN 'données_coriggées'
+        WHEN ARRAY['DIVISION'] @> correction_status THEN 'données_divisées'
+        WHEN ARRAY['COG_ERROR', 'DIVISION'] @> correction_status THEN 'données_coriggées'
         WHEN ARRAY['UNCHANGED', 'COG_ERROR'] @> correction_status THEN 'données_partiellement_coriggées'
+        WHEN ARRAY['UNCHANGED', 'DIVISION'] @> correction_status THEN 'données_partiellement_divisées'
+        WHEN ARRAY['UNCHANGED', 'COG_ERROR', 'DIVISION'] @> correction_status THEN 'données_partiellement_coriggées'
         WHEN ARRAY['UNCHANGED', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_inchangées_avec_données_manquantes'
         WHEN ARRAY['COG_ERROR', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_coriggées_avec_données_manquantes'
+        WHEN ARRAY['DIVISION', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_divisées_avec_données_manquantes'
+        WHEN ARRAY['COG_ERROR', 'DIVISION', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_coriggées_avec_données_manquantes'
         WHEN ARRAY['UNCHANGED', 'COG_ERROR', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_partiellement_coriggées_avec_données_manquantes'
+        WHEN ARRAY['UNCHANGED', 'DIVISION', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_partiellement_divisées_avec_données_manquantes'
+        WHEN ARRAY['UNCHANGED', 'COG_ERROR', 'DIVISION', 'MISSING_FROM_SOURCE'] @> correction_status THEN 'données_partiellement_coriggées_avec_données_manquantes'
         ELSE 'ERROR'
     END as consommation_correction_status
 FROM all_status_as_array

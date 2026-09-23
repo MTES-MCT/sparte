@@ -3,7 +3,7 @@ import { formatNumber } from "@utils/formatUtils";
 import { useConsoData } from "../hooks";
 
 export const DEFAULT_START_YEAR = 2011;
-export const DEFAULT_END_YEAR = 2023;
+export const DEFAULT_END_YEAR = 2024;
 
 export const LAND_TYPE_LABELS: Record<string, string> = {
   COMM: "Commune",
@@ -13,25 +13,6 @@ export const LAND_TYPE_LABELS: Record<string, string> = {
   REGION: "Région",
   NATION: "Nation",
   COMP: "Composite",
-};
-
-const LAND_TYPE_HIERARCHY: Record<string, number> = {
-  REGION: 5,
-  DEPART: 4,
-  SCOT: 3,
-  EPCI: 2,
-  COMM: 1,
-  NATION: 6,
-  COMP: 0,
-};
-
-const getHighestLandType = (landTypes: string[]): string => {
-  if (!landTypes || landTypes.length === 0) return "";
-  return landTypes.reduce((highest, current) => {
-    const highestValue = LAND_TYPE_HIERARCHY[highest] || 0;
-    const currentValue = LAND_TYPE_HIERARCHY[current] || 0;
-    return currentValue > highestValue ? current : highest;
-  }, landTypes[0]);
 };
 
 interface ConsommationControlsContextType {
@@ -83,17 +64,17 @@ export const ConsommationControlsProvider: React.FC<ConsommationControlsProvider
   land_id,
   land_type,
   childLandTypes,
-  minYear = 2009,
-  maxYear = 2023,
+  minYear = 2011,
+  maxYear = 2024,
   defaultStartYear = DEFAULT_START_YEAR,
   defaultEndYear = DEFAULT_END_YEAR,
 }) => {
   const [startYear, setStartYear] = useState(defaultStartYear);
   const [endYear, setEndYear] = useState(defaultEndYear);
 
-  const [childType, setChildType] = useState<string | undefined>(
-    childLandTypes && childLandTypes.length > 0 ? getHighestLandType(childLandTypes) : undefined
-  );
+  // La maille par défaut est le premier élément de child_land_types : l'ordre est
+  // fixé côté dbt (models/land/land.sql), qui fait autorité.
+  const [childType, setChildType] = useState<string | undefined>(childLandTypes?.[0]);
   const [activeBivariateChartId, setActiveBivariateChartId] = useState("dc_population_conso_map");
 
   const { totalConsoHa, populationEvolution, populationEvolutionPercent, isLoadingConso, isLoadingPop } =

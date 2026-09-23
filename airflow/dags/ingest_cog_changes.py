@@ -4,7 +4,7 @@ from pendulum import datetime
 
 from airflow.decorators import dag, task
 
-URL = "https://www.insee.fr/fr/statistiques/fichier/8377162/v_mvt_commune_2025.csv"
+URL = "https://www.insee.fr/fr/statistiques/fichier/8740222/v_mvt_commune_2026.csv"
 
 
 @dag(

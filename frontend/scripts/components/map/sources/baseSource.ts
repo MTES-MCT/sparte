@@ -1,4 +1,4 @@
-import type { BaseSourceOptions } from "../types/source";
+import type { BaseSourceOptions, MapDataLocations } from "../types/source";
 import type maplibregl from "maplibre-gl";
 import type { SourceSpecification, LayerSpecification, StyleSpecification } from "maplibre-gl";
 
@@ -7,6 +7,7 @@ export abstract class BaseSource {
     loaded = false;
     protected map?: maplibregl.Map;
     protected sourceId?: string;
+    protected dataLocations: MapDataLocations = { vector_tiles_location: "", geojson_location: "" };
 
     constructor(options: BaseSourceOptions) {
         this.options = { ...options };
@@ -16,6 +17,18 @@ export abstract class BaseSource {
     attach(map: maplibregl.Map, sourceId: string): void {
         this.map = map;
         this.sourceId = sourceId;
+    }
+
+    setDataLocations(locations: MapDataLocations): void {
+        this.dataLocations = locations;
+    }
+
+    protected get vectorTilesUrl(): string {
+        return `${this.dataLocations.vector_tiles_location}/`;
+    }
+
+    protected get geojsonUrl(): string {
+        return `${this.dataLocations.geojson_location}/`;
     }
 
     async load(): Promise<void> {

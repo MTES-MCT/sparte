@@ -1,0 +1,8 @@
+"land_id","land_type","motif"
+"NATION","NATION","Pas de diagnostic à l'échelle nationale"
+"75","DEPART","Périmètre identique à la commune de Paris (75056), problème de représentation graphique : https://github.com/MTES-MCT/sparte/issues/1522"
+"01","REGION","La maille d'analyse par défaut d'une région est le département, or cette région n'en compte qu'un seul (971), de même emprise qu'elle"
+"02","REGION","La maille d'analyse par défaut d'une région est le département, or cette région n'en compte qu'un seul (972), de même emprise qu'elle"
+"03","REGION","La maille d'analyse par défaut d'une région est le département, or cette région n'en compte qu'un seul (973), de même emprise qu'elle"
+"04","REGION","La maille d'analyse par défaut d'une région est le département, or cette région n'en compte qu'un seul (974), de même emprise qu'elle"
+"06","REGION","La maille d'analyse par défaut d'une région est le département, or cette région n'en compte qu'un seul (976), de même emprise qu'elle"

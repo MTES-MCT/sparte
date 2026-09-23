@@ -193,14 +193,11 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 
 ### DAGs (36 total)
 
-#### OCS GE — Occupation des Sols (10 DAGs)
+#### OCS GE — Occupation des Sols (7 DAGs)
 
 | DAG | Schedule | Description |
 |---|---|---|
 | `ingest_ocsge` | `@once` | Pipeline principal : téléchargement 7z → chargement staging → tests dbt → transformation → notification Mattermost |
-| `download_all_ocsge` | `@once` | Téléchargement parallèle (max 10) de tous les départements vers S3 |
-| `identify_changed_ocsge_data` | `0 10 * * *` | Scraping page IGN, alertes Mattermost pour URLs manquantes/modifiées |
-| `diff_ocsge_download_page_to_mattermost` | `0 10 * * *` | Détection des changements sur la page de téléchargement OCS GE |
 | `create_all_vector_tiles_france` | `@once` | Orchestrateur : déclenche la génération de 7 types de tuiles pour tous les départements |
 | `create_ocsge_vector_tiles` | `@once` | PMTiles occupation_du_sol (SQL → GeoJSON → tippecanoe → S3) |
 | `create_ocsge_artif_diff_vector_tiles` | `@once` | PMTiles différences d'artificialisation (ZAN) |

@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: gpu_scot
+    columns:
+      - name: id_scot
+        data_tests:
+          - not_null
+          - unique
+      - name: nom_scot
+        data_tests:
+          - not_null
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom

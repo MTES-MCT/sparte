@@ -3,6 +3,7 @@ import type maplibregl from "maplibre-gl";
 import { InfoContent, InfoRow, InfoLabel, InfoValue } from ".";
 import { formatNumber } from "@utils/formatUtils";
 import { useGetCarroyageDestinationConfigQuery } from "@services/api";
+import { CARROYAGE_FIRST_YEAR, CARROYAGE_LAST_YEAR } from "../../constants/config";
 
 interface CarroyageLeaInfoProps {
     feature: maplibregl.MapGeoJSONFeature;
@@ -17,8 +18,8 @@ function sumYearsRange(
     endYear: number,
     suffix: string = ""
 ): number {
-    const minYear = Math.max(startYear, 2011);
-    const maxYear = Math.min(endYear, 2023);
+    const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+    const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
     let total = 0;
     for (let year = minYear; year <= maxYear; year++) {
         const key = `conso_${year}${suffix}`;
@@ -36,8 +37,8 @@ function getYearlyData(
     endYear: number,
     suffix: string = ""
 ): { year: number; value: number }[] {
-    const minYear = Math.max(startYear, 2011);
-    const maxYear = Math.min(endYear, 2023);
+    const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+    const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
     const data: { year: number; value: number }[] = [];
     for (let year = minYear; year <= maxYear; year++) {
         const key = `conso_${year}${suffix}`;
@@ -83,8 +84,8 @@ export const CarroyageLeaInfo: React.FC<CarroyageLeaInfoProps> = ({
         [props, startYear, endYear, suffix]
     );
 
-    const displayStartYear = Math.max(startYear, 2011);
-    const displayEndYear = Math.min(endYear, 2023);
+    const displayStartYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+    const displayEndYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
 
     return (
         <InfoContent>

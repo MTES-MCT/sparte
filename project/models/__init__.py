@@ -1,5 +1,4 @@
 __all__ = [
-    "Emprise",
     "ErrorTracking",
     "ExportJob",
     "Project",
@@ -12,7 +11,7 @@ __all__ = [
 
 
 from .export_job import ExportJob
-from .project_base import Emprise, Project
+from .project_base import Project
 from .report_draft import ReportDraft
 from .request import ErrorTracking, Request, RequestedDocumentChoices
 from .user_land_preference import UserLandPreference

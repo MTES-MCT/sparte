@@ -6,8 +6,8 @@
 }}
 
 
-{% set last_year_insee = 2022 %}
-{% set last_year_mondiagartif = 2023 %}
+{% set last_year_insee = 2023 %}
+{% set last_year_mondiagartif = 2024 %}
 with known_years as (
     {% for year in range(2009, last_year_insee) %}
         {% set next_year = year + 1 %}

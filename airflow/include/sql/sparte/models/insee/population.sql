@@ -7,6 +7,7 @@
 
 select
     "CODGEO" as code_commune,
+    "PMUN2023" as population_2023,
     "PMUN2022" as population_2022,
     "PMUN2021" as population_2021,
     "PMUN2020" as population_2020,

@@ -1,7 +1,7 @@
 {{ config(materialized='table') }}
 
-{% for to_year in range(2010, 2024) %}
-    {% for from_year in range(2009, to_year) %}
+{% for to_year in range(2012, 2025) %}
+    {% for from_year in range(2011, to_year) %}
         {% if from_year >= to_year %}
             {% break %}
         {% endif %}

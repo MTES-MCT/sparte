@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: scot_geom
+    columns:
+    - name: id_scot
+      data_tests:
+      - not_null
+    - name: geom
+      data_tests:
+      - not_null
+      - unique
+      - is_valid_geom
+      - is_not_empty_geom
+    - name: simple_geom
+      data_tests:
+      - not_null
+      - unique
+      - is_not_empty_geom
+      - is_valid_geom

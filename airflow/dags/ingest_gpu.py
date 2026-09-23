@@ -3,6 +3,7 @@ Ce dag ingère les données de l'IGN GPU dans une base de données PostgreSQL.
 """
 
 from include.container import InfraContainer as Container
+from include.dbt import DbtBuild
 from include.utils import multiline_string_to_single_line
 from pendulum import datetime
 
@@ -95,15 +96,13 @@ def ingest_gpu():
             bash_command=" ".join(cmd),
         ).execute(context={})
 
-    @task.bash
-    def dbt_build() -> str:
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s 1_zonage_urbanisme_raw.sql+'
+    dbt_build = DbtBuild(select=["1_zonage_urbanisme_raw.sql+"])
 
     @task.bash
     def cleanup() -> str:
         return f"rm -f {localpath}"
 
-    download() >> ingest() >> dbt_build() >> cleanup()
+    download() >> ingest() >> dbt_build >> cleanup()
 
 
 ingest_gpu()

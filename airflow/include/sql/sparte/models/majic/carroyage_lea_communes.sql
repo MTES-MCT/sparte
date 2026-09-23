@@ -4,7 +4,7 @@
     )
 }}
 
-{%- set years = range(2011, 2024) -%}
+{%- set years = range(2011, 2025) -%}
 {%- set destinations = [
     ('total', ''),
     ('habitat', '_habitat'),

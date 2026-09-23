@@ -131,7 +131,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
               referenceValue={annualConsoReference}
               referenceLabel="Rythme 2011-2020"
               currentValue={annualConsoSince2021}
-              currentLabel="Rythme actuel 2021-2023"
+              currentLabel="Rythme actuel 2021-2024"
               markers={[
                 { value: allowedConso2021_2030PerYear, label: "Objectif national (-50%)", variant: "target" },
                 ...(hasCustomTarget
@@ -198,7 +198,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
               </p>
             )}
             <p>
-              <strong>Rythme actuel</strong> : entre 2021 et 2023, le territoire a consommé{" "}
+              <strong>Rythme actuel</strong> : entre 2021 et 2024, le territoire a consommé{" "}
               <strong>{formatNumber({ number: consoSince2021 })} ha</strong>, soit un rythme de{" "}
               <strong>{formatNumber({ number: annualConsoSince2021 })} ha/an</strong>.
             </p>

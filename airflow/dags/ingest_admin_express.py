@@ -1,27 +1,75 @@
 """
-Ce dag télécharge et importe les données de l'IGN Admin Express dans une base de données PostgreSQL,
-puis lance un job dbt pour les transformer.
+Ce dag télécharge les données IGN Admin Express (format geopackage) et les importe
+dans une base de données PostgreSQL via ogr2ogr.
+
+Chaque zone est livrée dans une archive 7z contenant un unique fichier .gpkg
+multi-couches. Les couches `commune`, `departement`, `epci` et `region` sont ingérées
+chacune dans sa propre table. La construction des modèles dbt est gérée séparément.
 """
 
-import json
-import os
-import subprocess
-from urllib.request import URLopener
-
-import py7zr
-from include.container import InfraContainer as Container
+from include.container import DomainContainer, InfraContainer
 from pendulum import datetime
 
 from airflow.decorators import dag, task
 from airflow.models.param import Param
 
-with open("include/data/admin_express/sources.json", "r") as f:
-    sources = json.load(f)
-    zones = [source["name"] for source in sources]
+# Couches du geopackage Admin Express à ingérer (une table par couche).
+LAYERS = ("commune", "departement", "epci", "region")
+
+GEOPF_DOWNLOAD_URL = "https://data.geopf.fr/telechargement/download"
+ADMIN_EXPRESS_EDITION = "2025-01-01"
+
+
+def admin_express_gpkg_url(product: str, projection: str, zone: str, edition: str = ADMIN_EXPRESS_EDITION) -> str:
+    """Construit l'URL de l'archive 7z geopackage Admin Express sur la Géoplateforme."""
+    archive = f"{product}_4-0__GPKG_{projection}_{zone}_{edition}"
+    return f"{GEOPF_DOWNLOAD_URL}/{product}/{archive}/{archive}.7z"
+
+
+sources = [
+    {
+        "name": "France Métropolitaine",
+        "table_suffix": "metropole",
+        "srid": 2154,
+        "url": admin_express_gpkg_url(product="ADMIN-EXPRESS-COG", projection="LAMB93", zone="FXX"),
+    },
+    {
+        "name": "Guadeloupe",
+        "table_suffix": "guadeloupe",
+        "srid": 32620,
+        "url": admin_express_gpkg_url(product="ADMIN-EXPRESS-COG", projection="RGAF09UTM20", zone="GLP"),
+    },
+    {
+        "name": "Martinique",
+        "table_suffix": "martinique",
+        "srid": 32620,
+        "url": admin_express_gpkg_url(product="ADMIN-EXPRESS-COG", projection="RGAF09UTM20", zone="MTQ"),
+    },
+    {
+        "name": "Guyane",
+        "table_suffix": "guyane",
+        "srid": 2972,
+        "url": admin_express_gpkg_url(product="ADMIN-EXPRESS-COG", projection="UTM22RGFG95", zone="GUF"),
+    },
+    {
+        "name": "La Réunion",
+        "table_suffix": "reunion",
+        "srid": 2975,
+        "url": admin_express_gpkg_url(product="ADMIN-EXPRESS-COG", projection="RGR92UTM40S", zone="REU"),
+    },
+    {
+        "name": "Mayotte",
+        "table_suffix": "mayotte",
+        "srid": 4471,
+        "url": admin_express_gpkg_url(product="ADMIN-EXPRESS-COG", projection="RGM04UTM38S", zone="MYT"),
+    },
+]
+
+zones = [source["name"] for source in sources]
 
 
 def get_source_by_name(name: str) -> dict:
-    return [source for source in sources if source["name"] == name][0]
+    return next(source for source in sources if source["name"] == name)
 
 
 @dag(
@@ -39,76 +87,48 @@ def get_source_by_name(name: str) -> dict:
             type="string",
             enum=zones,
         ),
+        "if_not_exists": Param(
+            default=True,
+            type="boolean",
+            description="Skip download if file already exists on S3",
+        ),
     },
 )
 def ingest_admin_express():
-    bucket_name = Container().bucket_name()
-    tmp_path = "/tmp/admin_express"
+    bucket_name = InfraContainer().bucket_name()
 
     @task.python
     def download_admin_express(**context) -> str:
-        print(context["params"]["zone"])
+        """Télécharge l'archive depuis l'IGN et la dépose sur le bucket S3."""
         url = get_source_by_name(context["params"]["zone"])["url"]
-        print(url)
         filename = url.split("/")[-1]
-        print(filename)
-        path_on_bucket = f"{bucket_name}/{filename}"
-        print(path_on_bucket)
-        opener = URLopener()
-        opener.addheader("User-Agent", "Mozilla/5.0")
-        opener.retrieve(url=url, filename=filename)
-        Container().s3().put_file(filename, path_on_bucket)
-        os.remove(filename)
-        return path_on_bucket
+
+        return (
+            DomainContainer()
+            .remote_to_s3_file_handler()
+            .download_http_file_and_upload_to_s3(
+                url=url,
+                s3_key=filename,
+                s3_bucket=bucket_name,
+                if_not_exists=context["params"].get("if_not_exists", True),
+            )
+        )
 
     @task.python
-    def ingest(path_on_bucket, **context) -> str:
+    def ingest(path_on_bucket: str, **context) -> None:
+        """Extrait le geopackage du bucket et ingère chaque couche dans PostgreSQL."""
         source = get_source_by_name(context["params"]["zone"])
-        srid = source["srid"]
-        print(srid)
-        shp_to_table_map = source["shapefile_to_table"]
-        print(shp_to_table_map)
+        s3_key = path_on_bucket.split("/")[-1]
+        layer_to_table = {layer: f"{layer}_{source['table_suffix']}" for layer in LAYERS}
 
-        with Container().s3().open(path_on_bucket, "rb") as f:
-            py7zr.SevenZipFile(f, mode="r").extractall(path=tmp_path)
-            for dirpath, _, filenames in os.walk(tmp_path):
-                for filename in filenames:
-                    if filename.endswith(".shp"):
-                        table_name = shp_to_table_map.get(filename)
-                        if not table_name:
-                            continue
-                        path = os.path.abspath(os.path.join(dirpath, filename))
-                        print(path)
-                        cmd = [
-                            "ogr2ogr",
-                            "-f",
-                            '"PostgreSQL"',
-                            f'"{Container().gdal_dbt_conn().encode()}"',
-                            "-overwrite",
-                            "-lco",
-                            "GEOMETRY_NAME=geom",
-                            "-a_srs",
-                            f"EPSG:{srid}",
-                            "-nlt",
-                            "MULTIPOLYGON",
-                            "-nlt",
-                            "PROMOTE_TO_MULTI",
-                            "-nln",
-                            table_name,
-                            path,
-                            "--config",
-                            "PG_USE_COPY",
-                            "YES",
-                        ]
-                        subprocess.run(" ".join(cmd), shell=True, check=True)
+        DomainContainer().s3_geopackage_archive_to_db_tables_handler().ingest_s3_geopackage_archive_to_db_tables(
+            s3_bucket=bucket_name,
+            s3_key=s3_key,
+            layer_to_table=layer_to_table,
+            srid=source["srid"],
+        )
 
-    @task.bash
-    def cleanup() -> str:
-        return f"rm -rf {tmp_path}"
-
-    path_on_bucket = download_admin_express()
-    ingest_result = ingest(path_on_bucket)
-    ingest_result >> cleanup()
+    ingest(download_admin_express())
 
 
 # Instantiate the DAG

@@ -1,5 +1,4 @@
 import { BaseOcsgeSource } from "./baseOcsgeSource";
-import { OCSGE_TILES_URL } from "../constants/config";
 import type { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
 import type { SourceSpecification, FilterSpecification, LayerSpecification, StyleSpecification } from "maplibre-gl";
@@ -23,7 +22,7 @@ export class OcsgeSource extends BaseOcsgeSource implements SourceInterface {
 	}
 
 	getOptions(): SourceSpecification {
-		const tilesUrl = `${OCSGE_TILES_URL}occupation_du_sol_${this.millesimeIndex}_${this.departement}.pmtiles`;
+		const tilesUrl = `${this.vectorTilesUrl}occupation_du_sol_${this.millesimeIndex}_${this.departement}.pmtiles`;
 
 		return {
 			type: this.options.type as 'vector',
@@ -105,7 +104,7 @@ export class OcsgeSource extends BaseOcsgeSource implements SourceInterface {
 
 		for (const dept of deptsForIndex) {
 			const extraSourceId = `${this.sourceId}-dept-${dept}`;
-			const tilesUrl = `${OCSGE_TILES_URL}occupation_du_sol_${this.millesimeIndex}_${dept}.pmtiles`;
+			const tilesUrl = `${this.vectorTilesUrl}occupation_du_sol_${this.millesimeIndex}_${dept}.pmtiles`;
 
 			// Ajouter la source pour ce département
 			this.map.addSource(extraSourceId, {

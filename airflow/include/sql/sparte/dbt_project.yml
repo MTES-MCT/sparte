@@ -30,6 +30,11 @@ seeds:
     seed_custom_land_commune:
       +column_types:
         commune_code: varchar(5)
+    seed_land_non_diagnosticable:
+      +column_types:
+        land_id: varchar(50)
+        land_type: varchar(10)
+        motif: text
 
 models:
   +grants:

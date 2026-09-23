@@ -1,7 +1,6 @@
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
-from include.pools import DBT_POOL
-from include.utils import get_dbt_command_from_directory
+from include.dbt import DbtBuild
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -65,13 +64,14 @@ def ingest_zlv():
                 encoding="latin-1",
             )
 
-    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
-    def dbt_build(**context) -> str:
-        if not context["params"]["run_dbt_build"]:
-            return "echo 'dbt build skipped'"
-        return get_dbt_command_from_directory(cmd="dbt build -s zlv")
+    dbt_build = DbtBuild(
+        select=["zlv"],
+        run_if_param="run_dbt_build",
+        retries=0,
+        trigger_rule="all_success",
+    )
 
-    download_opendata() >> ingest_opendata() >> dbt_build()
+    download_opendata() >> ingest_opendata() >> dbt_build
 
 
 ingest_zlv()

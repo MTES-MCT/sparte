@@ -5,6 +5,7 @@ import { theme } from "@theme";
 import { formatNumber } from "@utils/formatUtils";
 import ChartDataTable from "@components/charts/ChartDataTable";
 import { SidePanelPlaceholder, PlaceholderIcon, SidePanelContent, SidePanelHeader, HeaderContent, SidePanelTitle, SidePanelSubtitle } from "./SidePanelPrimitives";
+import { CARROYAGE_FIRST_YEAR, CARROYAGE_LAST_YEAR } from "../../constants/config";
 
 type DestinationConfig = Record<string, { label: string; suffix: string; color: string; light_text: boolean }>;
 
@@ -110,8 +111,8 @@ export const CarroyageLeaSidePanel: React.FC<CarroyageLeaSidePanelProps> = ({
 		if (!feature) return null;
 		const props = feature.properties || {};
 		const suffix = destinationConfig[selectedDestination].suffix;
-		const minYear = Math.max(startYear, 2011);
-		const maxYear = Math.min(endYear, 2023);
+		const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
+		const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
 		const yearlyData: { year: number; valueHa: number; raw: number }[] = [];
 		let total = 0;
 		for (let year = minYear; year <= maxYear; year++) {

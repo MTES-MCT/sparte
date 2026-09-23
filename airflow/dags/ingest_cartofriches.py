@@ -2,6 +2,7 @@ import subprocess
 
 import requests
 from include.container import InfraContainer as Container
+from include.dbt import DbtBuild
 from include.utils import multiline_string_to_single_line
 from pendulum import datetime
 
@@ -76,15 +77,13 @@ def ingest_cartofriches():
 
         subprocess.run(" ".join(cmd), shell=True, check=True)
 
-    @task.bash
-    def dbt_build() -> str:
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s friche.sql+'
+    dbt_build = DbtBuild(select=["friche.sql+"])
 
     @task.bash
     def cleanup() -> str:
         return f"rm -f {localpath}"
 
-    download() >> info() >> ingest() >> dbt_build() >> cleanup()
+    download() >> info() >> ingest() >> dbt_build >> cleanup()
 
 
 ingest_cartofriches()

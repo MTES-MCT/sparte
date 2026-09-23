@@ -30,3 +30,7 @@ models:
                 - données_inchangées
                 - données_coriggées_avec_données_manquantes
                 - données_partiellement_coriggées_avec_données_manquantes
+                - données_divisées
+                - données_partiellement_divisées
+                - données_divisées_avec_données_manquantes
+                - données_partiellement_divisées_avec_données_manquantes

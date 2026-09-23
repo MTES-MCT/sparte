@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: consommation_reunion_2025
+    columns:
+      - name: commune_code
+        data_tests:
+          - not_null
+          - unique

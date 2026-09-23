@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: consommation_cog_2025
+    columns:
+      - name: geom
+        data_tests:
+          - has_surface:
+              select_columns: commune_code
+              store_failures: true
+      - name: commune_code
+        data_tests:
+          - not_null
+          - unique
+          - has_all_communes:
+              severity: warn
+              store_failures: true
+          - relationships:
+              to: ref('commune')
+              field: code
+          - same_geom:
+              to: ref('commune')
+              field: code
+              accepted_differences:
+                - '14409' # bord de mer
+                - '14488' # bord de mer
+                - '14665' # estuaire
+                - '17004' # estuaire
+                - '35256' # estuaire
+                - '50003' # estuaire
+                - '50108' # estuaire
+                - '50288' # estuaire
+                - '56062' # bord de mer
+                - '56085' # territoire insulaire
+                - '56086' # territoire insulaire
+                - '56088' # territoire insulaire
+                - '56258' # port
+                - '76489' # estuaire
+                - '76533' # estuaire
+                - '80464' # estuaire
+                - '80633' # estuaire
+                - '80713' # bord de mer
+                - '85001' # bord de mer
+                - '22152' # rivières
+                - '22221' # rivières
+                - '22347' # rivières
+                - '22362' # rivières
+                - '22383' # rivières
+                - '59272' # bord de mer
+                - '59600' # étendue légérement altérée
+                - '04070' # étendue légérement altérée
+                - '04167' # étendue légérement altérée
+                - '17484' # étendue légérement altérée
+                - '28218' # étendue légérement altérée
+                - '34324' # bord de mer
+                - '62390' # estuaire
+                - '76036' # étendue légérement altérée
+                - '76085' # étendue légérement altérée
+                - '97110' # bord de mer
+                - '97120' # bord de mer
+                - '97131' # territoire insulaire
+                - '97206' # bord de mer
+                - '97207' # bord de mer
+                - '97213' # bord de mer
+                - '97221' # bord de mer
+                - '97222' # bord de mer
+                - '97226' # bord de mer
+                - '97227' # bord de mer
+                - '97230' # bord de mer
+                - '97231' # bord de mer
+                - '97232' # bord de mer
+                - '97302' # bord de mer
+                - '97303' # bord de mer
+                - '97305' # bord de mer
+                - '97309' # bord de mer
+                - '97312' # bord de mer
+                - '97361' # bord de mer
+              severity: warn
+              store_failures: true

@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useMemo, useCallback, useState } from "react"
 import styled from "styled-components";
 import maplibregl from "maplibre-gl";
 import { useMap } from "../hooks/useMap";
+import { useGetEnvironmentQuery } from "@services/api";
 import { initMapFromConfig } from "../factory/initMapFromConfig";
 import { ControlsPanel } from "./controls/ControlsPanel";
 import { ControlsManager } from "../controls/ControlsManager";
@@ -170,13 +171,15 @@ export const BaseMap: React.FC<BaseMapProps> = React.memo(({
         return infoPanelMgr;
     }, []);
 
+    const { data: environment } = useGetEnvironmentQuery({});
+
     const handleMapLoad = useCallback(async (map: maplibregl.Map) => {
-        if (!memoizedConfig || isInitialized.current) {
+        if (!memoizedConfig || isInitialized.current || !environment) {
             return;
         }
 
         // Initialiser la carte et récupérer les instances de sources/layers
-        const { sources, layers } = await initMapFromConfig(memoizedConfig, map, landData);
+        const { sources, layers } = await initMapFromConfig(memoizedConfig, map, landData, environment);
         
         // Initialiser le gestionnaire de stats si des layers en ont besoin
         const statsMgr = initializeStatsManager(map, layers, memoizedConfig.layers);
@@ -204,9 +207,10 @@ export const BaseMap: React.FC<BaseMapProps> = React.memo(({
 
         isInitialized.current = true;
         onMapLoad?.(map);
-    }, [memoizedConfig, landData, onMapLoad, id, initializeStatsManager, initializeControlsManager, initializeInfoPanelManager]);
+    }, [memoizedConfig, landData, environment, onMapLoad, id, initializeStatsManager, initializeControlsManager, initializeInfoPanelManager]);
 
     useEffect(() => {
+        if (!environment) return;
         if (mapDiv.current && !mapRef.current) {
             const map = initializeMap(mapDiv.current);
             if (map) {
@@ -215,7 +219,7 @@ export const BaseMap: React.FC<BaseMapProps> = React.memo(({
                 });
             }
         }
-    }, [initializeMap, handleMapLoad]);
+    }, [environment, initializeMap, handleMapLoad]);
 
     useEffect(() => {
         if (!isMapLoaded) return;

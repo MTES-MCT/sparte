@@ -1,5 +1,4 @@
 import { BaseOcsgeDiffSource } from "./baseOcsgeDiffSource";
-import { OCSGE_GEOJSON_CENTROIDS_URL } from "../constants/config";
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
 import type { FilterSpecification, LayerSpecification } from "maplibre-gl";
@@ -15,7 +14,7 @@ export class OcsgeDiffCentroidSource extends BaseOcsgeDiffSource {
     }
 
     getOptions() {
-        const url = `${OCSGE_GEOJSON_CENTROIDS_URL}${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.geojson.gz`;
+        const url = `${this.geojsonUrl}occupation_du_sol_diff_centroid_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.geojson.gz`;
 
         const territoryFilter = getTerritoryFilter(this.landData);
         const increaseFilter = ["==", ["get", "new_is_impermeable"], true] as FilterSpecification;
@@ -95,7 +94,7 @@ export class OcsgeDiffCentroidSource extends BaseOcsgeDiffSource {
 
         for (const dept of deptsForPair) {
             const extraSourceId = `${this.sourceId}-dept-${dept}`;
-            const url = `${OCSGE_GEOJSON_CENTROIDS_URL}${this.startMillesimeIndex}_${this.endMillesimeIndex}_${dept}.geojson.gz`;
+            const url = `${this.geojsonUrl}occupation_du_sol_diff_centroid_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${dept}.geojson.gz`;
 
             this.map.addSource(extraSourceId, {
                 type: 'geojson',

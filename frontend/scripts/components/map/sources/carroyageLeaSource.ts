@@ -1,5 +1,4 @@
 import { BaseSource } from "./baseSource";
-import { CARROYAGE_LEA_TILES_URL } from "../constants/config";
 import type { SourceSpecification } from "maplibre-gl";
 
 export class CarroyageLeaSource extends BaseSource {
@@ -13,7 +12,7 @@ export class CarroyageLeaSource extends BaseSource {
     getOptions(): SourceSpecification {
         return {
             type: this.options.type as 'vector',
-            url: `pmtiles://${CARROYAGE_LEA_TILES_URL}`,
+            url: `pmtiles://${this.vectorTilesUrl}carroyage_lea.pmtiles`,
         } as SourceSpecification;
     }
 }

@@ -99,7 +99,7 @@ export const ZonageUrbanismeSidePanel: React.FC<ZonageUrbanismeSidePanelProps> =
 	const libelle = properties.libelle as string;
 	const libelleLong = properties.libelle_long as string;
 	const year = properties.year as number | null;
-	const zonageSurface = properties.zonage_surface as number;
+	const zonageSurface = properties.part_surface as number;
 	const toUnit = (m2: number) => unit === "ha" ? m2 / 10000 : m2;
 	const unitLabel = unit === "ha" ? "ha" : "m²";
 	const zonageSurfaceDisplay = zonageSurface ? toUnit(zonageSurface) : 0;

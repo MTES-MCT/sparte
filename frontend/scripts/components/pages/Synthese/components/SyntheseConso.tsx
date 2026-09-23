@@ -89,7 +89,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           footer={{
             type: "period",
             from: "2021",
-            to: "2023",
+            to: "2024",
           }}
           action={{
             label: "Voir le diagnostic de consommation",
@@ -127,7 +127,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
             par une consommation maximale de <strong>{formatNumber({ number: allowed_conso_2021_2030 })} ha entre 2021 et 2031</strong>.
           </p>
           <p className="fr-text--sm fr-mb-0">
-            D'après les données du Portail National de l'Artificialisation, <strong>{formatNumber({ number: conso_since_2021 })} ha</strong> ont déjà été consommés <strong>entre 2021 et 2023</strong>.
+            D'après les données du Portail National de l'Artificialisation, <strong>{formatNumber({ number: conso_since_2021 })} ha</strong> ont déjà été consommés <strong>entre 2021 et 2024</strong>.
           </p>
         </GuideContent>
       </div>

@@ -11,9 +11,9 @@ models:
               field: code
               to: ref('commune')
       - name: year
-        description: The year for which the population data or projection is provided, ranging from 2009 to 2023.
+        description: The year for which the population data or projection is provided, ranging from 2009 to 2024.
         data_type: integer
         tests:
           - dbt_utils.accepted_range:
               min_value: 2009
-              max_value: 2023
+              max_value: 2024

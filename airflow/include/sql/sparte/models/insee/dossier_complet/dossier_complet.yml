@@ -6,6 +6,8 @@ models:
       - name: codgeo
         tests:
           - not_null
+          - has_all_communes:
+              severity: warn
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

@@ -88,7 +88,7 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 				type: "line" as const,
 				source: this.options.source,
 				"source-layer": sourceLayer,
-				filter: ["==", ["get", "checksum"], ""],
+				filter: ["==", ["get", "part_id"], ""],
 				layout: { visibility },
 				paint: {
 					"line-color": "#000000",

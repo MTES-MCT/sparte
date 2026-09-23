@@ -1,10 +1,19 @@
 models:
   - name: for_vector_tiles_zonage_urbanisme
     columns:
-      - name: checksum
+      - name: part_id
+        description: Identifiant de la part (zonage × commune). Porte le survol et le verrouillage côté front.
         data_type: text
         data_tests:
           - not_null
+      - name: zonage_checksum
+        description: Identifiant du zonage entier, pour remonter aux parts d'un même zonage.
+        data_type: text
+        data_tests:
+          - not_null
+          - relationships:
+              field: checksum
+              to: ref('zonage_urbanisme')
       - name: type_zone
         data_type: character varying
         data_tests:
@@ -27,17 +36,17 @@ models:
         data_type: date
       - name: id_document_urbanisme
         data_type: character varying
-      - name: zonage_surface
+      - name: part_surface
+        description: Surface de la part, dénominateur de tous les pourcentages du modèle.
         data_type: numeric
         data_tests:
           - not_null
-      - name: departement
-        data_type: character varying
+          - is_positive_number
+      - name: zonage_surface
+        description: Surface du zonage entier, mer comprise en zone littorale. Pour mémoire, pas un dénominateur.
+        data_type: numeric
         data_tests:
           - not_null
-          - relationships:
-              field: code
-              to: ref('departement')
       - name: srid_source
         data_type: integer
         data_tests:

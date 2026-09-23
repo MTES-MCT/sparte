@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-{% for year in range(2009, 2024) %}
+{% for year in range(2011, 2025) %}
     SELECT
         commune_code,
         commune.surface as surface,
@@ -12,7 +12,7 @@
         conso_{{ year }}_route as route,
         conso_{{ year }}_ferroviaire as ferroviaire,
         conso_{{ year }}_inconnu as inconnu
-    FROM {{ ref('consommation_cog_2024') }} as conso
+    FROM {{ ref('consommation_cog_2025') }} as conso
     LEFT JOIN {{ ref('commune') }} as commune
     ON commune.code = conso.commune_code
     {% if not loop.last %}

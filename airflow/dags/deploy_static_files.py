@@ -8,6 +8,9 @@ from airflow.decorators import dag, task
 
 logger = getLogger(__name__)
 
+# Fichiers trop volumineux pour la copie côté serveur, à traiter manuellement.
+EXCLUDED_FROM_COPY = "carroyage_lea"
+
 
 @dag(
     start_date=datetime(2024, 1, 1),
@@ -25,22 +28,33 @@ def deploy_static_files():
     @task.python
     def get_list_of_vector_tiles() -> list[str]:
         keys: list[str] = Container().s3_handler().list_files(s3_bucket=from_bucket_name, s3_key="vector_tiles")
+        pmtiles = [key.replace(from_bucket_name + "/", "") for key in keys if key.endswith(".pmtiles")]
 
-        return [
-            key.replace(from_bucket_name + "/", "")
-            for key in keys
-            if key.endswith(".pmtiles") and "occupation_du_sol" in key
-        ]
+        # Le carroyage LEA pèse plus de 2 Go, et la copie côté serveur dépasse le
+        # read timeout de botocore. L'échec faisait avorter la tâche entière, donc
+        # toutes les tuiles suivantes dans l'ordre lexicographique — les zonages
+        # d'urbanisme, notamment — n'étaient jamais copiées.
+        skipped = [key for key in pmtiles if EXCLUDED_FROM_COPY in key]
+        if skipped:
+            logger.warning(
+                "%s exclu(s) de la copie automatique : %s. "
+                "À copier à la main, l'AWS CLI faisant du multipart :\n"
+                "  aws --endpoint-url https://s3.fr-par.scw.cloud --region fr-par \\\n"
+                "    s3 cp s3://%s/%s s3://%s/%s --acl public-read",
+                len(skipped),
+                ", ".join(skipped),
+                from_bucket_name,
+                skipped[0],
+                to_bucket_name,
+                skipped[0],
+            )
+
+        return [key for key in pmtiles if EXCLUDED_FROM_COPY not in key]
 
     @task.python
     def get_list_of_geojson_files() -> list[str]:
         keys: list[str] = Container().s3_handler().list_files(s3_bucket=from_bucket_name, s3_key="geojson")
-
-        return [
-            key.replace(from_bucket_name + "/", "")
-            for key in keys
-            if key.endswith(".geojson.gz") and "occupation_du_sol" in key
-        ]
+        return [key.replace(from_bucket_name + "/", "") for key in keys if key.endswith(".geojson.gz")]
 
     @task.python
     def move_vector_tiles_from_airflow_bucket_to_prod(keys) -> str:

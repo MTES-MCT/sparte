@@ -2,48 +2,53 @@
 
 {% set where_conditions = {'artif': 'is_artificial', 'imper': 'is_impermeable'} %}
 {% set where_condition = where_conditions[indicateur] %}
-{% set zonage_admin_model = 'zonage_' + group_by_column %}
-{% set admin_code_column = group_by_column + '_code' %}
+
+/*
+Même agrégation que `merge_ocsge_zonage_commune`, remontée à un échelon
+administratif supérieur : {{ group_by_column }}.
+
+`zonage_couverture_et_usage` est au grain part (zonage × commune) et `commune`
+porte déjà `departement`, `region`, `epci` et `scot` : l'échelon s'obtient par une
+jointure sur la commune, sans passer par les tables de correspondance
+`zonage_departement` / `zonage_epci` / `zonage_region` / `zonage_scot`.
+
+Ces tables dérivaient de `zonage_commune`, qui rattachait un zonage ENTIER à
+chaque commune touchée : un zonage à cheval voyait sa surface intégrale comptée
+dans chaque territoire. Un zonage traversant une frontière départementale
+apparaissait de surcroît dans les deux départements avec 100 % de sa surface.
+
+La colonne `departement` de sortie reste celle de la commune, si bien qu'un EPCI
+ou un SCoT à cheval sur deux départements produit toujours une ligne par
+département — la clé de sortie est inchangée.
+
+`count(distinct)` est impératif : une part apparaît sur autant de lignes qu'elle
+a de combinaisons couverture × usage, et un même zonage peut avoir des parts dans
+plusieurs communes du territoire.
+*/
 
     with
         without_percent as (
             select
-                za.{{ admin_code_column }} as code,
-                {% if group_by_column == 'departement' %}
-                za.departement_code as departement,
-                {% else %}
-                zd.departement_code as departement,
-                {% endif %}
-                zonage_couverture_et_usage.index,
-                count(distinct za.zonage_checksum)::integer as zonage_count,
-                sum(zonage_couverture_et_usage.surface) as zonage_surface,
+                commune.{{ group_by_column }} as code,
+                commune.departement,
+                zcu.index,
+                zcu.zonage_type,
+                zcu.year,
+                count(distinct zcu.zonage_checksum)::integer as zonage_count,
+                sum(zcu.surface) as zonage_surface,
                 sum(
-                    case
-                        zonage_couverture_et_usage.{{ where_condition }}
-                        when true
-                        then zonage_couverture_et_usage.surface
-                        else 0
-                    end
-                ) as indicateur_surface,
-                zonage_type,
-                year
-            from {{ ref(zonage_admin_model) }} as za
-            {% if group_by_column != 'departement' %}
-            left join {{ ref("zonage_departement") }} as zd
-                on za.zonage_checksum = zd.zonage_checksum
-            {% endif %}
-            left join
-                {{ ref("zonage_couverture_et_usage") }}
-                on za.zonage_checksum = zonage_couverture_et_usage.zonage_checksum
-            where zonage_type is not null
+                    case when zcu.{{ where_condition }} then zcu.surface else 0 end
+                ) as indicateur_surface
+            from {{ ref("zonage_couverture_et_usage") }} as zcu
+            inner join {{ ref("commune") }} as commune on commune.code = zcu.commune_code
+            where zcu.zonage_type is not null
+              and commune.{{ group_by_column }} is not null
             group by
-                za.{{ admin_code_column }},
-                {% if group_by_column == 'departement' %}
-                za.departement_code,
-                {% else %}
-                zd.departement_code,
-                {% endif %}
-                zonage_type, year, zonage_couverture_et_usage.index
+                commune.{{ group_by_column }},
+                commune.departement,
+                zcu.index,
+                zcu.zonage_type,
+                zcu.year
         )
     select
         code,

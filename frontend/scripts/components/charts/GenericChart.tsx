@@ -55,6 +55,7 @@ type GenericChartProps = {
   land_type: string;
   params?: object;
   containerProps?: React.HTMLAttributes<HTMLDivElement>;
+  cardStyle?: React.CSSProperties;
   isMap?: boolean;
   showToolbar?: boolean;
   sources?: DataSource[];
@@ -114,6 +115,7 @@ const GenericChart = ({
   land_type,
   params,
   containerProps,
+  cardStyle,
   isMap = false,
   showToolbar = true,
   sources = [],
@@ -156,7 +158,7 @@ const GenericChart = ({
 
   if (isLoadingOrFetching) {
     return (
-      <ChartCard>
+      <ChartCard style={cardStyle}>
         <LoaderContainer>
           <Loader />
         </LoaderContainer>
@@ -166,7 +168,7 @@ const GenericChart = ({
 
   if (error || !chartOptions?.highcharts_options) {
     return (
-      <ChartCard>
+      <ChartCard style={cardStyle}>
         <ChartBody className="fr-text--sm fr-text-mention--grey fr-py-4w">
           <i className="bi bi-exclamation-triangle fr-mr-1w" />
           Erreur lors du chargement des données
@@ -186,10 +188,18 @@ const GenericChart = ({
       if (!points || points.length === 0) return false
 
       let tooltip = `<b>${this.x}</b><br/>`
+      // Tooltip partagé : Highcharts appelle le formatter une fois par abscisse, et non
+      // une fois par point. `this.points` contient donc un point par série à cette
+      // abscisse, et la boucle produit une ligne par série dans une même bulle. Chaque
+      // série porte ses propres unité et précision, d'où la lecture de tooltipOptions
+      // à l'intérieur de la boucle plutôt qu'une seule fois au-dessus.
       points.forEach((p) => {
         const seriesTooltipOptions = (p.series as Highcharts.Series & { tooltipOptions?: Highcharts.TooltipOptions }).tooltipOptions
         const suffix = seriesTooltipOptions?.valueSuffix || ''
-        tooltip += `<span style="color:${p.color}">●</span> ${p.series.name}: <b>${Highcharts.numberFormat(p.y || 0, 0, ',', ' ')}${suffix}</b><br/>`
+        // valueDecimals est repris de la série si elle le déclare, sinon des options
+        // globales du tooltip. Le repli à 0 conserve le rendu des graphes existants.
+        const decimals = seriesTooltipOptions?.valueDecimals ?? mutableChartOptions.tooltip?.valueDecimals ?? 0
+        tooltip += `<span style="color:${p.color}">●</span> ${p.series.name}: <b>${Highcharts.numberFormat(p.y || 0, decimals, ',', ' ')}${suffix}</b><br/>`
       })
       return tooltip
     }
@@ -273,7 +283,7 @@ const GenericChart = ({
 
   if (dataTableOnly && effectiveShowDataTable && dataTable) {
     return (
-      <ChartCard>
+      <ChartCard style={cardStyle}>
         <ChartBody>
           {dataTableHeader}
           <ChartDataTable data={dataTable} title={mutableChartOptions.title?.text} compact={compactDataTable} />
@@ -284,7 +294,7 @@ const GenericChart = ({
   }
 
   return (
-    <ChartCard>
+    <ChartCard style={cardStyle}>
       <ChartBody>
         {showToolbar && (
           <Toolbar>

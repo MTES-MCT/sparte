@@ -110,12 +110,14 @@ SELECT
     art23rou24::int as conso_2023_route,
     art23fer24::int as conso_2023_ferroviaire,
     art23inc24::int as conso_2023_inconnu,
-    -- Cumuls 2009-2024
-    naf09art24::int as conso_2009_2024,
-    art09hab24::int as conso_2009_2024_habitat,
-    art09act24::int as conso_2009_2024_activite,
-    art09mix24::int as conso_2009_2024_mixte,
-    art09inc24::int as conso_2009_2024_inconnu,
+    -- 2024
+    naf24art25::int as conso_2024,
+    art24hab25::int as conso_2024_habitat,
+    art24act25::int as conso_2024_activite,
+    art24mix25::int as conso_2024_mixte,
+    art24rou25::int as conso_2024_route,
+    art24fer25::int as conso_2024_ferroviaire,
+    art24inc25::int as conso_2024_inconnu,
     -- Géométrie
     geom
 FROM {{ source('public', 'majic_carroyage_lea') }}

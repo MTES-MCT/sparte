@@ -2,7 +2,6 @@ import logging
 from typing import Literal
 
 from django.conf import settings
-from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Centroid
 from django.contrib.gis.geos import MultiPolygon
@@ -17,8 +16,6 @@ from config.storages import PublicMediaStorage
 from project.models.enums import ProjectChangeReason
 from public_data.models import AdminRef, LandModel
 from public_data.models.administration.enums import ConsommationCorrectionStatus
-from public_data.models.enums import SRID
-from public_data.models.mixins import DataColorationMixin
 from utils.validators import is_alpha_validator
 
 logger = logging.getLogger(__name__)
@@ -397,33 +394,3 @@ class Project(BaseProject):
                 continue
 
         return sorted(land_models, key=lambda x: x.name)
-
-
-class Emprise(DataColorationMixin, gis_models.Model):
-    # DataColorationMixin properties that need to be set when heritating
-    default_property = "id"
-    default_color = "blue"
-
-    project = gis_models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-        verbose_name="Projet",
-    )
-    mpoly = gis_models.MultiPolygonField(srid=4326)
-    srid_source = models.IntegerField(
-        "SRID",
-        choices=SRID.choices,
-        default=SRID.LAMBERT_93,
-    )
-
-    # mapping for LayerMapping (from GeoDjango)
-    mapping = {
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    class Meta:
-        ordering = ["project"]
-
-    def set_parent(self, project: Project):
-        """Identical to Project"""
-        self.project = project

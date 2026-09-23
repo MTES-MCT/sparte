@@ -6,15 +6,16 @@
             simplify(
                 source=source('public', source_table_name),
                 geo_field='geom',
-                id_field='insee_reg',
+                id_field='code_insee',
                 tolerance='1500'
             )
         }}
     )
     SELECT
-        id,
-        nom as name,
-        insee_reg as code,
+        cleabs as id,
+        nom_officiel as name,
+        nom_officiel_en_majuscules as name_uppercase,
+        code_insee as code,
         ST_Area(source.geom) as surface,
         source.geom,
         simplified.geom as simple_geom
@@ -23,6 +24,6 @@
     LEFT JOIN
         simplified
     ON
-        source.insee_reg = simplified.id_field
+        source.code_insee = simplified.id_field
 
 {% endmacro %}

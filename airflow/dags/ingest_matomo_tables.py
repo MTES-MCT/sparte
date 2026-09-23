@@ -1,7 +1,6 @@
 from gdaltools import ogr2ogr
 from include.container import InfraContainer as Container
-from include.pools import DBT_POOL
-from include.utils import get_dbt_command_from_directory
+from include.dbt import DbtBuild
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -46,11 +45,7 @@ def ingest_matomo_tables():  # noqa: C901
     def ingest_log_action():
         return ingest_table("matomo.matomo_log_action", "matomo_log_action")
 
-    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
-    def dbt_run() -> str:
-        return get_dbt_command_from_directory(
-            "dbt build -s matomo+",
-        )
+    dbt_run = DbtBuild(task_id="dbt_run", select=["matomo+"], retries=0, trigger_rule="all_success")
 
     (
         ingest_log_visit()
@@ -58,7 +53,7 @@ def ingest_matomo_tables():  # noqa: C901
         >> ingest_log_conversion()
         >> ingest_log_action()
         >> ingest_action_types()
-        >> dbt_run()
+        >> dbt_run
     )
 
 

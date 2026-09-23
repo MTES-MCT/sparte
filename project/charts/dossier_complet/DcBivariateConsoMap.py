@@ -151,7 +151,7 @@ class DcBivariateConsoMap(DiagnosticChart):
 
     @property
     def end_date(self):
-        return int(self.params.get("end_date", 2022))
+        return int(self.params.get("end_date", 2024))
 
     @cached_property
     def _container_land(self):

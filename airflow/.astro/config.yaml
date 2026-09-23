@@ -1,5 +1,5 @@
 airflow:
-  expose_port: true
+  expose_port: false
 project:
     name: airflow
 postgres:

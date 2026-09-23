@@ -25,8 +25,8 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
     def lands(self):
         return LandModel.objects.filter(pk__in=self.children_objectifs.values_list("land__pk", flat=True))
 
-    # Nombre d'années depuis 2021 (données jusqu'à fin 2023 = 3 ans)
-    ANNEES_ECOULEES = 3
+    # Nombre d'années depuis 2021 (données jusqu'à fin 2024 = 4 ans)
+    ANNEES_ECOULEES = 4
 
     @property
     def base_data(self):
@@ -54,10 +54,10 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
             else:
                 annees_restantes = 99  # Pas de consommation = infini (plafonné)
 
-            # Année de dépassement prévue (2023 = dernière année de données réelles)
+            # Année de dépassement prévue (2024 = dernière année de données réelles)
             # Seulement si le dépassement est prévu avant 2031 (fin de la période)
             if 0 < annees_restantes < 99:
-                annee_depassement = 2023 + int(annees_restantes) + 1
+                annee_depassement = 2024 + int(annees_restantes) + 1
                 if annee_depassement < 2031:
                     depassement_text = f"(soit un dépassement prévu en {annee_depassement})"
                 else:
@@ -370,8 +370,8 @@ class TerritorialisationAnneesRestantesMap(TerritorialisationProgressMapBase):
 
     name = "carte années restantes territorialisation"
 
-    # Nombre d'années depuis 2021 (données jusqu'à fin 2023 = 3 ans)
-    ANNEES_ECOULEES = 3
+    # Nombre d'années depuis 2021 (données jusqu'à fin 2024 = 4 ans)
+    ANNEES_ECOULEES = 4
     ANNEE_FIN = 2030
 
     @property
@@ -397,10 +397,10 @@ class TerritorialisationAnneesRestantesMap(TerritorialisationProgressMapBase):
             else:
                 annees_restantes = 99  # Pas de consommation = infini (plafonné)
 
-            # Année de dépassement prévue (2023 = dernière année de données réelles)
+            # Année de dépassement prévue (2024 = dernière année de données réelles)
             # Seulement si le dépassement est prévu avant 2031 (fin de la période)
             if 0 < annees_restantes < 99:
-                annee_depassement = 2023 + int(annees_restantes) + 1
+                annee_depassement = 2024 + int(annees_restantes) + 1
                 if annee_depassement < 2031:
                     depassement_text = f"(soit un dépassement prévu en {annee_depassement})"
                 else:
@@ -481,8 +481,8 @@ class TerritorialisationEffortMap(TerritorialisationProgressMapBase):
 
     name = "carte effort territorialisation"
 
-    ANNEES_ECOULEES = 3
-    ANNEES_RESTANTES_PERIODE = 7  # 2024-2030
+    ANNEES_ECOULEES = 4
+    ANNEES_RESTANTES_PERIODE = 6  # 2025-2030
 
     @property
     def data(self):
@@ -588,7 +588,7 @@ class TerritorialisationRythmeMap(TerritorialisationProgressMapBase):
 
     name = "carte rythme territorialisation"
 
-    ANNEES_ECOULEES = 3
+    ANNEES_ECOULEES = 4
 
     @property
     def data(self):
@@ -694,7 +694,7 @@ class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
 
     name = "carte projection 2031 territorialisation"
 
-    ANNEES_ECOULEES = 3
+    ANNEES_ECOULEES = 4
     ANNEES_TOTALES = 10  # 2021-2030
 
     @property
@@ -799,7 +799,7 @@ class TerritorialisationDepassement2031Map(TerritorialisationProgressMapBase):
 
     name = "carte dépassement 2031 territorialisation"
 
-    ANNEES_ECOULEES = 3
+    ANNEES_ECOULEES = 4
     ANNEES_TOTALES = 10
 
     @property
@@ -905,7 +905,7 @@ class TerritorialisationTauxAtteinte2031Map(TerritorialisationProgressMapBase):
 
     name = "carte taux atteinte 2031 territorialisation"
 
-    ANNEES_ECOULEES = 3
+    ANNEES_ECOULEES = 4
     ANNEES_TOTALES = 10
 
     @property
