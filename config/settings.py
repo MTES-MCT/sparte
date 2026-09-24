@@ -307,8 +307,6 @@ VECTOR_TILES_LOCATION = f"{AIRFLOW_S3_BASE_URL}/vector_tiles"
 GEOJSON_LOCATION = f"{AIRFLOW_S3_BASE_URL}/geojson"
 
 
-MATOMO_CONTAINER_SRC = env.str("MATOMO_CONTAINER_SRC", default="https://stats.beta.gouv.fr/js/container_26e5XOBD.js")
-
 # CORSHEADERS
 # https://github.com/adamchainz/django-cors-headers
 
@@ -514,6 +512,8 @@ NUMBER_GROUPING = 3
 
 # MATOMO
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
+MATOMO_SRC = env.str("MATOMO_SRC", default="https://matomo.ign.fr")
+MATOMO_SITE_ID = env.str("MATOMO_SITE_ID", default="20")
 
 # GOOGLE TAG ADWORDS
 GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
@@ -569,7 +569,7 @@ CSP_IMG_SRC = [
     "https://client.crisp.chat",
     "https://image.crisp.chat",
     "https://storage.crisp.chat",
-    AIRFLOW_S3_BASE_URL,
+    AIRFLOW_S3_BASE_URL,  # à remplacer
 ]
 CSP_FRAME_SRC = (
     "'self'",
@@ -766,5 +766,3 @@ SITE_CONFIG = {
     "footer_description": env.str("FOOTER_DESCRIPTION", default=""),
     "accessibility_status": env.str("ACCESSIBILITY_STATUS", default="non"),
 }
-
-IS_TEST = "test" in sys.argv
