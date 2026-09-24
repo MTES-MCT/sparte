@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import sys
 from pathlib import Path
 from typing import Any, Dict, Literal
 
