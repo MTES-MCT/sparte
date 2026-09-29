@@ -7,6 +7,11 @@ export interface ReportTypeOption {
     label: string;
 }
 
+export interface ReportOwnerPreference {
+    target_2031: number | null;
+    comparison_lands: ComparisonLand[];
+}
+
 export interface ReportDraft {
     id: string;
     report_type: ReportType;
@@ -16,6 +21,7 @@ export interface ReportDraft {
     land_type: string;
     land_id: string;
     comparison_lands: ComparisonLand[];
+    owner_preference: ReportOwnerPreference;
     created_at: string;
     updated_at: string;
 }
