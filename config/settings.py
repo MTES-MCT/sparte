@@ -191,6 +191,8 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
+# Durée de validité des liens de réinitialisation de mot de passe (annoncée dans l'e-mail)
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24
 
 AUTHENTICATION_BACKENDS = [
     # Authentification Django par défaut

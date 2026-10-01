@@ -17,6 +17,12 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
             user.last_name = claims.get("usual_name", "")
             user.siret = claims.get("siret", "")
             user.proconnect = True
+            # Un compte qui passe à ProConnect perd son mot de passe : la connexion
+            # se fait ensuite uniquement via ProConnect.
+            if user.has_usable_password():
+                # La condition évite de régénérer le mot de passe à chaque rafraîchissement
+                # de session, ce qui déconnecterait l'utilisateur de ses autres sessions.
+                user.set_unusable_password()
             user.save()
 
         except Exception as e:
