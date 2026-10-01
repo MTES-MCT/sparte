@@ -2,7 +2,8 @@ import React, { useMemo, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { LandDetailResultType } from '@services/types/land';
 import AnnexeArticleR101Image from '@images/annexe-article-r-101-1-code-urbanisme.png';
-import { useGetLandArtifStockIndexQuery, useGetUserLandPreferenceQuery } from '@services/api';
+import { useGetLandArtifStockIndexQuery } from '@services/api';
+import { ReportOwnerPreference } from '@services/types/reportDraft';
 import { useMillesime } from '@hooks/useMillesime';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
 import { formatNumber } from '@utils/formatUtils';
@@ -20,7 +21,7 @@ import {
 import ChartWithTable from '@components/charts/ChartWithTable';
 import CoverPage from './CoverPage';
 import Drawer from '@components/ui/Drawer';
-import { useReportComparisonTerritories } from '../hooks';
+import { useReportComparisonTerritories, useReportPreference } from '../hooks';
 import { ComparisonTerritoriesSettings, ComparisonTerritoriesCallout } from '../components';
 
 export interface RapportLocalContent {
@@ -39,6 +40,8 @@ interface RapportLocalProps {
     content: RapportLocalContent;
     mode: ContentZoneMode;
     projectId: number;
+    /** Préférences du propriétaire du brouillon, à utiliser à la place de celles de l'utilisateur courant (rendu PDF anonyme) */
+    ownerPreference?: ReportOwnerPreference;
     onContentChange?: (key: string, value: string) => void;
     isSettingsOpen?: boolean;
     onSettingsChange?: (isOpen: boolean) => void;
@@ -71,6 +74,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
     content,
     mode,
     projectId,
+    ownerPreference,
     onContentChange,
     isSettingsOpen: externalIsSettingsOpen,
     onSettingsChange,
@@ -83,10 +87,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
         onContentChange?.(key, value);
     }, [onContentChange]);
 
-    const { data: preference } = useGetUserLandPreferenceQuery({
-        land_type: landData.land_type,
-        land_id: landData.land_id,
-    });
+    const preference = useReportPreference(landData.land_type, landData.land_id, ownerPreference);
 
     const millesimes = landData.millesimes || [];
     const maxIndex = millesimes.length > 0 ? Math.max(...millesimes.map(m => m.index)) : 0;
