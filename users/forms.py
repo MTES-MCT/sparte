@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import (
     AuthenticationForm,
+    PasswordResetForm,
     UserChangeForm,
     UserCreationForm,
 )
@@ -125,6 +126,35 @@ class UpdatePasswordForm(forms.Form):
         self.user.set_password(passwrd)
         self.user.save()
         return self.user
+
+
+class CustomPasswordResetForm(PasswordResetForm):
+    """
+    Les comptes créés via ProConnect n'ont pas de mot de passe utilisable et sont
+    ignorés par le formulaire de Django : on leur envoie à la place un e-mail les
+    invitant à se connecter avec ProConnect.
+    """
+
+    proconnect_subject_template_name = "users/password_reset_proconnect_subject.txt"
+    proconnect_email_template_name = "users/password_reset_proconnect_email.txt"
+    proconnect_html_email_template_name = "users/password_reset_proconnect_email.html"
+
+    def get_proconnect_users(self, email):
+        users = User.objects.filter(email__iexact=email, is_active=True, proconnect=True)
+        return (u for u in users if not u.has_usable_password())
+
+    def save(self, from_email=None, extra_email_context=None, **kwargs):
+        super().save(from_email=from_email, extra_email_context=extra_email_context, **kwargs)
+        for user in self.get_proconnect_users(self.cleaned_data["email"]):
+            context = {"email": user.email, "user": user, **(extra_email_context or {})}
+            self.send_mail(
+                self.proconnect_subject_template_name,
+                self.proconnect_email_template_name,
+                context,
+                from_email,
+                user.email,
+                html_email_template_name=self.proconnect_html_email_template_name,
+            )
 
 
 class ProfileFormBase(forms.ModelForm):
