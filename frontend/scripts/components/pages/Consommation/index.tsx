@@ -19,7 +19,10 @@ interface ConsommationProps {
 }
 
 const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference }) => {
-  const { land_id, land_type, name, child_land_types } = landData || {};
+  const { land_id, land_type, name, child_land_types, departements } = landData || {};
+
+  // Le carroyage n'est disponible que pour la France hexagonale
+  const isDromCom = departements?.length > 0 && departements.some((dep) => dep.startsWith("97"));
 
   const {
     startYear,
@@ -103,7 +106,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
 
         <ConsoAnnuelle landId={land_id} landType={land_type} landName={name} childLandTypes={child_land_types || []} />
 
-        <ConsoCarroyage landData={landData} />
+        {!isDromCom && <ConsoCarroyage landData={landData} />}
 
         <ConsoDemography
           landId={land_id}
