@@ -759,6 +759,6 @@ WEBINAIRE_URL = env.str(
     "WEBINAIRE_URL",
     default="https://app.livestorm.co/mte/mon-diag-artif-webinaire-de-presentation?s=7425e75c-4336-47c8-acd2-5459b8261af6",  # noqa: E501
 )
-FAQ_URL = env.str("FAQ_URL", default="https://faq.mondiagartif.beta.gouv.fr/fr/")
+FAQ_URL = env.str("FAQ_URL", default="https://aide.mondiagartif.beta.gouv.fr/fr/")
 
 IS_TEST = "test" in sys.argv
