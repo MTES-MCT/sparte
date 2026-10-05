@@ -750,6 +750,7 @@ XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]
 MAINTENANCE_MODE = env.bool("MAINTENANCE_MODE", default=False)
 TEAM_EMAIL = env.str("TEAM_EMAIL", default="equipe@support.mondiagartif.beta.gouv.fr")
 METABASE_URL = env.str("METABASE_URL", default="https://sparte-metabase.osc-secnum-fr1.scalingo.io/")
+STATS_ENABLED = env.bool("STATS_ENABLED", default=False)
 STATS_HEIGHT = env.str("STATS_HEIGHT", default="5240")
 STATS_URL = env.str(
     "STATS_URL",
