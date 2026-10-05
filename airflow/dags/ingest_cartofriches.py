@@ -6,7 +6,7 @@ from include.dbt import DbtBuild
 from include.utils import multiline_string_to_single_line
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 URL = "https://www.data.gouv.fr/fr/datasets/r/a9084493-e742-4a2f-890b-0ebc803098df"
 

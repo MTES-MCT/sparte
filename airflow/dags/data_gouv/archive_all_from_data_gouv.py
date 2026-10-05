@@ -5,10 +5,11 @@ Ce DAG récupère tous les datasets de l'organisation sur data.gouv.fr
 et les supprime.
 """
 
+
 import pendulum
 from include.container import DomainContainer as Container
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 
 @dag(

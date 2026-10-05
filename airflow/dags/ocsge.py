@@ -33,6 +33,7 @@ from include.data.ocsge.normalization import (
 )
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.utils import (
+    get_dbt_command_from_directory,
     get_geom_field_name,
     get_shapefile_or_geopackage_fields,
     get_shapefile_or_geopackage_first_layer_name,
@@ -40,10 +41,9 @@ from include.utils import (
     remove_extension_from_layer_name,
 )
 
-from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
-from airflow.models.param import Param
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.sdk import Param, dag, task
 
 log = logging.getLogger(__name__)
 
@@ -345,7 +345,7 @@ def ocsge():  # noqa: C901
         config = context["params"]["config"]
         dataset = get_from_config(config, "dataset")
         dbt_select = " ".join([vars["dbt_selector_staging"] for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt test -s ' + dbt_select
+        return get_dbt_command_from_directory("dbt test -s " + dbt_select)
 
     @task.python(trigger_rule="all_success")
     def delete_previously_loaded_data_in_dw(**context) -> dict:
@@ -401,7 +401,7 @@ def ocsge():  # noqa: C901
             raise AirflowSkipException
 
         dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s ' + dbt_select
+        return get_dbt_command_from_directory("dbt build -s " + dbt_select)
 
     @task.python(trigger_rule="all_done")
     def log_to_mattermost(**context):

@@ -1,7 +1,10 @@
 import os
+import shlex
 import subprocess
+from pathlib import Path
 
 import geopandas as gpd
+from include.paths import DBT_PROJECT_DIR
 
 
 def get_shapefile_or_geopackage_first_layer_name(path: str) -> str:
@@ -71,6 +74,6 @@ def get_first_shapefile_path_in_dir(dir_path: str) -> str | None:
 
 def get_dbt_command_from_directory(
     cmd: str,
-    directory="${AIRFLOW_HOME}/include/sql/sparte",
+    directory: str | Path = DBT_PROJECT_DIR,
 ) -> str:
-    return f'cd "{directory}" && ' + cmd
+    return f"cd {shlex.quote(str(directory))} && " + cmd

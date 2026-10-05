@@ -11,12 +11,12 @@ servant de référence au rattachement géographique commune -> SCoT.
 (ou le passer en paramètre) si le téléchargement échoue.
 """
 
+
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
-from airflow.models.param import Param
+from airflow.sdk import Param, dag, task
 
 GPU_SCOT_URL = (
     "https://data.geopf.fr/extraction/telechargement/download/"

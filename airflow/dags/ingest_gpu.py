@@ -2,13 +2,14 @@
 Ce dag ingère les données de l'IGN GPU dans une base de données PostgreSQL.
 """
 
+
 from include.container import InfraContainer as Container
 from include.dbt import DbtBuild
 from include.utils import multiline_string_to_single_line
 from pendulum import datetime
 
-from airflow.decorators import dag, task
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.sdk import dag, task
 
 
 @dag(

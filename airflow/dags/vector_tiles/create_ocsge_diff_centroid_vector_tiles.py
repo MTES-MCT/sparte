@@ -5,9 +5,8 @@ from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from include.utils import multiline_string_to_single_line
 
-from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
-from airflow.models.param import Param
+from airflow.sdk import Param, dag, task
 
 with open("include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)

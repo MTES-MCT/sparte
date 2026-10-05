@@ -9,8 +9,8 @@ from include.dbt import DbtBuild
 from include.utils import get_first_shapefile_path_in_dir
 from pendulum import datetime
 
-from airflow.decorators import dag, task
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
+from airflow.sdk import dag, task
 
 BUCKET_NAME = Container().bucket_name()
 TMP_PATH = "/tmp/majic"

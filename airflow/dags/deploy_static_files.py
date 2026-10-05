@@ -4,7 +4,7 @@ from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 logger = getLogger(__name__)
 

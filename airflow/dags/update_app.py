@@ -2,12 +2,12 @@
 Ce dag met à jour les données de l'application à partir des données de l'entrepôt de données.
 """
 
+
 from gdaltools import PgConnectionString, ogr2ogr
 from include.container import InfraContainer as Container
 from pendulum import datetime
 
-from airflow.decorators import dag, task
-from airflow.models.param import Param
+from airflow.sdk import Param, dag, task
 
 STAGING = "staging"
 PRODUCTION = "production"

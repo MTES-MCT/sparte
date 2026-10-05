@@ -3,12 +3,13 @@ Ce dag ingère les dépendances de l'application dans une base de
 données PostgreSQL, puis lance un job dbt pour les transformer.
 """
 
+
 from gdaltools import ogr2ogr
 from include.container import InfraContainer as Container
 from include.dbt import DbtBuild
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 
 def ingest_table(source_table_name: str, destination_table_name: str):

@@ -6,22 +6,19 @@ commande est construite comme une liste d'arguments, jamais interpolée dans un
 shell, et la configuration projet/profil est définie ici une seule fois.
 """
 
-import os
-from pathlib import Path
 from typing import Callable
 
 from cosmos import ProfileConfig
 from cosmos.operators.local import DbtBuildLocalOperator
+from include.paths import DBT_PROJECT_DIR, get_dbt_profiles_path
 from include.pools import DBT_POOL
 
 from airflow.exceptions import AirflowSkipException
 
-DBT_PROJECT_DIR = Path(os.environ["AIRFLOW_HOME"]) / "include" / "sql" / "sparte"
-
 PROFILE_CONFIG = ProfileConfig(
     profile_name="sparte",
     target_name="dev",
-    profiles_yml_filepath=Path.home() / ".dbt" / "profiles.yml",
+    profiles_yml_filepath=get_dbt_profiles_path(),
 )
 
 # Les modèles taggés `macro_unit_test` n'existent que pour les tests unitaires de

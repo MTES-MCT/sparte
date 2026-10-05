@@ -25,7 +25,7 @@ from include.utils import (
 )
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 URL = "https://www.data.gouv.fr/api/1/datasets/r/b11c843e-d73f-45e5-88b1-dcb5e9fc6e3b"
 TABLE_NAME = "majic_carroyage_lea"

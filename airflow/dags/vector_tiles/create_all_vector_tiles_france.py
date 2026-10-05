@@ -20,8 +20,8 @@ import json
 
 import pendulum
 
-from airflow.decorators import dag
-from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
+from airflow.sdk import dag
 
 with open("include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)

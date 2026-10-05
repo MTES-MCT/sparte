@@ -7,11 +7,11 @@ multi-couches. Les couches `commune`, `departement`, `epci` et `region` sont ing
 chacune dans sa propre table. La construction des modèles dbt est gérée séparément.
 """
 
+
 from include.container import DomainContainer, InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
-from airflow.models.param import Param
+from airflow.sdk import Param, dag, task
 
 # Couches du geopackage Admin Express à ingérer (une table par couche).
 LAYERS = ("commune", "departement", "epci", "region")

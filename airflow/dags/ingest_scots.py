@@ -2,7 +2,7 @@ from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 SCOT_ENDPOINT_DOCURBA = "https://docurba.beta.gouv.fr/api/scots"  # noqa: E501
 SCOT_PERIMETRE_DOCURBA = "https://docurba.beta.gouv.fr/api/perimetres"  # noqa: E501

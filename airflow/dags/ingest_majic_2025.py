@@ -17,8 +17,8 @@ from include.container import InfraContainer as Container
 from include.utils import get_shapefile_or_geopackage_first_layer_name
 from pendulum import datetime
 
-from airflow.decorators import dag
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
+from airflow.sdk import dag
 
 BUCKET_NAME = Container().bucket_name()
 

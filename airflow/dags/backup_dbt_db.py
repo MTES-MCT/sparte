@@ -3,9 +3,9 @@ from os import getenv
 
 from include.container import InfraContainer as Container
 
-from airflow import DAG
-from airflow.operators.bash import BashOperator
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.providers.standard.operators.python import PythonOperator
+from airflow.sdk import DAG
 
 default_args = {
     "owner": "Alexis Athlani",
@@ -38,7 +38,7 @@ with DAG(
     "backup_dbt_staging_db",
     default_args=default_args,
     description="Sauvegarde hebdomadaire de la base staging DBT vers S3",
-    schedule_interval="0 1 * * 0",  # Tous les dimanches à 1h du matin
+    schedule="0 1 * * 0",  # Tous les dimanches à 1h du matin
     start_date=datetime(2024, 1, 1),
     catchup=False,
 ) as dag:
