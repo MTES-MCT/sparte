@@ -191,7 +191,7 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 
 **Injection de dépendances** : pattern DI via `dependency_injector` dans `include/container.py`, avec conteneurs Infrastructure (connexions S3, BDD, SFTP) et Domain (handlers fichiers, notifications, exports).
 
-### DAGs (36 total)
+### DAGs (35 total)
 
 #### OCS GE — Occupation des Sols (7 DAGs)
 
@@ -251,13 +251,12 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 | `archive_all_from_data_gouv` | `@once` | Suppression de datasets sur data.gouv.fr |
 | `update_brevo` | `@daily` | Export CSV utilisateurs → S3 → import Brevo |
 
-#### Maintenance (3 DAGs)
+#### Maintenance (2 DAGs)
 
 | DAG | Schedule | Description |
 |---|---|---|
 | `ingest_app_tables` | `@daily` | Copie 5 tables app vers BDD dbt (users, requests, projects, newsletter, satisfaction) |
 | `ingest_matomo_tables` | `0 4 * * *` | Ingestion données analytique Matomo |
-| `backup_dbt_db` | `0 1 * * 0` | Backup hebdomadaire pg_dump → S3 |
 
 #### Utilitaires (1 DAG)
 
