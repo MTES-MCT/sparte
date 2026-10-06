@@ -257,7 +257,7 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 |---|---|---|
 | `ingest_app_tables` | `@daily` | Copie 5 tables app vers BDD dbt (users, requests, projects, newsletter, satisfaction) |
 | `ingest_matomo_tables` | `0 4 * * *` | Ingestion données analytique Matomo |
-| `backup_dbt_staging_db` | `0 1 * * 0` | Backup hebdomadaire pg_dump → S3 |
+| `backup_dbt_db` | `0 1 * * 0` | Backup hebdomadaire pg_dump → S3 |
 
 #### Utilitaires (1 DAG)
 

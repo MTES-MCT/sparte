@@ -14,6 +14,7 @@ from .connectors import Brevo
 from .file_handling import (
     CSVFileIngestor,
     DataGouvHandler,
+    GeoJsonOnS3ToPmtilesOnS3Handler,
     GeoJsonToGzippedGeoJsonOnS3Handler,
     HTTPFileHandler,
     PaginatedJsonToS3Handler,
@@ -307,6 +308,11 @@ class DomainContainer(containers.DeclarativeContainer):
         provides=GeoJsonToGzippedGeoJsonOnS3Handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
+    )
+
+    geojson_on_s3_to_pmtiles_on_s3_handler = providers.Factory(
+        provides=GeoJsonOnS3ToPmtilesOnS3Handler,
+        s3_handler=s3_handler,
     )
 
     sql_to_geopackage_on_s3_handler = providers.Factory(
