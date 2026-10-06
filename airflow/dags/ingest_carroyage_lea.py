@@ -13,7 +13,9 @@ La projection n'est pas forcée : celle déclarée par le geopackage fait foi (l
 shapefile devait être annoté en EPSG:3035 à la main).
 """
 
+import os
 import subprocess
+import tempfile
 
 import requests
 from include.container import DomainContainer
@@ -29,11 +31,25 @@ from airflow.decorators import dag, task
 
 URL = "https://www.data.gouv.fr/api/1/datasets/r/b11c843e-d73f-45e5-88b1-dcb5e9fc6e3b"
 TABLE_NAME = "majic_carroyage_lea"
-TMP_PATH = "/tmp/carroyage_lea"
 GPKG_FILENAME = "carroyage_lea.gpkg"
 GEOJSON_FILENAME = "carroyage_lea.geojson"
 PMTILES_FILENAME = "carroyage_lea.pmtiles"
 VECTOR_TILES_DIR = "vector_tiles"
+
+# Options propres au carroyage : des carrés jointifs, qu'on ne veut ni simplifier
+# ni fusionner, jusqu'au zoom 16
+TIPPECANOE_OPTIONS = [
+    "--read-parallel",
+    "--force",
+    "--no-simplification-of-shared-nodes",
+    "--no-tiny-polygon-reduction",
+    "--no-line-simplification",
+    "--no-feature-limit",
+    "--no-tile-size-limit",
+    "--detect-shared-borders",
+    "--extra-detail=15",
+    "-z16",
+]
 
 
 @dag(
@@ -48,62 +64,54 @@ VECTOR_TILES_DIR = "vector_tiles"
 def ingest_carroyage_lea():
     bucket_name = Container().bucket_name()
     s3_key = f"majic/{GPKG_FILENAME}"
-    localpath = f"{TMP_PATH}/{GPKG_FILENAME}"
 
     @task.python
     def download() -> str:
         """Télécharge le geopackage depuis data.gouv.fr et l'upload sur S3."""
-        import os
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            localpath = os.path.join(tmp_dir, GPKG_FILENAME)
 
-        os.makedirs(TMP_PATH, exist_ok=True)
+            # En streaming : le fichier pèse plusieurs Go
+            with requests.get(URL, allow_redirects=True, stream=True) as response:
+                response.raise_for_status()
+                with open(localpath, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=1024 * 1024):
+                        f.write(chunk)
 
-        response = requests.get(URL, allow_redirects=True)
-        response.raise_for_status()
-
-        with open(localpath, "wb") as f:
-            f.write(response.content)
-
-        Container().s3().put_file(localpath, f"{bucket_name}/{s3_key}")
+            Container().s3().put_file(localpath, f"{bucket_name}/{s3_key}")
         return s3_key
 
     @task.python
     def ingest() -> None:
         """Ingère la première couche du geopackage dans PostgreSQL."""
-        import os
-        import shutil
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            localpath = os.path.join(tmp_dir, GPKG_FILENAME)
+            Container().s3().get_file(f"{bucket_name}/{s3_key}", localpath)
 
-        os.makedirs(TMP_PATH, exist_ok=True)
+            layer_name = get_shapefile_or_geopackage_first_layer_name(localpath)
 
-        # Download from S3
-        Container().s3().get_file(f"{bucket_name}/{s3_key}", localpath)
-
-        layer_name = get_shapefile_or_geopackage_first_layer_name(localpath)
-
-        # Load to PostgreSQL with ogr2ogr (le SRS déclaré par le geopackage fait foi)
-        cmd = [
-            "ogr2ogr",
-            "-f",
-            '"PostgreSQL"',
-            f'"{Container().gdal_dbt_conn().encode()}"',
-            "-overwrite",
-            "-lco",
-            "GEOMETRY_NAME=geom",
-            "-nlt",
-            "MULTIPOLYGON",
-            "-nlt",
-            "PROMOTE_TO_MULTI",
-            "-nln",
-            TABLE_NAME,
-            localpath,
-            layer_name,
-            "--config",
-            "PG_USE_COPY",
-            "YES",
-        ]
-        subprocess.run(" ".join(cmd), shell=True, check=True)
-
-        # Cleanup
-        shutil.rmtree(TMP_PATH)
+            # Load to PostgreSQL with ogr2ogr (le SRS déclaré par le geopackage fait foi)
+            cmd = [
+                "ogr2ogr",
+                "-f",
+                '"PostgreSQL"',
+                f'"{Container().gdal_dbt_conn().encode()}"',
+                "-overwrite",
+                "-lco",
+                "GEOMETRY_NAME=geom",
+                "-nlt",
+                "MULTIPOLYGON",
+                "-nlt",
+                "PROMOTE_TO_MULTI",
+                "-nln",
+                TABLE_NAME,
+                localpath,
+                layer_name,
+                "--config",
+                "PG_USE_COPY",
+                "YES",
+            ]
+            subprocess.run(" ".join(cmd), shell=True, check=True)
 
     dbt_build = DbtBuild(select=["carroyage_lea+"], retries=0, trigger_rule="all_success")
 
@@ -126,42 +134,22 @@ def ingest_carroyage_lea():
             )
         )
 
-    @task.bash
-    def geojson_to_pmtiles():
-        """Convertit le GeoJSON en PMTiles avec tippecanoe."""
-        local_input = f"/tmp/{GEOJSON_FILENAME}"
-        local_output = f"/tmp/{PMTILES_FILENAME}"
-        Container().s3().get_file(f"{bucket_name}/{VECTOR_TILES_DIR}/{GEOJSON_FILENAME}", local_input)
-
-        cmd = [
-            "tippecanoe",
-            "-o",
-            local_output,
-            local_input,
-            "--read-parallel",
-            "--force",
-            "--no-simplification-of-shared-nodes",
-            "--no-tiny-polygon-reduction",
-            "--no-line-simplification",
-            "--no-feature-limit",
-            "--no-tile-size-limit",
-            "--detect-shared-borders",
-            "--extra-detail=15",
-            "-z16",
-        ]
-        return " ".join(cmd)
-
     @task.python
-    def upload_pmtiles():
-        """Upload le fichier PMTiles sur S3."""
-        local_path = f"/tmp/{PMTILES_FILENAME}"
-        path_on_s3 = f"{bucket_name}/{VECTOR_TILES_DIR}/{PMTILES_FILENAME}"
-        Container().s3().put(local_path, path_on_s3)
-
-    @task.bash
-    def cleanup():
-        """Supprime les fichiers temporaires."""
-        return f"rm -f /tmp/{GEOJSON_FILENAME} /tmp/{PMTILES_FILENAME}"
+    def geojson_to_pmtiles() -> str:
+        """Convertit le GeoJSON en PMTiles avec tippecanoe et l'upload sur S3."""
+        path_on_s3 = (
+            DomainContainer()
+            .geojson_on_s3_to_pmtiles_on_s3_handler()
+            .convert_geojson_to_pmtiles_on_s3(
+                s3_bucket=bucket_name,
+                s3_geojson_key=f"{VECTOR_TILES_DIR}/{GEOJSON_FILENAME}",
+                s3_pmtiles_key=f"{VECTOR_TILES_DIR}/{PMTILES_FILENAME}",
+                tippecanoe_options=TIPPECANOE_OPTIONS,
+            )
+        )
+        if path_on_s3 is None:
+            raise ValueError("Le carroyage ne contient pas assez de données pour générer des tuiles")
+        return path_on_s3
 
     @task.python
     def make_pmtiles_public():
@@ -170,16 +158,7 @@ def ingest_carroyage_lea():
         s3_handler = DomainContainer().s3_handler()
         s3_handler.set_key_publicly_visible(pmtiles_key, bucket_name)
 
-    (
-        download()
-        >> ingest()
-        >> dbt_build
-        >> postgis_to_geojson()
-        >> geojson_to_pmtiles()
-        >> upload_pmtiles()
-        >> cleanup()
-        >> make_pmtiles_public()
-    )
+    (download() >> ingest() >> dbt_build >> postgis_to_geojson() >> geojson_to_pmtiles() >> make_pmtiles_public())
 
 
 ingest_carroyage_lea()
