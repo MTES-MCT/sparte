@@ -141,14 +141,13 @@ def copy_table_from_datawarehouse_to_app(
         **build_arguments,
     )
 
-    try:
-        subprocess.run(command, check=True, capture_output=True, text=True)
-    except subprocess.CalledProcessError as error:
+    # Pas de check=True : CalledProcessError porterait la commande complète, mot de passe
+    # compris, dans son message et finirait dans les logs Airflow.
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode != 0:
         logger.error("ogr2ogr a échoué : %s", " ".join(safe_command))
-        logger.error("stderr : %s", error.stderr)
-        # `error` porte la commande complète, mot de passe compris, dans son message :
-        # on lève une exception propre plutôt que de la laisser remonter aux logs Airflow.
-        raise RuntimeError(f"ogr2ogr a échoué (code {error.returncode}) pour {staging_table}") from None
+        logger.error("stderr : %s", result.stderr)
+        raise RuntimeError(f"ogr2ogr a échoué (code {result.returncode}) pour {staging_table}")
 
     index_requests = []
 
