@@ -2,7 +2,7 @@
 Ce dag ingère les données MAJIC 2025 (Cerema, observatoire de l'artificialisation)
 dans une base de données PostgreSQL.
 
-Contrairement au dag `ingest_majic` qui chargeait des shapefiles (zippés), les données
+Contrairement à l'ancien dag `ingest_majic` qui chargeait des shapefiles (zippés), les données
 2025 sont livrées au format geopackage (.gpkg), avec un fichier par région
 (France métropolitaine + DROM). Ce dag se limite à l'ingestion brute des geopackages ;
 la construction des modèles dbt est gérée séparément.
