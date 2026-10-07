@@ -4,6 +4,7 @@ import pendulum
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from include.utils import multiline_string_to_single_line
+from include.vector_tiles import geojson_to_pmtiles_on_s3
 
 from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
@@ -83,18 +84,7 @@ def create_ocsge_vector_tiles():
         departement = params.get("departement")
         geojson_filename = get_geojson_filename(index, departement)
         pmtiles_filename = get_pmtiles_filename(index, departement)
-        path_on_s3 = (
-            Container()
-            .geojson_on_s3_to_pmtiles_on_s3_handler()
-            .convert_geojson_to_pmtiles_on_s3(
-                s3_bucket=bucket_name,
-                s3_geojson_key=f"{vector_tiles_dir}/{geojson_filename}",
-                s3_pmtiles_key=f"{vector_tiles_dir}/{pmtiles_filename}",
-            )
-        )
-        if path_on_s3 is None:
-            raise AirflowSkipException("Pas assez de données pour générer des tuiles")
-        return path_on_s3
+        return geojson_to_pmtiles_on_s3(bucket_name, vector_tiles_dir, geojson_filename, pmtiles_filename)
 
     @task.python(trigger_rule="none_skipped")
     def make_pmtiles_public(params: dict):
