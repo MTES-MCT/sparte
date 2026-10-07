@@ -1,7 +1,7 @@
 """
 Ingère le dossier complet INSEE dans la table `insee_dossier_complet`.
 
-⚠️ **DAG cassé, ne pas lancer** : l'INSEE a changé le format du fichier (octobre 2026).
+⚠️ **DAG désactivé** (`DISABLED_UNTIL_REWORK`) : l'INSEE a changé le format du fichier (octobre 2026).
 
 L'ancienne URL (`dossier_complet.zip`) ne répond plus. La nouvelle
 (`dossier_complet_csv.zip`) livre un CSV de 8 Go au format long
@@ -17,8 +17,8 @@ dans `dossier_complet_metadata.csv`, au lieu de `P22_POP`…).
   anciens codes.
 
 En attendant, la table `insee_dossier_complet` déjà en base reste utilisable.
-Attention : `download` écrase `insee/dossier_complet.csv` sur S3 avant que
-`ingest` n'échoue.
+`download` échoue volontairement tant que `DISABLED_UNTIL_REWORK` est actif : sinon
+il écraserait `insee/dossier_complet.csv` sur S3 avant que `ingest` n'échoue.
 """
 
 import os
@@ -30,8 +30,14 @@ from include.container import InfraContainer
 from pendulum import datetime
 
 from airflow.decorators import dag, task
+from airflow.exceptions import AirflowFailException
 
 URL = "https://www.insee.fr/fr/statistiques/fichier/5359146/dossier_complet_csv.zip"
+
+# Garde-fou tant que l'ingestion n'est pas refondue : sans lui, un lancement écraserait
+# insee/dossier_complet.csv sur S3 (la seule copie encore lisible par `ingest`) avant
+# d'échouer. Passer à False une fois `ingest` et les modèles dbt adaptés au nouveau format.
+DISABLED_UNTIL_REWORK = True
 
 
 @dag(
@@ -49,6 +55,12 @@ def ingest_dossier_complet():
 
     @task.python
     def download() -> str:
+        if DISABLED_UNTIL_REWORK:
+            raise AirflowFailException(
+                "ingest_dossier_complet est désactivé : le dossier complet INSEE a changé de format "
+                "et l'ingestion doit être refondue avant de relancer ce DAG."
+            )
+
         return (
             Container()
             .remote_zip_to_s3_file_handler()

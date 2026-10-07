@@ -189,30 +189,33 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 
 **Pools** : `DBT_POOL` (concurrence dbt limitée), `OCSGE_STAGING_POOL` (ingestion OCS GE)
 
-**Injection de dépendances** : pattern DI via `dependency_injector` dans `include/container.py`, avec conteneurs Infrastructure (connexions S3, BDD, SFTP) et Domain (handlers fichiers, notifications, exports).
+**Isolation des tâches** : chaque tâche doit pouvoir s'exécuter sur une machine (ou un pod Kubernetes) différente de la précédente. Les tâches ne se transmettent donc jamais de fichier local : les données passent par S3 ou par la base, et `/tmp` ne sert que de brouillon à l'intérieur d'une même tâche.
 
-### DAGs (35 total)
+**Injection de dépendances** : pattern DI via `dependency_injector` dans `include/container.py`, avec conteneurs Infrastructure (connexions S3, BDD) et Domain (handlers fichiers, notifications, exports).
 
-#### OCS GE — Occupation des Sols (7 DAGs)
+### DAGs (32 total)
+
+#### OCS GE — Occupation des Sols (9 DAGs)
 
 | DAG | Schedule | Description |
 |---|---|---|
 | `ingest_ocsge` | `@once` | Pipeline principal : téléchargement 7z → chargement staging → tests dbt → transformation → notification Mattermost |
 | `create_all_vector_tiles_france` | `@once` | Orchestrateur : déclenche la génération de 7 types de tuiles pour tous les départements |
-| `create_ocsge_vector_tiles` | `@once` | PMTiles occupation_du_sol (SQL → GeoJSON → tippecanoe → S3) |
+| `create_ocsge_vector_tiles` | `@once` | PMTiles occupation_du_sol (SQL → GeoJSON sur S3 → tippecanoe → PMTiles sur S3) |
 | `create_ocsge_artif_diff_vector_tiles` | `@once` | PMTiles différences d'artificialisation (ZAN) |
 | `create_ocsge_diff_vector_tiles` | `@once` | PMTiles différences d'imperméabilisation |
 | `create_ocsge_friche_vector_tiles` | `@once` | PMTiles friches |
 | `create_zonage_urbanisme_vector_tiles` | `@once` | PMTiles zonage d'urbanisme (GPU) |
+| `create_ocsge_artif_diff_centroid_vector_tiles` | `@once` | GeoJSON (et .gz) des centroïdes de différences d'artificialisation |
+| `create_ocsge_diff_centroid_vector_tiles` | `@once` | GeoJSON (et .gz) des centroïdes de différences d'imperméabilisation |
 
-+ 2 DAGs pour les GeoJSON centroïdes (artificialisation et imperméabilisation)
-
-#### Données administratives et territoriales (4 DAGs)
+#### Données administratives et territoriales (5 DAGs)
 
 | DAG | Schedule | Description |
 |---|---|---|
 | `ingest_admin_express` | `@once` | Limites Admin Express IGN (7z → shapefiles → ogr2ogr) |
-| `ingest_gpu` | `@once` | Zonage d'urbanisme IGN via SFTP |
+| `ingest_gpu` | `@once` | Zonage d'urbanisme GPU (export hebdomadaire HTTP du Géoportail de l'Urbanisme, flux Atom + contrôle MD5) |
+| `ingest_gpu_scot` | `@once` | Périmètres SCoT (geopackage d'extraction GPU) |
 | `ingest_plan_communal` (sudocuh) | `@once` | Données SUDOCUH depuis data.gouv.fr |
 | `ingest_scots` | `@once` | SCOT depuis l'API docurba.beta.gouv.fr |
 
@@ -222,13 +225,13 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 |---|---|---|
 | `ingest_population` | `@once` | Population historique 1876-2022 (Excel INSEE) |
 | `ingest_cog_changes` | `@once` | Changements COG 2025 (limites administratives) |
-| `ingest_dossier_complet` | `@once` | Recensement INSEE (1900+ colonnes dépivotées en EAV) |
+| `ingest_dossier_complet` | `@once` | Recensement INSEE (1900+ colonnes dépivotées en EAV). **Désactivé** : nouveau format INSEE, ingestion et modèles dbt à refondre |
 
 #### Données foncières et environnementales (5 DAGs)
 
 | DAG | Schedule | Description |
 |---|---|---|
-| `ingest_majic` | `@once` | Données foncières MAJIC (Cerema, shapefiles) |
+| `ingest_majic_2025` | `@once` | Données foncières MAJIC 2025 (Cerema, geopackages) |
 | `ingest_carroyage_lea` | `@once` | Carroyage LEA consommation d'espace (data.gouv.fr → ogr2ogr → dbt → PMTiles) |
 | `ingest_cartofriches` | `@once` | Inventaire des friches Cerema (GeoPackage) |
 | `ingest_pene` | `@once` | Zones PENE Cerema (WFS) |
@@ -241,22 +244,22 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 | `ingest_sitadel` | `@once` | Permis de construire (3 jeux : communes, départements, EPCI) |
 | `ingest_rpls` | `@once` | Logements sociaux RPLS (3 niveaux) |
 
-#### Application et exports (5 DAGs)
+#### Application et exports (4 DAGs)
 
 | DAG | Schedule | Description |
 |---|---|---|
 | `update_app` | `@once` | Copie données transformées de la BDD dbt vers les BDD app (dev/staging/prod) |
 | `deploy_static_files` | `@once` | Déploiement PMTiles et GeoJSON vers le bucket S3 de production |
 | `export_all_to_data_gouv` | `@once` | Publication de datasets sur data.gouv.fr (CSV, GeoPackage) |
-| `archive_all_from_data_gouv` | `@once` | Suppression de datasets sur data.gouv.fr |
-| `update_brevo` | `@daily` | Export CSV utilisateurs → S3 → import Brevo |
+| `update_brevo` | `@daily` | Export CSV utilisateurs → S3 → import Brevo (lu directement sur S3) |
 
-#### Maintenance (2 DAGs)
+#### Maintenance (3 DAGs)
 
 | DAG | Schedule | Description |
 |---|---|---|
 | `ingest_app_tables` | `@daily` | Copie 5 tables app vers BDD dbt (users, requests, projects, newsletter, satisfaction) |
 | `ingest_matomo_tables` | `0 4 * * *` | Ingestion données analytique Matomo |
+| `ingest_brevo_user_organism` | `@once` | Ingestion ponctuelle d'un export Brevo (correctif de données) |
 
 #### Utilitaires (1 DAG)
 
@@ -266,10 +269,10 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 
 ### Handlers personnalisés (`airflow/include/`)
 
-24 classes de handlers réparties en catégories :
+25 classes de handlers réparties en catégories :
 - **Fichiers** : `HTTPFileHandler`, `RemoteToS3FileHandler`, `RemoteZipToS3FileHandler`
 - **CSV/XLSX** : `CSVFileIngestor`, `XLSXFileIngestor`, `S3CSVFileToDBTableHandler`, `S3XLSXFileToDBTableHandler`
-- **Géospatial** : `S3GeoJsonFileToDBTableHandler`, `GeoJsonToGzippedGeoJsonOnS3Handler`
+- **Géospatial** : `S3GeoJsonFileToDBTableHandler`, `GeoJsonToGzippedGeoJsonOnS3Handler`, `GeoJsonOnS3ToPmtilesOnS3Handler` (tippecanoe, S3 → S3)
 - **Export** : `SQLToCSVOnS3Handler`, `SQLToGeoJsonOnS3Handler`, `SQLToGeopackageOnS3Handler`, `SQLToGeojsonSeqOnS3Handler`
 - **S3** : `S3Handler` (opérations génériques)
 - **data.gouv.fr** : `DataGouvHandler`, `S3ToDataGouvHandler`
@@ -497,7 +500,7 @@ Architecture sophistiquée avec :
    - Astronomer Runtime 13.4.0 (Docker)
    - Connexions à 5 bases PostgreSQL
    - Stockage S3 Scaleway
-   - SFTP vers IGN pour les données GPU
+   - Export hebdomadaire HTTP du Géoportail de l'Urbanisme pour les données GPU
 
 ### Démarrage de l'application
 
