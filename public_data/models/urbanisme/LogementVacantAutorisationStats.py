@@ -9,14 +9,19 @@ from public_data.models.urbanisme import AutorisationLogement, LogementVacant
 class LogementVacantAutorisationStatsSerializer(serializers.Serializer):
     """Serializer for LogementVacant and AutorisationLogement combined stats."""
 
+    # Les valeurs peuvent être nulles : données de vacance secrétisées, ou parc de logements vide.
     year = serializers.IntegerField()
-    autorisations = serializers.IntegerField()
-    percent_autorisations_on_parc = serializers.FloatField()
-    vacants_prive = serializers.IntegerField()
-    percent_vacants_prive = serializers.FloatField()
-    vacants_social = serializers.FloatField()
-    percent_vacants_social = serializers.FloatField()
-    ratio = serializers.FloatField()
+    autorisations = serializers.IntegerField(allow_null=True)
+    percent_autorisations_on_parc = serializers.FloatField(allow_null=True)
+    vacants_prive = serializers.IntegerField(allow_null=True)
+    percent_vacants_prive = serializers.FloatField(allow_null=True)
+    vacants_social = serializers.FloatField(allow_null=True)
+    percent_vacants_social = serializers.FloatField(allow_null=True)
+    ratio = serializers.FloatField(allow_null=True)
+
+
+def round_or_none(value: float | None) -> float | None:
+    return None if value is None else round(value, 2)
 
 
 class LogementVacantAutorisationStatsViewset(APIView):
@@ -81,12 +86,12 @@ class LogementVacantAutorisationStatsViewset(APIView):
         data = {
             "year": end_date,
             "autorisations": last_year_autorisation.logements_autorises,
-            "percent_autorisations_on_parc": round(last_year_autorisation.percent_autorises_on_parc_general, 2),
+            "percent_autorisations_on_parc": round_or_none(last_year_autorisation.percent_autorises_on_parc_general),
             "vacants_prive": last_year_vacant.logements_vacants_parc_prive,
-            "percent_vacants_prive": round(last_year_vacant.logements_vacants_parc_prive_percent, 2),
+            "percent_vacants_prive": round_or_none(last_year_vacant.logements_vacants_parc_prive_percent),
             "vacants_social": last_year_vacant.logements_vacants_parc_social,
-            "percent_vacants_social": round(last_year_vacant.logements_vacants_parc_social_percent, 2),
-            "ratio": round(last_year_autorisation.percent_autorises_on_vacants_parc_general, 2),
+            "percent_vacants_social": round_or_none(last_year_vacant.logements_vacants_parc_social_percent),
+            "ratio": round_or_none(last_year_autorisation.percent_autorises_on_vacants_parc_general),
         }
 
         serializer = LogementVacantAutorisationStatsSerializer(data)
