@@ -191,6 +191,8 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
+# Durée de validité des liens de réinitialisation de mot de passe (annoncée dans l'e-mail)
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24
 
 AUTHENTICATION_BACKENDS = [
     # Authentification Django par défaut
@@ -748,6 +750,7 @@ XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]
 MAINTENANCE_MODE = env.bool("MAINTENANCE_MODE", default=False)
 TEAM_EMAIL = env.str("TEAM_EMAIL", default="equipe@support.mondiagartif.beta.gouv.fr")
 METABASE_URL = env.str("METABASE_URL", default="https://sparte-metabase.osc-secnum-fr1.scalingo.io/")
+STATS_ENABLED = env.bool("STATS_ENABLED", default=False)
 STATS_HEIGHT = env.str("STATS_HEIGHT", default="5240")
 STATS_URL = env.str(
     "STATS_URL",
@@ -757,6 +760,6 @@ WEBINAIRE_URL = env.str(
     "WEBINAIRE_URL",
     default="https://app.livestorm.co/mte/mon-diag-artif-webinaire-de-presentation?s=7425e75c-4336-47c8-acd2-5459b8261af6",  # noqa: E501
 )
-FAQ_URL = env.str("FAQ_URL", default="https://faq.mondiagartif.beta.gouv.fr/fr/")
+FAQ_URL = env.str("FAQ_URL", default="https://aide.mondiagartif.beta.gouv.fr/fr/")
 
 IS_TEST = "test" in sys.argv

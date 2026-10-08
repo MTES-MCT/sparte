@@ -47,6 +47,7 @@ ID de la team de dev de MonDiagArtif : 12444060
 DEV_IDS = [
     16051000,  # Alexis
     16525551,  # Sofian
+    36155135,  # Benoit
 ]
 
 

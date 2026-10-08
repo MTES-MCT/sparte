@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { LandDetailResultType } from '@services/types/land';
 import TimelineTrajectoireZanImage from '@images/timeline-trajectoire-zan.png';
-import { useGetUserLandPreferenceQuery, useGetLandArtifStockIndexQuery } from '@services/api';
+import { useGetLandArtifStockIndexQuery } from '@services/api';
+import { ReportOwnerPreference } from '@services/types/reportDraft';
 import { useMillesime } from '@hooks/useMillesime';
 import { LandArtifStockIndex, defautLandArtifStockIndex } from '@services/types/landartifstockindex';
 import { formatNumber } from '@utils/formatUtils';
@@ -24,7 +25,7 @@ import CoverPage from './CoverPage';
 import AvailableDataPage from './AvailableDataPage';
 import Drawer from '@components/ui/Drawer';
 import styled from 'styled-components';
-import { useReportComparisonTerritories } from '../hooks';
+import { useReportComparisonTerritories, useReportPreference } from '../hooks';
 import { ComparisonTerritoriesSettings, ComparisonTerritoriesCallout } from '../components';
 
 export interface RapportCompletContent {
@@ -49,6 +50,8 @@ interface RapportCompletProps {
     content: RapportCompletContent;
     mode: ContentZoneMode;
     projectId: number;
+    /** Préférences du propriétaire du brouillon, à utiliser à la place de celles de l'utilisateur courant (rendu PDF anonyme) */
+    ownerPreference?: ReportOwnerPreference;
     onContentChange?: (key: string, value: string) => void;
     isSettingsOpen?: boolean;
     onSettingsChange?: (isOpen: boolean) => void;
@@ -88,6 +91,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     content,
     mode,
     projectId,
+    ownerPreference,
     onContentChange,
     isSettingsOpen: externalIsSettingsOpen,
     onSettingsChange,
@@ -106,10 +110,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     const consoStartYear = parseInt(content.conso_start_year || String(DEFAULT_consoStartYear));
     const consoEndYear = parseInt(content.conso_end_year || String(DEFAULT_consoEndYear));
 
-    const { data: preference } = useGetUserLandPreferenceQuery({
-        land_type: landData.land_type,
-        land_id: landData.land_id,
-    });
+    const preference = useReportPreference(landData.land_type, landData.land_id, ownerPreference);
 
     // Objectif territorialisé (réglementaire) ou national par défaut (50%)
     const objectif_reduction = landData.territorialisation?.has_objectif

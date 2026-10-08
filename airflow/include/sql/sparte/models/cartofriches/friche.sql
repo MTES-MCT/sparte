@@ -49,7 +49,7 @@ SELECT
     taux_artif_ff,
     date_mutation,
     sol_pollution_annee,
-    sol_pollution_existe as friche_sol_pollution,
+    {{ standardize_friche_sol_pollution('sol_pollution_existe') }} as friche_sol_pollution,
     sol_pollution_origine,
     sol_pollution_commentaire,
     sol_depollution_fiche,

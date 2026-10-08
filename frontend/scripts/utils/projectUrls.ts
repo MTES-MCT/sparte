@@ -1,6 +1,6 @@
 import type { MenuItem } from '@services/types/project';
 
-const FAQ_URL = "https://faq.mondiagartif.beta.gouv.fr/fr/";
+const FAQ_URL = "https://aide.mondiagartif.beta.gouv.fr/fr/";
 
 export type ProjectUrls = {
     synthese: string;
