@@ -1,4 +1,3 @@
-import subprocess
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -36,11 +35,11 @@ def handler(mock_s3_handler, mock_archive_handler, mock_tmp_path_generator):
 
 
 def _commands(mock_run):
-    """Concatène les commandes ogr2ogr passées à subprocess.run."""
-    return " ".join(c.args[0] for c in mock_run.call_args_list)
+    """Concatène les commandes ogr2ogr passées à run_ogr2ogr."""
+    return " ".join(" ".join(c.args[0]) for c in mock_run.call_args_list)
 
 
-@patch(f"{MODULE}.subprocess.run")
+@patch(f"{MODULE}.run_ogr2ogr")
 @patch(f"{MODULE}.os.walk")
 @patch(f"{MODULE}.os.path.exists", return_value=True)
 @patch(f"{MODULE}.os.remove")
@@ -56,7 +55,6 @@ def test_downloads_extracts_and_ingests_each_layer(
     mock_archive_handler,
 ):
     mock_walk.return_value = [("/tmp/extract/ADE", [], ["other.txt", "ADMIN.gpkg"])]
-    mock_run.return_value = MagicMock(stdout="", stderr="")
 
     handler.ingest_s3_geopackage_archive_to_db_tables(
         s3_bucket="my-bucket",
@@ -87,7 +85,7 @@ def test_downloads_extracts_and_ingests_each_layer(
     mock_rmtree.assert_called_once_with("/tmp/extract")
 
 
-@patch(f"{MODULE}.subprocess.run")
+@patch(f"{MODULE}.run_ogr2ogr")
 @patch(f"{MODULE}.os.walk")
 @patch(f"{MODULE}.os.path.exists", return_value=True)
 @patch(f"{MODULE}.os.remove")
@@ -117,7 +115,7 @@ def test_raises_and_cleans_up_when_no_gpkg_found(
     mock_rmtree.assert_called_once_with("/tmp/extract")
 
 
-@patch(f"{MODULE}.subprocess.run")
+@patch(f"{MODULE}.run_ogr2ogr")
 @patch(f"{MODULE}.os.walk")
 @patch(f"{MODULE}.os.path.exists", return_value=True)
 @patch(f"{MODULE}.os.remove")
@@ -131,9 +129,9 @@ def test_raises_and_cleans_up_when_ogr2ogr_fails(
     handler,
 ):
     mock_walk.return_value = [("/tmp/extract", [], ["ADMIN.gpkg"])]
-    mock_run.side_effect = subprocess.CalledProcessError(returncode=1, cmd="ogr2ogr", stderr="boom")
+    mock_run.side_effect = RuntimeError("ogr2ogr a échoué (code 1)")
 
-    with pytest.raises(subprocess.CalledProcessError):
+    with pytest.raises(RuntimeError):
         handler.ingest_s3_geopackage_archive_to_db_tables(
             s3_bucket="my-bucket",
             s3_key="admin.7z",

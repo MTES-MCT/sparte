@@ -12,14 +12,13 @@ modèles dbt en aval n'ont pas encore été vérifiés sur ce nouveau geopackage
 """
 
 import os
-import subprocess
 import tempfile
 from logging import getLogger
 
 from include.container import InfraContainer as Container
 from include.dbt import DbtBuild
 from include.gpu_export import download_gpu_export_file, get_latest_gpu_export_file
-from include.utils import multiline_string_to_single_line
+from include.utils import multiline_string_to_single_line, run_ogr2ogr
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -123,13 +122,7 @@ def ingest_gpu():
                 "PG_USE_COPY",
                 "YES",
             ]
-            # Pas de check=True : CalledProcessError porterait la commande complète,
-            # mot de passe compris, dans son message et finirait dans les logs Airflow.
-            result = subprocess.run(" ".join(cmd), shell=True, capture_output=True, text=True)
-            logger.info(result.stdout)
-            if result.returncode != 0:
-                logger.error(result.stderr)
-                raise RuntimeError(f"ogr2ogr a échoué (code {result.returncode})")
+            run_ogr2ogr(cmd)
 
     dbt_build = DbtBuild(select=["1_zonage_urbanisme_raw.sql+"])
 
