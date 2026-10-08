@@ -1,7 +1,26 @@
 import os
 import subprocess
+from logging import getLogger
 
 import geopandas as gpd
+
+logger = getLogger(__name__)
+
+
+def run_command(cmd: list[str]) -> None:
+    """
+    Exécute une commande shell (typiquement ogr2ogr) et lève RuntimeError si elle échoue.
+
+    À utiliser pour toute commande qui embarque un secret, comme le DSN PostgreSQL
+    passé à ogr2ogr : la commande n'apparaît jamais dans les logs Airflow, alors que
+    BashOperator la logue telle quelle à chaque exécution, et que subprocess.run avec
+    check=True la place dans le message de CalledProcessError en cas d'échec.
+    """
+    result = subprocess.run(" ".join(cmd), shell=True, capture_output=True, text=True)
+    logger.info(result.stdout)
+    if result.returncode != 0:
+        logger.error(result.stderr)
+        raise RuntimeError(f"{cmd[0]} a échoué (code {result.returncode})")
 
 
 def get_shapefile_or_geopackage_first_layer_name(path: str) -> str:

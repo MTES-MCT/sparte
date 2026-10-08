@@ -9,12 +9,11 @@ la construction des modèles dbt est gérée séparément.
 """
 
 import shutil
-import subprocess
 import tempfile
 from typing import List
 
 from include.container import InfraContainer as Container
-from include.utils import get_shapefile_or_geopackage_first_layer_name
+from include.utils import get_shapefile_or_geopackage_first_layer_name, run_command
 from pendulum import datetime
 
 from airflow.decorators import dag
@@ -90,7 +89,7 @@ def load_geopackage_to_postgres(config: dict):
         "PG_USE_COPY",
         "YES",
     ]
-    subprocess.run(" ".join(cmd), shell=True, check=True)
+    run_command(cmd)
 
     shutil.rmtree(tmp_dir)
     return config

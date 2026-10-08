@@ -38,12 +38,12 @@ from include.utils import (
     get_shapefile_or_geopackage_first_layer_name,
     multiline_string_to_single_line,
     remove_extension_from_layer_name,
+    run_command,
 )
 
 from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
-from airflow.operators.bash import BashOperator
 
 log = logging.getLogger(__name__)
 
@@ -237,10 +237,7 @@ def load_data_to_dw(
             "-sql",
             f'"{sql}"',
         ]
-        BashOperator(
-            task_id=f"ingest_{table_name}",
-            bash_command=" ".join(cmd),
-        ).execute(context={})
+        run_command(cmd)
 
     if file_matching_names_found == 0:
         raise ValueError(f"No shapefile/geopackage matching names found in {extract_dir}")
