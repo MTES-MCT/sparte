@@ -197,7 +197,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const [data, setData] = useState<LandDetailResultType[] | undefined>(undefined);
     const minimumCharCountForSearch = 2;
     // La requête est différée pour ne pas dépasser le throttle de l'API (429) pendant la frappe
-    const debouncedQuery = useDebounce(query, 300);
+    const debouncedQuery = useDebounce(query, 200);
     const isQueryTooShort = query.length < minimumCharCountForSearch;
     const shouldQueryBeSkipped = debouncedQuery.length < minimumCharCountForSearch;
     const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
