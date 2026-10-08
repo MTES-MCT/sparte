@@ -1,14 +1,16 @@
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, PropertyMock, patch
 
 from project.charts.artificialisation import (
     ArtifFluxByCouverture,
     ArtifFluxByUsage,
+    ArtifFluxByUsageExport,
     ArtifNetFluxChart,
 )
 from project.charts.impermeabilisation import (
     ImperFluxByCouverture,
     ImperFluxByUsage,
+    ImperFluxByUsageExport,
     ImperNetFluxChart,
 )
 
@@ -403,3 +405,36 @@ class TestImperNetFluxChartParams(TestCase):
             self.assertIsNotNone(chart)
         except ValueError:
             self.fail("ImperNetFluxChart raised ValueError with valid params including departement")
+
+
+class TestFluxByUsageExportHeight(TestCase):
+    """
+    Les graphiques de flux par usage exportés doivent tenir sur une page A4 :
+    au-delà de 800px, le graphique (et son cadre) dépasse la hauteur imprimable
+    et Chrome ne l'affiche pas dans le PDF (issue #1616).
+    """
+
+    MAX_EXPORT_HEIGHT = 800
+
+    def setUp(self):
+        self.mock_land = Mock()
+        self.mock_land.land_type = "COMMUNE"
+        self.mock_land.land_id = "75056"
+        self.mock_land.name = "Paris"
+        self.mock_land.is_interdepartemental = False
+
+    def assert_export_height_fits_a4(self, chart_class):
+        with (
+            patch("highcharts.charts.Chart.get_param", return_value={}),
+            patch.object(chart_class, "series", new_callable=PropertyMock, return_value=[]),
+            patch.object(chart_class, "categories", new_callable=PropertyMock, return_value=[]),
+            patch.object(chart_class, "title", new_callable=PropertyMock, return_value="titre"),
+        ):
+            chart = chart_class(land=self.mock_land, params={"millesime_new_index": 2})
+            self.assertLessEqual(chart.param["chart"]["height"], self.MAX_EXPORT_HEIGHT)
+
+    def test_artif_flux_by_usage_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ArtifFluxByUsageExport)
+
+    def test_imper_flux_by_usage_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ImperFluxByUsageExport)
