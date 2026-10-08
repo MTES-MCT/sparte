@@ -38,7 +38,7 @@ from include.utils import (
     get_shapefile_or_geopackage_first_layer_name,
     multiline_string_to_single_line,
     remove_extension_from_layer_name,
-    run_command,
+    run_ogr2ogr,
 )
 
 from airflow.decorators import dag, task
@@ -237,7 +237,7 @@ def load_data_to_dw(
             "-sql",
             f'"{sql}"',
         ]
-        run_command(cmd)
+        run_ogr2ogr(cmd)
 
     if file_matching_names_found == 0:
         raise ValueError(f"No shapefile/geopackage matching names found in {extract_dir}")

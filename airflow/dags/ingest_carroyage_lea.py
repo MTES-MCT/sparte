@@ -23,7 +23,7 @@ from include.dbt import DbtBuild
 from include.utils import (
     get_shapefile_or_geopackage_first_layer_name,
     multiline_string_to_single_line,
-    run_command,
+    run_ogr2ogr,
 )
 from pendulum import datetime
 
@@ -111,7 +111,7 @@ def ingest_carroyage_lea():
                 "PG_USE_COPY",
                 "YES",
             ]
-            run_command(cmd)
+            run_ogr2ogr(cmd)
 
     dbt_build = DbtBuild(select=["carroyage_lea+"], retries=0, trigger_rule="all_success")
 

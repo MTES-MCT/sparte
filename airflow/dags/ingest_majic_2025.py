@@ -13,7 +13,7 @@ import tempfile
 from typing import List
 
 from include.container import InfraContainer as Container
-from include.utils import get_shapefile_or_geopackage_first_layer_name, run_command
+from include.utils import get_shapefile_or_geopackage_first_layer_name, run_ogr2ogr
 from pendulum import datetime
 
 from airflow.decorators import dag
@@ -89,7 +89,7 @@ def load_geopackage_to_postgres(config: dict):
         "PG_USE_COPY",
         "YES",
     ]
-    run_command(cmd)
+    run_ogr2ogr(cmd)
 
     shutil.rmtree(tmp_dir)
     return config

@@ -6,7 +6,7 @@ from logging import getLogger
 import requests
 from include.container import InfraContainer as Container
 from include.dbt import DbtBuild
-from include.utils import multiline_string_to_single_line, run_command
+from include.utils import multiline_string_to_single_line, run_ogr2ogr
 from pendulum import datetime
 
 from airflow.decorators import dag, task
@@ -87,7 +87,7 @@ def ingest_cartofriches():
                 "YES",
             ]
 
-            run_command(cmd)
+            run_ogr2ogr(cmd)
 
     dbt_build = DbtBuild(select=["friche.sql+"])
 
