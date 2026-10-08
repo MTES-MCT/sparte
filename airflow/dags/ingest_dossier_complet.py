@@ -1,4 +1,28 @@
+"""
+Ingère le dossier complet INSEE dans la table `insee_dossier_complet`.
+
+⚠️ **DAG désactivé** (`DISABLED_UNTIL_REWORK`) : l'INSEE a changé le format du fichier (octobre 2026).
+
+L'ancienne URL (`dossier_complet.zip`) ne répond plus. La nouvelle
+(`dossier_complet_csv.zip`) livre un CSV de 8 Go au format long
+(`GEO`, `GEO_OBJECT`, `TIME_PERIOD`, `ID_TAB`, `TAB_MEASURE`, `OBS_VALUE`…),
+tous niveaux géographiques confondus, sans colonne `CODGEO` : `ingest` échoue
+sur le `melt`. Les codes de variables ont aussi changé (`TAB_MEASURE` décrits
+dans `dossier_complet_metadata.csv`, au lieu de `P22_POP`…).
+
+À refondre :
+- l'ingestion : filtrer `GEO_OBJECT = 'COM'` et charger par COPY plutôt qu'avec
+  pandas, le fichier étant déjà au format long ;
+- les 46 modèles dbt `models/insee/dossier_complet/dc_*.sql`, qui lisent les
+  anciens codes.
+
+En attendant, la table `insee_dossier_complet` déjà en base reste utilisable.
+`download` échoue volontairement tant que `DISABLED_UNTIL_REWORK` est actif : sinon
+il écraserait `insee/dossier_complet.csv` sur S3 avant que `ingest` n'échoue.
+"""
+
 import os
+import tempfile
 
 import pandas as pd
 from include.container import DomainContainer as Container
@@ -6,8 +30,14 @@ from include.container import InfraContainer
 from pendulum import datetime
 
 from airflow.decorators import dag, task
+from airflow.exceptions import AirflowFailException
 
-URL = "https://www.insee.fr/fr/statistiques/fichier/5359146/dossier_complet.zip"
+URL = "https://www.insee.fr/fr/statistiques/fichier/5359146/dossier_complet_csv.zip"
+
+# Garde-fou tant que l'ingestion n'est pas refondue : sans lui, un lancement écraserait
+# insee/dossier_complet.csv sur S3 (la seule copie encore lisible par `ingest`) avant
+# d'échouer. Passer à False une fois `ingest` et les modèles dbt adaptés au nouveau format.
+DISABLED_UNTIL_REWORK = True
 
 
 @dag(
@@ -25,6 +55,12 @@ def ingest_dossier_complet():
 
     @task.python
     def download() -> str:
+        if DISABLED_UNTIL_REWORK:
+            raise AirflowFailException(
+                "ingest_dossier_complet est désactivé : le dossier complet INSEE a changé de format "
+                "et l'ingestion doit être refondue avant de relancer ce DAG."
+            )
+
         return (
             Container()
             .remote_zip_to_s3_file_handler()
@@ -41,31 +77,31 @@ def ingest_dossier_complet():
         """Unpivot le CSV (1900+ colonnes) en format EAV (codgeo, variable, value)
         pour contourner la limite de 1600 colonnes PostgreSQL."""
         s3_path = f"{bucket_name}/{s3_key}"
-        tmp_localpath = "/tmp/dossier_complet.csv"
 
-        InfraContainer().s3().get_file(s3_path, tmp_localpath)
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_localpath = os.path.join(tmp_dir, "dossier_complet.csv")
+            InfraContainer().s3().get_file(s3_path, tmp_localpath)
 
-        engine = InfraContainer().sqlalchemy_dbt_conn()
-        table_name = "insee_dossier_complet"
-        chunk_size = 5000
-        total_rows = 0
+            engine = InfraContainer().sqlalchemy_dbt_conn()
+            table_name = "insee_dossier_complet"
+            chunk_size = 5000
+            total_rows = 0
 
-        for i, chunk in enumerate(pd.read_csv(tmp_localpath, sep=";", dtype=str, chunksize=chunk_size)):
-            melted = chunk.melt(
-                id_vars=["CODGEO"],
-                var_name="variable",
-                value_name="value",
-            )
-            melted = melted.dropna(subset=["value"])
-            row_count = melted.to_sql(
-                name=table_name,
-                con=engine,
-                if_exists="replace" if i == 0 else "append",
-                index=False,
-            )
-            total_rows += row_count if row_count else len(melted)
+            for i, chunk in enumerate(pd.read_csv(tmp_localpath, sep=";", dtype=str, chunksize=chunk_size)):
+                melted = chunk.melt(
+                    id_vars=["CODGEO"],
+                    var_name="variable",
+                    value_name="value",
+                )
+                melted = melted.dropna(subset=["value"])
+                row_count = melted.to_sql(
+                    name=table_name,
+                    con=engine,
+                    if_exists="replace" if i == 0 else "append",
+                    index=False,
+                )
+                total_rows += row_count if row_count else len(melted)
 
-        os.remove(tmp_localpath)
         return total_rows
 
     download() >> ingest()

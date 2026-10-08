@@ -2,19 +2,18 @@
 Ce dag ingère les données MAJIC 2025 (Cerema, observatoire de l'artificialisation)
 dans une base de données PostgreSQL.
 
-Contrairement au dag `ingest_majic` qui chargeait des shapefiles (zippés), les données
+Contrairement à l'ancien dag `ingest_majic` qui chargeait des shapefiles (zippés), les données
 2025 sont livrées au format geopackage (.gpkg), avec un fichier par région
 (France métropolitaine + DROM). Ce dag se limite à l'ingestion brute des geopackages ;
 la construction des modèles dbt est gérée séparément.
 """
 
 import shutil
-import subprocess
 import tempfile
 from typing import List
 
 from include.container import InfraContainer as Container
-from include.utils import get_shapefile_or_geopackage_first_layer_name
+from include.utils import get_shapefile_or_geopackage_first_layer_name, run_ogr2ogr
 from pendulum import datetime
 
 from airflow.decorators import dag
@@ -90,7 +89,7 @@ def load_geopackage_to_postgres(config: dict):
         "PG_USE_COPY",
         "YES",
     ]
-    subprocess.run(" ".join(cmd), shell=True, check=True)
+    run_ogr2ogr(cmd)
 
     shutil.rmtree(tmp_dir)
     return config

@@ -88,53 +88,25 @@ def create_zonage_urbanisme_vector_tiles():  # noqa: C901
             print(f"GeoJSON exported: {filename}")
         return departements
 
-    @task.bash(trigger_rule="none_skipped")
-    def geojson_to_pmtiles(params: dict, departements: list[str] = None):
-        index = params.get("index")
-        commands = []
-        for dept in departements:
-            geojson_filename = get_geojson_filename(index, dept)
-            pmtiles_filename = get_pmtiles_filename(index, dept)
-            local_input = f"/tmp/{geojson_filename}"
-            local_output = f"/tmp/{pmtiles_filename}"
-            InfraContainer().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{geojson_filename}", local_input)
-            cmd = " ".join(
-                [
-                    "tippecanoe",
-                    "-o",
-                    local_output,
-                    local_input,
-                    "--read-parallel",
-                    "--force",
-                    "--no-simplification-of-shared-nodes",
-                    "--no-tiny-polygon-reduction",
-                    "--coalesce-densest-as-needed",
-                    "--no-tile-size-limit",
-                    "-zg",
-                ]
-            )
-            commands.append(cmd)
-        return " && ".join(commands)
-
     @task.python(trigger_rule="none_skipped")
-    def upload(params: dict, departements: list[str] = None):
+    def geojson_to_pmtiles(params: dict, departements: list[str] = None) -> list[str]:
         index = params.get("index")
-        for dept in departements:
-            pmtiles_filename = get_pmtiles_filename(index, dept)
-            local_path = f"/tmp/{pmtiles_filename}"
-            path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{pmtiles_filename}"
-            InfraContainer().s3().put(local_path, path_on_s3)
-            print(f"Uploaded: {pmtiles_filename}")
-
-    @task.bash(trigger_rule="none_skipped")
-    def cleanup(params: dict, departements: list[str] = None):
-        index = params.get("index")
-        commands = []
+        handler = Container().geojson_on_s3_to_pmtiles_on_s3_handler()
+        converted = []
         for dept in departements:
             geojson_filename = get_geojson_filename(index, dept)
             pmtiles_filename = get_pmtiles_filename(index, dept)
-            commands.append(f"rm -f /tmp/{geojson_filename} /tmp/{pmtiles_filename}")
-        return " && ".join(commands)
+            path_on_s3 = handler.convert_geojson_to_pmtiles_on_s3(
+                s3_bucket=bucket_name,
+                s3_geojson_key=f"{vector_tiles_dir}/{geojson_filename}",
+                s3_pmtiles_key=f"{vector_tiles_dir}/{pmtiles_filename}",
+            )
+            if path_on_s3 is None:
+                print(f"Skipping {dept}: pas assez de données pour générer des tuiles")
+                continue
+            converted.append(dept)
+            print(f"Uploaded: {pmtiles_filename}")
+        return converted
 
     @task.python(trigger_rule="none_skipped")
     def make_pmtiles_public(params: dict, departements: list[str] = None):
@@ -150,11 +122,7 @@ def create_zonage_urbanisme_vector_tiles():  # noqa: C901
     to_process = check_if_vector_tiles_not_exist(departements=depts)
     geojson_done = postgis_to_geojson(departements=to_process)
     pmtiles_done = geojson_to_pmtiles(departements=geojson_done)
-    upload_done = upload(departements=to_process)
-    cleanup_done = cleanup(departements=to_process)
-    make_public = make_pmtiles_public(departements=to_process)
-
-    pmtiles_done >> upload_done >> cleanup_done >> make_public
+    make_pmtiles_public(departements=pmtiles_done)
 
 
 create_zonage_urbanisme_vector_tiles()

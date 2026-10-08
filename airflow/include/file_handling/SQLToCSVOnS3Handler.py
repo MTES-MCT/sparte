@@ -1,6 +1,7 @@
 import logging
 import os
-import subprocess
+
+from include.utils import run_ogr2ogr
 
 from .BaseS3Handler import BaseS3Handler
 from .BaseTmpPathGenerator import BaseTmpPathGenerator
@@ -33,11 +34,7 @@ class SQLToCSVOnS3Handler:
             f'-sql "{sql}"',
             "-lco STRING_QUOTING=ALWAYS",
         ]
-        try:
-            subprocess.run(" ".join(cmd), shell=True, stderr=subprocess.STDOUT, check=True)
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Error while exporting SQL results: {e.output}")
-            raise e
+        run_ogr2ogr(cmd)
         logger.info(f"SQL result exported to {tmp_file}")
 
         logger.info(f"Uploading {tmp_file} to s3://{s3_bucket}/{s3_key}")
