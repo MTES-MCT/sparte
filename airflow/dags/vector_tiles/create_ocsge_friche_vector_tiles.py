@@ -12,6 +12,7 @@ import pendulum
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from include.utils import multiline_string_to_single_line
+from include.vector_tiles import geojson_to_pmtiles_on_s3
 
 from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
@@ -77,50 +78,12 @@ def create_ocsge_friche_vector_tiles():
             )
         )
 
-    @task.bash(skip_on_exit_code=110, trigger_rule="none_skipped")
+    @task.python(trigger_rule="none_skipped")
     def geojson_to_pmtiles(params: dict):
         year_index = params.get("year_index")
         geojson_filename = get_geojson_filename(year_index)
         pmtiles_filename = get_pmtiles_filename(year_index)
-        local_input = f"/tmp/{geojson_filename}"
-        local_output = f"/tmp/{pmtiles_filename}"
-        InfraContainer().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{geojson_filename}", local_input)
-
-        cmd = [
-            "tippecanoe",
-            "-o",
-            local_output,
-            local_input,
-            "--read-parallel",
-            "--force",
-            "--no-simplification-of-shared-nodes",
-            "--no-tiny-polygon-reduction",
-            "--coalesce-densest-as-needed",
-            "--no-tile-size-limit",
-            "-zg",
-        ]
-
-        return " ".join(cmd)
-
-    @task.python(trigger_rule="none_skipped")
-    def upload(params: dict):
-        year_index = params.get("year_index")
-        pmtiles_filename = get_pmtiles_filename(year_index)
-        local_path = f"/tmp/{pmtiles_filename}"
-        path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{pmtiles_filename}"
-        InfraContainer().s3().put(local_path, path_on_s3)
-
-    @task.bash(trigger_rule="none_skipped")
-    def delete_geojson_file(params: dict):
-        year_index = params.get("year_index")
-        geojson_filename = get_geojson_filename(year_index)
-        return f"rm /tmp/{geojson_filename}"
-
-    @task.bash(trigger_rule="none_skipped")
-    def delete_pmtiles_file(params: dict):
-        year_index = params.get("year_index")
-        pmtiles_filename = get_pmtiles_filename(year_index)
-        return f"rm /tmp/{pmtiles_filename}"
+        return geojson_to_pmtiles_on_s3(bucket_name, vector_tiles_dir, geojson_filename, pmtiles_filename)
 
     @task.python(trigger_rule="none_skipped")
     def make_pmtiles_public(params: dict):
@@ -133,15 +96,7 @@ def create_ocsge_friche_vector_tiles():
         # Make PMTiles file public
         s3_handler.set_key_publicly_visible(pmtiles_key, bucket_name)
 
-    (
-        check_if_vector_tiles_not_exist()
-        >> postgis_to_geojson()
-        >> geojson_to_pmtiles()
-        >> upload()
-        >> delete_geojson_file()
-        >> delete_pmtiles_file()
-        >> make_pmtiles_public()
-    )
+    (check_if_vector_tiles_not_exist() >> postgis_to_geojson() >> geojson_to_pmtiles() >> make_pmtiles_public())
 
 
 create_ocsge_friche_vector_tiles()

@@ -1,5 +1,3 @@
-import os
-
 from include.container import DomainContainer, InfraContainer
 from include.dbt import DbtBuild
 from pendulum import datetime
@@ -19,7 +17,9 @@ from airflow.decorators import dag, task
 def update_brevo():
     bucket_name = InfraContainer().bucket_name()
     s3_key = "brevo/user_data.csv"
-    local_tmp_file = "/tmp/user_data.csv"
+    # Les tâches tournent dans des pods distincts : le CSV est lu directement sur S3,
+    # jamais depuis un fichier local écrit par une autre tâche.
+    path_on_bucket = f"{bucket_name}/{s3_key}"
 
     build_suv_on_dbt = DbtBuild(task_id="build_suv_on_dbt", select=["for_brevo"])
 
@@ -36,20 +36,8 @@ def update_brevo():
         )
 
     @task.python
-    def download_user_data_csv() -> list:
-        return (
-            DomainContainer()
-            .s3_handler()
-            .download_file(
-                s3_bucket=bucket_name,
-                s3_key=s3_key,
-                local_file_path=local_tmp_file,
-            )
-        )
-
-    @task.python
     def get_file_stats():
-        size = os.stat(local_tmp_file).st_size
+        size = InfraContainer().s3().size(path_on_bucket)
         size_in_mb = size / (1024 * 1024)  # Convert size to MB
 
         # check if size if greater than 8mb
@@ -62,19 +50,17 @@ def update_brevo():
     def import_brevo_contacts() -> None:
         """Upsert contact information in Brevo."""
         brevo = InfraContainer().brevo()
-        with open(local_tmp_file, "r") as file:
-            contact_csv_str = file.read()
+        contact_csv_str = InfraContainer().s3().cat_file(path_on_bucket).decode("utf-8")
         list_ids = [10]
         # TODO : different env with different list ids
         return brevo.import_contacts(contact_csv_str, list_ids=list_ids)
 
     build_suv = build_suv_on_dbt
     csv_file = create_user_data_csv()
-    local_user_data_path = download_user_data_csv()
     stats = get_file_stats()
     import_contacts = import_brevo_contacts()
 
-    build_suv >> csv_file >> local_user_data_path >> stats >> import_contacts
+    build_suv >> csv_file >> stats >> import_contacts
 
 
 update_brevo()
