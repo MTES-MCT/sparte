@@ -3,12 +3,14 @@ from unittest.mock import Mock, PropertyMock, patch
 
 from project.charts.artificialisation import (
     ArtifFluxByCouverture,
+    ArtifFluxByCouvertureExport,
     ArtifFluxByUsage,
     ArtifFluxByUsageExport,
     ArtifNetFluxChart,
 )
 from project.charts.impermeabilisation import (
     ImperFluxByCouverture,
+    ImperFluxByCouvertureExport,
     ImperFluxByUsage,
     ImperFluxByUsageExport,
     ImperNetFluxChart,
@@ -407,14 +409,15 @@ class TestImperNetFluxChartParams(TestCase):
             self.fail("ImperNetFluxChart raised ValueError with valid params including departement")
 
 
-class TestFluxByUsageExportHeight(TestCase):
+class TestFluxExportHeight(TestCase):
     """
-    Les graphiques de flux par usage exportés doivent tenir sur une page A4 :
-    au-delà de 800px, le graphique (et son cadre) dépasse la hauteur imprimable
-    et Chrome ne l'affiche pas dans le PDF (issue #1616).
+    Les graphiques de flux exportés ne doivent pas occuper presque toute une page A4 :
+    à 900px, le graphique et son cadre dépassent la hauteur imprimable et Chrome
+    imprime un cadre vide ; à 800px, ils sont repoussés seuls sur la page suivante,
+    loin de leur titre (issue #1616).
     """
 
-    MAX_EXPORT_HEIGHT = 800
+    MAX_EXPORT_HEIGHT = 600
 
     def setUp(self):
         self.mock_land = Mock()
@@ -438,3 +441,22 @@ class TestFluxByUsageExportHeight(TestCase):
 
     def test_imper_flux_by_usage_export_fits_a4(self):
         self.assert_export_height_fits_a4(ImperFluxByUsageExport)
+
+    def test_artif_flux_by_couverture_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ArtifFluxByCouvertureExport)
+
+    def test_imper_flux_by_couverture_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ImperFluxByCouvertureExport)
+
+    def test_imper_flux_by_couverture_export_matches_other_exports(self):
+        # Données par couverture, mais même rendu que les autres exports (barres)
+        self.assertEqual(ImperFluxByCouvertureExport.sol, "couverture")
+        self.assertIs(ImperFluxByCouvertureExport.model, ImperFluxByCouverture.model)
+        with (
+            patch("highcharts.charts.Chart.get_param", return_value={}),
+            patch.object(ImperFluxByCouvertureExport, "series", new_callable=PropertyMock, return_value=[]),
+            patch.object(ImperFluxByCouvertureExport, "categories", new_callable=PropertyMock, return_value=[]),
+            patch.object(ImperFluxByCouvertureExport, "title", new_callable=PropertyMock, return_value="titre"),
+        ):
+            chart = ImperFluxByCouvertureExport(land=self.mock_land, params={"millesime_new_index": 2})
+            self.assertEqual(chart.param["chart"]["type"], "bar")

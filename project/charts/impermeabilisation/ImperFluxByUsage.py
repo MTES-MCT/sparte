@@ -224,7 +224,7 @@ class ImperFluxByUsageExport(ImperFluxByUsage):
     @property
     def param(self):
         return super().param | {
-            "chart": {"type": "bar", "height": 800},
+            "chart": {"type": "bar", "height": 600},
             "credits": OCSGE_CREDITS,
             "title": {"text": self.title},
             "legend": {
