@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import tempfile
+from pathlib import Path
 from typing import Literal
 
 import pendulum
@@ -64,7 +65,7 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
     return paths
 
 
-with open("include/data/ocsge/sources.json", "r") as f:
+with open(Path(__file__).resolve().parents[1] / "include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 
