@@ -4,7 +4,6 @@ import subprocess
 from logging import getLogger
 
 import geopandas as gpd
-from include.paths import DBT_PROJECT_DIR
 
 logger = getLogger(__name__)
 
