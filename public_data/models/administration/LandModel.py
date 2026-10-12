@@ -1,3 +1,4 @@
+import re
 from functools import cached_property
 
 from django.contrib.gis.db.models import MultiPolygonField
@@ -12,6 +13,14 @@ from rest_framework import serializers, viewsets
 from rest_framework.response import Response
 
 from .AdminRef import AdminRef
+
+# Code INSEE (ou début de code) : chiffres uniquement, ou code corse
+# commençant par 2A / 2B (ex. "2A", "2B033"), insensible à la casse.
+INSEE_CODE_PATTERN = re.compile(r"^(?:\d+|2[AB]\d*)$", re.IGNORECASE)
+
+
+def is_insee_code(needle: str) -> bool:
+    return bool(INSEE_CODE_PATTERN.match(needle))
 
 
 class LandModelManager(models.Manager):
@@ -393,9 +402,10 @@ class LandModel(models.Model):
                 search_for = [search_for]
             valid_land_types = [lt for lt in valid_land_types if lt in search_for]
 
-        # Search by land_id if needle is numeric (INSEE code), otherwise by name
-        if needle.isdigit():
-            qs = cls.objects.annotate(similarity=TrigramSimilarity("land_id", needle))
+        # Search by land_id if needle looks like an INSEE code (corse inclus), otherwise by name
+        if is_insee_code(needle):
+            # Les land_id corses sont stockés en majuscules (2A, 2B)
+            qs = cls.objects.annotate(similarity=TrigramSimilarity("land_id", needle.upper()))
             similarity_threshold = 0.2
         else:
             qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))

@@ -1,6 +1,7 @@
 import logging
 import os
-import subprocess
+
+from include.utils import run_ogr2ogr
 
 from .BaseHTTPFileHandler import BaseHTTPFileHandler
 from .BaseS3Handler import BaseS3Handler
@@ -54,27 +55,7 @@ class SQLToGeoJsonOnS3Handler:
             f'"{self.db_connection}"',
             f'-sql "{sql}"',
         ]
-        try:
-            result = subprocess.run(
-                " ".join(cmd),
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                text=True,
-            )
-            if result.stdout:
-                logger.info(f"ogr2ogr stdout: {result.stdout}")
-            if result.stderr:
-                logger.info(f"ogr2ogr stderr: {result.stderr}")
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Error while exporting SQL results: {e}")
-            logger.error(f"Command: {' '.join(cmd)}")
-            if e.stdout:
-                logger.error(f"stdout: {e.stdout}")
-            if e.stderr:
-                logger.error(f"stderr: {e.stderr}")
-            raise e
+        run_ogr2ogr(cmd)
         logger.info(f"SQL result exported to {tmp_file}")
 
         logger.info(f"Uploading {tmp_file} to s3://{s3_bucket}/{s3_key}")

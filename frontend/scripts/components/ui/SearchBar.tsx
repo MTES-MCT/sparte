@@ -196,10 +196,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<LandDetailResultType[] | undefined>(undefined);
     const minimumCharCountForSearch = 2;
-    const shouldQueryBeSkipped = query.length < minimumCharCountForSearch;
-    const { data: queryData, isFetching } = useSearchTerritoryQuery(query, {
+    // La requête est différée pour ne pas dépasser le throttle de l'API (429) pendant la frappe
+    const debouncedQuery = useDebounce(query, 200);
+    const isQueryTooShort = query.length < minimumCharCountForSearch;
+    const shouldQueryBeSkipped = debouncedQuery.length < minimumCharCountForSearch;
+    const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
         skip: shouldQueryBeSkipped,
     });
+    // Recherche en cours : requête en vol ou saisie en attente du debounce
+    const isSearching = isFetching || (!isQueryTooShort && query !== debouncedQuery);
 
     const shouldShowAnimatedPlaceholder = animatedPlaceholder && !isFocused && query === '';
     const { displayText, isTyping } = useTypewriterAnimation({
@@ -228,7 +233,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     };
 
     useEffect(() => {
-        if (shouldQueryBeSkipped || isFetching) {
+        if (isQueryTooShort || shouldQueryBeSkipped || isSearching) {
             setData(undefined);
         } else {
             const filteredData = queryData
@@ -236,7 +241,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 : undefined;
             setData(filteredData);
         }
-    }, [isFetching, queryData, query, shouldQueryBeSkipped, stableExcludeTerritories]);
+    }, [isSearching, queryData, query, isQueryTooShort, shouldQueryBeSkipped, stableExcludeTerritories]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -294,7 +299,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                         <Cursor $blinking={!isTyping} />
                     </AnimatedPlaceholder>
                 </InputWrapper>
-                {isFetching && <Loader size={25} wrap={false} />}
+                {isSearching && <Loader size={25} wrap={false} />}
                 {data && (
                     <ResultsContainer $useHighZIndex={!disableOverlay} $position={dropdownPosition}>
                         {data.length > 0 ? (

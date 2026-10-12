@@ -1,6 +1,7 @@
 import logging
 import os
-import subprocess
+
+from include.utils import run_ogr2ogr
 
 from .BaseHTTPFileHandler import BaseHTTPFileHandler
 from .BaseS3Handler import BaseS3Handler
@@ -44,11 +45,7 @@ class SQLToGeojsonSeqOnS3Handler:
             # start records with the RS=0x1E character, so as to be compatible with the RFC 8142 standard
             # this allow tippecanoe to work concurrently with the GeoJSONSeq file
         ]
-        try:
-            subprocess.run(" ".join(cmd), shell=True, stderr=subprocess.STDOUT, check=True)
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Error while exporting SQL results: {e.output}")
-            raise e
+        run_ogr2ogr(cmd)
         logger.info(f"SQL result exported to {tmp_file}")
 
         logger.info(f"Uploading {tmp_file} to s3://{s3_bucket}/{s3_key}")

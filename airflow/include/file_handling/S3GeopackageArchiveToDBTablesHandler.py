@@ -1,7 +1,8 @@
 import logging
 import os
 import shutil
-import subprocess
+
+from include.utils import run_ogr2ogr
 
 from .BaseArchiveHandler import BaseArchiveHandler
 from .BaseS3Handler import BaseS3Handler
@@ -97,27 +98,7 @@ class S3GeopackageArchiveToDBTablesHandler:
             "PG_USE_COPY",
             "YES",
         ]
-        try:
-            result = subprocess.run(
-                " ".join(cmd),
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                text=True,
-            )
-            if result.stdout:
-                logger.info(f"ogr2ogr stdout: {result.stdout}")
-            if result.stderr:
-                logger.info(f"ogr2ogr stderr: {result.stderr}")
-        except subprocess.CalledProcessError as e:
-            logger.error(f"Error while ingesting layer {layer_name}: {e}")
-            logger.error(f"Command: {' '.join(cmd)}")
-            if e.stdout:
-                logger.error(f"stdout: {e.stdout}")
-            if e.stderr:
-                logger.error(f"stderr: {e.stderr}")
-            raise
+        run_ogr2ogr(cmd)
 
     @staticmethod
     def _cleanup(archive_path: str, extract_dir: str) -> None:

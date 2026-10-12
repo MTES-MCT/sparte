@@ -246,16 +246,6 @@ Airflow se connecte à plusieurs bases de données pour les pipelines DBT.
 | `PROD_DB_PORT` | Port | `ASK_A_MAINTAINER` |
 | `PROD_DB_SCHEMA` | Schéma | `public` |
 
-## GPU (SFTP IGN)
-
-| Variable | Description | Valeur par défaut |
-|----------|-------------|-------------------|
-| `GPU_SFTP_HOST` | Hôte SFTP IGN | `sftp-public.ign.fr` |
-| `GPU_SFTP_USER` | Utilisateur SFTP | `gpu_depot_exports` |
-| `GPU_SFTP_PASSWORD` | Mot de passe SFTP | `ASK_A_MAINTAINER` |
-| `GPU_SFTP_PORT` | Port SFTP | `2200` |
-| `GPU_HOST_KEY` | Clé publique du serveur SFTP | _(clé ed25519)_ |
-
 ## Notifications
 
 | Variable | Description | Valeur par défaut |

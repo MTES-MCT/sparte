@@ -46,11 +46,6 @@ jobs:
       PROD_DB_PORT: ${{ secrets.DBT_DB_PORT }}
       PROD_DB_SCHEMA: ${{ secrets.DBT_DB_SCHEMA }}
 
-      GPU_SFTP_HOST: ${{ secrets.GPU_SFTP_HOST }}
-      GPU_SFTP_USER: ${{ secrets.GPU_SFTP_USER }}
-      GPU_SFTP_PASSWORD: ${{ secrets.GPU_SFTP_PASSWORD }}
-      GPU_SFTP_PORT: ${{ secrets.GPU_SFTP_PORT }}
-
       MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
       MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL }}
 

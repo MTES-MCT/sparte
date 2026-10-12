@@ -30,6 +30,12 @@ const ComprendreLesDonnees: React.FC = () => {
     ratio,
   } = stats;
 
+  // Les valeurs peuvent être nulles (données de vacance secrétisées, parc vide) :
+  // on n'affiche que les phrases dont toutes les valeurs sont connues.
+  const hasAutorisations = autorisations != null && percentAutorisationsOnParc != null;
+  const hasVacantsPriv = vacantsPriv != null && percentVacantsPriv != null;
+  const hasVacantsSocial = vacantsSocial != null && percentVacantsSocial != null;
+
   const pluralAutorisations = autorisations > 1 ? "s" : "";
   const verbAutorisations =
     autorisations > 1 ? "ont été délivrées" : "a été délivrée";
@@ -52,32 +58,47 @@ const ComprendreLesDonnees: React.FC = () => {
 
   return (
     <GuideContent title="Comprendre les données">
-      <p>
-        En {endYear}, sur le territoire de {name},{" "}
-        <strong>
-          {autorisations} autorisation{pluralAutorisations} de construction de
-          logement{pluralAutorisations} {verbAutorisations}
-        </strong>
-        , ce qui correspondrait à une augmentation de{" "}
-        {formatNumber({ number: percentAutorisationsOnParc, decimals: 2 })}% de
-        son parc de logements total.
-      </p>
+      {hasAutorisations && (
+        <p>
+          En {endYear}, sur le territoire de {name},{" "}
+          <strong>
+            {autorisations} autorisation{pluralAutorisations} de construction de
+            logement{pluralAutorisations} {verbAutorisations}
+          </strong>
+          , ce qui correspondrait à une augmentation de{" "}
+          {formatNumber({ number: percentAutorisationsOnParc, decimals: 2 })}% de
+          son parc de logements total.
+        </p>
+      )}
 
-      <p>
-        Au 1er janvier de cette même année, sur le territoire de {name},{" "}
-        <strong>
-          {vacantsPriv} logement{pluralPriv} du parc privé (soit{" "}
-          {formatNumber({ number: percentVacantsPriv, decimals: 2 })}% du parc
-          de logements privé)
-        </strong>{" "}
-        {verbPriv} depuis plus de 2 ans, et{" "}
-        <strong>
-          {vacantsSocial} logement{pluralSocial} du parc des bailleurs sociaux
-          (soit {formatNumber({ number: percentVacantsSocial, decimals: 2 })}%
-          du parc de logements des bailleurs sociaux)
-        </strong>{" "}
-        {verbSocial} depuis plus de 3 mois.
-      </p>
+      {(hasVacantsPriv || hasVacantsSocial) && (
+        <p>
+          Au 1er janvier de cette même année, sur le territoire de {name},{" "}
+          {hasVacantsPriv && (
+            <>
+              <strong>
+                {vacantsPriv} logement{pluralPriv} du parc privé (soit{" "}
+                {formatNumber({ number: percentVacantsPriv, decimals: 2 })}% du
+                parc de logements privé)
+              </strong>{" "}
+              {verbPriv} depuis plus de 2 ans
+            </>
+          )}
+          {hasVacantsPriv && hasVacantsSocial && ", et "}
+          {hasVacantsSocial && (
+            <>
+              <strong>
+                {vacantsSocial} logement{pluralSocial} du parc des bailleurs
+                sociaux (soit{" "}
+                {formatNumber({ number: percentVacantsSocial, decimals: 2 })}% du
+                parc de logements des bailleurs sociaux)
+              </strong>{" "}
+              {verbSocial} depuis plus de 3 mois
+            </>
+          )}
+          .
+        </p>
+      )}
 
       {ratioInterpretation && (
         <p>

@@ -1,14 +1,18 @@
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, PropertyMock, patch
 
 from project.charts.artificialisation import (
     ArtifFluxByCouverture,
+    ArtifFluxByCouvertureExport,
     ArtifFluxByUsage,
+    ArtifFluxByUsageExport,
     ArtifNetFluxChart,
 )
 from project.charts.impermeabilisation import (
     ImperFluxByCouverture,
+    ImperFluxByCouvertureExport,
     ImperFluxByUsage,
+    ImperFluxByUsageExport,
     ImperNetFluxChart,
 )
 
@@ -403,3 +407,56 @@ class TestImperNetFluxChartParams(TestCase):
             self.assertIsNotNone(chart)
         except ValueError:
             self.fail("ImperNetFluxChart raised ValueError with valid params including departement")
+
+
+class TestFluxExportHeight(TestCase):
+    """
+    Les graphiques de flux exportés ne doivent pas occuper presque toute une page A4 :
+    à 900px, le graphique et son cadre dépassent la hauteur imprimable et Chrome
+    imprime un cadre vide ; à 800px, ils sont repoussés seuls sur la page suivante,
+    loin de leur titre (issue #1616).
+    """
+
+    MAX_EXPORT_HEIGHT = 600
+
+    def setUp(self):
+        self.mock_land = Mock()
+        self.mock_land.land_type = "COMMUNE"
+        self.mock_land.land_id = "75056"
+        self.mock_land.name = "Paris"
+        self.mock_land.is_interdepartemental = False
+
+    def assert_export_height_fits_a4(self, chart_class):
+        with (
+            patch("highcharts.charts.Chart.get_param", return_value={}),
+            patch.object(chart_class, "series", new_callable=PropertyMock, return_value=[]),
+            patch.object(chart_class, "categories", new_callable=PropertyMock, return_value=[]),
+            patch.object(chart_class, "title", new_callable=PropertyMock, return_value="titre"),
+        ):
+            chart = chart_class(land=self.mock_land, params={"millesime_new_index": 2})
+            self.assertLessEqual(chart.param["chart"]["height"], self.MAX_EXPORT_HEIGHT)
+
+    def test_artif_flux_by_usage_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ArtifFluxByUsageExport)
+
+    def test_imper_flux_by_usage_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ImperFluxByUsageExport)
+
+    def test_artif_flux_by_couverture_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ArtifFluxByCouvertureExport)
+
+    def test_imper_flux_by_couverture_export_fits_a4(self):
+        self.assert_export_height_fits_a4(ImperFluxByCouvertureExport)
+
+    def test_imper_flux_by_couverture_export_matches_other_exports(self):
+        # Données par couverture, mais même rendu que les autres exports (barres)
+        self.assertEqual(ImperFluxByCouvertureExport.sol, "couverture")
+        self.assertIs(ImperFluxByCouvertureExport.model, ImperFluxByCouverture.model)
+        with (
+            patch("highcharts.charts.Chart.get_param", return_value={}),
+            patch.object(ImperFluxByCouvertureExport, "series", new_callable=PropertyMock, return_value=[]),
+            patch.object(ImperFluxByCouvertureExport, "categories", new_callable=PropertyMock, return_value=[]),
+            patch.object(ImperFluxByCouvertureExport, "title", new_callable=PropertyMock, return_value="titre"),
+        ):
+            chart = ImperFluxByCouvertureExport(land=self.mock_land, params={"millesime_new_index": 2})
+            self.assertEqual(chart.param["chart"]["type"], "bar")
