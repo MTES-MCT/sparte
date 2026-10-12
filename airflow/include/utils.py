@@ -94,6 +94,6 @@ def get_first_shapefile_path_in_dir(dir_path: str) -> str | None:
 
 def get_dbt_command_from_directory(
     cmd: str,
-    directory: str | Path = DBT_PROJECT_DIR,
+    directory="${AIRFLOW_HOME}/include/sql/sparte",
 ) -> str:
-    return f"cd {shlex.quote(str(directory))} && " + cmd
+    return f'cd "{directory}" && ' + cmd
