@@ -44,7 +44,7 @@ from include.utils import (
 )
 
 from airflow.exceptions import AirflowSkipException
-from airflow.models.param import Param
+from airflow.sdk import Param, dag, task
 
 log = logging.getLogger(__name__)
 
