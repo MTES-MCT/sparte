@@ -2,6 +2,7 @@ import os
 import shlex
 import subprocess
 from logging import getLogger
+from pathlib import Path
 
 import geopandas as gpd
 
@@ -94,6 +95,8 @@ def get_first_shapefile_path_in_dir(dir_path: str) -> str | None:
 
 def get_dbt_command_from_directory(
     cmd: str,
-    directory="${AIRFLOW_HOME}/include/sql/sparte",
+    directory: str | Path | None = None,
 ) -> str:
-    return f'cd "{directory}" && ' + cmd
+    if directory is None:
+        directory = Path(__file__).resolve().parent / "sql" / "sparte"
+    return f"cd {shlex.quote(str(directory))} && " + cmd
