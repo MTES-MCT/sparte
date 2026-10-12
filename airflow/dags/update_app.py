@@ -16,10 +16,6 @@ from airflow.decorators import dag, task
 from airflow.models.param import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-STAGING = "staging"
-PRODUCTION = "production"
-DEV = "dev"
-
 logger = getLogger(__name__)
 
 OGR2OGR_PATH = "/usr/bin/ogr2ogr"
@@ -38,20 +34,12 @@ APP_SCHEMA = "public"
 POSTGRES_MAX_IDENTIFIER_LENGTH = 63
 
 
-def get_gdal_connection(environment: str) -> PgConnectionString:
-    return {
-        STAGING: Container().gdal_staging_conn,
-        PRODUCTION: Container().gdal_prod_conn,
-        DEV: Container().gdal_dev_conn,
-    }[environment]()
+def get_gdal_connection() -> PgConnectionString:
+    return Container().gdal_site_conn()
 
 
-def get_psycopg_connection(environment: str) -> connection:
-    return {
-        STAGING: Container().psycopg2_staging_conn,
-        PRODUCTION: Container().psycopg2_prod_conn,
-        DEV: Container().psycopg2_dev_conn,
-    }[environment]()
+def get_psycopg_connection() -> connection:
+    return Container().psycopg2_site_conn()
 
 
 def get_index_name(table_name: str, columns_name: list[str]) -> str:
@@ -113,7 +101,6 @@ def build_ogr2ogr_command(
 def copy_table_from_datawarehouse_to_app(
     from_table: str,
     to_table: str,
-    environment: str,
     geom_type=None,
     custom_columns_type: dict[str, str] = None,
     btree_index_columns: list[list[str]] = None,
@@ -123,7 +110,7 @@ def copy_table_from_datawarehouse_to_app(
     staging_table = f"{SWAP_SCHEMA}.{to_table.split('.')[-1]}"
 
     source_conn = Container().gdal_dbt_conn()
-    target_conn = get_gdal_connection(environment)
+    target_conn = get_gdal_connection()
 
     build_arguments = {
         "from_table": from_table,
@@ -156,7 +143,7 @@ def copy_table_from_datawarehouse_to_app(
         for columns in btree_index_columns:
             index_requests.append(get_btree_index_request(staging_table, columns))
 
-    conn = get_psycopg_connection(environment)
+    conn = get_psycopg_connection()
     try:
         with conn, conn.cursor() as cur:
             for request in index_requests:
@@ -171,14 +158,14 @@ def copy_table_from_datawarehouse_to_app(
     }
 
 
-def reset_swap_schema(environment: str) -> None:
+def reset_swap_schema() -> None:
     """Repart d'un schéma de bascule vide.
 
     Le teardown nettoie déjà en fin de run, mais il peut avoir été désactivé
     (keep_swap_schema) ou ne pas s'être exécuté du tout. Sans ce nettoyage d'entrée,
     swap_tables() publierait les données périmées du run précédent.
     """
-    conn = get_psycopg_connection(environment)
+    conn = get_psycopg_connection()
     try:
         with conn, conn.cursor() as cur:
             cur.execute(f"DROP SCHEMA IF EXISTS {SWAP_SCHEMA} CASCADE")
@@ -187,13 +174,13 @@ def reset_swap_schema(environment: str) -> None:
         conn.close()
 
 
-def swap_staged_tables(environment: str, lock_timeout: str = "30s") -> list[str]:
+def swap_staged_tables(lock_timeout: str = "30s") -> list[str]:
     """Publie toutes les tables du schéma de bascule, en une seule transaction.
 
     Chaque table remplace son homologue dans APP_SCHEMA. Les index, contraintes et
     séquences suivent la table lors du SET SCHEMA, il n'y a donc rien à renommer.
     """
-    conn = get_psycopg_connection(environment)
+    conn = get_psycopg_connection()
     try:
         with conn, conn.cursor() as cur:
             # Si l'application tient un verrou sur une des tables, mieux vaut échouer vite
@@ -218,9 +205,9 @@ def swap_staged_tables(environment: str, lock_timeout: str = "30s") -> list[str]
     return staged_tables
 
 
-def drop_swap_schema(environment: str) -> None:
+def drop_swap_schema() -> None:
     """Supprime le schéma de bascule et tout ce qu'il contient."""
-    conn = get_psycopg_connection(environment)
+    conn = get_psycopg_connection()
     try:
         with conn, conn.cursor() as cur:
             cur.execute(f"DROP SCHEMA IF EXISTS {SWAP_SCHEMA} CASCADE")
@@ -237,15 +224,6 @@ def drop_swap_schema(environment: str) -> None:
     default_args={"owner": "Alexis Athlani", "retries": 0},
     tags=["App"],
     params={
-        "environment": Param(
-            default=DEV,
-            type="string",
-            enum=[
-                STAGING,
-                PRODUCTION,
-                DEV,
-            ],
-        ),
         "tasks": Param(
             default=[
                 "copy_public_data_landconso",
@@ -324,7 +302,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landconso",
             to_table="public.public_data_landconso",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "year"],
             ],
@@ -335,7 +312,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landconsocomparison",
             to_table="public.public_data_landconsocomparison",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "from_year", "to_year"],
             ],
@@ -346,7 +322,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landconsostats",
             to_table="public.public_data_landconsostats",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "from_year", "to_year"],
             ],
@@ -357,7 +332,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landpop",
             to_table="public.public_data_landpop",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "year"],
             ],
@@ -368,7 +342,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landpopstats",
             to_table="public.public_data_landpopstats",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "from_year", "to_year"],
             ],
@@ -379,7 +352,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landpopulationdensity",
             to_table="public.public_data_landpopulationdensity",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "year"],
             ],
@@ -390,7 +362,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_nearest_territories",
             to_table="public.public_data_nearestterritories",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -401,7 +372,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_logementvacant",
             to_table="public.public_data_logementvacant",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "year"],
             ],
@@ -412,7 +382,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_autorisationlogement",
             to_table="public.public_data_autorisationlogement",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "year"],
             ],
@@ -423,7 +392,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_artifzonage",
             to_table="public.public_data_artifzonage",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -436,7 +404,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_artifzonageindex",
             to_table="public.public_data_artifzonageindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -449,7 +416,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartifstock",
             to_table="public.public_data_landartifstock",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -461,7 +427,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartifstockindex",
             to_table="public.public_data_landartifstockindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -473,7 +438,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartifstockcouverturecomposition",
             to_table="public.public_data_landartifstockcouverturecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -486,7 +450,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartifstockcouverturecompositionindex",
             to_table="public.public_data_landartifstockcouverturecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -499,7 +462,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartifstockusagecomposition",
             to_table="public.public_data_landartifstockusagecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -512,7 +474,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartifstockusagecompositionindex",
             to_table="public.public_data_landartifstockusagecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -525,7 +486,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_imperzonage",
             to_table="public.public_data_imperzonage",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -538,7 +498,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_imperzonageindex",
             to_table="public.public_data_imperzonageindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -551,7 +510,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperstock",
             to_table="public.public_data_landimperstock",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -563,7 +521,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperstockindex",
             to_table="public.public_data_landimperstockindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -575,7 +532,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperstockcouverturecomposition",
             to_table="public.public_data_landimperstockcouverturecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -588,7 +544,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperstockcouverturecompositionindex",
             to_table="public.public_data_landimperstockcouverturecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -601,7 +556,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperstockusagecomposition",
             to_table="public.public_data_landimperstockusagecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["year"],
@@ -614,7 +568,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperstockusagecompositionindex",
             to_table="public.public_data_landimperstockusagecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_index"],
@@ -627,7 +580,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperflux",
             to_table="public.public_data_landimperflux",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["departement"]],
         )
 
@@ -636,7 +588,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperfluxindex",
             to_table="public.public_data_landimperfluxindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_old_index", "millesime_new_index"],
@@ -648,7 +599,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperfluxcouverturecomposition",
             to_table="public.public_data_landimperfluxcouverturecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["couverture"]],
         )
 
@@ -657,7 +607,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperfluxcouverturecompositionindex",
             to_table="public.public_data_landimperfluxcouverturecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_old_index", "millesime_new_index"],
@@ -670,7 +619,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperfluxusagecomposition",
             to_table="public.public_data_landimperfluxusagecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["usage"]],
         )
 
@@ -679,7 +627,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landimperfluxusagecompositionindex",
             to_table="public.public_data_landimperfluxusagecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["millesime_old_index", "millesime_new_index"], ["usage"]],
         )
 
@@ -688,7 +635,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartifflux",
             to_table="public.public_data_landartifflux",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["departement"]],
         )
 
@@ -697,7 +643,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartiffluxindex",
             to_table="public.public_data_landartiffluxindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_old_index", "millesime_new_index"],
@@ -709,7 +654,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartiffluxcouverturecomposition",
             to_table="public.public_data_landartiffluxcouverturecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["couverture"]],
         )
 
@@ -718,7 +662,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartiffluxcouverturecompositionindex",
             to_table="public.public_data_landartiffluxcouverturecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
                 ["millesime_old_index", "millesime_new_index"],
@@ -731,7 +674,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartiffluxusagecomposition",
             to_table="public.public_data_landartiffluxusagecomposition",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["year_old", "year_new"], ["usage"]],
         )
 
@@ -740,7 +682,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landartiffluxusagecompositionindex",
             to_table="public.public_data_landartiffluxusagecompositionindex",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"], ["millesime_old_index", "millesime_new_index"], ["usage"]],
         )
 
@@ -749,7 +690,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_land",
             to_table="public.public_data_land",
-            environment=context["params"]["environment"],
             custom_columns_type={
                 "friche_status_details": "jsonb",
                 "conso_details": "jsonb",
@@ -767,7 +707,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_land_geojson",
             to_table="public.public_data_land_geojson",
-            environment=context["params"]["environment"],
             custom_columns_type={
                 "geojson": "jsonb",
             },
@@ -781,7 +720,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichepollution",
             to_table="public.public_data_landfrichepollution",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -792,7 +730,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichestatut",
             to_table="public.public_data_landfrichestatut",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -803,7 +740,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichesurfacerank",
             to_table="public.public_data_landfrichesurfacerank",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -814,7 +750,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichetype",
             to_table="public.public_data_landfrichetype",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -825,7 +760,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichezonageenvironnementale",
             to_table="public.public_data_landfrichezonageenvironnementale",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -836,7 +770,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichezonagetype",
             to_table="public.public_data_landfrichezonagetype",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -847,7 +780,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichezoneactivite",
             to_table="public.public_data_landfrichezoneactivite",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -858,7 +790,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfriche",
             to_table="public.public_data_landfriche",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type"],
             ],
@@ -870,7 +801,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landfrichegeojson",
             to_table="public.public_data_landfrichegeojson",
-            environment=context["params"]["environment"],
             custom_columns_type={
                 "geojson_feature_collection": "jsonb",
                 "geojson_centroid_feature_collection": "jsonb",
@@ -885,7 +815,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_landcarroyagebounds",
             to_table="public.public_data_landcarroyagebounds",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_id", "land_type", "start_year", "end_year", "destination"],
             ],
@@ -896,7 +825,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_population",
             to_table="public.public_data_dc_population",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -905,7 +833,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_menages",
             to_table="public.public_data_dc_menages",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -914,7 +841,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_logement",
             to_table="public.public_data_dc_logement",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -923,7 +849,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_categories_socioprofessionnelles",
             to_table="public.public_data_dc_categories_socioprofessionnelles",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -932,7 +857,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_activite_chomage",
             to_table="public.public_data_dc_activite_chomage",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -941,7 +865,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_emplois_lieu_travail",
             to_table="public.public_data_dc_emplois_lieu_travail",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -950,7 +873,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_revenus_pauvrete",
             to_table="public.public_data_dc_revenus_pauvrete",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -959,7 +881,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_creations_entreprises",
             to_table="public.public_data_dc_creations_entreprises",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -968,7 +889,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_tourisme",
             to_table="public.public_data_dc_tourisme",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -977,7 +897,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_dc_equipements_bpe",
             to_table="public.public_data_dc_equipements_bpe",
-            environment=context["params"]["environment"],
             btree_index_columns=[["land_id", "land_type"]],
         )
 
@@ -986,7 +905,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_bivariate_land_rate",
             to_table="public.public_data_bivariate_land_rate",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["indicator", "land_type", "start_year", "end_year"],
                 ["land_id", "land_type"],
@@ -998,7 +916,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_bivariate_conso_threshold",
             to_table="public.public_data_bivariate_conso_threshold",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["land_type", "conso_field", "start_year", "end_year"],
             ],
@@ -1009,7 +926,6 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_bivariate_indic_threshold",
             to_table="public.public_data_bivariate_indic_threshold",
-            environment=context["params"]["environment"],
             btree_index_columns=[
                 ["indicator", "land_type", "start_year", "end_year"],
             ],
@@ -1017,7 +933,7 @@ def update_app():  # noqa: C901
 
     @task.python
     def prepare_swap_schema(**context):
-        reset_swap_schema(context["params"]["environment"])
+        reset_swap_schema()
 
     @task.branch
     def copy_public_data_branch(**context):
@@ -1029,14 +945,14 @@ def update_app():  # noqa: C901
     # NONE_FAILED_MIN_ONE_SUCCESS tolère les skipped, mais toujours pas les échecs.
     @task.python(trigger_rule=TriggerRule.NONE_FAILED_MIN_ONE_SUCCESS)
     def swap_tables(**context):
-        return {"swapped_tables": swap_staged_tables(context["params"]["environment"])}
+        return {"swapped_tables": swap_staged_tables()}
 
     @task.python
     def cleanup_swap_schema(**context):
         if context["params"]["keep_swap_schema"]:
             return {"dropped": False, "reason": "keep_swap_schema"}
 
-        drop_swap_schema(context["params"]["environment"])
+        drop_swap_schema()
         return {"dropped": True}
 
     copy_tasks = [

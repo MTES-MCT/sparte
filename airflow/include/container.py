@@ -104,58 +104,22 @@ class InfraContainer(containers.DeclarativeContainer):
         port=os.getenv("MATOMO_DB_PORT"),
     )
 
-    # DEV connections
-    gdal_dev_conn = providers.Factory(
+    # SITE connections
+    gdal_site_conn = providers.Factory(
         PgConnectionString,
-        dbname=os.getenv("DEV_DB_NAME"),
-        user=os.getenv("DEV_DB_USER"),
-        password=os.getenv("DEV_DB_PASSWORD"),
-        host=os.getenv("DEV_DB_HOST"),
-        port=os.getenv("DEV_DB_PORT"),
+        dbname=os.getenv("SITE_DB_NAME"),
+        user=os.getenv("SITE_DB_USER"),
+        password=os.getenv("SITE_DB_PASSWORD"),
+        host=os.getenv("SITE_DB_HOST"),
+        port=os.getenv("SITE_DB_PORT"),
     )
-    psycopg2_dev_conn = providers.Factory(
+    psycopg2_site_conn = providers.Factory(
         provides=connect,
-        dbname=os.getenv("DEV_DB_NAME"),
-        user=os.getenv("DEV_DB_USER"),
-        password=os.getenv("DEV_DB_PASSWORD"),
-        host=os.getenv("DEV_DB_HOST"),
-        port=os.getenv("DEV_DB_PORT"),
-    )
-
-    # PROD connections
-    gdal_prod_conn = providers.Factory(
-        PgConnectionString,
-        dbname=os.getenv("PROD_DB_NAME"),
-        user=os.getenv("PROD_DB_USER"),
-        password=os.getenv("PROD_DB_PASSWORD"),
-        host=os.getenv("PROD_DB_HOST"),
-        port=os.getenv("PROD_DB_PORT"),
-    )
-    psycopg2_prod_conn = providers.Factory(
-        provides=connect,
-        dbname=os.getenv("PROD_DB_NAME"),
-        user=os.getenv("PROD_DB_USER"),
-        password=os.getenv("PROD_DB_PASSWORD"),
-        host=os.getenv("PROD_DB_HOST"),
-        port=os.getenv("PROD_DB_PORT"),
-    )
-
-    # STAGING connections
-    gdal_staging_conn = providers.Factory(
-        PgConnectionString,
-        dbname=os.getenv("STAGING_DB_NAME"),
-        user=os.getenv("STAGING_DB_USER"),
-        password=os.getenv("STAGING_DB_PASSWORD"),
-        host=os.getenv("STAGING_DB_HOST"),
-        port=os.getenv("STAGING_DB_PORT"),
-    )
-    psycopg2_staging_conn = providers.Factory(
-        provides=connect,
-        dbname=os.getenv("STAGING_DB_NAME"),
-        user=os.getenv("STAGING_DB_USER"),
-        password=os.getenv("STAGING_DB_PASSWORD"),
-        host=os.getenv("STAGING_DB_HOST"),
-        port=os.getenv("STAGING_DB_PORT"),
+        dbname=os.getenv("SITE_DB_NAME"),
+        user=os.getenv("SITE_DB_USER"),
+        password=os.getenv("SITE_DB_PASSWORD"),
+        host=os.getenv("SITE_DB_HOST"),
+        port=os.getenv("SITE_DB_PORT"),
     )
 
     brevo = providers.Factory(
