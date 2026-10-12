@@ -7,6 +7,8 @@ from psycopg2 import connect
 from psycopg2.extensions import connection
 from s3fs import S3FileSystem
 
+from airflow.sdk import BaseHook
+
 from .connectors import Brevo
 from .file_handling import (
     CSVFileIngestor,
@@ -46,6 +48,17 @@ def create_sql_alchemy_conn(
     return sqlalchemy.create_engine(url)
 
 
+DBT_CONN_ID = "postgresql_dbt"
+SITE_CONN_ID = "postgresql_site"
+MATOMO_CONN_ID = "postgresql_matomo"
+
+
+def pg_conn_params(conn_id: str) -> dict:
+    conn = BaseHook.get_connection(conn_id)
+    # Dans une connexion Postgres Airflow, `schema` porte le nom de la base.
+    return {"dbname": conn.schema, "user": conn.login, "password": conn.password, "host": conn.host, "port": conn.port}
+
+
 class InfraContainer(containers.DeclarativeContainer):
     bucket_name = providers.Factory(provides=str, object=os.getenv("AIRFLOW_S3_BUCKET_NAME"))
     app_bucket_name = providers.Factory(provides=str, object=os.getenv("AIRFLOW_S3_APP_BUCKET_NAME"))
@@ -60,67 +73,17 @@ class InfraContainer(containers.DeclarativeContainer):
         },
     )
     # DBT connections
-    gdal_dbt_conn = providers.Factory(
-        PgConnectionString,
-        dbname=os.getenv("DBT_DB_NAME"),
-        user=os.getenv("DBT_DB_USER"),
-        password=os.getenv("DBT_DB_PASSWORD"),
-        host=os.getenv("DBT_DB_HOST"),
-        port=os.getenv("DBT_DB_PORT"),
-    )
-    psycopg2_dbt_conn: connection = providers.Factory(
-        provides=connect,
-        dbname=os.getenv("DBT_DB_NAME"),
-        user=os.getenv("DBT_DB_USER"),
-        password=os.getenv("DBT_DB_PASSWORD"),
-        host=os.getenv("DBT_DB_HOST"),
-        port=os.getenv("DBT_DB_PORT"),
-    )
-
-    sqlalchemy_dbt_conn = providers.Factory(
-        create_sql_alchemy_conn,
-        dbname=os.getenv("DBT_DB_NAME"),
-        user=os.getenv("DBT_DB_USER"),
-        password=os.getenv("DBT_DB_PASSWORD"),
-        host=os.getenv("DBT_DB_HOST"),
-        port=os.getenv("DBT_DB_PORT"),
-    )
+    gdal_dbt_conn = providers.Factory(lambda: PgConnectionString(**pg_conn_params(DBT_CONN_ID)))
+    psycopg2_dbt_conn = providers.Factory(lambda: connect(**pg_conn_params(DBT_CONN_ID)))
+    sqlalchemy_dbt_conn = providers.Factory(lambda: create_sql_alchemy_conn(**pg_conn_params(DBT_CONN_ID)))
 
     # Matomo connections
-    gdal_matomo_conn = providers.Factory(
-        PgConnectionString,
-        dbname=os.getenv("MATOMO_DB_NAME"),
-        user=os.getenv("MATOMO_DB_USER"),
-        password=os.getenv("MATOMO_DB_PASSWORD"),
-        host=os.getenv("MATOMO_DB_HOST"),
-        port=os.getenv("MATOMO_DB_PORT"),
-    )
-    psycopg2_matomo_conn = providers.Factory(
-        provides=connect,
-        dbname=os.getenv("MATOMO_DB_NAME"),
-        user=os.getenv("MATOMO_DB_USER"),
-        password=os.getenv("MATOMO_DB_PASSWORD"),
-        host=os.getenv("MATOMO_DB_HOST"),
-        port=os.getenv("MATOMO_DB_PORT"),
-    )
+    gdal_matomo_conn = providers.Factory(lambda: PgConnectionString(**pg_conn_params(MATOMO_CONN_ID)))
+    psycopg2_matomo_conn = providers.Factory(lambda: connect(**pg_conn_params(MATOMO_CONN_ID)))
 
     # SITE connections
-    gdal_site_conn = providers.Factory(
-        PgConnectionString,
-        dbname=os.getenv("SITE_DB_NAME"),
-        user=os.getenv("SITE_DB_USER"),
-        password=os.getenv("SITE_DB_PASSWORD"),
-        host=os.getenv("SITE_DB_HOST"),
-        port=os.getenv("SITE_DB_PORT"),
-    )
-    psycopg2_site_conn = providers.Factory(
-        provides=connect,
-        dbname=os.getenv("SITE_DB_NAME"),
-        user=os.getenv("SITE_DB_USER"),
-        password=os.getenv("SITE_DB_PASSWORD"),
-        host=os.getenv("SITE_DB_HOST"),
-        port=os.getenv("SITE_DB_PORT"),
-    )
+    gdal_site_conn = providers.Factory(lambda: PgConnectionString(**pg_conn_params(SITE_CONN_ID)))
+    psycopg2_site_conn = providers.Factory(lambda: connect(**pg_conn_params(SITE_CONN_ID)))
 
     brevo = providers.Factory(
         provides=Brevo,
@@ -133,6 +96,8 @@ class InfraContainer(containers.DeclarativeContainer):
 class DomainContainer(containers.DeclarativeContainer):
     s3_handler = providers.Factory(provides=S3Handler, s3=InfraContainer().s3)
     tmp_path_generator = providers.Factory(provides=TmpPathGenerator)
+    # Résolu à l'appel : la connexion Airflow n'est pas forcément disponible à l'import.
+    gdal_dbt_conn_str = providers.Callable(lambda: InfraContainer().gdal_dbt_conn().encode())
 
     htto_file_handler = providers.Factory(provides=HTTPFileHandler)
 
@@ -180,14 +145,14 @@ class DomainContainer(containers.DeclarativeContainer):
         provides=S3GeoJsonFileToDBTableHandler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+        db_connection=gdal_dbt_conn_str,
     )
 
     s3_geopackage_file_to_db_table_handler = providers.Factory(
         provides=S3GeopackageFileToDBTableHandler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+        db_connection=gdal_dbt_conn_str,
     )
 
     seven_z_archive_handler = providers.Factory(provides=SevenZArchiveHandler)
@@ -197,7 +162,7 @@ class DomainContainer(containers.DeclarativeContainer):
         s3_handler=s3_handler,
         archive_handler=seven_z_archive_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+        db_connection=gdal_dbt_conn_str,
     )
 
     sql_to_geojsonseq_on_s3_handler = providers.Factory(
@@ -205,7 +170,7 @@ class DomainContainer(containers.DeclarativeContainer):
         http_file_handler=htto_file_handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+        db_connection=gdal_dbt_conn_str,
     )
 
     sql_to_geojson_on_s3_handler = providers.Factory(
@@ -213,7 +178,7 @@ class DomainContainer(containers.DeclarativeContainer):
         http_file_handler=htto_file_handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+        db_connection=gdal_dbt_conn_str,
     )
 
     geojson_to_gzipped_geojson_on_s3_handler = providers.Factory(
@@ -231,14 +196,14 @@ class DomainContainer(containers.DeclarativeContainer):
         provides=SQLToGeopackageOnS3Handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+        db_connection=gdal_dbt_conn_str,
     )
 
     sql_to_csv_on_s3_handler = providers.Factory(
         provides=SQLToCSVOnS3Handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
-        db_connection=InfraContainer().gdal_dbt_conn().encode(),
+        db_connection=gdal_dbt_conn_str,
     )
 
     data_gouv = providers.Factory(
