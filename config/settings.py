@@ -538,9 +538,6 @@ if ENVIRONMENT != "local":
 # MATOMO
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 
-# GOOGLE TAG ADWORDS
-GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
-
 # CRISP
 CRISP_WEBSITE_ID = env.str("CRISP_WEBSITE_ID")
 CRISP_ACTIVATED = env.bool("CRISP_ACTIVATED", default=False)
@@ -559,7 +556,6 @@ CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
     "code.highcharts.com",
-    "www.googletagmanager.com",
     "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
@@ -582,11 +578,6 @@ CSP_IMG_SRC = [
     "s3.fr-par.scw.cloud",
     "data:",
     MEDIA_URL,
-    "google.com",
-    "https://www.google.com/",
-    "https://www.google.fr",
-    "https://www.googleadservices.com",
-    "googleads.g.doubleclick.net",
     "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
@@ -599,7 +590,6 @@ CSP_FRAME_SRC = (
     # Crisp
     "https://game.crisp.chat",
     "https://plugins.crisp.chat/",
-    "https://www.googletagmanager.com/",
     "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
     "https://stats.beta.gouv.fr/",
 )
@@ -622,9 +612,6 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "stats.beta.gouv.fr",
-    "google.com",
-    "https://www.google.com/",
-    "https://www.google.fr",
     "data.geopf.fr",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",
