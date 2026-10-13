@@ -151,7 +151,7 @@ const ChartExplorer: React.FC<ChartExplorerProps> = ({
 
     const handleDownloadPNG = () => {
         if (modalChartRef.current?.chart) {
-            modalChartRef.current.chart.exportChart({ type: 'image/png' });
+            modalChartRef.current.chart.exportChartLocal({ type: 'image/png', fallbackToExportServer: false });
         }
     };
 
