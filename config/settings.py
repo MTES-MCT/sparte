@@ -443,10 +443,6 @@ if DEBUG:
         pass
 
 
-# Configuration for highchart
-
-HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highcharts.com/")
-
 # Configuration for export server (PDF generation)
 
 EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3001")
@@ -638,7 +634,6 @@ CSP_CONNECT_SRC = [
     "wss://client.relay.crisp.chat",
     "wss://stream.relay.crisp.chat",
     "https://gist.githubusercontent.com",
-    "https://highcharts-export.osc-fr1.scalingo.io/",
     "ws://localhost:3000/ws",
     "http://localhost:3000",
     AIRFLOW_S3_BASE_URL,
