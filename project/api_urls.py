@@ -2,7 +2,7 @@ import hashlib
 import json
 
 from django.core.cache import cache
-from django.http import Http404, JsonResponse
+from django.http import FileResponse, Http404, JsonResponse
 from django.urls import include, path
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -356,6 +356,14 @@ def chart_view_json_response(chart):
     )
 
 
+def chart_view_file_response(chart, id, land_type, land_id):
+    return FileResponse(
+        open(chart.get_temp_image(width=chart.print_width), "rb"),
+        filename=f"{id}_{land_type}_{land_id}.png",
+        as_attachment=False,
+    )
+
+
 def _chart_cache_key(id, land_type, land_id, params):
     params_str = json.dumps(params, sort_keys=True)
     h = hashlib.md5(params_str.encode()).hexdigest()
@@ -364,6 +372,14 @@ def _chart_cache_key(id, land_type, land_id, params):
 
 def chart_view(request, id, land_type, land_id):
     chart_params = request.GET.dict()
+
+    # PNG responses are not cached
+    if chart_params.get("format") == "png":
+        land = LandModel.objects.get(land_type=land_type, land_id=land_id)
+        chart_klass = get_chart_klass_or_404(id)
+        user = request.user if request.user.is_authenticated else None
+        chart = chart_klass(land=land, params=chart_params, user=user)
+        return chart_view_file_response(chart=chart, id=id, land_type=land_type, land_id=land_id)
 
     cache_key = _chart_cache_key(id, land_type, land_id, chart_params)
     cached = cache.get(cache_key)

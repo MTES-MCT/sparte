@@ -14,6 +14,7 @@ env:
   DOMAIN_URL: http://localhost:8080/
   EMAIL_ENGINE: local
   EMAIL_FILE_PATH: ${GITHUB_WORKSPACE}/emails
+  HIGHCHART_SERVER: https://highcharts-export.osc-fr1.scalingo.io
   POSTGRES_DB: postgres
   CELERY_BROKER_URL: null
   CELERY_RESULT_BACKEND: null

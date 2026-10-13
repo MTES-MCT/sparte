@@ -113,10 +113,11 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 | `MATOMO_ACTIVATE` | Activer le tracking Matomo | `0` |
 | `GOOGLE_ADWORDS_ACTIVATE` | Activer les Google Tags | `0` |
 
-## Export
+## Highcharts / Export
 
 | Variable | Description | Valeur par défaut |
 |----------|-------------|-------------------|
+| `HIGHCHART_SERVER` | URL du serveur d'export Highcharts | `https://highcharts-export.osc-fr1.scalingo.io` |
 | `EXPORT_SERVER_URL` | URL du serveur d'export PDF | `http://export-server:3000` |
 | `EXPORT_BASE_URL` | URL de base utilisée par le serveur d'export pour accéder à Django | `http://django:8080` |
 

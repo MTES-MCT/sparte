@@ -1,13 +1,26 @@
+import base64
 import copy
 import json
+import os
 import random
 import string
+import tempfile
 from typing import Any, Dict, List
 
+import requests
+from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
 from utils.functions import decimal2float
+
+
+class ChartGenerationException(Exception):
+    pass
+
+
+class RateLimitExceededException(Exception):
+    pass
 
 
 class Chart:
@@ -33,6 +46,7 @@ class Chart:
             },
             "exporting": {
                 "filename": param.get("title", {}).get("text", "graphique"),
+                "url": settings.HIGHCHART_SERVER,
                 "chartOptions": {
                     "chart": {"style": {"fontSize": "8px"}},
                 },
@@ -122,3 +136,37 @@ class Chart:
 
     def get_js_name(self) -> str:
         return slugify(self.get_name()).replace("-", "_")
+
+    @property
+    def chart_is_a_map(self) -> bool:
+        return self.chart.get("chart", {}).get("map") is not None
+
+    def request_b64_image_from_server(self, width) -> bytes:
+        json_option = copy.deepcopy(self.chart)
+
+        data = {
+            "infile": json_option,
+            "width": width,
+            "scale": False,
+            "constr": "mapChart" if self.chart_is_a_map else "chart",
+            "type": "image/png",
+            "b64": True,
+        }
+
+        r = requests.post(
+            settings.HIGHCHART_SERVER,
+            data=json.dumps(obj=data, default=decimal2float),
+            headers={"content-type": "application/json"},
+        )
+        if r.content.startswith(b"0x04 error when performing chart generation"):
+            raise ChartGenerationException(json.dumps(data, default=decimal2float))
+        if r.content.startswith(b'{"message":"Too many requests, you have been rate l'):
+            raise RateLimitExceededException()
+        return r.content + b"==="
+
+    def get_temp_image(self, width=1000) -> str:
+        b64_content = self.request_b64_image_from_server(width=width)
+        fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
+        os.write(fd, base64.decodebytes(b64_content))
+        os.close(fd)
+        return img_path
