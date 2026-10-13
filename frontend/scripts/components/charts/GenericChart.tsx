@@ -13,7 +13,6 @@ import HighchartsTilemap from 'highcharts/modules/tilemap';
 import HighchartsTreemap from 'highcharts/modules/treemap';
 import Drilldown from 'highcharts/modules/drilldown';
 import Exporting from 'highcharts/modules/exporting';
-import OfflineExporting from 'highcharts/modules/offline-exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import SeriesOnPoint from 'highcharts/modules/series-on-point';
@@ -35,7 +34,6 @@ HighchartsTilemap(Highcharts)
 HighchartsTreemap(Highcharts)
 Drilldown(Highcharts)
 Exporting(Highcharts)
-OfflineExporting(Highcharts)
 Fullscreen(Highcharts)
 NoDataToDisplay(Highcharts)
 HCSoldGauge(Highcharts)
@@ -148,7 +146,7 @@ const GenericChart = ({
 
   const handleDownloadPNG = () => {
     if (chartRef.current?.chart) {
-      chartRef.current.chart.exportChartLocal({ type: 'image/png', fallbackToExportServer: false })
+      chartRef.current.chart.exportChart({ type: 'image/png' })
     }
   }
 
