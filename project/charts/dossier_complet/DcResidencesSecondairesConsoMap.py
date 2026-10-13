@@ -45,5 +45,5 @@ class DcResidencesSecondairesConsoMap(DcBivariateConsoMap):
     def get_chart_subtitle(self):
         return (
             "Croisement entre le taux de résidences secondaires (INSEE) "
-            "et la consommation d'espaces NAF (fichiers fonciers)."
+            "et la consommation d'ENAF (fichiers fonciers)."
         )

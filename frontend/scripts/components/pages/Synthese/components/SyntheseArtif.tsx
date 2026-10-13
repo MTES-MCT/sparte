@@ -55,11 +55,11 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
           />
         </div>
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
-          <GuideContent title="Qu'est ce que le ZAN ?">
+          <GuideContent title="Qu'est-ce que le ZAN ?">
           <p className="fr-text--sm">
-              À partir de 2031, l'objectif est d'atteindre <strong>Zéro Artificialisation Nette</strong> :
-              toute nouvelle artificialisation doit être compensée par une désartificialisation équivalente.
-              Cela implique de <strong>renaturer des espaces</strong> pour compenser les nouvelles constructions.
+              A partir de 2031, la loi fixe un objectif de réduction de l'artificialisation nette des sols. 
+              L'artificialisation nette est définie comme « le solde de l'artificialisation et de la renaturation des sols constatées sur un périmètre et sur une période donnés » 
+              (article L.101-2-1 du code de l’urbanisme).
             </p>
             <p className="fr-text--sm fr-mb-0">
               A titre d'exemple, sur le territoire de {landData.name},{" "}
@@ -70,7 +70,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
                 className="fr-text--sm"
               />
               , <strong>l'artificialisation nette est de{" "}
-              {formatNumber({ number: data.flux_surface })} ha</strong>.
+              {formatNumber({ number: data.flux_surface })} ha selon les données de l’OCS GE</strong>.
             </p>
           </GuideContent>
         </div>

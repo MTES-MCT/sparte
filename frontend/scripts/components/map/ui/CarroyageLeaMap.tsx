@@ -504,7 +504,7 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             {
                 id: "carroyage-lea-group",
                 label: "Consommation d'espaces (carroyage)",
-                description: "Carroyage de la consommation d'espaces NAF issue des fichiers fonciers (Cerema)",
+                description: "Carroyage de la consommation d'ENAF issue des fichiers fonciers (Cerema)",
                 controls: [
                     {
                         id: "carroyage-lea-visibility",

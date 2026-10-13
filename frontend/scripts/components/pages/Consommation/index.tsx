@@ -74,31 +74,32 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
         <Triptych
           className="fr-mb-5w"
           definition={{
-            preview: "La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).",
+            preview: "La consommation d'ENAF est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).",
             content: (
               <>
-                <p>La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme <strong>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</strong> (article 194 de la loi Climat et résilience).</p>
-                <p>Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait. Un espace urbanisé n'est plus un espace d'usage NAF (Naturel, Agricole et Forestier).</p>
+                <p>La consommation d'espaces naturels, agricoles et forestiers (ENAF) est entendue comme <strong>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</strong> (article 194 de la loi Climat et résilience).</p>
+                <p>Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait.</p>
                 <p>Si l'artificialisation des sols traduit globalement un changement de couverture physique, la consommation traduit un changement d'usage. À titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.</p>
               </>
             ),
           }}
           donnees={{
-            preview: "Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le CEREMA à partir des données d'évolution des fichiers fonciers.",
+            preview: "Les données de consommation d'ENAF publiées sur Mon Diag Artif sont produites par le Cerema à partir des Fichiers Fonciers.",
             content: (
               <>
-                <p>Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le <strong>CEREMA</strong> à partir des données d'évolution des <strong>fichiers fonciers</strong>.</p>
+                <p>Les données de consommation d'ENAF publiées sur Mon Diag Artif sont produites par le <strong>Cerema</strong> à partir des <strong>Fichiers Fonciers</strong>.</p>
                 <p>Ces données sont disponibles à l'échelle de la commune.</p>
+                <p>Depuis 2026 les données sont également proposées à l’échelle infra-communale pour les ayants droit (structures publiques et prestataires assurant des missions pour elles), via le site <a href="https://datafoncier.cerema.fr/" target="_blank" rel="noopener noreferrer">Datafoncier</a> ou sur <a href="https://urbansimul.cerema.fr/" target="_blank" rel="noopener noreferrer">UrbanSimul</a>.</p>
                 <p>Le dernier millésime (2024) correspond à la photographie du territoire au 1er janvier 2025, et intègre les évolutions réalisées au cours de l'année 2024.</p>
               </>
             ),
           }}
           cadreReglementaire={{
-            preview: "La loi Climat et Résilience, adoptée en 2021, engage la France à limiter la consommation d'espaces naturels, agricoles et forestiers (NAF), entendue comme leur transformation en espaces urbanisés.",
+            preview: "La loi Climat et Résilience, adoptée en 2021, engage la France à limiter la consommation d'ENAF, entendue comme leur transformation en espaces urbanisés.",
             content: (
               <>
-                <p>La loi Climat et Résilience, adoptée en 2021, engage la France à <strong>limiter la consommation d'espaces naturels, agricoles et forestiers</strong> (NAF), entendue comme leur transformation en espaces urbanisés.</p>
-                <p>Plus précisément, elle fixe à l'échelle nationale l'objectif de <strong>réduire de moitié cette consommation sur la période 2021-2031</strong>, par rapport à la décennie 2011-2021.</p>
+                <p>La loi Climat et Résilience, adoptée en 2021, engage la France à <strong>limiter la consommation d'espaces naturels, agricoles et forestiers</strong> (ENAF), entendue comme leur transformation en espaces urbanisés.</p>
+                <p>Plus précisément, elle fixe à l'échelle nationale l'objectif de <strong>réduire de moitié cette consommation sur la période allant du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031</strong>, par rapport à la décennie précédente (1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021).</p>
               </>
             ),
           }}

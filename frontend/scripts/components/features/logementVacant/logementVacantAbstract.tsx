@@ -81,7 +81,7 @@ const LogementVacantAbstract: React.FC<LogementVacantAbstractProps> = ({
                 <strong>{logements_vacants_status_details.logements_vacants_parc_general} {pluralize(logements_vacants_status_details.logements_vacants_parc_general, "logement vacant")}</strong>{" "}
                 sur le territoire de <strong>{name}</strong>, soit{" "}
                 <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_general_percent })}%</strong> du parc total.{" "}
-                <strong>L'exploitation des logements vacants semble être un levier actionnable pour ce territoire (chiffres potentiellement sous-estimés).</strong>
+                <strong>L'exploitation des logements vacants semble être un levier actionnable pour ce territoire.</strong>
             </p>
         ),
 

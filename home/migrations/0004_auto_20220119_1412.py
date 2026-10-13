@@ -26,7 +26,7 @@ le endpoint public
 
 ## Les fichiers fonciers
 
-La documentation officielle est disponible sur le site du CEREMA :
+La documentation officielle est disponible sur le site du Cerema :
 [http://doc-datafoncier.cerema.fr/ff/docff/](http://doc-datafoncier.cerema.fr/ff/docff/)
 
 **TODO** fournir la description de la table, le endpoint et les champs calculés.

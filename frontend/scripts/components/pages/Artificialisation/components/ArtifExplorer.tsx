@@ -23,9 +23,9 @@ export const ArtifExplorer: React.FC = () => {
 
   return (
     <div className="fr-mb-5w">
-      <h2>Explorateur des objets OCS GE artificialisés</h2>
+      <h2>Explorateur des objets OCS GE</h2>
       <p className="fr-text--sm fr-mb-2w">
-        Cette carte permet d'explorer individuellement les objets OCS GE artificialisés du territoire. Chaque objet est caractérisé par un croisement couverture / usage qui détermine s'il est artificialisé ou non.
+        Cette carte permet d'explorer individuellement les objets OCS GE du territoire. Chaque objet est caractérisé par un croisement couverture / usage qui détermine s'il est artificialisé ou non.
         Sélectionnez un objet sur la carte pour consulter sa couverture, son usage et son statut d'artificialisation.
         <br />
         <br />Exemple : un objet de couverture <ColorSquare $color="rgb(255, 55, 122)" /> <strong>Zones bâties</strong> et d'usage <ColorSquare $color="rgb(230, 0, 77)" /> <strong>Résidentiel</strong> est considéré comme <strong style={{ color: "#E63946" }}>artificialisé</strong>.

@@ -96,7 +96,7 @@ const FricheAbstract: React.FC<FricheAbstractProps> = ({
                 <div className="fr-col-12">
                     <h3 className="fr-text--lg fr-mb-2w">
                         <i className="bi bi-lightning-charge text-primary fr-mr-1w" />
-                        Les friches sans projet : un levier actionnable pour la sobriété foncière
+                        Les friches sans projet : un gisement à mobiliser pour la sobriété foncière
                     </h3>
                     {contentMap[friche_status]}
                     {link && (

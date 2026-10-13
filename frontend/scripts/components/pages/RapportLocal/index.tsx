@@ -93,11 +93,11 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
     <div className="fr-container--fluid fr-p-3w">
       <CallToAction
         className="fr-mb-7w"
-        title="Besoin d'aide ?"
+        title="Besoin d'aide pour réaliser un rapport triennal d’artificialisation des sols ?"
         text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
         actions={[
           {
-            label: "Accéder aux téléchargements",
+            label: "Accéder aux rapports",
             to: urls.downloads,
           },
         ]}
@@ -130,8 +130,8 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               </ExternalLink>
               , l'objectif d'atteindre le « zéro artificialisation nette des
               sols » en 2050, avec un objectif intermédiaire de réduction de
-              moitié de la consommation d'espaces NAF (Naturels, Agricoles
-              et Forestiers) sur 2021-2031 par rapport à la décennie
+              moitié de la consommation d'espaces naturels, agricoles
+              et forestiers (ENAF) sur 2021-2031 par rapport à la décennie
               précédente.
             </p>
             <p className="fr-text--sm fr-mb-2w">
@@ -140,20 +140,18 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
             </p>
             <p className="fr-text--sm fr-mb-2w">
               Cette trajectoire est mesurée, pour la période 2021-2031, en
-              consommation d'espaces NAF (Naturels, Agricoles et Forestiers),
-              définie comme « la création ou l'extension effective d'espaces
+              consommation d'ENAF, définie comme « la création ou l'extension effective d'espaces
               urbanisés sur le territoire concerné » (
               <ExternalLink href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223">
                 article 194, III, 5° de la loi Climat et résilience
               </ExternalLink>
-              ). Le bilan de consommation d'espaces NAF (Naturels, Agricoles
-              et Forestiers) s'effectue à l'échelle d'un document de
+              ). Le bilan de consommation d'ENAF s'effectue à l'échelle d'un document de
               planification ou d'urbanisme.
             </p>
             <p className="fr-text--sm fr-mb-0">
               A partir de 2031, cette trajectoire est également mesurée en
               artificialisation nette des sols, définie comme « le solde de
-              l'artificialisation et de la désartificialisation des sols
+              l'artificialisation et de la renaturation des sols
               constatées sur un périmètre et sur une période donnés » (
               <ExternalLink href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043967077/2023-09-04">
                 article L.101-2-1 du code de l'urbanisme
@@ -189,7 +187,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
         <p className="fr-text--sm fr-mt-2w fr-mb-0">
           L'enjeu est de mesurer et de communiquer régulièrement au sujet du
           rythme de l'artificialisation des sols, afin d'anticiper et de
-          suivre la trajectoire et sa réduction. Ce rapport doit être
+          suivre sa trajectoire. Ce rapport doit être
           présenté à l'organe délibérant, faire l'objet d'un débat et d'une
           délibération du conseil municipal ou communautaire, et de mesures
           de publicité. Le rapport est transmis dans un délai de quinze
@@ -204,8 +202,8 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
       <BaseCard className="fr-p-3w fr-mb-5w">
         <h4>Quand doit être établi ce rapport et sur quelle période ?</h4>
         <p className="fr-text--sm fr-mb-2w">
-          Le premier rapport doit être réalisé 3 ans après l'entrée en
-          vigueur de la loi, soit en 2024.
+          Le premier rapport devait être réalisé 3 ans après l'entrée en
+          vigueur de la loi, soit en 2024. Le deuxième rapport doit être réalisé en 2027.
         </p>
         <p className="fr-text--sm fr-mb-2w">
           A noter que c'est le rapport qui est triennal, et non la période à
@@ -244,7 +242,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
         </p>
 
         <IndicatorTile
-          title="1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert."
+          title="1° La consommation des espaces naturels, agricoles et forestiers (ENAF), exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert."
           description="Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une désartificialisation."
           isRequired={true}
           isAvailable={true}
@@ -284,7 +282,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
         />
 
         <IndicatorTile
-          title="4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme."
+          title="4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers (ENAF) et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme."
           description={
             <>
               Les documents de planification sont ceux énumérés au{" "}
@@ -318,30 +316,21 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
           sont disponibles gratuitement.
         </p>
         <p className="fr-text--sm fr-mb-2w">
-          MonDiagnosticArtificialisation vous propose une première trame de
+          MonDiagArtif vous propose une première trame de
           ce rapport triennal local, en s'appuyant sur les données de
           l'observatoire national disponibles à date, soit:
         </p>
         <ul className="fr-text--sm">
           <li>
             concernant la consommation d'espaces naturels, agricoles et
-            forestiers, les données issues des fichiers fonciers produites
+            forestiers (ENAF), les données issues des fichiers fonciers produites
             annuellement par le Cerema ;
           </li>
           <li>
             concernant l'artificialisation nette des sols, les données
-            issues de l'occupation des sols à grande échelle (OCS GE) en
-            cours de production par l'IGN, qui seront disponibles sur
-            l'ensemble du territoire national d'ici fin 2025.
+            issues de l'occupation des sols à grande échelle (OCS GE) produites par l'IGN.
           </li>
         </ul>
-        <p className="fr-text--sm fr-mb-2w">
-          Il n'est, bien évidemment, pas demandé d'inventer des données non
-          encore disponibles : pour le premier rapport triennal à produire
-          d'ici août 2024 il est possible d'utiliser les fichiers fonciers
-          au 1er janvier 2024, couvrant la consommation d'espaces NAF
-          (Naturels, Agricoles et Forestiers) de l'année 2023.
-        </p>
         <p className="fr-text--sm fr-mb-2w">
           Il est également possible d'utiliser les données locales,
           notamment celles des observatoires de l'habitat et du foncier{" "}
@@ -361,7 +350,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
         </p>
         <p className="fr-text--sm fr-mb-0">
           Ces données locales doivent être conformes aux définitions légales
-          de la consommation d'espaces (et le cas échéant de
+          de la consommation d'ENAF (et le cas échéant de
           l'artificialisation nette des sols), homogènes et cohérentes sur
           la décennie de référence de la loi (1er janvier 2011-1er janvier
           2021) et sur la décennie en cours (1er janvier 2021-1er janvier

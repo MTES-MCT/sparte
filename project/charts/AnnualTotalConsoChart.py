@@ -49,9 +49,9 @@ class AnnualTotalConsoChart(DiagnosticChart):
         return super().param | {
             "chart": {"type": "column", "height": 280},
             "title": {
-                "text": f"Consommation annuelle d'espaces NAF - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+                "text": f"Consommation annuelle d'ENAF - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
             },
-            "yAxis": {"title": {"text": "Consommation d'espaces NAF (ha)"}},
+            "yAxis": {"title": {"text": "Consommation d'ENAF (ha)"}},
             "xAxis": {"type": "category"},
             "tooltip": {
                 "headerFormat": DEFAULT_HEADER_FORMAT,
@@ -348,7 +348,7 @@ class AnnualTotalConsoChartExport(AnnualTotalConsoChart):
         return super().param | {
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF à {self.land.name} "
+                    f"Consommation d'ENAF à {self.land.name} "
                     f"entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
                 )
             },

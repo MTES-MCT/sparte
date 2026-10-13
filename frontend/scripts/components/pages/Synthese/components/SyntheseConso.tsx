@@ -33,7 +33,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
           <Kpi
             icon="bi bi-archive"
-            label="Consommation d'espaces NAF observée"
+            label="Consommation d'ENAF observée"
             value={
               <>
                 <div>{formatNumber({ number: conso_2011_2020 })} <span>ha</span></div>
@@ -55,17 +55,16 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
           <GuideContent title="Comprendre la période de référence">
             <p className="fr-text--sm">
-              La consommation d'espaces NAF entre 2011 et 2021 constitue
+              La consommation d'ENAF entre le 1<sup>er</sup> janvier 2011 et le 1<sup>er</sup> janvier 2021 constitue
               la base de calcul pour définir la trajectoire de réduction fixée
               par la <strong>loi Climat et Résilience</strong>.
             </p>
             <p className="fr-text--sm fr-mb-0">
               Sur le territoire de <strong>{name}</strong>,{" "}
               <strong>{formatNumber({ number: conso_2011_2020 })} ha</strong> ont été
-              consommés sur cette période selon les données du Portail National de
-              l'artificialisation.{" "}
+              consommés sur cette période selon les données du Portail de l'artificialisation des sols.{" "}
               Cette valeur sert de point de départ pour apprécier les efforts
-              de réduction à mettre en oeuvre sur ce territoire.
+              de réduction à mettre en œuvre sur ce territoire.
             </p>
           </GuideContent>
         </div>
@@ -78,7 +77,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-check"
-          label="Consommation d'espaces NAF observée"
+          label="Consommation d'ENAF observée"
           value={
             <>
               <div>{formatNumber({ number: conso_since_2021 })} <span>ha</span></div>
@@ -100,7 +99,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-bullseye"
-          label="Consommation d'espaces NAF cible"
+          label="Consommation d'ENAF cible"
           value={
             <>
               <div>{formatNumber({ number: allowed_conso_2021_2030 })} <span>ha</span></div>
@@ -124,10 +123,10 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
         <GuideContent title="Comprendre l'objectif de réduction">
           <p className="fr-text--sm">
             L'objectif national de réduction de 50% se traduit, pour le territoire de <strong>{name}</strong>,
-            par une consommation maximale de <strong>{formatNumber({ number: allowed_conso_2021_2030 })} ha entre 2021 et 2031</strong>.
+            par une consommation cible de <strong>{formatNumber({ number: allowed_conso_2021_2030 })} ha entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031</strong>.
           </p>
           <p className="fr-text--sm fr-mb-0">
-            D'après les données du Portail National de l'Artificialisation, <strong>{formatNumber({ number: conso_since_2021 })} ha</strong> ont déjà été consommés <strong>entre 2021 et 2024</strong>.
+            D'après les données du Portail de l'artificialisation des sols, <strong>{formatNumber({ number: conso_since_2021 })} ha</strong> ont déjà été consommés <strong>entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2024</strong>.
           </p>
         </GuideContent>
       </div>

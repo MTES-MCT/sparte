@@ -86,13 +86,13 @@ export const OcsgeDrawerProvider: React.FC<OcsgeDrawerProviderProps> = ({
                         Source des données
                     </SectionTitle>
                     <Paragraph>
-                        La mesure de l'artificialisation et de l'imperméabilisation d'un territoire repose sur la donnée <strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>, base de données de référence pour la description de l'occupation du sol.
+                        La mesure de l'artificialisation et de l'imperméabilisation d'un territoire repose sur l'<strong>OCS GE (Occupation du Sol à Grande Échelle)</strong>, base de données de référence pour la description de l'occupation du sol.
                     </Paragraph>
                     <Paragraph>
                         Cette donnée est produite par l'IGN tous les 3 ans pour chaque département. Chaque production est appelée un <strong>millésime</strong>.
                     </Paragraph>
                     <Paragraph>
-                        Ces données sont disponibles en téléchargement sur le site de l'IGN : <a href="https://geoservices.ign.fr/ocsge" target="_blank" rel="noopener noreferrer">geoservices.ign.fr</a>
+                        Ces données sont disponibles en téléchargement sur le site de l'IGN : <a href="https://cartes.gouv.fr/" target="_blank" rel="noopener noreferrer">cartes.gouv.fr</a>
                     </Paragraph>
                 </Section>
 
