@@ -100,7 +100,7 @@ Le projet est organisé en applications Django :
 | `carto/` | Cartographie (réservé pour extensions futures) |
 | `crisp/` | Webhooks Crisp, forwarding vers Mattermost, envoi de feedback |
 | `oidc/` | Authentification ProConnect via OpenID Connect |
-| `highcharts/` | Classe de base pour les graphiques Highcharts, export images/PDF |
+| `highcharts/` | Classe de base pour les graphiques Highcharts |
 | `utils/` | Utilitaires partagés : emails, Mattermost, anti-spam, couleurs, Excel, cache |
 | `brevo/` | Intégration Brevo (migrations) |
 
