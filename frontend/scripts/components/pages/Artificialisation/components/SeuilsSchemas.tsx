@@ -138,7 +138,6 @@ const Arrow = styled.div`
 
 export const SeuilsSchemas = () => {
 	return (
-		<>
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<SchemaPair className="fr-col-12 fr-col-lg-4">
 				<span className="fr-badge">1</span>
@@ -180,6 +179,5 @@ export const SeuilsSchemas = () => {
 			</SchemaPair>
 			
 		</div>
-		</>
 	);
 };
