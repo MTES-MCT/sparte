@@ -1,0 +1,23 @@
+{% if MESSAGES_WIDGET_ACTIVATED %}
+<script nonce="[NONCE_PLACEHOLDER]" src="{{ MESSAGES_WIDGET_LOADER_SRC }}" async></script>
+<script nonce="[NONCE_PLACEHOLDER]">
+    window._lasuite_widget = window._lasuite_widget || [];
+    _lasuite_widget.push(["loader", "init", {
+        "params": {
+            "api": "{{ MESSAGES_WIDGET_API }}",
+            "channel": "{{ MESSAGES_WIDGET_CHANNEL }}",
+            "title": "Une question, une remarque ?",
+            "placeholder": "Écrivez-nous votre message...",
+            "emailPlaceholder": "Votre adresse e-mail...",
+            "submitText": "Envoyer",
+            "successText": "Merci pour votre message !",
+            "successText2": "Nous vous répondrons par e-mail dans les meilleurs délais.",
+            "closeLabel": "Fermer la fenêtre de contact"
+        },
+        "script": "{{ MESSAGES_WIDGET_SCRIPT_SRC }}",
+        "widget": "feedback",
+    }]);
+</script>
+{% else %}
+<!-- Messages widget is not activated, see MESSAGES_WIDGET_ACTIVATED environment variable -->
+{% endif %}
