@@ -5,7 +5,6 @@
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
-{% load highcharts_tags %}
 {% load sri %}
 
 {% block pagetitle %}
@@ -20,11 +19,5 @@ Stand alone view on fragment
 
 {% block bodyend %}
 {% localize off %}
-
-{% sri_static "highcharts/js/highcharts.js" %}
-{% sri_static "highcharts/js/highcharts-more.js" %}
-{% sri_static "highcharts/js/exporting.js" %}
-{% french_translation %}
-
 {% endlocalize %}
 {% endblock bodyend %}

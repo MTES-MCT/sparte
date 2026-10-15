@@ -13,6 +13,7 @@ import HighchartsTilemap from 'highcharts/modules/tilemap';
 import HighchartsTreemap from 'highcharts/modules/treemap';
 import Drilldown from 'highcharts/modules/drilldown';
 import Exporting from 'highcharts/modules/exporting';
+import OfflineExporting from 'highcharts/modules/offline-exporting';
 import Fullscreen from 'highcharts/modules/full-screen';
 import NoDataToDisplay from 'highcharts/modules/no-data-to-display';
 import SeriesOnPoint from 'highcharts/modules/series-on-point';
@@ -23,6 +24,7 @@ import Button from '@components/ui/Button';
 import ChartDataSource from './ChartDataSource';
 import ChartDataTable from './ChartDataTable';
 import ChartExplorer from './ChartExplorer';
+import { downloadChartPng } from './downloadChartPng';
 import MailleIndicator from '@components/ui/MailleIndicator';
 import { useGetChartConfigQuery } from '@services/api';
 
@@ -34,6 +36,7 @@ HighchartsTilemap(Highcharts)
 HighchartsTreemap(Highcharts)
 Drilldown(Highcharts)
 Exporting(Highcharts)
+OfflineExporting(Highcharts)
 Fullscreen(Highcharts)
 NoDataToDisplay(Highcharts)
 HCSoldGauge(Highcharts)
@@ -144,11 +147,7 @@ const GenericChart = ({
   const isLoadingOrFetching = isLoading || isFetching
   const effectiveShowDataTable = dataTableOnly || showDataTable
 
-  const handleDownloadPNG = () => {
-    if (chartRef.current?.chart) {
-      chartRef.current.chart.exportChart({ type: 'image/png' })
-    }
-  }
+  const handleDownloadPNG = () => downloadChartPng(chartRef.current?.chart)
 
   const handleFullscreen = () => {
     if (chartRef.current?.chart) {
