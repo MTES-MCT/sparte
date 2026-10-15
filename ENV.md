@@ -213,38 +213,16 @@ Airflow se connecte à plusieurs bases de données pour les pipelines DBT.
 | `DBT_DB_PORT` | Port | `ASK_A_MAINTAINER` |
 | `DBT_DB_SCHEMA` | Schéma | `public` |
 
-### Dev (Django local)
+### Site (base applicative)
 
 | Variable | Description | Valeur par défaut |
 |----------|-------------|-------------------|
-| `DEV_DB_NAME` | Nom de la base | `synthese` |
-| `DEV_DB_USER` | Utilisateur | `postgres` |
-| `DEV_DB_PASSWORD` | Mot de passe | `postgres` |
-| `DEV_DB_HOST` | Hôte | `host.docker.internal` |
-| `DEV_DB_PORT` | Port | `5432` |
-| `DEV_DB_SCHEMA` | Schéma | `public` |
-
-### Staging
-
-| Variable | Description | Valeur par défaut |
-|----------|-------------|-------------------|
-| `STAGING_DB_NAME` | Nom de la base | `ASK_A_MAINTAINER` |
-| `STAGING_DB_USER` | Utilisateur | `ASK_A_MAINTAINER` |
-| `STAGING_DB_PASSWORD` | Mot de passe | `ASK_A_MAINTAINER` |
-| `STAGING_DB_HOST` | Hôte | `ASK_A_MAINTAINER` |
-| `STAGING_DB_PORT` | Port | `ASK_A_MAINTAINER` |
-| `STAGING_DB_SCHEMA` | Schéma | `public` |
-
-### Production
-
-| Variable | Description | Valeur par défaut |
-|----------|-------------|-------------------|
-| `PROD_DB_NAME` | Nom de la base | `ASK_A_MAINTAINER` |
-| `PROD_DB_USER` | Utilisateur | `ASK_A_MAINTAINER` |
-| `PROD_DB_PASSWORD` | Mot de passe | `ASK_A_MAINTAINER` |
-| `PROD_DB_HOST` | Hôte | `ASK_A_MAINTAINER` |
-| `PROD_DB_PORT` | Port | `ASK_A_MAINTAINER` |
-| `PROD_DB_SCHEMA` | Schéma | `public` |
+| `SITE_DB_NAME` | Nom de la base | `synthese` |
+| `SITE_DB_USER` | Utilisateur | `postgres` |
+| `SITE_DB_PASSWORD` | Mot de passe | `postgres` |
+| `SITE_DB_HOST` | Hôte | `host.docker.internal` |
+| `SITE_DB_PORT` | Port | `5432` |
+| `SITE_DB_SCHEMA` | Schéma | `public` |
 
 ## Notifications
 
