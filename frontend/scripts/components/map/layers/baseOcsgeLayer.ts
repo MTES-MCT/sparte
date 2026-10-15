@@ -5,6 +5,7 @@ import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
 import { area } from '@turf/turf';
 import type { FilterSpecification, LayerSpecification } from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
 

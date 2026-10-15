@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState, useMemo, useEffect } from "react";
 import styled from "styled-components";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";

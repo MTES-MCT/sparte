@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { formatNumber } from "@utils/formatUtils";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";
 import { InfoContent } from "./InfoContent";
 import { InfoRow } from "./InfoRow";

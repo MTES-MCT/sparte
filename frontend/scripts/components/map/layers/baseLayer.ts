@@ -1,6 +1,6 @@
 import type { BaseLayerOptions } from "../types/layer";
 import type { LayerInterface } from "../types/layerInterface";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import type { LayerSpecification } from "maplibre-gl";
 
 export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSource' | 'getOpacity' | 'setOpacity' | 'getVisibility' | 'setVisibility'> {

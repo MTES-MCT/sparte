@@ -1,6 +1,6 @@
 import React, { useRef, useLayoutEffect } from "react";
 import styled from "styled-components";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import { theme } from "@theme";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { formatNumber } from "@utils/formatUtils";

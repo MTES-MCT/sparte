@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";

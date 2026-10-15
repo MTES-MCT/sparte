@@ -24,6 +24,20 @@ const common = {
     module: {
         rules: [
             {
+                test: /maplibre-gl\.mjs$/,
+                include: /node_modules[\\/]maplibre-gl[\\/]dist/,
+                parser: {
+                    url: false,
+                },
+            },
+            {
+                test: /maplibre-gl-worker\.mjs$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/scripts/[name].[contenthash][ext]',
+                },
+            },
+            {
                 test: /\.(woff|woff2|eot|ttf|otf)$/i,
                 type: 'asset/resource',
                 generator: {

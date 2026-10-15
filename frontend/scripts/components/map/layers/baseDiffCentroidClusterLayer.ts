@@ -1,6 +1,6 @@
 import { BaseLayer } from "./baseLayer";
 import type { LayerSpecification } from "maplibre-gl";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 
 export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
     private markers: Record<string, maplibregl.Marker> = {};

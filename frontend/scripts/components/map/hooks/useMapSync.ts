@@ -1,5 +1,5 @@
 import { useRef, useCallback } from "react";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 
 export const useMapSync = () => {
     const mapsRef = useRef<maplibregl.Map[]>([]);

@@ -1,5 +1,5 @@
 import type { BaseSourceOptions, MapDataLocations } from "../types/source";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import type { SourceSpecification, LayerSpecification, StyleSpecification } from "maplibre-gl";
 
 export abstract class BaseSource {

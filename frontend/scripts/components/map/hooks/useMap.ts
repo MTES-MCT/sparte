@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import { DEFAULT_MAP_STYLE, FRENCH_LOCALE } from "../constants/config";
 import { calculateMaxBoundsWithPadding } from "../utils/bounds";

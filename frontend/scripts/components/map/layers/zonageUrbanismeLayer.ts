@@ -1,7 +1,7 @@
 import { BaseLayer } from "./baseLayer";
 import type { StatCategory } from "../types/layer";
 import type { LayerSpecification, FilterSpecification } from "maplibre-gl";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
 import { area } from "@turf/turf";

@@ -1,4 +1,4 @@
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import { LayerInfoConfig, InfoPanelState } from "../types/infoPanel";
 import { InfoPanelStateManager } from "./InfoPanelStateManager";
 
