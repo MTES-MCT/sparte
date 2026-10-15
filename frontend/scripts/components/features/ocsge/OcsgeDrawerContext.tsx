@@ -92,7 +92,7 @@ export const OcsgeDrawerProvider: React.FC<OcsgeDrawerProviderProps> = ({
                         Cette donnée est produite par l'IGN tous les 3 ans pour chaque département. Chaque production est appelée un <strong>millésime</strong>.
                     </Paragraph>
                     <Paragraph>
-                        Ces données sont disponibles en téléchargement sur le site de l'IGN : <a href="https://cartes.gouv.fr/" target="_blank" rel="noopener noreferrer">cartes.gouv.fr</a>
+                        Ces données sont disponibles en téléchargement sur le site de l'IGN : <a href="https://cartes.gouv.fr/rechercher-une-donnee/dataset/IGNF_OCS-GE-ARTIFICIALISATION" target="_blank" rel="noopener noreferrer">cartes.gouv.fr</a>
                     </Paragraph>
                 </Section>
 
