@@ -81,7 +81,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                         <ContentWrapper>
                             <Navbar navbar={navbar} urls={urls} landData={landData} />
                             <Main>
-                                <TopBar name={landData.name} landType={landData.land_type} landId={landData.land_id} />
+                                <TopBar name={landData.name} landType={landData.land_type} landTypeLabel={landData.land_type_label} landId={landData.land_id} />
                                 <Content>
                                     <Routes>
                                         <Route
