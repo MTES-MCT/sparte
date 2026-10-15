@@ -123,7 +123,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
         <GuideContent title="Comprendre l'objectif de réduction">
           <p className="fr-text--sm">
             L'objectif national de réduction de 50% se traduit, pour le territoire de <strong>{name}</strong>,
-            par une consommation cible de <strong>{formatNumber({ number: allowed_conso_2021_2030 })} ha entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031</strong>.
+            par une consommation maximale de <strong>{formatNumber({ number: allowed_conso_2021_2030 })} ha entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031</strong>.
           </p>
           <p className="fr-text--sm fr-mb-0">
             D'après les données du Portail de l'artificialisation des sols, <strong>{formatNumber({ number: conso_since_2021 })} ha</strong> ont déjà été consommés <strong>entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2024</strong>.
