@@ -551,7 +551,6 @@ CSP_WORKER_SRC = ["blob:"]
 CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
-    "code.highcharts.com",
     "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
@@ -626,6 +625,9 @@ CSP_CONNECT_SRC = [
     AIRFLOW_S3_BASE_URL,
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io", "https://stats.beta.gouv.fr")
+# Aucun formulaire ne doit être soumis vers un domaine tiers (ex. l'export de graphiques
+# Highcharts, qui par défaut POSTe vers export.highcharts.com).
+CSP_FORM_ACTION = ["'self'"]
 
 
 # MAP SETTINGS

@@ -24,6 +24,7 @@ import Button from '@components/ui/Button';
 import ChartDataSource from './ChartDataSource';
 import ChartDataTable from './ChartDataTable';
 import ChartExplorer from './ChartExplorer';
+import { downloadChartPng } from './downloadChartPng';
 import MailleIndicator from '@components/ui/MailleIndicator';
 import { useGetChartConfigQuery } from '@services/api';
 
@@ -146,11 +147,7 @@ const GenericChart = ({
   const isLoadingOrFetching = isLoading || isFetching
   const effectiveShowDataTable = dataTableOnly || showDataTable
 
-  const handleDownloadPNG = () => {
-    if (chartRef.current?.chart) {
-      chartRef.current.chart.exportChartLocal({ type: 'image/png', fallbackToExportServer: false })
-    }
-  }
+  const handleDownloadPNG = () => downloadChartPng(chartRef.current?.chart)
 
   const handleFullscreen = () => {
     if (chartRef.current?.chart) {

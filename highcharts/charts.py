@@ -33,6 +33,8 @@ class Chart:
             },
             "exporting": {
                 "filename": param.get("title", {}).get("text", "graphique"),
+                # Export PNG uniquement côté navigateur : jamais de repli vers export.highcharts.com
+                "fallbackToExportServer": False,
                 "chartOptions": {
                     "chart": {"style": {"fontSize": "8px"}},
                 },
