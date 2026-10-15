@@ -31,3 +31,15 @@ def crisp_tag_code(context):
         "CRISP_WEBSITE_ID": settings.CRISP_WEBSITE_ID,
         "CRISP_ACTIVATED": settings.CRISP_ACTIVATED,
     }
+
+
+@register.inclusion_tag("utils/messages_widget.html", takes_context=True)
+def messages_widget_code(context):
+    return {
+        "CSP_NONCE": context["CSP_NONCE"],
+        "MESSAGES_WIDGET_ACTIVATED": settings.MESSAGES_WIDGET_ACTIVATED,
+        "MESSAGES_WIDGET_API": settings.MESSAGES_WIDGET_API,
+        "MESSAGES_WIDGET_CHANNEL": settings.MESSAGES_WIDGET_CHANNEL,
+        "MESSAGES_WIDGET_LOADER_SRC": settings.MESSAGES_WIDGET_LOADER_SRC,
+        "MESSAGES_WIDGET_SCRIPT_SRC": settings.MESSAGES_WIDGET_SCRIPT_SRC,
+    }

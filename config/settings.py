@@ -516,12 +516,16 @@ MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 MATOMO_SRC = env.str("MATOMO_SRC", default="https://matomo.ign.fr")
 MATOMO_SITE_ID = env.str("MATOMO_SITE_ID", default="20")
 
-# GOOGLE TAG ADWORDS
-GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
-
 # CRISP
 CRISP_WEBSITE_ID = env.str("CRISP_WEBSITE_ID")
 CRISP_ACTIVATED = env.bool("CRISP_ACTIVATED", default=False)
+
+# MESSAGES (widget de feedback de l'ANCT, via La Suite)
+MESSAGES_WIDGET_ACTIVATED = env.bool("MESSAGES_WIDGET_ACTIVATED", default=False)
+MESSAGES_WIDGET_API = env.str("MESSAGES_WIDGET_API", default="https://support.incubateur.net/api/v1.0/inbound/widget/")
+MESSAGES_WIDGET_CHANNEL = env.str("MESSAGES_WIDGET_CHANNEL", default="231af05a-312a-4e24-be81-3356be8603f9")
+MESSAGES_WIDGET_LOADER_SRC = "https://beta.gouv.fr/assets/lasuite-widgets/loader.js"
+MESSAGES_WIDGET_SCRIPT_SRC = "https://beta.gouv.fr/assets/lasuite-widgets/feedback.js"
 
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
@@ -537,12 +541,13 @@ CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
     "code.highcharts.com",
-    "www.googletagmanager.com",
     "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
     "https://settings.crisp.chat",
     "https://stats.beta.gouv.fr",
+    # Messages (widget La Suite)
+    "https://beta.gouv.fr",
 ]
 CSP_STYLE_SRC = [
     "'self'",
@@ -552,6 +557,8 @@ CSP_STYLE_SRC = [
     # Crisp
     "https://client.crisp.chat",
     "https://stats.beta.gouv.fr/",
+    # Messages (widget La Suite)
+    "https://beta.gouv.fr",
 ]
 CSP_IMG_SRC = [
     "'self'",
@@ -560,24 +567,20 @@ CSP_IMG_SRC = [
     "s3.fr-par.scw.cloud",
     "data:",
     MEDIA_URL,
-    "google.com",
-    "https://www.google.com/",
-    "https://www.google.fr",
-    "https://www.googleadservices.com",
-    "googleads.g.doubleclick.net",
     "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
     "https://image.crisp.chat",
     "https://storage.crisp.chat",
-    AIRFLOW_S3_BASE_URL,  # à remplacer
+    # Messages (widget La Suite)
+    "https://beta.gouv.fr",
+    AIRFLOW_S3_BASE_URL,
 ]
 CSP_FRAME_SRC = (
     "'self'",
     # Crisp
     "https://game.crisp.chat",
     "https://plugins.crisp.chat/",
-    "https://www.googletagmanager.com/",
     "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
     "https://stats.beta.gouv.fr/",
 )
@@ -600,9 +603,6 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "stats.beta.gouv.fr",
-    "google.com",
-    "https://www.google.com/",
-    "https://www.google.fr",
     "data.geopf.fr",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",
@@ -615,6 +615,8 @@ CSP_CONNECT_SRC = [
     "https://storage.crisp.chat",
     "wss://client.relay.crisp.chat",
     "wss://stream.relay.crisp.chat",
+    # Messages (widget La Suite)
+    "https://support.incubateur.net",
     "https://gist.githubusercontent.com",
     "https://highcharts-export.osc-fr1.scalingo.io/",
     "ws://localhost:3000/ws",
