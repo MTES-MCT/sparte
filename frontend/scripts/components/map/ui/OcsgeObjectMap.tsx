@@ -1,6 +1,5 @@
 import React, { useRef, useCallback, useState, useMemo } from "react";
-import * as maplibregl from "maplibre-gl";
-import type { GeoJSONSource } from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
@@ -38,7 +37,7 @@ export const OcsgeObjectMap: React.FC<OcsgeObjectMapProps> = ({
 	const { layerType, ocsgeLabel, ocsgeDescription } = MODE_CONFIG[mode];
 
 	const updateOcsgeHighlight = useCallback((map: maplibregl.Map, hovered: maplibregl.MapGeoJSONFeature | null) => {
-		const source = map.getSource(OCSGE_HIGHLIGHT_SOURCE) as GeoJSONSource | undefined;
+		const source = map.getSource(OCSGE_HIGHLIGHT_SOURCE) as maplibregl.GeoJSONSource | undefined;
 		if (!source) return;
 		const locked = lockedOcsgeFeatureRef.current;
 		const features: GeoJSON.Feature[] = [];

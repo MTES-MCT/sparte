@@ -1,5 +1,5 @@
 import React from "react";
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 
 export interface LayerInfoConfig {
     layerId: string;

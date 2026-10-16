@@ -1,6 +1,6 @@
 import React from "react";
 import { formatNumber } from "@utils/formatUtils";
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";
 import { InfoContent } from "./InfoContent";
 import { InfoRow } from "./InfoRow";

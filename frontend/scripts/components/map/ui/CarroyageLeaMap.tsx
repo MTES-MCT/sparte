@@ -1,12 +1,11 @@
 import React, { useMemo, useRef, useEffect, useCallback, useState } from "react";
 import styled from "styled-components";
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
 import { useGetCarroyageBoundsQuery, useGetCarroyageDestinationConfigQuery, useGetLandChildrenGeomQuery } from "@services/api";
 import Loader from "@components/ui/Loader";
-import type { ExpressionSpecification } from "maplibre-gl";
 import { CarroyageLeaSidePanel } from "./sidePanel";
 import { CARROYAGE_FIRST_YEAR, CARROYAGE_LAST_YEAR } from "../constants/config";
 
@@ -94,26 +93,26 @@ function buildCumulativeExpression(
     startYear: number,
     endYear: number,
     suffix: string
-): ExpressionSpecification {
+): maplibregl.ExpressionSpecification {
     const minYear = Math.max(startYear, CARROYAGE_FIRST_YEAR);
     const maxYear = Math.min(endYear, CARROYAGE_LAST_YEAR);
 
-    const yearFields: ExpressionSpecification[] = [];
+    const yearFields: maplibregl.ExpressionSpecification[] = [];
     for (let year = minYear; year <= maxYear; year++) {
-        yearFields.push(["coalesce", ["get", `conso_${year}${suffix}`], 0] as ExpressionSpecification);
+        yearFields.push(["coalesce", ["get", `conso_${year}${suffix}`], 0] as maplibregl.ExpressionSpecification);
     }
 
-    if (yearFields.length === 0) return ["literal", 0] as ExpressionSpecification;
+    if (yearFields.length === 0) return ["literal", 0] as maplibregl.ExpressionSpecification;
     if (yearFields.length === 1) return yearFields[0];
-    return ["+", ...yearFields] as ExpressionSpecification;
+    return ["+", ...yearFields] as maplibregl.ExpressionSpecification;
 }
 
 function buildCumulativeFilter(
     startYear: number,
     endYear: number,
     suffix: string
-): ExpressionSpecification {
-    return [">", buildCumulativeExpression(startYear, endYear, suffix), 0] as ExpressionSpecification;
+): maplibregl.ExpressionSpecification {
+    return [">", buildCumulativeExpression(startYear, endYear, suffix), 0] as maplibregl.ExpressionSpecification;
 }
 
 function buildCumulativeColorExpression(
@@ -122,7 +121,7 @@ function buildCumulativeColorExpression(
     destination: DestinationType,
     config: DestinationConfig,
     bounds: { min_value: number; max_value: number } | null
-): ExpressionSpecification {
+): maplibregl.ExpressionSpecification {
     const suffix = config[destination].suffix;
     const baseColor = config[destination].color;
     const stops = buildColorStops(baseColor, bounds);
@@ -135,7 +134,7 @@ function buildCumulativeColorExpression(
         ["linear"],
         cumulativeExpression,
         ...colorStops,
-    ] as ExpressionSpecification;
+    ] as maplibregl.ExpressionSpecification;
 }
 
 function parseHex(hex: string): [number, number, number] {
@@ -254,8 +253,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             const suffix = destinationConfig[selectedDestination].suffix;
             const colorExpression = buildCumulativeColorExpression(startYear, endYear, selectedDestination, destinationConfig, bounds);
             const nonZeroFilter = buildCumulativeFilter(startYear, endYear, suffix);
-            const territoryFilter = ["in", land_id, ["get", land_type]] as ExpressionSpecification;
-            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as ExpressionSpecification;
+            const territoryFilter = ["in", land_id, ["get", land_type]] as maplibregl.ExpressionSpecification;
+            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as maplibregl.ExpressionSpecification;
             if (colorExpression) {
                 map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
             }
@@ -435,8 +434,8 @@ export const CarroyageLeaMap: React.FC<CarroyageLeaMapProps> = ({
             const suffix = destinationConfig["total"].suffix;
             const colorExpression = buildCumulativeColorExpression(startYear, endYear, "total", destinationConfig, bounds);
             const nonZeroFilter = buildCumulativeFilter(startYear, endYear, suffix);
-            const territoryFilter = ["in", land_id, ["get", land_type]] as ExpressionSpecification;
-            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as ExpressionSpecification;
+            const territoryFilter = ["in", land_id, ["get", land_type]] as maplibregl.ExpressionSpecification;
+            const combinedFilter = ["all", territoryFilter, nonZeroFilter] as maplibregl.ExpressionSpecification;
             if (colorExpression) {
                 map.setPaintProperty("carroyage-lea-layer", "fill-color", colorExpression);
             }

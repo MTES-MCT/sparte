@@ -1,5 +1,5 @@
 import React from "react";
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { ARTIFICIALISATION_MATRIX } from "../../constants/ocsge_nomenclatures";
 import { OcsgeDiffSidePanel, OcsgeDiffConfig } from "./OcsgeDiffSidePanel";
 

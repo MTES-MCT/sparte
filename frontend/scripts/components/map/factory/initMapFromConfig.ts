@@ -1,4 +1,4 @@
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { createSource } from "./sourceRegistry";
 import { createLayer } from "./layerRegistry";
 import type { MapConfig } from "../types/builder";

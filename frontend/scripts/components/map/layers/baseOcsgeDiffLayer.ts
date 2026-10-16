@@ -1,7 +1,6 @@
 import { BaseLayer } from "./baseLayer";
 import type { StatCategory, LayerType } from "../types/layer";
 import { area } from '@turf/turf';
-import type { FilterSpecification } from 'maplibre-gl';
 import type * as maplibregl from 'maplibre-gl';
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
@@ -123,7 +122,7 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
         ].filter(cat => cat.percent > 0);
     }
 
-    protected getTerritoryFilter(): FilterSpecification | null {
+    protected getTerritoryFilter(): maplibregl.FilterSpecification | null {
         return getTerritoryFilter(this.landData);
     }
 }

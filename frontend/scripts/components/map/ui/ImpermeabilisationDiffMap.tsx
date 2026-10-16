@@ -1,6 +1,5 @@
 import React, { useRef, useCallback, useState, useMemo } from "react";
-import * as maplibregl from "maplibre-gl";
-import type { GeoJSONSource } from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
@@ -31,7 +30,7 @@ export const ImpermeabilisationDiffMap: React.FC<ImpermeabilisationMapProps> = (
 	const lockedFeatureRef = useRef<maplibregl.MapGeoJSONFeature | null>(null);
 
 	const updateHighlight = useCallback((map: maplibregl.Map, hovered: maplibregl.MapGeoJSONFeature | null) => {
-		const source = map.getSource(HIGHLIGHT_SOURCE) as GeoJSONSource | undefined;
+		const source = map.getSource(HIGHLIGHT_SOURCE) as maplibregl.GeoJSONSource | undefined;
 		if (!source) return;
 		const locked = lockedFeatureRef.current;
 		const features: GeoJSON.Feature[] = [];

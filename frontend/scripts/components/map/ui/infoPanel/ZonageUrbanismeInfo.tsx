@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { InfoContent } from "./InfoContent";
 import { InfoRow } from "./InfoRow";
 import { InfoLabel } from "./InfoLabel";

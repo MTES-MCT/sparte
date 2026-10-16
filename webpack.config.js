@@ -24,6 +24,8 @@ const common = {
     module: {
         rules: [
             {
+                // Empêche webpack d'analyser les new URL(expr, import.meta.url) internes
+                // de maplibre-gl, qui déclenchent sinon un avertissement "Critical dependency"
                 test: /maplibre-gl\.mjs$/,
                 include: /node_modules[\\/]maplibre-gl[\\/]dist/,
                 parser: {
@@ -198,10 +200,8 @@ const production = {
         }),
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: [
-                'fonts/*',
-                'images/*',
-                'scripts/*',
-                'styles/*',
+                'assets/scripts/*',
+                'assets/styles/*',
             ],
         })
     ]

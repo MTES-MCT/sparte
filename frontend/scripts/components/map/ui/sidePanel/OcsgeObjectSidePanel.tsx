@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { theme } from "@theme";
 import { formatNumber } from "@utils/formatUtils";
 import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";

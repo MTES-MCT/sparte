@@ -9,10 +9,8 @@ import '@gouvfr/dsfr/dist/dsfr.module.min.js'
 // HTMX
 import 'htmx.org'
 
-import { setWorkerUrl } from 'maplibre-gl'
+// MapLibre : l'URL du worker doit être définie avant tout import qui crée une carte
+import './maplibreWorker.js'
 
 // React
 import './react-roots.tsx'
-
-const workerUrl = new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url)
-setWorkerUrl(workerUrl.href)

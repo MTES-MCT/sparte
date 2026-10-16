@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useCallback, useState } from "react";
 import styled from "styled-components";
-import * as maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { useMap } from "../hooks/useMap";
 import { useGetEnvironmentQuery } from "@services/api";
 import { initMapFromConfig } from "../factory/initMapFromConfig";
