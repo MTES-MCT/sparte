@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { InfoContent, InfoRow, InfoLabel, InfoValue } from ".";
 import { formatNumber } from "@utils/formatUtils";
 import { useGetCarroyageDestinationConfigQuery } from "@services/api";

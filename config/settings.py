@@ -554,7 +554,7 @@ if USE_CSP:
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob:", "stats.beta.gouv.fr"]
-CSP_WORKER_SRC = ["blob:"]
+CSP_WORKER_SRC = ["'self'", "blob:"]
 CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
