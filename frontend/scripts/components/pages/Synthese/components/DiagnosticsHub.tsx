@@ -13,20 +13,20 @@ const DIAGNOSTICS = [
   {
     key: "consommation" as const,
     icon: "bi bi-graph-up",
-    title: "Consommation d'espaces",
-    description: "Analyse détaillée par destination, évolution démographique, ...",
+    title: "Consommation d'ENAF",
+    description: "Analyse détaillée à la maille communale",
   },
   {
     key: "trajectoires" as const,
     icon: "bi bi-sliders",
-    title: "Simulation de trajectoire",
-    description: "Projetez et simulez vos objectifs de réduction",
+    title: "Trajectoire de sobriété foncière",
+    description: "Analyse du rythme de consommation et projection d'objectifs de réduction",
   },
   {
     key: "artificialisation" as const,
     icon: "bi bi-layers",
     title: "Artificialisation des sols",
-    description: "Analyse détaillée des surfaces artificialisées (OCS GE)",
+    description: "Analyse détaillée des stocks et des flux (OCS GE)",
   },
   {
     key: "impermeabilisation" as const,
@@ -38,13 +38,13 @@ const DIAGNOSTICS = [
     key: "logementVacant" as const,
     icon: "bi bi-house",
     title: "Logements vacants",
-    description: "Parc privé, bailleurs sociaux et potentiel de mobilisation",
+    description: "Potentiel de mobilisation des logements du parc privé et du parc social",
   },
   {
     key: "friches" as const,
     icon: "bi bi-building-x",
     title: "Friches",
-    description: "Localisation, surfaces artificialisées et imperméables",
+    description: "Analyse du potentiel de friches à réhabiliter",
   },
 ];
 

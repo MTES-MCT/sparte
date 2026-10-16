@@ -165,13 +165,13 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         La France s'est donc fixé, dans le cadre de la <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924" target="_blank" rel="noopener noreferrer">loi n° 2021-1104 du 22 août 2021</a> dite 
                         « Climat et résilience » complétée par la <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047866733" target="_blank" rel="noopener noreferrer">loi n° 2023-630 du 20 juillet 2023</a>,
                         l'objectif d'atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire de réduction de moitié 
-                        de la consommation d'espaces NAF sur 2021-2031 par rapport à la décennie précédente.
+                        de la consommation d'ENAF sur 2021-2031 par rapport à la décennie précédente.
                     </p>
                     <p>
                         Cette trajectoire progressive est à décliner territorialement dans les documents de planification et d'urbanisme.
                     </p>
                     <p>
-                        Cette trajectoire est mesurée, pour la période 2021-2031, en consommation d'espaces NAF (Naturels, Agricoles et Forestiers), 
+                        Cette trajectoire est mesurée, pour la période 2021-2031, en consommation d'espaces naturels, agricoles et forestiers (ENAF), 
                         définie comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » 
                         (<a href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223" target="_blank" rel="noopener noreferrer">article 194, III, 5° de la loi Climat et résilience</a>).
                     </p>
@@ -267,7 +267,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         Les données produites par l'<a href="https://artificialisation.developpement-durable.gouv.fr/" target="_blank" rel="noopener noreferrer">observatoire national de l'artificialisation</a> sont disponibles gratuitement. <strong>Mon Diagnostic Artificialisation vous propose une première trame de ce rapport local, en s'appuyant sur les données de l'observatoire national disponibles à date, soit :</strong>
                     </p>
                     <p>
-                        <strong>Concernant la consommation d'espaces NAF</strong>, les données issues des fichiers fonciers produits annuellement par le Cerema. 
+                        <strong>Concernant la consommation d'ENAF</strong>, les données issues des fichiers fonciers produits annuellement par le Cerema. 
                     </p>
                     <p>
                         Ce rapport a été produit à partir des fichiers fonciers fournis par le Cerema au 1er janvier 2024 ;
@@ -291,7 +291,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </section>
 
             <section>
-                <h2>1 Consommation des espaces NAF (Naturels, Agricoles et Forestiers)</h2>
+                <h2>1 Consommation des espaces naturels, agricoles et forestiers (ENAF)</h2>
 
                 <div className="fr-badge fr-badge--warning fr-badge--sm fr-mb-3w">Indicateurs obligatoires</div>
                 
@@ -350,7 +350,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                 <div className="fr-callout fr-callout--brown-caramel">
                     <p className="fr-callout__text">
-                        Attention, les données issues des fichiers fonciers concernent uniquement la consommation d'espaces NAF, 
+                        Attention, les données issues des fichiers fonciers concernent uniquement la consommation d'ENAF, 
                         et ne prennent pas en compte la désartificialisation (définie par l'article 194 de la loi Climat et résilience 
                         comme "la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers").
                     </p>
@@ -371,7 +371,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                 <div className="fr-callout fr-callout--brown-caramel fr-mt-4w">
                     <p className="fr-callout__text">
-                        De façon optionnelle, il est possible d'indiquer ici, parmi les espaces NAF consommés sur la période de référence, 
+                        De façon optionnelle, il est possible d'indiquer ici, parmi les ENAF consommés sur la période de référence, 
                         la proportion des espaces agricoles, naturels, et forestiers. Cet indicateur n'est pas disponible sur l'observatoire national. 
                         Des données locales peuvent être utilisées.
                     </p>
@@ -390,7 +390,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                 <div className="fr-callout fr-callout--brown-caramel fr-mt-4w">
                     <p className="fr-callout__text">
                         De façon optionnelle, il est possible d'indiquer les surfaces désartificialisées sur la période de référence.
-                        La désartificialisation peut être décomptée du bilan de consommation d'espaces NAF, au choix de la commune ou de l'intercommunalité.
+                        La désartificialisation peut être décomptée du bilan de consommation d'ENAF, au choix de la commune ou de l'intercommunalité.
                         Cet indicateur n'est pas disponible sur l'observatoire national. Des données locales peuvent être utilisées.
                     </p>
                 </div>
@@ -678,7 +678,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
             </section>
 
             <section>
-                <h2>4 Evaluation du respect des objectifs de réduction de la consommation d'espaces NAF et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme</h2>
+                <h2>4 Evaluation du respect des objectifs de réduction de la consommation d'ENAF et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme</h2>
 
                 <ContentZone
                     content={content.evaluation_respect_trajectoire || ''}
@@ -693,7 +693,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         (SRADDET, SDRIF, PADDUC, SAR), le cas échéant dans le SCoT et le PLU(i) applicable, d'évaluer la trajectoire de la commune ou de l'intercommunalité.
                     </p>
                     <p className="fr-callout__text">
-                        Avant 2031, seule la trajectoire de consommation d'espaces NAF est à évaluer (et non l'artificialisation nette des sols).
+                        Avant 2031, seule la trajectoire de consommation d'ENAF est à évaluer (et non l'artificialisation nette des sols).
                     </p>
                 </div>
             </section>

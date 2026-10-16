@@ -32,13 +32,13 @@ export const ArtifCalculation: React.FC = () => {
             <img
               width="100%"
               src={OcsgeMatricePNG}
-              alt="Matrice de croisements d'usage et de couverture d'après la nomenclature OCS GE qui détermine la composition de l'artificialisation"
+              alt="Matrice de croisements d'usage et de couverture d'après la nomenclature OCS GE qui détermine l'artificialisation"
             />
           </div>
         </section>
         <h3 id="seuils-interpretation" className="fr-mt-5w">Les seuils d'interprétation</h3>
         <p className="fr-text--sm">
-          Une fois les espaces qualifiés en artificiels ou non-artificiels à
+          Une fois les espaces qualifiés en artificialisés ou non-artificialisés à
           partir du tableau de croisement,{" "}
           <strong>des seuils d'interprétation sont appliqués</strong>, comme
           défini dans le{" "}
@@ -49,9 +49,8 @@ export const ArtifCalculation: React.FC = () => {
           >
             décret du 27 novembre 2023
           </a>
-          . Ces seuils indiquent que des surfaces de moins de 2500 m² ne peuvent
-          pas être comptabilisées comme artificialisées ou désartificialisées, à
-          l'exception des espaces bâtis.
+          . Ces seuils indiquent que la caractérisation des surfaces enclavées de moins de 2500 m² dépend des surfaces environnantes.
+          Exception faite des surfaces bâties qui sont toujours considérées comme artificielles.
         </p>
         <p className="fr-text--sm">
           De fait, l'application de ces seuils{" "}
@@ -65,15 +64,15 @@ export const ArtifCalculation: React.FC = () => {
         <SeuilsSchemas />
         <p className="fr-text--sm">
           Le détail de la méthode de calcul de l'artificialisation avec les seuils
-          d'interprétation est disponible sur le portail de l'artificialisation
+          d'interprétation est disponible sur le portail de l'artificialisation des sols
           :&nbsp;{" "}
           <a
             className="fr-link fr-text--sm"
             target="_blank"
             rel="noopener noreferrer"
-            href="https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols"
+            href="https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/analyse-lartificialisation-des-sols-et-autres-indicateurs"
           >
-            https://artificialisation.developpement-durable.gouv.fr/calcul-lartificialisation-des-sols
+            https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/analyse-lartificialisation-des-sols-et-autres-indicateurs
           </a>
         </p>
         <h3 className="fr-mt-5w">Les exemptions facultatives</h3>
@@ -108,11 +107,7 @@ export const ArtifCalculation: React.FC = () => {
           type="info"
           withCard={false}
           title="L'IGN est actuellement en cours de production d'une base de données nationale intégrant les exemptions prévues pour les installations photovoltaïques au sol et les parcs ou jardins publics. Les données affichées sur la plateforme ne prennent pas encore en compte ces exemptions."
-          description={
-            <a target="_blank" href="/newsletter/inscription">
-              Inscrivez-vous à notre lettre d'infos pour être prévenu(e) de la disponibilité de ces données
-            </a>
-          }
+          description={""}
         />
       </BaseCard>
     </>
