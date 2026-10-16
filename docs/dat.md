@@ -80,7 +80,7 @@ graph TB
 - **Mattermost** : notifications internes (déploiements, alertes, connexions admin)
 - **Matomo** : analytique web (optionnel, stats.beta.gouv.fr)
 - **Metabase** : tableaux de bord statistiques (hébergé sur Scalingo)
-- **Highcharts** : génération de graphiques (serveur d'export dédié)
+- **Highcharts** : génération de graphiques ; l'export PNG se fait entièrement dans le navigateur (module `offline-exporting`), sans serveur d'export et sans repli vers export.highcharts.com. Le module peut tenter de charger `canvg.js` depuis code.highcharts.com en cas de canvas « tainted » (SVG contenant une image d'une autre origine, ce qu'aucun graphique du projet ne fait) : ce domaine est volontairement absent de la CSP, l'export échoue alors silencieusement plutôt que de charger un script tiers
 - **Sentry** : monitoring des erreurs (sentry.incubateur.net)
 - **ProConnect** : authentification OpenID Connect (État français)
 - **data.gouv.fr** : publication de données ouvertes via API
@@ -100,7 +100,7 @@ Le projet est organisé en applications Django :
 | `carto/` | Cartographie (réservé pour extensions futures) |
 | `crisp/` | Webhooks Crisp, forwarding vers Mattermost, envoi de feedback |
 | `oidc/` | Authentification ProConnect via OpenID Connect |
-| `highcharts/` | Classe de base pour les graphiques Highcharts, export images/PDF |
+| `highcharts/` | Classe de base pour les graphiques Highcharts |
 | `utils/` | Utilitaires partagés : emails, Mattermost, anti-spam, couleurs, Excel, cache |
 | `brevo/` | Intégration Brevo (migrations) |
 

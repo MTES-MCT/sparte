@@ -6,7 +6,6 @@ import {
   SyntheseArtif,
   SyntheseFriche,
   SyntheseLogementVacant,
-  TerritoryIdentityCard,
   DiagnosticsHub,
 } from "./components";
 import Badge from "@components/ui/Badge";
@@ -21,8 +20,6 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
 
   return (
     <div className="fr-container--fluid fr-p-3w">
-      <TerritoryIdentityCard landData={landData} className="fr-mb-7w" />
-
       <div className="fr-mb-7w">
         <h2 className="fr-mb-1w">
           Comprendre : les objectifs de sobriété foncière

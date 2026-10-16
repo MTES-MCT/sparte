@@ -51,6 +51,13 @@ const RightSection = styled.div`
     }
 `;
 
+const Slot = styled.div`
+    display: flex;
+    align-items: center;
+    gap: ${theme.spacing.md};
+    min-width: 0;
+`;
+
 const Title = styled.div`
     color: ${theme.colors.purple};
     margin: 0;
@@ -58,6 +65,13 @@ const Title = styled.div`
     font-size: ${theme.fontSize.xxl};
     line-height: 1.2em;
     font-weight: ${theme.fontWeight.semibold};
+`;
+
+const TypeLabel = styled.span`
+    font-size: ${theme.fontSize.sm};
+    font-weight: ${theme.fontWeight.medium};
+    color: ${theme.colors.textMuted};
+    white-space: nowrap;
 `;
 
 const FavoriteButton = styled(Button)<{ $active: boolean }>`
@@ -77,10 +91,11 @@ const FavoriteButton = styled(Button)<{ $active: boolean }>`
 interface TopBarProps {
     name?: string;
     landType?: string;
+    landTypeLabel?: string;
     landId?: string;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
+const TopBar: React.FC<TopBarProps> = ({ name, landType, landTypeLabel, landId }) => {
     const isOpen = useSelector(selectIsNavbarOpen);
     const { data: preference } = useGetUserLandPreferenceQuery(
         { land_type: landType!, land_id: landId! },
@@ -139,8 +154,11 @@ const TopBar: React.FC<TopBarProps> = ({ name, landType, landId }) => {
                     </FavoriteButton>
                 )}
             </LeftSection>
-            <RightSection id="topbar-slot">
-                {/* Le contenu sera rendu ici via React Portal */}
+            <RightSection>
+                <Slot id="topbar-slot">
+                    {/* Le contenu sera rendu ici via React Portal */}
+                </Slot>
+                {landTypeLabel && <TypeLabel>{landTypeLabel}</TypeLabel>}
             </RightSection>
         </Container>
     );

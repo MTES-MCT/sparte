@@ -36,7 +36,6 @@ class ProjectChart(charts.Chart):
 
 
 class DiagnosticChart(charts.Chart):
-    print_width = 1000
     required_params = []  # Override in subclasses to specify required params
 
     @property

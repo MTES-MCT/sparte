@@ -9,5 +9,8 @@ import '@gouvfr/dsfr/dist/dsfr.module.min.js'
 // HTMX
 import 'htmx.org'
 
+// MapLibre : l'URL du worker doit être définie avant tout import qui crée une carte
+import './maplibreWorker.js'
+
 // React
 import './react-roots.tsx'
