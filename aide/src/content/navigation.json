@@ -1,0 +1,282 @@
+[
+  {
+    "label": "Utilisation de la plateforme",
+    "items": [
+      {
+        "label": "Vue d’ensemble",
+        "slug": "category/utilisation-de-la-plateforme"
+      },
+      {
+        "label": "Découvrir Mon Diag Artif",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Qu'est-ce que Mon Diagnostic Artificialisation ?",
+            "slug": "article/quest-ce-que-mon-diagnostic-artificialisation"
+          },
+          {
+            "label": "Quels sont les objectifs de la plateforme ?",
+            "slug": "article/quels-sont-les-objectifs-de-la-plateforme"
+          },
+          {
+            "label": "Quels territoires sont couverts ?",
+            "slug": "article/quels-territoires-sont-couverts"
+          },
+          {
+            "label": "Comment accéder à la plateforme ?",
+            "slug": "article/comment-acceder-a-la-plateforme"
+          },
+          {
+            "label": "Quelles sont les données utilisées ?",
+            "slug": "article/quelles-sont-les-donnees-utilisees"
+          }
+        ]
+      },
+      {
+        "label": "Naviguer sur la plateforme",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Créer un compte et se connecter",
+            "slug": "article/creer-un-compte-et-se-connecter"
+          },
+          {
+            "label": "Configurer son espace de travail",
+            "slug": "article/configurer-son-espace-de-travail"
+          },
+          {
+            "label": "Comprendre l'interface principale",
+            "slug": "article/comprendre-linterface-principale"
+          },
+          {
+            "label": "Paramètres généraux des diagnostics",
+            "slug": "article/parametres-generaux-des-diagnostics"
+          },
+          {
+            "label": "Autres modifications",
+            "slug": "article/autres-modifications"
+          }
+        ]
+      },
+      {
+        "label": "Explorer et analyser les données",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Pourquoi je ne reçois pas mes rapports de consommation d’espace ou d’artificialisation ?",
+            "slug": "article/pourquoi-je-ne-recois-pas-mes-rapports-de-consommation-despace-ou-dartificialisation"
+          },
+          {
+            "label": "Comment intégrer les données SIG dans mes propres analyses locales ?",
+            "slug": "article/comment-integrer-les-donnees-sig-dans-mes-propres-analyses-locales"
+          },
+          {
+            "label": "Comment interpréter un diagnostic délivré par Mon Diag Artif ?",
+            "slug": "article/comment-interpreter-un-diagnostic-delivre-par-mon-diag-artif"
+          },
+          {
+            "label": "Représentation et interprétation des données",
+            "slug": "article/representation-et-interpretation-des-donnees"
+          },
+          {
+            "label": "Comparer mon territoire avec d’autres territoires",
+            "slug": "article/comparer-mon-territoire-avec-dautres-territoires"
+          }
+        ]
+      },
+      {
+        "label": "Générer et exploiter les rapports",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Télécharger un diagnostic ou un rapport",
+            "slug": "article/telecharger-un-diagnostic-ou-un-rapport"
+          },
+          {
+            "label": "Pourquoi certains rapports sont-ils manquants ou incomplets ?",
+            "slug": "article/pourquoi-certains-rapports-sont-ils-manquants-ou-incomplets"
+          },
+          {
+            "label": "Problèmes de téléchargement de rapports ou de fichiers depuis la plateforme",
+            "slug": "article/problemes-de-telechargement-de-rapports-ou-de-fichiers-depuis-la-plateforme"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Aller plus loin",
+    "items": [
+      {
+        "label": "Vue d’ensemble",
+        "slug": "category/aller-plus-loin"
+      },
+      {
+        "label": "Données et indicateurs",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Quelles sont les sources des données utilisées ?",
+            "slug": "article/quelles-sont-les-sources-des-donnees-utilisees"
+          },
+          {
+            "label": "Quelle est la différence entre consommation des sols, artificialisation et imperméabilisation ?",
+            "slug": "article/quelle-est-la-difference-entre-consommation-des-sols-artificialisation-et-impermeabilisation"
+          },
+          {
+            "label": "Fréquence et production des données de consommation d'espaces NAF et d'artificialisation des sols",
+            "slug": "article/frequence-et-production-des-donnees-de-consommation-despaces-naf-et-dartificialisation-des-sols"
+          },
+          {
+            "label": "Pourquoi je n'ai pas accès aux données de l'année qui vient de s'écouler ? Quelle est la fraîcheur des données sur la plateforme ?",
+            "slug": "article/pourquoi-je-nai-pas-acces-aux-donnees-de-lannee-qui-vient-de-secouler-quelle-est-la-fraicheur-des-donnees-sur-la-plateforme"
+          },
+          {
+            "label": "Pourquoi des données d’observatoires locaux et bureaux d’études peuvent différer de celles de Mon Diag Artif ?",
+            "slug": "article/pourquoi-des-donnees-dobservatoires-locaux-et-bureaux-detudes-peuvent-differer-de-celles-de-mon-diag-artif"
+          },
+          {
+            "label": "Quelles sont les limites et marges d'erreur des calculs ?",
+            "slug": "article/quelles-sont-les-limites-et-marges-derreur-des-calculs"
+          },
+          {
+            "label": "Que faire si les données de mon territoire sont incorrectes ou absentes ?",
+            "slug": "article/que-faire-si-les-donnees-de-mon-territoire-sont-incorrectes-ou-absentes"
+          }
+        ]
+      },
+      {
+        "label": "Obligations légales et sobriété foncière",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Comment transmettre le rapport triennal aux autorités compétentes ?",
+            "slug": "article/comment-transmettre-le-rapport-triennal-aux-autorites-competentes"
+          },
+          {
+            "label": "Qui doit produire le rapport triennal de suivi de l’artificialisation des sols et à quelle fréquence ?",
+            "slug": "article/qui-doit-produire-le-rapport-triennal-de-suivi-de-lartificialisation-des-sols-et-a-quelle-frequence"
+          }
+        ]
+      },
+      {
+        "label": "Enjeux environnementaux",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Quelle est la différence entre désimperméabilisation et renaturation ?",
+            "slug": "article/quelle-est-la-difference-entre-desimpermeabilisation-et-renaturation"
+          },
+          {
+            "label": "Comment les actions de renaturation sont-elles comptabilisées ?",
+            "slug": "article/comment-les-actions-de-renaturation-sont-elles-comptabilisees"
+          },
+          {
+            "label": "Comment évaluer l’impact environnemental de l’artificialisation ?",
+            "slug": "article/comment-evaluer-limpact-environnemental-de-lartificialisation"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Communauté",
+    "items": [
+      {
+        "label": "Vue d’ensemble",
+        "slug": "category/communaute"
+      },
+      {
+        "label": "Webinaires mensuels",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "M'inscrire à un webinaire de présentation de Mon Diag Artif",
+            "slug": "article/minscrire-a-un-webinaire-de-presentation-de-mon-diag-artif"
+          },
+          {
+            "label": "Ressources du webinaire du 05 août",
+            "slug": "article/ressources-du-webinaire-du-05-aout"
+          }
+        ]
+      },
+      {
+        "label": "Rester informé des nouveautés de la plateforme",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Rester informé des nouveautés de la plateforme",
+            "slug": "article/rester-informe-des-nouveautes-de-la-plateforme"
+          }
+        ]
+      },
+      {
+        "label": "Support et assistance utilisateurs",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Comment demander une évolution ou une nouvelle fonctionnalité sur la plateforme ?",
+            "slug": "article/comment-demander-une-evolution-ou-une-nouvelle-fonctionnalite-sur-la-plateforme"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Ressources externes",
+    "items": [
+      {
+        "label": "Vue d’ensemble",
+        "slug": "category/ressources-externes"
+      },
+      {
+        "label": "Cadre réglementaire",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Ressources légales",
+            "slug": "article/ressources-legales"
+          }
+        ]
+      },
+      {
+        "label": "Ressources de la Direction Générale du Logement et de la Nature (DGALN)",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Ressources utiles pour la sobriété foncière",
+            "slug": "article/ressources-utiles-pour-la-sobriete-fonciere"
+          },
+          {
+            "label": "Foire Aux Questions",
+            "slug": "article/foire-aux-questions"
+          }
+        ]
+      },
+      {
+        "label": "Ressources complémentaires sur les données utilisées",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Ressources complémentaires sur les données de consommation d'espaces NAF",
+            "slug": "article/ressources-complementaires-sur-les-donnees-de-consommation-despaces-naf"
+          },
+          {
+            "label": "Ressources complémentaires sur les données d'artificialisation des sols",
+            "slug": "article/ressources-complementaires-sur-les-donnees-dartificialisation-des-sols"
+          }
+        ]
+      },
+      {
+        "label": "Autres documentations",
+        "collapsed": true,
+        "items": [
+          {
+            "label": "Abécédaire de la renaturation par la Fédération Nationale des Agences d'Urbanisme",
+            "slug": "article/abecedaire-de-la-renaturation-par-la-federation-nationale-des-agences-durbanisme"
+          }
+        ]
+      }
+    ]
+  }
+]

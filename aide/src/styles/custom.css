@@ -1,0 +1,126 @@
+:root {
+  --help-blue: #1972f5;
+  --help-card-background: var(--sl-color-bg-nav);
+  --sl-color-accent: #1972f5;
+}
+
+:root[data-theme='light'] {
+  --help-card-background: #fff;
+  --sl-color-accent-low: #e8f1ff;
+  --sl-color-accent-high: #0056b3;
+  --sl-color-bg: #f3f6fb;
+  --sl-color-text: #263445;
+}
+
+header.header {
+  background: var(--help-blue);
+  border-bottom: 0;
+}
+
+header.header .site-title,
+header.header button[data-open-modal] {
+  color: #fff;
+}
+
+header.header button[data-open-modal] {
+  background: rgb(255 255 255 / 14%);
+  border-color: rgb(255 255 255 / 40%);
+}
+
+body:has(#articles-en-vedette) {
+  --sl-content-width: 64rem;
+}
+
+body:has(#articles-en-vedette) .right-sidebar-container {
+  display: none;
+}
+
+body:has(#articles-en-vedette) .main-frame {
+  padding-inline-start: 0;
+}
+
+body:has(#articles-en-vedette) .main-pane {
+  width: 100%;
+}
+
+body:has(#articles-en-vedette) .sl-container {
+  max-width: var(--sl-content-width);
+  margin-inline: auto;
+}
+
+body:has(#articles-en-vedette) .content-panel {
+  border: 0;
+}
+
+body:has(#articles-en-vedette) main > .content-panel:first-child {
+  padding-block: 2.5rem;
+  color: #fff;
+  background: var(--help-blue);
+}
+
+body:has(#articles-en-vedette) h1 {
+  color: #fff;
+  font-size: 2rem;
+  text-align: center;
+}
+
+body:has(#articles-en-vedette) .sl-markdown-content h2 {
+  font-size: 1.35rem;
+  margin-block-start: 2rem;
+}
+
+body:has(#articles-en-vedette) .sl-markdown-content > ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+body:has(#articles-en-vedette) .sl-markdown-content > ul > li {
+  margin: 0;
+}
+
+body:has(#articles-en-vedette) .sl-markdown-content > ul a {
+  display: flex;
+  align-items: center;
+  min-height: 6rem;
+  height: 100%;
+  padding: 1.25rem;
+  color: var(--sl-color-text);
+  background: var(--help-card-background);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 4px;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+body:has(#articles-en-vedette) .sl-markdown-content > ul a:hover {
+  color: var(--sl-color-accent-high);
+  border-color: var(--help-blue);
+}
+
+body:has(#articles-en-vedette) .sl-markdown-content > ul a[href^='/aide/category/'] {
+  justify-content: center;
+  color: #fff;
+  background: #0065cd;
+  font-weight: 600;
+  text-align: center;
+}
+
+body:has(#articles-en-vedette) .sl-markdown-content > ul a[href^='/aide/category/']:hover {
+  color: #fff;
+  background: #0056b3;
+}
+
+@media (max-width: 40rem) {
+  body:has(#articles-en-vedette) .sl-markdown-content > ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 50rem) {
+  body:has(#articles-en-vedette) .sidebar {
+    display: none;
+  }
+}
