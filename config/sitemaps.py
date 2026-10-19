@@ -28,8 +28,9 @@ def canonical_site():
 
 class CanonicalDomainSitemap(Sitemap):
     def get_urls(self, page=1, site=None, protocol=None):
-        site, protocol = canonical_site()
-        return super().get_urls(page=page, site=site, protocol=protocol)
+        # `site` et `protocol` viennent de la requête : ignorés au profit du domaine canonique.
+        canonical_domain, canonical_protocol = canonical_site()
+        return super().get_urls(page=page, site=canonical_domain, protocol=canonical_protocol)
 
 
 class StaticViewSitemap(CanonicalDomainSitemap):
