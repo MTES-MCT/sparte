@@ -117,11 +117,11 @@ describe("Options de source par type", () => {
 });
 
 describe("Sources supplémentaires par département", () => {
-    it("ajoute une source et un clone de couche pour chaque autre département du millésime", async () => {
+    it("ajoute une source et un clone de couche pour chaque autre département du millésime", () => {
         const source = new OcsgeSource(twoDepartementsLand);
         const map = mount(source, "ocsge-source", { "source-layer": "occupation_du_sol_2_01" } as Partial<LayerSpecification>);
 
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
 
         expect(map.sourceIds()).toEqual(["ocsge-source", "ocsge-source-dept-39"]);
         expect(map.sources.get("ocsge-source-dept-39")).toEqual(pmtiles("occupation_du_sol_2_39"));
@@ -130,31 +130,31 @@ describe("Sources supplémentaires par département", () => {
         expect(map.sourceLayerOf("ocsge-source-layer-dept-39")).toBe("occupation_du_sol_2_39");
     });
 
-    it("n'ajoute rien pour un territoire sur un seul département", async () => {
+    it("n'ajoute rien pour un territoire sur un seul département", () => {
         const source = new ZonageUrbanismeSource(singleDepartementLand);
         const map = mount(source, "zonage-urbanisme-source");
 
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
 
         expect(map.sourceIds()).toEqual(["zonage-urbanisme-source"]);
         expect(map.layerIds()).toEqual(["zonage-urbanisme-source-layer"]);
     });
 
-    it("les sources de différence utilisent la paire de millésimes dans le nom des tuiles", async () => {
+    it("les sources de différence utilisent la paire de millésimes dans le nom des tuiles", () => {
         const source = new OcsgeArtifDiffSource(twoDepartementsLand);
         const map = mount(source, "ocsge-artif-diff-source", { "source-layer": "artif_diff_1_2_01" } as Partial<LayerSpecification>);
 
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
 
         expect(map.sources.get("ocsge-artif-diff-source-dept-39")).toEqual(pmtiles("artif_diff_1_2_39"));
         expect(map.sourceLayerOf("ocsge-artif-diff-source-layer-dept-39")).toBe("artif_diff_1_2_39");
     });
 
-    it("les centroïdes clonent la source GeoJSON et forcent le recalcul des clusters", async () => {
+    it("les centroïdes clonent la source GeoJSON et forcent le recalcul des clusters", () => {
         const source = new OcsgeDiffCentroidSource(twoDepartementsLand);
         const map = mount(source, "ocsge-diff-centroid-source");
 
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
 
         expect(map.sources.get("ocsge-diff-centroid-source-dept-39")).toMatchObject({
             type: "geojson",
@@ -165,11 +165,11 @@ describe("Sources supplémentaires par département", () => {
         expect(map.events).toEqual(["moveend"]);
     });
 
-    it("les sources vectorielles ne déclenchent pas d'événement à l'initialisation", async () => {
+    it("les sources vectorielles ne déclenchent pas d'événement à l'initialisation", () => {
         const source = new OcsgeDiffSource(twoDepartementsLand);
         const map = mount(source, "ocsge-diff-source");
 
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
 
         expect(map.events).toEqual([]);
     });
@@ -179,7 +179,7 @@ describe("Changement de millésime", () => {
     it("recharge la source principale, met à jour le source-layer et retire les sources supplémentaires devenues inutiles", async () => {
         const source = new OcsgeSource(twoDepartementsLand);
         const map = mount(source, "ocsge-source", { "source-layer": "occupation_du_sol_2_01" } as Partial<LayerSpecification>);
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
         expect(map.sourceIds()).toContain("ocsge-source-dept-39");
 
         // Le millésime 1 n'existe que dans l'Ain : plus de source supplémentaire.
@@ -194,7 +194,7 @@ describe("Changement de millésime", () => {
     it("changer de département principal inverse source principale et source supplémentaire", async () => {
         const source = new OcsgeDiffSource(twoDepartementsLand);
         const map = mount(source, "ocsge-diff-source", { "source-layer": "occupation_du_sol_diff_1_2_01" } as Partial<LayerSpecification>);
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
 
         await source.setMillesimes(1, 2, "39");
 
@@ -208,7 +208,7 @@ describe("Changement de millésime", () => {
     it("les centroïdes rechargent leur GeoJSON et leurs clones", async () => {
         const source = new OcsgeArtifDiffCentroidSource(twoDepartementsLand);
         const map = mount(source, "ocsge-artif-diff-centroid-source");
-        await source.addExtraDepartmentSourcesOnInit();
+        source.addExtraDepartmentSourcesOnInit();
 
         await source.setMillesimes(1, 2, "39");
 

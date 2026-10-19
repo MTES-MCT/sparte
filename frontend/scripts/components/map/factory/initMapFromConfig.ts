@@ -50,7 +50,7 @@ export async function initMapFromConfig(
     // Post-init: allow sources to add extra department sources now that layers exist
     for (const source of sources.values()) {
         if (source instanceof BaseMultiDepartementSource) {
-            await source.addExtraDepartmentSourcesOnInit();
+            source.addExtraDepartmentSourcesOnInit();
         }
     }
 

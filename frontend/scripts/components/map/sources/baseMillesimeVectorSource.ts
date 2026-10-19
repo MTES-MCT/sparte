@@ -77,7 +77,7 @@ export abstract class BaseMillesimeVectorSource extends BaseMultiDepartementSour
 			.map(([index, { years, departement }]) => ({
 				value: `${index}_${departement}`,
 				label: years.size > 0
-					? Array.from(years).sort().join(', ')
+					? Array.from(years).sort((a, b) => a.localeCompare(b)).join(', ')
 					: `Millésime ${index}`,
 			}));
 	}

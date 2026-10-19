@@ -43,15 +43,15 @@ export abstract class BaseMultiDepartementSource extends BaseOcsgeSource {
         return this.sourceLayerForDepartement(sourceLayer, this.getCurrentDepartement());
     }
 
-    async addExtraDepartmentSourcesOnInit(): Promise<void> {
-        await this.addExtraDepartmentSources();
+    addExtraDepartmentSourcesOnInit(): void {
+        this.addExtraDepartmentSources();
     }
 
     protected async reloadSource(): Promise<void> {
         if (!this.map || !this.sourceId) return;
         this.removeExtraSources();
         await super.reloadSource();
-        await this.addExtraDepartmentSources();
+        this.addExtraDepartmentSources();
     }
 
     private removeExtraSources(): void {
@@ -76,7 +76,7 @@ export abstract class BaseMultiDepartementSource extends BaseOcsgeSource {
         this.extraSourceIds = [];
     }
 
-    private async addExtraDepartmentSources(): Promise<void> {
+    private addExtraDepartmentSources(): void {
         if (!this.map || !this.sourceId) return;
 
         const currentDepartement = this.getCurrentDepartement();
