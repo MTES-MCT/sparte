@@ -1,9 +1,9 @@
-import { BaseOcsgeSource } from "./baseOcsgeSource";
+import { BaseMultiDepartementSource } from "./baseMultiDepartementSource";
 import type { LandDetailResultType, Millesime } from "@services/types/land";
 import { getLastMillesimeIndex, getStartMillesimeIndex, getAvailableMillesimePairs } from "../utils/ocsge";
 import type { SourceInterface } from "../types/sourceInterface";
 
-export abstract class BaseOcsgeDiffSource extends BaseOcsgeSource implements SourceInterface {
+export abstract class BaseOcsgeDiffSource extends BaseMultiDepartementSource implements SourceInterface {
     protected startMillesimeIndex: number;
     protected endMillesimeIndex: number;
     protected departement: string;
@@ -20,6 +20,14 @@ export abstract class BaseOcsgeDiffSource extends BaseOcsgeSource implements Sou
 
         const millesime = this.millesimes.find((m: Millesime) => m.index === this.endMillesimeIndex);
         this.departement = millesime?.departement || this.departements[0];
+    }
+
+    protected getCurrentDepartement(): string {
+        return this.departement;
+    }
+
+    protected getCurrentMillesimeIndex(): number {
+        return this.endMillesimeIndex;
     }
 
     async setMillesimes(newStartIndex: number, newEndIndex: number, newDepartement?: string): Promise<void> {

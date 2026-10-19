@@ -1,13 +1,12 @@
-import { BaseOcsgeSource } from "./baseOcsgeSource";
+import { BaseMultiDepartementSource } from "./baseMultiDepartementSource";
 import type { Millesime, LandDetailResultType } from "@services/types/land";
 import type { SourceInterface } from "../types/sourceInterface";
-import type { SourceSpecification, FilterSpecification, LayerSpecification } from "maplibre-gl";
+import type { SourceSpecification, FilterSpecification } from "maplibre-gl";
 import { getLastMillesimeIndex, getTerritoryFilter } from "../utils/ocsge";
 
-export class ZonageUrbanismeSource extends BaseOcsgeSource implements SourceInterface {
+export class ZonageUrbanismeSource extends BaseMultiDepartementSource implements SourceInterface {
 	private millesimeIndex: number;
 	private departement: string;
-	private extraSourceIds: string[] = [];
 
 	constructor(landData: LandDetailResultType) {
 		super({
@@ -21,13 +20,24 @@ export class ZonageUrbanismeSource extends BaseOcsgeSource implements SourceInte
 		this.departement = millesime?.departement || this.departements[0];
 	}
 
-	getOptions(): SourceSpecification {
-		const tilesUrl = `${this.vectorTilesUrl}zonage_urbanisme_${this.millesimeIndex}_${this.departement}.pmtiles`;
+	private tileName(departement: string): string {
+		return `zonage_urbanisme_${this.millesimeIndex}_${departement}`;
+	}
 
-		return {
-			type: this.options.type as 'vector',
-			url: `pmtiles://${tilesUrl}`,
-		} as SourceSpecification;
+	protected getCurrentDepartement(): string {
+		return this.departement;
+	}
+
+	protected getCurrentMillesimeIndex(): number {
+		return this.millesimeIndex;
+	}
+
+	protected buildOptions(departement: string): SourceSpecification {
+		return this.pmtilesOptions(this.tileName(departement));
+	}
+
+	protected sourceLayerForDepartement(sourceLayer: string, departement: string): string {
+		return sourceLayer.startsWith("zonage_urbanisme_") ? this.tileName(departement) : sourceLayer;
 	}
 
 	async setMillesime(newIndex: number, newDepartement: string): Promise<void> {
@@ -42,95 +52,6 @@ export class ZonageUrbanismeSource extends BaseOcsgeSource implements SourceInte
 		this.departement = newDepartement;
 
 		await this.reloadSource();
-	}
-
-	async addExtraDepartmentSourcesOnInit(): Promise<void> {
-		await this.addExtraDepartmentSources();
-	}
-
-	protected async reloadSource(): Promise<void> {
-		if (!this.map || !this.sourceId) return;
-
-		this.removeExtraSources();
-		await super.reloadSource();
-		await this.addExtraDepartmentSources();
-	}
-
-	private removeExtraSources(): void {
-		if (!this.map) return;
-
-		for (const extraSourceId of this.extraSourceIds) {
-			const style = this.map.getStyle();
-			if (style) {
-				const layersToRemove = style.layers.filter((l: LayerSpecification) =>
-					'source' in l && (l as { source?: string }).source === extraSourceId
-				);
-				for (const layer of layersToRemove) {
-					if (this.map.getLayer(layer.id)) {
-						this.map.removeLayer(layer.id);
-					}
-				}
-			}
-			if (this.map.getSource(extraSourceId)) {
-				this.map.removeSource(extraSourceId);
-			}
-		}
-		this.extraSourceIds = [];
-	}
-
-	private async addExtraDepartmentSources(): Promise<void> {
-		if (!this.map || !this.sourceId) return;
-
-		const deptsForIndex = this.millesimes
-			.filter(m => m.index === this.millesimeIndex)
-			.map(m => m.departement)
-			.filter(d => d !== this.departement);
-
-		if (deptsForIndex.length === 0) return;
-
-		const style = this.map.getStyle();
-		const primaryLayers = style.layers.filter((l: LayerSpecification) =>
-			'source' in l && (l as { source?: string }).source === this.sourceId
-		);
-
-		for (const dept of deptsForIndex) {
-			const extraSourceId = `${this.sourceId}-dept-${dept}`;
-			const tilesUrl = `${this.vectorTilesUrl}zonage_urbanisme_${this.millesimeIndex}_${dept}.pmtiles`;
-
-			this.map.addSource(extraSourceId, {
-				type: 'vector',
-				url: `pmtiles://${tilesUrl}`,
-			} as SourceSpecification);
-
-			this.extraSourceIds.push(extraSourceId);
-
-			for (const primaryLayer of primaryLayers) {
-				const sourceLayer = 'source-layer' in primaryLayer
-					? (primaryLayer as { 'source-layer'?: string })['source-layer']
-					: undefined;
-
-				let updatedSourceLayer = sourceLayer;
-				if (sourceLayer && sourceLayer.startsWith('zonage_urbanisme_')) {
-					updatedSourceLayer = `zonage_urbanisme_${this.millesimeIndex}_${dept}`;
-				}
-
-				const clonedSpec: LayerSpecification = {
-					...primaryLayer,
-					id: `${primaryLayer.id}-dept-${dept}`,
-					source: extraSourceId,
-					...(updatedSourceLayer && { 'source-layer': updatedSourceLayer }),
-				} as LayerSpecification;
-
-				this.map.addLayer(clonedSpec);
-			}
-		}
-	}
-
-	protected updateSourceLayer(sourceLayer: string): string {
-		if (sourceLayer.startsWith('zonage_urbanisme_')) {
-			return `zonage_urbanisme_${this.millesimeIndex}_${this.departement}`;
-		}
-		return sourceLayer;
 	}
 
 	getAvailableMillesimes(): Array<{ value: string; label: string }> {

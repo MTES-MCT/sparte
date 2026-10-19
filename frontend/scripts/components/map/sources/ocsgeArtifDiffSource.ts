@@ -1,10 +1,10 @@
 import { BaseOcsgeDiffSource } from "./baseOcsgeDiffSource";
 import type { LandDetailResultType } from "@services/types/land";
-import type { SourceSpecification, LayerSpecification } from "maplibre-gl";
+import type { SourceSpecification } from "maplibre-gl";
+
+const TILES_PREFIX = "artif_diff";
 
 export class OcsgeArtifDiffSource extends BaseOcsgeDiffSource {
-    private extraSourceIds: string[] = [];
-
     constructor(landData: LandDetailResultType) {
         super({
             id: "ocsge-artif-diff-source",
@@ -12,99 +12,15 @@ export class OcsgeArtifDiffSource extends BaseOcsgeDiffSource {
         }, landData);
     }
 
-    getOptions(): SourceSpecification {
-        const tilesUrl = `${this.vectorTilesUrl}artif_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.pmtiles`;
-
-        return {
-            type: this.options.type as 'vector',
-            url: `pmtiles://${tilesUrl}`,
-        } as SourceSpecification;
+    private tileName(departement: string): string {
+        return `${TILES_PREFIX}_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${departement}`;
     }
 
-    async addExtraDepartmentSourcesOnInit(): Promise<void> {
-        await this.addExtraDepartmentSources();
+    protected buildOptions(departement: string): SourceSpecification {
+        return this.pmtilesOptions(this.tileName(departement));
     }
 
-    protected async reloadSource(): Promise<void> {
-        if (!this.map || !this.sourceId) return;
-        this.removeExtraSources();
-        await super.reloadSource();
-        await this.addExtraDepartmentSources();
+    protected sourceLayerForDepartement(sourceLayer: string, departement: string): string {
+        return sourceLayer.startsWith(`${TILES_PREFIX}_`) ? this.tileName(departement) : sourceLayer;
     }
-
-    private removeExtraSources(): void {
-        if (!this.map) return;
-
-        for (const extraSourceId of this.extraSourceIds) {
-            const style = this.map.getStyle();
-            if (style) {
-                const layersToRemove = style.layers.filter((l: LayerSpecification) =>
-                    'source' in l && (l as { source?: string }).source === extraSourceId
-                );
-                for (const layer of layersToRemove) {
-                    if (this.map.getLayer(layer.id)) {
-                        this.map.removeLayer(layer.id);
-                    }
-                }
-            }
-            if (this.map.getSource(extraSourceId)) {
-                this.map.removeSource(extraSourceId);
-            }
-        }
-        this.extraSourceIds = [];
-    }
-
-    private async addExtraDepartmentSources(): Promise<void> {
-        if (!this.map || !this.sourceId) return;
-
-        const deptsForPair = this.millesimes
-            .filter(m => m.index === this.endMillesimeIndex)
-            .map(m => m.departement)
-            .filter(d => d !== this.departement);
-
-        if (deptsForPair.length === 0) return;
-
-        const style = this.map.getStyle();
-        const primaryLayers = style.layers.filter((l: LayerSpecification) =>
-            'source' in l && (l as { source?: string }).source === this.sourceId
-        );
-
-        for (const dept of deptsForPair) {
-            const extraSourceId = `${this.sourceId}-dept-${dept}`;
-            const tilesUrl = `${this.vectorTilesUrl}artif_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${dept}.pmtiles`;
-
-            this.map.addSource(extraSourceId, {
-                type: 'vector',
-                url: `pmtiles://${tilesUrl}`,
-            } as SourceSpecification);
-
-            this.extraSourceIds.push(extraSourceId);
-
-            for (const primaryLayer of primaryLayers) {
-                const sourceLayer = 'source-layer' in primaryLayer
-                    ? (primaryLayer as { 'source-layer'?: string })['source-layer']
-                    : undefined;
-
-                let updatedSourceLayer = sourceLayer;
-                if (sourceLayer && sourceLayer.startsWith('artif_diff_')) {
-                    updatedSourceLayer = `artif_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${dept}`;
-                }
-
-                const clonedSpec: LayerSpecification = {
-                    ...primaryLayer,
-                    id: `${primaryLayer.id}-dept-${dept}`,
-                    source: extraSourceId,
-                    ...(updatedSourceLayer && { 'source-layer': updatedSourceLayer }),
-                } as LayerSpecification;
-
-                this.map.addLayer(clonedSpec);
-            }
-        }
-    }
-
-    protected updateSourceLayer(sourceLayer: string): string {
-        return `artif_diff_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}`;
-    }
-
 }
-

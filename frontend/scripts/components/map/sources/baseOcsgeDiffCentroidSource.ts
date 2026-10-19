@@ -1,7 +1,7 @@
 import { BaseOcsgeDiffSource } from "./baseOcsgeDiffSource";
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
-import type { ExpressionSpecification, GeoJSONSourceSpecification, LayerSpecification } from "maplibre-gl";
+import type { ExpressionSpecification, GeoJSONSourceSpecification } from "maplibre-gl";
 
 export interface OcsgeDiffCentroidConfig {
     sourceId: string;
@@ -22,7 +22,6 @@ export interface OcsgeDiffCentroidConfig {
  * (imperméabilisation ou artificialisation).
  */
 export abstract class BaseOcsgeDiffCentroidSource extends BaseOcsgeDiffSource {
-    private extraSourceIds: string[] = [];
     private readonly centroidConfig: OcsgeDiffCentroidConfig;
 
     constructor(landData: LandDetailResultType, centroidConfig: OcsgeDiffCentroidConfig) {
@@ -33,11 +32,7 @@ export abstract class BaseOcsgeDiffCentroidSource extends BaseOcsgeDiffSource {
         this.centroidConfig = centroidConfig;
     }
 
-    getOptions(): GeoJSONSourceSpecification {
-        return this.buildOptions(this.departement);
-    }
-
-    private buildOptions(departement: string): GeoJSONSourceSpecification {
+    protected buildOptions(departement: string): GeoJSONSourceSpecification {
         const { geojsonPrefix, increaseProperty, decreaseProperty, increaseCountProperty, decreaseCountProperty } = this.centroidConfig;
         const url = `${this.geojsonUrl}${geojsonPrefix}_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${departement}.geojson.gz`;
 
@@ -63,70 +58,8 @@ export abstract class BaseOcsgeDiffCentroidSource extends BaseOcsgeDiffSource {
         };
     }
 
-    async addExtraDepartmentSourcesOnInit(): Promise<void> {
-        await this.addExtraDepartmentSources();
-    }
-
-    protected async reloadSource(): Promise<void> {
-        if (!this.map || !this.sourceId) return;
-        this.removeExtraSources();
-        await super.reloadSource();
-        await this.addExtraDepartmentSources();
-    }
-
-    private removeExtraSources(): void {
-        if (!this.map) return;
-
-        for (const extraSourceId of this.extraSourceIds) {
-            const style = this.map.getStyle();
-            if (style) {
-                const layersToRemove = style.layers.filter((l: LayerSpecification) =>
-                    'source' in l && (l as { source?: string }).source === extraSourceId
-                );
-                for (const layer of layersToRemove) {
-                    if (this.map.getLayer(layer.id)) {
-                        this.map.removeLayer(layer.id);
-                    }
-                }
-            }
-            if (this.map.getSource(extraSourceId)) {
-                this.map.removeSource(extraSourceId);
-            }
-        }
-        this.extraSourceIds = [];
-    }
-
-    private async addExtraDepartmentSources(): Promise<void> {
-        if (!this.map || !this.sourceId) return;
-
-        const deptsForPair = this.millesimes
-            .filter(m => m.index === this.endMillesimeIndex)
-            .map(m => m.departement)
-            .filter(d => d !== this.departement);
-
-        if (deptsForPair.length === 0) return;
-
-        const style = this.map.getStyle();
-        const primaryLayers = style.layers.filter((l: LayerSpecification) =>
-            'source' in l && (l as { source?: string }).source === this.sourceId
-        );
-
-        for (const dept of deptsForPair) {
-            const extraSourceId = `${this.sourceId}-dept-${dept}`;
-            this.map.addSource(extraSourceId, this.buildOptions(dept));
-            this.extraSourceIds.push(extraSourceId);
-
-            for (const primaryLayer of primaryLayers) {
-                const clonedSpec: LayerSpecification = {
-                    ...primaryLayer,
-                    id: `${primaryLayer.id}-dept-${dept}`,
-                    source: extraSourceId,
-                } as LayerSpecification;
-
-                this.map.addLayer(clonedSpec);
-            }
-        }
-
-        this.map.fire('moveend');
+    /** Force le recalcul des clusters une fois les sources supplémentaires ajoutées. */
+    protected onExtraDepartmentSourcesAdded(): void {
+        this.map?.fire('moveend');
     }
 }
