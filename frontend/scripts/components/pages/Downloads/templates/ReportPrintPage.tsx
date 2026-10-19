@@ -65,7 +65,6 @@ const ReportPrintPage: React.FC<ReportPrintPageProps> = ({ draftId }) => {
                 landData={landData}
                 content={draft.content || {}}
                 mode="print"
-                projectId={draft.project}
                 ownerPreference={draft.owner_preference}
             />
         );
@@ -76,7 +75,6 @@ const ReportPrintPage: React.FC<ReportPrintPageProps> = ({ draftId }) => {
             landData={landData}
             content={draft.content || {}}
             mode="print"
-            projectId={draft.project}
             ownerPreference={draft.owner_preference}
         />
     );

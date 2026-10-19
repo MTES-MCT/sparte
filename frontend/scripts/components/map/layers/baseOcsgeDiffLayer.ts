@@ -58,8 +58,6 @@ export abstract class BaseOcsgeDiffLayer extends BaseLayer {
 
         this.startMillesimeIndex = newStartIndex;
         this.endMillesimeIndex = newEndIndex;
-
-        this.map.setLayoutProperty(this.options.id, "source-layer", this.getSourceLayerName());
     }
 
     getStartMillesimeIndex(): number {

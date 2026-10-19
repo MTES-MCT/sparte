@@ -62,7 +62,6 @@ const ReportEditor: React.FC<ReportEditorProps> = ({
         landData,
         content,
         mode: 'edit' as const,
-        projectId: draft.project,
         onContentChange,
         isSettingsOpen,
         onSettingsChange: setIsSettingsOpen,

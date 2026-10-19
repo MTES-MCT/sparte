@@ -1,9 +1,10 @@
 import React from "react";
 import { FrichesChart } from "@components/charts/friches/FrichesChart";
+import type { DataSource } from "@components/charts/GenericChart";
 import BaseCard from "@components/ui/BaseCard";
 import { useFrichesContext } from "../context/FrichesContext";
 
-const FRICHES_ANALYSIS_CHARTS: Array<{ id: string; sources: string[] }> = [
+const FRICHES_ANALYSIS_CHARTS: Array<{ id: string; sources: DataSource[] }> = [
   { id: "friche_pollution", sources: ["cartofriches"] },
   { id: "friche_surface", sources: ["cartofriches"] },
   { id: "friche_type", sources: ["cartofriches"] },
