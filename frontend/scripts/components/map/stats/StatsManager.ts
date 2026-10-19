@@ -1,4 +1,4 @@
-import maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import type { StatCategory } from "../types/layer";
 import type { LayerId } from "../types/registry";
 import { StatsStateManager, type StatsState } from "./StatsStateManager";

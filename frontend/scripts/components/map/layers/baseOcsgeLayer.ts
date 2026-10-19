@@ -4,7 +4,7 @@ import type { LayerInterface } from "../types/layerInterface";
 import { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
 import { area } from '@turf/turf';
-import type { FilterSpecification, LayerSpecification } from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
 
@@ -32,7 +32,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
             : this.allowedCodes.usage;
     }
 
-    protected abstract getBaseFilter(): FilterSpecification;
+    protected abstract getBaseFilter(): maplibregl.FilterSpecification;
 
     getColorExpression() {
         const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
@@ -61,7 +61,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
         return `occupation_du_sol_${this.millesimeIndex}_${this.departement}`;
     }
 
-    protected buildFillOptions(baseFilter: FilterSpecification): LayerSpecification[] {
+    protected buildFillOptions(baseFilter: maplibregl.FilterSpecification): maplibregl.LayerSpecification[] {
         return [{
             id: this.options.id,
             type: this.options.type as 'fill',
@@ -76,10 +76,10 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
                 "fill-opacity": this.options.opacity ?? 0.7,
                 "fill-outline-color": "rgba(0, 0, 0, 0.3)",
             },
-        } as LayerSpecification];
+        } as maplibregl.LayerSpecification];
     }
 
-    private buildCompleteFilter(baseFilter: FilterSpecification, selectedCodes?: string[]): FilterSpecification {
+    private buildCompleteFilter(baseFilter: maplibregl.FilterSpecification, selectedCodes?: string[]): maplibregl.FilterSpecification {
         const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
         const codes = selectedCodes || this.currentFilter;
 
@@ -87,16 +87,16 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
         const territoryFilter = this.getTerritoryFilter();
 
         if (territoryFilter) {
-            return ["all", territoryFilter, baseFilter, codesExpr] as FilterSpecification;
+            return ["all", territoryFilter, baseFilter, codesExpr] as maplibregl.FilterSpecification;
         }
-        return ["all", baseFilter, codesExpr] as FilterSpecification;
+        return ["all", baseFilter, codesExpr] as maplibregl.FilterSpecification;
     }
 
-    protected getTerritoryFilter(): FilterSpecification | null {
+    protected getTerritoryFilter(): maplibregl.FilterSpecification | null {
         return getTerritoryFilter(this.landData);
     }
 
-    abstract getOptions(): LayerSpecification[];
+    abstract getOptions(): maplibregl.LayerSpecification[];
 
 
     getCurrentMillesime(): number {
@@ -127,16 +127,16 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
         return this.currentFilter;
     }
 
-    private buildCodesFilterExpression(codes: string[], field: string): FilterSpecification {
+    private buildCodesFilterExpression(codes: string[], field: string): maplibregl.FilterSpecification {
         if (codes.length === 0) {
-            return ["==", ["get", field], ""] as FilterSpecification;
+            return ["==", ["get", field], ""] as maplibregl.FilterSpecification;
         }
 
         if (codes.length === 1) {
-            return ["==", ["get", field], codes[0]] as FilterSpecification;
+            return ["==", ["get", field], codes[0]] as maplibregl.FilterSpecification;
         }
 
-        return ["in", ["get", field], ["literal", codes]] as FilterSpecification;
+        return ["in", ["get", field], ["literal", codes]] as maplibregl.FilterSpecification;
     }
 
     async setNomenclature(newNomenclature: NomenclatureType): Promise<void> {

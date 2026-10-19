@@ -4,5 +4,4 @@ interface Window {
     htmx?: any;
     bootstrap?: any;
     _paq?: any[];
-    dataLayer?: any[];
 }

@@ -1,7 +1,6 @@
 import type { BaseLayerOptions } from "../types/layer";
 import type { LayerInterface } from "../types/layerInterface";
-import type maplibregl from "maplibre-gl";
-import type { LayerSpecification } from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 
 export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSource' | 'getOpacity' | 'setOpacity' | 'getVisibility' | 'setVisibility'> {
 	readonly options: BaseLayerOptions;
@@ -93,7 +92,7 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 		this.loaded = true;
 	}
 
-	abstract getOptions(): LayerSpecification[];
+	abstract getOptions(): maplibregl.LayerSpecification[];
 
 	setVisibility(visible: boolean): void {
 		if (!this.map) return;

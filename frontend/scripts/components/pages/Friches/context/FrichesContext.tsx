@@ -4,7 +4,7 @@ import { LandFriche } from "@services/types/land_friches";
 import { useGetLandFrichesQuery } from "@services/api";
 import { useMapSync } from "@components/map";
 import useWindowSize from "@hooks/useWindowSize";
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 
 interface FrichesContextValue {
   landData: LandDetailResultType;

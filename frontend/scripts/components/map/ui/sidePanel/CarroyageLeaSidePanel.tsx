@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import styled from "styled-components";
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { theme } from "@theme";
 import { formatNumber } from "@utils/formatUtils";
 import ChartDataTable from "@components/charts/ChartDataTable";
