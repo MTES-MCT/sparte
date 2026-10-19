@@ -147,7 +147,6 @@ const AvailableDataPage: React.FC<AvailableDataPageProps> = ({
                         <LandMillesimeTable
                             millesimes={landData.millesimes}
                             is_interdepartemental={landData.is_interdepartemental}
-                            compact={true}
                         />
                     ) : (
                         <span className="fr-text--sm fr-text--bold">Non disponible</span>

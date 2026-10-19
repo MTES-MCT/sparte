@@ -1,7 +1,7 @@
 import { BaseOcsgeDiffSource } from "./baseOcsgeDiffSource";
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
-import type { FilterSpecification, LayerSpecification } from "maplibre-gl";
+import type { ExpressionSpecification, FilterSpecification, GeoJSONSourceSpecification, LayerSpecification } from "maplibre-gl";
 
 export class OcsgeArtifDiffCentroidSource extends BaseOcsgeDiffSource {
     private extraSourceIds: string[] = [];
@@ -13,18 +13,18 @@ export class OcsgeArtifDiffCentroidSource extends BaseOcsgeDiffSource {
         }, landData);
     }
 
-    getOptions() {
+    getOptions(): GeoJSONSourceSpecification {
         const url = `${this.geojsonUrl}artif_diff_centroid_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${this.departement}.geojson.gz`;
 
         const territoryFilter = getTerritoryFilter(this.landData);
-        const increaseFilter = ["==", ["get", "new_is_artificial"], true] as FilterSpecification;
-        const decreaseFilter = ["==", ["get", "new_not_artificial"], true] as FilterSpecification;
+        const increaseFilter: ExpressionSpecification = ["==", ["get", "new_is_artificial"], true];
+        const decreaseFilter: ExpressionSpecification = ["==", ["get", "new_not_artificial"], true];
 
-        const dataFilter = ["any", increaseFilter, decreaseFilter] as FilterSpecification;
-        const finalFilter = territoryFilter ? ["all", territoryFilter, dataFilter] : dataFilter;
+        const dataFilter: ExpressionSpecification = ["any", increaseFilter, decreaseFilter];
+        const finalFilter: ExpressionSpecification = territoryFilter ? ["all", territoryFilter, dataFilter] : dataFilter;
 
         return {
-            type: this.options.type,
+            type: "geojson",
             data: url,
             cluster: true,
             clusterMaxZoom: 14,

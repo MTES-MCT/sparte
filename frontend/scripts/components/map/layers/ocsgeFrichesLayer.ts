@@ -1,5 +1,5 @@
 import { BaseLayer } from "./baseLayer";
-import type { LayerSpecification, FilterSpecification } from 'maplibre-gl';
+import type { LayerSpecification, FilterSpecification, ExpressionSpecification } from 'maplibre-gl';
 import type { LayerInterface } from "../types/layerInterface";
 import type { NomenclatureType, Couverture, Usage } from "../types/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, ALL_OCSGE_COUVERTURE_CODES, ALL_OCSGE_USAGE_CODES } from "../constants/ocsge_nomenclatures";
@@ -36,11 +36,11 @@ export class OcsgeFrichesLayer extends BaseLayer implements LayerInterface {
         return `occupation_du_sol_friche_${this.millesimeIndex}_national`;
     }
 
-    getColorExpression() {
+    getColorExpression(): ExpressionSpecification {
         const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
         const colors = this.nomenclature === "couverture" ? COUVERTURE_COLORS : USAGE_COLORS;
 
-        const cases = Object.entries(colors).map(([key]) => [
+        const cases: ExpressionSpecification[] = Object.entries(colors).map(([key]) => [
             "==", ["get", field], key
         ]);
         const colorValues = Object.values(colors);
@@ -49,7 +49,7 @@ export class OcsgeFrichesLayer extends BaseLayer implements LayerInterface {
             "case",
             ...cases.flatMap((case_, index) => [case_, colorValues[index]]),
             "rgb(200, 200, 200)"
-        ];
+        ] as ExpressionSpecification;
     }
 
     protected getFricheSiteIdFilter(): FilterSpecification | null {

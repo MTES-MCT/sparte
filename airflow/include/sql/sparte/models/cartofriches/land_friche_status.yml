@@ -6,6 +6,7 @@ models:
     columns:
       - name: status
         data_tests:
+          - not_null
           - accepted_values:
               values: [
                 'gisement nul et sans potentiel',

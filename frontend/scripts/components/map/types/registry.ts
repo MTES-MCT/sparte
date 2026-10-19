@@ -1,11 +1,14 @@
 import type { Millesime } from "@services/types/land";
 import type { NomenclatureType } from "./ocsge";
 
-export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'artificialisation-diff', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster', 'friches', 'friches-centroid-cluster', 'ocsge-friches', 'ocsge-friches-impermeable', 'ocsge-friches-artificial', 'osm', 'carroyage-lea', 'carroyage-lea-outline', 'zonage-urbanisme'] as const;
+export const layerCategories = ['orthophoto', 'emprise', 'impermeabilisation', 'artificialisation', 'impermeabilisation-diff', 'artificialisation-diff', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster', 'friches', 'friches-outline', 'friches-centroid-cluster', 'ocsge-friches', 'ocsge-friches-impermeable', 'ocsge-friches-artificial', 'osm', 'carroyage-lea', 'carroyage-lea-outline', 'zonage-urbanisme'] as const;
 export type LayerCategory = typeof layerCategories[number];
 
 export const layerIds = ['orthophoto-layer', 'emprise-layer', 'impermeabilisation-layer', 'artificialisation-layer', 'impermeabilisation-diff-layer', 'artificialisation-diff-layer', 'impermeabilisation-diff-centroid-cluster', 'artificialisation-diff-centroid-cluster', 'friches-layer', 'friches-centroid-cluster', 'ocsge-friches-layer', 'ocsge-friches-impermeable-layer', 'ocsge-friches-artificial-layer', 'zonage-urbanisme-layer', 'zonage-urbanisme-layer-outline'] as const;
 export type LayerId = typeof layerIds[number];
+
+export const isLayerId = (id: string): id is LayerId =>
+    (layerIds as readonly string[]).includes(id);
 
 export type LayerIdToCategory = {
     'orthophoto-layer': 'orthophoto';
@@ -35,6 +38,7 @@ export const layerCategoryToFactory = {
     'impermeabilisation-diff-centroid-cluster': 'impermeabilisation-diff-centroid-cluster',
     'artificialisation-diff-centroid-cluster': 'artificialisation-diff-centroid-cluster',
     'friches': 'friches',
+    'friches-outline': 'friches-outline',
     'friches-centroid-cluster': 'friches-centroid-cluster',
     'ocsge-friches': 'ocsge-friches',
     'ocsge-friches-impermeable': 'ocsge-friches-impermeable',

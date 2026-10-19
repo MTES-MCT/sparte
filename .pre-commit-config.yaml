@@ -42,3 +42,13 @@ repos:
       - id: ggshield
         language_version: python3
         stages: [commit]
+-   repo: local
+    hooks:
+    -   id: tsc
+        name: tsc
+        # Vérification des types TypeScript sur tout le projet (tsc ne sait pas
+        # vérifier fichier par fichier). Mode incrémental : ~2 s après la 1re passe.
+        entry: npx tsc --noEmit -p . --incremental --tsBuildInfoFile node_modules/.cache/tsc/tsbuildinfo
+        language: system
+        pass_filenames: false
+        always_run: true

@@ -39,7 +39,6 @@ interface RapportLocalProps {
     landData: LandDetailResultType;
     content: RapportLocalContent;
     mode: ContentZoneMode;
-    projectId: number;
     /** Préférences du propriétaire du brouillon, à utiliser à la place de celles de l'utilisateur courant (rendu PDF anonyme) */
     ownerPreference?: ReportOwnerPreference;
     onContentChange?: (key: string, value: string) => void;
@@ -73,7 +72,6 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
     landData,
     content,
     mode,
-    projectId,
     ownerPreference,
     onContentChange,
     isSettingsOpen: externalIsSettingsOpen,

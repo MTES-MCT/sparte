@@ -74,13 +74,8 @@ export const LogementVacantProvider: React.FC<LogementVacantProviderProps> = ({
       landType: land_type ?? "",
       name: name ?? "",
       childLandTypes: child_land_types ?? [],
-      logementsVacantsStatus: logements_vacants_status ?? LogementVacantStatusEnum.DONNEES_INDISPONIBLES,
-      logementsVacantsStatusDetails: logements_vacants_status_details ?? {
-        logements_vacants_parc_prive: null,
-        logements_vacants_parc_social: null,
-        logements_vacants_parc_prive_percent: null,
-        logements_vacants_parc_social_percent: null,
-      },
+      logementsVacantsStatus: logements_vacants_status,
+      logementsVacantsStatusDetails: logements_vacants_status_details,
 
       startYear,
       endYear,
