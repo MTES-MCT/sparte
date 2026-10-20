@@ -10,8 +10,9 @@ jobs:
   test-airflow:
     runs-on: ubuntu-latest
     env:
+      ASTRO_TELEMETRY_DISABLED: "1"
       AIRFLOW__CORE__TEST_CONNECTION: Enabled
-      AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 3
+      AIRFLOW__DAG_PROCESSOR__REFRESH_INTERVAL: 3
 
       AIRFLOW_S3_LOGIN: ${{ secrets.AIRFLOW_S3_LOGIN }}
       AIRFLOW_S3_PASSWORD: ${{ secrets.AIRFLOW_S3_PASSWORD }}

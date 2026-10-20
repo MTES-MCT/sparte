@@ -29,5 +29,9 @@ WORKDIR /usr/local/airflow
 RUN mkdir /home/astro/.dbt
 COPY ./dbt_profile.yml /home/astro/.dbt/profiles.yml
 
+# L'airflow.cfg de l'image pointe vers l'auth manager du plugin Astronomer retiré
+# ci-dessus : on impose Flask-AppBuilder (OAuth GitHub, voir webserver_config.py).
+ENV AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+
 # Copy project into image
 COPY --chown=astro:0 . .
