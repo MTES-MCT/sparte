@@ -67,6 +67,18 @@ jobs:
   test-backend:
     name: Backend Tests (Django)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -75,10 +87,6 @@ jobs:
           cache: 'pipenv'
       - name: Install pipenv
         run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-      - uses: nyurik/action-setup-postgis@v2.3
-        id: pg
-      - name: Configure PostgreSQL
-        run: psql -c "ALTER ROLE postgres SUPERUSER;"
       - name: Install Python dependencies
         run: pipenv install --dev
       - name: Install GDAL
@@ -93,4 +101,4 @@ jobs:
       - name: Run backend tests
         run: pipenv run python -Wa manage.py test
         env:
-          DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}
+          DATABASE_URL: postgres://postgres@localhost:5432/postgres
