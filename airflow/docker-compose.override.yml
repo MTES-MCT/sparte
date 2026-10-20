@@ -1,0 +1,31 @@
+# Surcharge du compose généré par le CLI Astro (appliquée par `astro dev start` / `restart`).
+#
+# Pour un projet Airflow 3, le CLI impose le SimpleAuthManager avec
+# `SIMPLE_AUTH_MANAGER_ALL_ADMINS=True` (tout visiteur est admin, sans mot de
+# passe), une URL publique http://localhost:8080 et des secrets JWT/API égaux au
+# nom du projet, par-dessus le `.env`. On rétablit ici l'authentification
+# Flask-AppBuilder (OAuth GitHub, voir webserver_config.py) et on rend l'URL
+# publique et les secrets configurables.
+#
+# Les `${…}` ci-dessous sont résolus depuis l'environnement du processus `astro`,
+# pas depuis le `.env` : sur un serveur, les exporter avant de lancer le CLI
+# (export $(grep -E '^AIRFLOW__(API__|API_AUTH__)' .env | xargs) && astro dev restart).
+# Sans export, les valeurs par défaut conviennent au développement local.
+x-auth-env: &auth-env
+  AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+  AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "False"
+  AIRFLOW__API__BASE_URL: ${AIRFLOW__API__BASE_URL:-http://localhost:9090}
+  AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET:-dev-only-jwt-secret-0123456789abcdef0123456789abcdef0123456789abcdef}
+  AIRFLOW__API__SECRET_KEY: ${AIRFLOW__API__SECRET_KEY:-dev-only-secret-key-0123456789abcdef0123456789abcdef0123456789abcdef}
+
+services:
+  api-server:
+    environment: *auth-env
+  scheduler:
+    environment: *auth-env
+  dag-processor:
+    environment: *auth-env
+  triggerer:
+    environment: *auth-env
+  db-migration:
+    environment: *auth-env

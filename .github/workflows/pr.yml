@@ -35,7 +35,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: pre-commit/action@v3.0.1
         env:
           SKIP: ggshield,sqlfluff-lint,sqlfluff-fix,tsc  # tsc tourne dans test-frontend, avec node_modules
@@ -44,8 +44,8 @@ jobs:
     name: Frontend Tests (Jest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
           cache: 'npm'
@@ -56,7 +56,7 @@ jobs:
       - name: Run frontend tests
         run: npm test -- --coverage
       - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         if: always()
         with:
           files: ./coverage/lcov.info
@@ -67,23 +67,30 @@ jobs:
   test-backend:
     name: Backend Tests (Django)
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.11'
           cache: 'pipenv'
       - name: Install pipenv
         run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-      - uses: nyurik/action-setup-postgis@v1
-        id: pg
-      - name: Configure PostgreSQL
-        run: psql -c "ALTER ROLE postgres SUPERUSER;"
       - name: Install Python dependencies
         run: pipenv install --dev
       - name: Install GDAL
         run: |
-          sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
           sudo apt-get update
           sudo apt-get install -y gdal-bin libgdal-dev
       - name: Install Node dependencies (for webpack build)
@@ -93,4 +100,4 @@ jobs:
       - name: Run backend tests
         run: pipenv run python -Wa manage.py test
         env:
-          DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}
+          DATABASE_URL: postgres://postgres@localhost:5432/postgres
