@@ -51,7 +51,7 @@ jobs:
       MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: curl -sSL install.astronomer.io | sudo bash -s
       - run: printenv > airflow/.env
       - run: astro dev parse
