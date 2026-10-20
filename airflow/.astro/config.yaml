@@ -6,5 +6,3 @@ postgres:
     port: 5433
 project:
     name: airflow
-webserver:
-    port: 9090

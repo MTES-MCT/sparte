@@ -15,7 +15,7 @@ RUN /usr/local/bin/install-python-dependencies
 # l'habillage et la télémétrie du cloud Astronomer, inutilisés ici, et son middleware
 # réécrit les réponses HTML sans en conserver le statut ni les en-têtes, ce qui casse
 # les redirections de connexion Flask-AppBuilder (OAuth GitHub).
-RUN uv pip uninstall astronomer-runtime-extensions
+RUN uv pip uninstall --system astronomer-runtime-extensions
 
 # Install tippecanoe
 RUN git clone https://github.com/felt/tippecanoe.git /home/astro/tippecanoe --depth 1 --branch 2.75.1
@@ -29,8 +29,9 @@ WORKDIR /usr/local/airflow
 RUN mkdir /home/astro/.dbt
 COPY ./dbt_profile.yml /home/astro/.dbt/profiles.yml
 
-# L'airflow.cfg de l'image pointe vers l'auth manager du plugin Astronomer retiré
-# ci-dessus : on impose Flask-AppBuilder (OAuth GitHub, voir webserver_config.py).
+# La distribution Airflow de l'image a pour auth manager par défaut celui du plugin
+# Astronomer retiré ci-dessus : on impose Flask-AppBuilder (OAuth GitHub, voir
+# webserver_config.py).
 ENV AIRFLOW__CORE__AUTH_MANAGER=airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
 
 # Copy project into image
