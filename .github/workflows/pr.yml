@@ -73,7 +73,7 @@ jobs:
           cache: 'pipenv'
       - name: Install pipenv
         run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-      - uses: nyurik/action-setup-postgis@v1
+      - uses: nyurik/action-setup-postgis@v2.3
         id: pg
       - name: Configure PostgreSQL
         run: psql -c "ALTER ROLE postgres SUPERUSER;"
