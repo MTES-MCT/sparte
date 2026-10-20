@@ -1,8 +1,10 @@
 airflow:
-  expose_port: false
-project:
-    name: airflow
+    expose_port: false
+api-server:
+    port: "9090"
 postgres:
     port: 5433
+project:
+    name: airflow
 webserver:
     port: 9090

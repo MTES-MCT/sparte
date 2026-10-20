@@ -21,8 +21,8 @@ from include.gpu_export import download_gpu_export_file, get_latest_gpu_export_f
 from include.utils import multiline_string_to_single_line, run_ogr2ogr
 from pendulum import datetime
 
-from airflow.decorators import dag, task
 from airflow.exceptions import AirflowFailException
+from airflow.sdk import dag, task
 
 logger = getLogger(__name__)
 

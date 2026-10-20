@@ -8,3 +8,4 @@ astro
 airflow-webserver.pid
 airflow.cfg
 airflow.db
+.astro/config.yaml.lock

@@ -12,8 +12,8 @@ from datetime import datetime, timedelta
 
 from include.dbt import DbtBuild
 
-from airflow.decorators import dag
-from airflow.models.param import Param
+from airflow.sdk import dag
+from airflow.sdk.definitions.param import Param
 
 default_args = {
     "owner": "airflow",
@@ -29,7 +29,7 @@ default_args = {
     "dbt_build",
     default_args=default_args,
     description="Exécute un dbt build sur le projet sparte",
-    schedule_interval=None,
+    schedule=None,
     start_date=datetime(2024, 1, 1),
     catchup=False,
     # Les params `array` doivent arriver à Cosmos comme de vraies listes Python,

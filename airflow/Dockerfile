@@ -1,4 +1,4 @@
-FROM quay.io/astronomer/astro-runtime:13.4.0-base
+FROM astrocrpublic.azurecr.io/runtime:3.1-22-base
 
 # Switch to root for setup
 USER root
@@ -10,6 +10,12 @@ RUN /usr/local/bin/install-system-packages
 # Install Python dependencies
 COPY requirements.txt .
 RUN /usr/local/bin/install-python-dependencies
+
+# Retrait du plugin Astronomer (astronomer-runtime-extensions) : il n'apporte que
+# l'habillage et la télémétrie du cloud Astronomer, inutilisés ici, et son middleware
+# réécrit les réponses HTML sans en conserver le statut ni les en-têtes, ce qui casse
+# les redirections de connexion Flask-AppBuilder (OAuth GitHub).
+RUN uv pip uninstall astronomer-runtime-extensions
 
 # Install tippecanoe
 RUN git clone https://github.com/felt/tippecanoe.git /home/astro/tippecanoe --depth 1 --branch 2.75.1

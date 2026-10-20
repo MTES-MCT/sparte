@@ -1,23 +1,23 @@
-# Astro Runtime includes the following pre-installed providers packages: https://docs.astronomer.io/astro/runtime-image-architecture#provider-packages
+# Astro Runtime inclut déjà des providers : https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
 s3fs==2024.6.1
 dependency-injector
 py7zr==0.21.1
-apache-airflow-providers-postgres==5.11.2
-requests==2.32.3
-dbt-core==1.8.2
-dbt-postgres==1.8.2
+requests
+# Authentification OAuth GitHub (webserver_config.py) : FAB est un provider optionnel en Airflow 3
+apache-airflow-providers-fab==3.10.1
+dbt-core==1.12.6
+dbt-postgres==1.11.0
 astronomer-cosmos==1.15.1
 # openlineage-integration-common doit rester aligné sur openlineage-python fourni
-# par l'image Astro : une version plus récente passe `dialect=` à SQLJobFacet,
-# ce qui fait échouer tout opérateur Cosmos (TypeError non rattrapé).
-openlineage-integration-common==1.34.0
+# par l'image Astro (1.52.0 dans Runtime 3.1-22) : une version différente peut faire
+# échouer les opérateurs Cosmos (TypeError sur SQLJobFacet).
+openlineage-integration-common==1.52.0
 tqdm==4.66.5
 pyarrow==17.0.0
 adbc_driver_postgresql==1.1.0
 pandas
 geopandas==1.0.1
 GeoAlchemy2==0.15.2
-SQLAlchemy==1.4.53
 pygdaltools==1.4.2
 beautifulsoup4
 openpyxl
