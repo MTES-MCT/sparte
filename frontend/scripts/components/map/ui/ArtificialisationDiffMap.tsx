@@ -3,7 +3,8 @@ import type * as maplibregl from "maplibre-gl";
 import { BaseMap } from "./BaseMap";
 import { defineMapConfig } from "../types/builder";
 import { LandDetailResultType } from "@services/types/land";
-import { BASE_SOURCES, BASE_LAYERS, BASE_CONTROLS } from "../constants/presets";
+import { mapStyles } from "carte-facile";
+import { EMPRISE_CONTROLS } from "../constants/presets";
 import { getStartMillesimeIndex, getLastMillesimeIndex } from "../utils/ocsge";
 import { bbox } from "@turf/turf";
 import { ArtificialisationDiffSidePanel } from "./sidePanel";
@@ -114,17 +115,17 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 
 	const config = useMemo(() => defineMapConfig({
 		sources: [
-			...BASE_SOURCES,
+			{ type: "emprise" },
 			{ type: "ocsge-artif-diff" },
 			{ type: "ocsge-artif-diff-centroid" },
 		],
 		layers: [
-			...BASE_LAYERS,
-			{ type: "artificialisation-diff", stats: true },
+			{ type: "emprise" },
+			{ type: "artificialisation-diff" },
 			{ type: "artificialisation-diff-centroid-cluster" },
 		],
 		controlGroups: [
-			...BASE_CONTROLS,
+			...EMPRISE_CONTROLS,
 			{
 				id: "artificialisation-diff-group",
 				label: "Artificialisation",
@@ -161,6 +162,7 @@ export const ArtificialisationDiffMap: React.FC<ArtificialisationDiffMapProps> =
 		<BaseMap
 			id="artificialisation-diff-map"
 			mapHeight="85vh"
+			baseStyle={mapStyles.desaturated}
 			config={config}
 			landData={landData}
 			onMapLoad={handleMapLoad}

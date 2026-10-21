@@ -78,7 +78,7 @@ const layerRegistry: Record<string, LayerFactory> = {
         );
     },
     "impermeabilisation-diff-centroid-cluster": () => new ImpermeabilisationDiffCentroidClusterLayer(),
-    "artificialisation-diff-centroid-cluster": () => new ArtificialisationDiffCentroidClusterLayer(),
+    "artificialisation-diff-centroid-cluster": (_cfg, landData) => new ArtificialisationDiffCentroidClusterLayer(landData),
     "friches": () => new FrichesLayer(),
     "friches-outline": () => new FrichesOutlineLayer(),
     "friches-centroid-cluster": () => new FrichesCentroidClusterLayer(),
