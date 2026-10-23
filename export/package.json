@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "API service for exporting Sparte reports to PDF",
   "main": "dist/api.js",
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
   "scripts": {
     "build": "tsc",
     "scalingo-postbuild": "tsc && npx puppeteer browsers install chrome",
