@@ -70,6 +70,7 @@ interface BaseMapProps {
     center?: [number, number] | null;
     mapHeight?: string;
     sidePanel?: React.ReactNode;
+    baseStyle?: maplibregl.StyleSpecification;
     onMapLoad?: (map: maplibregl.Map) => void;
     onControlsReady?: (manager: ControlsManager) => void;
 }
@@ -82,6 +83,7 @@ export const BaseMap: React.FC<BaseMapProps> = React.memo(({
     center,
     mapHeight = "80vh",
     sidePanel,
+    baseStyle,
     onMapLoad,
     onControlsReady,
 }) => {
@@ -106,7 +108,7 @@ export const BaseMap: React.FC<BaseMapProps> = React.memo(({
         isMapLoaded,
         initializeMap,
         updateControls,
-    } = useMap(landData);
+    } = useMap(landData, baseStyle);
 
     const initializeStatsManager = useCallback((
         map: maplibregl.Map,

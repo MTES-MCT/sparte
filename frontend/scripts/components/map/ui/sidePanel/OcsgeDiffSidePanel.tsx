@@ -1,4 +1,4 @@
-import React, { useRef, useLayoutEffect } from "react";
+import React, { useRef, useLayoutEffect, useState, useEffect } from "react";
 import styled from "styled-components";
 import type * as maplibregl from "maplibre-gl";
 import { theme } from "@theme";
@@ -6,7 +6,8 @@ import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { formatNumber } from "@utils/formatUtils";
 import { getCouvertureLabel, getUsageLabel } from "../../utils/ocsge";
 import { COUVERTURE_COLORS, USAGE_COLORS, ALL_OCSGE_COUVERTURE_CODES, ALL_OCSGE_USAGE_CODES } from "../../constants/ocsge_nomenclatures";
-import { SidePanelPlaceholder, PlaceholderIcon, SidePanelHeader, SidePanelTitle, CloseButton, InfoRow, InfoLabel, InfoValue, ColorDot, SectionTitle, Section, Separator, SidePanelContent } from "./SidePanelPrimitives";
+import { SidePanelPlaceholder, PlaceholderIcon, CloseButton, InfoRow, InfoLabel, InfoValue, ColorDot, Section, Separator } from "./SidePanelPrimitives";
+import { SidePanelAccordion } from "./SidePanelAccordion";
 import { Tooltip } from "react-tooltip";
 
 export interface OcsgeDiffConfig {
@@ -19,6 +20,7 @@ export interface OcsgeDiffConfig {
 	matrixPositiveLabel: string;
 	matrixNegativeLabel: string;
 	seuilText: (oldPositive: boolean, isPositive: boolean) => string;
+	legend?: { color?: string; label: string; description?: string }[];
 }
 
 export interface OcsgeDiffSidePanelProps {
@@ -27,6 +29,39 @@ export interface OcsgeDiffSidePanelProps {
 	onClose: () => void;
 	config: OcsgeDiffConfig;
 }
+
+const LegendItem = styled.div`
+	display: flex;
+	align-items: flex-start;
+	gap: ${theme.spacing.xs};
+	font-size: ${theme.fontSize.xs};
+	color: ${theme.colors.text};
+	line-height: 1.4;
+`;
+
+const LegendSwatchEmpty = styled.span`
+	display: inline-block;
+	width: 10px;
+	height: 10px;
+	border-radius: 3px;
+	border: 1px dashed ${theme.colors.textMuted};
+	background-color: transparent;
+	flex-shrink: 0;
+	margin-top: 2px;
+`;
+
+const LegendDot = styled(ColorDot)`
+	margin-top: 2px;
+`;
+
+const LegendText = styled.div`
+	display: flex;
+	flex-direction: column;
+`;
+
+const LegendDescription = styled.span`
+	color: ${theme.colors.textMuted};
+`;
 
 const MiniMatrixWrapper = styled.div`
 	position: relative;
@@ -137,13 +172,18 @@ const MiniMatrixLegendOutline = styled.span<{ $dashed?: boolean }>`
 	border: 1.5px ${({ $dashed }) => $dashed ? "dashed" : "solid"} ${theme.colors.text};
 `;
 
-export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
-	feature,
-	isLocked,
-	onClose,
-	config,
-}) => {
-	const { id, positiveField, negativeField, positiveLabel, negativeLabel, matrix, matrixPositiveLabel, matrixNegativeLabel, seuilText } = config;
+const getFeatureTitle = (feature: maplibregl.MapGeoJSONFeature, config: OcsgeDiffConfig): string => {
+	const properties = feature.properties ?? {};
+	const isPositive = properties[config.positiveField] === true || properties[config.positiveField] === "true";
+	const surface = (properties.surface as number) || 0;
+	return `${isPositive ? config.positiveLabel : config.negativeLabel} - ${formatNumber({ number: surface / 10000 })} ha (${formatNumber({ number: surface })} m²)`;
+};
+
+const OcsgeDiffFeatureDetails: React.FC<{
+	feature: maplibregl.MapGeoJSONFeature;
+	config: OcsgeDiffConfig;
+}> = ({ feature, config }) => {
+	const { id, positiveField, negativeField, matrix, matrixPositiveLabel, matrixNegativeLabel, seuilText } = config;
 	const tooltipId = `${id}-diff-matrix-tooltip`;
 	const arrowheadId = `${id}-diff-arrowhead`;
 
@@ -178,21 +218,11 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 		line.setAttribute("y2", `${y1 + dy * endRatio}`);
 	});
 
-	if (!feature) {
-		return (
-			<SidePanelPlaceholder>
-				<PlaceholderIcon><i className="bi bi-hand-index" /></PlaceholderIcon>
-				Survolez ou cliquez sur un objet pour afficher ses informations
-			</SidePanelPlaceholder>
-		);
-	}
-
 	const properties = feature.properties;
 	if (!properties) return null;
 
 	const isPositive = properties[positiveField] === true || properties[positiveField] === "true";
 	const isNegative = properties[negativeField] === true || properties[negativeField] === "true";
-	const surface = (properties.surface as number) || 0;
 
 	const csOld = properties.cs_old as string;
 	const csNew = properties.cs_new as string;
@@ -212,20 +242,9 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 	const sameMatrixClass = oldByMatrix === newByMatrix;
 	const isBySeuil = hasMatrix && (isPositive || isNegative) && sameMatrixClass;
 
-	const title = `${isPositive ? positiveLabel : negativeLabel} - ${formatNumber({ number: surface / 10000 })} ha (${formatNumber({ number: surface })} m²)`;
-
 	return (
 		<>
-			<SidePanelHeader>
-				<SidePanelTitle>{title}</SidePanelTitle>
-				{isLocked && (
-					<CloseButton title="Désélectionner l'objet" onClick={onClose}>
-						✕
-					</CloseButton>
-				)}
-			</SidePanelHeader>
-			<SidePanelContent>
-				<Section>
+			<Section>
 					{csOld && csNew && (
 						<>
 							<InfoRow>
@@ -347,7 +366,68 @@ export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
 						</Section>
 					</>
 				)}
-			</SidePanelContent>
+		</>
+	);
+};
+
+export const OcsgeDiffSidePanel: React.FC<OcsgeDiffSidePanelProps> = ({
+	feature,
+	isLocked,
+	onClose,
+	config,
+}) => {
+	const { legend } = config;
+	const hasFeature = !!feature;
+	const hasLegend = !!legend && legend.length > 0;
+
+	// Les deux accordéons sont ouverts au départ. Quand un objet est survolé ou cliqué,
+	// l'accordéon objet s'ouvre (s'il avait été replié) et la légende se replie ;
+	// elle se rouvre quand il n'y a plus d'objet.
+	const [objectOpen, setObjectOpen] = useState(true);
+	const [legendOpen, setLegendOpen] = useState(true);
+
+	useEffect(() => {
+		if (hasFeature) setObjectOpen(true);
+		setLegendOpen(!hasFeature);
+	}, [hasFeature]);
+
+	return (
+		<>
+			<SidePanelAccordion
+				title={feature ? getFeatureTitle(feature, config) : "Informations sur l'objet"}
+				open={objectOpen}
+				onToggle={setObjectOpen}
+				grow
+				actions={isLocked && (
+					<CloseButton title="Désélectionner l'objet" onClick={onClose}>
+						✕
+					</CloseButton>
+				)}
+			>
+				{feature ? (
+					<OcsgeDiffFeatureDetails feature={feature} config={config} />
+				) : (
+					<SidePanelPlaceholder>
+						<PlaceholderIcon><i className="bi bi-hand-index" /></PlaceholderIcon>
+						Survolez ou cliquez sur un objet pour afficher ses informations
+					</SidePanelPlaceholder>
+				)}
+			</SidePanelAccordion>
+			{hasLegend && (
+				<SidePanelAccordion title="Légende" open={legendOpen} onToggle={setLegendOpen}>
+					<Section>
+						{legend.map((item) => (
+							<LegendItem key={item.label}>
+								{item.color ? <LegendDot $color={item.color} /> : <LegendSwatchEmpty />}
+								<LegendText>
+									<span>{item.label}</span>
+									{item.description && <LegendDescription>{item.description}</LegendDescription>}
+								</LegendText>
+							</LegendItem>
+						))}
+					</Section>
+				</SidePanelAccordion>
+			)}
 		</>
 	);
 };
