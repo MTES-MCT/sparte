@@ -177,7 +177,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
             },
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF de {self.land.name} et des territoires de comparaison "
+                    f"Consommation d'ENAF de {self.land.name} et des territoires de comparaison "
                     f"({self.start_year} à {self.end_year})"
                 )
             },

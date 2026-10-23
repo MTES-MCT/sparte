@@ -68,7 +68,7 @@
 
 ### 3.3 Vacance vs consommation
 - **Indicateur** : Taux de vacance (LOGVAC/LOG) vs consommation
-- **Question** : Les communes a forte vacance continuent-elles a consommer des espaces NAF ?
+- **Question** : Les communes a forte vacance continuent-elles a consommer des ENAF ?
 - **Alerte** : Identifier les communes qui consomment ET ont de la vacance croissante
 
 ### 3.4 Residences secondaires vs consommation

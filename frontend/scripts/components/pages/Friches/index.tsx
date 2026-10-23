@@ -40,17 +40,18 @@ const FrichesContent: React.FC = () => {
                 résidentiels ou des équipements. On estime que ces sites
                 pourraient représenter en France entre 90 000 et 150 000
                 hectares d'espaces inemployés.
+                Le site Cartofriches recense plus de 20 500 friches représentant 61 000 hectares en 2026.
               </p>
             </>
           ),
         }}
         donnees={{
-          preview: "Les données utilisées proviennent du recensement des friches réalisé par le CEREMA dans le cadre du dispositif Cartofriches.",
+          preview: "Les données utilisées proviennent du recensement des friches réalisé par le Cerema dans le cadre du dispositif Cartofriches.",
           content: (
             <>
               <p>
                 Les données utilisées proviennent du recensement des friches
-                réalisé par le <strong>CEREMA</strong> dans le cadre du
+                réalisé par le <strong>Cerema</strong> et les acteurs locaux dans le cadre du
                 dispositif <strong>Cartofriches</strong>.
               </p>
               <p>

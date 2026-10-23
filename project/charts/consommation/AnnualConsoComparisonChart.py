@@ -66,7 +66,7 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                     "tooltip": {
                         "headerFormat": "<b>{point.key}</b><br/>",
                         "pointFormat": (
-                            "Consommation d'espaces NAF entre "
+                            "Consommation d'ENAF entre "
                             f"{self.params['start_date']} et {self.params['end_date']} : "
                             "<b>{point.y:.2f} ha</b>"
                         ),
@@ -82,7 +82,7 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "chart": {"type": "column", "height": 500},
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF de {self.land.name} "
+                    f"Consommation d'ENAF de {self.land.name} "
                     "et des territoires de comparaison "
                     f"({self.params['start_date']} et {self.params['end_date']})"
                 )
@@ -173,7 +173,7 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
             },
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF de {self.land.name} "
+                    f"Consommation d'ENAF de {self.land.name} "
                     "et des territoires de comparaison "
                     f"({self.params['start_date']} et {self.params['end_date']})"
                 )

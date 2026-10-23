@@ -52,7 +52,7 @@ const ImpermeabilisationPageContent: React.FC = () => {
           ),
         }}
         donnees={{
-          preview: "La mesure de l'imperméabilisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Échelle), base de données de référence pour la description de l'occupation du sol.",
+          preview: "La mesure nationale de l'imperméabilisation d'un territoire repose sur l'OCS GE (Occupation du Sol à Grande Échelle), base de données de référence pour la description de l'occupation du sol.",
           content: null,
         }}
         onDonneesClick={ocsgeDrawer?.openDrawer}

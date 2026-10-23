@@ -186,7 +186,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   const chartChildren = useMemo(() => (
     <div style={{ fontSize: "0.875rem", lineHeight: 1.6 }}>
       <p>
-        Cette carte bivariée croise deux axes : la <strong>consommation d'espaces NAF</strong> (fichiers fonciers)
+        Cette carte bivariée croise deux axes : la <strong>consommation d'ENAF</strong> (fichiers fonciers)
         et un <strong>indicateur socio-économique</strong> (INSEE, dossier complet). Chaque territoire est classé
         dans une grille 3×3 = 9 catégories, selon sa position sur chacun des deux axes.
       </p>

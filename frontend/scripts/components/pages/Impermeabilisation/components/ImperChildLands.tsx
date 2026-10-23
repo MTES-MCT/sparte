@@ -120,14 +120,12 @@ export const ImperChildLands: React.FC = () => {
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
           <GuideContent title="Comprendre les données">
             <p>
-              La couleur de fond indique le <strong>taux d'imperméabilisation</strong> de chaque
-              territoire : plus la teinte <strong style={{ color: "#6a6af4" }}>violette</strong> est
+              La couleur de fond indique le <strong>taux d'imperméabilisation des sols</strong> à la date du dernier millésime sur chaque
+              territoire (surfaces imperméabilisées/surface communale totale) : plus la teinte <strong style={{ color: "#6a6af4" }}>violette</strong> est
               intense, plus la part imperméabilisée est élevée.
             </p>
             <p>
-              Les cercles représentent l'<strong>évolution</strong> entre les deux millésimes :{" "}
-              <strong style={{ color: "#FC9292" }}>rouge</strong> pour une imperméabilisation nette,{" "}
-              <strong style={{ color: "#7ec974" }}>vert</strong> pour une désimperméabilisation nette.
+              Les cercles rouges représentent l'<strong>les flux d’imperméabilisation</strong> entre les deux millésimes :{" "}
               Leur taille est proportionnelle à la surface concernée.
             </p>
             <p>

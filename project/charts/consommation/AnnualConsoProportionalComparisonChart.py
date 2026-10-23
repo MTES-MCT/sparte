@@ -56,7 +56,7 @@ class AnnualConsoProportionalComparisonChart(ComparisonChartMixin, DiagnosticCha
         return super().param | {
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF relative à la surface de {self.land.name} "
+                    f"Consommation d'ENAF relative à la surface de {self.land.name} "
                     "et des territoires de comparaison "
                     f"({self.params['start_date']} - {self.params['end_date']})"
                 )
@@ -125,7 +125,7 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
             },
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF relative à la surface de {self.land.name} "
+                    f"Consommation d'ENAF relative à la surface de {self.land.name} "
                     "et des territoires de comparaison "
                     f"entre {self.params['start_date']} et {self.params['end_date']} (en %)"
                 )

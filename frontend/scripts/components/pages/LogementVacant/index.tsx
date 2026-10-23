@@ -32,11 +32,10 @@ const LogementVacantContent: React.FC = () => {
               <p>
                 On distingue deux formes principales de vacance des logements :{" "}
                 <strong>la vacance conjoncturelle</strong>, qui est de courte
-                durée et nécessaire à la fluidité du marché du logement, et{" "}
-                <strong>la vacance structurelle</strong>, qui pourrait se
-                substituer à la construction neuve de logements, souvent
-                génératrice d'artificialisation des sols et contre laquelle il
-                est légitime de lutter.
+                durée et liée à la fluidité du marché du logement, et{" "}
+                <strong>la vacance structurelle</strong>, de longue durée. 
+                Faire baisser cette dernière peut permettre de diminuer le besoin de construction de logements neufs,
+                qui génère souvent une artificialisation des sols.
               </p>
               <p>
                 Dans cette perspective, l'analyse proposée s'appuie sur une
@@ -49,20 +48,20 @@ const LogementVacantContent: React.FC = () => {
           ),
         }}
         donnees={{
-          preview: "Les données sur la vacance des logements affichées sur cette page proviennent de la base LOVAC produite par le CEREMA pour le parc privé, ainsi que de la base RPLS produite par le Ministère de la Transition Écologique (MTE), pour ce qui concerne le parc des bailleurs sociaux.",
+          preview: "Les données sur la vacance des logements affichées sur cette page proviennent de la base LOVAC produite par le Cerema pour le parc privé, ainsi que de la base RPLS produite par le Ministère de la Transition Écologique (MTE), pour ce qui concerne le parc des bailleurs sociaux.",
           content: (
             <>
               <p>
                 Les données sur la vacance des logements affichées sur cette
                 page proviennent de la <strong>base LOVAC</strong> produite par
-                le CEREMA pour le parc privé, ainsi que de la{" "}
+                le Cerema pour le parc privé, ainsi que de la{" "}
                 <strong>base RPLS</strong> produite par le Ministère de la
                 Transition Écologique (MTE), pour ce qui concerne le parc des
                 bailleurs sociaux.
               </p>
               <p>Ces données sont disponibles à l'échelle de la commune.</p>
               <p>
-                Les données de consommation d'espaces NAF (CEREMA) et de la base
+                Les données de consommation d'ENAF (Cerema) et la base
                 SITADEL (MTE) sont également utilisées pour certains
                 indicateurs.
               </p>
@@ -81,7 +80,7 @@ const LogementVacantContent: React.FC = () => {
 
       <div className="fr-mb-5w">
         <h2 className="fr-mb-3w">
-          Logements vacants et consommation d'espaces NAF
+          Logements vacants et consommation d'ENAF
         </h2>
         <LogementVacantConso />
       </div>

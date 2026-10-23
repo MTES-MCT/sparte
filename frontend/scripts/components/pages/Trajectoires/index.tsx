@@ -31,20 +31,20 @@ const TrajectoiresContent: React.FC = () => {
       <Triptych
         className="fr-mb-5w"
         definition={{
-          preview: "La trajectoire de sobriété foncière décrit la réduction progressive de la consommation d'espaces naturels, agricoles et forestiers (NAF) sur un territoire.",
+          preview: "La trajectoire de sobriété foncière décrit la réduction progressive de la consommation d'espaces naturels, agricoles et forestiers (ENAF) sur un territoire.",
           content: (
             <>
               <p className="fr-mb-2w">
                 La trajectoire de sobriété foncière décrit la{" "}
                 <strong>
                   réduction progressive de la consommation d'espaces naturels,
-                  agricoles et forestiers (NAF)
+                  agricoles et forestiers (ENAF)
                 </strong>{" "}
                 sur un territoire.
               </p>
               <p className="fr-mb-2w">
-                Elle montre la répartition dans le temps de la{" "}
-                <strong>consommation maximale d'espaces NAF autorisée</strong>,
+                Elle montre l'évolution de la{" "}
+                <strong>consommation d'ENAF</strong>,
                 en cohérence avec les objectifs de sobriété foncière fixés à
                 l'échelle nationale ou territorialisés.
               </p>
@@ -59,15 +59,15 @@ const TrajectoiresContent: React.FC = () => {
           ),
         }}
         donnees={{
-          preview: "Les données affichées sur cette plateforme proviennent du Portail national de l'artificialisation et sont produites par le CEREMA à partir des Fichiers Fonciers.",
+          preview: "Les données affichées sur cette plateforme proviennent du Portail de l’artificialisation des sols et sont produites par le Cerema à partir des Fichiers Fonciers.",
           content: (
             <>
               <p>
                 Les données affichées sur cette plateforme proviennent du
-                Portail national de l'artificialisation et sont produites par le
-                CEREMA à partir des Fichiers Fonciers. Elles constituent une{" "}
+                Portail de l’artificialisation des sol et sont produites par le
+                Cerema à partir des Fichiers Fonciers. Elles constituent une{" "}
                 <strong>donnée de référence</strong> pour la mesure de la
-                consommation d'Espaces NAF.
+                consommation d'ENAF.
               </p>
               <p>
                 Ces données peuvent être complétées par des données locales (ex.
@@ -93,8 +93,8 @@ const TrajectoiresContent: React.FC = () => {
                 documents d'urbanisme dans{" "}
                 <strong>
                   une trajectoire visant nationalement à réduire de moitié la
-                  consommation d'Espaces NAF (naturels, agricoles et forestiers)
-                  sur la période 2021-2031, par rapport à la décennie 2011-2020.
+                  consommation d'espaces naturels, agricoles et forestiers (ENAF)
+                  entre le 1er janvier 2021 et le 1er janvier 2031, par rapport à la période allant du 1er janvier 2011 au 1er janvier 2021.
                 </strong>
               </p>
             </>
@@ -110,7 +110,7 @@ const TrajectoiresContent: React.FC = () => {
             description={
               <>
                   L'équipe travaille à l'intégration des objectifs déjà
-                  territorialisés de réduction de la consommation d'espaces NAF.
+                  territorialisés de réduction de la consommation d'ENAF.
                   Dans l'attente de cette mise à jour, <strong>vous pouvez simuler différents scénarios d'objectifs de réduction ci-dessous</strong>. Par défaut,
                   en attendant cette territorialisation, l'outil affiche l'objectif
                   national de réduction de 50%.
