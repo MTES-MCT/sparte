@@ -26,6 +26,7 @@ flake8-pyproject = "*"
 click = "*"
 ggshield = "*"
 anyio = ">=4.14.2"
+pyjwt = ">=2.14.0"
 
 [packages]
 boto3 = "*"
@@ -68,3 +69,4 @@ django-two-factor-auth = "*"
 qrcode = "*"
 phonenumbers = "*"
 mozilla-django-oidc = "5.0.2"
+pyjwt = ">=2.14.0"
