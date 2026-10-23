@@ -46,8 +46,6 @@ models:
         data_type: character varying
         data_tests:
           - not_null
-      - name: cover_image
-        data_type: character varying
       - name: folder_name
         data_type: character varying
       - name: territory_name

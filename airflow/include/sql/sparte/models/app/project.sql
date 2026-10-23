@@ -13,7 +13,6 @@ SELECT
     level,
     land_id,
     land_type,
-    cover_image,
     folder_name,
     territory_name,
     target_2031,
