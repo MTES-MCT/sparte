@@ -25,7 +25,7 @@ types-requests = "*"
 flake8-pyproject = "*"
 click = "*"
 ggshield = "*"
-anyio = "*"
+anyio = ">=4.14.2"
 
 [packages]
 boto3 = "*"
