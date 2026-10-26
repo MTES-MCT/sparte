@@ -1,4 +1,4 @@
-import React, { useEffect, ChangeEvent, useState, useRef, useMemo } from 'react';
+import React, { useEffect, ChangeEvent, KeyboardEvent, useState, useRef, useMemo, useId } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 
@@ -27,6 +27,7 @@ interface SearchBarProps {
     label?: string;
     dropdownPosition?: "below" | "above";
     animatedPlaceholder?: boolean;
+    inputId?: string;
 }
 
 const defaultBehavior = (territory: LandDetailResultType) => {
@@ -37,6 +38,7 @@ const defaultBehavior = (territory: LandDetailResultType) => {
 const primaryColor = '#313178';
 const activeColor = '#4318FF';
 const secondaryColor = '#a1a1f8';
+const focusColor = '#0a76f6';
 
 const SearchContainer = styled.div<{ $useHighZIndex: boolean }>`
     display: flex;
@@ -48,6 +50,11 @@ const SearchContainer = styled.div<{ $useHighZIndex: boolean }>`
     background: #fff;
     position: relative;
     z-index: ${({ $useHighZIndex }) => ($useHighZIndex ? '1001' : '10')};
+
+    &:focus-within {
+        outline: 2px solid ${focusColor};
+        outline-offset: 2px;
+    }
 `;
 
 const Icon = styled.i`
@@ -131,12 +138,13 @@ const Overlay = styled.div<{ $visible: boolean }>`
     z-index: 1000;
 `;
 
-const ResultItem = styled.div<{ $disabled: boolean }>`
+const ResultItem = styled.div<{ $disabled: boolean; $active: boolean }>`
     padding: 0.5rem;
     font-size: 0.9em;
     cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
     transition: background 0.3s ease, color 0.3s ease;
-    color: ${primaryColor};
+    color: ${({ $active }) => ($active ? activeColor : primaryColor)};
+    background: ${({ $active }) => ($active ? '#f4f7fe' : 'transparent')};
 
     &:not(:last-child) {
         border-bottom: 1px solid #EBEBEC;
@@ -190,11 +198,21 @@ const SearchBar: React.FC<SearchBarProps> = ({
     label = "",
     dropdownPosition = "below",
     animatedPlaceholder = false,
+    inputId,
 }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
+    const listboxRef = useRef<HTMLDivElement>(null);
+    // Identifiants propres à chaque instance : plusieurs barres peuvent coexister sur une page
+    const reactId = useId();
+    const resolvedInputId = inputId ?? `${reactId}search-bar`;
+    const listboxId = `${reactId}search-bar-results`;
+    const getOptionId = (index: number) => `${reactId}search-bar-option-${index}`;
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<LandDetailResultType[] | undefined>(undefined);
+    // Liste refermée par Échap : elle se rouvre à la prochaine saisie ou avec les flèches
+    const [isListOpen, setIsListOpen] = useState<boolean>(false);
+    const [activeIndex, setActiveIndex] = useState<number>(-1);
     const minimumCharCountForSearch = 2;
     // La requête est différée pour ne pas dépasser le throttle de l'API (429) pendant la frappe
     const debouncedQuery = useDebounce(query, 200);
@@ -205,6 +223,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
     });
     // Recherche en cours : requête en vol ou saisie en attente du debounce
     const isSearching = isFetching || (!isQueryTooShort && query !== debouncedQuery);
+
+    const results = isListOpen ? data : undefined;
+    const hasResults = results !== undefined && results.length > 0;
+    const activeOptionId = hasResults && activeIndex >= 0 ? getOptionId(activeIndex) : undefined;
 
     const shouldShowAnimatedPlaceholder = animatedPlaceholder && !isFocused && query === '';
     const { displayText, isTyping } = useTypewriterAnimation({
@@ -240,8 +262,19 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 ? queryData.filter((territory: LandDetailResultType) => !shouldExcludeTerritoryFromResults(territory))
                 : undefined;
             setData(filteredData);
+            setIsListOpen(true);
         }
+        setActiveIndex(-1);
     }, [isSearching, queryData, query, isQueryTooShort, shouldQueryBeSkipped, stableExcludeTerritories]);
+
+    // Garde le résultat actif visible dans la liste (qui peut défiler)
+    useEffect(() => {
+        if (activeIndex < 0) {
+            return;
+        }
+        const activeOption = listboxRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+        activeOption?.scrollIntoView?.({ block: 'nearest' });
+    }, [activeIndex]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -270,6 +303,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
         setQuery('');
         setIsFocused(false);
         setData(undefined);
+        setIsListOpen(false);
+        setActiveIndex(-1);
     };
 
     const handleTerritoryClick = (territory: LandDetailResultType) => {
@@ -277,18 +312,65 @@ const SearchBar: React.FC<SearchBarProps> = ({
         handleReset();
     };
 
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        const options = data ?? [];
+        switch (event.key) {
+            case 'ArrowDown':
+                if (options.length === 0) {
+                    return;
+                }
+                event.preventDefault();
+                setIsListOpen(true);
+                setActiveIndex((index) => (index + 1) % options.length);
+                break;
+            case 'ArrowUp':
+                if (options.length === 0) {
+                    return;
+                }
+                event.preventDefault();
+                setIsListOpen(true);
+                setActiveIndex((index) => (index <= 0 ? options.length - 1 : index - 1));
+                break;
+            case 'Enter':
+                if (hasResults && activeIndex >= 0) {
+                    event.preventDefault();
+                    handleTerritoryClick(options[activeIndex]);
+                }
+                break;
+            case 'Escape':
+                if (results !== undefined) {
+                    event.preventDefault();
+                    setIsListOpen(false);
+                    setActiveIndex(-1);
+                } else if (query !== '') {
+                    event.preventDefault();
+                    setQuery('');
+                }
+                break;
+            default:
+                break;
+        }
+    };
+
     return (
         <>
             {!disableOverlay && <Overlay $visible={isFocused} />}
-            {label && <Label htmlFor="search-bar-territory">{label}</Label>}
+            {label && <Label htmlFor={resolvedInputId}>{label}</Label>}
             <SearchContainer ref={searchContainerRef} $useHighZIndex={!disableOverlay}>
-                <Icon className="bi bi-search" />
+                <Icon className="bi bi-search" aria-hidden="true" />
                 <InputWrapper>
                     <Input
-                        id="search-bar-territory"
+                        id={resolvedInputId}
                         type="text"
+                        role="combobox"
+                        autoComplete="off"
+                        aria-autocomplete="list"
+                        aria-expanded={hasResults}
+                        aria-controls={hasResults ? listboxId : undefined}
+                        aria-activedescendant={activeOptionId}
                         value={query}
                         onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
                         onFocus={() => setIsFocused(true)}
                         onBlur={handleBlur}
                         placeholder={shouldShowAnimatedPlaceholder ? '' : 'Rechercher un territoire (Commune, EPCI, Département, Région...)'}
@@ -300,35 +382,43 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     </AnimatedPlaceholder>
                 </InputWrapper>
                 {isSearching && <Loader size={25} wrap={false} />}
-                {data && (
+                {results && (
                     <ResultsContainer $useHighZIndex={!disableOverlay} $position={dropdownPosition}>
-                        {data.length > 0 ? (
-                            data.map((territory: LandDetailResultType) => {
-                                const isDisabled = territory.surface === 0;
-                                return (
-                                    <ResultItem
-                                        key={territory.land_id}
-                                        $disabled={isDisabled}
-                                        onMouseDown={(e) => e.preventDefault()}
-                                        onClick={() => handleTerritoryClick(territory)}
-                                    >
-                                        <div>
-                                            <TerritoryTitle>
-                                                <div>{territory.name}</div>
-                                                <Badge className="fr-badge">{territory.land_type_label}</Badge>
-                                            </TerritoryTitle>
-                                            <TerritoryDetails>
-                                                <div>Code INSEE: {territory.land_id}</div>
-                                                {isDisabled && 
-                                                    <div><i className="bi bi-info-circle fr-mr-1w"></i>Données indisponibles: Territoire supprimé en 2024</div>
-                                                }
-                                            </TerritoryDetails>
-                                        </div>
-                                    </ResultItem>
-                                );
-                            })
+                        {results.length > 0 ? (
+                            <div ref={listboxRef} role="listbox" id={listboxId} aria-label="Résultats de la recherche">
+                                {results.map((territory: LandDetailResultType, index: number) => {
+                                    const isDisabled = territory.surface === 0;
+                                    const isActive = index === activeIndex;
+                                    return (
+                                        <ResultItem
+                                            key={territory.land_id}
+                                            id={getOptionId(index)}
+                                            role="option"
+                                            aria-selected={isActive}
+                                            $disabled={isDisabled}
+                                            $active={isActive}
+                                            onMouseDown={(e) => e.preventDefault()}
+                                            onMouseMove={() => setActiveIndex(index)}
+                                            onClick={() => handleTerritoryClick(territory)}
+                                        >
+                                            <div>
+                                                <TerritoryTitle>
+                                                    <div>{territory.name}</div>
+                                                    <Badge className="fr-badge">{territory.land_type_label}</Badge>
+                                                </TerritoryTitle>
+                                                <TerritoryDetails>
+                                                    <div>Code INSEE: {territory.land_id}</div>
+                                                    {isDisabled && 
+                                                        <div><i className="bi bi-info-circle fr-mr-1w" aria-hidden="true"></i>Données indisponibles: Territoire supprimé en 2024</div>
+                                                    }
+                                                </TerritoryDetails>
+                                            </div>
+                                        </ResultItem>
+                                    );
+                                })}
+                            </div>
                         ) : (
-                            <NoResultsMessage>
+                            <NoResultsMessage role="status">
                                 Aucun résultat trouvé pour votre recherche.
                             </NoResultsMessage>
                         )}
