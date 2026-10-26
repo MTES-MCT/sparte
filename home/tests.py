@@ -30,6 +30,18 @@ class HomeTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/contact")
 
+    def test_robots_txt_disallows_api_without_blocking_any_bot(self) -> None:
+        response = self.client.get("/robots.txt")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/plain")
+        content = response.content.decode()
+        # une seule section, commune à tous les robots
+        self.assertEqual(content.count("User-Agent:"), 1)
+        self.assertIn("User-Agent: *\n", content)
+        self.assertIn("Disallow: /api/\n", content)
+        # aucun robot n'est exclu de tout le site
+        self.assertNotIn("Disallow: /\n", content)
+
 
 class SitemapTests(TestCase):
     """Le plan du site est construit sur DOMAIN_URL, pas sur l'hôte de la requête."""
