@@ -1,4 +1,7 @@
-from django.test import TestCase
+from django.conf import settings
+from django.template import Context, Template
+from django.template.loader import get_template
+from django.test import SimpleTestCase, TestCase
 
 
 class HomeTests(TestCase):
@@ -129,3 +132,35 @@ class SitemapTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Sitemap: https://mondiagartif.beta.gouv.fr/sitemap.xml", response.content.decode())
+
+
+class SriStaticTemplateTagTests(SimpleTestCase):
+    """
+    Les templates s'appuient sur le tag `sri_static` de django-sri, retiré dans la version 1.0 :
+    on vérifie qu'ils compilent et que le tag produit bien un lien vers nos fichiers statiques.
+    """
+
+    TEMPLATES_USING_SRI = [
+        "home/home.html",
+        "home/home_rapport_local.html",
+        "home/accessibilite.html",
+        "home/download.html",
+        "home/legal_notices.html",
+        "home/privacy.html",
+        "project/layout/base.html",
+    ]
+
+    def test_templates_using_sri_compile(self) -> None:
+        for template_name in self.TEMPLATES_USING_SRI:
+            with self.subTest(template=template_name):
+                get_template(template_name)
+
+    def test_sri_static_renders_a_stylesheet_link_to_our_static_file(self) -> None:
+        html = Template('{% load sri %}{% sri_static "home/css/home.css" %}').render(Context())
+
+        self.assertTrue(html.startswith("<link"), html)
+        self.assertIn('rel="stylesheet"', html)
+        self.assertIn('href="/static/home/css/home.css"', html)
+        if settings.USE_SRI:
+            self.assertIn('crossorigin="anonymous"', html)
+            self.assertRegex(html, r'integrity="sha(256|384|512)-[A-Za-z0-9+/=]+"')

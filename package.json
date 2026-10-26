@@ -12,8 +12,7 @@
     "tsc": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "export:pdf": "node scripts/export-rapport-pdf.js"
+    "test:coverage": "jest --coverage"
   },
   "devDependencies": {
     "@babel/core": "^7.24.1",
@@ -43,7 +42,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "json-loader": "^0.5.7",
     "mini-css-extract-plugin": "^2.7.2",
-    "puppeteer": "^24.28.0",
     "react-refresh": "^0.14.2",
     "style-loader": "^4.0.0",
     "terser-webpack-plugin": "^5.3.11",
@@ -90,9 +88,14 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.1.0",
-    "react-router-dom": "^6.26.0",
+    "react-router-dom": "^7.18.4",
     "react-toastify": "^11.0.5",
     "react-tooltip": "^5.28.0",
     "styled-components": "^6.1.8"
+  },
+  "overrides": {
+    "sockjs": {
+      "uuid": "^11.1.1"
+    }
   }
 }
