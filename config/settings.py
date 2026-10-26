@@ -21,6 +21,8 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
+from config.csp import build_csp_directives
+
 OFFICIAL_VERSION = "9.0.0"
 
 
@@ -80,6 +82,8 @@ THIRD_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "sri",
+    # django-csp : expose ses vérifications `manage.py check` (réglages CSP_* obsolètes)
+    "csp",
     "simple_history",
     "corsheaders",
     "fancy_cache",
@@ -546,104 +550,27 @@ MESSAGES_WIDGET_CHANNEL = env.str("MESSAGES_WIDGET_CHANNEL", default="231af05a-3
 MESSAGES_WIDGET_LOADER_SRC = "https://beta.gouv.fr/assets/lasuite-widgets/loader.js"
 MESSAGES_WIDGET_SCRIPT_SRC = "https://beta.gouv.fr/assets/lasuite-widgets/feedback.js"
 
-# SECURITY - Content Security Header Policy
+# SECURITY - Content Security Policy
 # https://django-csp.readthedocs.io
+# La politique (format django-csp 4) est construite dans config/csp.py.
 
 USE_CSP = env.bool("USE_CSP", default=not DEBUG)
+# Mode observation : la politique est envoyée dans Content-Security-Policy-Report-Only, le
+# navigateur signale les violations dans sa console sans rien bloquer (déploiement progressif).
+USE_CSP_REPORT_ONLY = env.bool("USE_CSP_REPORT_ONLY", default=False)
 if USE_CSP:
     MIDDLEWARE.insert(2, "config.middlewares.ForceNonceCSPMiddleware")
 
-CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
-CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob:", "stats.beta.gouv.fr"]
-CSP_WORKER_SRC = ["'self'", "blob:"]
-CSP_SCRIPT_SRC = [
-    "'self'",
-    "stats.beta.gouv.fr",
-    "http://localhost:3000",
-    # Crisp
-    "https://client.crisp.chat",
-    "https://settings.crisp.chat",
-    "https://stats.beta.gouv.fr",
-    # Messages (widget La Suite)
-    "https://beta.gouv.fr",
-]
-CSP_STYLE_SRC = [
-    "'self'",
-    "cdn.jsdelivr.net",
-    "'unsafe-inline'",
-    "http://localhost:3000",
-    # Crisp
-    "https://client.crisp.chat",
-    "https://stats.beta.gouv.fr/",
-    # Messages (widget La Suite)
-    "https://beta.gouv.fr",
-]
-CSP_IMG_SRC = [
-    "'self'",
-    "data:",
-    "data.geopf.fr",
-    "s3.fr-par.scw.cloud",
-    "data:",
-    MEDIA_URL,
-    "http://localhost:3000",
-    # Crisp
-    "https://client.crisp.chat",
-    "https://image.crisp.chat",
-    "https://storage.crisp.chat",
-    # Messages (widget La Suite)
-    "https://beta.gouv.fr",
-    AIRFLOW_S3_BASE_URL,
-]
-CSP_FRAME_SRC = (
-    "'self'",
-    # Crisp
-    "https://game.crisp.chat",
-    "https://plugins.crisp.chat/",
-    "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
-    "https://stats.beta.gouv.fr/",
+csp_directives = build_csp_directives(
+    local=ENVIRONMENT == "local",
+    media_url=MEDIA_URL,
+    airflow_s3_base_url=AIRFLOW_S3_BASE_URL,
+    s3_endpoint_url=AWS_S3_ENDPOINT_URL,
 )
-CSP_MEDIA_SRC = (
-    # Crisp
-    "https://client.crisp.chat",
-)
-CSP_INCLUDE_NONCE_IN = ["script-src"]
-CSP_FONT_SRC = (
-    "'self'",
-    "data:",
-    "cdn.jsdelivr.net",
-    "http://localhost:3000",
-    # Crisp
-    "https://client.crisp.chat",
-    "https://stats.beta.gouv.fr",
-)
-CSP_CONNECT_SRC = [
-    "'self'",
-    "beta.gouv.fr",
-    "sparte-metabase.osc-secnum-fr1.scalingo.io",
-    "stats.beta.gouv.fr",
-    "data.geopf.fr",
-    "https://raw.githack.com",
-    "https://openmaptiles.geo.data.gouv.fr",
-    "https://openmaptiles.github.io",
-    "https://stats.beta.gouv.fr",
-    "https://s3.fr-par.scw.cloud",
-    "https://sparte.s3.fr-par.scw.cloud",
-    # Crisp
-    "https://client.crisp.chat",
-    "https://storage.crisp.chat",
-    "wss://client.relay.crisp.chat",
-    "wss://stream.relay.crisp.chat",
-    # Messages (widget La Suite)
-    "https://support.incubateur.net",
-    "https://gist.githubusercontent.com",
-    "ws://localhost:3000/ws",
-    "http://localhost:3000",
-    AIRFLOW_S3_BASE_URL,
-]
-CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io", "https://stats.beta.gouv.fr")
-# Aucun formulaire ne doit être soumis vers un domaine tiers (ex. l'export de graphiques
-# Highcharts, qui par défaut POSTe vers export.highcharts.com).
-CSP_FORM_ACTION = ["'self'"]
+if USE_CSP_REPORT_ONLY:
+    CONTENT_SECURITY_POLICY_REPORT_ONLY = {"DIRECTIVES": csp_directives}
+else:
+    CONTENT_SECURITY_POLICY = {"DIRECTIVES": csp_directives}
 
 
 # MAP SETTINGS
