@@ -558,6 +558,9 @@ USE_CSP = env.bool("USE_CSP", default=not DEBUG)
 # Mode observation : la politique est envoyée dans Content-Security-Policy-Report-Only, le
 # navigateur signale les violations dans sa console sans rien bloquer (déploiement progressif).
 USE_CSP_REPORT_ONLY = env.bool("USE_CSP_REPORT_ONLY", default=False)
+# Adresse de collecte des rapports de violation (directive report-uri), ex. l'endpoint
+# « security » du projet Sentry : https://sentry.incubateur.net/api/21/security/?sentry_key=…
+CONTENT_SECURITY_POLICY_REPORT_URI = env.str("CONTENT_SECURITY_POLICY_REPORT_URI", default="")
 if USE_CSP:
     MIDDLEWARE.insert(2, "config.middlewares.ForceNonceCSPMiddleware")
 
@@ -566,6 +569,7 @@ csp_directives = build_csp_directives(
     media_url=MEDIA_URL,
     airflow_s3_base_url=AIRFLOW_S3_BASE_URL,
     s3_endpoint_url=AWS_S3_ENDPOINT_URL,
+    report_uri=CONTENT_SECURITY_POLICY_REPORT_URI,
 )
 if USE_CSP_REPORT_ONLY:
     CONTENT_SECURITY_POLICY_REPORT_ONLY = {"DIRECTIVES": csp_directives}

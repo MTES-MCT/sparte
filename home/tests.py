@@ -194,6 +194,14 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertNotIn("http:", policy)
         self.assertNotIn("ws:", policy)
 
+    def test_report_uri_is_added_only_when_configured(self) -> None:
+        report_uri = "https://sentry.example.org/api/21/security/?sentry_key=abc"
+        directives = build_csp_directives(local=False, report_uri=report_uri, **HTTPS_SOURCES)
+
+        self.assertEqual(directives["report-uri"], [report_uri])
+        self.assertIn(f"report-uri {report_uri}", build_policy(config=directives))
+        self.assertNotIn("report-uri", build_csp_directives(local=False, **HTTPS_SOURCES))
+
     def test_local_policy_tolerates_webpack_dev_server_and_local_s3(self) -> None:
         directives = build_csp_directives(local=True, **{**HTTPS_SOURCES, "s3_endpoint_url": "http://s3:7070"})
 

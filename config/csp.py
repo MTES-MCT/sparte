@@ -27,12 +27,17 @@ def build_csp_directives(
     media_url: str,
     airflow_s3_base_url: str,
     s3_endpoint_url: str,
+    report_uri: str = "",
 ) -> dict[str, Any]:
     """Construit les directives CSP.
 
     ``local`` (``ENVIRONMENT == "local"``) tolère le serveur de développement webpack et le
     S3 local, tous deux servis en HTTP ; partout ailleurs aucune source ``http:``/``ws:``
     n'est autorisée et ``upgrade-insecure-requests`` est ajouté.
+
+    ``report_uri`` (optionnel) est l'adresse où le navigateur envoie les rapports de
+    violation (ex. l'endpoint « security » d'un projet Sentry) ; utile surtout en mode
+    Report-Only pour collecter les violations sans surveiller la console du navigateur.
     """
     directives: dict[str, Any] = {
         "default-src": [SELF, METABASE, "blob:", MATOMO],
@@ -90,4 +95,6 @@ def build_csp_directives(
         # block-all-mixed-content est déprécié et ignoré par les navigateurs qui gèrent
         # upgrade-insecure-requests : seule cette dernière directive est posée.
         directives["upgrade-insecure-requests"] = True
+    if report_uri:
+        directives["report-uri"] = [report_uri]
     return directives
