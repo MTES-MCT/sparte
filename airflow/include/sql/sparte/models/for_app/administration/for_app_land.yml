@@ -108,16 +108,21 @@ models:
       - name: friche_status
         data_type: text
         data_tests:
+          - not_null
           - accepted_values:
               values:
+                - gisement nul et sans potentiel
                 - gisement nul car potentiel déjà exploité
                 - gisement potentiel et non exploité
                 - gisement potentiel et en cours d’exploitation
       - name: friche_status_details
         data_type: jsonb
+        data_tests:
+          - not_null
       - name: logements_vacants_status
         data_type: text
         data_tests:
+          - not_null
           - accepted_values:
               values:
                 - données indisponibles (secretisation)
@@ -139,6 +144,8 @@ models:
         data_type: boolean
       - name: logements_vacants_status_details
         data_type: jsonb
+        data_tests:
+          - not_null
       - name: millesimes
         data_type: array
       - name: millesimes_by_index

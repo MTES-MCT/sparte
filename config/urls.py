@@ -17,15 +17,22 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
+
+# cache_page de fancy_cache : la bibliothèque retire la propriété `cache` du
+# middleware de Django à l'import, ce qui casse le cache_page standard de Django 5.
+from fancy_cache import cache_page
 from mozilla_django_oidc.urls import urlpatterns as oidc_urls
 from two_factor.admin import AdminSiteOTPRequired
 from two_factor.urls import urlpatterns as tf_urls
 from two_factor.views import LoginView
 
+from config.sitemaps import SITEMAP_CACHE_TIMEOUT, sitemaps
 from config.views import (
     CarroyageDestinationConfigView,
     EnvironmentView,
+    SitemapIndexView,
     WebpackProxyView,
 )
 from public_data.views import (
@@ -65,6 +72,13 @@ urlpatterns += [
     path("exports/pdf-header", PdfHeaderView.as_view(), name="pdf_header"),
     path("exports/pdf-footer", PdfFooterView.as_view(), name="pdf_footer"),
     path("env", view=EnvironmentView.as_view(), name="env"),
+    path("sitemap.xml", cache_page(SITEMAP_CACHE_TIMEOUT)(SitemapIndexView.as_view()), name="sitemap"),
+    path(
+        "sitemap-<section>.xml",
+        cache_page(SITEMAP_CACHE_TIMEOUT)(sitemap),
+        {"sitemaps": sitemaps},
+        name="sitemap-section",
+    ),
     path(
         "carroyage-destination-config",
         view=CarroyageDestinationConfigView.as_view(),

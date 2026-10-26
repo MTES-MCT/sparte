@@ -13,3 +13,7 @@ models:
       - relationships:
           to: ref('scot')
           field: id_scot
+    - name: approved
+      description: "Statut du SCoT de rattachement (cf. gpu_scot) : true = opposable, false = en projet"
+      data_tests:
+      - not_null
