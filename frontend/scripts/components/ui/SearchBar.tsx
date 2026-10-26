@@ -1,4 +1,4 @@
-import React, { useEffect, ChangeEvent, KeyboardEvent, useState, useRef, useMemo, useId } from 'react';
+import React, { useEffect, ChangeEvent, FocusEvent, KeyboardEvent, useState, useRef, useMemo, useId } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 
@@ -19,6 +19,8 @@ const ANIMATED_PLACEHOLDER_TEXTS = [
     'Aveyron',
     'Gironde',
 ];
+
+const GPU_URL = 'https://www.geoportail-urbanisme.gouv.fr/';
 
 interface SearchBarProps {
     onTerritorySelect?: (territory: LandDetailResultType) => void;
@@ -186,6 +188,14 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
+const ScotHint = styled.p`
+    margin: 0;
+    padding: 0.5rem;
+    font-size: 0.8em;
+    line-height: 1.4;
+    color: #666;
+`;
+
 const Label = styled.label`
     font-size: 0.85em;
     margin-bottom: 0.5rem;
@@ -214,6 +224,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const [isListOpen, setIsListOpen] = useState<boolean>(false);
     const [activeIndex, setActiveIndex] = useState<number>(-1);
     const minimumCharCountForSearch = 2;
+    // Le message SCoT/GPU n'a de sens que pour une vraie recherche, pas pour 2 lettres
+    const minimumCharCountForScotHint = 3;
     // La requête est différée pour ne pas dépasser le throttle de l'API (429) pendant la frappe
     const debouncedQuery = useDebounce(query, 200);
     const isQueryTooShort = query.length < minimumCharCountForSearch;
@@ -223,6 +235,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     });
     // Recherche en cours : requête en vol ou saisie en attente du debounce
     const isSearching = isFetching || (!isQueryTooShort && query !== debouncedQuery);
+    const shouldShowScotHint = query.trim().length >= minimumCharCountForScotHint;
 
     const results = isListOpen ? data : undefined;
     const hasResults = results !== undefined && results.length > 0;
@@ -295,7 +308,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
         setQuery(newQuery);
     };
 
-    const handleBlur = () => {
+    const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+        // Le focus passe au lien du message SCoT (Tab) : la liste reste ouverte
+        if (searchContainerRef.current?.contains(event.relatedTarget)) {
+            return;
+        }
         setTimeout(handleReset, 150);
     };
 
@@ -356,7 +373,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         <>
             {!disableOverlay && <Overlay $visible={isFocused} />}
             {label && <Label htmlFor={resolvedInputId}>{label}</Label>}
-            <SearchContainer ref={searchContainerRef} $useHighZIndex={!disableOverlay}>
+            <SearchContainer ref={searchContainerRef} $useHighZIndex={!disableOverlay} onBlur={handleBlur}>
                 <Icon className="bi bi-search" aria-hidden="true" />
                 <InputWrapper>
                     <Input
@@ -372,7 +389,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         onFocus={() => setIsFocused(true)}
-                        onBlur={handleBlur}
                         placeholder={shouldShowAnimatedPlaceholder ? '' : 'Rechercher un territoire (Commune, EPCI, Département, Région...)'}
                         aria-label="Rechercher un territoire"
                     />
@@ -421,6 +437,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
                             <NoResultsMessage role="status">
                                 Aucun résultat trouvé pour votre recherche.
                             </NoResultsMessage>
+                        )}
+                        {shouldShowScotHint && (
+                            <ScotHint onMouseDown={(e) => e.preventDefault()}>
+                                Vous ne trouvez pas votre SCoT ? Les SCoT sont intégrés automatiquement à partir des documents
+                                publiés sur le{' '}
+                                <a href={GPU_URL} target="_blank" rel="noopener noreferrer">Géoportail de l’urbanisme</a>.
+                                Si votre SCoT n’y est pas encore publié, rapprochez-vous de sa structure porteuse : il sera ajouté
+                                à Mon Diag Artif lors de la prochaine mise à jour des données.
+                            </ScotHint>
                         )}
                     </ResultsContainer>
                 )}

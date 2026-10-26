@@ -29,10 +29,13 @@ const lys = makeTerritory({ land_id: '59368', name: 'Lys-lez-Lannoy', slug: 'lys
 const noResult: LandDetailResultType[] = [];
 const resultsByNeedle: Record<string, LandDetailResultType[]> = {
     ly: [lyon, lys],
+    lyo: [lyon],
 };
 
 const DEBOUNCE_DELAY = 200;
 const BLUR_RESET_DELAY = 150;
+const SCOT_HINT_TEXT = /Vous ne trouvez pas votre SCoT/;
+const GPU_URL = 'https://www.geoportail-urbanisme.gouv.fr/';
 
 const setup = (ui: React.ReactElement = <SearchBar onTerritorySelect={jest.fn()} />) => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
@@ -46,20 +49,20 @@ const advanceTimers = (delay: number) => {
     });
 };
 
+beforeEach(() => {
+    jest.useFakeTimers();
+    mockedSearchQuery.mockReset();
+    mockedSearchQuery.mockImplementation((needle: string, options: { skip: boolean }) => ({
+        data: options.skip ? undefined : resultsByNeedle[needle] ?? noResult,
+        isFetching: false,
+    }));
+});
+
+afterEach(() => {
+    jest.useRealTimers();
+});
+
 describe('SearchBar : navigation clavier et accessibilité', () => {
-    beforeEach(() => {
-        jest.useFakeTimers();
-        mockedSearchQuery.mockReset();
-        mockedSearchQuery.mockImplementation((needle: string, options: { skip: boolean }) => ({
-            data: options.skip ? undefined : resultsByNeedle[needle] ?? noResult,
-            isFetching: false,
-        }));
-    });
-
-    afterEach(() => {
-        jest.useRealTimers();
-    });
-
     it('est atteignable avec Tab et expose un combobox fermé', async () => {
         const { user, input } = setup();
 
@@ -206,5 +209,74 @@ describe('SearchBar : navigation clavier et accessibilité', () => {
         const [first, second] = screen.getAllByRole('combobox');
         expect(first.id).not.toBe('');
         expect(first.id).not.toBe(second.id);
+    });
+});
+
+describe('SearchBar : message sur l\'ajout des SCoT via le GPU', () => {
+    it('n\'affiche rien tant que le champ est vide', () => {
+        setup();
+
+        expect(screen.queryByText(SCOT_HINT_TEXT)).not.toBeInTheDocument();
+    });
+
+    it('n\'affiche pas le message pour une recherche de 2 caractères', async () => {
+        const { user, input } = setup();
+
+        await user.type(input, 'ly');
+        advanceTimers(DEBOUNCE_DELAY);
+
+        expect(screen.getByText('Lyon')).toBeInTheDocument();
+        expect(screen.queryByText(SCOT_HINT_TEXT)).not.toBeInTheDocument();
+    });
+
+    it('affiche le message avec le lien vers le GPU sous les résultats à partir de 3 caractères', async () => {
+        const { user, input } = setup();
+
+        await user.type(input, 'lyo');
+        advanceTimers(DEBOUNCE_DELAY);
+
+        const hint = screen.getByText(SCOT_HINT_TEXT);
+        expect(hint).toHaveTextContent('il sera ajouté à Mon Diag Artif lors de la prochaine mise à jour des données.');
+        const link = screen.getByRole('link', { name: 'Géoportail de l’urbanisme' });
+        expect(link).toHaveAttribute('href', GPU_URL);
+        expect(link).toHaveAttribute('target', '_blank');
+        expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+        // Le message vient après le résultat, en bas de la liste
+        const result = screen.getByText('Lyon');
+        expect(result.compareDocumentPosition(hint)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    it('affiche le message quand aucun résultat ne correspond', async () => {
+        const { user, input } = setup();
+
+        await user.type(input, 'zzz');
+        advanceTimers(DEBOUNCE_DELAY);
+
+        expect(screen.getByText('Aucun résultat trouvé pour votre recherche.')).toBeInTheDocument();
+        expect(screen.getByText(SCOT_HINT_TEXT)).toBeInTheDocument();
+    });
+
+    it('le lien reste accessible au clavier sans refermer la liste', async () => {
+        const { user, input } = setup(
+            <>
+                <SearchBar onTerritorySelect={jest.fn()} />
+                <button type="button">Suivant</button>
+            </>
+        );
+        await user.type(input, 'lyo');
+        advanceTimers(DEBOUNCE_DELAY);
+
+        await user.tab();
+        expect(screen.getByRole('link', { name: 'Géoportail de l’urbanisme' })).toHaveFocus();
+        advanceTimers(BLUR_RESET_DELAY);
+        expect(screen.getByText(SCOT_HINT_TEXT)).toBeInTheDocument();
+        expect(input).toHaveValue('lyo');
+
+        // En sortant de la barre, la liste se referme et la saisie est vidée comme avant
+        await user.tab();
+        expect(screen.getByRole('button', { name: 'Suivant' })).toHaveFocus();
+        advanceTimers(BLUR_RESET_DELAY);
+        expect(screen.queryByText(SCOT_HINT_TEXT)).not.toBeInTheDocument();
+        expect(input).toHaveValue('');
     });
 });
