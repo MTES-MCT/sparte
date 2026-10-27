@@ -224,8 +224,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const [isListOpen, setIsListOpen] = useState<boolean>(false);
     const [activeIndex, setActiveIndex] = useState<number>(-1);
     const minimumCharCountForSearch = 2;
-    // Le message SCoT/GPU n'a de sens que pour une vraie recherche, pas pour 2 lettres
-    const minimumCharCountForScotHint = 3;
     // La requête est différée pour ne pas dépasser le throttle de l'API (429) pendant la frappe
     const debouncedQuery = useDebounce(query, 200);
     const isQueryTooShort = query.length < minimumCharCountForSearch;
@@ -235,7 +233,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
     });
     // Recherche en cours : requête en vol ou saisie en attente du debounce
     const isSearching = isFetching || (!isQueryTooShort && query !== debouncedQuery);
-    const shouldShowScotHint = query.trim().length >= minimumCharCountForScotHint;
+    // Le message SCoT/GPU ne concerne que les recherches de SCoT
+    const shouldShowScotHint = /scot/i.test(query);
 
     const results = isListOpen ? data : undefined;
     const hasResults = results !== undefined && results.length > 0;

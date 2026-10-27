@@ -25,11 +25,20 @@ const makeTerritory = (overrides: Partial<LandDetailResultType>): LandDetailResu
 
 const lyon = makeTerritory({});
 const lys = makeTerritory({ land_id: '59368', name: 'Lys-lez-Lannoy', slug: 'lys-lez-lannoy' });
+const scotLyon = makeTerritory({
+    land_id: '200046977',
+    land_type: LandType.SCOT,
+    land_type_slug: 'scot',
+    land_type_label: 'SCoT',
+    name: 'SCoT de l\'agglomération lyonnaise',
+    slug: 'scot-de-l-agglomeration-lyonnaise',
+});
 // Références stables entre rendus, comme les données de RTK Query (sinon l'effet du composant boucle)
 const noResult: LandDetailResultType[] = [];
 const resultsByNeedle: Record<string, LandDetailResultType[]> = {
     ly: [lyon, lys],
     lyo: [lyon],
+    'SCoT lyo': [scotLyon],
 };
 
 const DEBOUNCE_DELAY = 200;
@@ -219,20 +228,20 @@ describe('SearchBar : message sur l\'ajout des SCoT via le GPU', () => {
         expect(screen.queryByText(SCOT_HINT_TEXT)).not.toBeInTheDocument();
     });
 
-    it('n\'affiche pas le message pour une recherche de 2 caractères', async () => {
+    it('n\'affiche pas le message pour une recherche sans « scot »', async () => {
         const { user, input } = setup();
 
-        await user.type(input, 'ly');
+        await user.type(input, 'lyo');
         advanceTimers(DEBOUNCE_DELAY);
 
         expect(screen.getByText('Lyon')).toBeInTheDocument();
         expect(screen.queryByText(SCOT_HINT_TEXT)).not.toBeInTheDocument();
     });
 
-    it('affiche le message avec le lien vers le GPU sous les résultats à partir de 3 caractères', async () => {
+    it('affiche le message avec le lien vers le GPU sous les résultats quand la recherche contient « scot »', async () => {
         const { user, input } = setup();
 
-        await user.type(input, 'lyo');
+        await user.type(input, 'SCoT lyo');
         advanceTimers(DEBOUNCE_DELAY);
 
         const hint = screen.getByText(SCOT_HINT_TEXT);
@@ -242,14 +251,14 @@ describe('SearchBar : message sur l\'ajout des SCoT via le GPU', () => {
         expect(link).toHaveAttribute('target', '_blank');
         expect(link).toHaveAttribute('rel', 'noopener noreferrer');
         // Le message vient après le résultat, en bas de la liste
-        const result = screen.getByText('Lyon');
+        const result = screen.getByText('SCoT de l\'agglomération lyonnaise');
         expect(result.compareDocumentPosition(hint)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
 
-    it('affiche le message quand aucun résultat ne correspond', async () => {
+    it('affiche le message quand aucun SCoT ne correspond', async () => {
         const { user, input } = setup();
 
-        await user.type(input, 'zzz');
+        await user.type(input, 'scot zzz');
         advanceTimers(DEBOUNCE_DELAY);
 
         expect(screen.getByText('Aucun résultat trouvé pour votre recherche.')).toBeInTheDocument();
@@ -263,14 +272,14 @@ describe('SearchBar : message sur l\'ajout des SCoT via le GPU', () => {
                 <button type="button">Suivant</button>
             </>
         );
-        await user.type(input, 'lyo');
+        await user.type(input, 'scot lyo');
         advanceTimers(DEBOUNCE_DELAY);
 
         await user.tab();
         expect(screen.getByRole('link', { name: 'Géoportail de l’urbanisme' })).toHaveFocus();
         advanceTimers(BLUR_RESET_DELAY);
         expect(screen.getByText(SCOT_HINT_TEXT)).toBeInTheDocument();
-        expect(input).toHaveValue('lyo');
+        expect(input).toHaveValue('scot lyo');
 
         // En sortant de la barre, la liste se referme et la saisie est vidée comme avant
         await user.tab();
