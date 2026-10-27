@@ -42,8 +42,6 @@ models:
     insert: ["alexis", "production"]
     update: ["alexis","production"]
   sparte:
-    docurba:
-      +schema: docurba
     analytics:
       +schema: analytics
     app:
