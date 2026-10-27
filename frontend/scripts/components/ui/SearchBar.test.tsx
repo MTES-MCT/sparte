@@ -43,7 +43,7 @@ const resultsByNeedle: Record<string, LandDetailResultType[]> = {
 
 const DEBOUNCE_DELAY = 200;
 const BLUR_RESET_DELAY = 150;
-const SCOT_HINT_TEXT = /Vous ne trouvez pas votre SCoT/;
+const SCOT_HINT_TEXT = /Vous ne trouvez pas un SCoT/;
 const GPU_URL = 'https://www.geoportail-urbanisme.gouv.fr/';
 
 const setup = (ui: React.ReactElement = <SearchBar onTerritorySelect={jest.fn()} />) => {

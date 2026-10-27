@@ -439,10 +439,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
                         )}
                         {shouldShowScotHint && (
                             <ScotHint onMouseDown={(e) => e.preventDefault()}>
-                                Vous ne trouvez pas votre SCoT ? Les SCoT sont intégrés automatiquement à partir des documents
+                                Vous ne trouvez pas un SCoT ? Les SCoT sont intégrés automatiquement à partir des documents
                                 publiés sur le{' '}
                                 <a href={GPU_URL} target="_blank" rel="noopener noreferrer">Géoportail de l’urbanisme</a>.
-                                Si votre SCoT n’y est pas encore publié, rapprochez-vous de sa structure porteuse : il sera ajouté
+                                Si un SCoT n’y est pas encore publié, rapprochez-vous de sa structure porteuse : il sera ajouté
                                 à Mon Diag Artif lors de la prochaine mise à jour des données.
                             </ScotHint>
                         )}
