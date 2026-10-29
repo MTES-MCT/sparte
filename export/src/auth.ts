@@ -1,4 +1,4 @@
-import { createHash, timingSafeEqual } from 'crypto';
+import { timingSafeEqual } from 'crypto';
 
 export const TOKEN_HEADER = 'x-export-token';
 
@@ -11,8 +11,6 @@ export function getExpectedToken(): string {
     return process.env.EXPORT_API_TOKEN?.trim() ?? '';
 }
 
-const digest = (value: string) => createHash('sha256').update(value).digest();
-
 export function isAuthorized(providedToken: string | undefined): boolean {
     const expectedToken = getExpectedToken();
     if (!expectedToken) {
@@ -21,6 +19,8 @@ export function isAuthorized(providedToken: string | undefined): boolean {
     if (!providedToken) {
         return false;
     }
-    // Comparaison à temps constant (sur des empreintes de même longueur)
-    return timingSafeEqual(digest(providedToken), digest(expectedToken));
+    const provided = Buffer.from(providedToken);
+    const expected = Buffer.from(expectedToken);
+    // Comparaison à temps constant ; seule la longueur du jeton peut fuiter
+    return provided.length === expected.length && timingSafeEqual(provided, expected);
 }
