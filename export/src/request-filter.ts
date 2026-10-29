@@ -1,4 +1,4 @@
-import { isIP } from 'net';
+import { isIP } from 'node:net';
 
 /**
  * Filtre des requêtes émises par le navigateur pendant un export.
@@ -9,7 +9,7 @@ import { isIP } from 'net';
  *   sauf un hôte explicitement autorisé (ex. `django` en local).
  */
 
-const LOCAL_HOSTNAMES = ['localhost'];
+const LOCAL_HOSTNAMES = new Set(['localhost']);
 const LOCAL_SUFFIXES = ['.localhost', '.local', '.internal'];
 
 function isPrivateIPv4(ip: string): boolean {
@@ -30,7 +30,7 @@ function isPrivateIPv6(ip: string): boolean {
     if (normalized === '::' || normalized === '::1') {
         return true;
     }
-    const mappedIPv4 = normalized.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+    const mappedIPv4 = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(normalized);
     if (mappedIPv4) {
         return isPrivateIPv4(mappedIPv4[1]);
     }
@@ -40,7 +40,7 @@ function isPrivateIPv6(ip: string): boolean {
 
 export function isLocalOrPrivateHost(hostname: string): boolean {
     const host = hostname.replace(/^\[|\]$/g, '').toLowerCase();
-    if (LOCAL_HOSTNAMES.includes(host) || LOCAL_SUFFIXES.some(suffix => host.endsWith(suffix))) {
+    if (LOCAL_HOSTNAMES.has(host) || LOCAL_SUFFIXES.some(suffix => host.endsWith(suffix))) {
         return true;
     }
     const version = isIP(host);
