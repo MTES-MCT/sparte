@@ -83,10 +83,10 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
 
   return (
     <div className="fr-mt-7w">
-      <h3 id="conso-demographie">Consommation d'espaces NAF et dynamiques socio-économiques</h3>
+      <h3 id="conso-demographie">Consommation d'ENAF et dynamiques socio-économiques</h3>
       <p className="fr-text--sm fr-mb-3w">
-        Cette section croise la consommation d'espaces NAF avec les principales dynamiques socio-économiques du territoire :
-        population, ménages, emplois. Ces indicateurs permettent de mettre en perspective la consommation foncière
+        Cette section croise la consommation d'ENAF avec les principales dynamiques socio-économiques du territoire :
+        population, ménages, emplois. Ces indicateurs permettent de mettre en perspective la consommation d'ENAF
         au regard des besoins liés au développement du territoire.
       </p>
 

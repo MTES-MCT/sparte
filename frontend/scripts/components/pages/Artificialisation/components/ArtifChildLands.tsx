@@ -118,14 +118,12 @@ export const ArtifChildLands: React.FC = () => {
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
           <GuideContent title="Comprendre les données">
             <p>
-              La couleur de fond indique le <strong>taux d'artificialisation</strong> de chaque
-              territoire : plus la teinte <strong style={{ color: "#6a6af4" }}>violette</strong> est
+              La couleur de fond indique le <strong>la part de surfaces artificialisées</strong> à la date du dernier millésime sur de chaque
+              territoire (surfaces artificialisées/surface communale totale) : plus la teinte <strong style={{ color: "#6a6af4" }}>violette</strong> est
               intense, plus la part artificialisée est élevée.
             </p>
             <p>
-              Les cercles représentent l'<strong>évolution</strong> entre les deux millésimes :{" "}
-              <strong style={{ color: "#FC9292" }}>rouge</strong> pour une artificialisation nette,{" "}
-              <strong style={{ color: "#7ec974" }}>vert</strong> pour une désartificialisation nette.
+              Les cercles rouges représentent les <strong>flux d’artificialisation</strong> entre les deux millésimes :{" "}              
               Leur taille est proportionnelle à la surface concernée.
             </p>
             <p>

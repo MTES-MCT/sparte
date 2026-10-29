@@ -324,8 +324,6 @@ class ObjectiveChartExport(ObjectiveChart):
     @property
     def param(self):
         return super().param | {
-            "title": {
-                "text": f"Trajectoire de consommation d'espaces NAF à {self.land.name} entre 2021 et 2031 (en ha)"
-            },
+            "title": {"text": f"Trajectoire de consommation d'ENAF à {self.land.name} entre 2021 et 2031 (en ha)"},
             "credits": CEREMA_CREDITS,
         }

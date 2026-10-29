@@ -216,7 +216,7 @@ Les **flux** mesurent les changements entre deux millésimes (artificialisation,
 L'application permet à un utilisateur de sélectionner un territoire et d'accéder à un diagnostic complet comprenant :
 
 - **Synthèse** : vue d'ensemble des indicateurs clés (KPIs)
-- **Consommation d'espaces NAF** : tendances annuelles, comparaisons inter-territoriales, croisements démographiques, analyse par carroyage, cartes bivariées
+- **Consommation d'ENAF** : tendances annuelles, comparaisons inter-territoriales, croisements démographiques, analyse par carroyage, cartes bivariées
 - **Artificialisation** : taux, flux nets, répartition par couverture/usage, impact par zonage d'urbanisme, détail des territoires enfants
 - **Imperméabilisation** : même structure que l'artificialisation
 - **Friches** : inventaire, statuts de gisement, couverture OCS GE

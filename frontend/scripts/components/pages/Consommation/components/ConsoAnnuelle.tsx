@@ -168,7 +168,7 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
               <div>
                 <h6 className="fr-mb-0">Comprendre la carte</h6>
                 <p className="fr-text--xs fr-mb-0">
-                  Cette carte permet de visualiser la consommation d'espaces NAF
+                  Cette carte permet de visualiser la consommation d'ENAF
                   relative à la surface de chaque territoire, représentée par
                   l'intensité de la couleur : plus la teinte est foncée, plus la
                   consommation d'espaces est importante par rapport à la surface

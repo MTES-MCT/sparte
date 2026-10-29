@@ -113,7 +113,7 @@ const AvailableDataPage: React.FC<AvailableDataPageProps> = ({
                 <PeriodItem $available={landData.has_conso}>
                     <PeriodItemHeader>
                         <div>
-                            <p className="fr-text--sm fr-text--bold fr-mb-0">Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)</p>
+                            <p className="fr-text--sm fr-text--bold fr-mb-0">Consommation d'espaces Naturels, Agricoles et Forestiers (ENAF)</p>
                             <p className="fr-text--xs fr-mb-0"><em>Source : Fichiers fonciers (Cerema)</em></p>
                         </div>
                         <span className="fr-text--bold fr-text--sm">
