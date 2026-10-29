@@ -24,7 +24,6 @@ pytest-github-actions-annotate-failures = "*"
 types-requests = "*"
 flake8-pyproject = "*"
 click = "*"
-ggshield = "*"
 anyio = ">=4.14.2"
 pyjwt = ">=2.14.0"
 # Versions minimales corrigeant des alertes Dependabot (dépendances transitives)
