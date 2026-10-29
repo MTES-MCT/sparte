@@ -217,7 +217,6 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 | `ingest_gpu` | `@once` | Zonage d'urbanisme GPU (export hebdomadaire HTTP du Géoportail de l'Urbanisme, flux Atom + contrôle MD5) |
 | `ingest_gpu_scot` | `@once` | Périmètres SCoT (geopackage d'extraction GPU) |
 | `ingest_plan_communal` (sudocuh) | `@once` | Données SUDOCUH depuis data.gouv.fr |
-| `ingest_scots` | `@once` | SCOT depuis l'API docurba.beta.gouv.fr |
 
 #### Données INSEE (3 DAGs)
 
@@ -286,7 +285,6 @@ flowchart LR
         INSEE[INSEE - Population / COG / Dossier Complet]
         CEREMA[Cerema - MAJIC / Friches / PENE / Carroyage LEA]
         OPENDATA[data.gouv.fr - RPLS / SITADEL / ZLV / SUDOCUH]
-        DOCURBA[docurba.beta.gouv.fr - SCOT]
         MATOMO_SRC[Matomo Analytics]
         APP_SRC[Tables applicatives]
     end
@@ -312,7 +310,6 @@ flowchart LR
     INSEE --> AF
     CEREMA --> AF
     OPENDATA --> AF
-    DOCURBA --> AF
     MATOMO_SRC --> AF
     APP_SRC --> AF
 
@@ -354,7 +351,6 @@ flowchart LR
 | `sudocuh` | 6 | Données habitat |
 | `analytics` | 5 | Vues analytiques |
 | `app` | 5 | Données applicatives |
-| `docurba` | 3 | SCOT |
 | `for_brevo` | 1 | Export marketing |
 | `misc` | 1 | Divers |
 

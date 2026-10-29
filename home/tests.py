@@ -2,7 +2,9 @@ import re
 
 from csp.utils import build_policy
 from django.conf import settings
-from django.test import TestCase, modify_settings, override_settings
+from django.template import Context, Template
+from django.template.loader import get_template
+from django.test import SimpleTestCase, TestCase, modify_settings, override_settings
 
 from config.csp import WEBPACK_DEV_SERVER, WEBPACK_DEV_SERVER_WS, build_csp_directives
 
@@ -211,3 +213,35 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertIn(WEBPACK_DEV_SERVER_WS, directives["connect-src"])
         self.assertIn("http://s3:7070", directives["img-src"])
         self.assertIn("http://s3:7070", directives["connect-src"])
+
+
+class SriStaticTemplateTagTests(SimpleTestCase):
+    """
+    Les templates s'appuient sur le tag `sri_static` de django-sri, retiré dans la version 1.0 :
+    on vérifie qu'ils compilent et que le tag produit bien un lien vers nos fichiers statiques.
+    """
+
+    TEMPLATES_USING_SRI = [
+        "home/home.html",
+        "home/home_rapport_local.html",
+        "home/accessibilite.html",
+        "home/download.html",
+        "home/legal_notices.html",
+        "home/privacy.html",
+        "project/layout/base.html",
+    ]
+
+    def test_templates_using_sri_compile(self) -> None:
+        for template_name in self.TEMPLATES_USING_SRI:
+            with self.subTest(template=template_name):
+                get_template(template_name)
+
+    def test_sri_static_renders_a_stylesheet_link_to_our_static_file(self) -> None:
+        html = Template('{% load sri %}{% sri_static "home/css/home.css" %}').render(Context())
+
+        self.assertTrue(html.startswith("<link"), html)
+        self.assertIn('rel="stylesheet"', html)
+        self.assertIn('href="/static/home/css/home.css"', html)
+        if settings.USE_SRI:
+            self.assertIn('crossorigin="anonymous"', html)
+            self.assertRegex(html, r'integrity="sha(256|384|512)-[A-Za-z0-9+/=]+"')
