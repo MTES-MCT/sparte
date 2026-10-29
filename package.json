@@ -78,7 +78,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
-    "highcharts": "^11.4.6",
+    "highcharts": "^11.4.9",
     "highcharts-react-official": "^3.2.1",
     "htmx.org": "^1.8.4",
     "lodash.isequal": "^4.5.0",
