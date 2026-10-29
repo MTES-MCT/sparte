@@ -29,7 +29,7 @@ Paramètres (tous requis) :
 - `headerUrl` : URL du template HTML pour le header du PDF
 - `footerUrl` : URL du template HTML pour le footer du PDF
 
-Retourne un PDF.
+Retourne un PDF. Si `EXPORT_API_TOKEN` est défini, l'en-tête `X-Export-Token` doit contenir ce jeton (sinon 401).
 
 Exemple :
 ```bash
@@ -41,6 +41,7 @@ curl "http://localhost:3001/api/export?url=http://localhost:8080/exports/rapport
 
 - `PORT` : Port du serveur (défaut: 3001 en dev)
 - `ALLOWED_HOSTS` : Liste des hosts autorisés, séparés par des virgules (requis)
+- `EXPORT_API_TOKEN` : Jeton exigé dans l'en-tête `X-Export-Token` (égal à `EXPORT_SERVER_TOKEN` côté Django). Vide : aucun jeton exigé
 
 Exemple :
 ```bash
@@ -53,6 +54,12 @@ Le service valide toutes les URLs (page, header, footer) :
 - Seuls les protocoles `http:` et `https:` sont autorisés
 - Le hostname doit être dans la liste `ALLOWED_HOSTS`
 - Retourne une erreur 403 si l'host n'est pas autorisé
+- Les gabarits d'en-tête et de pied de page sont chargés sans suivre de redirection
+
+Pendant le rendu, le navigateur :
+- garde la politique de même origine et la vérification des certificats (aucune option qui les désactive)
+- n'ouvre que des pages (navigation, iframe, redirection) d'un host de `ALLOWED_HOSTS`
+- refuse toute requête vers une adresse locale ou privée (`localhost`, `127.0.0.1`, `10.x`, `169.254.x`…), sauf un host de `ALLOWED_HOSTS`
 
 ## Développement local
 

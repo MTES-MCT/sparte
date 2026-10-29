@@ -33,6 +33,7 @@ def _run_export_job(job_pk: int, export_server_url: str, url: str, header_url: s
 
     try:
         export_endpoint = f"{export_server_url}/api/export"
+        headers = {"X-Export-Token": settings.EXPORT_SERVER_TOKEN} if settings.EXPORT_SERVER_TOKEN else {}
         response = requests.get(
             export_endpoint,
             params={
@@ -40,6 +41,7 @@ def _run_export_job(job_pk: int, export_server_url: str, url: str, header_url: s
                 "headerUrl": header_url,
                 "footerUrl": footer_url,
             },
+            headers=headers,
             timeout=200,
         )
 

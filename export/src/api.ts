@@ -1,5 +1,5 @@
 import express from 'express';
-import cors from 'cors';
+import { TOKEN_HEADER, isAuthorized } from './auth';
 import { exportToPdf } from './pdf-generator';
 import { validateUrlHost } from './url-validation';
 
@@ -7,17 +7,18 @@ const app = express();
 
 const PORT = process.env.PORT;
 
-// Activer CORS pour permettre les requêtes depuis le frontend
-app.use(cors({
-    origin: true,
-    credentials: true,
-}));
+// Pas de CORS : seul Django appelle ce service, de serveur à serveur.
 
 app.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
 });
 
 app.get('/api/export', async (req, res) => {
+    if (!isAuthorized(req.get(TOKEN_HEADER))) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+    }
+
     const url = req.query.url as string;
     const headerUrl = req.query.headerUrl as string;
     const footerUrl = req.query.footerUrl as string;

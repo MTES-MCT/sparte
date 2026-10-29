@@ -452,6 +452,8 @@ if DEBUG:
 
 EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3001")
 EXPORT_BASE_URL = env.str("EXPORT_BASE_URL", default="http://django:8080")
+# Jeton envoyé au serveur d'export (en-tête X-Export-Token), égal à son EXPORT_API_TOKEN
+EXPORT_SERVER_TOKEN = env.str("EXPORT_SERVER_TOKEN", default="")
 
 # EMAIL
 """Configuration of e-mails

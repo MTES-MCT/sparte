@@ -119,6 +119,7 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 |----------|-------------|-------------------|
 | `EXPORT_SERVER_URL` | URL du serveur d'export PDF | `http://export-server:3000` |
 | `EXPORT_BASE_URL` | URL de base utilisée par le serveur d'export pour accéder à Django | `http://django:8080` |
+| `EXPORT_SERVER_TOKEN` | Jeton envoyé au serveur d'export dans l'en-tête `X-Export-Token` ; doit être égal à la variable `EXPORT_API_TOKEN` du serveur d'export. Vide : aucun en-tête envoyé | vide |
 
 ## Notifications
 
