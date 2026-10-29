@@ -13,6 +13,7 @@ import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
 import Button from '@components/ui/Button';
 import styled from 'styled-components';
+import { sanitizeContent } from './sanitizeContent';
 
 const ZoneWrapper = styled.div`
     position: relative;
@@ -294,7 +295,7 @@ const PrintContent: React.FC<{ content: string }> = ({ content }) => {
     if (!content || content === "<p></p>" || content.trim() === "") {
         return null;
     }
-    return <PrintContentBox dangerouslySetInnerHTML={{ __html: content }} />;
+    return <PrintContentBox dangerouslySetInnerHTML={{ __html: sanitizeContent(content) }} />;
 };
 
 const ContentZone: React.FC<ContentZoneProps> = ({
