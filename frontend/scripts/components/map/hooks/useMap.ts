@@ -7,7 +7,7 @@ import type { LandDetailResultType } from "@services/types/land";
 
 let PMTILES_PROTOCOL_REGISTERED = false;
 
-export const useMap = (landData: LandDetailResultType) => {
+export const useMap = (landData: LandDetailResultType, baseStyle: maplibregl.StyleSpecification = DEFAULT_MAP_STYLE) => {
     const mapRef = useRef<maplibregl.Map | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const controlsRef = useRef<{ [key: string]: maplibregl.IControl }>({});
@@ -26,7 +26,7 @@ export const useMap = (landData: LandDetailResultType) => {
 
         mapRef.current = new maplibregl.Map({
             container,
-            style: DEFAULT_MAP_STYLE,
+            style: baseStyle,
             bounds: bounds,
             maxBounds: maxBounds,
             maplibreLogo: false,
@@ -41,7 +41,7 @@ export const useMap = (landData: LandDetailResultType) => {
         });
 
         return mapRef.current;
-    }, [bounds, maxBounds]);
+    }, [bounds, maxBounds, baseStyle]);
 
     const addControl = useCallback((control: maplibregl.IControl, id: string) => {
         if (!mapRef.current || controlsRef.current[id]) return;

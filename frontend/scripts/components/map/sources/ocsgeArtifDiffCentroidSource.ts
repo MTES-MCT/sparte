@@ -1,5 +1,6 @@
 import { BaseOcsgeDiffCentroidSource } from "./baseOcsgeDiffCentroidSource";
 import type { LandDetailResultType } from "@services/types/land";
+import { OCSGE_DIFF_PROXIMITY_CLUSTER_RADIUS_PX, OCSGE_DIFF_DONUTS_FADE_OUT_ZOOM } from "../constants/config";
 
 export class OcsgeArtifDiffCentroidSource extends BaseOcsgeDiffCentroidSource {
     constructor(landData: LandDetailResultType) {
@@ -10,6 +11,8 @@ export class OcsgeArtifDiffCentroidSource extends BaseOcsgeDiffCentroidSource {
             decreaseProperty: "new_not_artificial",
             increaseCountProperty: "artificialisation_count",
             decreaseCountProperty: "desartificialisation_count",
+            clusterRadius: OCSGE_DIFF_PROXIMITY_CLUSTER_RADIUS_PX,
+            clusterMaxZoom: OCSGE_DIFF_DONUTS_FADE_OUT_ZOOM,
         });
     }
 }

@@ -16,6 +16,45 @@ export const OSM_TILES_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 export const CARROYAGE_FIRST_YEAR = 2011;
 export const CARROYAGE_LAST_YEAR = 2024;
 
+// Zoom à partir duquel la carte de différence OCS GE passe du mode « bilan »
+// (donuts de clusters) au mode « objets » (polygones). Le fondu entre les deux
+// se fait sur le niveau de zoom qui précède.
+export const OCSGE_DIFF_OBJECTS_MIN_ZOOM = 13;
+
+// Au clic sur un donut, la carte cadre l'étendue de ses objets sans dépasser ce zoom.
+export const OCSGE_DIFF_DONUT_CLICK_MAX_ZOOM = 17;
+
+// Les donuts restent affichés au-dessus des objets et s'effacent en zoom
+// rapproché : fondu sur le niveau qui précède ce zoom, disparition à ce zoom.
+export const OCSGE_DIFF_DONUTS_FADE_OUT_ZOOM = 15;
+
+// Regroupement des objets sous le seuil : par commune tant qu'au moins deux
+// communes sont visibles à l'écran, par proximité sinon (rayon en pixels).
+export const OCSGE_DIFF_MIN_COMMUNES_FOR_COMMUNE_MODE = 2;
+export const OCSGE_DIFF_PROXIMITY_CLUSTER_RADIUS_PX = 60;
+
+// Au survol d'un donut : la zone couverte par ses objets (enveloppe convexe
+// tamponnée) et le contour pulsant de chacun de ses polygones.
+export const OCSGE_DIFF_CLUSTER_HOVER_MAX_LEAVES = 500; // garde-fou
+export const OCSGE_DIFF_CLUSTER_HOVER_COLOR = "#444444";
+export const OCSGE_DIFF_CLUSTER_ZONE_FILL_OPACITY = 0.12;
+export const OCSGE_DIFF_CLUSTER_ZONE_PADDING_PX = 12;
+export const OCSGE_DIFF_HOVER_OUTLINE_MIN_WIDTH = 1;
+export const OCSGE_DIFF_HOVER_OUTLINE_MAX_WIDTH = 3;
+export const OCSGE_DIFF_HOVER_OUTLINE_PULSE_PERIOD_MS = 1200;
+
+// Les tuiles de polygones sont chargées dès ce zoom (invisibles avant le seuil)
+// pour pouvoir retrouver les polygones d'un cluster survolé.
+export const OCSGE_DIFF_TILES_MIN_ZOOM = 9;
+
+// Contour pulsant permanent des objets, une fois les donuts effacés : apparaît
+// en fondu pendant que les donuts s'estompent, puis reste à tous les zooms.
+// Tant que les donuts sont visibles, seul le survol d'un donut fait pulser ses objets.
+export const OCSGE_DIFF_OUTLINE_COLOR = "#333333";
+export const OCSGE_DIFF_OUTLINE_PULSE_PERIOD_MS = 1800;
+export const OCSGE_DIFF_OUTLINE_MIN_WIDTH = 0.5;
+export const OCSGE_DIFF_OUTLINE_MAX_WIDTH = 2.5;
+
 export const ARTIFICIALISATION_COLOR = "#FA4B42"
 export const DESARTIFICIALISATION_COLOR = "#00ce67"
 export const IMPERMEABILISATION_COLOR = "#FA4B42"

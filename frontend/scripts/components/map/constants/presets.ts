@@ -11,6 +11,28 @@ export const BASE_LAYERS: LayerConfig[] = [
     { type: "emprise" },
 ];
 
+export const EMPRISE_CONTROLS: ControlGroup[] = [
+    {
+        id: "emprise-group",
+        label: "Emprise du territoire",
+        description: "Contour géographique du territoire",
+        controls: [
+            {
+                id: "emprise-visibility",
+                type: "visibility",
+                targetLayers: ["emprise-layer"],
+                defaultValue: true
+            },
+            {
+                id: "emprise-opacity",
+                type: "opacity",
+                targetLayers: ["emprise-layer"],
+                defaultValue: 1
+            }
+        ]
+    }
+];
+
 export const BASE_CONTROLS: ControlGroup[] = [
     {
         id: "orthophoto-group",
@@ -31,23 +53,5 @@ export const BASE_CONTROLS: ControlGroup[] = [
             }
         ]
     },
-    {
-        id: "emprise-group",
-        label: "Emprise du territoire",
-        description: "Contour géographique du territoire",
-        controls: [
-            {
-                id: "emprise-visibility",
-                type: "visibility",
-                targetLayers: ["emprise-layer"],
-                defaultValue: true
-            },
-            {
-                id: "emprise-opacity",
-                type: "opacity",
-                targetLayers: ["emprise-layer"],
-                defaultValue: 1
-            }
-        ]
-    }
+    ...EMPRISE_CONTROLS,
 ];

@@ -1,6 +1,7 @@
 import React from "react";
 import type * as maplibregl from "maplibre-gl";
 import { ARTIFICIALISATION_MATRIX } from "../../constants/ocsge_nomenclatures";
+import { ARTIFICIALISATION_COLOR, DESARTIFICIALISATION_COLOR } from "../../constants/config";
 import { OcsgeDiffSidePanel, OcsgeDiffConfig } from "./OcsgeDiffSidePanel";
 
 const ARTIF_CONFIG: OcsgeDiffConfig = {
@@ -14,6 +15,11 @@ const ARTIF_CONFIG: OcsgeDiffConfig = {
 	matrixNegativeLabel: "Non artificialisé",
 	seuilText: (oldPositive, isPositive) =>
 		`Les couvertures/usages avant et après sont tous deux classés « ${oldPositive ? "artificialisé" : "non artificialisé"} » par la matrice OCS GE. Cette ${isPositive ? "artificialisation" : "désartificialisation"} est détectée par les`,
+	legend: [
+		{ color: ARTIFICIALISATION_COLOR, label: "Artificialisation" },
+		{ color: DESARTIFICIALISATION_COLOR, label: "Désartificialisation" },
+		{ label: "Pas de changement entre les deux millésimes" },
+	],
 };
 
 export interface ArtificialisationDiffSidePanelProps {

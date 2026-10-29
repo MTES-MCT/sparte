@@ -14,6 +14,10 @@ export interface OcsgeDiffCentroidConfig {
     /** Noms des surfaces cumulées par cluster, lus par les couches de centroïdes. */
     increaseCountProperty: string;
     decreaseCountProperty: string;
+    /** Rayon de regroupement par proximité, en pixels (100 par défaut). */
+    clusterRadius?: number;
+    /** Dernier zoom où les points sont regroupés (14 par défaut). */
+    clusterMaxZoom?: number;
 }
 
 /**
@@ -33,7 +37,7 @@ export abstract class BaseOcsgeDiffCentroidSource extends BaseOcsgeDiffSource {
     }
 
     protected buildOptions(departement: string): GeoJSONSourceSpecification {
-        const { geojsonPrefix, increaseProperty, decreaseProperty, increaseCountProperty, decreaseCountProperty } = this.centroidConfig;
+        const { geojsonPrefix, increaseProperty, decreaseProperty, increaseCountProperty, decreaseCountProperty, clusterRadius, clusterMaxZoom } = this.centroidConfig;
         const url = `${this.geojsonUrl}${geojsonPrefix}_${this.startMillesimeIndex}_${this.endMillesimeIndex}_${departement}.geojson.gz`;
 
         const territoryFilter = getTerritoryFilter(this.landData);
@@ -47,8 +51,8 @@ export abstract class BaseOcsgeDiffCentroidSource extends BaseOcsgeDiffSource {
             type: "geojson",
             data: url,
             cluster: true,
-            clusterMaxZoom: 14,
-            clusterRadius: 100,
+            clusterMaxZoom: clusterMaxZoom ?? 14,
+            clusterRadius: clusterRadius ?? 100,
             clusterMinPoints: 2,
             filter: finalFilter,
             clusterProperties: {
