@@ -85,11 +85,11 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
             ),
           }}
           donnees={{
-            preview: "Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le CEREMA à partir des données d'évolution des fichiers fonciers.",
+            preview: "Les données de consommation d'ENAF publiées sur Mon Diagnostic Artificialisation sont produites par le CEREMA à partir des données d'évolution des fichiers fonciers.",
             content: (
               <>
-                <p>Les données de consommation d'espaces NAF publiées sur Mon Diagnostic Artificialisation sont produites par le <strong>CEREMA</strong> à partir des données d'évolution des <strong>fichiers fonciers</strong>.</p>
-                <p>Sur Mon Diagnostic Artificialisation, ces données sont restituées à l'échelle de la <strong>commune</strong>{!isDromCom && <> et sous forme de <a href="#conso-carroyage">carroyage de 1 km</a></>}. Les ayants droit des fichiers fonciers peuvent consulter le détail à la <strong>parcelle</strong> sur la carte <a href="#conso-urbansimul">UrbanSimul</a> du Cerema.</p>
+                <p>Les données de consommation d'ENAF publiées sur Mon Diagnostic Artificialisation sont produites par le <strong>CEREMA</strong> à partir des données d'évolution des <strong>fichiers fonciers</strong>.</p>
+                <p>Sur Mon Diagnostic Artificialisation, ces données sont restituées à l'échelle de la <strong>commune</strong>{!isDromCom && <> et sous forme de <a href="#conso-carroyage">carroyage de 1 km</a></>}. Les ayants droit des fichiers fonciers peuvent consulter le détail à la <strong>parcelle</strong> sur l'application <a href="#conso-urbansimul">UrbanSimul</a> du Cerema.</p>
                 <p>Le dernier millésime (2024) correspond à la photographie du territoire au 1er janvier 2025, et intègre les évolutions réalisées au cours de l'année 2024.</p>
               </>
             ),
