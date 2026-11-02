@@ -15,7 +15,7 @@ application **déjà lancée** : Playwright ne démarre aucun serveur.
 6. Création d'un rapport complet depuis « Générer un rapport » (`/diagnostic/<type>/<slug>/telechargements`).
 7. Export PDF : la demande (`/diagnostic/export/start/`) est acceptée, le polling
    (`/diagnostic/export/status/<job>/`) aboutit à `completed`, le fichier téléchargé commence par `%PDF-`.
-8. Suppression du rapport de test.
+8. Suppression du rapport de test, puis du compte de test (`/users/unsubscribe/`).
 
 ## Pré-requis
 
@@ -54,10 +54,48 @@ Variables d'environnement :
 Les traces et captures d'écran des échecs sont dans `test-results/`, le rapport HTML dans
 `playwright-report/` (tous deux ignorés par git).
 
+## Exécution dans la CI (GitHub Actions)
+
+Le job `test-e2e` de `.github/workflows/pr.yml` rejoue le parcours à chaque push, sans
+docker-compose : il installe la pile directement sur le runner.
+
+1. Service Postgres/PostGIS (`postgis/postgis:17-3.5`), `manage.py migrate`.
+2. `manage.py e2e_setup_db` : crée (vides) les tables `public_data` non gérées par Django,
+   normalement produites par dbt/Airflow, puis charge la fixture d'un seul territoire
+   `public_data/fixtures/e2e/land_COMM_69123.json` (Lyon).
+3. Bucket S3 factice `versity/versitygw` (`docker run`, port 7070) pour stocker les PDF exportés.
+4. Serveur d'export Puppeteer (`export/`, port 3001), Django `runserver --insecure` (port 8080,
+   `DEBUG=0`, `USE_CSP=0`, `USE_SRI=0`, bundle webpack construit par `npm run build`).
+5. `npx playwright install --with-deps chromium` puis `npm run test:e2e`.
+
+En cas d'échec, les logs Django et export-server sont affichés et le rapport Playwright
+(`playwright-report/`, `test-results/`) est publié en artefact.
+
+### Fixture d'un territoire
+
+La fixture contient les lignes de Lyon (commune 69123) dans les tables `public_data` non gérées :
+`LandModel` (avec géométrie), consommation (`LandConso`, `LandConsoStats`), population
+(`LandPop`, `LandPopStats`, `LandPopulationDensity`), artificialisation / imperméabilisation
+(stocks, flux, compositions, zonages), friches, logements vacants, autorisations de logement et
+dossier complet INSEE (`LandDc*`). Sont volontairement exclus : `LandCarroyageBounds` et
+`BivariateLandRate` (plusieurs centaines de lignes inutiles au parcours), `NearestTerritories`
+(les voisins ne sont pas dans la fixture) et `ImperZonage` (schéma local divergent du modèle).
+Les tables exclues existent quand même, vides.
+
+Pour la régénérer depuis une base locale complète (lecture seule) :
+
+```bash
+docker compose exec django python manage.py e2e_dump_land --land-type COMM --land-id 69123 --output public_data/fixtures/e2e/land_COMM_69123.json
+```
+
+Pour changer de territoire, adapter `--land-type` / `--land-id`, le nom du fichier
+(`--fixture` de `e2e_setup_db` ou sa valeur par défaut) et les variables `E2E_TERRITOIRE_*`.
+Le territoire doit avoir `has_conso` vrai et `is_diagnosticable` vrai.
+
 ## Limites connues
 
-- Chaque exécution crée un utilisateur dans la base locale (non supprimé : il n'existe pas de
-  parcours de suppression de compte sans e-mail). Le rapport créé est, lui, supprimé en fin de test.
+- Le test supprime en fin de parcours le rapport puis le compte qu'il a créés. Si le test échoue
+  avant, un utilisateur `e2e-<horodatage>@example.com` reste dans la base cible.
 - Le formulaire d'inscription refuse toute soumission moins de 3 s après l'affichage (jeton anti-spam) :
   le test attend donc 3,5 s avant de valider.
 - La génération du PDF dépend du conteneur `export-server` (Puppeteer) et du bucket S3 local. Si le

@@ -181,5 +181,15 @@ test.describe('Parcours utilisateur : du compte au rapport téléchargeable', ()
             await expect(page).toHaveURL(new RegExp(`${territoire.urlDiagnostic}/telechargements$`));
             await expect(page.getByRole('button', { name: nomDuRapport })).toHaveCount(0);
         });
+
+        await test.step('Supprimer le compte de test (nettoyage)', async () => {
+            await page.goto('/users/unsubscribe/');
+            await expect(page).toHaveTitle(/Désinscription/);
+            await page.getByRole('button', { name: 'Confirmer' }).click();
+
+            await expect(page).toHaveURL((url) => url.pathname === '/');
+            const moi = await page.request.get('/api/me/');
+            expect(await moi.json()).toMatchObject({ is_authenticated: false });
+        });
     });
 });
