@@ -48,7 +48,23 @@ class Command(BaseCommand):
                 if table_exists(model._meta.db_table):
                     continue
                 schema_editor.create_model(model)
+                self.allow_nulls(schema_editor, model)
                 created += 1
         self.stdout.write(f"{created} table(s) non gérée(s) créée(s) à partir des modèles.")
 
         call_command("loaddata", options["fixture"], verbosity=1)
+
+    @staticmethod
+    def allow_nulls(schema_editor, model):
+        """
+        Les tables dbt n'ont pas de contrainte NOT NULL alors que les modèles
+        Django, eux, ne déclarent pas toujours `null=True` : on relâche la
+        contrainte sur toutes les colonnes (hors clé primaire) pour que les
+        données réelles se chargent telles quelles.
+        """
+        table = schema_editor.quote_name(model._meta.db_table)
+        for field in model._meta.local_concrete_fields:
+            if field.primary_key:
+                continue
+            column = schema_editor.quote_name(field.column)
+            schema_editor.execute(f"ALTER TABLE {table} ALTER COLUMN {column} DROP NOT NULL")

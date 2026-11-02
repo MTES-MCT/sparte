@@ -150,7 +150,7 @@ jobs:
             package-lock.json
             export/package-lock.json
       - name: Install pipenv
-        run: pip install pipenv==2026.10.5
+        run: "pip install --only-binary :all: pipenv==2026.10.5"
       - name: Install Python dependencies (from Pipfile.lock)
         run: pipenv sync --dev
       - name: Install GDAL
