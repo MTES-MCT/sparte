@@ -22,6 +22,7 @@ module.exports = {
     '^@images/(.*)$': '<rootDir>/frontend/images/$1',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/e2e/'],
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   collectCoverageFrom: [
     'frontend/scripts/**/*.{ts,tsx}',

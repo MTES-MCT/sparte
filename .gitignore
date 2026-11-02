@@ -180,3 +180,8 @@ static/webpack-stats.json
 
 
 coverage
+
+# Playwright (tests e2e)
+/test-results/
+/playwright-report/
+/playwright/.cache/
