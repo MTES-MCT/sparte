@@ -14,6 +14,21 @@ class HomeTests(TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
+    def test_carte_nationale_mounts_react_root_without_dsfr_header(self) -> None:
+        response = self.client.get("/carte")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="react-carte-nationale"')
+        self.assertNotContains(response, 'class="fr-header"')
+
+    @override_settings(CRISP_ACTIVATED=True, MESSAGES_WIDGET_ACTIVATED=True)
+    def test_carte_nationale_has_no_chat_nor_messages_widget(self) -> None:
+        response = self.client.get("/carte")
+        self.assertNotContains(response, "client.crisp.chat")
+        self.assertNotContains(response, "_lasuite_widget")
+        home = self.client.get("/")
+        self.assertContains(home, "client.crisp.chat")
+        self.assertContains(home, "_lasuite_widget")
+
     # maintenance view only redirects to own domain
     def test_maintenance_view_redirects_to_own_domain_when_trying_outside_domain(self) -> None:
         response = self.client.get("/maintenance?next=http://malicious.com")
