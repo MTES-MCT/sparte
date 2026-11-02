@@ -58,11 +58,11 @@ export const ImpermeabilisationZonage: React.FC<ImpermeabilisationZonageProps> =
 							</thead>
 							<tbody>
 								{imperZonageIndex
-									?.filter((a: ZonageData) => a && typeof a.zonage_surface === 'number')
+									?.filter((a: ImperZonageData) => a && typeof a.zonage_surface === 'number')
 									?.sort(
-										(a: ZonageData, b: ZonageData) => b.zonage_surface - a.zonage_surface
+										(a: ImperZonageData, b: ImperZonageData) => b.zonage_surface - a.zonage_surface
 									)
-									.map((a: ZonageData) => (
+									.map((a: ImperZonageData) => (
 										<tr key={`${a.zonage_type}_${a.millesime_index}`}>
 											<td>
 												<ZoneTypeBadge type={a.zonage_type} />{" "}

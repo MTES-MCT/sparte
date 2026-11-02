@@ -1,7 +1,23 @@
 version: 2
 
 models:
+  - name: gpu_scot_candidats
+    description: "SCoT du GPU candidats : validés + en projet hors du territoire des validés (recouvrement < 1 %), avant résolution des conflits entre périmètres (cf. gpu_scot)."
+    columns:
+      - name: name
+        data_tests:
+          - not_null
+          - unique
+      - name: approved
+        data_tests:
+          - not_null
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom
+
   - name: gpu_scot
+    description: "SCoT du GPU retenus. Quand deux candidats revendiquent une même commune, seul le plus récent (gpu_timestamp) est gardé, l'autre est écarté en entier."
     columns:
       - name: id_scot
         data_tests:
@@ -10,6 +26,12 @@ models:
       - name: nom_scot
         data_tests:
           - not_null
+      - name: approved
+        description: "true = SCoT validé, false = SCoT en projet retenu car hors du territoire des validés (recouvrement < 1 %)"
+        data_tests:
+          - not_null
+      - name: gpu_timestamp
+        description: "Date GPU la plus récente parmi les features du SCoT ; null si le porteur n'a jamais daté son téléversement"
       - name: geom
         data_tests:
           - not_null

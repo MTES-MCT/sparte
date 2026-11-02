@@ -1,4 +1,5 @@
 import type * as maplibregl from "maplibre-gl";
+import { BaseMultiDepartementSource } from "../sources/baseMultiDepartementSource";
 import { createSource } from "./sourceRegistry";
 import { createLayer } from "./layerRegistry";
 import type { MapConfig } from "../types/builder";
@@ -48,8 +49,8 @@ export async function initMapFromConfig(
 
     // Post-init: allow sources to add extra department sources now that layers exist
     for (const source of sources.values()) {
-        if ('addExtraDepartmentSourcesOnInit' in source && typeof (source as any).addExtraDepartmentSourcesOnInit === 'function') {
-            await (source as any).addExtraDepartmentSourcesOnInit();
+        if (source instanceof BaseMultiDepartementSource) {
+            source.addExtraDepartmentSourcesOnInit();
         }
     }
 

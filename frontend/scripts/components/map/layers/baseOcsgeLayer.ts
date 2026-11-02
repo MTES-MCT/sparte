@@ -34,7 +34,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
 
     protected abstract getBaseFilter(): maplibregl.FilterSpecification;
 
-    getColorExpression() {
+    getColorExpression(): maplibregl.ExpressionSpecification {
         const field = this.nomenclature === "couverture" ? "code_cs" : "code_us";
         const allowed = this.nomenclature === "couverture" ? this.allowedCodes.couverture : this.allowedCodes.usage;
         const allColors = this.nomenclature === "couverture" ? COUVERTURE_COLORS : USAGE_COLORS;
@@ -43,7 +43,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
             Object.entries(allColors).filter(([key]) => (allowed as string[]).includes(key))
         ) as typeof allColors;
 
-        const cases = Object.entries(colors).map(([key]) => [
+        const cases: maplibregl.ExpressionSpecification[] = Object.entries(colors).map(([key]) => [
             "==", ["get", field], key
         ]);
         const colorValues = Object.values(colors).map((color: string) =>
@@ -54,7 +54,7 @@ export abstract class BaseOcsgeLayer extends BaseLayer implements LayerInterface
             "case",
             ...cases.flatMap((case_, index) => [case_, colorValues[index]]),
             "rgba(200, 200, 200, 0.7)"
-        ];
+        ] as maplibregl.ExpressionSpecification;
     }
 
     protected getSourceLayerName() {

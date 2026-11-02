@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
 
-from config.storages import PublicMediaStorage
 from project.models.enums import ProjectChangeReason
 from public_data.models import AdminRef, LandModel
 from public_data.models.administration.enums import ConsommationCorrectionStatus
@@ -24,13 +23,6 @@ logger = logging.getLogger(__name__)
 class ProjectNotSaved(BaseException):
     """Exception raised when project needs to be saved once before performing the
     requested action"""
-
-
-def upload_in_project_folder(project: "Project", filename: str) -> str:
-    """Define where to upload project's cover image : diagnostic/<int:id>
-    nb: currently you can't add cover image if project is not saved yet"""
-
-    return f"diagnostics/{project.get_folder_name()}/{filename}"
 
 
 class BaseProject(models.Model):
@@ -185,20 +177,6 @@ class Project(BaseProject):
         validators=[is_alpha_validator],
     )
 
-    cover_image = models.ImageField(
-        upload_to=upload_in_project_folder,
-        blank=True,
-        null=True,
-        storage=PublicMediaStorage(),
-    )
-
-    theme_map_conso = models.ImageField(
-        upload_to=upload_in_project_folder,
-        blank=True,
-        null=True,
-        storage=PublicMediaStorage(),
-    )
-
     history = HistoricalRecords(
         user_db_constraint=False,
     )
@@ -233,10 +211,6 @@ class Project(BaseProject):
     @property
     def nb_years_before_2031(self):
         return 2031 - int(self.analyse_end_date)
-
-    def delete(self):
-        self.cover_image.delete(save=False)
-        return super().delete()
 
     def save(self, *args, **kwargs):
         logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))

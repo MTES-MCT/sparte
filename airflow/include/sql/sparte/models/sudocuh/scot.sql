@@ -20,6 +20,7 @@
 SELECT
     gpu_scot.id_scot,
     gpu_scot.nom_scot,
+    gpu_scot.approved,
     scot_geom.geom,
     scot_geom.simple_geom,
     ST_Area(scot_geom.geom) as surface,

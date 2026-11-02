@@ -24,7 +24,10 @@ export interface LandFriche {
     };
 }
 
-export type UseLandFrichesType = (arg: { land_type: string; land_id: string }) => {
+export type UseLandFrichesType = (
+    arg: { land_type: string; land_id: string },
+    options?: { skip?: boolean }
+) => {
     data?: LandFriche[];
     isLoading: boolean;
     error?: any;

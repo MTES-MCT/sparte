@@ -69,7 +69,7 @@ graph TB
 - **Base de données** : PostgreSQL 17 avec PostGIS 3.5
 - **Cache** : Redis (cache des graphiques, sessions)
 - **Stockage objet** : Scaleway S3 (région fr-par)
-- **Data pipeline** : Apache Airflow (Astronomer Runtime 13.4.0), dbt
+- **Data pipeline** : Apache Airflow 3.1 (Astro Runtime 3.1), dbt
 - **Conteneurisation** : Docker / Docker Compose
 - **CI/CD** : GitHub Actions, déploiement sur Scalingo
 - **Gestion des dépendances** : Pipenv (Python), npm (JavaScript)
@@ -178,7 +178,7 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 
 ### Vue d'ensemble des pipelines Airflow
 
-**Infrastructure** : Apache Airflow sur Astronomer Runtime 13.4.0, avec `tippecanoe` (v2.75.1, compilé dans le Dockerfile) pour la génération de tuiles vectorielles.
+**Infrastructure** : Apache Airflow 3.1 sur Astro Runtime 3.1, avec `tippecanoe` (v2.75.1, compilé dans le Dockerfile) pour la génération de tuiles vectorielles.
 
 **Architecture multi-bases** : Airflow se connecte à 5 bases PostgreSQL :
 1. **DBT Database** : transformations et staging (ogr2ogr, psycopg2, SQLAlchemy)
@@ -217,7 +217,6 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 | `ingest_gpu` | `@once` | Zonage d'urbanisme GPU (export hebdomadaire HTTP du Géoportail de l'Urbanisme, flux Atom + contrôle MD5) |
 | `ingest_gpu_scot` | `@once` | Périmètres SCoT (geopackage d'extraction GPU) |
 | `ingest_plan_communal` (sudocuh) | `@once` | Données SUDOCUH depuis data.gouv.fr |
-| `ingest_scots` | `@once` | SCOT depuis l'API docurba.beta.gouv.fr |
 
 #### Données INSEE (3 DAGs)
 
@@ -286,7 +285,6 @@ flowchart LR
         INSEE[INSEE - Population / COG / Dossier Complet]
         CEREMA[Cerema - MAJIC / Friches / PENE / Carroyage LEA]
         OPENDATA[data.gouv.fr - RPLS / SITADEL / ZLV / SUDOCUH]
-        DOCURBA[docurba.beta.gouv.fr - SCOT]
         MATOMO_SRC[Matomo Analytics]
         APP_SRC[Tables applicatives]
     end
@@ -312,7 +310,6 @@ flowchart LR
     INSEE --> AF
     CEREMA --> AF
     OPENDATA --> AF
-    DOCURBA --> AF
     MATOMO_SRC --> AF
     APP_SRC --> AF
 
@@ -354,7 +351,6 @@ flowchart LR
 | `sudocuh` | 6 | Données habitat |
 | `analytics` | 5 | Vues analytiques |
 | `app` | 5 | Données applicatives |
-| `docurba` | 3 | SCOT |
 | `for_brevo` | 1 | Export marketing |
 | `misc` | 1 | Divers |
 
@@ -497,7 +493,7 @@ Architecture sophistiquée avec :
    - Gunicorn avec 9 workers, timeout 180s
 
 3. **Airflow (serveur dédié)**
-   - Astronomer Runtime 13.4.0 (Docker)
+   - Astro Runtime 3.1 (Airflow 3.1, Docker)
    - Connexions à 5 bases PostgreSQL
    - Stockage S3 Scaleway
    - Export hebdomadaire HTTP du Géoportail de l'Urbanisme pour les données GPU

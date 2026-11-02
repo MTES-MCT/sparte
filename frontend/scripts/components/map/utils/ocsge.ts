@@ -1,7 +1,7 @@
 import { Millesime, LandDetailResultType } from "@services/types/land";
 import { COUVERTURE_LABELS, USAGE_LABELS } from "../constants/ocsge_nomenclatures";
 import type { Couverture, Usage } from "../types/ocsge";
-import type { FilterSpecification } from 'maplibre-gl';
+import type { ExpressionSpecification } from 'maplibre-gl';
 
 export const getLastMillesimeIndex = (millesimes: Millesime[] | undefined): number => {
     if (!millesimes || millesimes.length === 0) {
@@ -35,16 +35,16 @@ export const getOcsgeLabel = (code: string, nomenclature: 'couverture' | 'usage'
     return nomenclature === 'couverture' ? getCouvertureLabel(code) : getUsageLabel(code);
 };
 
-export const getTerritoryFilter = (landData?: LandDetailResultType): FilterSpecification | null => {
+export const getTerritoryFilter = (landData?: LandDetailResultType): ExpressionSpecification | null => {
     if (!landData?.land_type || !landData?.land_id) {
         return null;
     }
 
     if (landData.land_type === "CUSTOM") {
-        return ["in", landData.land_id, ["get", "CUSTOM"]] as FilterSpecification;
+        return ["in", landData.land_id, ["get", "CUSTOM"]] as ExpressionSpecification;
     }
 
-    return ["==", ["get", landData.land_type], landData.land_id] as FilterSpecification;
+    return ["==", ["get", landData.land_type], landData.land_id];
 };
 
 export const getAvailableMillesimePairs = (landData: LandDetailResultType): Array<{ startIndex: number; endIndex: number; startYear?: number; endYear?: number; departement?: string; departementName?: string }> => {

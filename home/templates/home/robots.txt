@@ -6,3 +6,5 @@ Disallow: /public/
 Disallow: /accounts/
 Disallow: /docx/
 Disallow: /project/diagnostic
+
+Sitemap: {{ sitemap_url }}

@@ -8,6 +8,7 @@ from pendulum import datetime
 
 from airflow.sdk import Param, dag, task
 
+
 URL = "https://www.statistiques.developpement-durable.gouv.fr/media/8938/download?inline"
 # COG ?
 

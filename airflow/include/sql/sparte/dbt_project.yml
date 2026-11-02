@@ -43,8 +43,6 @@ models:
     insert: ["mondiagartif"]
     update: ["mondiagartif"]
   sparte:
-    docurba:
-      +schema: docurba
     analytics:
       +schema: analytics
     app:

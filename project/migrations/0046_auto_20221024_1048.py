@@ -4,7 +4,6 @@ import django.core.validators
 from django.db import migrations, models
 
 import config.storages
-import project.models.project_base
 
 
 class Migration(migrations.Migration):
@@ -68,7 +67,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 null=True,
                 storage=config.storages.PublicMediaStorage(),
-                upload_to=project.models.project_base.upload_in_project_folder,
+                upload_to="diagnostics/",
             ),
         ),
         migrations.AlterField(

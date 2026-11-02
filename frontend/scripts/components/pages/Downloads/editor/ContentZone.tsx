@@ -13,6 +13,7 @@ import History from '@tiptap/extension-history';
 import Placeholder from '@tiptap/extension-placeholder';
 import Button from '@components/ui/Button';
 import styled from 'styled-components';
+import { sanitizeContent } from './sanitizeContent';
 
 const ZoneWrapper = styled.div`
     position: relative;
@@ -172,6 +173,8 @@ const EditableContent: React.FC<{
             }),
         ],
         content: content || '',
+        // Tiptap v3 ne re-rend plus à chaque transaction : nécessaire pour l'état actif des boutons
+        shouldRerenderOnTransaction: true,
         onUpdate: ({ editor }) => {
             const html = editor.getHTML();
             
@@ -195,7 +198,8 @@ const EditableContent: React.FC<{
         // Ne sync que si le contenu du parent est différent de ce qu'on a dans l'éditeur
         // ET différent de ce qu'on vient d'envoyer au parent
         if (content !== currentHtml && content !== lastSentToParentRef.current) {
-            editor.commands.setContent(content || '');
+            // Tiptap v3 émet un update par défaut : la sync depuis le parent ne doit pas renvoyer au parent
+            editor.commands.setContent(content || '', { emitUpdate: false });
         }
     }, [content, editor]);
 
@@ -291,7 +295,7 @@ const PrintContent: React.FC<{ content: string }> = ({ content }) => {
     if (!content || content === "<p></p>" || content.trim() === "") {
         return null;
     }
-    return <PrintContentBox dangerouslySetInnerHTML={{ __html: content }} />;
+    return <PrintContentBox dangerouslySetInnerHTML={{ __html: sanitizeContent(content) }} />;
 };
 
 const ContentZone: React.FC<ContentZoneProps> = ({

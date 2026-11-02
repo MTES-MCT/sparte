@@ -110,21 +110,8 @@ export const FrichesProvider: React.FC<FrichesProviderProps> = ({
       landId: land_id ?? "",
       landType: land_type ?? LandType.COMMUNE,
       name: name ?? "",
-      fricheStatus: friche_status ?? FricheStatusEnum.DONNEES_INDISPONIBLES,
-      fricheStatusDetails: friche_status_details ?? {
-        friche_sans_projet_surface: 0,
-        friche_sans_projet_surface_artif: 0,
-        friche_sans_projet_surface_imper: 0,
-        friche_avec_projet_surface: 0,
-        friche_avec_projet_surface_artif: 0,
-        friche_avec_projet_surface_imper: 0,
-        friche_reconvertie_surface: 0,
-        friche_reconvertie_surface_artif: 0,
-        friche_reconvertie_surface_imper: 0,
-        friche_sans_projet_count: 0,
-        friche_avec_projet_count: 0,
-        friche_reconvertie_count: 0,
-      },
+      fricheStatus: friche_status,
+      fricheStatusDetails: friche_status_details,
 
       frichesData,
 

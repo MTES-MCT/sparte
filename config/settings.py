@@ -72,6 +72,7 @@ DJANGO_APPS = [
     "django.contrib.gis",
     "django.contrib.humanize",
     "django.contrib.postgres",
+    "django.contrib.sitemaps",
 ]
 
 RESTFRAMEWORK_APPS = [
