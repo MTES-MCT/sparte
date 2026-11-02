@@ -64,9 +64,10 @@ docker-compose : il installe la pile directement sur le runner.
    normalement produites par dbt/Airflow, puis charge la fixture d'un seul territoire
    `public_data/fixtures/e2e/land_COMM_69123.json` (Lyon).
 3. Bucket S3 factice `versity/versitygw` (`docker run`, port 7070) pour stocker les PDF exportés.
-4. Serveur d'export Puppeteer (`export/`, port 3001), Django `runserver --insecure` (port 8080,
-   `DEBUG=0`, `USE_CSP=0`, `USE_SRI=0`, bundle webpack construit par `npm run build`).
-5. `npx playwright install --with-deps chromium` puis `npm run test:e2e`.
+4. Serveur d'export Puppeteer (`export/`, port 3001, `npm ci --ignore-scripts` puis téléchargement
+   explicite du Chrome de Puppeteer), Django `runserver --insecure` (port 8080, `DEBUG=0`,
+   `USE_CSP=0`, `USE_SRI=0`, bundle webpack construit par `npm run build`).
+5. Installation du Chromium de Playwright avec ses dépendances système, puis `npm run test:e2e`.
 
 En cas d'échec, les logs Django et export-server sont affichés et le rapport Playwright
 (`playwright-report/`, `test-results/`) est publié en artefact.
