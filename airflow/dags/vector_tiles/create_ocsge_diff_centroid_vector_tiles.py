@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pendulum
 from include.container import DomainContainer as Container
@@ -6,10 +7,9 @@ from include.container import InfraContainer
 from include.utils import multiline_string_to_single_line
 
 from airflow.exceptions import AirflowSkipException
-from airflow.sdk import dag, task
-from airflow.sdk.definitions.param import Param
+from airflow.sdk import Param, dag, task
 
-with open("include/data/ocsge/sources.json", "r") as f:
+with open(Path(__file__).resolve().parents[2] / "include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 

@@ -143,9 +143,10 @@ const development = {
         },
         client: {
             webSocketURL: {
-                hostname: 'localhost',
+                protocol: 'auto:',
+                hostname: '0.0.0.0',
                 pathname: '/ws',
-                port: 3002,
+                port: 0,
             },
         },
     },
@@ -155,13 +156,7 @@ const development = {
             analyzerPort: '8989',
             openAnalyzer: false
         }),
-        new ReactRefreshWebpackPlugin({
-            overlay: {
-                sockHost: 'localhost',
-                sockPort: 3002,
-                sockPath: '/ws',
-            },
-        }),
+        new ReactRefreshWebpackPlugin(),
         new MiniCssExtractPlugin({
             filename: 'assets/styles/[name].css',
             chunkFilename: '[id].css'

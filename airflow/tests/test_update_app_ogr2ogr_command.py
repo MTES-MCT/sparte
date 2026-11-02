@@ -11,11 +11,30 @@ en XCom — un mot de passe qui fuirait ici atterrirait dans la base de métadon
 Airflow et dans l'interface.
 """
 
-from dags.update_app import DEFAULT_GEOM_TYPE, OGR2OGR_PATH, build_ogr2ogr_command
+from unittest.mock import Mock
+
+from dags.update_app import (
+    DEFAULT_GEOM_TYPE,
+    OGR2OGR_PATH,
+    build_ogr2ogr_command,
+    get_gdal_connection,
+    get_psycopg_connection,
+)
 from gdaltools import PgConnectionString
 
 TARGET_DSN = "PG:host='app' port='5432' user='app' dbname='app' password='secret-app'"
 SOURCE_DSN = "PG:host='dw' port='5432' user='dw' dbname='dw' password='secret-dw'"
+
+
+def test_connections_use_site_providers(monkeypatch):
+    container = Mock()
+    monkeypatch.setattr("dags.update_app.Container", lambda: container)
+
+    assert get_gdal_connection() is container.gdal_site_conn.return_value
+    assert get_psycopg_connection() is container.psycopg2_site_conn.return_value
+    container.gdal_site_conn.assert_called_once_with()
+    container.psycopg2_site_conn.assert_called_once_with()
+
 
 COLONNES_JSONB = {
     "friche_status_details": "jsonb",
