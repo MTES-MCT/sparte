@@ -12,6 +12,8 @@ Elle refuse de s'exécuter hors d'un environnement `local` et ne touche jamais
 une table déjà existante.
 """
 
+import copy
+
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
@@ -62,9 +64,9 @@ class Command(BaseCommand):
         contrainte sur toutes les colonnes (hors clé primaire) pour que les
         données réelles se chargent telles quelles.
         """
-        table = schema_editor.quote_name(model._meta.db_table)
         for field in model._meta.local_concrete_fields:
-            if field.primary_key:
+            if field.primary_key or field.null:
                 continue
-            column = schema_editor.quote_name(field.column)
-            schema_editor.execute(f"ALTER TABLE {table} ALTER COLUMN {column} DROP NOT NULL")
+            nullable_field = copy.deepcopy(field)
+            nullable_field.null = True
+            schema_editor.alter_field(model, field, nullable_field)
