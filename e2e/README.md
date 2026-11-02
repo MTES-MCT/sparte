@@ -47,7 +47,7 @@ Variables d'environnement :
 | Variable | Défaut | Rôle |
 | --- | --- | --- |
 | `E2E_BASE_URL` | `http://localhost:8080` | URL de l'application testée |
-| `E2E_TERRITOIRE_RECHERCHE` | `Lyon` | Texte saisi dans la barre de recherche |
+| `E2E_TERRITOIRE_RECHERCHE` | `Lyon` | Texte saisi dans la barre de recherche, et nom du territoire attendu sur le diagnostic |
 | `E2E_TERRITOIRE_CODE_INSEE` | `69123` | Code INSEE du résultat à sélectionner |
 | `E2E_TERRITOIRE_URL` | `/diagnostic/commune/69123-lyon` | URL attendue du diagnostic |
 

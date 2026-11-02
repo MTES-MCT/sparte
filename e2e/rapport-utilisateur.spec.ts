@@ -61,7 +61,13 @@ test.describe('Parcours utilisateur : du compte au rapport téléchargeable', ()
             await page.locator('input[name="password2"]').fill(utilisateur.motDePasse);
             await page.locator('input[name="accept_privacy"]').check();
 
-            await page.waitForTimeout(DELAI_ANTISPAM_MS);
+            // Le jeton anti-spam porte son horodatage de génération : on attend qu'il
+            // ait l'âge minimal exigé par le serveur avant de soumettre.
+            const jetonAntispam = await page.locator('input[name="_token"]').inputValue();
+            const genereLe = Number(jetonAntispam.split(':')[0]) * 1000;
+            await expect
+                .poll(() => Date.now() - genereLe, { timeout: 10 * 1000 })
+                .toBeGreaterThanOrEqual(DELAI_ANTISPAM_MS);
             await page.getByRole('button', { name: "S'inscrire" }).click();
 
             // L'inscription connecte l'utilisateur ; le middleware le renvoie
@@ -106,7 +112,9 @@ test.describe('Parcours utilisateur : du compte au rapport téléchargeable', ()
 
         await test.step('Ouvrir le diagnostic du territoire', async () => {
             await expect(page).toHaveURL(new RegExp(`${territoire.urlDiagnostic}/?$`));
-            await expect(page).toHaveTitle(new RegExp(`\\(${territoire.codeInsee}\\)`));
+            // Le titre de l'onglet est réécrit par le dashboard React : on vérifie
+            // plutôt le nom du territoire affiché dans la barre de titre du diagnostic.
+            await expect(page.getByText(territoire.recherche, { exact: true }).first()).toBeVisible();
             await expect(page.getByRole('link', { name: 'Générer un rapport' })).toBeVisible();
         });
 
