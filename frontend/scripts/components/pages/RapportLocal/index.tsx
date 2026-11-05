@@ -94,7 +94,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
       <CallToAction
         className="fr-mb-7w"
         title="Besoin d'aide pour réaliser un rapport triennal d’artificialisation des sols ?"
-        text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l'artificialisation des sols de votre territoire."
+        text="Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal de suivi de l'artificialisation des sols de votre territoire."
         actions={[
           {
             label: "Accéder aux rapports",
@@ -216,11 +216,11 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
             produire un rapport, par exemple tous les ans ou tous les 2 ans.
           </li>
           <li>
-            La période à couvrir n'est pas précisée dans les textes. Étant
-            donné que l'État met à disposition les données des fichiers
-            fonciers depuis le 1er janvier 2011 (le début de la période de
-            référence de la loi CR), il serait intéressant que le rapport
-            présente la chronique des données du 1er janvier 2011 et
+            La période à couvrir n'est pas précisée dans les textes. L'État
+            met à disposition les données de consommation d'ENAF depuis le
+            1er janvier 2011 (le début de la période de référence de la loi
+            Climat et Résilience). Il serait donc intéressant que le rapport
+            présente la chronique des données à partir du 1er janvier 2011 et
             jusqu'au dernier millésime disponible, pour apprécier la
             trajectoire du territoire concerné avec le recul nécessaire (les
             variations annuelles étant toujours à prendre avec prudence car
@@ -316,9 +316,9 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
           sont disponibles gratuitement.
         </p>
         <p className="fr-text--sm fr-mb-2w">
-          MonDiagArtif vous propose une première trame de
+          Mon Diag Artif vous propose une première trame de
           ce rapport triennal local, en s'appuyant sur les données de
-          l'observatoire national disponibles à date, soit:
+          l'observatoire national disponibles à date, soit&nbsp;:
         </p>
         <ul className="fr-text--sm">
           <li>

@@ -163,7 +163,7 @@ export const FrichesDataTable: React.FC = () => {
     },
     {
       key: "surface_imper" as keyof LandFriche,
-      label: "Surface imperméable",
+      label: "Surface imperméabilisée",
       sortable: true,
       render: (value: unknown, friche: LandFriche) =>
         `${formatNumber({ number: value as number })} ha (${formatNumber({

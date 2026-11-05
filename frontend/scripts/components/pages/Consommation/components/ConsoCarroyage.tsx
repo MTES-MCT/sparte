@@ -36,7 +36,7 @@ export const ConsoCarroyage: React.FC<ConsoCarroyageProps> = ({ landData }) => {
 
   return (
     <div className="fr-mb-7w fr-mt-5w">
-      <h3 id="conso-carroyage">Carroyage de la consommation d'espaces</h3>
+      <h3 id="conso-carroyage">Carroyage de la consommation d'ENAF</h3>
       <p className="fr-text--sm fr-mb-2w">
         Cette carte utilise un <strong>carroyage de 1 km x 1 km</strong> afin
         de <strong>respecter le secret statistique</strong> tout en permettant de localiser la consommation d'ENAF.

@@ -64,8 +64,8 @@ export const FrichesImpermeableMap: React.FC<FrichesImpermeableMapProps> = ({
             },
             {
                 id: "ocsge-friches-impermeable-group",
-                label: "Surfaces imperméables",
-                description: "Surfaces imperméables des friches (OCS GE).",
+                label: "Surfaces imperméabilisées",
+                description: "Surfaces imperméabilisées des friches (OCS GE).",
                 controls: [
                     {
                         id: "ocsge-friches-impermeable-visibility",
@@ -91,7 +91,7 @@ export const FrichesImpermeableMap: React.FC<FrichesImpermeableMapProps> = ({
         infoPanels: [
             {
                 layerId: "ocsge-friches-impermeable-layer",
-                title: "Surfaces imperméables",
+                title: "Surfaces imperméabilisées",
                 renderContent: (feature: maplibregl.MapGeoJSONFeature) => <OcsgeFrichesInfo feature={feature} showUsage={false} />,
             }
         ]

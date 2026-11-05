@@ -84,7 +84,7 @@ export const ImperKpiCards: React.FC = () => {
         <div className="fr-col-12 fr-col-md-6">
           <Kpi
             icon="bi bi-droplet"
-            label="Surfaces imperméables"
+            label="Surfaces imperméabilisées"
             value={
               <>
                 {formatNumber({ number: landImperStockIndex.surface })}{" "}

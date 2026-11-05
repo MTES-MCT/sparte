@@ -39,7 +39,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
       <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
         <Kpi
           icon="bi bi-clock-history"
-          label="Consommation d'ENAF observée"
+          label="Consommation d'ENAF mesurée"
           value={
             <>
               <div>{formatNumber({ number: conso2011_2020 })} <span>ha</span></div>
@@ -143,8 +143,8 @@ export const TrajectoiresObjectifs: React.FC = () => {
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
           <GuideContent title="Comprendre l'objectif de réduction">
             <p>
-              <strong>{objectifLabel}</strong> : c'est le maximum d'espaces que le
-              territoire peut consommer entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031. Il est calculé en
+              <strong>{objectifLabel}</strong> : c'est la superficie maximale d'ENAF que le
+              territoire peut consommer entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031. Elle est calculée en
               appliquant une réduction de <strong>{objectifReduction}%</strong> à
               la consommation de référence (2011-2021).
             </p>

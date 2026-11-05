@@ -132,9 +132,9 @@ class DcBivariateConsoMap(DiagnosticChart):
     conso_field = "total"
 
     CONSO_LABELS = {
-        "total": "Consommation annuelle totale",
-        "habitat": "Consommation annuelle pour l'habitat",
-        "activite": "Consommation annuelle pour l'activité",
+        "total": "Consommation d'ENAF annuelle totale",
+        "habitat": "Consommation d'ENAF annuelle pour l'habitat",
+        "activite": "Consommation d'ENAF annuelle pour l'activité",
     }
 
     @property
@@ -332,7 +332,7 @@ class DcBivariateConsoMap(DiagnosticChart):
         )
 
     def get_chart_subtitle(self):
-        return f"Croisement entre {self.indicator_name.lower()} et la {self.conso_label.lower()} NAF"
+        return f"Croisement entre {self.indicator_name.lower()} et {self.conso_label.lower()}"
 
     def _build_series(self):
         tooltip_format = {

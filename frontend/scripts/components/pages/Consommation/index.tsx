@@ -88,7 +88,7 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
             content: (
               <>
                 <p>Les données de consommation d'ENAF publiées sur Mon Diag Artif sont produites par le <strong>Cerema</strong> à partir des <strong>Fichiers Fonciers</strong>.</p>
-                <p>Ces données sont disponibles à l'échelle de la commune.</p>
+                <p>Ces données sont disponibles à l'échelle de la commune via le <a href="https://artificialisation.developpement-durable.gouv.fr/mesurer-la-consommation-despaces/telecharger-les-donnees" target="_blank" rel="noopener noreferrer">Portail de l'artificialisation des sols</a>.</p>
                 <p>Depuis 2026 les données sont également proposées à l’échelle infra-communale pour les ayants droit (structures publiques et prestataires assurant des missions pour elles), via le site <a href="https://datafoncier.cerema.fr/" target="_blank" rel="noopener noreferrer">Datafoncier</a> ou sur <a href="https://urbansimul.cerema.fr/" target="_blank" rel="noopener noreferrer">UrbanSimul</a>.</p>
                 <p>Le dernier millésime (2024) correspond à la photographie du territoire au 1er janvier 2025, et intègre les évolutions réalisées au cours de l'année 2024.</p>
               </>

@@ -59,7 +59,7 @@ const LogementVacantContent: React.FC = () => {
                 Transition Écologique (MTE), pour ce qui concerne le parc des
                 bailleurs sociaux.
               </p>
-              <p>Ces données sont disponibles à l'échelle de la commune.</p>
+              <p>Les données LOVAC détaillées sont disponibles sur <a href="https://datafoncier.cerema.fr/lovac" target="_blank" rel="noopener noreferrer">Datafoncier</a> pour les ayants droit (collectivités territoriales à fiscalité propre, services de l'État, Anah).</p>
               <p>
                 Les données de consommation d'ENAF (Cerema) et la base
                 SITADEL (MTE) sont également utilisées pour certains

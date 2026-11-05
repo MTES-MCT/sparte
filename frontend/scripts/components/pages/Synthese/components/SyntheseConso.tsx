@@ -33,7 +33,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
           <Kpi
             icon="bi bi-archive"
-            label="Consommation d'ENAF observée"
+            label="Consommation d'ENAF mesurée"
             value={
               <>
                 <div>{formatNumber({ number: conso_2011_2020 })} <span>ha</span></div>
@@ -77,7 +77,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-check"
-          label="Consommation d'ENAF observée"
+          label="Consommation d'ENAF mesurée"
           value={
             <>
               <div>{formatNumber({ number: conso_since_2021 })} <span>ha</span></div>

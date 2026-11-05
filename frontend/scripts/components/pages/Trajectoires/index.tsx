@@ -113,7 +113,7 @@ const TrajectoiresContent: React.FC = () => {
                   territorialisés de réduction de la consommation d'ENAF.
                   Dans l'attente de cette mise à jour, <strong>vous pouvez simuler différents scénarios d'objectifs de réduction ci-dessous</strong>. Par défaut,
                   en attendant cette territorialisation, l'outil affiche l'objectif
-                  national de réduction de 50%.
+                  national de réduction de 50%.{" "}
                   <strong>Cet objectif est fourni à titre indicatif et n'a pas de valeur réglementaire.</strong>
               </>
             }

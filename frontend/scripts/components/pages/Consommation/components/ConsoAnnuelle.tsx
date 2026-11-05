@@ -67,7 +67,7 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row" ref={consoCardRef}>
           <Kpi
             icon="bi-bar-chart"
-            label="Consommation d'espaces"
+            label="Consommation d'ENAF mesurée"
             value={
               isLoadingConso || totalConsoHa === null ? (
                 <Loader size={32} />

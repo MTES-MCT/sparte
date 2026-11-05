@@ -50,7 +50,7 @@ export const ArtifCalculation: React.FC = () => {
             décret du 27 novembre 2023
           </a>
           . Ces seuils indiquent que la caractérisation des surfaces enclavées de moins de 2500 m² dépend des surfaces environnantes.
-          Exception faite des surfaces bâties qui sont toujours considérées comme artificielles.
+          Exception faite des surfaces bâties qui sont toujours considérées comme artificialisées.
         </p>
         <p className="fr-text--sm">
           De fait, l'application de ces seuils{" "}

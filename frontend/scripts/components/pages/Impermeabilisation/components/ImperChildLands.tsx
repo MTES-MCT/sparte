@@ -125,8 +125,8 @@ export const ImperChildLands: React.FC = () => {
               intense, plus la part imperméabilisée est élevée.
             </p>
             <p>
-              Les cercles rouges représentent l'<strong>les flux d’imperméabilisation</strong> entre les deux millésimes :{" "}
-              Leur taille est proportionnelle à la surface concernée.
+              Les cercles rouges représentent les <strong>flux d’imperméabilisation</strong> entre les deux millésimes :{" "}
+              leur taille est proportionnelle à la surface concernée.
             </p>
             <p>
               Cliquez sur un territoire pour afficher le détail de ses sous-territoires. Le fil

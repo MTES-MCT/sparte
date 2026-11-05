@@ -32,7 +32,7 @@ const DIAGNOSTICS = [
     key: "impermeabilisation" as const,
     icon: "bi bi-droplet",
     title: "Imperméabilisation des sols",
-    description: "Analyse détaillée des surfaces imperméables (OCS GE)",
+    description: "Analyse détaillée des surfaces imperméabilisées (OCS GE)",
   },
   {
     key: "logementVacant" as const,
