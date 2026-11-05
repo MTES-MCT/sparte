@@ -31,12 +31,16 @@ section {
     background: #000091;
     padding: 0.75rem 0;
     transform: translateY(-100%);
-    transition: transform 0.3s ease;
+    /* Masquée hors écran : visibility la retire aussi de l'ordre de tabulation, après la glissade */
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .sticky-search-bar.is-visible {
     transform: translateY(0);
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s;
 }
 
 .sticky-search-bar .fr-container {

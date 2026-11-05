@@ -133,8 +133,10 @@ En local, un S3 compatible (versitygw) tourne dans Docker sur le port 7070.
 
 | Variable | Description | Valeur par défaut |
 |----------|-------------|-------------------|
-| `USE_SRI` | Activer les Subresource Integrity | `0` |
-| `USE_CSP` | Activer les Content Security Policy | `1` |
+| `USE_SRI` | Ajouter `integrity`/`crossorigin` aux feuilles de style incluses par `{% sri_static %}` (django-sri). Demande les fichiers statiques sur disque (bundle webpack construit puis `collectstatic`) : `0` en local, `1` en staging et production (défaut : actif hors `DEBUG`) | `0` |
+| `USE_CSP` | Émettre l'en-tête Content-Security-Policy (politique dans `config/csp.py`). Hors `ENVIRONMENT=local`, aucune source HTTP n'est autorisée et `upgrade-insecure-requests` est ajouté ; en local, le serveur de développement webpack (`http://localhost:3000`) et le S3 local sont tolérés (défaut : actif hors `DEBUG`) | `1` |
+| `USE_CSP_REPORT_ONLY` | Envoyer la politique dans `Content-Security-Policy-Report-Only` : les violations sont signalées dans la console du navigateur sans être bloquées (déploiement progressif) | `0` |
+| `CONTENT_SECURITY_POLICY_REPORT_URI` | Adresse où le navigateur envoie les rapports de violation CSP (directive `report-uri`), par exemple l'endpoint « security » du projet Sentry (`https://sentry.incubateur.net/api/21/security/?sentry_key=<clé>`). Vide : les violations ne sont visibles que dans la console du navigateur | vide |
 | `TWO_FACTOR_ENABLED` | Activer l'authentification 2FA | `0` |
 
 ## ProConnect (OIDC)

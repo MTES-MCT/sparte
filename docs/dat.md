@@ -555,10 +555,12 @@ Architecture sophistiquée avec :
    - Referrer Policy : strict-origin-when-cross-origin
 
 2. **Politique de sécurité du contenu (CSP)**
-   - Configuration stricte des sources autorisées via middleware custom
+   - Politique définie dans `config/csp.py` au format django-csp 4 (`CONTENT_SECURITY_POLICY`), émise par `ForceNonceCSPMiddleware` (`USE_CSP`, mode observation `USE_CSP_REPORT_ONLY`)
    - Nonces pour les scripts inline
    - Sources configurées pour : scripts, styles, images, frames, connexions
    - Autorisations spécifiques : Metabase, Matomo, Crisp, MapLibre tiles
+   - Requêtes non HTTPS interdites hors environnement local : aucune source `http:`/`ws:`, directive `upgrade-insecure-requests` ; en local, le serveur de développement webpack et le S3 local (HTTP) sont tolérés
+   - Intégrité des sous-ressources (SRI) : les feuilles de style propres incluses via `{% sri_static %}` portent `integrity`/`crossorigin` quand `USE_SRI=1` ; les bundles webpack sont servis depuis la même origine ; les scripts tiers (Crisp, Matomo, widget Messages) sont des chargeurs non versionnés mis à jour par leurs éditeurs, qu'un hash d'intégrité casserait à chaque mise à jour, et restent cantonnés par la CSP
 
 3. **Protection CSRF**
    - Middleware CSRF activé
