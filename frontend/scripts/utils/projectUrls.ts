@@ -55,7 +55,7 @@ export function buildNavbar(landType: string, landSlug: string, isDGALNMember: b
             label: "Pilotage territorial",
             icon: "bi bi-bar-chart",
             subMenu: [
-                { label: "Consommation d'espaces NAF", url: urls.consommation },
+                { label: "Consommation d'ENAF", url: urls.consommation },
                 { label: "Artificialisation", url: urls.artificialisation },
                 { label: "Imperméabilisation", url: urls.impermeabilisation },
             ],

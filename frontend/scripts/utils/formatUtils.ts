@@ -73,7 +73,7 @@ const formatDateTime = (date: Date, options: Intl.DateTimeFormatOptions = {}): s
  * @returns Le mot au singulier ou au pluriel selon le nombre
  */
 export const pluralize = (count: number, singular: string, plural?: string): string => {
-    const pluralForm = plural || `${singular}s`;
+  const pluralForm = plural || (singular ? singular.replace(/\S+/g, (word) => `${word}s`) : 's');
     return count > 1 ? pluralForm : singular;
 };
 

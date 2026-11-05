@@ -18,7 +18,7 @@ export const TrajectoiresProjection: React.FC = () => {
 
   return (
     <div className="fr-mt-5w">
-      <SectionTitle>Projection jusqu'en 2030</SectionTitle>
+      <SectionTitle>Projection jusqu'en 2031</SectionTitle>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-9 fr-grid-row">
           <BaseCard>
@@ -40,14 +40,12 @@ export const TrajectoiresProjection: React.FC = () => {
           <GuideContent title="Comment lire ce graphique ?">
             <p>
               Ce graphique compare la <strong>consommation réelle</strong>{" "}
-              d'espaces avec la <strong>trajectoire théorique</strong>{" "}
-              permettant d'atteindre l'objectif de réduction en 2030.
+              d'espaces naturels, agricoles et forestiers (ENAF) avec la <strong>trajectoire théorique</strong>{" "}
+              permettant d'atteindre l'objectif de réduction au 1<sup>er</sup> janvier 2031.
             </p>
             <p>
-              Si les <strong>barres grises</strong> (réel) sont plus hautes que
-              les <strong>barres colorées</strong> (objectif), le territoire
-              doit ralentir son rythme de consommation afin de respecter
-              l'objectif.
+              Les <strong>barres grises</strong> montrent la consommation annuelle d’ENAF selon les Fichiers Fonciers.
+              Les <strong>barres vertes</strong> symbolisent le rythme annuel moyen de consommation d’ENAF pour atteindre l’objectif de réduction de 50%.
             </p>
             <p>
               Les lignes montrent le cumul : si la{" "}

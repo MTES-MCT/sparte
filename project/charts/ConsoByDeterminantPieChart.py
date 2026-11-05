@@ -79,7 +79,7 @@ class ConsoByDeterminantPieChart(DiagnosticChart):
 
         headers = [
             "Destination",
-            f"Consommation d'espaces NAF (ha) {self.params['start_date']}-{self.params['end_date']}",
+            f"Consommation d'ENAF (ha) {self.params['start_date']}-{self.params['end_date']}",
         ]
 
         rows = [
@@ -117,7 +117,7 @@ class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (
-                    f"Destinations de la consommation d'espaces NAF de {self.land.name}"
+                    f"Destinations de la consommation d'ENAF de {self.land.name}"
                     f" entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
                 )
             },

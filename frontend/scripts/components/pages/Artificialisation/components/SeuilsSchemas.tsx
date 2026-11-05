@@ -138,7 +138,6 @@ const Arrow = styled.div`
 
 export const SeuilsSchemas = () => {
 	return (
-		<>
 		<div className="fr-grid-row fr-grid-row--gutters">
 			<SchemaPair className="fr-col-12 fr-col-lg-4">
 				<span className="fr-badge">1</span>
@@ -148,8 +147,8 @@ export const SeuilsSchemas = () => {
 					<ArtificializedSquare className="with-threshold" />
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
-					Une surface non-artificielle de moins de 2500 m² enclavée dans une surface
-					artificielle devient artificielle.
+					Une surface non artificialisée de moins de 2500 m² enclavée dans une surface
+					artificialisée devient artificialisée.
 				</p>
 			</SchemaPair>
 
@@ -161,8 +160,8 @@ export const SeuilsSchemas = () => {
 					<NonArtificializedSquare className="with-threshold" />
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
-					Une surface artificielle de moins de 2500 m² enclavée dans une surface
-					non-artificielle devient non-artificielle.
+					Une surface artificialisée de moins de 2500 m² enclavée dans une surface
+					non artificialisée devient non-artificialisée.
 				</p>
 			</SchemaPair>
 
@@ -175,24 +174,10 @@ export const SeuilsSchemas = () => {
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
 					Une surface bâtie de plus de 50 m² enclavée dans une surface
-					non-artificielle est toujours artificielle*.
+					non-artificialisée est toujours artificialisée.
 				</p>
 			</SchemaPair>
 			
 		</div>
-		<p>
-			<small>
-				<i>* Concernant les surfaces bâties : bien que la réglementation précise
-					qu'une surface bâtie est toujours considérée comme artificielle
-					à partir de 50m2, il est important de noter qu'avec les données 
-					OCS GE, les surfaces bâties comprises entre 50m2 et 200m2
-					sont gonflées à 200m2. <a target="_blank" href="https://storymaps.arcgis.com/stories/193550c4e4af4f92845201d74ca8a002">
-						Source
-					</a>
-
-				</i>
-			</small>
-		</p>
-		</>
 	);
 };

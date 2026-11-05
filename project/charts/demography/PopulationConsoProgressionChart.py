@@ -88,7 +88,7 @@ class PopulationConsoProgressionChart(DiagnosticChart):
     def param(self):
         return super().param | {
             "title": {
-                "text": f"Évolution de la consommation d'espaces NAF et de la population - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+                "text": f"Évolution de la consommation d'ENAF et de la population - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
             },
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
@@ -107,7 +107,7 @@ class PopulationConsoProgressionChart(DiagnosticChart):
                 },
                 {
                     "labels": {"style": {"color": "#6a6af4"}},
-                    "title": {"text": "Consommation d'espaces NAF (ha)", "style": {"color": "#6a6af4"}},
+                    "title": {"text": "Consommation d'ENAF (ha)", "style": {"color": "#6a6af4"}},
                 },
             ],
             "legend": {

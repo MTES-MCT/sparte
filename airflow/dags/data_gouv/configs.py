@@ -15,7 +15,7 @@ configs = [
     },
     {
         "dataset_slug": "trajectoires-zan-2031-2026",
-        "dataset_title": "Etat des lieux national de la trajectoire de consommation d'espaces NAF (naturels, agricoles et forestiers) à horizon 2031",  # noqa: E501
+        "dataset_title": "Etat des lieux national de la trajectoire de consommation d'espaces naturels, agricoles et forestiers (ENAF) à horizon 2031",  # noqa: E501
         "frequency": "@once",
         "resources": [
             {

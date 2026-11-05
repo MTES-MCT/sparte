@@ -117,7 +117,7 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "credits": {"enabled": False},
             "title": {
                 "text": (
-                    f"Consommation d'espaces au regard de l'évolution de la population de {self.land.name} "
+                    f"Consommation d'ENAF au regard de l'évolution de la population de {self.land.name} "
                     f"et des territoires de comparaison ({self.params['start_date']} - {self.params['end_date']})"
                 )
             },

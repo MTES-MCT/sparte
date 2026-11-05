@@ -257,6 +257,10 @@ describe('formatUtils', () => {
                 expect(pluralize(5, 'territoire')).toBe('territoires');
                 expect(pluralize(100, 'habitant')).toBe('habitants');
             });
+
+            it('should pluralize each word in a multi-word phrase', () => {
+                expect(pluralize(2, 'logement vacant')).toBe('logements vacants');
+            });
         });
 
         describe('Custom plural form', () => {

@@ -165,7 +165,7 @@ class ConsoMap(DiagnosticChart):
             },
             "title": {
                 "text": (
-                    f"Consommation d'espaces NAF des {self.formatted_child_land_type}s "
+                    f"Consommation d'ENAF des {self.formatted_child_land_type}s "
                     f"entre {self.start_year} et {self.end_year}"
                 )
             },
@@ -500,7 +500,7 @@ class ConsoMapBubble(ConsoMap):
             },
             "title": {
                 "text": (
-                    f"Flux de consommation d'espaces NAF des {self.formatted_child_land_type}s "
+                    f"Flux de consommation d'ENAF des {self.formatted_child_land_type}s "
                     f"entre {self.start_year} et {self.end_year}"
                 )
             },

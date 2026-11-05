@@ -37,12 +37,12 @@ const ArtificialisationPageContent: React.FC = () => {
           content: (
             <>
               <p>L'artificialisation est définie dans l'<a href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957221" target="_blank" rel="noopener noreferrer">article 192 de la loi Climat et Résilience</a> comme «<strong>l'altération durable de tout ou partie des fonctions écologiques d'un sol</strong>, en particulier de ses fonctions biologiques, hydriques et climatiques, ainsi que de son potentiel agronomique par son occupation ou son usage.»</p>
-              <p>Elle entraîne une perte de biodiversité, réduit la capacité des sols à absorber l'eau et contribue au réchauffement climatique.</p>
+              <p>Les effets de l’artificialisation sont nombreux : perte de biodiversité, réduction de la capacité des sols à absorber l'eau, contribution au réchauffement climatique ...</p>
             </>
           ),
         }}
         donnees={{
-          preview: "La mesure de l'artificialisation d'un territoire repose sur la donnée OCS GE (Occupation du Sol à Grande Échelle), base de données de référence pour la description de l'occupation du sol.",
+          preview: "La mesure nationale de l'artificialisation d'un territoire repose sur l'OCS GE (Occupation du Sol à Grande Échelle), base de données de référence pour la description de l'occupation du sol.",
           content: null,
         }}
         cadreReglementaire={{

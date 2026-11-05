@@ -140,7 +140,7 @@ class TerritorialisationMap(DiagnosticChart):
                 "map": geojson,
             },
             "title": {
-                "text": f"Objectifs de réduction de la consommation d'espaces NAF des {self.get_children_land_types_label()} territorialisés dans le {self.get_document_name()} de {self.land.name}",  # noqa
+                "text": f"Objectifs de réduction de la consommation d'ENAF des {self.get_children_land_types_label()} territorialisés dans le {self.get_document_name()} de {self.land.name}",  # noqa
                 "style": {"fontSize": "16px", "fontWeight": "600"},
             },
             "subtitle": {

@@ -55,7 +55,7 @@ class ConsoAnnualChart(DiagnosticChart):
         return super().param | {
             "title": {
                 "text": (
-                    f"Consommation annuelle d'espaces NAF "
+                    f"Consommation annuelle d'ENAF "
                     f"de {self.land.name} ({self.data.first().year}-{self.data.last().year})"
                 ),
                 "style": {"fontSize": "14px", "fontWeight": "600"},

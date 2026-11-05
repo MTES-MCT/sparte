@@ -22,19 +22,19 @@ const noticeContentMap: Partial<Record<LogementVacantStatusEnum, NoticeContent>>
   },
   [LogementVacantStatusEnum.GISEMENT_NUL_PARTIELLEMENT_SECRETISE]: {
     title: "Données du parc privé partiellement secrétisées.",
-    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Les chiffres peuvent être incomplets."
+    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Une consolidation locale des données nationales est indispensable pour confirmer le potentiel de ce gisement."
   },
   [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE_PARTIELLEMENT_SECRETISE]: {
     title: "Données du parc privé partiellement secrétisées.",
-    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Les chiffres affichés peuvent être sous-estimés."
+    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Une consolidation locale des données nationales est indispensable pour confirmer le potentiel de ce gisement."
   },
   [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_PARTIELLEMENT_SECRETISE]: {
     title: "Données du parc privé partiellement secrétisées.",
-    description: "Certaines données du parc privé sont masquées en raison du secret statistique."
+    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Une consolidation locale des données nationales est indispensable pour confirmer le potentiel de ce gisement"
   },
   [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE]: {
     title: "Données du parc privé partiellement secrétisées.",
-    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Les chiffres affichés peuvent être sous-estimés."
+    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Une consolidation locale des données nationales est indispensable pour confirmer le potentiel de ce gisement."
   },
   [LogementVacantStatusEnum.GISEMENT_NUL_DANS_LE_SOCIAL_DONNEES_PRIVEES_INDISPONIBLES]: {
     title: "Données du parc privé non disponibles.",

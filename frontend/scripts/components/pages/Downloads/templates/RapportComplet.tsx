@@ -210,7 +210,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </div>
 
                     <SettingsInfo>
-                        Modifie la période affichée dans les graphiques de consommation d'espaces NAF.
+                        Modifie la période affichée dans les graphiques de consommation d'ENAF.
                     </SettingsInfo>
                 </SettingsSection>
 
@@ -250,7 +250,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </div>
 
                     <SettingsInfo>
-                        Le graphique de la trajectoire de consommation d'espaces NAF affiche par défaut une trajectoire avec un objectif de réduction de 50% (objectif national). Vous pouvez ajouter une trajectoire personnalisée en ajustant l'objectif de réduction ci-dessus.
+                        Le graphique de la trajectoire de consommation d'ENAF affiche par défaut une trajectoire avec un objectif de réduction de 50% (objectif national). Vous pouvez ajouter une trajectoire personnalisée en ajustant l'objectif de réduction ci-dessus.
                     </SettingsInfo>
                 </SettingsSection>
             </Drawer>
@@ -260,11 +260,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     const reportContent = (
         <>
             <section className="fr-mb-6w">
-                <h2>1 Consommation des espaces NAF (Naturels, Agricoles et Forestiers)</h2>
+                <h2>1 Consommation des espaces naturels, agricoles et forestiers (ENAF)</h2>
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Chaque année, <strong>24 000 ha d’espaces NAF (Naturels, Agricoles et Forestiers)</strong> sont consommés en moyenne en France, soit près de 5 terrains de football par heure.
+                        Chaque année, <strong>24 000 ha d’ENAF</strong> sont consommés en moyenne en France, soit près de 5 terrains de football par heure.
                         Tous les territoires sont concernés : en particulier 61% de la consommation d’espaces est constatée dans les territoires sans tension immobilière.
                     </p>
                     <p className="fr-callout__text">
@@ -283,13 +283,13 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         <strong>Pour la période 2021-2031, il s’agit de raisonner en consommation d’espaces.</strong>
                     </p>
                     <p>
-                        La consommation d’espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).
+                        La consommation d’ENAF est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).
                     </p>
                     <p>
                         La loi adoptée en 2023 précise qu’à l’échelle d’un même territoire, « la transformation effective d’espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d’une désartificialisation peut être comptabilisée en déduction de cette consommation ».
                     </p>
                     <p>
-                        Au niveau national, la consommation d’espaces NAF (Naturels, Agricoles et Forestiers)  est mesurée par les fichiers fonciers retraités par le CEREMA.
+                        Au niveau national, la consommation d’ENAF est mesurée par les fichiers fonciers retraités par le Cerema.
                     </p>
                     <p>
                         <strong>A partir de 2031, il s’agit de raisonner en artificialisation.</strong>
@@ -311,7 +311,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             </section>
 
             <section className="fr-mb-6w">
-                <h2>2 Trajectoire de consommation d’espaces NAF à l’horizon 2031</h2>
+                <h2>2 Trajectoire de consommation d’ENAF à l’horizon 2031</h2>
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
@@ -341,7 +341,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         Cette « garantie communale » peut être mutualisée au niveau intercommunal à la demande des communes. Quant aux communes littorales soumises au recul du trait de côte, qui sont listées par décret et qui ont mis en place un projet de recomposition spatiale, elles peuvent considérer, avant même que la désartificialisation soit effective, comme « désartificialisées » les surfaces situées dans la zone menacée à horizon 30 ans et qui seront ensuite désartificialisées.
                     </p>
                     <p>
-                        Dès aujourd'hui, <strong>Mon Diagnostic Artificialisation</strong> vous permet de vous projeter dans cet objectif de réduction de la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) d'ici à 2031 et de simuler divers scénarii.
+                        Dès aujourd'hui, <strong>Mon Diagnostic Artificialisation</strong> vous permet de vous projeter dans cet objectif de réduction de la consommation d'ENAF d'ici à 2031 et de simuler divers scénarii.
                     </p>
                 </TwoColumnLayout>
 
@@ -393,7 +393,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Les graphiques de cette section présentent les données de consommation d'espaces NAF
+                        Les graphiques de cette section présentent les données de consommation d'ENAF
                         sur la période du <strong>1er janvier {consoStartYear}</strong> au{' '}
                         <strong>31 décembre {consoEndYear}</strong>.
                     </p>
