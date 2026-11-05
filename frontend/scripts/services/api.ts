@@ -16,6 +16,88 @@ import {
 	ReportTypeOption,
 } from "./types/reportDraft";
 
+export const NATIONAL_MAP_FORMAT_VERSION = 5;
+
+export type NationalMapFeature = {
+	type: "Feature";
+	// `zone` sert au placement (HEXAGONE, CORSE ou code de la région d'outre-mer),
+	// `region` est le code INSEE de la région contenant le territoire
+	properties: { land_id: string; land_type: string; name: string; has_conso: boolean; zone: string; region: string };
+	geometry: { type: string; coordinates: unknown };
+};
+
+export type NationalMapInset = {
+	zone: string;
+	name: string;
+	// Emprise du territoire déplacé, en coordonnées projetées (EPSG:3857) : [xmin, ymin, xmax, ymax]
+	bbox: [number, number, number, number];
+};
+
+export type NationalMapParent = {
+	land_type: string;
+	land_id: string;
+	name: string;
+	ancestors: { land_type: string; land_id: string; name: string }[];
+};
+
+export type NationalMapBaseMap = {
+	scale: string;
+	geojson: { type: "FeatureCollection"; features: NationalMapFeature[] };
+	insets: NationalMapInset[];
+	// Polyligne séparant les territoires déplacés de l'Hexagone, en coordonnées projetées
+	separation: [number, number][];
+	no_conso_data: string[];
+	parent: NationalMapParent | null;
+};
+
+export type NationalMapBivariateValue = {
+	class: number;
+	conso_rate: number | null;
+	indic_rate: number | null;
+} | null;
+
+export type NationalMapLandIndicators = {
+	surface_ha: number;
+	conso_ha: number | null;
+	conso_pct_surface: number | null;
+	conso_habitat_ha: number | null;
+	conso_activite_ha: number | null;
+	conso_mixte_ha: number | null;
+	conso_route_ha: number | null;
+	conso_ferroviaire_ha: number | null;
+	conso_inconnu_ha: number | null;
+	annual_conso_2011_2021: number | null;
+	annual_conso_2021_end: number | null;
+	conso_evolution_between_periods: number | null;
+	conso_2011_end: number | null;
+	conso_2011_2021: number | null;
+	conso_2021_end: number | null;
+	bivariate_activite_emplois: NationalMapBivariateValue;
+	bivariate_habitat_menages: NationalMapBivariateValue;
+	bivariate_habitat_population: NationalMapBivariateValue;
+};
+
+export type NationalMapBivariateMeta = {
+	palette: string[];
+	conso_thresholds: [number, number] | null;
+	indic_thresholds: [number, number] | null;
+	conso_label: string;
+	indicator_label: string;
+	indicator_unit: string;
+};
+
+export type NationalMapIndicators = {
+	scale: string;
+	start_year: number;
+	end_year: number;
+	years: { min: number; max: number };
+	fixed_periods: { p1: [number, number]; p2: [number, number]; total: [number, number] };
+	lands: Record<string, NationalMapLandIndicators>;
+	bivariate: Record<string, NationalMapBivariateMeta>;
+};
+
+export type NationalMapQuery = { scale: string; parent_type?: string; parent_id?: string };
+
 export type CurrentUserResponse = {
 	is_authenticated: boolean;
 	id?: number;
@@ -70,6 +152,26 @@ export const djangoApi = createApi({
 					to_year: to_year.toString()
 				})}`
 			},
+		}),
+		getNationalMapBaseMap: builder.query<NationalMapBaseMap, NationalMapQuery>({
+			// `v` ne sert qu'à invalider le cache navigateur quand le format change
+			// (même valeur que FORMAT_VERSION dans public_data/domain/national_map.py).
+			// `parent_type` et `parent_id` limitent le fond aux territoires d'un parent.
+			query: ({ scale, parent_type, parent_id }) =>
+				`/public/national-map/base-map?${new URLSearchParams({
+					scale,
+					v: String(NATIONAL_MAP_FORMAT_VERSION),
+					...(parent_type && parent_id ? { parent_type, parent_id } : {}),
+				})}`,
+		}),
+		getNationalMapIndicators: builder.query<NationalMapIndicators, NationalMapQuery & { start_year: number; end_year: number }>({
+			query: ({ scale, start_year, end_year, parent_type, parent_id }) =>
+				`/public/national-map/indicators?${new URLSearchParams({
+					scale,
+					start_year: String(start_year),
+					end_year: String(end_year),
+					...(parent_type && parent_id ? { parent_type, parent_id } : {}),
+				})}`,
 		}),
 		getChartConfig: builder.query({
 			query: ({ id, land_type, land_id, ...params }) => {
@@ -398,6 +500,8 @@ const {
 	useGetDepartementListQuery,
 	useSearchTerritoryQuery,
 	useGetChartConfigQuery,
+	useGetNationalMapBaseMapQuery,
+	useGetNationalMapIndicatorsQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandArtifFluxIndexQuery,
 	useGetLandImperStockIndexQuery,
@@ -425,6 +529,8 @@ export {
 	useGetEnvironmentQuery,
 	useSearchTerritoryQuery,
 	useGetChartConfigQuery,
+	useGetNationalMapBaseMapQuery,
+	useGetNationalMapIndicatorsQuery,
 	useGetLandQuery,
 	useGetArtifZonageIndexQuery,
 	useGetImperZonageIndexQuery,

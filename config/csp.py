@@ -12,6 +12,8 @@ from typing import Any
 from csp.constants import NONCE, SELF, UNSAFE_INLINE
 
 METABASE = "https://sparte-metabase.osc-secnum-fr1.scalingo.io"
+# Ressources générées dans le navigateur (workers, export PNG des graphiques Highcharts)
+BLOB = "blob:"
 MATOMO = "https://stats.beta.gouv.fr"
 CRISP_CLIENT = "https://client.crisp.chat"
 # Widget Messages de l'ANCT (La Suite)
@@ -40,13 +42,14 @@ def build_csp_directives(
     Report-Only pour collecter les violations sans surveiller la console du navigateur.
     """
     directives: dict[str, Any] = {
-        "default-src": [SELF, METABASE, "blob:", MATOMO],
-        "worker-src": [SELF, "blob:"],
+        "default-src": [SELF, METABASE, BLOB, MATOMO],
+        "worker-src": [SELF, BLOB],
         "script-src": [SELF, MATOMO, CRISP_CLIENT, "https://settings.crisp.chat", LA_SUITE, NONCE],
         "style-src": [SELF, UNSAFE_INLINE, "https://cdn.jsdelivr.net", CRISP_CLIENT, MATOMO, LA_SUITE],
         "img-src": [
             SELF,
             "data:",
+            BLOB,
             "https://data.geopf.fr",
             "https://s3.fr-par.scw.cloud",
             media_url,

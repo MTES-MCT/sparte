@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
+import NationalMap from '@components/pages/NationalMap';
 import { ReportPrintPage } from '@components/pages/Downloads/templates';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
 import SearchBar from '@components/ui/SearchBar'
@@ -87,6 +88,17 @@ if (dashboard) {
     <ErrorBoundary>
       <Provider store={store}>
         <Dashboard landType={landType} landId={landId} landSlug={landSlug} />
+      </Provider>
+    </ErrorBoundary>,
+  );
+}
+
+const nationalMap = document.getElementById('react-national-map');
+if (nationalMap) {
+  createRoot(nationalMap).render(
+    <ErrorBoundary>
+      <Provider store={store}>
+        <NationalMap />
       </Provider>
     </ErrorBoundary>,
   );

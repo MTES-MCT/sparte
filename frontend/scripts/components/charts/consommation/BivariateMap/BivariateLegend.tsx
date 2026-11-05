@@ -45,11 +45,19 @@ const GridSection = styled.div`
   flex-shrink: 0;
 `;
 
-const MainContainer = styled.div`
+const MainContainer = styled.div<{ $compact?: boolean }>`
   display: flex;
-  align-items: stretch;
+  align-items: ${({ $compact }) => $compact ? 'flex-start' : 'stretch'};
   width: 100%;
   gap: ${theme.spacing.sm};
+`;
+
+// En mode compact, le titre de l'axe vertical est écrit à l'horizontale au-dessus de la grille
+const CompactAxisTitle = styled.div`
+  margin-bottom: ${theme.spacing.sm};
+  font-size: ${theme.fontSize.xs};
+  font-weight: ${theme.fontWeight.semibold};
+  color: ${theme.colors.text};
 `;
 
 const YAxisTitle = styled.div`
@@ -63,12 +71,12 @@ const YAxisTitle = styled.div`
   justify-content: right;
 `;
 
-const GridLayout = styled.div`
+const GridLayout = styled.div<{ $compact?: boolean }>`
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-rows: 1fr auto auto;
+  grid-template-columns: ${({ $compact }) => $compact ? 'max-content max-content' : 'auto minmax(0, 1fr)'};
+  grid-template-rows: ${({ $compact }) => $compact ? 'auto auto auto' : '1fr auto auto'};
   gap: 0;
-  flex: 1;
+  flex: ${({ $compact }) => $compact ? 'none' : '1'};
   min-width: 0;
 `;
 
@@ -113,13 +121,14 @@ const YAxisArrow = styled.div`
   }
 `;
 
-const GridWrapper = styled.div`
+const GridWrapper = styled.div<{ $compact?: boolean }>`
   grid-column: 2;
   grid-row: 1;
   display: grid;
   grid-template-rows: repeat(3, auto);
+  align-content: start;
   gap: 3px;
-  width: 100%;
+  width: ${({ $compact }) => $compact ? 'max-content' : '100%'};
 `;
 
 const GridRow = styled.div`
@@ -128,9 +137,9 @@ const GridRow = styled.div`
   gap: 3px;
 `;
 
-const Cell = styled.div<{ $color: string; $highlighted?: boolean }>`
-  width: 100%;
-  height: clamp(32px, 8vw, 55px);
+const Cell = styled.div<{ $color: string; $highlighted?: boolean; $compact?: boolean }>`
+  width: ${({ $compact }) => $compact ? '36px' : '100%'};
+  height: ${({ $compact }) => $compact ? '36px' : 'clamp(32px, 8vw, 55px)'};
   border-radius: 6px;
   background: ${({ $color }) => $color};
   border: none;
@@ -143,13 +152,13 @@ const Cell = styled.div<{ $color: string; $highlighted?: boolean }>`
   }
 `;
 
-const XAxisLabels = styled.div`
+const XAxisLabels = styled.div<{ $compact?: boolean }>`
   grid-column: 2;
   grid-row: 2;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: ${({ $compact }) => $compact ? 'auto minmax(28px, 1fr) auto' : 'auto minmax(0, 1fr) auto'};
   align-items: center;
-  column-gap: ${theme.spacing.md};
+  column-gap: ${({ $compact }) => $compact ? theme.spacing.sm : theme.spacing.md};
   margin-top: ${theme.spacing.md};
 `;
 
@@ -180,7 +189,7 @@ const XAxisArrow = styled.div`
   }
 `;
 
-const XAxisTitle = styled.div`
+const XAxisTitle = styled.div<{ $compact?: boolean }>`
   grid-column: 2;
   grid-row: 3;
   text-align: center;
@@ -191,7 +200,7 @@ const XAxisTitle = styled.div`
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: ${({ $compact }) => $compact ? 'normal' : 'nowrap'};
 `;
 
 const DetailPanel = styled.div<{ $bgColor: string }>`
@@ -291,6 +300,8 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
   indicQualif,
   childLandTypeLabel,
   highlightedCell,
+  onCellHover,
+  compact = false,
 }) => {
   const hints = tercileHints(childLandTypeLabel);
   const [hoveredCell, setHoveredCell] = useState<{ row: number; col: number } | null>(null);
@@ -361,39 +372,47 @@ export const BivariateLegend: React.FC<BivariateLegendProps> = ({
         </Header>
 
         <GridSection>
-          <MainContainer>
-            <YAxisTitle>{consoLabel} (%)</YAxisTitle>
+          {compact && <CompactAxisTitle>{consoLabel} (%)</CompactAxisTitle>}
+          <MainContainer $compact={compact}>
+            {!compact && <YAxisTitle>{consoLabel} (%)</YAxisTitle>}
 
-            <GridLayout>
+            <GridLayout $compact={compact}>
               <YAxisLabels>
                 <YAxisLabel>Plus faible</YAxisLabel>
                 <YAxisArrow aria-hidden="true" />
                 <YAxisLabel>Plus élevée</YAxisLabel>
               </YAxisLabels>
 
-              <GridWrapper>
+              <GridWrapper $compact={compact}>
                 {colorGrid.map((colors, rowIndex) => (
                   <GridRow key={rowIndex}>
                     {colors.map((color, colIndex) => (
                       <Cell
                         key={`${rowIndex}-${colIndex}`}
                         $color={color}
+                        $compact={compact}
                         $highlighted={activeCell?.row === rowIndex && activeCell?.col === colIndex}
-                        onMouseEnter={() => setHoveredCell({ row: rowIndex, col: colIndex })}
-                        onMouseLeave={() => setHoveredCell(null)}
+                        onMouseEnter={() => {
+                          setHoveredCell({ row: rowIndex, col: colIndex });
+                          onCellHover?.({ row: rowIndex, col: colIndex });
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredCell(null);
+                          onCellHover?.(null);
+                        }}
                       />
                     ))}
                   </GridRow>
                 ))}
               </GridWrapper>
 
-              <XAxisLabels>
+              <XAxisLabels $compact={compact}>
                 <XAxisLabel>Plus faible</XAxisLabel>
                 <XAxisArrow aria-hidden="true" />
                 <XAxisLabel>Plus élevée</XAxisLabel>
               </XAxisLabels>
 
-              <XAxisTitle>{indicName}{indicUnit ? ` (${indicUnit})` : ""}</XAxisTitle>
+              <XAxisTitle $compact={compact}>{indicName}{indicUnit ? ` (${indicUnit})` : ""}</XAxisTitle>
             </GridLayout>
           </MainContainer>
         </GridSection>

@@ -14,6 +14,21 @@ class HomeTests(TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
 
+    def test_national_map_mounts_react_root_without_dsfr_header(self) -> None:
+        response = self.client.get("/carte")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="react-national-map"')
+        self.assertNotContains(response, 'class="fr-header"')
+
+    @override_settings(CRISP_ACTIVATED=True, MESSAGES_WIDGET_ACTIVATED=True)
+    def test_national_map_has_no_chat_nor_messages_widget(self) -> None:
+        response = self.client.get("/carte")
+        self.assertNotContains(response, "client.crisp.chat")
+        self.assertNotContains(response, "_lasuite_widget")
+        home = self.client.get("/")
+        self.assertContains(home, "client.crisp.chat")
+        self.assertContains(home, "_lasuite_widget")
+
     # maintenance view only redirects to own domain
     def test_maintenance_view_redirects_to_own_domain_when_trying_outside_domain(self) -> None:
         response = self.client.get("/maintenance?next=http://malicious.com")
@@ -195,6 +210,12 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertIn("upgrade-insecure-requests", policy)
         self.assertNotIn("http:", policy)
         self.assertNotIn("ws:", policy)
+
+    def test_browser_generated_images_are_allowed(self) -> None:
+        # L'export PNG des graphiques et cartes Highcharts charge l'image depuis une URL blob:
+        directives = build_csp_directives(local=False, **HTTPS_SOURCES)
+
+        self.assertIn("blob:", directives["img-src"])
 
     def test_report_uri_is_added_only_when_configured(self) -> None:
         report_uri = "https://sentry.example.org/api/21/security/?sentry_key=abc"

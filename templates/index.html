@@ -47,10 +47,14 @@
         {% block headers %}{% endblock %}
         <!-- Matomo -->
         {% tracking_code %}
+        {% block crisp %}
         <!-- Crisp -->
         {% crisp_tag_code %}
+        {% endblock crisp %}
+        {% block messages_widget %}
         <!-- Messages (ANCT) -->
         {% messages_widget_code %}
+        {% endblock messages_widget %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
         <!-- Page content wrapper-->
@@ -61,7 +65,7 @@
             {% endblock top_navigation %}
 
             <!-- Page content-->
-            <main id="contenu" class="h-100 {% if request.resolver_match.url_name not in 'home,home_rapport_local' %}fr-py-7w {% endif %}">
+            <main id="contenu" class="h-100 {% if request.resolver_match.url_name not in 'home,home_rapport_local,national_map' %}fr-py-7w {% endif %}">
                 {% if messages %}
                 <div class="fr-container fr-mt-2w fr-mb-5w">
                     <div class="fr-grid-row fr-grid-row--center">
