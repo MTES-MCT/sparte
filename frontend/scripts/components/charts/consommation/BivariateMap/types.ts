@@ -51,4 +51,8 @@ export interface BivariateLegendProps {
   adjectives: { faible: string; moyen: string; fort: string };
   childLandTypeLabel: string;
   highlightedCell?: { row: number; col: number } | null;
+  // Appelé quand le pointeur entre sur une case (ou la quitte : null)
+  onCellHover?: (cell: { row: number; col: number } | null) => void;
+  // Cases carrées de taille fixe et titres d'axes sur plusieurs lignes, pour un affichage étroit
+  compact?: boolean;
 }

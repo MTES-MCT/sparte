@@ -1,11 +1,11 @@
 from .AccessView import AccessView
 from .AliveView import AliveView
-from .CarteNationaleView import CarteNationaleView
 from .ContactView import ContactView
 from .HomeRapportLocalView import HomeRapportLocalView
 from .HomeView import HomeView
 from .LegalNoticeView import LegalNoticeView
 from .MaintenanceView import MaintenanceView
+from .NationalMapView import NationalMapView
 from .NewsletterConfirmationSubscriptionView import (
     NewsletterConfirmationSubscriptionView,
 )
@@ -19,12 +19,12 @@ from .StatsView import StatsView
 __all__ = [
     "AccessView",
     "AliveView",
-    "CarteNationaleView",
     "ContactView",
     "HomeRapportLocalView",
     "HomeView",
     "LegalNoticeView",
     "MaintenanceView",
+    "NationalMapView",
     "NewsletterSubscriptionView",
     "NewsletterEmailValidationView",
     "NewsletterConfirmationSubscriptionView",

@@ -47,6 +47,8 @@ def build_csp_directives(
         "img-src": [
             SELF,
             "data:",
+            # Images générées dans le navigateur : export PNG des graphiques et cartes Highcharts
+            "blob:",
             "https://data.geopf.fr",
             "https://s3.fr-par.scw.cloud",
             media_url,

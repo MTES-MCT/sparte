@@ -9,6 +9,8 @@ interface PeriodSelectorProps {
   maxYear: number;
   onStartYearChange: (year: number) => void;
   onEndYearChange: (year: number) => void;
+  // Bord du sélecteur sur lequel le menu déroulant s'aligne (à droite par défaut)
+  dropdownAlign?: "left" | "right";
 }
 
 const Wrapper = styled.div`
@@ -93,9 +95,11 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   maxYear,
   onStartYearChange,
   onEndYearChange,
+  dropdownAlign = "right",
 }) => {
   const [open, setOpen] = useState<OpenDropdown>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const dropdownStyle = dropdownAlign === "left" ? { left: 0 } : { right: 0 };
 
   const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
@@ -124,7 +128,7 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
       </YearButton>
 
       {open === "start" && (
-        <Dropdown style={{ right: 0 }}>
+        <Dropdown style={dropdownStyle}>
           {years.map((year) => {
             const disabled = year >= endYear;
             return (
@@ -148,7 +152,7 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
       )}
 
       {open === "end" && (
-        <Dropdown style={{ right: 0 }}>
+        <Dropdown style={dropdownStyle}>
           {years.map((year) => {
             const disabled = year <= startYear;
             return (
