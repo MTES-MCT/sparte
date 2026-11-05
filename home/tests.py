@@ -6,7 +6,12 @@ from django.template import Context, Template
 from django.template.loader import get_template
 from django.test import SimpleTestCase, TestCase, modify_settings, override_settings
 
-from config.csp import WEBPACK_DEV_SERVER, WEBPACK_DEV_SERVER_WS, build_csp_directives
+from config.csp import (
+    OSM_TILES,
+    WEBPACK_DEV_SERVER,
+    WEBPACK_DEV_SERVER_WS,
+    build_csp_directives,
+)
 
 
 class HomeTests(TestCase):
@@ -195,6 +200,13 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertIn("upgrade-insecure-requests", policy)
         self.assertNotIn("http:", policy)
         self.assertNotIn("ws:", policy)
+
+    def test_openstreetmap_tiles_are_allowed(self) -> None:
+        # Fond de plan des cartes : tuiles demandées en fetch par MapLibre (connect-src) ou en image (img-src)
+        directives = build_csp_directives(local=False, **HTTPS_SOURCES)
+
+        self.assertIn(OSM_TILES, directives["connect-src"])
+        self.assertIn(OSM_TILES, directives["img-src"])
 
     def test_report_uri_is_added_only_when_configured(self) -> None:
         report_uri = "https://sentry.example.org/api/21/security/?sentry_key=abc"
