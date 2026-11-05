@@ -153,7 +153,7 @@ const Controls: React.FC<ControlsProps> = ({
             <Item>
                 <Label $inBar={inBar}>
                     <i className="bi bi-grid-3x3-gap" aria-hidden="true" />
-                    Maille
+                    <span>Maille</span>
                 </Label>
                 <Group role="group" aria-label="Maille affichée">
                     {scales.map((code) => (

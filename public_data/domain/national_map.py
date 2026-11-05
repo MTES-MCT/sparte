@@ -102,9 +102,10 @@ def land_zone(land_type: str, land_id: str, region: str | None = None) -> str:
         if region in DROM:
             return region
         return ZONE_CORSE if region == REGION_CORSE else ZONE_HEXAGONE
-    if land_id[:3] in PREFIX_TO_REGION:
-        return PREFIX_TO_REGION[land_id[:3]]
-    if land_id[:2].upper() in ("2A", "2B"):
+    code = land_id or ""
+    if code[:3] in PREFIX_TO_REGION:
+        return PREFIX_TO_REGION[code[:3]]
+    if code[:2].upper() in ("2A", "2B"):
         return ZONE_CORSE
     return ZONE_HEXAGONE
 

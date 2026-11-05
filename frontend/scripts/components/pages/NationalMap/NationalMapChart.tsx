@@ -138,24 +138,24 @@ const Footnote = styled.p`
 // Phrase sous la carte : territoires affichés sans données, et, sur la France entière,
 // collectivités absentes de la carte. Rien à dire : null.
 const missingDataSentence = (names: string[], wholeFrance: boolean): string | null => {
+    const intro = "Les données de consommation d'espaces ne sont pas disponibles pour";
     const shown = names.length > 0 ? `${names.join(', ')} (en gris sur la carte)` : '';
-    if (wholeFrance) {
-        return (
-            `Les données de consommation d'espaces ne sont pas disponibles pour ${shown ? `${shown}, ni pour ` : ''}` +
-            `${COLLECTIVITIES_OFF_MAP}, qui ne figurent pas sur la carte.`
-        );
-    }
-    return shown ? `Les données de consommation d'espaces ne sont pas disponibles pour ${shown}.` : null;
+    if (!wholeFrance) return shown ? `${intro} ${shown}.` : null;
+    const offMap = `${COLLECTIVITIES_OFF_MAP}, qui ne figurent pas sur la carte.`;
+    return shown ? `${intro} ${shown}, ni pour ${offMap}` : `${intro} ${offMap}`;
 };
 
 const percent = (v: number | null | undefined, decimals = 2) =>
     v === null || v === undefined ? 'n.d.' : `${formatNumber({ number: v, decimals })} %`;
 
 // Taux des cartes bivariées : des pourcentages par an souvent très petits, affichés avec juste assez de décimales
-const formatRate = (v: number): string => {
-    const decimals = Math.abs(v) < 0.01 ? 4 : Math.abs(v) < 0.1 ? 3 : 2;
-    return Number.parseFloat(v.toFixed(decimals)).toString().replace('.', ',');
+const rateDecimals = (v: number): number => {
+    if (Math.abs(v) < 0.01) return 4;
+    if (Math.abs(v) < 0.1) return 3;
+    return 2;
 };
+
+const formatRate = (v: number): string => Number.parseFloat(v.toFixed(rateDecimals(v))).toString().replace('.', ',');
 
 const formatIndicatorRate = (v: number, unit: string): string => (unit === '%' && v > 0 ? `+${formatRate(v)}` : formatRate(v));
 
@@ -301,19 +301,18 @@ const NationalMapChart = forwardRef<NationalMapChartHandle, NationalMapChartProp
                 };
             }
             const value = land[indicator.id as 'conso_ha'] as number | null;
-            return { ...base, value, valueText: `${formatValue(value, indicator)}${indicator.usesPeriod ? ` ${period}` : ''}` };
+            const text = formatValue(value, indicator);
+            return { ...base, value, valueText: indicator.usesPeriod ? `${text} ${period}` : text };
         });
-        const cls: ValueClass[] = !bivariate && !unavailable
-            ? naturalBreaksClasses(
-                  raw.map((p) => p.value).filter((v): v is number => v !== null),
-                  indicator.palette === 'diverging' ? DIVERGING_PALETTE : SEQUENTIAL_PALETTE,
-                  indicator,
-              )
-            : [];
-        const pts: MapPoint[] = raw.map((p) => ({
-            ...p,
-            legendKey: p.value === null ? null : bivariate ? p.value : classIndexOf(p.value, cls),
-        }));
+        const palette = indicator.palette === 'diverging' ? DIVERGING_PALETTE : SEQUENTIAL_PALETTE;
+        const values = raw.map((p) => p.value).filter((v): v is number => v !== null);
+        const cls: ValueClass[] = bivariate || unavailable ? [] : naturalBreaksClasses(values, palette, indicator);
+        // Clé de légende : classe de valeur (cartes simples) ou classe 0-8 (bivariées)
+        const legendKeyOf = (value: number | null): number | null => {
+            if (value === null) return null;
+            return bivariate ? value : classIndexOf(value, cls);
+        };
+        const pts: MapPoint[] = raw.map((p) => ({ ...p, legendKey: legendKeyOf(p.value) }));
         return { points: pts, classes: cls };
     }, [features, data, unavailable, bivariate, bivariateMeta, indicator, scale]);
 
@@ -407,22 +406,22 @@ const NationalMapChart = forwardRef<NationalMapChartHandle, NationalMapChartProp
                     point: {
                         events: {
                             // Un clic sur un territoire en fait la zone affichée
-                            click() {
-                                const target = (this.options as { zone?: string }).zone;
+                            click: (event: Highcharts.PointClickEventObject) => {
+                                const target = (event.point.options as { zone?: string }).zone;
                                 if (clickable && target) onZoneChange?.(target);
                             },
-                            // Le survol d'un territoire alimente la légende
-                            mouseOver() {
-                                const { name, valueText, legendKey } = this.options as unknown as MapPoint;
+                            // Le survol d'un territoire alimente la légende ; Highcharts passe le point en cible de l'événement
+                            mouseOver: (event: Event) => {
+                                const point = event.target as unknown as Highcharts.Point;
+                                const { name, valueText, legendKey } = point.options as unknown as MapPoint;
+                                const classIndex = legendKey ?? null;
                                 setHoveredLand((current) =>
-                                    current && current.name === name && current.classIndex === (legendKey ?? null)
+                                    current?.name === name && current.classIndex === classIndex
                                         ? current
-                                        : { name, valueText: valueText.replace(/<br\/>/g, ', '), classIndex: legendKey ?? null },
+                                        : { name, valueText: valueText.replace(/<br\/>/g, ', '), classIndex },
                                 );
                             },
-                            mouseOut() {
-                                setHoveredLand(null);
-                            },
+                            mouseOut: () => setHoveredLand(null),
                         },
                     },
                 },

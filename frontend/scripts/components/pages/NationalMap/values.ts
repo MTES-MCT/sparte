@@ -17,49 +17,60 @@ export const formatValue = (value: number | null | undefined, indicator: Formatt
     return indicator.unit ? `${number} ${UNIT_LABELS[indicator.unit]}` : number;
 };
 
-// Seuils naturels de Jenks : partition d'une liste triée en k classes qui minimise la
-// variance intra-classe (programmation dynamique de Fisher, O(k·n²)). Renvoie les k + 1
-// bornes, du minimum au maximum, chaque borne étant une valeur observée.
-export const jenksBreaks = (sorted: number[], k: number): number[] => {
+// Programmation dynamique de Fisher–Jenks. Pour les l premiers éléments découpés en j classes,
+// `lowerLimits[l][j]` est l'indice (1-based) du premier élément de la dernière classe et
+// `variances[l][j]` la somme des variances intra-classe minimale.
+type JenksTables = { lowerLimits: Int32Array; variances: Float64Array; at: (l: number, j: number) => number };
+
+// Essaie `lower` comme début de la dernière classe pour les l premiers éléments, en 2..k classes
+const relaxJenksClasses = (tables: JenksTables, k: number, l: number, lower: number, variance: number): void => {
+    const { lowerLimits, variances, at } = tables;
+    for (let j = 2; j <= k; j += 1) {
+        const candidate = variance + variances[at(lower - 1, j - 1)];
+        if (variances[at(l, j)] >= candidate) {
+            lowerLimits[at(l, j)] = lower;
+            variances[at(l, j)] = candidate;
+        }
+    }
+};
+
+const jenksTables = (sorted: number[], k: number): JenksTables => {
     const n = sorted.length;
-    if (n === 0) return [];
-    if (k >= n) return [...sorted];
-    // lowerLimits[l][j] : indice (1-based) du premier élément de la classe j quand les l premiers éléments sont découpés en j classes
-    const lowerLimits = new Int32Array((n + 1) * (k + 1));
-    const variances = new Float64Array((n + 1) * (k + 1));
     const at = (l: number, j: number) => l * (k + 1) + j;
+    const tables: JenksTables = { lowerLimits: new Int32Array((n + 1) * (k + 1)), variances: new Float64Array((n + 1) * (k + 1)).fill(Infinity), at };
     for (let j = 1; j <= k; j += 1) {
-        lowerLimits[at(1, j)] = 1;
-        for (let l = 2; l <= n; l += 1) variances[at(l, j)] = Infinity;
+        tables.lowerLimits[at(1, j)] = 1;
+        tables.variances[at(1, j)] = 0;
     }
     for (let l = 2; l <= n; l += 1) {
         let sum = 0;
         let sumSquares = 0;
-        let count = 0;
+        // Parcourt les débuts de classe possibles, du dernier élément vers le premier (m éléments dans la classe)
         for (let m = 1; m <= l; m += 1) {
             const lower = l - m + 1;
             const value = sorted[lower - 1];
-            count += 1;
             sum += value;
             sumSquares += value * value;
-            const variance = sumSquares - (sum * sum) / count;
-            const previous = lower - 1;
-            if (previous !== 0) {
-                for (let j = 2; j <= k; j += 1) {
-                    const candidate = variance + variances[at(previous, j - 1)];
-                    if (variances[at(l, j)] >= candidate) {
-                        lowerLimits[at(l, j)] = lower;
-                        variances[at(l, j)] = candidate;
-                    }
-                }
-            }
+            const variance = sumSquares - (sum * sum) / m;
+            if (lower > 1) relaxJenksClasses(tables, k, l, lower, variance);
         }
-        lowerLimits[at(l, 1)] = 1;
-        variances[at(l, 1)] = sumSquares - (sum * sum) / count;
+        tables.lowerLimits[at(l, 1)] = 1;
+        tables.variances[at(l, 1)] = sumSquares - (sum * sum) / l;
     }
+    return tables;
+};
+
+// Seuils naturels de Jenks : partition d'une liste triée en k classes qui minimise la
+// variance intra-classe (O(k·n²)). Renvoie les k + 1 bornes, du minimum au maximum,
+// chaque borne étant une valeur observée.
+export const jenksBreaks = (sorted: number[], k: number): number[] => {
+    const n = sorted.length;
+    if (n === 0) return [];
+    if (k >= n) return [...sorted];
+    const { lowerLimits, at } = jenksTables(sorted, k);
     const breaks = new Array<number>(k + 1);
-    breaks[k] = sorted[n - 1];
     breaks[0] = sorted[0];
+    breaks[k] = sorted[n - 1];
     let remaining = n;
     for (let j = k; j > 1; j -= 1) {
         breaks[j - 1] = sorted[lowerLimits[at(remaining, j)] - 2];
@@ -68,33 +79,34 @@ export const jenksBreaks = (sorted: number[], k: number): number[] => {
     return breaks;
 };
 
+// Bornes intérieures d'une partition de Jenks en `count` classes, sans doublon
+const innerBounds = (sorted: number[], count: number): number[] =>
+    jenksBreaks(sorted, count)
+        .slice(1, -1)
+        .filter((bound, index, bounds) => index === 0 || bound > bounds[index - 1]);
+
+// Libellé d'une classe d'après ses bornes ; une borne extrême absente est ouverte
+const className = (from: number | undefined, to: number | undefined, format: (v: number) => string, unit: string, single: number): string => {
+    if (from === undefined && to === undefined) return `${format(single)}${unit}`;
+    if (from === undefined) return `Jusqu'à ${format(to as number)}${unit}`;
+    if (to === undefined) return `Plus de ${format(from)}${unit}`;
+    return `De ${format(from)} à ${format(to)}${unit}`;
+};
+
 // Découpe les valeurs en classes par seuils naturels (Jenks), avec autant de classes que de
 // couleurs quand les valeurs distinctes le permettent. Les bornes sont des valeurs observées ;
 // une valeur égale à une borne appartient à la classe inférieure, comme dans Highcharts.
 export const naturalBreaksClasses = (values: number[], palette: string[], indicator: Formatting): ValueClass[] => {
     const sorted = values.filter((v) => Number.isFinite(v)).sort((a, b) => a - b);
     if (sorted.length === 0) return [];
-    const distinct = new Set(sorted).size;
-    const count = Math.min(palette.length, distinct);
-    const breaks = jenksBreaks(sorted, count);
-    // Bornes intérieures, sans doublon
-    const bounds: number[] = [];
-    for (let i = 1; i < breaks.length - 1; i += 1) {
-        if (bounds.length === 0 || breaks[i] > bounds[bounds.length - 1]) bounds.push(breaks[i]);
-    }
+    const bounds = innerBounds(sorted, Math.min(palette.length, new Set(sorted).size));
     const format = (v: number) => formatNumber({ number: v, decimals: indicator.decimals ?? 1 });
     const unit = indicator.unit ? ` ${UNIT_LABELS[indicator.unit]}` : '';
-    const colors = bounds.length + 1 === palette.length ? palette : palette.slice(0, bounds.length + 1);
     const classes: ValueClass[] = [];
     for (let i = 0; i <= bounds.length; i += 1) {
         const from = i === 0 ? undefined : bounds[i - 1];
         const to = i === bounds.length ? undefined : bounds[i];
-        let name: string;
-        if (from === undefined && to === undefined) name = `${format(sorted[0])}${unit}`;
-        else if (from === undefined) name = `Jusqu'à ${format(to as number)}${unit}`;
-        else if (to === undefined) name = `Plus de ${format(from)}${unit}`;
-        else name = `De ${format(from)} à ${format(to)}${unit}`;
-        classes.push({ from, to, color: colors[Math.min(i, colors.length - 1)], name });
+        classes.push({ from, to, color: palette[Math.min(i, palette.length - 1)], name: className(from, to, format, unit, sorted[0]) });
     }
     return classes;
 };

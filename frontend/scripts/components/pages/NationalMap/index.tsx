@@ -324,11 +324,11 @@ const NationalMap: React.FC = () => {
                 <MobileTabs aria-label="Affichage">
                     <MobileTab type="button" $active={mobileView === 'map'} aria-pressed={mobileView === 'map'} onClick={() => setMobileView('map')}>
                         <i className="bi bi-map" aria-hidden="true" />
-                        Carte
+                        <span>Carte</span>
                     </MobileTab>
                     <MobileTab type="button" $active={mobileView === 'infos'} aria-pressed={mobileView === 'infos'} onClick={() => setMobileView('infos')}>
                         <i className="bi bi-list-ul" aria-hidden="true" />
-                        Informations
+                        <span>Informations</span>
                     </MobileTab>
                 </MobileTabs>
             )}
@@ -343,9 +343,9 @@ const NationalMap: React.FC = () => {
                             <Tip id="visualizing" title="Pour visualiser les données">
                                 <p>Cliquez sur les rubriques pour faire apparaître les données sur la carte et afficher les chiffres clés et la légende.</p>
                                 <p>
-                                    Cliquez sur l'icône
+                                    Cliquez sur l'icône{' '}
                                     <i className="bi bi-info-circle" aria-label="information" />
-                                    pour afficher les détails de la donnée.
+                                    {' '}pour afficher les détails de la donnée.
                                 </p>
                             </Tip>
                         </PanelBlock>

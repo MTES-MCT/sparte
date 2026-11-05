@@ -80,7 +80,7 @@ export const zoneLabel = (zone: string, parent?: ParentInfo | null): string => {
     const land = zoneToLand(zone);
     if (!land) return zone;
     if (land.land_type === 'REGION') return regionLabel(land.land_id);
-    if (parent && parent.land_type === land.land_type && parent.land_id === land.land_id) return parent.name;
+    if (parent?.land_type === land.land_type && parent?.land_id === land.land_id) return parent.name;
     return land.land_id;
 };
 
@@ -104,7 +104,7 @@ export const zonePath = (zone: string, parent?: ParentInfo | null): { zone: stri
     if (zone === ZONE_HEXAGONE) return [...path, { zone: ZONE_HEXAGONE, label: zoneLabel(ZONE_HEXAGONE) }];
     const land = zoneToLand(zone);
     if (!land) return path;
-    const ancestors = parent && parent.land_type === land.land_type && parent.land_id === land.land_id ? parent.ancestors : [];
+    const ancestors = parent?.land_type === land.land_type && parent?.land_id === land.land_id ? parent.ancestors : [];
     const regionCode = land.land_type === 'REGION' ? land.land_id : ancestors.find((a) => a.land_type === 'REGION')?.land_id;
     if (regionCode && isRegionInHexagone(regionCode)) path.push({ zone: ZONE_HEXAGONE, label: zoneLabel(ZONE_HEXAGONE) });
     ancestors.forEach((ancestor) => path.push({ zone: landToZone(ancestor), label: ancestor.name }));
