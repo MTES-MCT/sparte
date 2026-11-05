@@ -1,6 +1,6 @@
 import React from 'react';
 
-import GenericChart from '../GenericChart';
+import GenericChart, { DataSource } from '../GenericChart';
 
 type FrichesChartProps = {
     id: string;
@@ -9,7 +9,7 @@ type FrichesChartProps = {
     isMap?: boolean;
     params?: object;
     containerProps?: object;
-    sources?: string[];
+    sources?: DataSource[];
     children?: React.ReactNode;
     showDataTable?: boolean;
 };

@@ -6,9 +6,9 @@ from include.container import InfraContainer
 from include.utils import multiline_string_to_single_line
 from include.vector_tiles import geojson_to_pmtiles_on_s3
 
-from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
-from airflow.models.param import Param
+from airflow.sdk import dag, task
+from airflow.sdk.definitions.param import Param
 
 with open("include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)

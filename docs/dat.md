@@ -69,7 +69,7 @@ graph TB
 - **Base de données** : PostgreSQL 17 avec PostGIS 3.5
 - **Cache** : Redis (cache des graphiques, sessions)
 - **Stockage objet** : Scaleway S3 (région fr-par)
-- **Data pipeline** : Apache Airflow (Astronomer Runtime 13.4.0), dbt
+- **Data pipeline** : Apache Airflow 3.1 (Astro Runtime 3.1), dbt
 - **Conteneurisation** : Docker / Docker Compose
 - **CI/CD** : GitHub Actions, déploiement sur Scalingo
 - **Gestion des dépendances** : Pipenv (Python), npm (JavaScript)
@@ -80,7 +80,7 @@ graph TB
 - **Mattermost** : notifications internes (déploiements, alertes, connexions admin)
 - **Matomo** : analytique web (optionnel, stats.beta.gouv.fr)
 - **Metabase** : tableaux de bord statistiques (hébergé sur Scalingo)
-- **Highcharts** : génération de graphiques (serveur d'export dédié)
+- **Highcharts** : génération de graphiques ; l'export PNG se fait entièrement dans le navigateur (module `offline-exporting`), sans serveur d'export et sans repli vers export.highcharts.com. Le module peut tenter de charger `canvg.js` depuis code.highcharts.com en cas de canvas « tainted » (SVG contenant une image d'une autre origine, ce qu'aucun graphique du projet ne fait) : ce domaine est volontairement absent de la CSP, l'export échoue alors silencieusement plutôt que de charger un script tiers
 - **Sentry** : monitoring des erreurs (sentry.incubateur.net)
 - **ProConnect** : authentification OpenID Connect (État français)
 - **data.gouv.fr** : publication de données ouvertes via API
@@ -100,7 +100,7 @@ Le projet est organisé en applications Django :
 | `carto/` | Cartographie (réservé pour extensions futures) |
 | `crisp/` | Webhooks Crisp, forwarding vers Mattermost, envoi de feedback |
 | `oidc/` | Authentification ProConnect via OpenID Connect |
-| `highcharts/` | Classe de base pour les graphiques Highcharts, export images/PDF |
+| `highcharts/` | Classe de base pour les graphiques Highcharts |
 | `utils/` | Utilitaires partagés : emails, Mattermost, anti-spam, couleurs, Excel, cache |
 | `brevo/` | Intégration Brevo (migrations) |
 
@@ -178,7 +178,7 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 
 ### Vue d'ensemble des pipelines Airflow
 
-**Infrastructure** : Apache Airflow sur Astronomer Runtime 13.4.0, avec `tippecanoe` (v2.75.1, compilé dans le Dockerfile) pour la génération de tuiles vectorielles.
+**Infrastructure** : Apache Airflow 3.1 sur Astro Runtime 3.1, avec `tippecanoe` (v2.75.1, compilé dans le Dockerfile) pour la génération de tuiles vectorielles.
 
 **Architecture multi-bases** : Airflow se connecte à 5 bases PostgreSQL :
 1. **DBT Database** : transformations et staging (ogr2ogr, psycopg2, SQLAlchemy)
@@ -217,7 +217,6 @@ Points d'entrée dans `project/api_urls.py` et `project/api_views/` :
 | `ingest_gpu` | `@once` | Zonage d'urbanisme GPU (export hebdomadaire HTTP du Géoportail de l'Urbanisme, flux Atom + contrôle MD5) |
 | `ingest_gpu_scot` | `@once` | Périmètres SCoT (geopackage d'extraction GPU) |
 | `ingest_plan_communal` (sudocuh) | `@once` | Données SUDOCUH depuis data.gouv.fr |
-| `ingest_scots` | `@once` | SCOT depuis l'API docurba.beta.gouv.fr |
 
 #### Données INSEE (3 DAGs)
 
@@ -286,7 +285,6 @@ flowchart LR
         INSEE[INSEE - Population / COG / Dossier Complet]
         CEREMA[Cerema - MAJIC / Friches / PENE / Carroyage LEA]
         OPENDATA[data.gouv.fr - RPLS / SITADEL / ZLV / SUDOCUH]
-        DOCURBA[docurba.beta.gouv.fr - SCOT]
         MATOMO_SRC[Matomo Analytics]
         APP_SRC[Tables applicatives]
     end
@@ -312,7 +310,6 @@ flowchart LR
     INSEE --> AF
     CEREMA --> AF
     OPENDATA --> AF
-    DOCURBA --> AF
     MATOMO_SRC --> AF
     APP_SRC --> AF
 
@@ -354,7 +351,6 @@ flowchart LR
 | `sudocuh` | 6 | Données habitat |
 | `analytics` | 5 | Vues analytiques |
 | `app` | 5 | Données applicatives |
-| `docurba` | 3 | SCOT |
 | `for_brevo` | 1 | Export marketing |
 | `misc` | 1 | Divers |
 
@@ -497,7 +493,7 @@ Architecture sophistiquée avec :
    - Gunicorn avec 9 workers, timeout 180s
 
 3. **Airflow (serveur dédié)**
-   - Astronomer Runtime 13.4.0 (Docker)
+   - Astro Runtime 3.1 (Airflow 3.1, Docker)
    - Connexions à 5 bases PostgreSQL
    - Stockage S3 Scaleway
    - Export hebdomadaire HTTP du Géoportail de l'Urbanisme pour les données GPU
@@ -559,10 +555,12 @@ Architecture sophistiquée avec :
    - Referrer Policy : strict-origin-when-cross-origin
 
 2. **Politique de sécurité du contenu (CSP)**
-   - Configuration stricte des sources autorisées via middleware custom
+   - Politique définie dans `config/csp.py` au format django-csp 4 (`CONTENT_SECURITY_POLICY`), émise par `ForceNonceCSPMiddleware` (`USE_CSP`, mode observation `USE_CSP_REPORT_ONLY`)
    - Nonces pour les scripts inline
    - Sources configurées pour : scripts, styles, images, frames, connexions
    - Autorisations spécifiques : Metabase, Matomo, Crisp, MapLibre tiles
+   - Requêtes non HTTPS interdites hors environnement local : aucune source `http:`/`ws:`, directive `upgrade-insecure-requests` ; en local, le serveur de développement webpack et le S3 local (HTTP) sont tolérés
+   - Intégrité des sous-ressources (SRI) : les feuilles de style propres incluses via `{% sri_static %}` portent `integrity`/`crossorigin` quand `USE_SRI=1` ; les bundles webpack sont servis depuis la même origine ; les scripts tiers (Crisp, Matomo, widget Messages) sont des chargeurs non versionnés mis à jour par leurs éditeurs, qu'un hash d'intégrité casserait à chaque mise à jour, et restent cantonnés par la CSP
 
 3. **Protection CSRF**
    - Middleware CSRF activé

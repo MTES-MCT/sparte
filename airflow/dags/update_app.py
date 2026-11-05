@@ -11,8 +11,8 @@ from include.container import InfraContainer as Container
 from pendulum import datetime
 from psycopg2.extensions import connection
 
-from airflow.decorators import dag, task
-from airflow.models.param import Param
+from airflow.sdk import dag, task
+from airflow.sdk.definitions.param import Param
 from airflow.utils.trigger_rule import TriggerRule
 
 STAGING = "staging"

@@ -43,6 +43,7 @@ const NameButton = styled(Button)`
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-title-grey);
+    background: transparent;
     max-width: 300px;
     
     span:first-child {
@@ -51,7 +52,7 @@ const NameButton = styled(Button)`
         white-space: nowrap;
     }
 
-    &:hover {
+    &:hover:not(:disabled) {
         background: var(--background-alt-grey);
     }
 `;
@@ -166,7 +167,7 @@ const EditorTopBar: React.FC<EditorTopBarProps> = ({
                         onKeyDown={handleKeyDown}
                     />
                 ) : (
-                    <NameButton variant="text" onClick={() => setIsEditing(true)} title="Modifier le nom">
+                    <NameButton variant="tertiary" onClick={() => setIsEditing(true)} title="Modifier le nom">
                         <span>{name}</span>
                         <i className="bi bi-pencil" aria-hidden="true" />
                     </NameButton>

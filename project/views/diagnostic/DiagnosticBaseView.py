@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.http import HttpResponsePermanentRedirect
 from django.views.generic import DetailView
 
@@ -69,7 +68,6 @@ class DiagnosticBaseView(DetailView):
 
         kwargs.update(
             {
-                "HIGHCHART_SERVER": settings.HIGHCHART_SERVER,
                 "page_title": page_title,
                 "meta_description": meta_description,
                 "canonical_url": canonical_url,

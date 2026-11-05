@@ -1,6 +1,6 @@
 import { LandType } from "@services/types/land";
 
-const PADDING_BY_LAND_TYPE: Record<LandType, number> = {
+const PADDING_BY_LAND_TYPE: Partial<Record<LandType, number>> = {
     [LandType.COMMUNE]: 15,
     [LandType.EPCI]: 30,
     [LandType.SCOT]: 30,

@@ -2,7 +2,7 @@ from include.container import DomainContainer, InfraContainer
 from include.dbt import DbtBuild
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 
 @dag(

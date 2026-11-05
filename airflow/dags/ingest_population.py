@@ -5,7 +5,7 @@ from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques-1876-2023.xlsx"
 

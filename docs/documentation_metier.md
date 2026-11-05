@@ -170,7 +170,7 @@ Les données cartographiques (occupation du sol, artificialisation, imperméabil
 
 ### Données d'urbanisme
 - **SUDOCUH** : données habitat communales et intercommunales
-- **SCOT** : schémas de cohérence territoriale (via docurba.beta.gouv.fr)
+- **SCOT** : schémas de cohérence territoriale (via le Géoportail de l'urbanisme)
 
 ---
 

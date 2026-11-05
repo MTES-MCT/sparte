@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from project.models import ReportDraft, RequestedDocumentChoices
+from project.models.user_land_preference import UserLandPreference
 from project.serializers import ReportDraftListSerializer, ReportDraftSerializer
 
 
@@ -28,7 +29,15 @@ class ReportDraftViewSet(viewsets.ModelViewSet):
         return ReportDraftSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        draft = serializer.save(user=self.request.user)
+        # Le territoire du rapport est ajouté aux favoris pour que l'utilisateur
+        # retrouve le rapport dans « Mes territoires favoris » (#1541).
+        if draft.land_type and draft.land_id:
+            UserLandPreference.objects.get_or_create(
+                user=self.request.user,
+                land_type=draft.land_type,
+                land_id=draft.land_id,
+            )
 
     def list(self, request, *args, **kwargs):
         land_type = request.query_params.get("land_type")

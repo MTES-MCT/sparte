@@ -29,8 +29,8 @@ from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
 from airflow.exceptions import AirflowFailException
+from airflow.sdk import dag, task
 
 URL = "https://www.insee.fr/fr/statistiques/fichier/5359146/dossier_complet_csv.zip"
 

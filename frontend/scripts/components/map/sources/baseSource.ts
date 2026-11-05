@@ -1,6 +1,5 @@
 import type { BaseSourceOptions, MapDataLocations } from "../types/source";
-import type maplibregl from "maplibre-gl";
-import type { SourceSpecification, LayerSpecification, StyleSpecification } from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 
 export abstract class BaseSource {
     readonly options: BaseSourceOptions;
@@ -35,7 +34,7 @@ export abstract class BaseSource {
         this.loaded = true;
     }
 
-    abstract getOptions(): SourceSpecification;
+    abstract getOptions(): maplibregl.SourceSpecification;
 
     protected async reloadSource(): Promise<void> {
         if (!this.map || !this.sourceId) {
@@ -101,17 +100,17 @@ export abstract class BaseSource {
         });
     }
 
-    private collectLayerSpecs(style: StyleSpecification): LayerSpecification[] {
+    private collectLayerSpecs(style: maplibregl.StyleSpecification): maplibregl.LayerSpecification[] {
         return style.layers
-            .filter((l: LayerSpecification): l is LayerSpecification => {
+            .filter((l: maplibregl.LayerSpecification): l is maplibregl.LayerSpecification => {
                 if (!('source' in l)) return false;
                 const layerSource = (l as { source?: string }).source;
                 return layerSource === this.sourceId;
             })
-            .map((l: LayerSpecification) => this.cloneLayerSpec(l));
+            .map((l: maplibregl.LayerSpecification) => this.cloneLayerSpec(l));
     }
 
-    private cloneLayerSpec(layer: LayerSpecification): LayerSpecification {
+    private cloneLayerSpec(layer: maplibregl.LayerSpecification): maplibregl.LayerSpecification {
         const { id, type, minzoom, maxzoom, layout, paint } = layer;
         const source = (layer as { source?: string }).source;
         const filter = (layer as { filter?: unknown }).filter;
@@ -133,7 +132,7 @@ export abstract class BaseSource {
             ...(filter && { filter }),
             ...(layout && { layout }),
             ...(paint && { paint })
-        } as LayerSpecification;
+        } as maplibregl.LayerSpecification;
     }
 
     protected updateSourceLayer(sourceLayer: string): string {

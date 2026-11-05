@@ -15,8 +15,8 @@ from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
-from airflow.models.param import Param
+from airflow.sdk import dag, task
+from airflow.sdk.definitions.param import Param
 
 GPU_SCOT_URL = (
     "https://data.geopf.fr/extraction/telechargement/download/"

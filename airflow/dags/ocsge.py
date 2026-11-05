@@ -41,9 +41,9 @@ from include.utils import (
     run_ogr2ogr,
 )
 
-from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
-from airflow.models.param import Param
+from airflow.sdk import dag, task
+from airflow.sdk.definitions.param import Param
 
 log = logging.getLogger(__name__)
 

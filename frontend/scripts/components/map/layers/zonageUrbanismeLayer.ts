@@ -1,7 +1,6 @@
 import { BaseLayer } from "./baseLayer";
 import type { StatCategory } from "../types/layer";
-import type { LayerSpecification, FilterSpecification } from "maplibre-gl";
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import type { LandDetailResultType } from "@services/types/land";
 import { getTerritoryFilter } from "../utils/ocsge";
 import { area } from "@turf/turf";
@@ -37,9 +36,9 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 		return `zonage_urbanisme_${this.millesimeIndex}_${this.departement}`;
 	}
 
-	getOptions(): LayerSpecification[] {
+	getOptions(): maplibregl.LayerSpecification[] {
 		const territoryFilter = getTerritoryFilter(this.landData);
-		const filter: FilterSpecification | undefined = territoryFilter
+		const filter: maplibregl.FilterSpecification | undefined = territoryFilter
 			? territoryFilter
 			: undefined;
 
@@ -67,7 +66,7 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 					],
 					"fill-opacity": 1,
 				},
-			} as LayerSpecification,
+			} as maplibregl.LayerSpecification,
 			// Visible outline
 			{
 				id: `${this.options.id}-outline`,
@@ -81,7 +80,7 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 					"line-width": 0.2,
 					"line-opacity": 0.4,
 				},
-			} as LayerSpecification,
+			} as maplibregl.LayerSpecification,
 			// Highlight outline for hovered/locked features
 			{
 				id: `${this.options.id}-highlight`,
@@ -95,7 +94,7 @@ export class ZonageUrbanismeLayer extends BaseLayer {
 					"line-width": 3,
 					"line-opacity": 1,
 				},
-			} as LayerSpecification,
+			} as maplibregl.LayerSpecification,
 		];
 	}
 

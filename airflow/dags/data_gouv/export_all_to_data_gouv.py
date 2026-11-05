@@ -4,7 +4,7 @@ from dags.data_gouv.utils import get_dataset_configs
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
 
-from airflow.decorators import dag, task, task_group
+from airflow.sdk import dag, task, task_group
 
 dataset_configs = get_dataset_configs()
 

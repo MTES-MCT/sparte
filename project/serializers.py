@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from project.html_sanitizer import sanitize_html
 from project.models import ReportDraft
 from project.models.user_land_preference import UserLandPreference
 
@@ -7,6 +8,17 @@ from project.models.user_land_preference import UserLandPreference
 class ReportDraftSerializer(serializers.ModelSerializer):
     report_type_display = serializers.CharField(source="get_report_type_display", read_only=True)
     owner_preference = serializers.SerializerMethodField()
+
+    def validate_content(self, value):
+        """
+        Les zones de commentaire sont rendues en HTML dans l'export public du rapport :
+        on n'enregistre que le HTML nettoyé (balises de l'éditeur, sans attribut).
+        """
+        if not isinstance(value, dict):
+            raise serializers.ValidationError("Le contenu doit être un objet.")
+        if not all(isinstance(zone, str) for zone in value.values()):
+            raise serializers.ValidationError("Chaque zone de contenu doit être une chaîne.")
+        return {key: sanitize_html(zone) for key, zone in value.items()}
 
     def get_owner_preference(self, obj):
         """

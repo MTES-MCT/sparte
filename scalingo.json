@@ -22,9 +22,9 @@
     },
     "addons": [
         {
-            "plan": "postgresql:postgresql-starter-2048",
+            "plan": "postgresql:postgresql-starter-4096",
             "options": {
-                "version": "16"
+                "version": "17"
             }
         },
         {

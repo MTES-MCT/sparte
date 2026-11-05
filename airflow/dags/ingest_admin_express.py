@@ -10,8 +10,8 @@ chacune dans sa propre table. La construction des modèles dbt est gérée sépa
 from include.container import DomainContainer, InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
-from airflow.models.param import Param
+from airflow.sdk import dag, task
+from airflow.sdk.definitions.param import Param
 
 # Couches du geopackage Admin Express à ingérer (une table par couche).
 LAYERS = ("commune", "departement", "epci", "region")

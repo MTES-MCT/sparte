@@ -2,7 +2,7 @@ from include.container import DomainContainer as Container
 from include.container import InfraContainer
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 URL = "https://www.insee.fr/fr/statistiques/fichier/8740222/v_mvt_commune_2026.csv"
 

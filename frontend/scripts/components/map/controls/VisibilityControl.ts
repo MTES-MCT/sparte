@@ -2,6 +2,7 @@ import React from "react";
 import { BaseControl } from "./BaseControl";
 import type { ControlUIProps, ControlContext } from "../types/controls";
 import type { LayerInterface } from "../types/layerInterface";
+import { isLayerId } from "../types/registry";
 import { VisibilityControl as VisibilityControlComponent } from "../ui/controls/VisibilityControl";
 
 export class VisibilityControl extends BaseControl {
@@ -17,7 +18,7 @@ export class VisibilityControl extends BaseControl {
                 layer.setVisibility(value);
             }
 
-            if (context.statsManager) {
+            if (context.statsManager && isLayerId(layerId)) {
                 if (value) {
                     context.statsManager.showStats(layerId);
                 } else {

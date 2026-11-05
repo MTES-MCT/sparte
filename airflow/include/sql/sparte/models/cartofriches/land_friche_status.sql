@@ -45,6 +45,30 @@ SELECT
  GROUP BY
     land_id,
     land_type
+), statut_counts_all_lands as (
+/* Une ligne par territoire, y compris ceux sans aucune friche (compteurs et
+   surfaces à zéro), pour que le statut ne soit jamais null en aval. */
+SELECT
+    land.land_id,
+    land.land_type,
+    coalesce(statut_counts.friche_count, 0) as friche_count,
+    coalesce(statut_counts.friche_sans_projet_count, 0) as friche_sans_projet_count,
+    coalesce(statut_counts.friche_avec_projet_count, 0) as friche_avec_projet_count,
+    coalesce(statut_counts.friche_reconvertie_count, 0) as friche_reconvertie_count,
+    coalesce(statut_counts.friche_surface, 0) as friche_surface,
+    coalesce(statut_counts.friche_reconvertie_surface, 0) as friche_reconvertie_surface,
+    coalesce(statut_counts.friche_reconvertie_surface_artif, 0) as friche_reconvertie_surface_artif,
+    coalesce(statut_counts.friche_reconvertie_surface_imper, 0) as friche_reconvertie_surface_imper,
+    coalesce(statut_counts.friche_avec_projet_surface, 0) as friche_avec_projet_surface,
+    coalesce(statut_counts.friche_avec_projet_surface_artif, 0) as friche_avec_projet_surface_artif,
+    coalesce(statut_counts.friche_avec_projet_surface_imper, 0) as friche_avec_projet_surface_imper,
+    coalesce(statut_counts.friche_sans_projet_surface, 0) as friche_sans_projet_surface,
+    coalesce(statut_counts.friche_sans_projet_surface_artif, 0) as friche_sans_projet_surface_artif,
+    coalesce(statut_counts.friche_sans_projet_surface_imper, 0) as friche_sans_projet_surface_imper
+FROM {{ ref('land') }} as land
+LEFT JOIN statut_counts
+    ON statut_counts.land_id = land.land_id
+    AND statut_counts.land_type = land.land_type
 ), status as (
 SELECT
     land_id,
@@ -111,7 +135,7 @@ SELECT
     friche_reconvertie_count
 
 
-FROM statut_counts
+FROM statut_counts_all_lands
 )
 SELECT
     land_id,

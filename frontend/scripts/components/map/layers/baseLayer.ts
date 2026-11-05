@@ -1,7 +1,8 @@
 import type { BaseLayerOptions } from "../types/layer";
 import type { LayerInterface } from "../types/layerInterface";
-import type maplibregl from "maplibre-gl";
-import type { LayerSpecification } from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
+
+type OpacityPaintProperty = 'fill-opacity' | 'line-opacity' | 'raster-opacity' | 'text-opacity' | 'circle-opacity';
 
 export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSource' | 'getOpacity' | 'setOpacity' | 'getVisibility' | 'setVisibility'> {
 	readonly options: BaseLayerOptions;
@@ -65,7 +66,7 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 
 		const hoverOpacity = this.options.hoverHighlight.hoverOpacity ?? 0;
 
-		const opacityExpression = [
+		const opacityExpression: maplibregl.ExpressionSpecification = [
 			"case",
 			["==", ["get", propertyField], featureId],
 			hoverOpacity,
@@ -93,7 +94,7 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 		this.loaded = true;
 	}
 
-	abstract getOptions(): LayerSpecification[];
+	abstract getOptions(): maplibregl.LayerSpecification[];
 
 	setVisibility(visible: boolean): void {
 		if (!this.map) return;
@@ -120,7 +121,7 @@ export abstract class BaseLayer implements Pick<LayerInterface, 'getId' | 'getSo
 		}
 	}
 
-	protected getOpacityPropertyForLayerType(layerType: string): string | null {
+	protected getOpacityPropertyForLayerType(layerType: string): OpacityPaintProperty | null {
 		switch (layerType) {
 			case 'fill':
 				return 'fill-opacity';

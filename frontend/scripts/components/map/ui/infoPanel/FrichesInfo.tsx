@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { formatNumber } from "@utils/formatUtils";
-import type maplibregl from "maplibre-gl";
+import type * as maplibregl from "maplibre-gl";
 import { STATUT_BADGE_CONFIG } from "@components/features/friches/constants";
 import { InfoContent } from "./InfoContent";
 import { InfoRow } from "./InfoRow";

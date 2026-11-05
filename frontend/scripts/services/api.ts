@@ -306,7 +306,12 @@ export const djangoApi = createApi({
 					headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
 				};
 			},
-			invalidatesTags: [{ type: 'ReportDraft', id: 'LIST' }],
+			// La création d'un rapport ajoute le territoire aux favoris côté serveur :
+			// on invalide aussi ses préférences pour mettre à jour l'étoile de la barre du haut.
+			invalidatesTags: (result, error, { land_type, land_id }) => [
+				{ type: 'ReportDraft', id: 'LIST' },
+				{ type: 'Preference', id: `${land_type}_${land_id}` },
+			],
 		}),
 		updateReportDraft: builder.mutation<ReportDraft, UpdateReportDraftPayload>({
 			query: ({ id, ...body }) => {

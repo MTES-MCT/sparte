@@ -9,7 +9,7 @@ from include.dbt import DbtBuild
 from include.utils import multiline_string_to_single_line, run_ogr2ogr
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 logger = getLogger(__name__)
 

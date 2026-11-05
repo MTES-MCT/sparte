@@ -3,7 +3,7 @@ from include.container import InfraContainer
 from include.dbt import DbtBuild
 from pendulum import datetime
 
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 
 URL_COMMUNE = "https://www.data.gouv.fr/api/1/datasets/r/61541a0f-e9b0-43dc-bace-6c3905714400"
 URL_EPCI = "https://www.data.gouv.fr/api/1/datasets/r/d07e259a-4e9a-43d4-924a-e76b50f47d3b"

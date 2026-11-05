@@ -2,7 +2,7 @@ import { NomenclatureType } from "../types/ocsge";
 import { BaseOcsgeLayer } from "./baseOcsgeLayer";
 import { OCSGE_LAYER_NOMENCLATURES } from "../constants/ocsge_nomenclatures";
 import type { StatCategory } from "../types/layer";
-import type { FilterSpecification } from 'maplibre-gl';
+import type * as maplibregl from 'maplibre-gl';
 import type { LandDetailResultType } from "@services/types/land";
 
 export class ArtificialisationLayer extends BaseOcsgeLayer {
@@ -24,8 +24,8 @@ export class ArtificialisationLayer extends BaseOcsgeLayer {
 		return this.buildFillOptions(["==", ["get", "is_artificial"], true]);
 	}
 
-	protected getBaseFilter(): FilterSpecification {
-		return ["==", ["get", "is_artificial"], true] as FilterSpecification;
+	protected getBaseFilter(): maplibregl.FilterSpecification {
+		return ["==", ["get", "is_artificial"], true] as maplibregl.FilterSpecification;
 	}
 
 	extractStats(features: maplibregl.MapGeoJSONFeature[]): StatCategory[] {

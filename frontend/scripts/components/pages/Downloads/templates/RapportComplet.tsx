@@ -49,7 +49,6 @@ interface RapportCompletProps {
     landData: LandDetailResultType;
     content: RapportCompletContent;
     mode: ContentZoneMode;
-    projectId: number;
     /** Préférences du propriétaire du brouillon, à utiliser à la place de celles de l'utilisateur courant (rendu PDF anonyme) */
     ownerPreference?: ReportOwnerPreference;
     onContentChange?: (key: string, value: string) => void;
@@ -90,7 +89,6 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     landData,
     content,
     mode,
-    projectId,
     ownerPreference,
     onContentChange,
     isSettingsOpen: externalIsSettingsOpen,

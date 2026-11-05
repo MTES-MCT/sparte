@@ -5,6 +5,7 @@ import * as Highcharts from 'highcharts';
 import Button from '@components/ui/Button';
 import ChartDataSource from './ChartDataSource';
 import ChartDataTable from './ChartDataTable';
+import { downloadChartPng } from './downloadChartPng';
 
 /* ── Layout ──────────────────────────────────────── */
 
@@ -149,11 +150,7 @@ const ChartExplorer: React.FC<ChartExplorerProps> = ({
         return cloned;
     }, [chartOptions]);
 
-    const handleDownloadPNG = () => {
-        if (modalChartRef.current?.chart) {
-            modalChartRef.current.chart.exportChart({ type: 'image/png' });
-        }
-    };
+    const handleDownloadPNG = () => downloadChartPng(modalChartRef.current?.chart);
 
     const hasTable = !!dataTable?.headers?.length;
 

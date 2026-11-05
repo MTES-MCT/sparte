@@ -2,8 +2,6 @@
 
 from django.db import migrations, models
 
-import project.models.project_base
-
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -17,7 +15,7 @@ class Migration(migrations.Migration):
             field=models.ImageField(
                 blank=True,
                 null=True,
-                upload_to=project.models.project_base.upload_in_project_folder,
+                upload_to="diagnostics/",
             ),
         ),
         migrations.AddField(

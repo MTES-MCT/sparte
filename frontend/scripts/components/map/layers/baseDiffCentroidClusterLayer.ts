@@ -1,6 +1,5 @@
 import { BaseLayer } from "./baseLayer";
-import type { LayerSpecification } from "maplibre-gl";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 
 export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
     private markers: Record<string, maplibregl.Marker> = {};
@@ -178,7 +177,7 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
 
     // Layer technique nécessaire pour que querySourceFeatures() fonctionne
     // Les markers HTML (donut charts) sont gérés séparément via updateMarkers()
-    getOptions(): LayerSpecification[] {
+    getOptions(): maplibregl.LayerSpecification[] {
         return [{
             id: this.options.id,
             type: 'circle',
@@ -191,7 +190,7 @@ export abstract class BaseDiffCentroidClusterLayer extends BaseLayer {
                 'circle-radius': 0,
                 'circle-opacity': 0
             }
-        } as LayerSpecification];
+        } as maplibregl.LayerSpecification];
     }
 
     setVisibility(visible: boolean): void {

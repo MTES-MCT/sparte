@@ -3,7 +3,6 @@
 from django.db import connection, migrations, models
 
 import config.storages
-import project.models.project_base
 
 
 def set_async_theme_map_gpu_to_false(apps, schema_editor):
@@ -40,7 +39,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 null=True,
                 storage=config.storages.PublicMediaStorage(),
-                upload_to=project.models.project_base.upload_in_project_folder,
+                upload_to="diagnostics/",
             ),
         ),
         migrations.RunPython(set_async_theme_map_gpu_to_false, reverse_code=migrations.RunPython.noop),
