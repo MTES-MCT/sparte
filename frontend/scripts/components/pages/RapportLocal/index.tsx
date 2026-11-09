@@ -111,7 +111,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
         <BaseCard className="fr-p-3w fr-mb-5w">
           <div className="fr-highlight fr-highlight--no-margin">
             <p className="fr-text--sm">
-              Sur la décennie 2011-2021, 24 000 ha d'espaces naturels,
+              Du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021, 24 000 ha d'espaces naturels,
               agricoles et forestiers ont été consommés chaque année en
               moyenne en France, soit près de 5 terrains de football par
               heure. Les conséquences sont écologiques mais aussi
@@ -131,7 +131,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               , l'objectif d'atteindre le « zéro artificialisation nette des
               sols » en 2050, avec un objectif intermédiaire de réduction de
               moitié de la consommation d'espaces naturels, agricoles
-              et forestiers (ENAF) sur 2021-2031 par rapport à la décennie
+              et forestiers (ENAF) du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031 par rapport à la décennie
               précédente.
             </p>
             <p className="fr-text--sm fr-mb-2w">
@@ -139,7 +139,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               dans les documents de planification et d'urbanisme.
             </p>
             <p className="fr-text--sm fr-mb-2w">
-              Cette trajectoire est mesurée, pour la période 2021-2031, en
+              Cette trajectoire est mesurée, pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031, en
               consommation d'ENAF, définie comme « la création ou l'extension effective d'espaces
               urbanisés sur le territoire concerné » (
               <ExternalLink href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223">

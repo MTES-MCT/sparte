@@ -753,7 +753,10 @@ class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Consommation projetée 2021-2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "title": {
+                "text": "Consommation projetée 01/01/2021 - 01/01/2031",
+                "style": {"fontSize": "14px", "fontWeight": "600"},
+            },
             "subtitle": {
                 "text": f"{en_depassement} territoires en dépassement projeté"
                 if en_depassement

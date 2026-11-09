@@ -94,9 +94,9 @@ class TerritorialisationMap(DiagnosticChart):
         headers = [
             "Territoire",
             "Objectif (%)",
-            "Conso. 2011-2020 (ha)",
+            "Conso. 01/01/2011 - 01/01/2021 (ha)",
             "Conso. depuis 2021 (ha)",
-            "Conso. max 2021-2030 (ha)",
+            "Conso. max 01/01/2021 - 01/01/2031 (ha)",
         ]
 
         return {
@@ -144,7 +144,10 @@ class TerritorialisationMap(DiagnosticChart):
                 "style": {"fontSize": "16px", "fontWeight": "600"},
             },
             "subtitle": {
-                "text": "Réduction pour la période 2021-2031 par rapport à la période 2011-2020",
+                "text": (
+                    "Réduction pour la période du 1er janvier 2021 au 1er janvier 2031 "
+                    "par rapport à celle du 1er janvier 2011 au 1er janvier 2021"
+                ),
                 "style": {"fontSize": "12px", "color": "#666"},
             },
             "mapNavigation": {"enabled": True},

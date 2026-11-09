@@ -153,7 +153,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Sur la décennie 2011-2020, 24 000 ha d'espaces naturels, agricoles et forestiers ont été consommés chaque année 
+                        Du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021, 24 000 ha d'espaces naturels, agricoles et forestiers ont été consommés chaque année 
                         en moyenne en France, soit près de 5 terrains de football par heure. Les conséquences sont écologiques mais aussi socio-économiques.
                     </p>
                 </div>
@@ -163,13 +163,13 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         La France s'est donc fixé, dans le cadre de la <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924" target="_blank" rel="noopener noreferrer">loi n° 2021-1104 du 22 août 2021</a> dite 
                         « Climat et résilience » complétée par la <a href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047866733" target="_blank" rel="noopener noreferrer">loi n° 2023-630 du 20 juillet 2023</a>,
                         l'objectif d'atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire de réduction de moitié 
-                        de la consommation d'ENAF sur 2021-2031 par rapport à la décennie précédente.
+                        de la consommation d'ENAF du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031 par rapport à la décennie précédente.
                     </p>
                     <p>
                         Cette trajectoire progressive est à décliner territorialement dans les documents de planification et d'urbanisme.
                     </p>
                     <p>
-                        Cette trajectoire est mesurée, pour la période 2021-2031, en consommation d'espaces naturels, agricoles et forestiers (ENAF), 
+                        Cette trajectoire est mesurée, pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031, en consommation d'espaces naturels, agricoles et forestiers (ENAF), 
                         définie comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » 
                         (<a href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223" target="_blank" rel="noopener noreferrer">article 194, III, 5° de la loi Climat et résilience</a>).
                     </p>

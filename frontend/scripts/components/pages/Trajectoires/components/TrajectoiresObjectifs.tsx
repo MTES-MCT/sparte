@@ -128,7 +128,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
           <div className="fr-mt-2w">
             <TrajectoiresBulletChart
               referenceValue={annualConsoReference}
-              referenceLabel="Rythme 2011-2020"
+              referenceLabel="Rythme 01/01/2011 - 01/01/2021"
               currentValue={annualConsoSince2021}
               currentLabel="Rythme actuel 2021-2024"
               markers={[
@@ -146,7 +146,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
               <strong>{objectifLabel}</strong> : c'est la superficie maximale d'ENAF que le
               territoire peut consommer entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031. Elle est calculée en
               appliquant une réduction de <strong>{objectifReduction}%</strong> à
-              la consommation de référence (2011-2021).
+              la consommation de référence (du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021).
             </p>
             {hasTerritorialisation && !isFromParent && (
               <p>
@@ -220,14 +220,14 @@ export const TrajectoiresObjectifs: React.FC = () => {
       <div className="fr-col-12">
         <Timeline phases={[
             {
-              badge: <Badge variant="primary">2011 - 2021</Badge>,
+              badge: <Badge variant="primary">01/01/2011 - 01/01/2021</Badge>,
               title: "Période de référence",
               description:
                 "La consommation d'ENAF de cette décennie sert de base pour calculer l'objectif de réduction.",
               content: referenceContent,
             },
             {
-              badge: <Badge variant="primary">2021 - 2031</Badge>,
+              badge: <Badge variant="primary">01/01/2021 - 01/01/2031</Badge>,
               title: "Période de réduction",
               description:
                 "À l'échelle nationale, l'objectif est de diviser par deux la consommation d'ENAF par rapport à la période de référence.",

@@ -274,13 +274,13 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <TwoColumnLayout>
                     <p>
-                        La France s’est donc fixée <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
+                        La France s’est donc fixée <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031 par rapport à la décennie précédente, du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021.
                     </p>
                     <p>
                         Les dispositions introduites par la loi n° 2021-1104 du 22 août 2021 portant lutte contre le dérèglement climatique et renforcement de la résilience face à ses effets (dite « Loi Climat et résilience ») ont été complétées par la loi n° 2023-630 du 20 juillet 2023 visant à faciliter la mise en œuvre des objectifs de lutte contre l’artificialisation des sols et à renforcer l’accompagnement des élus locaux.
                     </p>
                     <p>
-                        <strong>Pour la période 2021-2031, il s’agit de raisonner en consommation d’espaces.</strong>
+                        <strong>Pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031, il s’agit de raisonner en consommation d’espaces.</strong>
                     </p>
                     <p>
                         La consommation d’ENAF est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).
@@ -315,7 +315,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        La loi Climat & Résilience fixe <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
+                        La loi Climat & Résilience fixe <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031 par rapport à la décennie précédente, du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021.
                     </p>
                 </div>
 
