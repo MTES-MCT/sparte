@@ -18,7 +18,7 @@ export const TrajectoiresProjection: React.FC = () => {
 
   return (
     <div className="fr-mt-5w">
-      <SectionTitle>Projection jusqu'en 2031</SectionTitle>
+      <SectionTitle>Projection jusqu'au 1<sup>er</sup> janvier 2031</SectionTitle>
       <div className="fr-grid-row fr-grid-row--gutters">
         <div className="fr-col-12 fr-col-xl-9 fr-grid-row">
           <BaseCard>

@@ -311,7 +311,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
             </section>
 
             <section className="fr-mb-6w">
-                <h2>2 Trajectoire de consommation d’ENAF à l’horizon 2031</h2>
+                <h2>2 Trajectoire de consommation d’ENAF jusqu’au 1<sup>er</sup> janvier 2031</h2>
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
@@ -333,11 +333,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </p>
                     <p>
                         La loi prévoit également que la consommation foncière des <strong>projets d'envergure nationale ou européenne et d'intérêt général majeur sera comptabilisée au niveau national</strong>, et non au niveau régional ou local.
-                        Ces projets seront énumérés par arrêté du ministre chargé de l'urbanisme, en fonction de catégories définies dans la loi, après consultation des régions, de la conférence régionale et du public. Un forfait de 12 500 hectares est déterminé pour la période 2021-2031, dont 10 000 hectares font l'objet d'une péréquation entre les régions couvertes par un SRADDET. 
+                        Ces projets seront énumérés par arrêté du ministre chargé de l'urbanisme, en fonction de catégories définies dans la loi, après consultation des régions, de la conférence régionale et du public. Un forfait de 12 500 hectares est déterminé pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031, dont 10 000 hectares font l'objet d'une péréquation entre les régions couvertes par un SRADDET. 
                     </p>
                     <p>
                         Cette loi précise également l’exercice de territorialisation de la trajectoire.
-                        Afin de tenir compte des besoins de l’ensemble des territoires, <strong>une surface minimale d’un hectare de consommation</strong> est garantie à toutes les communes couvertes par un document d'urbanisme prescrit, arrêté ou approuvé avant le 22 août 2026, pour la période 2021-2031.
+                        Afin de tenir compte des besoins de l’ensemble des territoires, <strong>une surface minimale d’un hectare de consommation</strong> est garantie à toutes les communes couvertes par un document d'urbanisme prescrit, arrêté ou approuvé avant le 22 août 2026, pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031.
                         Cette « garantie communale » peut être mutualisée au niveau intercommunal à la demande des communes. Quant aux communes littorales soumises au recul du trait de côte, qui sont listées par décret et qui ont mis en place un projet de recomposition spatiale, elles peuvent considérer, avant même que la désartificialisation soit effective, comme « désartificialisées » les surfaces situées dans la zone menacée à horizon 30 ans et qui seront ensuite désartificialisées.
                     </p>
                     <p>

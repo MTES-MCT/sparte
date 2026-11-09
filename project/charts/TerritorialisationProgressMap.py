@@ -146,7 +146,7 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
         return super().param | {
             "chart": {"map": self.get_geojson()},
             "title": {
-                "text": f"Membres de {self.land.name} : projection en 2031",
+                "text": f"Membres de {self.land.name} : projection au 01/01/2031",
                 "style": {"fontSize": "14px", "fontWeight": "600"},
             },
             "mapNavigation": {"enabled": True},
@@ -330,7 +330,10 @@ class TerritorialisationRestanteMap(TerritorialisationProgressMapBase):
         return super().param | {
             "chart": {"map": self.get_geojson()},
             "title": {"text": "Part de l'enveloppe restante", "style": {"fontSize": "14px", "fontWeight": "600"}},
-            "subtitle": {"text": "Hectares disponibles jusqu'en 2030", "style": {"fontSize": "11px", "color": "#666"}},
+            "subtitle": {
+                "text": "Hectares disponibles jusqu'au 1er janvier 2031",
+                "style": {"fontSize": "11px", "color": "#666"},
+            },
             "mapNavigation": {"enabled": True},
             "legend": {
                 "title": {"text": "Hectares", "style": {"fontSize": "10px", "fontWeight": "500"}},
@@ -695,7 +698,7 @@ class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
     name = "carte projection 2031 territorialisation"
 
     ANNEES_ECOULEES = 4
-    ANNEES_TOTALES = 10  # 2021-2030
+    ANNEES_TOTALES = 10  # du 1er janvier 2021 au 1er janvier 2031
 
     @property
     def data(self):
@@ -862,7 +865,7 @@ class TerritorialisationDepassement2031Map(TerritorialisationProgressMapBase):
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Dépassement projeté en 2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "title": {"text": "Dépassement projeté au 01/01/2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
             "subtitle": {
                 "text": f"{en_depassement} territoires en dépassement"
                 if en_depassement
@@ -970,7 +973,7 @@ class TerritorialisationTauxAtteinte2031Map(TerritorialisationProgressMapBase):
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Taux d'atteinte en 2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "title": {"text": "Taux d'atteinte au 01/01/2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
             "subtitle": {
                 "text": f"{en_depassement} territoires dépasseront 100%"
                 if en_depassement
