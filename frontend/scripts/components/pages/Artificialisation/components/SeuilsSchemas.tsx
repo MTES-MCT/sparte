@@ -161,7 +161,7 @@ export const SeuilsSchemas = () => {
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
 					Une surface artificialisée de moins de 2500 m² enclavée dans une surface
-					non artificialisée devient non-artificialisée.
+					non artificialisée devient non artificialisée.
 				</p>
 			</SchemaPair>
 
@@ -174,7 +174,7 @@ export const SeuilsSchemas = () => {
 				</div>
 				<p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">
 					Une surface bâtie de plus de 50 m² enclavée dans une surface
-					non-artificialisée est toujours artificialisée.
+					non artificialisée est toujours artificialisée.
 				</p>
 			</SchemaPair>
 			

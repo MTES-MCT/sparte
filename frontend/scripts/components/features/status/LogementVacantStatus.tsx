@@ -30,7 +30,7 @@ const noticeContentMap: Partial<Record<LogementVacantStatusEnum, NoticeContent>>
   },
   [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_PARTIELLEMENT_SECRETISE]: {
     title: "Données du parc privé partiellement secrétisées.",
-    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Une consolidation locale des données nationales est indispensable pour confirmer le potentiel de ce gisement"
+    description: "Certaines données du parc privé sont masquées en raison du secret statistique. Une consolidation locale des données nationales est indispensable pour confirmer le potentiel de ce gisement."
   },
   [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE]: {
     title: "Données du parc privé partiellement secrétisées.",
