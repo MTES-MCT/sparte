@@ -47,7 +47,7 @@ interface RapportLocalProps {
 }
 
 const CONSO_START_YEAR = 2011;
-const CONSO_END_YEAR = 2023;
+const CONSO_END_YEAR = 2024;
 
 const AnnexeImage = styled.img`
     width: 100%;
@@ -174,7 +174,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         (<a href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223" target="_blank" rel="noopener noreferrer">article 194, III, 5° de la loi Climat et résilience</a>).
                     </p>
                     <p>
-                        A partir de 2031, cette trajectoire est également mesurée en artificialisation nette des sols, définie comme 
+                        À partir du 1<sup>er</sup> janvier 2031, cette trajectoire est également mesurée en artificialisation nette des sols, définie comme 
                         « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » 
                         (<a href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043967077/2023-09-04" target="_blank" rel="noopener noreferrer">article L.101-2-1 du code de l'urbanisme</a>).
                     </p>
@@ -235,7 +235,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Avant 2031, il n'est pas obligatoire de renseigner les indicateurs 2°, 3° et 4° tant que les documents d'urbanisme n'ont pas intégré cet objectif.
+                        Avant le 1<sup>er</sup> janvier 2031, il n'est pas obligatoire de renseigner les indicateurs 2°, 3° et 4° tant que les documents d'urbanisme n'ont pas intégré cet objectif.
                     </p>
                 </div>
 
@@ -251,7 +251,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         <strong>Il faut que le rapport soit produit a minima tous les 3 ans</strong>. Il est donc possible de produire un rapport plus fréquemment.
                     </p>
                     <p>
-                        La période à couvrir n'est pas précisée dans les textes. Il est <strong>recommandé de présenter la chronique des données du 1er janvier 2011</strong> jusqu'au dernier millésime disponible.
+                        La période à couvrir n'est pas précisée dans les textes. Il est <strong>recommandé de présenter la chronique des données du 1<sup>er</sup> janvier 2011</strong> jusqu'au dernier millésime disponible.
                     </p>
                 </TwoColumnLayout>
 
@@ -268,7 +268,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         <strong>Concernant la consommation d'ENAF</strong>, les données issues des fichiers fonciers produits annuellement par le Cerema. 
                     </p>
                     <p>
-                        Ce rapport a été produit à partir des fichiers fonciers fournis par le Cerema au 1er janvier 2024 ;
+                        Ce rapport a été produit à partir des fichiers fonciers fournis par le Cerema au 1<sup>er</sup> janvier 2025 ;
                     </p>
                     <p>
                         <strong>Concernant l'artificialisation nette des sols</strong>, les données issues de l'occupation des sols à grande échelle (OCS GE) 
@@ -278,8 +278,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Il n'est pas demandé d'inventer des données non encore disponibles : pour le premier rapport triennal à produire d'ici août 2024, 
-                        il sera possible d'utiliser les fichiers fonciers au 1er janvier 2024.
+                        Il n'est pas demandé d'inventer des données non encore disponibles.
                     </p>
                     <p className="fr-callout__text">
                         Il est également possible d'utiliser les données locales, notamment celles des observatoires de l'habitat et du foncier 
@@ -295,7 +294,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        La consommation d'espaces entre le <strong>1er janvier {CONSO_START_YEAR} et le 1er janvier {CONSO_END_YEAR + 1}</strong> représente 
+                        La consommation d'espaces entre le <strong>1<sup>er</sup> janvier {CONSO_START_YEAR} et le 1<sup>er</sup> janvier {CONSO_END_YEAR + 1}</strong> représente 
                         pour le territoire de <strong>{landData.name}</strong> une surface de <strong>{(landData.conso_details.conso_2011_2020 + landData.conso_details.conso_since_2021).toFixed(1)} hectares</strong>.
                     </p>
                 </div>
@@ -474,7 +473,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                     <>
                         <div className="fr-callout">
                             <p className="fr-callout__text">
-                                Il s'agit ici du bilan de l'artificialisation nette des sols tel que prévu par la loi, à partir de 2031, 
+                                Il s'agit ici du bilan de l'artificialisation nette des sols tel que prévu par la loi, à partir du 1<sup>er</sup> janvier 2031, 
                                 à l'échelle d'un document de planification ou d'urbanisme.
                             </p>
                         </div>
@@ -691,7 +690,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({
                         (SRADDET, SDRIF, PADDUC, SAR), le cas échéant dans le SCoT et le PLU(i) applicable, d'évaluer la trajectoire de la commune ou de l'intercommunalité.
                     </p>
                     <p className="fr-callout__text">
-                        Avant 2031, seule la trajectoire de consommation d'ENAF est à évaluer (et non l'artificialisation nette des sols).
+                        Avant le 1<sup>er</sup> janvier 2031, seule la trajectoire de consommation d'ENAF est à évaluer (et non l'artificialisation nette des sols).
                     </p>
                 </div>
             </section>
