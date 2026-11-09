@@ -7,7 +7,6 @@ slug: category/aller-plus-loin
 ## Données et indicateurs
 
 - [Quelles sont les sources des données utilisées ?](/aide/article/quelles-sont-les-sources-des-donnees-utilisees/)
-- [Quelle est la différence entre consommation des sols, artificialisation et imperméabilisation ?](/aide/article/quelle-est-la-difference-entre-consommation-des-sols-artificialisation-et-impermeabilisation/)
 - [Fréquence et production des données de consommation d'espaces NAF et d'artificialisation des sols](/aide/article/frequence-et-production-des-donnees-de-consommation-despaces-naf-et-dartificialisation-des-sols/)
 - [Pourquoi je n'ai pas accès aux données de l'année qui vient de s'écouler ? Quelle est la fraîcheur des données sur la plateforme ?](/aide/article/pourquoi-je-nai-pas-acces-aux-donnees-de-lannee-qui-vient-de-secouler-quelle-est-la-fraicheur-des-donnees-sur-la-plateforme/)
 - [Pourquoi des données d’observatoires locaux et bureaux d’études peuvent différer de celles de Mon Diag Artif ?](/aide/article/pourquoi-des-donnees-dobservatoires-locaux-et-bureaux-detudes-peuvent-differer-de-celles-de-mon-diag-artif/)

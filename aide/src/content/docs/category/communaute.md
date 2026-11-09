@@ -6,12 +6,11 @@ slug: category/communaute
 
 ## Webinaires mensuels
 
-- [M'inscrire à un webinaire de présentation de Mon Diag Artif](/aide/article/minscrire-a-un-webinaire-de-presentation-de-mon-diag-artif/)
-- [Ressources du webinaire du 05 août](/aide/article/ressources-du-webinaire-du-05-aout/)
+Cette section ne contient aucun article.
 
 ## Rester informé des nouveautés de la plateforme
 
-- [Rester informé des nouveautés de la plateforme](/aide/article/rester-informe-des-nouveautes-de-la-plateforme/)
+Cette section ne contient aucun article.
 
 ## Support et assistance utilisateurs
 

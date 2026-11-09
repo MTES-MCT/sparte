@@ -11,7 +11,7 @@
         "collapsed": true,
         "items": [
           {
-            "label": "Qu'est-ce que Mon Diagnostic Artificialisation ?",
+            "label": "Qu'est-ce que Mon Diag Artif ?",
             "slug": "article/quest-ce-que-mon-diagnostic-artificialisation"
           },
           {
@@ -37,23 +37,19 @@
         "collapsed": true,
         "items": [
           {
-            "label": "Créer un compte et se connecter",
-            "slug": "article/creer-un-compte-et-se-connecter"
-          },
-          {
-            "label": "Configurer son espace de travail",
-            "slug": "article/configurer-son-espace-de-travail"
-          },
-          {
             "label": "Comprendre l'interface principale",
             "slug": "article/comprendre-linterface-principale"
           },
           {
-            "label": "Paramètres généraux des diagnostics",
-            "slug": "article/parametres-generaux-des-diagnostics"
+            "label": "Créer un compte et se connecter",
+            "slug": "article/creer-un-compte-et-se-connecter"
           },
           {
-            "label": "Autres modifications",
+            "label": "Configurer son espace de travail (profil et territoires favoris)",
+            "slug": "article/configurer-son-espace-de-travail"
+          },
+          {
+            "label": "Modifier des éléments d'un diagnostic",
             "slug": "article/autres-modifications"
           }
         ]
@@ -63,24 +59,16 @@
         "collapsed": true,
         "items": [
           {
-            "label": "Pourquoi je ne reçois pas mes rapports de consommation d’espace ou d’artificialisation ?",
-            "slug": "article/pourquoi-je-ne-recois-pas-mes-rapports-de-consommation-despace-ou-dartificialisation"
-          },
-          {
-            "label": "Comment intégrer les données SIG dans mes propres analyses locales ?",
-            "slug": "article/comment-integrer-les-donnees-sig-dans-mes-propres-analyses-locales"
-          },
-          {
-            "label": "Comment interpréter un diagnostic délivré par Mon Diag Artif ?",
-            "slug": "article/comment-interpreter-un-diagnostic-delivre-par-mon-diag-artif"
-          },
-          {
             "label": "Représentation et interprétation des données",
             "slug": "article/representation-et-interpretation-des-donnees"
           },
           {
             "label": "Comparer mon territoire avec d’autres territoires",
             "slug": "article/comparer-mon-territoire-avec-dautres-territoires"
+          },
+          {
+            "label": "Comment intégrer les données SIG dans mes propres analyses locales ?",
+            "slug": "article/comment-integrer-les-donnees-sig-dans-mes-propres-analyses-locales"
           }
         ]
       },
@@ -89,7 +77,7 @@
         "collapsed": true,
         "items": [
           {
-            "label": "Télécharger un diagnostic ou un rapport",
+            "label": "Créer et télécharger un rapport",
             "slug": "article/telecharger-un-diagnostic-ou-un-rapport"
           },
           {
@@ -118,10 +106,6 @@
           {
             "label": "Quelles sont les sources des données utilisées ?",
             "slug": "article/quelles-sont-les-sources-des-donnees-utilisees"
-          },
-          {
-            "label": "Quelle est la différence entre consommation des sols, artificialisation et imperméabilisation ?",
-            "slug": "article/quelle-est-la-difference-entre-consommation-des-sols-artificialisation-et-impermeabilisation"
           },
           {
             "label": "Fréquence et production des données de consommation d'espaces NAF et d'artificialisation des sols",
@@ -185,30 +169,6 @@
       {
         "label": "Vue d’ensemble",
         "slug": "category/communaute"
-      },
-      {
-        "label": "Webinaires mensuels",
-        "collapsed": true,
-        "items": [
-          {
-            "label": "M'inscrire à un webinaire de présentation de Mon Diag Artif",
-            "slug": "article/minscrire-a-un-webinaire-de-presentation-de-mon-diag-artif"
-          },
-          {
-            "label": "Ressources du webinaire du 05 août",
-            "slug": "article/ressources-du-webinaire-du-05-aout"
-          }
-        ]
-      },
-      {
-        "label": "Rester informé des nouveautés de la plateforme",
-        "collapsed": true,
-        "items": [
-          {
-            "label": "Rester informé des nouveautés de la plateforme",
-            "slug": "article/rester-informe-des-nouveautes-de-la-plateforme"
-          }
-        ]
       },
       {
         "label": "Support et assistance utilisateurs",
