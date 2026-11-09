@@ -149,7 +149,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
               planification ou d'urbanisme.
             </p>
             <p className="fr-text--sm fr-mb-0">
-              A partir de 2031, cette trajectoire est également mesurée en
+              À partir du 1<sup>er</sup> janvier 2031, cette trajectoire est également mesurée en
               artificialisation nette des sols, définie comme « le solde de
               l'artificialisation et de la renaturation des sols
               constatées sur un périmètre et sur une période donnés » (
@@ -218,9 +218,9 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
           <li>
             La période à couvrir n'est pas précisée dans les textes. L'État
             met à disposition les données de consommation d'ENAF depuis le
-            1er janvier 2011 (le début de la période de référence de la loi
+            1<sup>er</sup> janvier 2011 (le début de la période de référence de la loi
             Climat et Résilience). Il serait donc intéressant que le rapport
-            présente la chronique des données à partir du 1er janvier 2011 et
+            présente la chronique des données à partir du 1<sup>er</sup> janvier 2011 et
             jusqu'au dernier millésime disponible, pour apprécier la
             trajectoire du territoire concerné avec le recul nécessaire (les
             variations annuelles étant toujours à prendre avec prudence car
@@ -299,7 +299,7 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
 
         <div className="fr-highlight fr-highlight--no-margin fr-mt-3w">
           <p className="fr-text--sm fr-mb-0">
-            Avant 2031, il n'est pas obligatoire de renseigner les
+            Avant le 1<sup>er</sup> janvier 2031, il n'est pas obligatoire de renseigner les
             indicateurs 2°, 3° et 4° tant que les documents d'urbanisme
             n'ont pas intégré cet objectif.
           </p>
@@ -352,9 +352,9 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
           Ces données locales doivent être conformes aux définitions légales
           de la consommation d'ENAF (et le cas échéant de
           l'artificialisation nette des sols), homogènes et cohérentes sur
-          la décennie de référence de la loi (1er janvier 2011-1er janvier
-          2021) et sur la décennie en cours (1er janvier 2021-1er janvier
-          2031).
+          la décennie de référence de la loi (du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup>
+          janvier 2021) et sur la décennie en cours (du 1<sup>er</sup> janvier 2021 au
+          1<sup>er</sup> janvier 2031).
         </p>
       </BaseCard>
     </div>

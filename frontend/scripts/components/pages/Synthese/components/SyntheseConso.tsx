@@ -43,8 +43,8 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
             variant="default"
             footer={{
               type: "period",
-              from: "2011",
-              to: "2020",
+              from: "1er janv. 2011",
+              to: "1er janv. 2021",
             }}
             action={{
               label: "Voir le diagnostic de consommation",
@@ -87,8 +87,8 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           variant="default"
           footer={{
             type: "period",
-            from: "2021",
-            to: "2024",
+            from: "1er janv. 2021",
+            to: "1er janv. 2025",
           }}
           action={{
             label: "Voir le diagnostic de consommation",
@@ -99,7 +99,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
       <div className="fr-col-12 fr-col-xl-4 fr-grid-row">
         <Kpi
           icon="bi bi-bullseye"
-          label="Consommation d'ENAF cible"
+          label="Consommation d'ENAF maximale"
           value={
             <>
               <div>{formatNumber({ number: allowed_conso_2021_2030 })} <span>ha</span></div>
@@ -110,8 +110,8 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
           badge="Objectif national (-50%)"
           footer={{
             type: "period",
-            from: "2021",
-            to: "2031",
+            from: "1er janv. 2021",
+            to: "1er janv. 2031",
           }}
           action={{
             label: "Simuler une trajectoire",
@@ -126,7 +126,7 @@ const SyntheseConso: React.FC<SyntheseConsoProps> = ({
             par une consommation maximale de <strong>{formatNumber({ number: allowed_conso_2021_2030 })} ha entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031</strong>.
           </p>
           <p className="fr-text--sm fr-mb-0">
-            D'après les données du Portail de l'artificialisation des sols, <strong>{formatNumber({ number: conso_since_2021 })} ha</strong> ont déjà été consommés <strong>entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2024</strong>.
+            D'après les données du Portail de l'artificialisation des sols, <strong>{formatNumber({ number: conso_since_2021 })} ha</strong> ont déjà été consommés <strong>entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2025</strong>.
           </p>
         </GuideContent>
       </div>

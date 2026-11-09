@@ -57,7 +57,7 @@ const SyntheseArtifContent: React.FC<SyntheseArtifProps> = ({
         <div className="fr-col-12 fr-col-xl-6 fr-grid-row">
           <GuideContent title="Qu'est-ce que le ZAN ?">
           <p className="fr-text--sm">
-              A partir de 2031, la loi fixe un objectif de réduction de l'artificialisation nette des sols. 
+              À partir du 1<sup>er</sup> janvier 2031, la loi fixe un objectif de réduction de l'artificialisation nette des sols. 
               L'artificialisation nette est définie comme « le solde de l'artificialisation et de la renaturation des sols constatées sur un périmètre et sur une période donnés » 
               (article L.101-2-1 du code de l’urbanisme).
             </p>

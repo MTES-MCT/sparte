@@ -230,7 +230,7 @@ export const TrajectoiresChildrenStats: React.FC = () => {
         <div className="fr-col-6 fr-col-md-3">
           <Kpi
             icon="bi bi-graph-up-arrow"
-            label="Consommation projetée au 01/01/2031"
+            label="Consommation projetée au 1er janv. 2031"
             value={
               <>
                 {formatNumber({ number: consoProjetee2031 })} <span>ha</span>
@@ -242,7 +242,7 @@ export const TrajectoiresChildrenStats: React.FC = () => {
         <div className="fr-col-6 fr-col-md-3">
           <Kpi
             icon="bi bi-bullseye"
-            label="Consommation max autorisée"
+            label="Consommation d'ENAF maximale"
             value={
               <>
                 {formatNumber({ number: allowedConso2021_2030 })}{" "}
@@ -255,7 +255,7 @@ export const TrajectoiresChildrenStats: React.FC = () => {
         <div className="fr-col-6 fr-col-md-3">
           <Kpi
             icon="bi bi-percent"
-            label="de l'objectif atteint au 01/01/2031"
+            label="de l'objectif atteint au 1er janv. 2031"
             value={`${formatNumber({ number: tauxAtteinte2031, decimals: 1 })}%`}
             variant={tauxAtteinte2031 > 100 ? "error" : "success"}
             badge={

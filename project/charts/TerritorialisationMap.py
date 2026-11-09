@@ -94,9 +94,9 @@ class TerritorialisationMap(DiagnosticChart):
         headers = [
             "Territoire",
             "Objectif (%)",
-            "Conso. 01/01/2011 - 01/01/2021 (ha)",
-            "Conso. depuis 2021 (ha)",
-            "Conso. max 01/01/2021 - 01/01/2031 (ha)",
+            "Conso. 1er janv. 2011 – 1er janv. 2021 (ha)",
+            "Conso. 1er janv. 2021 – 1er janv. 2025 (ha)",
+            "Conso. max 1er janv. 2021 – 1er janv. 2031 (ha)",
         ]
 
         return {

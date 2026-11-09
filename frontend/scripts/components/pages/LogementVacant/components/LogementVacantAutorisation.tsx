@@ -73,7 +73,7 @@ const ComprendreLesDonnees: React.FC = () => {
 
       {(hasVacantsPriv || hasVacantsSocial) && (
         <p>
-          Au 1er janvier de cette même année, sur le territoire de {name},{" "}
+          Au 1<sup>er</sup> janvier de cette même année, sur le territoire de {name},{" "}
           {hasVacantsPriv && (
             <>
               <strong>

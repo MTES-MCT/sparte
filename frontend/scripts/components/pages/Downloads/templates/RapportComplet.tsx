@@ -175,7 +175,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     <div className="fr-select-group">
                         <label className="fr-label fr-text--sm fr-mb-0" htmlFor="select-start-year">
-                            Année de début
+                            Début de la période (au 1<sup>er</sup> janvier)
                         </label>
                         <select
                             className="fr-select"
@@ -193,7 +193,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     <div className="fr-select-group fr-mt-2w">
                         <label className="fr-label fr-text--sm fr-mb-0" htmlFor="select-end-year">
-                            Année de fin
+                            Fin de la période (au 1<sup>er</sup> janvier)
                         </label>
                         <select
                             className="fr-select"
@@ -204,7 +204,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             onChange={(e) => handleChange('conso_end_year')(e.target.value)}
                         >
                             {AVAILABLE_YEARS.filter(y => y > consoStartYear).map(year => (
-                                <option key={year} value={year}>{year}</option>
+                                <option key={year} value={year}>{year + 1}</option>
                             ))}
                         </select>
                     </div>
@@ -226,7 +226,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 </SettingsSection>
 
                 <SettingsSection>
-                    <h3 className="fr-text--lg fr-mb-2w">Objectif non-réglementaire de réduction 2031</h3>
+                    <h3 className="fr-text--lg fr-mb-2w">Objectif non réglementaire de réduction au 1<sup>er</sup> janvier 2031</h3>
 
                     <div className="fr-input-group">
                         <label className="fr-label fr-text--sm fr-mb-0" htmlFor="input-target-2031">
@@ -292,7 +292,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         Au niveau national, la consommation d’ENAF est mesurée par les fichiers fonciers retraités par le Cerema.
                     </p>
                     <p>
-                        <strong>A partir de 2031, il s’agit de raisonner en artificialisation.</strong>
+                        <strong>À partir du 1<sup>er</sup> janvier 2031, il s’agit de raisonner en artificialisation.</strong>
                     </p>
                     <p>
                         L'artificialisation nette est définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l’urbanisme).
@@ -304,7 +304,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        La consommation d'espaces entre le <strong>1er janvier 2011 et le 31 décembre 2020</strong> représente 
+                        La consommation d'espaces entre le <strong>1<sup>er</sup> janvier 2011 et le 1<sup>er</sup> janvier 2021</strong> représente 
                         pour le territoire de <strong>{landData.name}</strong> une surface de <strong>{(landData.conso_details.conso_2011_2020).toFixed(1)} hectares</strong>.
                     </p>
                 </div>
@@ -341,18 +341,18 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                         Cette « garantie communale » peut être mutualisée au niveau intercommunal à la demande des communes. Quant aux communes littorales soumises au recul du trait de côte, qui sont listées par décret et qui ont mis en place un projet de recomposition spatiale, elles peuvent considérer, avant même que la désartificialisation soit effective, comme « désartificialisées » les surfaces situées dans la zone menacée à horizon 30 ans et qui seront ensuite désartificialisées.
                     </p>
                     <p>
-                        Dès aujourd'hui, <strong>Mon Diagnostic Artificialisation</strong> vous permet de vous projeter dans cet objectif de réduction de la consommation d'ENAF d'ici à 2031 et de simuler divers scénarii.
+                        Dès aujourd'hui, <strong>Mon Diagnostic Artificialisation</strong> vous permet de vous projeter dans cet objectif de réduction de la consommation d'ENAF d'ici au 1<sup>er</sup> janvier 2031 et de simuler divers scénarii.
                     </p>
                 </TwoColumnLayout>
 
                 <div className="fr-callout">
                     {has_custom_target ? (
                         <p className="fr-callout__text">
-                            Vous avez personnalisé votre objectif non-réglementaire de réduction à hauteur de <strong>{target_custom} %</strong> et le graphique ci-dessous vous montre un aperçu des tendances annuelles maximales que votre territoire ne devrait pas dépasser d’ici à 2031.
+                            Vous avez personnalisé votre objectif non réglementaire de réduction à hauteur de <strong>{target_custom} %</strong> et le graphique ci-dessous vous montre un aperçu des tendances annuelles maximales que votre territoire ne devrait pas dépasser d’ici au 1<sup>er</sup> janvier 2031.
                         </p>
                     ) : (
                         <p className="fr-callout__text">
-                            Vous n'avez pas personnalisé votre objectif non-réglementaire de réduction.
+                            Vous n'avez pas personnalisé votre objectif non réglementaire de réduction.
                         </p>
                     )}
                     {mode === 'edit' && (
@@ -394,8 +394,8 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 <div className="fr-callout">
                     <p className="fr-callout__text">
                         Les graphiques de cette section présentent les données de consommation d'ENAF
-                        sur la période du <strong>1er janvier {consoStartYear}</strong> au{' '}
-                        <strong>31 décembre {consoEndYear}</strong>.
+                        sur la période du <strong>1<sup>er</sup> janvier {consoStartYear}</strong> au{' '}
+                        <strong>1<sup>er</sup> janvier {consoEndYear + 1}</strong>.
                     </p>
                     {mode === 'edit' && (
                         <CalloutEditInfo>

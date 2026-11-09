@@ -49,8 +49,8 @@ export const TrajectoiresObjectifs: React.FC = () => {
           variant="default"
           footer={{
             type: "period",
-            from: "2011",
-            to: "2020",
+            from: "1er janv. 2011",
+            to: "1er janv. 2021",
           }}
         />
       </div>
@@ -81,7 +81,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
             <div className="fr-col-12 fr-col-md-6 fr-grid-row">
               <Kpi
                 icon="bi bi-bullseye"
-                label="Consommation d'ENAF cible"
+                label="Consommation d'ENAF maximale"
                 value={
                   <>
                     <div>{formatNumber({ number: allowedConso2021_2030 })} <span>ha</span></div>
@@ -92,15 +92,15 @@ export const TrajectoiresObjectifs: React.FC = () => {
                 badge={objectifTypeBadge}
                 footer={{
                   type: "period",
-                  from: "2021",
-                  to: "2031",
+                  from: "1er janv. 2021",
+                  to: "1er janv. 2031",
                 }}
               />
             </div>
             <div className="fr-col-12 fr-col-md-6 fr-grid-row">
               <Kpi
                 icon="bi bi-sliders"
-                label="Consommation d'ENAF cible"
+                label="Consommation d'ENAF maximale"
                 value={
                   <>
                     <div>
@@ -119,8 +119,8 @@ export const TrajectoiresObjectifs: React.FC = () => {
                 badge={hasCustomTarget ? `Objectif personnalisé (-${targetCustom}%)` : "Objectif personnalisé (non défini)"}
                 footer={{
                   type: "period",
-                  from: "2021",
-                  to: "2031",
+                  from: "1er janv. 2021",
+                  to: "1er janv. 2031",
                 }}
               />
             </div>
@@ -128,9 +128,9 @@ export const TrajectoiresObjectifs: React.FC = () => {
           <div className="fr-mt-2w">
             <TrajectoiresBulletChart
               referenceValue={annualConsoReference}
-              referenceLabel="Rythme 01/01/2011 - 01/01/2021"
+              referenceLabel="Rythme 1er janv. 2011 – 1er janv. 2021"
               currentValue={annualConsoSince2021}
-              currentLabel="Rythme actuel 2021-2024"
+              currentLabel="Rythme actuel 1er janv. 2021 – 1er janv. 2025"
               markers={[
                 { value: allowedConso2021_2030PerYear, label: "Objectif national (-50%)", variant: "target" },
                 ...(hasCustomTarget
@@ -197,7 +197,7 @@ export const TrajectoiresObjectifs: React.FC = () => {
               </p>
             )}
             <p>
-              <strong>Rythme actuel</strong> : entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2024, le territoire a consommé{" "}
+              <strong>Rythme actuel</strong> : entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2025, le territoire a consommé{" "}
               <strong>{formatNumber({ number: consoSince2021 })} ha</strong>, soit un rythme de{" "}
               <strong>{formatNumber({ number: annualConsoSince2021 })} ha/an</strong>.
             </p>
@@ -220,14 +220,14 @@ export const TrajectoiresObjectifs: React.FC = () => {
       <div className="fr-col-12">
         <Timeline phases={[
             {
-              badge: <Badge variant="primary">01/01/2011 - 01/01/2021</Badge>,
+              badge: <Badge variant="primary">1er janv. 2011 – 1er janv. 2021</Badge>,
               title: "Période de référence",
               description:
                 "La consommation d'ENAF de cette décennie sert de base pour calculer l'objectif de réduction.",
               content: referenceContent,
             },
             {
-              badge: <Badge variant="primary">01/01/2021 - 01/01/2031</Badge>,
+              badge: <Badge variant="primary">1er janv. 2021 – 1er janv. 2031</Badge>,
               title: "Période de réduction",
               description:
                 "À l'échelle nationale, l'objectif est de diviser par deux la consommation d'ENAF par rapport à la période de référence.",

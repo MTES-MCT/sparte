@@ -327,7 +327,7 @@ class ObjectiveChartExport(ObjectiveChart):
             "title": {
                 "text": (
                     f"Trajectoire de consommation d'ENAF à {self.land.name} "
-                    "du 1er janvier 2021 au 1er janvier 2031 (en ha)"
+                    "(1er janv. 2021 – 1er janv. 2031, en ha)"
                 )
             },
             "credits": CEREMA_CREDITS,

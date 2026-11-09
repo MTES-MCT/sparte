@@ -46,10 +46,10 @@ const ArtificialisationPageContent: React.FC = () => {
           content: null,
         }}
         cadreReglementaire={{
-          preview: "Afin de préserver les sols naturels, agricoles et forestiers, la loi Climat et Résilience fixe à partir de 2031 un cap clair : atteindre l'équilibre entre les surfaces artificialisées et désartificialisées, c'est-à-dire un objectif de « zéro artificialisation nette » des sols, à horizon 2050.",
+          preview: "Afin de préserver les sols naturels, agricoles et forestiers, la loi Climat et Résilience fixe à partir du 1er janvier 2031 un cap clair : atteindre l'équilibre entre les surfaces artificialisées et désartificialisées, c'est-à-dire un objectif de « zéro artificialisation nette » des sols, à horizon 2050.",
           content: (
             <>
-              <p>Afin de préserver les sols naturels, agricoles et forestiers, la loi Climat et Résilience fixe à partir de 2031 un cap clair : <strong>atteindre l'équilibre entre les surfaces artificialisées et désartificialisées</strong>, c'est-à-dire un objectif de « zéro artificialisation nette » des sols, à horizon 2050.</p>
+              <p>Afin de préserver les sols naturels, agricoles et forestiers, la loi Climat et Résilience fixe à partir du 1<sup>er</sup> janvier 2031 un cap clair : <strong>atteindre l'équilibre entre les surfaces artificialisées et désartificialisées</strong>, c'est-à-dire un objectif de « zéro artificialisation nette » des sols, à horizon 2050.</p>
             </>
           ),
         }}

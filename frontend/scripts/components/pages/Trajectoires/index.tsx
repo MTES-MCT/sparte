@@ -64,7 +64,7 @@ const TrajectoiresContent: React.FC = () => {
             <>
               <p>
                 Les données affichées sur cette plateforme proviennent du
-                Portail de l’artificialisation des sol et sont produites par le
+                Portail de l’artificialisation des sols et sont produites par le
                 Cerema à partir des Fichiers Fonciers. Elles constituent une{" "}
                 <strong>donnée de référence</strong> pour la mesure de la
                 consommation d'ENAF.
@@ -94,7 +94,7 @@ const TrajectoiresContent: React.FC = () => {
                 <strong>
                   une trajectoire visant nationalement à réduire de moitié la
                   consommation d'espaces naturels, agricoles et forestiers (ENAF)
-                  entre le 1er janvier 2021 et le 1er janvier 2031, par rapport à la période allant du 1er janvier 2011 au 1er janvier 2021.
+                  entre le 1<sup>er</sup> janvier 2021 et le 1<sup>er</sup> janvier 2031, par rapport à la période allant du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021.
                 </strong>
               </p>
             </>

@@ -25,7 +25,7 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
           Comprendre : les objectifs de sobriété foncière
         </h2>
         <p className="fr-text--sm fr-mb-4w">
-          En France, 24 000 ha d’espaces naturels, agricoles et forestiers (ENAF) ont été consommés en moyenne chaque année entre le 1er janvier 2011 et le 1er janvier 2021.
+          En France, 24 000 ha d’espaces naturels, agricoles et forestiers (ENAF) ont été consommés en moyenne chaque année entre le 1<sup>er</sup> janvier 2011 et le 1<sup>er</sup> janvier 2021.
           La sobriété foncière vise à protéger les sols et leur
           rôle vital pour le climat, la biodiversité et l'agriculture, tout en
           permettant un développement durable des territoires. La{" "}
@@ -35,21 +35,21 @@ const Synthese: React.FC<SyntheseProps> = ({ landData }) => {
 
         <Timeline phases={[
             {
-              badge: <Badge variant="primary">01/01/2011 - 01/01/2021</Badge>,
+              badge: <Badge variant="primary">1er janv. 2011 – 1er janv. 2021</Badge>,
               title: "Période de référence",
               description:
                 "La consommation d'ENAF de cette décennie sert de base pour calculer l'objectif de réduction.",
               content: <SyntheseConso landData={landData} urls={urls} phase="reference" />,
             },
             {
-              badge: <Badge variant="primary">01/01/2021 - 01/01/2031</Badge>,
+              badge: <Badge variant="primary">1er janv. 2021 – 1er janv. 2031</Badge>,
               title: "Période de réduction",
               description:
                 "À l'échelle nationale, l'objectif est de diviser par deux la consommation d'ENAF par rapport à la période de référence.",
               content: <SyntheseConso landData={landData} urls={urls} phase="reduction" />,
             },
             {
-              badge: <Badge variant="primary">2031-2050</Badge>,
+              badge: <Badge variant="primary">1er janv. 2031 – 2050</Badge>,
               title: "Suivi de l’artificialisation nette des sols",
               description:
                 "L'objectif est d’atteindre le « Zéro Artificialisation Nette » (ZAN) à l’horizon 2050.",

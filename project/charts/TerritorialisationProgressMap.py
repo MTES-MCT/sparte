@@ -25,7 +25,7 @@ class TerritorialisationProgressMapBase(DiagnosticChart):
     def lands(self):
         return LandModel.objects.filter(pk__in=self.children_objectifs.values_list("land__pk", flat=True))
 
-    # Nombre d'années depuis 2021 (données jusqu'à fin 2024 = 4 ans)
+    # Nombre d'années du 1er janvier 2021 au 1er janvier 2025 (données disponibles)
     ANNEES_ECOULEES = 4
 
     @property
@@ -121,7 +121,7 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
     @property
     def data_table(self):
         return {
-            "headers": ["Territoire", "Statut", "Conso. depuis 2021 (ha)", "Conso. max (ha)"],
+            "headers": ["Territoire", "Statut", "Conso. 1er janv. 2021 – 1er janv. 2025 (ha)", "Conso. max (ha)"],
             "boldFirstColumn": True,
             "rows": [
                 {
@@ -146,7 +146,7 @@ class TerritorialisationProgressMap(TerritorialisationProgressMapBase):
         return super().param | {
             "chart": {"map": self.get_geojson()},
             "title": {
-                "text": f"Membres de {self.land.name} : projection au 01/01/2031",
+                "text": f"Membres de {self.land.name} : projection au 1er janv. 2031",
                 "style": {"fontSize": "14px", "fontWeight": "600"},
             },
             "mapNavigation": {"enabled": True},
@@ -207,7 +207,10 @@ class TerritorialisationConsoMap(TerritorialisationProgressMapBase):
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Consommation depuis 2021", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "title": {
+                "text": "Consommation 1er janv. 2021 – 1er janv. 2025",
+                "style": {"fontSize": "14px", "fontWeight": "600"},
+            },
             "subtitle": {"text": "En hectares", "style": {"fontSize": "11px", "color": "#666"}},
             "mapNavigation": {"enabled": True},
             "legend": {
@@ -236,7 +239,7 @@ class TerritorialisationConsoMap(TerritorialisationProgressMapBase):
                     "dataLabels": {"enabled": False},
                     "tooltip": {
                         "headerFormat": "",
-                        "pointFormat": "<b>{point.name}</b><br/>Consommé depuis 2021 : <b>{point.conso_since_2021} ha</b><br/>Objectif : -{point.objectif}%",  # noqa: E501
+                        "pointFormat": "<b>{point.name}</b><br/>Consommé du 1er janvier 2021 au 1er janvier 2025 : <b>{point.conso_since_2021} ha</b><br/>Objectif : -{point.objectif}%",  # noqa: E501
                     },
                 }
             ],
@@ -373,7 +376,7 @@ class TerritorialisationAnneesRestantesMap(TerritorialisationProgressMapBase):
 
     name = "carte années restantes territorialisation"
 
-    # Nombre d'années depuis 2021 (données jusqu'à fin 2024 = 4 ans)
+    # Nombre d'années du 1er janvier 2021 au 1er janvier 2025 (données disponibles)
     ANNEES_ECOULEES = 4
     ANNEE_FIN = 2030
 
@@ -485,7 +488,7 @@ class TerritorialisationEffortMap(TerritorialisationProgressMapBase):
     name = "carte effort territorialisation"
 
     ANNEES_ECOULEES = 4
-    ANNEES_RESTANTES_PERIODE = 6  # 2025-2030
+    ANNEES_RESTANTES_PERIODE = 6  # du 1er janvier 2025 au 1er janvier 2031
 
     @property
     def data(self):
@@ -730,7 +733,12 @@ class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
     @property
     def data_table(self):
         return {
-            "headers": ["Territoire", "Conso. projetée 2031 (ha)", "Conso. max (ha)", "Rythme actuel (ha/an)"],
+            "headers": [
+                "Territoire",
+                "Conso. projetée au 1er janv. 2031 (ha)",
+                "Conso. max (ha)",
+                "Rythme actuel (ha/an)",
+            ],
             "boldFirstColumn": True,
             "rows": [
                 {
@@ -757,7 +765,7 @@ class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
         return super().param | {
             "chart": {"map": self.get_geojson()},
             "title": {
-                "text": "Consommation projetée 01/01/2021 - 01/01/2031",
+                "text": "Consommation projetée 1er janv. 2021 – 1er janv. 2031",
                 "style": {"fontSize": "14px", "fontWeight": "600"},
             },
             "subtitle": {
@@ -782,7 +790,7 @@ class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
             },
             "series": [
                 {
-                    "name": "Projection 2031",
+                    "name": "Projection au 1er janv. 2031",
                     "data": data,
                     "joinBy": ["land_id"],
                     "colorKey": "conso_projetee_2031",
@@ -793,7 +801,7 @@ class TerritorialisationProjection2031Map(TerritorialisationProgressMapBase):
                     "dataLabels": {"enabled": False},
                     "tooltip": {
                         "headerFormat": "",
-                        "pointFormat": "<b>{point.name}</b><br/>Projection 2031 : <b>{point.conso_projetee_2031} ha</b><br/>Objectif max : {point.conso_max_2021_2030} ha<br/>Rythme actuel : {point.rythme_actuel} ha/an",  # noqa: E501
+                        "pointFormat": "<b>{point.name}</b><br/>Projection au 1er janv. 2031 : <b>{point.conso_projetee_2031} ha</b><br/>Objectif max : {point.conso_max_2021_2030} ha<br/>Rythme actuel : {point.rythme_actuel} ha/an",  # noqa: E501
                     },
                 }
             ],
@@ -865,7 +873,10 @@ class TerritorialisationDepassement2031Map(TerritorialisationProgressMapBase):
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Dépassement projeté au 01/01/2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "title": {
+                "text": "Dépassement projeté au 1er janv. 2031",
+                "style": {"fontSize": "14px", "fontWeight": "600"},
+            },
             "subtitle": {
                 "text": f"{en_depassement} territoires en dépassement"
                 if en_depassement
@@ -973,7 +984,7 @@ class TerritorialisationTauxAtteinte2031Map(TerritorialisationProgressMapBase):
 
         return super().param | {
             "chart": {"map": self.get_geojson()},
-            "title": {"text": "Taux d'atteinte au 01/01/2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
+            "title": {"text": "Taux d'atteinte au 1er janv. 2031", "style": {"fontSize": "14px", "fontWeight": "600"}},
             "subtitle": {
                 "text": f"{en_depassement} territoires dépasseront 100%"
                 if en_depassement
