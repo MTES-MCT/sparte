@@ -96,7 +96,7 @@ const MainTerritorySearchBar: React.FC = () => {
 
     return (
         <Container>
-            <SearchBar onTerritorySelect={handleTerritorySelect} />
+            <SearchBar onTerritorySelect={handleTerritorySelect} inputId="search-bar-territory" />
             {selected && (
                 <SelectedTerritoryCard>
                     <TerritoryHeader>
