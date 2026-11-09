@@ -352,9 +352,9 @@ const RapportLocal: React.FC<RapportLocalProps> = ({ landData }) => {
           Ces données locales doivent être conformes aux définitions légales
           de la consommation d'ENAF (et le cas échéant de
           l'artificialisation nette des sols), homogènes et cohérentes sur
-          la décennie de référence de la loi (du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup>
-          janvier 2021) et sur la décennie en cours (du 1<sup>er</sup> janvier 2021 au
-          1<sup>er</sup> janvier 2031).
+          la décennie de référence de la loi (du 1<sup>er</sup> janvier 2011
+          au 1<sup>er</sup> janvier 2021) et sur la décennie en cours
+          (du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031).
         </p>
       </BaseCard>
     </div>
