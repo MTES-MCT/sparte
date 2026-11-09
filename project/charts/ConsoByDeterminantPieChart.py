@@ -1,5 +1,6 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import CEREMA_CREDITS
+from project.charts.periods import conso_period_short
 from public_data.domain.containers import PublicDataContainer
 
 
@@ -49,7 +50,7 @@ class ConsoByDeterminantPieChart(DiagnosticChart):
         return super().param | {
             "chart": {"type": "pie"},
             "title": {
-                "text": f"Consommation d'espaces par destination à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})",  # noqa: E501
+                "text": f"Consommation d'espaces par destination à {self.land.name} ({conso_period_short(self.params['start_date'], self.params['end_date'])})",  # noqa: E501
             },
             "tooltip": {"enabled": False},
             "plotOptions": {
@@ -79,7 +80,7 @@ class ConsoByDeterminantPieChart(DiagnosticChart):
 
         headers = [
             "Destination",
-            f"Consommation d'ENAF (ha) {self.params['start_date']}-{self.params['end_date']}",
+            f"Consommation d'ENAF (ha) {conso_period_short(self.params['start_date'], self.params['end_date'])}",
         ]
 
         rows = [
@@ -118,7 +119,7 @@ class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
             "title": {
                 "text": (
                     f"Destinations de la consommation d'ENAF de {self.land.name}"
-                    f" entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
+                    f" ({conso_period_short(self.params['start_date'], self.params['end_date'])}, en ha)"
                 )
             },
             "plotOptions": {

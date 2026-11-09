@@ -5,8 +5,22 @@ from project.charts.constants import (
     MAP_NAVIGATION_EXPORT,
     MAP_NORTH_INDICATOR,
 )
+from project.charts.periods import conso_period_short
 from public_data.models import AdminRef, LandConsoStats, LandModel
 from public_data.models.administration import LandGeoJSON
+
+
+def _export_title(title: str, land_name: str, unit: str | None = None) -> str:
+    """Ajoute le territoire au titre d'une carte en gardant la période entre parenthèses à la fin :
+    « Flux … des communes (1er janv. 2011 – 1er janv. 2025) » ->
+    « Flux … des communes sur le territoire X (1er janv. 2011 – 1er janv. 2025, en ha) »."""
+    subject, _, period = title.rpartition(" (")
+    if not subject:
+        return f"{title} sur le territoire {land_name}" + (f" ({unit})" if unit else "")
+    details = period.removesuffix(")")
+    if unit:
+        details = f"{details}, {unit}"
+    return f"{subject} sur le territoire {land_name} ({details})"
 
 
 class ConsoMap(DiagnosticChart):
@@ -110,8 +124,8 @@ class ConsoMap(DiagnosticChart):
     def data_table(self):
         headers = [
             AdminRef.get_label(self.params.get("child_land_type")),
-            f"Consommation relative à la surface (%) - {self.start_year} à {self.end_year}",
-            f"Consommation totale (ha) - {self.start_year} à {self.end_year}",
+            f"Consommation relative à la surface (%) - {conso_period_short(self.start_year, self.end_year)}",
+            f"Consommation totale (ha) - {conso_period_short(self.start_year, self.end_year)}",
             "Habitat (ha)",
             "Activité (ha)",
             "Mixte (ha)",
@@ -166,7 +180,7 @@ class ConsoMap(DiagnosticChart):
             "title": {
                 "text": (
                     f"Consommation d'ENAF des {self.formatted_child_land_type}s "
-                    f"entre {self.start_year} et {self.end_year}"
+                    f"({conso_period_short(self.start_year, self.end_year)})"
                 )
             },
             "mapNavigation": {"enabled": True},
@@ -286,7 +300,7 @@ class ConsoMapExport(ConsoMap):
                 "navigation": LEGEND_NAVIGATION_EXPORT,
             },
             "title": {
-                "text": f"{base_param['title']['text']} sur le territoire {self.land.name}",
+                "text": _export_title(base_param["title"]["text"], self.land.name),
             },
             "subtitle": {"text": ""},
             "series": series,
@@ -381,12 +395,12 @@ class ConsoMapRelative(ConsoMap):
         if self.land.land_type == AdminRef.COMMUNE:
             title_text = (
                 f"Consommation relative à la surface des {self.formatted_child_land_type}s "
-                f"- {self.land.name} ({container.name}, {self.start_year}-{self.end_year})"
+                f"- {self.land.name} ({container.name}, {conso_period_short(self.start_year, self.end_year)})"
             )
         else:
             title_text = (
                 f"Consommation relative à la surface des {self.formatted_child_land_type}s "
-                f"entre {self.start_year} et {self.end_year}"
+                f"({conso_period_short(self.start_year, self.end_year)})"
             )
 
         base_param = {
@@ -446,7 +460,7 @@ class ConsoMapRelativeExport(ConsoMapRelative):
                 "verticalAlign": "bottom",
             },
             "title": {
-                "text": f"{base_param['title']['text']} sur le territoire {self.land.name} (en %)",
+                "text": _export_title(base_param["title"]["text"], self.land.name, "en %"),
             },
             "subtitle": MAP_NORTH_INDICATOR,
             "series": series,
@@ -460,7 +474,7 @@ class ConsoMapBubble(ConsoMap):
     def data_table(self):
         headers = [
             AdminRef.get_label(self.params.get("child_land_type")),
-            f"Consommation totale (ha) - {self.start_year} à {self.end_year}",
+            f"Consommation totale (ha) - {conso_period_short(self.start_year, self.end_year)}",
             "Habitat (ha)",
             "Activité (ha)",
             "Mixte (ha)",
@@ -501,7 +515,7 @@ class ConsoMapBubble(ConsoMap):
             "title": {
                 "text": (
                     f"Flux de consommation d'ENAF des {self.formatted_child_land_type}s "
-                    f"entre {self.start_year} et {self.end_year}"
+                    f"({conso_period_short(self.start_year, self.end_year)})"
                 )
             },
             "mapNavigation": {"enabled": True},
@@ -607,7 +621,7 @@ class ConsoMapBubbleExport(ConsoMapBubble):
                 "layout": "horizontal",
             },
             "title": {
-                "text": f"{base_param['title']['text']} sur le territoire {self.land.name} (en ha)",
+                "text": _export_title(base_param["title"]["text"], self.land.name, "en ha"),
             },
             "subtitle": MAP_NORTH_INDICATOR,
             "series": series,

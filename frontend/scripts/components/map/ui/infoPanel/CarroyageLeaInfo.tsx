@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import type * as maplibregl from "maplibre-gl";
 import { InfoContent, InfoRow, InfoLabel, InfoValue } from ".";
-import { formatNumber } from "@utils/formatUtils";
+import { formatNumber, formatFirstJanuary, formatConsoYearEnd } from "@utils/formatUtils";
 import { useGetCarroyageDestinationConfigQuery } from "@services/api";
 import { CARROYAGE_FIRST_YEAR, CARROYAGE_LAST_YEAR } from "../../constants/config";
 
@@ -91,7 +91,7 @@ export const CarroyageLeaInfo: React.FC<CarroyageLeaInfoProps> = ({
         <InfoContent>
             <div>
                 <strong className="fr-text--sm">
-                    {destinationLabel} - Cumulé {displayStartYear}-{displayEndYear}
+                    {destinationLabel} : cumul {formatFirstJanuary(displayStartYear)} – {formatConsoYearEnd(displayEndYear)}
                 </strong>
             </div>
 

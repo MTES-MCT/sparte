@@ -4,7 +4,7 @@ import { BivariateMap, useMapDrilldown } from "@components/charts/consommation/B
 import Kpi from "@components/ui/Kpi";
 import Loader from "@components/ui/Loader";
 import Button from "@components/ui/Button";
-import { formatNumber } from "@utils/formatUtils";
+import { formatNumber, formatFirstJanuary } from "@utils/formatUtils";
 import { djangoApi, useGetSocioEconomicStatsQuery } from "@services/api";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 import Badge from "@components/ui/Badge";
@@ -104,8 +104,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(Math.min(endYear, 2022)),
+              from: formatFirstJanuary(startYear),
+              to: formatFirstJanuary(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -122,8 +122,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(Math.min(endYear, 2022)),
+              from: formatFirstJanuary(startYear),
+              to: formatFirstJanuary(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -140,8 +140,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(Math.min(endYear, 2022)),
+              from: formatFirstJanuary(startYear),
+              to: formatFirstJanuary(Math.min(endYear, 2022)),
             }}
           />
         </div>

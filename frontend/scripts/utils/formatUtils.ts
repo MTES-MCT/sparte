@@ -77,4 +77,20 @@ export const pluralize = (count: number, singular: string, plural?: string): str
     return count > 1 ? pluralForm : singular;
 };
 
+/**
+ * 1er janvier d'une année, en forme courte : début d'une année de données de
+ * consommation, ou date d'un stock annuel (population, ménages, emplois).
+ */
+export const formatFirstJanuary = (year: number): string => `1er janv. ${year}`;
+
+/**
+ * Fin d'une période de consommation dont la dernière année incluse est `year` :
+ * une période « de 2011 à 2020 » s'arrête au 1er janvier 2021.
+ */
+export const formatConsoYearEnd = (year: number): string => formatFirstJanuary(year + 1);
+
+/** Période de consommation en toutes lettres, par ex. « du 1er janvier 2011 au 1er janvier 2021 ». */
+export const formatConsoPeriodLong = (startYear: number, endYear: number): string =>
+  `du 1er janvier ${startYear} au 1er janvier ${endYear + 1}`;
+
 export { formatNumber, formatDateTime };

@@ -5,6 +5,7 @@ from project.charts.constants import (
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
 )
+from project.charts.periods import conso_period_short
 from project.utils import add_total_line_column
 from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef, LandModel
@@ -49,7 +50,7 @@ class AnnualTotalConsoChart(DiagnosticChart):
         return super().param | {
             "chart": {"type": "column", "height": 280},
             "title": {
-                "text": f"Consommation annuelle d'ENAF - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+                "text": f"Consommation annuelle d'ENAF - {self.land.name} ({conso_period_short(self.params['start_date'], self.params['end_date'])})"  # noqa: E501
             },
             "yAxis": {"title": {"text": "Consommation d'ENAF (ha)"}},
             "xAxis": {"type": "category"},
@@ -349,7 +350,7 @@ class AnnualTotalConsoChartExport(AnnualTotalConsoChart):
             "title": {
                 "text": (
                     f"Consommation d'ENAF à {self.land.name} "
-                    f"entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
+                    f"({conso_period_short(self.params['start_date'], self.params['end_date'])}, en ha)"
                 )
             },
             "credits": CEREMA_CREDITS,

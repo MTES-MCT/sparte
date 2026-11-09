@@ -1,4 +1,4 @@
-import { formatNumber, formatDateTime, pluralize } from './formatUtils';
+import { formatNumber, formatDateTime, pluralize, formatFirstJanuary, formatConsoYearEnd, formatConsoPeriodLong } from './formatUtils';
 
 describe('formatUtils', () => {
     describe('formatNumber', () => {
@@ -306,4 +306,18 @@ describe('formatUtils', () => {
             });
         });
     });
+});
+
+describe("périodes de consommation", () => {
+  it("fait commencer une année de données au 1er janvier", () => {
+    expect(formatFirstJanuary(2011)).toBe("1er janv. 2011");
+  });
+
+  it("fait finir une période au 1er janvier qui suit sa dernière année", () => {
+    expect(formatConsoYearEnd(2024)).toBe("1er janv. 2025");
+  });
+
+  it("écrit la période en toutes lettres", () => {
+    expect(formatConsoPeriodLong(2011, 2020)).toBe("du 1er janvier 2011 au 1er janvier 2021");
+  });
 });

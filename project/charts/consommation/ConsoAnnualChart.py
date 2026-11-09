@@ -1,5 +1,6 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import DEFAULT_VALUE_DECIMALS
+from project.charts.periods import conso_period_short
 from public_data.models import LandConso
 
 
@@ -56,7 +57,7 @@ class ConsoAnnualChart(DiagnosticChart):
             "title": {
                 "text": (
                     f"Consommation annuelle d'ENAF "
-                    f"de {self.land.name} ({self.data.first().year}-{self.data.last().year})"
+                    f"de {self.land.name} ({conso_period_short(self.data.first().year, self.data.last().year)})"
                 ),
                 "style": {"fontSize": "14px", "fontWeight": "600"},
                 "margin": 25,

@@ -3,7 +3,7 @@ import Kpi from "@components/ui/Kpi";
 import GenericChart from "@components/charts/GenericChart";
 import Button from "@components/ui/Button";
 import Loader from "@components/ui/Loader";
-import { formatNumber } from "@utils/formatUtils";
+import { formatNumber, formatFirstJanuary, formatConsoYearEnd } from "@utils/formatUtils";
 import { useMapDrilldown } from "@components/charts/consommation/BivariateMap";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
@@ -82,8 +82,8 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
             badge="Donnée clé"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(endYear),
+              from: formatFirstJanuary(startYear),
+              to: formatConsoYearEnd(endYear),
             }}
           />
         </div>

@@ -1,4 +1,5 @@
 from project.charts.base_project_chart import DiagnosticChart
+from project.charts.periods import conso_period_short
 from public_data.domain.containers import PublicDataContainer
 
 CENSUS_YEARS = {2011, 2016, 2022}
@@ -88,7 +89,7 @@ class PopulationConsoProgressionChart(DiagnosticChart):
     def param(self):
         return super().param | {
             "title": {
-                "text": f"Évolution de la consommation d'ENAF et de la population - {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+                "text": f"Évolution de la consommation d'ENAF et de la population - {self.land.name} ({conso_period_short(self.params['start_date'], self.params['end_date'])})"  # noqa: E501
             },
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},

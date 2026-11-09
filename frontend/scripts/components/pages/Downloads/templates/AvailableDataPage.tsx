@@ -5,6 +5,7 @@ import Button from '@components/ui/Button';
 
 import { FullPageContainer } from "../styles";
 import { LandMillesimeTable } from "@components/features/ocsge/LandMillesimeTable";
+import { formatFirstJanuary, formatConsoYearEnd } from '@utils/formatUtils';
 
 interface AvailableDataPageProps {
     landData: LandDetailResultType;
@@ -117,7 +118,7 @@ const AvailableDataPage: React.FC<AvailableDataPageProps> = ({
                             <p className="fr-text--xs fr-mb-0"><em>Source : Fichiers fonciers (Cerema)</em></p>
                         </div>
                         <span className="fr-text--bold fr-text--sm">
-                            {landData.has_conso ? `${consoStartYear} - ${consoEndYear}` : 'Non disponible'}
+                            {landData.has_conso ? `${formatFirstJanuary(consoStartYear)} – ${formatConsoYearEnd(consoEndYear)}` : 'Non disponible'}
                         </span>
                     </PeriodItemHeader>
                     {mode === 'edit' && onOpenSettings && landData.has_conso && (

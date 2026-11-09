@@ -3,6 +3,7 @@ from functools import cached_property
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import CEREMA_CREDITS, LEGEND_NAVIGATION_EXPORT
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
+from project.charts.periods import conso_period_short
 from public_data.domain.containers import PublicDataContainer
 from public_data.infra.consommation.progression.highchart.ConsoProportionalComparisonMapper import (
     ConsoProportionalComparisonMapper,
@@ -58,7 +59,7 @@ class AnnualConsoProportionalComparisonChart(ComparisonChartMixin, DiagnosticCha
                 "text": (
                     f"Consommation d'ENAF relative à la surface de {self.land.name} "
                     "et des territoires de comparaison "
-                    f"({self.params['start_date']} - {self.params['end_date']})"
+                    f"({conso_period_short(self.params['start_date'], self.params['end_date'])})"
                 )
             },
             "subtitle": {"text": "La taille des zones est proportionnelle à la surface des territoires."},
@@ -127,7 +128,7 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
                 "text": (
                     f"Consommation d'ENAF relative à la surface de {self.land.name} "
                     "et des territoires de comparaison "
-                    f"entre {self.params['start_date']} et {self.params['end_date']} (en %)"
+                    f"({conso_period_short(self.params['start_date'], self.params['end_date'])}, en %)"
                 )
             },
         }

@@ -3,6 +3,7 @@ from functools import cached_property
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import CEREMA_CREDITS, HIGHLIGHT_COLOR
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
+from project.charts.periods import conso_period_long, conso_period_short
 from public_data.domain.containers import PublicDataContainer
 
 
@@ -66,8 +67,8 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                     "tooltip": {
                         "headerFormat": "<b>{point.key}</b><br/>",
                         "pointFormat": (
-                            "Consommation d'ENAF entre "
-                            f"{self.params['start_date']} et {self.params['end_date']} : "
+                            "Consommation d'ENAF "
+                            f"{conso_period_long(self.params['start_date'], self.params['end_date'])} : "
                             "<b>{point.y:.2f} ha</b>"
                         ),
                     },
@@ -84,7 +85,7 @@ class AnnualConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                 "text": (
                     f"Consommation d'ENAF de {self.land.name} "
                     "et des territoires de comparaison "
-                    f"({self.params['start_date']} et {self.params['end_date']})"
+                    f"({conso_period_short(self.params['start_date'], self.params['end_date'])})"
                 )
             },
             "subtitle": {"text": "Cliquez sur un territoire pour voir le détail de sa consommation d'espaces."},
@@ -175,7 +176,7 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
                 "text": (
                     f"Consommation d'ENAF de {self.land.name} "
                     "et des territoires de comparaison "
-                    f"({self.params['start_date']} et {self.params['end_date']})"
+                    f"({conso_period_short(self.params['start_date'], self.params['end_date'])})"
                 )
             },
             "subtitle": {"text": ""},

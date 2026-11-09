@@ -10,6 +10,7 @@ from project.charts.constants import (
     MAP_NORTH_INDICATOR,
 )
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
+from project.charts.periods import conso_period_short
 from public_data.models import AdminRef, LandConsoStats
 
 
@@ -130,8 +131,8 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
         headers = [
             "Territoire",
             "Type",
-            f"Consommation relative à la surface (%) - {self.start_year} à {self.end_year}",
-            f"Consommation totale (ha) - {self.start_year} à {self.end_year}",
+            f"Consommation relative à la surface (%) - {conso_period_short(self.start_year, self.end_year)}",
+            f"Consommation totale (ha) - {conso_period_short(self.start_year, self.end_year)}",
             "Habitat (ha)",
             "Activité (ha)",
             "Mixte (ha)",
@@ -178,7 +179,7 @@ class ComparisonMap(ComparisonChartMixin, DiagnosticChart):
             "title": {
                 "text": (
                     f"Consommation d'ENAF de {self.land.name} et des territoires de comparaison "
-                    f"({self.start_year} à {self.end_year})"
+                    f"({conso_period_short(self.start_year, self.end_year)})"
                 )
             },
             "mapNavigation": {"enabled": len(self.lands) > 20},
