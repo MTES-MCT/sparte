@@ -1,0 +1,14 @@
+{
+  "name": "sparte-aide",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port 6000",
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0 --port 6000"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.42.6",
+    "astro": "7.4.0"
+  }
+}
