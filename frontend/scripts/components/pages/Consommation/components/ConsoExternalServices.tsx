@@ -1,8 +1,38 @@
 import React from "react";
 import { ExternalServiceTile } from "@components/ui/ExternalServiceTile";
+import Notice from "@components/ui/Notice";
 import urbansimulImage from "@images/logo-urbansimul.png";
 
 export const URBANSIMUL_CONSO_URL = "https://urbansimul-app.cerema.fr/map/#/map/conso_espace?cercle=none";
+export const FICHIERS_FONCIERS_ACCES_URL = "https://datafoncier.cerema.fr/portail-des-donnees-foncieres";
+
+/** Rappel affiché sous le carroyage : renvoie vers le détail à la parcelle sur UrbanSimul. */
+export const UrbanSimulNotice: React.FC = () => (
+  <div className="fr-mt-3w">
+    <Notice
+      type="info"
+      title="Besoin du détail à la parcelle ?"
+      description={
+        <>
+          Les{" "}
+          <a
+            href={FICHIERS_FONCIERS_ACCES_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Ayants droit des fichiers fonciers - nouvelle fenêtre"
+          >
+            ayants droit des fichiers fonciers
+          </a>{" "}
+          peuvent consulter la consommation d'ENAF à la parcelle sur l'application{" "}
+          <a href={URBANSIMUL_CONSO_URL} target="_blank" rel="noopener noreferrer" title="UrbanSimul - nouvelle fenêtre">
+            UrbanSimul
+          </a>{" "}
+          du Cerema.
+        </>
+      }
+    />
+  </div>
+);
 
 export const ConsoExternalServices: React.FC = () => {
   return (

@@ -12,6 +12,7 @@ import {
   ConsoDemography,
   ConsoComparison,
   ConsoExternalServices,
+  UrbanSimulNotice,
 } from "./components";
 
 interface ConsommationProps {
@@ -107,7 +108,12 @@ const ConsommationContent: React.FC<ConsommationProps> = ({ landData, preference
 
         <ConsoAnnuelle landId={land_id} landType={land_type} landName={name} childLandTypes={child_land_types || []} />
 
-        {!isDromCom && <ConsoCarroyage landData={landData} />}
+        {!isDromCom && (
+          <>
+            <ConsoCarroyage landData={landData} />
+            <UrbanSimulNotice />
+          </>
+        )}
 
         <ConsoDemography
           landId={land_id}
