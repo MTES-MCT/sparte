@@ -8,6 +8,7 @@ test-paths: ["tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
+packages-install-path: "{{ env_var('DBT_PACKAGES_INSTALL_PATH', 'dbt_packages') }}"
 
 clean-targets:
   - "target"
@@ -38,9 +39,9 @@ seeds:
 
 models:
   +grants:
-    select: ["alexis","production"]
-    insert: ["alexis", "production"]
-    update: ["alexis","production"]
+    select: ["mondiagartif"]
+    insert: ["mondiagartif"]
+    update: ["mondiagartif"]
   sparte:
     analytics:
       +schema: analytics

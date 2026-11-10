@@ -16,10 +16,11 @@ def tracking_code(context):
     return {
         "CSP_NONCE": context["CSP_NONCE"],
         "MATOMO_ACTIVATE": settings.MATOMO_ACTIVATE,
+        "MATOMO_SRC": settings.MATOMO_SRC,
+        "MATOMO_SITE_ID": settings.MATOMO_SITE_ID,
         "DEBUG": settings.DEBUG,
         "REQUEST": context.get("request"),
         "ENVIRONMENT": settings.ENVIRONMENT,
-        "MATOMO_CONTAINER_SRC": settings.MATOMO_CONTAINER_SRC,
     }
 
 

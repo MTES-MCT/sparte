@@ -10,16 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import sys
 from pathlib import Path
 from typing import Any, Dict, Literal
 
 import environ
-import sentry_sdk
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.redis import RedisIntegration
 
 from config.csp import build_csp_directives
 
@@ -42,7 +38,7 @@ if env_path.is_file():
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
-ENVIRONMENT: Literal["local", "staging", "production"] = env.str("ENVIRONMENT")
+ENVIRONMENT: Literal["local", "staging", "production"] = env.str("ENVIRONMENT", default="local")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str("SECRET")
@@ -52,6 +48,15 @@ DEBUG = env.bool("DEBUG", default=False)
 USE_SRI = env.bool("USE_SRI", default=not DEBUG)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
+
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "https://mondiagartif.mut-dev.ign.fr",
+        "https://qlf-mondiagartif.ign.fr",
+        "https://mondiagartif.gouv.fr",
+    ],
+)
 
 DOMAIN_URL = env.str("DOMAIN_URL")
 
@@ -308,8 +313,6 @@ VECTOR_TILES_LOCATION = f"{AIRFLOW_S3_BASE_URL}/vector_tiles"
 GEOJSON_LOCATION = f"{AIRFLOW_S3_BASE_URL}/geojson"
 
 
-MATOMO_CONTAINER_SRC = env.str("MATOMO_CONTAINER_SRC", default="https://stats.beta.gouv.fr/js/container_26e5XOBD.js")
-
 # CORSHEADERS
 # https://github.com/adamchainz/django-cors-headers
 
@@ -346,11 +349,12 @@ else:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": env.str("SCALINGO_REDIS_URL"),
+            "LOCATION": env.str("CACHE_DB_URL"),
             "TIMEOUT": 60 * 15,  # 15 minutes
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "MAX_ENTRIES": 1000,
+                "PASSWORD": env.str("CACHE_DB_PASSWORD", default=""),
             },
         }
     }
@@ -358,6 +362,7 @@ else:
     FANCY_REMEMBER_STATS_ALL_URLS = True
 # SESSION
 
+SESSION_COOKIE_SECURE = ENVIRONMENT != "local"
 SESSION_CACHE_ALIAS = "default"
 
 
@@ -450,7 +455,7 @@ if DEBUG:
 
 # Configuration for export server (PDF generation)
 
-EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3001")
+EXPORT_SERVER_URL = env.str("EXPORT_SERVER_URL", default="http://localhost:3000")
 EXPORT_BASE_URL = env.str("EXPORT_BASE_URL", default="http://django:8080")
 
 # EMAIL
@@ -472,20 +477,24 @@ To set MailJet configuration, please add environment variables:
 """
 
 EMAIL_ENGINE = env.str("EMAIL_ENGINE", default="local")
-if EMAIL_ENGINE not in ["local", "sendinblue"]:
+if EMAIL_ENGINE not in ["local", "smtp", "sendinblue"]:
     raise ImproperlyConfigured("E-mail backend needs to be correctly set")
 elif EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
+elif EMAIL_ENGINE == "sendinblue":
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = env.str("MAIL_SERVER", default="smtp-relay.brevo.com")
+    EMAIL_PORT = env.int("MAIL_PORT", default=587)
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY", default="")
+    SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp-relay.brevo.com"
-    EMAIL_PORT = 587
+    EMAIL_HOST = env.str("MAIL_SERVER", default="smtp-relay.brevo.com")
+    EMAIL_PORT = env.int("MAIL_PORT", default=587)
     EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY")
-
-
-EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
-SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY", default="")
 
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
@@ -504,40 +513,10 @@ DECIMAL_SEPARATOR = ","
 THOUSAND_SEPARATOR = " "
 NUMBER_GROUPING = 3
 
-
-# SENTRY
-if ENVIRONMENT != "local":
-    sentry_sdk.init(  # type: ignore
-        # dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
-        dsn="https://b40bb226b8a148fdafff102baf5abf34@sentry.incubateur.net/21",
-        integrations=[
-            DjangoIntegration(
-                # available options:
-                # url (default) - formats based on the route
-                # function_name - formats based on the view function name
-                transaction_style="url",
-            ),
-            RedisIntegration(),
-        ],
-        # Set traces_sample_rate to 1.0 to capture 100%
-        # of transactions for performance monitoring.
-        # We recommend adjusting this value in production.
-        traces_sample_rate=0.0,
-        # If you wish to associate users to errors (assuming you are using
-        # django.contrib.auth) you may enable sending PII data.
-        send_default_pii=True,
-        # By default the SDK will try to use the SENTRY_RELEASE
-        # environment variable, or infer a git commit
-        # SHA as release, however you may want to set
-        # something more human-readable.
-        release=f"MonDiagArtif@{OFFICIAL_VERSION}",
-        environment=ENVIRONMENT,
-        debug=False,
-    )
-
-
 # MATOMO
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
+MATOMO_SRC = env.str("MATOMO_SRC", default="https://matomo.ign.fr")
+MATOMO_SITE_ID = env.str("MATOMO_SITE_ID", default="20")
 
 # CRISP
 CRISP_WEBSITE_ID = env.str("CRISP_WEBSITE_ID")
@@ -603,8 +582,13 @@ ALERT_DIAG_EMAIL_RECIPIENTS = env.list("ALERT_DIAG_EMAIL_RECIPIENTS", default=[]
 ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list("ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[])
 
 # LOGGING SETTINGS
-
+# DEBUG: Low level system information for debugging purposes
+# INFO: General system information
+# WARNING: Information describing a minor problem that has occurred.
+# ERROR: Information describing a major problem that has occurred.
+# CRITICAL: Information describing a critical problem that has occurred.
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
+DJANGO_LOGGING_LEVEL = env.str("DJANGO_LOGGING_LEVEL", default="INFO")
 DB_LOGGING_LEVEL = env.str("DB_LOGGING_LEVEL", default="INFO")
 
 LOGGING = {
@@ -642,6 +626,30 @@ LOGGING = {
         "level": "WARNING",
     },
     "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.server": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.core.mail": {
+            "handlers": ["console"],
+            "level": DJANGO_LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "level": DB_LOGGING_LEVEL,
+            "handlers": ["console"],
+        },
         "config": {
             "handlers": ["console"],
             "level": LOGGING_LEVEL,
@@ -656,10 +664,6 @@ LOGGING = {
             "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
-        },
-        "django.db.backends": {
-            "level": DB_LOGGING_LEVEL,
-            "handlers": ["console"],
         },
     },
 }
@@ -693,4 +697,9 @@ WEBINAIRE_URL = env.str(
 )
 FAQ_URL = env.str("FAQ_URL", default="https://aide.mondiagartif.beta.gouv.fr/fr/")
 
-IS_TEST = "test" in sys.argv
+SITE_CONFIG = {
+    "footer_brand": env.str("FOOTER_BRAND", default="république française"),
+    "footer_brand_html": env.str("FOOTER_BRAND_HTML", default="république<br />française"),
+    "footer_description": env.str("FOOTER_DESCRIPTION", default=""),
+    "accessibility_status": env.str("ACCESSIBILITY_STATUS", default="non"),
+}

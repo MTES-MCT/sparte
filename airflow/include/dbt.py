@@ -12,16 +12,21 @@ from typing import Callable
 
 from cosmos import ProfileConfig
 from cosmos.operators.local import DbtBuildLocalOperator
+from cosmos.profiles import PostgresUserPasswordProfileMapping
 from include.pools import DBT_POOL
 
 from airflow.exceptions import AirflowSkipException
 
-DBT_PROJECT_DIR = Path(os.environ["AIRFLOW_HOME"]) / "include" / "sql" / "sparte"
+DBT_PROJECT_DIR = Path(__file__).resolve().parent / "sql" / "sparte"
 
 PROFILE_CONFIG = ProfileConfig(
     profile_name="sparte",
     target_name="dev",
-    profiles_yml_filepath=Path.home() / ".dbt" / "profiles.yml",
+    profile_mapping=PostgresUserPasswordProfileMapping(
+        conn_id="postgresql_dbt",
+        # Le champ `schema` de la connexion Airflow porte le nom de la base, pas le schéma dbt.
+        profile_args={"schema": os.environ.get("DBT_DB_SCHEMA", "public"), "threads": 1},
+    ),
 )
 
 # Les modèles taggés `macro_unit_test` n'existent que pour les tests unitaires de

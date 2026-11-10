@@ -38,7 +38,7 @@
       <ul class="fr-footer__bottom-list">
         {% block footer_links %}
           <li class="fr-footer__bottom-item">
-            <a class="fr-footer__bottom-link" href="{% url 'home:accessibilite' %}">Accessibilité: {{ SITE_CONFIG.get_accessibility_status_display|default:'non' }} conforme</a>
+            <a class="fr-footer__bottom-link" href="{% url 'home:accessibilite' %}">Accessibilité: {{ SITE_CONFIG.accessibility_status|default:'non' }} conforme</a>
           </li>
           <li class="fr-footer__bottom-item">
             <a class="fr-footer__bottom-link" href="{% url 'home:cgv' %}">Mentions légales</a>

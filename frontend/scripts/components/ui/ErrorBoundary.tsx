@@ -21,7 +21,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    // Intégration Sentry à ajouter ici
     console.error("ErrorBoundary caught an error", error, errorInfo);
   }
 

@@ -6,8 +6,8 @@ from include.container import InfraContainer
 from include.dbt import DbtBuild
 from pendulum import datetime
 
-from airflow.sdk import dag, task
-from airflow.sdk.definitions.param import Param
+from airflow.sdk import Param, dag, task
+
 
 URL = "https://www.statistiques.developpement-durable.gouv.fr/media/8938/download?inline"
 # COG ?
