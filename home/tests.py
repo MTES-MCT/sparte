@@ -6,6 +6,7 @@ from django.template import Context, Template
 from django.template.loader import get_template
 from django.test import SimpleTestCase, TestCase, modify_settings, override_settings
 
+from config.cache_backends import build_caches
 from config.csp import (
     OSM_TILES,
     WEBPACK_DEV_SERVER,
@@ -237,6 +238,34 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertIn(WEBPACK_DEV_SERVER_WS, directives["connect-src"])
         self.assertIn("http://s3:7070", directives["img-src"])
         self.assertIn("http://s3:7070", directives["connect-src"])
+
+
+class CacheSettingsTests(SimpleTestCase):
+    """`USE_REDIS=0` doit couper tout accès à Redis sans casser le code qui appelle le cache."""
+
+    def test_redis_cache_is_used_when_an_url_is_given(self) -> None:
+        caches = build_caches(redis_url="redis://redis:6379/0")
+
+        self.assertEqual(caches["default"]["BACKEND"], "django_redis.cache.RedisCache")
+        self.assertEqual(caches["default"]["LOCATION"], "redis://redis:6379/0")
+
+    def test_no_redis_is_configured_without_url(self) -> None:
+        caches = build_caches(redis_url=None)
+
+        self.assertEqual(caches, {"default": {"BACKEND": "config.cache_backends.RedisDummyCache"}})
+
+    def test_cache_calls_made_by_the_code_work_without_redis(self) -> None:
+        from django.core.cache import caches
+
+        with override_settings(CACHES=build_caches(redis_url=None)):
+            cache = caches["default"]
+            cache.set("chart:x", {"a": 1}, timeout=60)
+            # rien n'est gardé : chaque lecture est un défaut de cache
+            self.assertIsNone(cache.get("chart:x"))
+            # appel propre à django-redis, fait à l'enregistrement d'un projet
+            self.assertIsNone(cache.delete_pattern("*project/1/*"))
+            # appel du script de déploiement (commande clear_cache)
+            cache.clear()
 
 
 class SriStaticTemplateTagTests(SimpleTestCase):
