@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { validateUrlHost, getAllowedHosts } from './url-validation';
+import { validateUrlHost, getAllowedHosts, buildTemplateUrl, HEADER_TEMPLATE_PATH, FOOTER_TEMPLATE_PATH } from './url-validation';
 
 describe('getAllowedHosts', () => {
     const originalEnv = process.env.ALLOWED_HOSTS;
@@ -172,5 +172,30 @@ describe('validateUrlHost', () => {
                 'Protocol "data:" is not allowed'
             );
         });
+    });
+});
+
+describe('buildTemplateUrl', () => {
+    const originalEnv = process.env.ALLOWED_HOSTS;
+
+    afterEach(() => {
+        if (originalEnv === undefined) {
+            delete process.env.ALLOWED_HOSTS;
+        } else {
+            process.env.ALLOWED_HOSTS = originalEnv;
+        }
+    });
+
+    it('should build the template URL on the host of the exported page', () => {
+        process.env.ALLOWED_HOSTS = 'mondiagartif.beta.gouv.fr,django';
+        expect(buildTemplateUrl('https://mondiagartif.beta.gouv.fr/exports/rapport-draft/1?x=1', HEADER_TEMPLATE_PATH))
+            .toBe('https://mondiagartif.beta.gouv.fr/exports/pdf-header');
+        expect(buildTemplateUrl('http://django:8080/exports/rapport-draft/1', FOOTER_TEMPLATE_PATH))
+            .toBe('http://django:8080/exports/pdf-footer');
+    });
+
+    it('should reject a page on a host that is not allowed', () => {
+        process.env.ALLOWED_HOSTS = 'mondiagartif.beta.gouv.fr';
+        expect(() => buildTemplateUrl('https://example.com/page', HEADER_TEMPLATE_PATH)).toThrow();
     });
 });

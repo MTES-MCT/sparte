@@ -42,3 +42,23 @@ export function validateUrlHost(url: string): void {
         throw new Error(`Host "${hostname}" is not in the allowed hosts list. Allowed hosts: ${allowedHosts.join(', ')}`);
     }
 }
+
+export const HEADER_TEMPLATE_PATH = '/exports/pdf-header';
+export const FOOTER_TEMPLATE_PATH = '/exports/pdf-footer';
+
+/**
+ * URL d'un gabarit (en-tête, pied de page) servi par le même site que la page exportée.
+ * L'hôte vient de ALLOWED_HOSTS et le chemin est fixe : rien n'est repris tel quel de la requête.
+ * @throws Error si l'URL de la page n'est pas autorisée
+ */
+export function buildTemplateUrl(pageUrl: string, path: string): string {
+    validateUrlHost(pageUrl);
+    const parsedUrl = new URL(pageUrl);
+    const host = getAllowedHosts().find(allowedHost => allowedHost === parsedUrl.hostname);
+    if (!host) {
+        throw new Error(`Host "${parsedUrl.hostname}" is not in the allowed hosts list.`);
+    }
+    const protocol = parsedUrl.protocol === 'https:' ? 'https:' : 'http:';
+    const port = parsedUrl.port ? `:${Number.parseInt(parsedUrl.port, 10)}` : '';
+    return `${protocol}//${host}${port}${path}`;
+}

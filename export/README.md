@@ -21,19 +21,19 @@ Retourne le statut du service.
 
 ### Export PDF
 ```
-GET /api/export?url=<page_url>&headerUrl=<header_url>&footerUrl=<footer_url>
+GET /api/export?url=<page_url>
 ```
 
-Paramètres (tous requis) :
+Paramètre (requis) :
 - `url` : URL de la page à exporter en PDF
-- `headerUrl` : URL du template HTML pour le header du PDF
-- `footerUrl` : URL du template HTML pour le footer du PDF
 
-Retourne un PDF.
+Les templates HTML du header et du footer sont chargés sur le même site que la page, aux chemins fixes `/exports/pdf-header` et `/exports/pdf-footer` (les paramètres `headerUrl` et `footerUrl`, s'ils sont envoyés, sont ignorés).
+
+Retourne un PDF. Si `EXPORT_API_TOKEN` est défini, l'en-tête `X-Export-Token` doit contenir ce jeton (sinon 401).
 
 Exemple :
 ```bash
-curl "http://localhost:3001/api/export?url=http://localhost:8080/exports/rapport-complet/COMM/69123&headerUrl=http://localhost:8080/exports/pdf-header&footerUrl=http://localhost:8080/exports/pdf-footer" \
+curl "http://localhost:3001/api/export?url=http://localhost:8080/exports/rapport-complet/COMM/69123" \
   --output rapport.pdf
 ```
 
@@ -41,6 +41,8 @@ curl "http://localhost:3001/api/export?url=http://localhost:8080/exports/rapport
 
 - `PORT` : Port du serveur (défaut: 3001 en dev)
 - `ALLOWED_HOSTS` : Liste des hosts autorisés, séparés par des virgules (requis)
+- `EXPORT_RATE_LIMIT_PER_MINUTE` : Nombre maximal d'appels à `/api/export` par minute et par adresse (défaut : 30 ; tous les appels de Django partagent la même adresse)
+- `EXPORT_API_TOKEN` : Jeton exigé dans l'en-tête `X-Export-Token` (égal à `EXPORT_SERVER_TOKEN` côté Django). Vide : aucun jeton exigé
 
 Exemple :
 ```bash
@@ -49,10 +51,16 @@ ALLOWED_HOSTS=localhost,mondiagartif.beta.gouv.fr
 
 ## Sécurité
 
-Le service valide toutes les URLs (page, header, footer) :
+Le service valide l'URL de la page (et en déduit celles du header et du footer) :
 - Seuls les protocoles `http:` et `https:` sont autorisés
 - Le hostname doit être dans la liste `ALLOWED_HOSTS`
 - Retourne une erreur 403 si l'host n'est pas autorisé
+- Les gabarits d'en-tête et de pied de page sont chargés sans suivre de redirection
+
+Pendant le rendu, le navigateur :
+- garde la politique de même origine et la vérification des certificats (aucune option qui les désactive)
+- n'ouvre que des pages (navigation, iframe, redirection) d'un host de `ALLOWED_HOSTS`
+- refuse toute requête vers une adresse locale ou privée (`localhost`, `127.0.0.1`, `10.x`, `169.254.x`…), sauf un host de `ALLOWED_HOSTS`
 
 ## Développement local
 

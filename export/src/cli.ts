@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { exportToPdf } from './pdf-generator';
+import { getAllowedHosts } from './url-validation';
 
 /**
  * CLI script to export a page to PDF using Puppeteer
@@ -23,7 +24,10 @@ const outputPath = args[1] || path.join(process.cwd(), `export-${Date.now()}.pdf
 const headerUrl = args[2];
 const footerUrl = args[3];
 
-exportToPdf({ url, headerUrl, footerUrl })
+// En ligne de commande, sans ALLOWED_HOSTS, seul l'hôte de la page exportée peut être ouvert
+const allowedHosts = getAllowedHosts().length > 0 ? getAllowedHosts() : [new URL(url).hostname];
+
+exportToPdf({ url, headerUrl, footerUrl, allowedHosts })
     .then((pdfBuffer) => {
         fs.writeFileSync(outputPath, pdfBuffer);
         console.log(`Export completed successfully: ${outputPath}`);
