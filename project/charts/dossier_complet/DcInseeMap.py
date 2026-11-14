@@ -1,5 +1,6 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
+from project.charts.periods import first_january
 from public_data.models import AdminRef, LandModel
 from public_data.models.administration import LandGeoJSON
 
@@ -294,14 +295,15 @@ class DcResidencesSecondairesMap(DcInseeMap):
     @property
     def map_title(self):
         return (
-            f"Part des résidences secondaires des {self.formatted_child_land_type}s - {self.land.name} ({self.year})"
+            f"Part des résidences secondaires des {self.formatted_child_land_type}s - {self.land.name} "
+            f"(au {first_january(self.year)})"
         )
 
     @property
     def data_table_headers(self):
         return [
             "Territoire",
-            f"Part rés. secondaires ({self.year}) (%)",
+            f"Part rés. secondaires au {first_january(self.year)} (%)",
             "Rés. secondaires",
             "Total logements",
         ]
@@ -351,7 +353,9 @@ class DcResidencesSecondairesMap(DcInseeMap):
     def param(self):
         # Override to use dynamic title instead of format string
         child_label = self.formatted_child_land_type
-        title = f"Part des résidences secondaires des {child_label}s - {self.land.name} ({self.year})"
+        title = (
+            f"Part des résidences secondaires des {child_label}s - {self.land.name} (au {first_january(self.year)})"
+        )
 
         base = super(DcInseeMap, self).param  # skip DcInseeMap.param, go to DiagnosticChart
         geojson = LandGeoJSON.for_parent(self.land.land_id, self.land.land_type, self.child_land_type)

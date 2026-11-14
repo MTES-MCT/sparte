@@ -24,7 +24,7 @@ export const FrichesExternalServices: React.FC = () => {
             imageUrl={urbanvitalizImage}
             imageAlt="Logo de UrbanVitaliz"
             title="Faites-vous accompagner gratuitement dans la réhabilitation des friches de votre territoire grâce à UrbanVitaliz"
-            description="UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que les conseillers publics (selon les territoires : DDT, DREAL, EPF...)"
+            description="UrbanVitaliz est un service public gratuit d'appui aux collectivités pour la reconversion des friches, assuré par des urbanistes ainsi que des conseillers publics (selon les territoires : DDT, DREAL, EPF...)"
             href="https://urbanvitaliz.fr/"
           />
         </div>

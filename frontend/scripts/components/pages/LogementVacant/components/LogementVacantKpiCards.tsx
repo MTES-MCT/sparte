@@ -64,7 +64,7 @@ export const LogementVacantKpiCards: React.FC = () => {
         <div className="fr-col-12 fr-col-lg-6">
           <Kpi
             icon="bi bi-house"
-            label="Logements vacants dans le parc privé"
+            label="Logements vacants dans le parc privé (vacance structurelle)"
             value={
               hasPriveData
                 ? formatNumber({ number: logements_vacants_parc_prive, decimals: 0 })
@@ -81,7 +81,7 @@ export const LogementVacantKpiCards: React.FC = () => {
         <div className="fr-col-12 fr-col-lg-6">
           <Kpi
             icon="bi bi-houses"
-            label="Logements vacants dans le parc des bailleurs sociaux"
+            label="Logements vacants dans le parc des bailleurs sociaux (vacance structurelle)"
             value={
               hasSocialData
                 ? formatNumber({ number: logements_vacants_parc_social, decimals: 0 })

@@ -4,6 +4,7 @@ from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
     LEGEND_NAVIGATION_EXPORT,
 )
+from project.charts.periods import conso_period_short
 from project.utils import add_total_line_column
 from public_data.domain.containers import PublicDataContainer
 
@@ -67,7 +68,7 @@ class AnnualConsoByDeterminantChart(DiagnosticChart):
         return super().param | {
             "chart": {"type": "column"},
             "title": {
-                "text": f"Évolution annuelle de la consommation d'espaces par destination à {self.land.name} ({self.params['start_date']} - {self.params['end_date']})"  # noqa: E501
+                "text": f"Évolution annuelle de la consommation d'espaces par destination à {self.land.name} ({conso_period_short(self.params['start_date'], self.params['end_date'])})"  # noqa: E501
             },
             "yAxis": {
                 "title": {"text": "Consommation d'espaces (en ha)"},
@@ -163,8 +164,8 @@ class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (
-                    f"Consommation annuelle d'espaces NAF par destination de {self.land.name}"
-                    f" entre {self.params['start_date']} et {self.params['end_date']} (en ha)"
+                    f"Consommation annuelle d'ENAF par destination de {self.land.name}"
+                    f" ({conso_period_short(self.params['start_date'], self.params['end_date'])}, en ha)"
                 )
             },
         }

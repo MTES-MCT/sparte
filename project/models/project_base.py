@@ -152,8 +152,8 @@ class Project(BaseProject):
         default=None,
         help_text=(
             "L'objectif fixé au niveau national par la loi Climat et résilience est de "
-            "réduire de 50% la consommation d'espaces sur 2021-2031 par rapport à la "
-            "décennie précédente.<br /><br />"
+            "réduire de 50% la consommation d'espaces du 1er janvier 2021 au 1er janvier 2031 "
+            "par rapport à la décennie précédente.<br /><br />"
             "Cet objectif doit être territorialisé et peut être "
             "modulé via les documents de planification régionale ainsi que les documents "
             "d'urbanisme (SCOT, PLU(i), cartes communales).<br /><br /> "

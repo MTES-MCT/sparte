@@ -1,5 +1,5 @@
 """
-DAG pour ingérer le carroyage LEA de consommation d'espaces NAF.
+DAG pour ingérer le carroyage LEA de consommation d'ENAF.
 
 Source: data.gouv.fr - Consommation d'espaces naturels, agricoles et forestiers
 du 1er janvier 2011 au 1er janvier 2025 (ressource `conso_carroyage.gpkg`).

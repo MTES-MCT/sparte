@@ -1,6 +1,6 @@
 import React from "react";
 import Kpi from "@components/ui/Kpi";
-import { formatNumber } from "@utils/formatUtils";
+import { formatNumber, formatFirstJanuary } from "@utils/formatUtils";
 
 interface RSKpisProps {
   residencesSecondaires: number | null;
@@ -35,8 +35,8 @@ export const RSKpis: React.FC<RSKpisProps> = ({
           badge="Donnée clé"
           footer={{
             type: "period",
-            from: "2011",
-            to: "2022",
+            from: formatFirstJanuary(2011),
+            to: formatFirstJanuary(2022),
           }}
         />
       </div>
@@ -48,8 +48,7 @@ export const RSKpis: React.FC<RSKpisProps> = ({
           variant="default"
           footer={{
             type: "period",
-            from: "2022",
-            to: "2022",
+            from: formatFirstJanuary(2022),
           }}
         />
       </div>
@@ -61,8 +60,7 @@ export const RSKpis: React.FC<RSKpisProps> = ({
           variant="default"
           footer={{
             type: "period",
-            from: "2022",
-            to: "2022",
+            from: formatFirstJanuary(2022),
           }}
         />
       </div>

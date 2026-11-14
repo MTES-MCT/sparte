@@ -219,10 +219,10 @@ export const TrajectoiresChildrenStats: React.FC = () => {
       </div>
 
       <SectionTitle className="fr-mt-5w">
-        Projection de {name} à l'horizon 2031 au rythme actuel
+        Projection de {name} au 1<sup>er</sup> janvier 2031 au rythme actuel
       </SectionTitle>
       <MutedText className="fr-text--sm fr-mb-2w">
-        Estimation de la situation en 2031 si le rythme de consommation actuel
+        Estimation de la situation au 1<sup>er</sup> janvier 2031 si le rythme de consommation actuel
         se maintient.
       </MutedText>
 
@@ -230,7 +230,7 @@ export const TrajectoiresChildrenStats: React.FC = () => {
         <div className="fr-col-6 fr-col-md-3">
           <Kpi
             icon="bi bi-graph-up-arrow"
-            label="Consommation projetée en 2031"
+            label="Consommation projetée au 1er janv. 2031"
             value={
               <>
                 {formatNumber({ number: consoProjetee2031 })} <span>ha</span>
@@ -242,7 +242,7 @@ export const TrajectoiresChildrenStats: React.FC = () => {
         <div className="fr-col-6 fr-col-md-3">
           <Kpi
             icon="bi bi-bullseye"
-            label="Consommation max autorisée"
+            label="Consommation d'ENAF maximale"
             value={
               <>
                 {formatNumber({ number: allowedConso2021_2030 })}{" "}
@@ -255,7 +255,7 @@ export const TrajectoiresChildrenStats: React.FC = () => {
         <div className="fr-col-6 fr-col-md-3">
           <Kpi
             icon="bi bi-percent"
-            label="de l'objectif atteint en 2031"
+            label="de l'objectif atteint au 1er janv. 2031"
             value={`${formatNumber({ number: tauxAtteinte2031, decimals: 1 })}%`}
             variant={tauxAtteinte2031 > 100 ? "error" : "success"}
             badge={

@@ -175,7 +175,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     <div className="fr-select-group">
                         <label className="fr-label fr-text--sm fr-mb-0" htmlFor="select-start-year">
-                            Année de début
+                            Début de la période (au 1<sup>er</sup> janvier)
                         </label>
                         <select
                             className="fr-select"
@@ -193,7 +193,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                     <div className="fr-select-group fr-mt-2w">
                         <label className="fr-label fr-text--sm fr-mb-0" htmlFor="select-end-year">
-                            Année de fin
+                            Fin de la période (au 1<sup>er</sup> janvier)
                         </label>
                         <select
                             className="fr-select"
@@ -204,13 +204,13 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                             onChange={(e) => handleChange('conso_end_year')(e.target.value)}
                         >
                             {AVAILABLE_YEARS.filter(y => y > consoStartYear).map(year => (
-                                <option key={year} value={year}>{year}</option>
+                                <option key={year} value={year}>{year + 1}</option>
                             ))}
                         </select>
                     </div>
 
                     <SettingsInfo>
-                        Modifie la période affichée dans les graphiques de consommation d'espaces NAF.
+                        Modifie la période affichée dans les graphiques de consommation d'ENAF.
                     </SettingsInfo>
                 </SettingsSection>
 
@@ -226,7 +226,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                 </SettingsSection>
 
                 <SettingsSection>
-                    <h3 className="fr-text--lg fr-mb-2w">Objectif non-réglementaire de réduction 2031</h3>
+                    <h3 className="fr-text--lg fr-mb-2w">Objectif non réglementaire de réduction au 1<sup>er</sup> janvier 2031</h3>
 
                     <div className="fr-input-group">
                         <label className="fr-label fr-text--sm fr-mb-0" htmlFor="input-target-2031">
@@ -250,7 +250,7 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </div>
 
                     <SettingsInfo>
-                        Le graphique de la trajectoire de consommation d'espaces NAF affiche par défaut une trajectoire avec un objectif de réduction de 50% (objectif national). Vous pouvez ajouter une trajectoire personnalisée en ajustant l'objectif de réduction ci-dessus.
+                        Le graphique de la trajectoire de consommation d'ENAF affiche par défaut une trajectoire avec un objectif de réduction de 50% (objectif national). Vous pouvez ajouter une trajectoire personnalisée en ajustant l'objectif de réduction ci-dessus.
                     </SettingsInfo>
                 </SettingsSection>
             </Drawer>
@@ -260,11 +260,11 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
     const reportContent = (
         <>
             <section className="fr-mb-6w">
-                <h2>1 Consommation des espaces NAF (Naturels, Agricoles et Forestiers)</h2>
+                <h2>1 Consommation des espaces naturels, agricoles et forestiers (ENAF)</h2>
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Chaque année, <strong>24 000 ha d’espaces NAF (Naturels, Agricoles et Forestiers)</strong> sont consommés en moyenne en France, soit près de 5 terrains de football par heure.
+                        Chaque année, <strong>24 000 ha d’ENAF</strong> sont consommés en moyenne en France, soit près de 5 terrains de football par heure.
                         Tous les territoires sont concernés : en particulier 61% de la consommation d’espaces est constatée dans les territoires sans tension immobilière.
                     </p>
                     <p className="fr-callout__text">
@@ -274,25 +274,25 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <TwoColumnLayout>
                     <p>
-                        La France s’est donc fixée <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
+                        La France s’est donc fixée <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031 par rapport à la décennie précédente, du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021.
                     </p>
                     <p>
                         Les dispositions introduites par la loi n° 2021-1104 du 22 août 2021 portant lutte contre le dérèglement climatique et renforcement de la résilience face à ses effets (dite « Loi Climat et résilience ») ont été complétées par la loi n° 2023-630 du 20 juillet 2023 visant à faciliter la mise en œuvre des objectifs de lutte contre l’artificialisation des sols et à renforcer l’accompagnement des élus locaux.
                     </p>
                     <p>
-                        <strong>Pour la période 2021-2031, il s’agit de raisonner en consommation d’espaces.</strong>
+                        <strong>Pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031, il s’agit de raisonner en consommation d’espaces.</strong>
                     </p>
                     <p>
-                        La consommation d’espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).
+                        La consommation d’ENAF est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).
                     </p>
                     <p>
                         La loi adoptée en 2023 précise qu’à l’échelle d’un même territoire, « la transformation effective d’espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d’une désartificialisation peut être comptabilisée en déduction de cette consommation ».
                     </p>
                     <p>
-                        Au niveau national, la consommation d’espaces NAF (Naturels, Agricoles et Forestiers)  est mesurée par les fichiers fonciers retraités par le CEREMA.
+                        Au niveau national, la consommation d’ENAF est mesurée par les fichiers fonciers retraités par le Cerema.
                     </p>
                     <p>
-                        <strong>A partir de 2031, il s’agit de raisonner en artificialisation.</strong>
+                        <strong>À partir du 1<sup>er</sup> janvier 2031, il s’agit de raisonner en artificialisation.</strong>
                     </p>
                     <p>
                         L'artificialisation nette est définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l’urbanisme).
@@ -304,18 +304,18 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        La consommation d'espaces entre le <strong>1er janvier 2011 et le 31 décembre 2020</strong> représente 
+                        La consommation d'espaces entre le <strong>1<sup>er</sup> janvier 2011 et le 1<sup>er</sup> janvier 2021</strong> représente 
                         pour le territoire de <strong>{landData.name}</strong> une surface de <strong>{(landData.conso_details.conso_2011_2020).toFixed(1)} hectares</strong>.
                     </p>
                 </div>
             </section>
 
             <section className="fr-mb-6w">
-                <h2>2 Trajectoire de consommation d’espaces NAF à l’horizon 2031</h2>
+                <h2>2 Trajectoire de consommation d’ENAF jusqu’au 1<sup>er</sup> janvier 2031</h2>
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        La loi Climat & Résilience fixe <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 (en se basant sur les données allant du 01/01/2021 au 31/12/2030) par rapport à la décennie précédente 2011-2020 (en se basant sur les données allant du 01/01/2011 au 31/12/2020).
+                        La loi Climat & Résilience fixe <strong>l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050</strong>, avec un <strong>objectif intermédiaire</strong> de réduction de moitié de la consommation d’espaces naturels, agricoles et forestiers du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031 par rapport à la décennie précédente, du 1<sup>er</sup> janvier 2011 au 1<sup>er</sup> janvier 2021.
                     </p>
                 </div>
 
@@ -333,26 +333,26 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
                     </p>
                     <p>
                         La loi prévoit également que la consommation foncière des <strong>projets d'envergure nationale ou européenne et d'intérêt général majeur sera comptabilisée au niveau national</strong>, et non au niveau régional ou local.
-                        Ces projets seront énumérés par arrêté du ministre chargé de l'urbanisme, en fonction de catégories définies dans la loi, après consultation des régions, de la conférence régionale et du public. Un forfait de 12 500 hectares est déterminé pour la période 2021-2031, dont 10 000 hectares font l'objet d'une péréquation entre les régions couvertes par un SRADDET. 
+                        Ces projets seront énumérés par arrêté du ministre chargé de l'urbanisme, en fonction de catégories définies dans la loi, après consultation des régions, de la conférence régionale et du public. Un forfait de 12 500 hectares est déterminé pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031, dont 10 000 hectares font l'objet d'une péréquation entre les régions couvertes par un SRADDET. 
                     </p>
                     <p>
                         Cette loi précise également l’exercice de territorialisation de la trajectoire.
-                        Afin de tenir compte des besoins de l’ensemble des territoires, <strong>une surface minimale d’un hectare de consommation</strong> est garantie à toutes les communes couvertes par un document d'urbanisme prescrit, arrêté ou approuvé avant le 22 août 2026, pour la période 2021-2031.
+                        Afin de tenir compte des besoins de l’ensemble des territoires, <strong>une surface minimale d’un hectare de consommation</strong> est garantie à toutes les communes couvertes par un document d'urbanisme prescrit, arrêté ou approuvé avant le 22 août 2026, pour la période du 1<sup>er</sup> janvier 2021 au 1<sup>er</sup> janvier 2031.
                         Cette « garantie communale » peut être mutualisée au niveau intercommunal à la demande des communes. Quant aux communes littorales soumises au recul du trait de côte, qui sont listées par décret et qui ont mis en place un projet de recomposition spatiale, elles peuvent considérer, avant même que la désartificialisation soit effective, comme « désartificialisées » les surfaces situées dans la zone menacée à horizon 30 ans et qui seront ensuite désartificialisées.
                     </p>
                     <p>
-                        Dès aujourd'hui, <strong>Mon Diagnostic Artificialisation</strong> vous permet de vous projeter dans cet objectif de réduction de la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) d'ici à 2031 et de simuler divers scénarii.
+                        Dès aujourd'hui, <strong>Mon Diagnostic Artificialisation</strong> vous permet de vous projeter dans cet objectif de réduction de la consommation d'ENAF d'ici au 1<sup>er</sup> janvier 2031 et de simuler divers scénarii.
                     </p>
                 </TwoColumnLayout>
 
                 <div className="fr-callout">
                     {has_custom_target ? (
                         <p className="fr-callout__text">
-                            Vous avez personnalisé votre objectif non-réglementaire de réduction à hauteur de <strong>{target_custom} %</strong> et le graphique ci-dessous vous montre un aperçu des tendances annuelles maximales que votre territoire ne devrait pas dépasser d’ici à 2031.
+                            Vous avez personnalisé votre objectif non réglementaire de réduction à hauteur de <strong>{target_custom} %</strong> et le graphique ci-dessous vous montre un aperçu des tendances annuelles maximales que votre territoire ne devrait pas dépasser d’ici au 1<sup>er</sup> janvier 2031.
                         </p>
                     ) : (
                         <p className="fr-callout__text">
-                            Vous n'avez pas personnalisé votre objectif non-réglementaire de réduction.
+                            Vous n'avez pas personnalisé votre objectif non réglementaire de réduction.
                         </p>
                     )}
                     {mode === 'edit' && (
@@ -393,9 +393,9 @@ const RapportComplet: React.FC<RapportCompletProps> = ({
 
                 <div className="fr-callout">
                     <p className="fr-callout__text">
-                        Les graphiques de cette section présentent les données de consommation d'espaces NAF
-                        sur la période du <strong>1er janvier {consoStartYear}</strong> au{' '}
-                        <strong>31 décembre {consoEndYear}</strong>.
+                        Les graphiques de cette section présentent les données de consommation d'ENAF
+                        sur la période du <strong>1<sup>er</sup> janvier {consoStartYear}</strong> au{' '}
+                        <strong>1<sup>er</sup> janvier {consoEndYear + 1}</strong>.
                     </p>
                     {mode === 'edit' && (
                         <CalloutEditInfo>

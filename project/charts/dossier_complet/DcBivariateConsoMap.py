@@ -11,6 +11,7 @@ from functools import cached_property
 
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
+from project.charts.periods import conso_period_short, with_definite_article
 from public_data.models import AdminRef, LandModel
 from public_data.models.administration import LandGeoJSON
 from public_data.models.bivariate import (
@@ -132,9 +133,9 @@ class DcBivariateConsoMap(DiagnosticChart):
     conso_field = "total"
 
     CONSO_LABELS = {
-        "total": "Consommation annuelle totale",
-        "habitat": "Consommation annuelle pour l'habitat",
-        "activite": "Consommation annuelle pour l'activité",
+        "total": "Consommation d'ENAF annuelle totale",
+        "habitat": "Consommation d'ENAF annuelle pour l'habitat",
+        "activite": "Consommation d'ENAF annuelle pour l'activité",
     }
 
     @property
@@ -298,7 +299,7 @@ class DcBivariateConsoMap(DiagnosticChart):
             "headers": [
                 AdminRef.get_label(self.child_land_type),
                 f"{self.indicator_short} ({self.indicator_unit}/an)" if self.indicator_unit else self.indicator_short,
-                f"{self.conso_label} {self.start_date}-{self.end_date} (%/an)",
+                f"{self.conso_label} {conso_period_short(self.start_date, self.end_date)} (%/an)",
                 "Catégorie",
             ],
             "boldFirstColumn": True,
@@ -323,16 +324,17 @@ class DcBivariateConsoMap(DiagnosticChart):
             return (
                 f"Rythmes annuels de consommation et {self.indicator_name.lower()}"
                 f" des {child_label}s"
-                f" - {self.land.name} ({container.name}, {self.start_date}-{self.end_date})"
+                f" - {self.land.name} ({container.name}, {conso_period_short(self.start_date, self.end_date)})"
             )
         return (
             f"Rythmes annuels de consommation et {self.indicator_name.lower()}"
             f" des {child_label}s"
-            f" - {container.name} ({self.start_date}-{self.end_date})"
+            f" - {container.name} ({conso_period_short(self.start_date, self.end_date)})"
         )
 
     def get_chart_subtitle(self):
-        return f"Croisement entre {self.indicator_name.lower()} et la {self.conso_label.lower()} NAF"
+        label = self.conso_label
+        return f"Croisement entre {with_definite_article(self.indicator_name)} et la {label[0].lower()}{label[1:]}"
 
     def _build_series(self):
         tooltip_format = {

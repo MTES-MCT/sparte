@@ -186,7 +186,7 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
   const chartChildren = useMemo(() => (
     <div style={{ fontSize: "0.875rem", lineHeight: 1.6 }}>
       <p>
-        Cette carte bivariée croise deux axes : la <strong>consommation d'espaces NAF</strong> (fichiers fonciers)
+        Cette carte bivariée croise deux axes : la <strong>consommation d'ENAF</strong> (fichiers fonciers)
         et un <strong>indicateur socio-économique</strong> (INSEE, dossier complet). Chaque territoire est classé
         dans une grille 3×3 = 9 catégories, selon sa position sur chacun des deux axes.
       </p>
@@ -215,15 +215,15 @@ export const BivariateMap: React.FC<BivariateMapProps> = ({
         obtenu en divisant la variation totale par le nombre d'années entre les deux millésimes :
       </p>
       <ul>
-        <li>Période se terminant avant 2016 : évolution 2011→2016, divisée par 5 ans.</li>
-        <li>Période débutant après 2016 : évolution 2016→2022, divisée par 6 ans.</li>
-        <li>Sinon : évolution 2011→2022, divisée par 11 ans.</li>
+        <li>Période s'arrêtant au plus tard au 1<sup>er</sup> janvier 2017 : évolution entre les millésimes 2011 et 2016, divisée par 5 ans.</li>
+        <li>Période commençant au 1<sup>er</sup> janvier 2016 ou après : évolution entre les millésimes 2016 et 2022, divisée par 6 ans.</li>
+        <li>Sinon : évolution entre les millésimes 2011 et 2022, divisée par 11 ans.</li>
       </ul>
       <p>
         Les années <strong>2023</strong> et <strong>2024</strong> ne disposent pas encore de
-        millésime INSEE. Pour les périodes qui s'étendent au-delà de 2022, le rythme annuel
+        millésime INSEE. Pour les périodes qui s'étendent au-delà du 1<sup>er</sup> janvier 2023, le rythme annuel
         utilisé reste celui du dernier couple de millésimes disponible (par exemple,
-        2016–2024 utilise le rythme annuel 2016→2022).
+        la période 1er janv. 2016 – 1er janv. 2025 utilise le rythme annuel entre les millésimes 2016 et 2022).
       </p>
     </div>
   ), []);

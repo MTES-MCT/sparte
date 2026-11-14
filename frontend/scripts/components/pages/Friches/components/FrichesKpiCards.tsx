@@ -53,7 +53,7 @@ export const FrichesKpiCards: React.FC = () => {
                 },
                 {
                   icon: "bi bi-droplet",
-                  label: "Surfaces imperméables",
+                  label: "Surfaces imperméabilisées",
                   value: `${formatNumber({ number: friche_sans_projet_surface_imper })} ha`,
                 },
               ],
@@ -88,7 +88,7 @@ export const FrichesKpiCards: React.FC = () => {
                 },
                 {
                   icon: "bi bi-droplet",
-                  label: "Surfaces imperméables",
+                  label: "Surfaces imperméabilisées",
                   value: `${formatNumber({ number: friche_avec_projet_surface_imper })} ha`,
                 },
               ],
@@ -124,7 +124,7 @@ export const FrichesKpiCards: React.FC = () => {
                 },
                 {
                   icon: "bi bi-droplet",
-                  label: "Surfaces imperméables",
+                  label: "Surfaces imperméabilisées",
                   value: `${formatNumber({ number: friche_reconvertie_surface_imper })} ha`,
                 },
               ],

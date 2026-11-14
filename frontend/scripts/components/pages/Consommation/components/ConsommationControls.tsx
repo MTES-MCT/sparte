@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Button from "@components/ui/Button";
 import PeriodSelector from "@components/ui/PeriodSelector";
+import { formatConsoPeriodLong } from "@utils/formatUtils";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
 const ControlLabel = styled.span`
@@ -56,6 +57,9 @@ export const ConsommationControls: React.FC = () => {
 					maxYear={maxYear}
 					onStartYearChange={setStartYear}
 					onEndYearChange={setEndYear}
+					endYearOffset={1}
+					datePrefix="1er janv."
+					dropdownCaption={<>Au 1<sup>er</sup> janvier</>}
 				/>
 
 				{hasChangedFromDefault && (
@@ -64,7 +68,7 @@ export const ConsommationControls: React.FC = () => {
 						variant="secondary"
 						size="sm"
 						icon="bi bi-arrow-clockwise"
-						title={`Réinitialiser à la période ${defaultStartYear}-${defaultEndYear}`}
+						title={`Réinitialiser à la période ${formatConsoPeriodLong(defaultStartYear, defaultEndYear)}`}
 					/>
 				)}
 

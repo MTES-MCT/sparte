@@ -101,7 +101,7 @@ const Dashboard: React.FC<DashboardProps> = ({ landType, landId, landSlug }) => 
                                             path={urls.consommation}
                                             element={
                                                 <RouteWrapper
-                                                    title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
+                                                    title="Consommation d'espaces naturels, agricoles et forestiers (ENAF)"
                                                     showPage={has_conso}
                                                     showStatus={consommation_correction_status !== ConsoCorrectionStatusEnum.DONNEES_INCHANGEES}
                                                     status={

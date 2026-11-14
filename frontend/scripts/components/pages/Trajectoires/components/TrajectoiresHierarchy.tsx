@@ -326,7 +326,7 @@ export const TrajectoiresHierarchy: React.FC<TrajectoiresHierarchyProps> = ({
       </Header>
       <Subtitle>
         Pour {land_name}, les objectifs de réduction de la consommation
-        d'espaces NAF sont déclinés de la façon suivantes :
+        d'ENAF sont déclinés de la façon suivante :
       </Subtitle>
       <TimelineContainer>
         {fullHierarchy.map((item, index) => {

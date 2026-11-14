@@ -4,7 +4,7 @@ import { BivariateMap, useMapDrilldown } from "@components/charts/consommation/B
 import Kpi from "@components/ui/Kpi";
 import Loader from "@components/ui/Loader";
 import Button from "@components/ui/Button";
-import { formatNumber } from "@utils/formatUtils";
+import { formatNumber, formatFirstJanuary } from "@utils/formatUtils";
 import { djangoApi, useGetSocioEconomicStatsQuery } from "@services/api";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 import Badge from "@components/ui/Badge";
@@ -83,10 +83,10 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
 
   return (
     <div className="fr-mt-7w">
-      <h3 id="conso-demographie">Consommation d'espaces NAF et dynamiques socio-économiques</h3>
+      <h3 id="conso-demographie">Consommation d'ENAF et dynamiques socio-économiques</h3>
       <p className="fr-text--sm fr-mb-3w">
-        Cette section croise la consommation d'espaces NAF avec les principales dynamiques socio-économiques du territoire :
-        population, ménages, emplois. Ces indicateurs permettent de mettre en perspective la consommation foncière
+        Cette section croise la consommation d'ENAF avec les principales dynamiques socio-économiques du territoire :
+        population, ménages, emplois. Ces indicateurs permettent de mettre en perspective la consommation d'ENAF
         au regard des besoins liés au développement du territoire.
       </p>
 
@@ -104,8 +104,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(Math.min(endYear, 2022)),
+              from: formatFirstJanuary(startYear),
+              to: formatFirstJanuary(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -122,8 +122,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(Math.min(endYear, 2022)),
+              from: formatFirstJanuary(startYear),
+              to: formatFirstJanuary(Math.min(endYear, 2022)),
             }}
           />
         </div>
@@ -140,8 +140,8 @@ export const ConsoDemography: React.FC<ConsoDemographyProps> = ({
             variant="default"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(Math.min(endYear, 2022)),
+              from: formatFirstJanuary(startYear),
+              to: formatFirstJanuary(Math.min(endYear, 2022)),
             }}
           />
         </div>

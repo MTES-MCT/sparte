@@ -4,6 +4,7 @@ from functools import cached_property
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import HIGHLIGHT_COLOR, INSEE_CREDITS
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
+from project.charts.periods import conso_period_short, first_january
 from public_data.domain.containers import PublicDataContainer
 
 logger = logging.getLogger(__name__)
@@ -117,8 +118,9 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "credits": {"enabled": False},
             "title": {
                 "text": (
-                    f"Consommation d'espaces au regard de l'évolution de la population de {self.land.name} "
-                    f"et des territoires de comparaison ({self.params['start_date']} - {self.params['end_date']})"
+                    f"Consommation d'ENAF au regard de l'évolution de la population de {self.land.name} "
+                    "et des territoires de comparaison "
+                    f"({conso_period_short(self.params['start_date'], self.params['end_date'])})"
                 )
             },
             "xAxis": {
@@ -136,7 +138,7 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
                     "Consommation relative à la surface : <span class='fr-text--bold'>{point.y:.4f} %%</span><br />"
                     "Évolution démographique : <span class='fr-text--bold'>{point.x} %%</span><br />"
                     "Population totale (%s) : <span class='fr-text--bold'>{point.z} hab</span>"
-                    % self.params["end_date"]
+                    % first_january(self.params["end_date"])
                 ),
             },
             "series": self.series,
@@ -149,7 +151,7 @@ class PopulationConsoComparisonChart(ComparisonChartMixin, DiagnosticChart):
             "Territoire",
             "Consommation relative à la surface (%)",
             "Évolution démographique (%)",
-            f"Population {self.params['end_date']} (hab)",
+            f"Population au {first_january(self.params['end_date'])} (hab)",
         ]
         rows = []
 

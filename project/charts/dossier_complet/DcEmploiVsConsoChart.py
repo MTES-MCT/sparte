@@ -5,6 +5,7 @@ from project.charts.constants import (
     HIGHLIGHT_COLOR,
     INSEE_CREDITS,
 )
+from project.charts.periods import conso_period_short
 from public_data.models import LandConso, LandDcCreationsEntreprises
 
 
@@ -56,7 +57,7 @@ class DcEmploiVsConsoChart(DiagnosticChart):
             "title": {
                 "text": (
                     f"Créations d'entreprises et consommation d'espaces - {self.land.name} "
-                    f"({self.effective_start_date} - {self.params['end_date']})"
+                    f"({conso_period_short(self.effective_start_date, self.params['end_date'])})"
                 )
             },
             "credits": INSEE_CREDITS,
