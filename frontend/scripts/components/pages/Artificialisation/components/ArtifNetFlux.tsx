@@ -5,6 +5,7 @@ import BaseCard from "@components/ui/BaseCard";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { ArtificialisationDiffMap } from "@components/map/ui/ArtificialisationDiffMap";
+import { hasOcsgeFlux } from "@utils/fluxUtils";
 import { useArtificialisationContext } from "../context/ArtificialisationContext";
 
 export const ArtifNetFlux: React.FC = () => {
@@ -15,11 +16,13 @@ export const ArtifNetFlux: React.FC = () => {
     millesimes,
     isInterdepartemental,
     landArtifStockIndex,
+    landArtifFluxIndex,
     byDepartementNetFlux,
     setByDepartementNetFlux,
   } = useArtificialisationContext();
 
   const maxIndex = Math.max(...millesimes.map((m) => m.index));
+  const hasDiff = hasOcsgeFlux(landArtifFluxIndex?.flux_artif, landArtifFluxIndex?.flux_desartif);
 
   return (
     <div className="fr-mb-5w">
@@ -31,7 +34,7 @@ export const ArtifNetFlux: React.FC = () => {
           between={true}
         />
       </h2>
-      {landType !== LandType.REGION && (
+      {landType !== LandType.REGION && hasDiff && (
         <div className="fr-mb-5w">
           <ArtificialisationDiffMap landData={landData} />
         </div>

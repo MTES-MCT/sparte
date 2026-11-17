@@ -18,6 +18,8 @@ MATOMO = "https://stats.beta.gouv.fr"
 CRISP_CLIENT = "https://client.crisp.chat"
 # Widget Messages de l'ANCT (La Suite)
 LA_SUITE = "https://beta.gouv.fr"
+# Fond de plan OpenStreetMap des cartes : tuiles chargées par MapLibre en fetch (connect-src)
+OSM_TILES = "https://tile.openstreetmap.org"
 # Serveur de développement webpack (bundle, styles, rechargement à chaud), servi en HTTP
 WEBPACK_DEV_SERVER = "http://localhost:3000"
 WEBPACK_DEV_SERVER_WS = "ws://localhost:3000/ws"
@@ -51,6 +53,7 @@ def build_csp_directives(
             "data:",
             BLOB,
             "https://data.geopf.fr",
+            OSM_TILES,
             "https://s3.fr-par.scw.cloud",
             media_url,
             CRISP_CLIENT,
@@ -68,6 +71,7 @@ def build_csp_directives(
             METABASE,
             MATOMO,
             "https://data.geopf.fr",
+            OSM_TILES,
             "https://raw.githack.com",
             "https://openmaptiles.geo.data.gouv.fr",
             "https://openmaptiles.github.io",

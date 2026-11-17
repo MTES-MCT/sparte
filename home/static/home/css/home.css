@@ -31,12 +31,16 @@ section {
     background: #000091;
     padding: 0.75rem 0;
     transform: translateY(-100%);
-    transition: transform 0.3s ease;
+    /* Masquée hors écran : visibility la retire aussi de l'ordre de tabulation, après la glissade */
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .sticky-search-bar.is-visible {
     transform: translateY(0);
+    visibility: visible;
+    transition: transform 0.3s ease, visibility 0s;
 }
 
 .sticky-search-bar .fr-container {
@@ -55,6 +59,10 @@ section {
 .section-hero {
     background: linear-gradient(180deg, #faf8f5 0%, #f5f1eb 100%);
     position: relative;
+    /* Le halo décoratif (::before) dépasse de 20 % à droite : sans rognage, toute la page défile
+       horizontalement. `clip` ne rogne que cet axe et laisse dépasser vers le bas la liste des
+       résultats de la recherche. */
+    overflow-x: clip;
 }
 
 .section-hero::before {

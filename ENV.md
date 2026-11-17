@@ -70,6 +70,7 @@ Prérequis : [Bitwarden CLI](https://bitwarden.com/help/cli/) (`bw`) installé (
 | Variable | Description | Valeur par défaut |
 |----------|-------------|-------------------|
 | `SCALINGO_REDIS_URL` | URL Redis | `redis://redis:6379/0` |
+| `USE_REDIS` | `0` coupe tout accès à Redis : le site est servi sans cache (cache factice) et `SCALINGO_REDIS_URL` n'est plus lue. À poser pendant une panne ou une maintenance de l'addon | `1`, sauf en `local` (`0`) |
 
 ## Stockage S3
 

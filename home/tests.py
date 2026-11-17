@@ -6,7 +6,13 @@ from django.template import Context, Template
 from django.template.loader import get_template
 from django.test import SimpleTestCase, TestCase, modify_settings, override_settings
 
-from config.csp import WEBPACK_DEV_SERVER, WEBPACK_DEV_SERVER_WS, build_csp_directives
+from config.cache_backends import build_caches
+from config.csp import (
+    OSM_TILES,
+    WEBPACK_DEV_SERVER,
+    WEBPACK_DEV_SERVER_WS,
+    build_csp_directives,
+)
 
 
 class HomeTests(TestCase):
@@ -39,6 +45,18 @@ class HomeTests(TestCase):
         response = self.client.get("/maintenance?next=/contact")
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, "/contact")
+
+    def test_robots_txt_disallows_api_without_blocking_any_bot(self) -> None:
+        response = self.client.get("/robots.txt")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/plain")
+        content = response.content.decode()
+        # une seule section, commune à tous les robots
+        self.assertEqual(content.count("User-Agent:"), 1)
+        self.assertIn("User-Agent: *\n", content)
+        self.assertIn("Disallow: /api/\n", content)
+        # aucun robot n'est exclu de tout le site
+        self.assertNotIn("Disallow: /\n", content)
 
 
 class SitemapTests(TestCase):
@@ -217,6 +235,13 @@ class ContentSecurityPolicyTests(TestCase):
 
         self.assertIn("blob:", directives["img-src"])
 
+    def test_openstreetmap_tiles_are_allowed(self) -> None:
+        # Fond de plan des cartes : tuiles demandées en fetch par MapLibre (connect-src) ou en image (img-src)
+        directives = build_csp_directives(local=False, **HTTPS_SOURCES)
+
+        self.assertIn(OSM_TILES, directives["connect-src"])
+        self.assertIn(OSM_TILES, directives["img-src"])
+
     def test_report_uri_is_added_only_when_configured(self) -> None:
         report_uri = "https://sentry.example.org/api/21/security/?sentry_key=abc"
         directives = build_csp_directives(local=False, report_uri=report_uri, **HTTPS_SOURCES)
@@ -234,6 +259,34 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertIn(WEBPACK_DEV_SERVER_WS, directives["connect-src"])
         self.assertIn("http://s3:7070", directives["img-src"])
         self.assertIn("http://s3:7070", directives["connect-src"])
+
+
+class CacheSettingsTests(SimpleTestCase):
+    """`USE_REDIS=0` doit couper tout accès à Redis sans casser le code qui appelle le cache."""
+
+    def test_redis_cache_is_used_when_an_url_is_given(self) -> None:
+        caches = build_caches(redis_url="redis://redis:6379/0")
+
+        self.assertEqual(caches["default"]["BACKEND"], "django_redis.cache.RedisCache")
+        self.assertEqual(caches["default"]["LOCATION"], "redis://redis:6379/0")
+
+    def test_no_redis_is_configured_without_url(self) -> None:
+        caches = build_caches(redis_url=None)
+
+        self.assertEqual(caches, {"default": {"BACKEND": "config.cache_backends.RedisDummyCache"}})
+
+    def test_cache_calls_made_by_the_code_work_without_redis(self) -> None:
+        from django.core.cache import caches
+
+        with override_settings(CACHES=build_caches(redis_url=None)):
+            cache = caches["default"]
+            cache.set("chart:x", {"a": 1}, timeout=60)
+            # rien n'est gardé : chaque lecture est un défaut de cache
+            self.assertIsNone(cache.get("chart:x"))
+            # appel propre à django-redis, fait à l'enregistrement d'un projet
+            self.assertIsNone(cache.delete_pattern("*project/1/*"))
+            # appel du script de déploiement (commande clear_cache)
+            cache.clear()
 
 
 class SriStaticTemplateTagTests(SimpleTestCase):
