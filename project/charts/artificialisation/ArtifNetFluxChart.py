@@ -8,6 +8,10 @@ from project.charts.constants import (
     DESARTIFICIALISATION_COLOR,
     OCSGE_CREDITS,
 )
+from project.charts.mixins.NationalMapChartMixin import (
+    NationalMapChartMixin,
+    flux_subtitle,
+)
 from public_data.models.administration import AdminRef, LandModel
 from public_data.models.artificialisation import LandArtifFlux, LandArtifFluxIndex
 
@@ -172,3 +176,13 @@ class ArtifNetFluxChartExport(ArtifNetFluxChart):
                 }
             },
         }
+
+
+class ArtifNetFluxChartNationalMap(NationalMapChartMixin, ArtifNetFluxChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Artificialisation, désartificialisation et artificialisation nette"
+
+    @property
+    def national_map_subtitle(self):
+        return flux_subtitle(self.params["millesime_old_index"], self.params["millesime_new_index"], self.data)

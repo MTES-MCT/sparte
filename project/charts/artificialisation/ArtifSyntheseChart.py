@@ -1,5 +1,12 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import DEFAULT_VALUE_DECIMALS, OCSGE_CREDITS
+from project.charts.mixins.NationalMapChartMixin import (
+    NBSP,
+    NationalMapChartMixin,
+    at_millesimes_text,
+    millesime_tick,
+    millesime_years,
+)
 from public_data.models import LandArtifStockIndex
 
 
@@ -260,3 +267,27 @@ class ArtifSyntheseChartExport(ArtifSyntheseChart):
             "rows": rows,
             "boldFirstColumn": True,
         }
+
+
+class ArtifSyntheseChartNationalMap(NationalMapChartMixin, ArtifSyntheseChart):
+    """
+    Graphique complémentaire de la carte nationale : le titre et le sous-titre changent, ainsi que
+    les étiquettes des barres, qui désignent chaque millésime comme eux.
+    """
+
+    national_map_title = "Part du territoire artificialisée"
+
+    @property
+    def millesimes(self):
+        """Index et années de chaque millésime du territoire, dans l'ordre des barres."""
+        return [(stock_index.millesime_index, millesime_years(stock_index)) for stock_index in self.data]
+
+    @property
+    def years(self):
+        # Étiquettes des barres : celles du diagnostic ne donnent que les années, toutes écrites
+        # (« 2016-2017-2018-2019-2020 ») pour un territoire à cheval sur des départements
+        return [millesime_tick(index, years) for index, years in self.millesimes]
+
+    @property
+    def national_map_subtitle(self):
+        return f"En{NBSP}% de la surface du territoire, {at_millesimes_text(self.millesimes)}"

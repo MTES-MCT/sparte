@@ -3,12 +3,14 @@ __all__ = [
     "AnnualTotalConsoChartExport",
     "AnnualConsoByDeterminantChart",
     "AnnualConsoByDeterminantChartExport",
+    "AnnualConsoByDeterminantChartNationalMap",
     "AnnualConsoComparisonChart",
     "AnnualConsoComparisonChartExport",
     "AnnualConsoProportionalComparisonChart",
     "AnnualConsoProportionalComparisonChartExport",
     "ConsoByDeterminantPieChart",
     "ConsoByDeterminantPieChartExport",
+    "ConsoByDeterminantPieChartNationalMap",
     "FrichePollutionChart",
     "FricheSurfaceChart",
     "FricheTypeChart",
@@ -18,6 +20,7 @@ __all__ = [
     "ObjectiveChart",
     "ObjectiveChartExport",
     "PopulationConsoProgressionChart",
+    "PopulationConsoProgressionChartNationalMap",
     "PopulationConsoComparisonChart",
     "PopulationConsoComparisonChartExport",
     "LogementVacantAutorisationLogementRatioProgressionChart",
@@ -59,6 +62,7 @@ __all__ = [
 from .AnnualConsoByDeterminantChart import (
     AnnualConsoByDeterminantChart,
     AnnualConsoByDeterminantChartExport,
+    AnnualConsoByDeterminantChartNationalMap,
 )
 from .AnnualTotalConsoChart import AnnualTotalConsoChart, AnnualTotalConsoChartExport
 from .artificialisation import (
@@ -76,6 +80,7 @@ from .artificialisation import (
 from .ConsoByDeterminantPieChart import (
     ConsoByDeterminantPieChart,
     ConsoByDeterminantPieChartExport,
+    ConsoByDeterminantPieChartNationalMap,
 )
 from .consommation.AnnualConsoComparisonChart import (
     AnnualConsoComparisonChart,
@@ -89,7 +94,10 @@ from .demography.PopulationConsoComparisonChart import (
     PopulationConsoComparisonChart,
     PopulationConsoComparisonChartExport,
 )
-from .demography.PopulationConsoProgressionChart import PopulationConsoProgressionChart
+from .demography.PopulationConsoProgressionChart import (
+    PopulationConsoProgressionChart,
+    PopulationConsoProgressionChartNationalMap,
+)
 from .impermeabilisation import (
     ImperByCouverturePieChart,
     ImperByCouverturePieChartExport,

@@ -6,6 +6,12 @@ from project.charts.constants import (
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
+from project.charts.mixins.NationalMapChartMixin import (
+    NBSP,
+    NationalMapChartMixin,
+    at_millesimes_text,
+    millesime_years,
+)
 from public_data.models import (
     LandArtifStockCouvertureComposition,
     LandArtifStockCouvertureCompositionIndex,
@@ -151,3 +157,15 @@ class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
                 },
             },
         }
+
+
+class ArtifByCouverturePieChartNationalMap(NationalMapChartMixin, ArtifByCouverturePieChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Surfaces artificialisées par type de couverture du sol"
+
+    @property
+    def national_map_subtitle(self):
+        cover = self.data[0]
+        millesime = (cover.millesime_index, millesime_years(cover))
+        return f"En{NBSP}% des surfaces artificialisées, {at_millesimes_text([millesime])}"

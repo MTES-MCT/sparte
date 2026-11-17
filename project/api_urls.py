@@ -19,10 +19,12 @@ from project.api_views import (
 from project.charts import (
     AnnualConsoByDeterminantChart,
     AnnualConsoByDeterminantChartExport,
+    AnnualConsoByDeterminantChartNationalMap,
     AnnualTotalConsoChart,
     AnnualTotalConsoChartExport,
     ConsoByDeterminantPieChart,
     ConsoByDeterminantPieChartExport,
+    ConsoByDeterminantPieChartNationalMap,
     ObjectiveChart,
     ObjectiveChartExport,
     TerritorialisationAnneesRestantesMap,
@@ -40,23 +42,28 @@ from project.charts import (
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByCouverturePieChartExport,
+    ArtifByCouverturePieChartNationalMap,
     ArtifByUsagePieChart,
     ArtifFluxByCouverture,
     ArtifFluxByCouvertureExport,
+    ArtifFluxByCouvertureNationalMap,
     ArtifFluxByUsage,
     ArtifFluxByUsageExport,
     ArtifMap,
     ArtifMapExport,
     ArtifNetFluxChart,
     ArtifNetFluxChartExport,
+    ArtifNetFluxChartNationalMap,
     ArtifSyntheseChart,
     ArtifSyntheseChartExport,
+    ArtifSyntheseChartNationalMap,
     ArtifUsagePieChartExport,
 )
 from project.charts.consommation import (
     ComparisonMap,
     ComparisonMapExport,
     ConsoAnnualChart,
+    ConsoAnnualChartNationalMap,
     ConsoMap,
     ConsoMapBubble,
     ConsoMapBubbleExport,
@@ -78,11 +85,13 @@ from project.charts.demography.PopulationConsoComparisonChart import (
 )
 from project.charts.demography.PopulationConsoProgressionChart import (
     PopulationConsoProgressionChart,
+    PopulationConsoProgressionChartNationalMap,
 )
 from project.charts.dossier_complet import (
     DcCreationsEntreprisesChart,
     DcCspRepartitionChart,
     DcEmploiChomageChart,
+    DcEmploiChomageChartNationalMap,
     DcEmploiConsoComparisonChart,
     DcEmploiConsoMap,
     DcEmploiMap,
@@ -99,6 +108,7 @@ from project.charts.dossier_complet import (
     DcMenagesConsoComparisonChartExport,
     DcMenagesConsoMap,
     DcMenagesEvolutionChart,
+    DcMenagesEvolutionChartNationalMap,
     DcPauvreteMap,
     DcPopulationConsoMap,
     DcPopulationEvolutionChart,
@@ -339,6 +349,17 @@ def get_chart_klass_or_404(chart_id):
         "dc_residences_secondaires": DcResidencesSecondairesChart,
         "dc_residences_secondaires_conso_map": DcResidencesSecondairesConsoMap,
         "dc_residences_secondaires_map": DcResidencesSecondairesMap,
+        # Graphiques complémentaires de la carte nationale : ceux du diagnostic sous d'autres titres
+        "chart_determinant_national_map": AnnualConsoByDeterminantChartNationalMap,
+        "pie_determinant_national_map": ConsoByDeterminantPieChartNationalMap,
+        "conso_annual_national_map": ConsoAnnualChartNationalMap,
+        "population_conso_progression_chart_national_map": PopulationConsoProgressionChartNationalMap,
+        "dc_menages_evolution_national_map": DcMenagesEvolutionChartNationalMap,
+        "dc_emploi_chomage_national_map": DcEmploiChomageChartNationalMap,
+        "artif_synthese_national_map": ArtifSyntheseChartNationalMap,
+        "pie_artif_by_couverture_national_map": ArtifByCouverturePieChartNationalMap,
+        "artif_net_flux_national_map": ArtifNetFluxChartNationalMap,
+        "artif_flux_by_couverture_national_map": ArtifFluxByCouvertureNationalMap,
     }
 
     if chart_id not in charts:

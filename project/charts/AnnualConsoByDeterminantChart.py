@@ -4,6 +4,11 @@ from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
     LEGEND_NAVIGATION_EXPORT,
 )
+from project.charts.mixins.NationalMapChartMixin import (
+    IN_HECTARES,
+    NationalMapChartMixin,
+    period_text,
+)
 from project.utils import add_total_line_column
 from public_data.domain.containers import PublicDataContainer
 
@@ -168,3 +173,13 @@ class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
                 )
             },
         }
+
+
+class AnnualConsoByDeterminantChartNationalMap(NationalMapChartMixin, AnnualConsoByDeterminantChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Consommation d'ENAF par année et par destination"
+
+    @property
+    def national_map_subtitle(self):
+        return f"{IN_HECTARES}, {period_text(self.params['start_date'], self.params['end_date'])}"
