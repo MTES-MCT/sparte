@@ -16,7 +16,7 @@ import {
 	ReportTypeOption,
 } from "./types/reportDraft";
 
-export const NATIONAL_MAP_FORMAT_VERSION = 5;
+export const NATIONAL_MAP_FORMAT_VERSION = 8;
 
 export type NationalMapFeature = {
 	type: "Feature";
@@ -31,6 +31,9 @@ export type NationalMapInset = {
 	name: string;
 	// Emprise du territoire déplacé, en coordonnées projetées (EPSG:3857) : [xmin, ymin, xmax, ymax]
 	bbox: [number, number, number, number];
+	// Emprise du territoire à sa position réelle, de mêmes proportions : une image de cette
+	// emprise se pose telle quelle sur le cartouche
+	source_bbox: [number, number, number, number];
 };
 
 export type NationalMapParent = {
@@ -46,6 +49,9 @@ export type NationalMapBaseMap = {
 	insets: NationalMapInset[];
 	// Polyligne séparant les territoires déplacés de l'Hexagone, en coordonnées projetées
 	separation: [number, number][];
+	// Limite du territoire parent, en lignes de coordonnées projetées, quand les entités du fond
+	// peuvent déborder de lui (département à la maille EPCI) ; null pour les autres fonds
+	parent_boundary: [number, number][][] | null;
 	no_conso_data: string[];
 	parent: NationalMapParent | null;
 };
@@ -66,12 +72,7 @@ export type NationalMapLandIndicators = {
 	conso_route_ha: number | null;
 	conso_ferroviaire_ha: number | null;
 	conso_inconnu_ha: number | null;
-	annual_conso_2011_2021: number | null;
-	annual_conso_2021_end: number | null;
 	conso_evolution_between_periods: number | null;
-	conso_2011_end: number | null;
-	conso_2011_2021: number | null;
-	conso_2021_end: number | null;
 	bivariate_activite_emplois: NationalMapBivariateValue;
 	bivariate_habitat_menages: NationalMapBivariateValue;
 	bivariate_habitat_population: NationalMapBivariateValue;
@@ -97,6 +98,81 @@ export type NationalMapIndicators = {
 };
 
 export type NationalMapQuery = { scale: string; parent_type?: string; parent_id?: string };
+
+// Artificialisation (OCS GE) d'un territoire : stock à son dernier millésime et flux entre ses deux
+// derniers millésimes. Tout est à null (et les listes d'années vides) sans couverture OCS GE complète.
+export type NationalMapArtifLand = {
+	surface_ha: number;
+	artif_ha: number | null;
+	artif_pct: number | null;
+	// Année du dernier millésime ; plusieurs pour un territoire à cheval sur des départements
+	artif_years: number[];
+	// Index de ce millésime (« millésime n°2 ») ; absent d'une réponse d'avant la version 2 du format
+	artif_index?: number | null;
+	artif_net_ha: number | null;
+	artif_net_pct_surface: number | null;
+	artif_net_annual_ha: number | null;
+	artif_net_annual_pct_surface: number | null;
+	artif_gross_ha: number | null;
+	desartif_gross_ha: number | null;
+	artif_net_years_old: number[];
+	artif_net_years_new: number[];
+	// Index des deux millésimes du flux
+	artif_net_index_old?: number | null;
+	artif_net_index_new?: number | null;
+};
+
+export type NationalMapArtifIndicators = {
+	scale: string;
+	lands: Record<string, NationalMapArtifLand>;
+};
+
+// Millésimes OCS GE communs à plusieurs communes : ceux du stock ou ceux du flux, selon la clé demandée
+export type NationalMapYearSet = Partial<
+	Pick<NationalMapArtifLand, "artif_years" | "artif_index" | "artif_net_years_old" | "artif_net_years_new" | "artif_net_index_old" | "artif_net_index_new">
+>;
+
+// `amount` : clé des hectares dont `key` est la version relative, pour les donner au survol.
+// `start_year` et `end_year` ne sont envoyés que pour une clé qui dépend de la période choisie.
+export type NationalMapValuesQuery = { scale: string; key: string; amount?: string; start_year?: number; end_year?: number };
+
+type NationalMapValuesHeader = {
+	scale: string;
+	key: string;
+	amount: string | null;
+	// null pour une clé qui ne dépend pas de la période choisie
+	start_year: number | null;
+	end_year: number | null;
+	// Identifiants des territoires, triés : toutes les colonnes sont alignées dessus
+	ids: string[];
+	// Code INSEE de la région de chaque territoire
+	regions: (string | null)[];
+	// Territoires dont la source manque (identifiant, nom) : les 50 premiers, et leur nombre total
+	no_data: [string, string][];
+	no_data_count: number;
+};
+
+// Valeurs d'un indicateur pour tous les territoires d'une maille, en colonnes : la réponse
+// « indicateurs » pèserait 2,5 Mo compressés pour les 34 875 communes du pays.
+export type NationalMapValueColumns = NationalMapValuesHeader & {
+	values: (number | null)[];
+	// Hectares correspondants, si `amount` est demandé
+	amounts?: (number | null)[];
+	// Artificialisation : jeux de millésimes, et rang de celui de chaque territoire
+	year_sets?: NationalMapYearSet[];
+	year_set_index?: number[];
+};
+
+// Carte bivariée : la classe (0 à 8) et les deux taux de chaque territoire, et la description
+// de la carte telle que la donne la réponse « indicateurs »
+export type NationalMapBivariateColumns = NationalMapValuesHeader & {
+	classes: (number | null)[];
+	conso_rates: (number | null)[];
+	indic_rates: (number | null)[];
+	bivariate: NationalMapBivariateMeta;
+};
+
+export type NationalMapValues = NationalMapValueColumns | NationalMapBivariateColumns;
 
 export type CurrentUserResponse = {
 	is_authenticated: boolean;
@@ -172,6 +248,26 @@ export const djangoApi = createApi({
 					end_year: String(end_year),
 					...(parent_type && parent_id ? { parent_type, parent_id } : {}),
 				})}`,
+		}),
+		getNationalMapArtifIndicators: builder.query<NationalMapArtifIndicators, NationalMapQuery>({
+			query: ({ scale, parent_type, parent_id }) =>
+				`/public/national-map/artif-indicators?${new URLSearchParams({
+					scale,
+					...(parent_type && parent_id ? { parent_type, parent_id } : {}),
+				})}`,
+		}),
+		getNationalMapValues: builder.query<NationalMapValues, NationalMapValuesQuery>({
+			query: ({ scale, key, amount, start_year, end_year }) =>
+				`/public/national-map/values?${new URLSearchParams({
+					scale,
+					key,
+					...(amount ? { amount } : {}),
+					...(start_year && end_year ? { start_year: String(start_year), end_year: String(end_year) } : {}),
+				})}`,
+			// Une réponse analysée occupe environ 2 Mo de mémoire (mesuré) et il y en a une par carte
+			// et par période : elle n'est gardée qu'une minute après usage. Le cache HTTP du
+			// navigateur la ressert ensuite sans appel au serveur, tant qu'elle y est fraîche.
+			keepUnusedDataFor: 60,
 		}),
 		getChartConfig: builder.query({
 			query: ({ id, land_type, land_id, ...params }) => {
@@ -502,6 +598,8 @@ const {
 	useGetChartConfigQuery,
 	useGetNationalMapBaseMapQuery,
 	useGetNationalMapIndicatorsQuery,
+	useGetNationalMapArtifIndicatorsQuery,
+	useGetNationalMapValuesQuery,
 	useGetLandArtifStockIndexQuery,
 	useGetLandArtifFluxIndexQuery,
 	useGetLandImperStockIndexQuery,
@@ -531,6 +629,8 @@ export {
 	useGetChartConfigQuery,
 	useGetNationalMapBaseMapQuery,
 	useGetNationalMapIndicatorsQuery,
+	useGetNationalMapArtifIndicatorsQuery,
+	useGetNationalMapValuesQuery,
 	useGetLandQuery,
 	useGetArtifZonageIndexQuery,
 	useGetImperZonageIndexQuery,
