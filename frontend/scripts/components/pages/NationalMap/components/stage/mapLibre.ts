@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
-import { theme } from '@theme';
 import { FRENCH_LOCALE } from '@components/map/constants/config';
 import type { Bounds } from '../../gridded';
 import { TipSource, tipOf } from '../../domain/tip';
@@ -125,14 +124,15 @@ export const useTilesAvailability = (url: string | null): boolean | null => {
     useEffect(() => {
         if (!url) return undefined;
         let cancelled = false;
-        isAvailable(url).then((value) => {
+        // isAvailable ne rejette jamais : un fichier illisible vaut « absent »
+        void isAvailable(url).then((value) => {
             if (!cancelled) setKnown({ url, value });
         });
         return () => {
             cancelled = true;
         };
     }, [url]);
-    return known && known.url === url ? known.value : null;
+    return known?.url === url ? known.value : null;
 };
 
 // Présence de plusieurs fichiers de tuiles, par adresse ; une adresse dont la présence n'est pas

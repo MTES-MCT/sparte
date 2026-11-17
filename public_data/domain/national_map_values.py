@@ -129,8 +129,8 @@ ARTIF_YEAR_FIELDS: dict[str, tuple[str, ...]] = {
 
 # Liste fermée des clés servies, avec leur famille
 FAMILY_BY_KEY: dict[str, str] = {
-    **{key: CONSO for key in (*CONSO_COLUMNS, EVOLUTION_KEY)},
-    **{key: BIVARIATE for key in BIVARIATES},
+    **dict.fromkeys((*CONSO_COLUMNS, EVOLUTION_KEY), CONSO),
+    **dict.fromkeys(BIVARIATES, BIVARIATE),
     **{key: family for family, keys in ARTIF_KEYS.items() for key in keys},
 }
 

@@ -195,7 +195,7 @@ const roundDown = (value: number): number => {
 
 // Valeurs rondes des cercles de référence de la légende, de la plus grande à la plus petite
 export const symbolReferenceValues = (maxValue: number, decimals = 0): number[] => {
-    if (!(maxValue > 0)) return [];
+    if (Number.isNaN(maxValue) || maxValue <= 0) return [];
     const smallest = 10 ** -decimals;
     const references = [maxValue, maxValue / 4, maxValue / 20].map(roundDown).filter((v) => v >= smallest);
     return references.filter((v, i) => references.indexOf(v) === i);

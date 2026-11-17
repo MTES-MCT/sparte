@@ -284,7 +284,7 @@ const CHART_LAYOUTS = {
         narrow: (context, options) => {
             const change = surfaceChangeOf(options);
             return {
-                subtitle: ocsgeSubtitle(`${serverSubtitle(options)}${change === null ? '' : `${NBSP}; ${formatSigned(change, 0)}${NBSP}ha`}`, context),
+                subtitle: ocsgeSubtitle(serverSubtitle(options) + (change === null ? '' : `${NBSP}; ${formatSigned(change, 0)}${NBSP}ha`), context),
                 xAxis: { labels: YEAR_LABELS },
                 yAxis: VALUE_AXIS,
                 plotOptions: { column: { dataLabels: { style: BAR_LABEL_STYLE } } },

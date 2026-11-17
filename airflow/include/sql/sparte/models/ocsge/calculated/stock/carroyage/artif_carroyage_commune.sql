@@ -9,23 +9,23 @@
 }}
 
 {#-
-    Surface artificialisée et surface couverte par l'OCS GE dans chaque maille carrée d'une
+    Surface artificialisée et surface couverte par l’OCS GE dans chaque maille carrée d’une
     grille fine (voir `carroyage_artif_resolutions_m`, première valeur), commune par commune,
     au dernier millésime de chaque département.
 
-    C'est la base de la carte « sols artificialisés » de la carte nationale : à l'échelle du
-    pays ou d'une région, un objet OCS GE fait bien moins d'un pixel, et les tuiles des
+    C’est la base de la carte « sols artificialisés » de la carte nationale : à l’échelle du
+    pays ou d’une région, un objet OCS GE fait bien moins d’un pixel, et les tuiles des
     diagnostics (un fichier de 120 Mo par département en médiane) ne peuvent pas être
     chargées. Le modèle `for_vector_tiles_sols_artificialises_national` regroupe ces mailles
     en blocs de plus en plus grands.
 
-    La grille est celle de la projection d'origine de chaque territoire (`srid`) : Lambert-93
+    La grille est celle de la projection d’origine de chaque territoire (`srid`) : Lambert-93
     en métropole, une projection UTM par DROM. La maille (x, y) couvre le carré dont le coin
     sud-ouest est (x × côté, y × côté).
 
-    Une ligne par commune et par maille, et non par maille : la somme d'une commune se compare
-    ainsi aux tables d'artificialisation des diagnostics (test
-    `artif_carroyage_commune_matches_ocsge_stock`), et les territoires d'une maille (région,
+    Une ligne par commune et par maille, et non par maille : la somme d’une commune se compare
+    ainsi aux tables d’artificialisation des diagnostics (test
+    `artif_carroyage_commune_matches_ocsge_stock`), et les territoires d’une maille (région,
     département, EPCI) se déduisent de ses communes.
 
     Découpage : chaque objet est croisé avec les mailles que recoupe son emprise. Un objet
@@ -41,10 +41,10 @@
     La requête est écrite pour être exécutée en parallèle : le pays est calculé en 1 h 45 sur
     dix processus (mesuré le 13 novembre 2026), contre 4 h 30 sur un seul avec le découpage
     rapide. Deux conditions pour cela :
-    - la table des objets n'est lue qu'une fois, sans expression de table lue par plusieurs
+    - la table des objets n’est lue qu’une fois, sans expression de table lue par plusieurs
       branches, pour que son parcours soit réparti entre plusieurs processus ;
     - `morceaux` est MATERIALIZED : les surfaces sont ainsi calculées dans ces processus.
-      Sans cela, le calcul est repoussé dans l'agrégation, qui trie d'abord les géométries.
+      Sans cela, le calcul est repoussé dans l’agrégation, qui trie d’abord les géométries.
 -#}
 
 {%- set cell_size_m = carroyage_artif_resolutions_m() | first %}

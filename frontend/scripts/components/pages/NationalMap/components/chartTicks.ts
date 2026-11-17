@@ -8,7 +8,7 @@ const TICK_STEPS = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
 // `count` graduations régulières (trois au moins) qui couvrent l'intervalle, au pas le plus fin de
 // TICK_STEPS qui le permet ; undefined pour un intervalle vide
 export const roundTicks = (min: number, max: number, count: number): number[] | undefined => {
-    if (!(max > min)) return undefined;
+    if (Number.isNaN(max - min) || max <= min) return undefined;
     const magnitude = 10 ** Math.floor(Math.log10((max - min) / (count - 1)));
     // La première graduation tombe sous le minimum, à un multiple du pas : il faut parfois un pas
     // de la puissance de dix suivante, qui couvre toujours l'intervalle

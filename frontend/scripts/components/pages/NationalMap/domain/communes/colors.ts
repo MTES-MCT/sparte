@@ -3,7 +3,7 @@
 // nombre de communes touchées : seules celles dont la couleur change sont à mettre à jour.
 import { NO_DATA_COLOR } from '../../values';
 import { NO_DATA_KEY, OUTSIDE_ZONE_KEY } from '../frame/render/communes';
-import type { CommunesRender, LegendKey } from '../frame/types';
+import type { CommunesRender } from '../frame/types';
 
 // Une commune hors de la zone affichée n'est pas dessinée
 const OUTSIDE_ZONE_COLOR = 'rgba(0, 0, 0, 0)';
@@ -26,7 +26,7 @@ export type CommuneColors = { ids: string[]; colors: string[] };
 // Couleur affichée de chaque commune : celle de sa clé de légende, grise sans donnée,
 // transparente hors de la zone. Quand une ligne de légende est mise en avant (`highlighted`), les
 // communes des autres lignes, et celles sans donnée, prennent la version estompée de leur couleur.
-export const communeColors = ({ ids, legendKeys, palette }: CommunesRender, highlighted: LegendKey | null): CommuneColors => {
+export const communeColors = ({ ids, legendKeys, palette }: CommunesRender, highlighted: number | null): CommuneColors => {
     const faded = palette.map(dimmed);
     const noData = highlighted === null ? NO_DATA_COLOR : dimmed(NO_DATA_COLOR);
     const colors = new Array<string>(ids.length);

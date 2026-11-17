@@ -123,7 +123,8 @@ export const COMMUNES_ARTIF_NET_SHARE: NationalMapValueColumns = {
 const seededRandom = (seed: number): (() => number) => {
     let state = seed;
     return () => {
-        state = (state + 0x6d2b79f5) | 0;
+        // Math.imul ramène la somme sur 32 bits signés, comme l'attend mulberry32
+        state = Math.imul(state + 0x6d2b79f5, 1);
         let mixed = Math.imul(state ^ (state >>> 15), 1 | state);
         mixed = (mixed + Math.imul(mixed ^ (mixed >>> 7), 61 | mixed)) ^ mixed;
         return ((mixed ^ (mixed >>> 14)) >>> 0) / 4294967296;

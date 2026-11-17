@@ -281,7 +281,7 @@ describe('nuage de points des cartes bivariées', () => {
         openTwelveRegions();
         act(() => mockScatter.highlight.publish('scatter', 'R7'));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 });
 
@@ -406,7 +406,7 @@ describe('vue chargée', () => {
         expect(mapChoices()[0]).toBe('conso_pct_surface');
         expect(drawnLands()).toEqual(['Métropole de Lyon', 'Rennes Métropole']);
         expect(mapLegend()).toHaveTextContent("Consommation d'ENAF (en pourcentage de la surface communale)");
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('rouvre depuis son adresse la France entière par région, en hectares consommés', () => {
@@ -735,11 +735,11 @@ describe('changement de période', () => {
         openFranceByRegion();
         chooseStartYear(2012);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
 
         deliverConso(FRANCE_BY_REGION, from2012);
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
     });
 });
 
@@ -930,7 +930,7 @@ describe('vers les données carroyées et retour', () => {
 
         expect(selectedMap()).toBe('conso_ha_gridded');
         expect(territoryMap()).not.toBeNull();
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(mapLegend()).toHaveTextContent("Consommation d'ENAF (en hectares)");
         expect(keyFigures().textContent).toBe(before);
         expect(screen.getByRole('status')).toHaveTextContent('Chargement de la carte : France entière…');
@@ -968,7 +968,7 @@ describe('vers les données carroyées et retour', () => {
         fireEvent.click(screen.getByRole('radio', { name: "Consommation d'ENAF (en hectares)" }));
 
         expect(territoryMap()).not.toBeNull();
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
         expect(gridMap()).toBeNull();
         expect(mapLegend()).toHaveTextContent("Consommation d'ENAF (en hectares)");
     });
@@ -1058,7 +1058,7 @@ describe('destinations des données carroyées', () => {
         expect(gridStub.props.render.cells.file).toBe('carroyage_national_habitat.pmtiles');
         expect(gridStub.creations).toBe(1);
         expect(territoryMap()).toBeNull();
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         // La même légende, à son emplacement, sous le titre de la destination
         expect(mapLegend()).toBe(legend);
         expect(mapLegend()).toHaveTextContent("Consommation d'ENAF à destination de l'habitat (en hectares), données carroyées");
@@ -1237,7 +1237,7 @@ describe('toutes les communes d’une zone nationale', () => {
             expect(mapLegend()).toBe(legendNode);
             expect(mapLegend()).toHaveTextContent('Classes par quantiles');
             expect(screen.queryByRole('status')).toBeNull();
-            expect(chartStub.creations.length).toBe(1);
+            expect(chartStub.creations).toHaveLength(1);
         });
 
         it('affiche la vue au bout de trois secondes si les tuiles tardent, sous l’annonce de leur chargement', () => {
@@ -1269,7 +1269,7 @@ describe('toutes les communes d’une zone nationale', () => {
             expect(communesMap()).toBeNull();
             expect(mapLegend()).toBe(legendNode);
             expect(mapLegend()).toHaveTextContent('méthode de Jenks');
-            expect(chartStub.creations.length).toBe(2);
+            expect(chartStub.creations).toHaveLength(2);
         });
     });
 
@@ -1289,7 +1289,7 @@ describe('toutes les communes d’une zone nationale', () => {
         expect(communesStub.creations).toBe(1);
         expect(communesStub.props.busy).toBe(false);
         expect(communesStub.props.render.describe('35238').valueText).toMatch(/soit 123/);
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
     });
 
     it('ouvre par commune le département désigné dans la fiche de sélection', () => {
@@ -1338,11 +1338,11 @@ describe('créations du graphique', () => {
         openPage(BY_REGION_IN_HECTARES);
         deliverBaseMap(FRANCE_BY_REGION);
 
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
 
         deliverConso(FRANCE_BY_REGION, CONSO_FRANCE_BY_REGION);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('crée la carte une seule fois au premier affichage, quand les données arrivent avant le fond', () => {
@@ -1350,7 +1350,7 @@ describe('créations du graphique', () => {
         deliverConso(FRANCE_BY_REGION, CONSO_FRANCE_BY_REGION);
         deliverBaseMap(FRANCE_BY_REGION);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne crée rien pendant le chargement d’une autre maille, puis crée sa carte une seule fois', () => {
@@ -1358,11 +1358,11 @@ describe('créations du graphique', () => {
         fireEvent.click(scaleButton('Département'));
         deliverBaseMap(FRANCE_BY_DEPARTEMENT);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
 
         deliverConso(FRANCE_BY_DEPARTEMENT, CONSO_FRANCE_BY_DEPARTEMENT);
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
     });
 
     it('ne crée rien pendant le chargement du territoire cliqué, puis crée sa carte une seule fois', () => {
@@ -1370,18 +1370,18 @@ describe('créations du graphique', () => {
         act(() => chartStub.clickLand('53'));
         deliverConso(BRETAGNE_BY_DEPARTEMENT, CONSO_BRETAGNE_BY_DEPARTEMENT);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
 
         deliverBaseMap(BRETAGNE_BY_DEPARTEMENT);
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
     });
 
     it('crée une carte par changement d’indicateur sur des données déjà chargées', () => {
         openFranceByRegion();
         fireEvent.click(screen.getByRole('radio', { name: /en pourcentage de la surface communale/ }));
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
     });
 
     it('ne crée rien à l’ouverture d’une rubrique d’artificialisation, puis crée sa carte à l’arrivée des données OCS GE', () => {
@@ -1389,11 +1389,11 @@ describe('créations du graphique', () => {
         // Rubrique dont la première carte est par territoire, dessinée par Highcharts
         fireEvent.click(screen.getByRole('button', { name: "Visualiser l'artificialisation" }));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
 
         deliverArtif(FRANCE_BY_REGION, ARTIF_FRANCE_BY_REGION);
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
     });
 
     it('ne recrée pas une carte OCS GE à l’arrivée de la réponse de consommation, qu’elle ne lit pas', () => {
@@ -1401,11 +1401,11 @@ describe('créations du graphique', () => {
         deliverArtif(FRANCE_BY_REGION, ARTIF_FRANCE_BY_REGION);
         openPage('?zone=FRANCE&scale=REGION&indicator=artif_pct');
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
 
         deliverConso(FRANCE_BY_REGION, CONSO_FRANCE_BY_REGION);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(screen.getByRole('button', { name: /Exporter la carte/ })).toBeEnabled();
     });
 
@@ -1416,7 +1416,7 @@ describe('créations du graphique', () => {
         fireEvent.click(screen.getAllByRole('checkbox')[0]);
 
         expect(charts()).toHaveLength(1);
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 });
 
@@ -1440,7 +1440,7 @@ describe('échec du chargement des données', () => {
         openPage('?zone=FRANCE&scale=REGION&start=1950');
 
         expect(screen.getByText("Les données de la carte n'ont pas pu être chargées.")).toBeInTheDocument();
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
         expect(screen.getByRole('button', { name: /Exporter la carte/ })).toBeDisabled();
     });
 });

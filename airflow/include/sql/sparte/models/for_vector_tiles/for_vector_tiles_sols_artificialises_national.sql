@@ -8,12 +8,12 @@
     Sols artificialisés pour les tuiles de la carte nationale (fichier
     `sols_artificialises_national.pmtiles`, produit par le DAG
     `create_sols_artificialises_national_vector_tiles`) : la part artificialisée de mailles
-    carrées, d'après l'OCS GE au dernier millésime de chaque département.
+    carrées, d’après l’OCS GE au dernier millésime de chaque département.
 
-    Pourquoi des mailles et non les objets OCS GE : à l'échelle du pays, d'une région ou d'un
-    département, un objet fait moins d'un pixel, et les tuiles des diagnostics pèsent 12 à
+    Pourquoi des mailles et non les objets OCS GE : à l’échelle du pays, d’une région ou d’un
+    département, un objet fait moins d’un pixel, et les tuiles des diagnostics pèsent 12 à
     15 Mo chacune aux zooms 4 à 9 pour un seul département (mesuré). Une carte « artificialisé
-    ou non » vue de loin, c'est la proportion des deux natures de sol en chaque point : la
+    ou non » vue de loin, c’est la proportion des deux natures de sol en chaque point : la
     part artificialisée de la maille, une valeur relative, qui se lit en aplat de couleur.
 
     Le modèle empile plusieurs résolutions de la même grille (voir
@@ -21,20 +21,20 @@
     portent la même grandeur sous le même attribut `part_artif` : les classes et la légende de
     la carte valent à toutes les résolutions.
 
-    La part rapporte la surface artificialisée à la surface que l'OCS GE couvre dans la
+    La part rapporte la surface artificialisée à la surface que l’OCS GE couvre dans la
     maille, et non à la maille entière : une maille à cheval sur la mer ou sur la limite de la
-    couverture n'est pas diluée. Là où l'OCS GE ne couvre rien, il n'y a pas de maille, ce que
+    couverture n’est pas diluée. Là où l’OCS GE ne couvre rien, il n’y a pas de maille, ce que
     la carte montre comme une absence de donnée et non comme un sol non artificialisé.
 
-    Les millésimes diffèrent d'un département à l'autre : chaque maille porte l'année de ses
+    Les millésimes diffèrent d’un département à l’autre : chaque maille porte l’année de ses
     objets (`annee_min` et `annee_max`, différentes pour une maille à cheval sur deux
-    départements qui n'ont pas le même millésime).
+    départements qui n’ont pas le même millésime).
 
-    Les mailles d'outre-mer existent deux fois : à leur position réelle (`placement` vaut
-    'reel'), pour l'affichage d'une région, d'un département ou d'un EPCI, et déplacées près
-    de l'Hexagone selon `national_map_drom_placement` ('cartouche'), pour la France entière,
-    comme les communes de `for_vector_tiles_communes_national`. L'Hexagone et la Corse n'ont
-    qu'une position : `placement` y est NULL.
+    Les mailles d’outre-mer existent deux fois : à leur position réelle (`placement` vaut
+    `reel`), pour l’affichage d’une région, d’un département ou d’un EPCI, et déplacées près
+    de l’Hexagone selon `national_map_drom_placement` (`cartouche`), pour la France entière,
+    comme les communes de `for_vector_tiles_communes_national`. L’Hexagone et la Corse n’ont
+    qu’une position : `placement` y est NULL.
 -#}
 
 {%- set resolutions_m = carroyage_artif_resolutions_m() -%}

@@ -88,7 +88,7 @@ export const scatterOf = ({ base, indicator, period }: FrameContext, render: Fra
     }));
     const moved = points.filter((point) => point.x !== point.indicRate || point.y !== point.consoRate).length;
     const perLand = `un point par ${scaleName(base.scale)}`;
-    const measured = `${RATE_UNIT}${period ? `, ${periodLabel(period.startYear, period.endYear)}` : ''}`;
+    const measured = RATE_UNIT + (period ? `, ${periodLabel(period.startYear, period.endYear)}` : '');
     return {
         kind: 'points',
         model: {

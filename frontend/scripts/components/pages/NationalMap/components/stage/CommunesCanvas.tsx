@@ -7,7 +7,7 @@ import { extentToLngLat, zoneExtent } from '../../domain/communes/extent';
 import { CommuneSelection, communeHitOf, selectionOf, selectionSheetOf } from '../../domain/communes/selection';
 import { insetMapLabels } from '../../domain/frame/base';
 import type { ExportLegend, MapImageInfo } from '../../domain/frame/exportImage';
-import type { CommunesRender, FrameBase, LegendKey } from '../../domain/frame/types';
+import type { CommunesRender, FrameBase } from '../../domain/frame/types';
 import { separationLine, toLngLatCollection } from '../../gridded';
 import OverviewButton, { ZoomControlsCorner } from './OverviewButton';
 import SelectionCard from './SelectionCard';
@@ -61,7 +61,7 @@ interface CommunesCanvasProps {
     // Départements, clés de légende et palette de la carte à dessiner
     render: CommunesRender;
     // Ligne de la légende dont les communes restent nettes, les autres étant estompées
-    highlightedClass: LegendKey | null;
+    highlightedClass: number | null;
     // Petite carte : les territoires d'outre-mer sont désignés par des numéros
     numberedInsets: boolean;
     // La vue demandée est en cours de chargement : la carte est estompée et les clics ignorés
@@ -83,7 +83,7 @@ interface CommunesCanvasProps {
 // Classe mise en avant sur la carte : celle que demande la légende, après un court délai. Une
 // carte neuve (`render`) prend tout de suite celle de sa légende : la classe d'une autre carte
 // n'y aurait pas de sens.
-const useSettledHighlight = (render: CommunesRender, requested: LegendKey | null): LegendKey | null => {
+const useSettledHighlight = (render: CommunesRender, requested: number | null): number | null => {
     const [stored, setStored] = useState({ render, key: requested });
     let settled = stored;
     if (stored.render !== render) {
@@ -105,7 +105,7 @@ export type CommunesCanvasHandle = {
 };
 
 const CommunesCanvas = forwardRef<CommunesCanvasHandle, CommunesCanvasProps>((props, ref) => {
-    const { base, render, highlightedClass, numberedInsets, busy, ariaLabel, onZoneChange, onStatusChange } = props;
+    const { base, render, highlightedClass, numberedInsets, busy, ariaLabel, onZoneChange, onStatusChange, onHover, touching } = props;
     const containerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<maplibregl.Map | null>(null);
     // Le style de la carte est chargé, puis la source des communes y est posée
@@ -130,9 +130,9 @@ const CommunesCanvas = forwardRef<CommunesCanvasHandle, CommunesCanvasProps>((pr
     }, [base, numberedInsets]);
 
     // Ce que les gestionnaires d'événements de la carte lisent au moment où ils sont appelés
-    const live = useRef({ props });
+    const live = useRef({ props, onHover, touching });
     useLayoutEffect(() => {
-        live.current = { props };
+        live.current = { props, onHover, touching };
     });
 
     // Création de la carte, une seule fois
@@ -168,7 +168,7 @@ const CommunesCanvas = forwardRef<CommunesCanvasHandle, CommunesCanvasProps>((pr
             outline.hide();
             markDepartment(null);
             map.getCanvas().style.cursor = '';
-            live.current.props.onHover(null);
+            live.current.onHover(null);
         };
 
         map.on('load', () => {
@@ -185,9 +185,9 @@ const CommunesCanvas = forwardRef<CommunesCanvasHandle, CommunesCanvasProps>((pr
             }
             markDepartment(hit.departmentId);
             map.getCanvas().style.cursor = 'pointer';
-            live.current.props.onHover({ name: hit.name, valueText: hit.value.valueText, classIndex: hit.value.legendKey });
+            live.current.onHover({ name: hit.name, valueText: hit.value.valueText, classIndex: hit.value.legendKey });
             // Au doigt, rien n'est survolé : la fiche de sélection dit ce que l'appui désigne
-            if (live.current.props.touching?.()) return;
+            if (live.current.touching?.()) return;
             const { legendKey } = hit.value;
             const swatch = legendKey === null ? null : (live.current.props.render.palette[legendKey] ?? null);
             tooltip.show(event.lngLat, { name: hit.name, valueText: hit.tipText, swatch });
@@ -202,7 +202,7 @@ const CommunesCanvas = forwardRef<CommunesCanvasHandle, CommunesCanvasProps>((pr
 
         return () => {
             mapRef.current = null;
-            live.current.props.onHover(null);
+            live.current.onHover(null);
             // L'infobulle est retirée avec la carte : restée ouverte, elle garderait ses nœuds
             tooltip.hide();
             map.remove();

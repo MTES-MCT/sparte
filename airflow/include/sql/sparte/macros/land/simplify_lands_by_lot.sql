@@ -1,13 +1,13 @@
 {% macro simplify_lands_by_lot(source) %}
 {#
     Simplifie des territoires par lots, en gardant des frontières identiques entre les
-    voisins d'un même lot.
+    voisins d’un même lot.
 
-    Paramètre `source` : nom d'une relation ou d'une CTE, avec une ligne par territoire et
+    Paramètre `source` : nom d’une relation ou d’une CTE, avec une ligne par territoire et
     par lot. Colonnes attendues :
         - land_id, land_type ;
-        - lot : les territoires d'un même lot (et d'un même land_type) sont simplifiés
-          ensemble. Un lot ne contient qu'une seule projection ;
+        - lot : les territoires d’un même lot (et d’un même land_type) sont simplifiés
+          ensemble. Un lot ne contient qu’une seule projection ;
         - tolerance : tolérance de simplification en mètres, la même pour tout le lot ;
         - geom : géométrie surfacique valide à simplifier.
     Ce nom ne doit pas commencer par `simplify_`, préfixe réservé aux CTE de la macro.
@@ -17,16 +17,16 @@
 
     Méthode, reprise de la macro `simplify` :
         1. les contours du lot sont fusionnés en un réseau de lignes, où une frontière
-           partagée ne figure qu'une fois ;
-        2. le réseau est simplifié d'un bloc, puis redécoupé en faces ;
+           partagée ne figure qu’une fois ;
+        2. le réseau est simplifié d’un bloc, puis redécoupé en faces ;
         3. chaque face revient au territoire qui en couvre plus de la moitié. Un point
-           intérieur de la face ne suffit pas : pour une île ou une presqu'île étroite,
+           intérieur de la face ne suffit pas : pour une île ou une presqu’île étroite,
            il tombe souvent en mer et la face serait perdue ;
         4. les îlots plus petits que le carré de la tolérance sont retirés, un territoire
            gardant toujours sa plus grande partie.
 
     Repli : un territoire trop petit pour la tolérance peut ne retrouver aucune face, ou
-    seulement une fraction de sa surface. Il garde alors sa géométrie d'entrée
+    seulement une fraction de sa surface. Il garde alors sa géométrie d’entrée
     (is_simplified = false), qui peut déborder légèrement sur ses voisins simplifiés :
     aucun territoire ne disparaît.
 #}
@@ -153,7 +153,7 @@ FROM simplify_checked
 
 
 {% macro bounding_box_columns(geometry_column) -%}
-{#- Emprise d'une géométrie en quatre colonnes numériques, comparables sans relire la géométrie -#}
+{#- Emprise d’une géométrie en quatre colonnes numériques, comparables sans relire la géométrie -#}
 ST_XMin({{ geometry_column }}) AS x_min,
         ST_XMax({{ geometry_column }}) AS x_max,
         ST_YMin({{ geometry_column }}) AS y_min,

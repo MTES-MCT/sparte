@@ -8,7 +8,7 @@ import { CONSO_FRANCE_BY_REGION, FRANCE_BY_REGION } from './nationalMapFixtures'
 // ménages croise des taux étalés de part et d'autre de ses seuils
 export const TWELVE_REGIONS = Array.from({ length: 12 }, (_, index) => `R${index}`);
 
-const [BRETAGNE] = FRANCE_BY_REGION.geojson.features.filter((feature) => feature.properties.land_id === '53');
+const BRETAGNE = FRANCE_BY_REGION.geojson.features.find((feature) => feature.properties.land_id === '53') as (typeof FRANCE_BY_REGION.geojson.features)[number];
 
 export const FRANCE_BY_TWELVE_REGIONS: NationalMapBaseMap = {
     ...FRANCE_BY_REGION,

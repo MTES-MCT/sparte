@@ -81,8 +81,11 @@ const CONSO_LEVELS = ['parmi les plus faibles', 'intermédiaire', 'parmi les plu
 const lowerFirst = (text: string): string => text.charAt(0).toLowerCase() + text.slice(1);
 
 // Les trois niveaux d'un axe, chacun suivi de son intervalle quand la période a des seuils
-const withRanges = (levels: string[], ranges: string[] | null, unit: string): string[] =>
-    levels.map((level, index) => (ranges ? `${level} : ${ranges[index]}${unit ? ` ${unit}` : ''}` : level));
+const withRanges = (levels: string[], ranges: string[] | null, unit: string): string[] => {
+    if (!ranges) return levels;
+    const suffix = unit ? ` ${unit}` : '';
+    return levels.map((level, index) => `${level} : ${ranges[index]}${suffix}`);
+};
 
 interface BivariateLegendBodyProps {
     indicatorLabel: string;

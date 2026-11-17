@@ -204,7 +204,8 @@ const UNGRADUATED_AXIS: Highcharts.YAxisOptions = { title: { text: undefined }, 
 const flowTooltip = (tooltip: Highcharts.TooltipOptions = {}): Highcharts.TooltipOptions => ({
     ...tooltip,
     pointFormatter(this: Highcharts.Point) {
-        return `<span style="color:${this.color}">●</span> ${this.series.name ? `${this.series.name} : ` : ''}<b>${signedHectares(this.y ?? 0)}</b><br/>`;
+        const label = this.series.name ? `${this.series.name} : ` : '';
+        return `<span style="color:${this.color}">●</span> ${label}<b>${signedHectares(this.y ?? 0)}</b><br/>`;
     },
 });
 
@@ -234,7 +235,8 @@ export const shareByMillesime = (server: Highcharts.Options): Highcharts.Options
             ...server.tooltip,
             pointFormatter(this: Highcharts.Point) {
                 const { y = 0, surface } = this.options as SharePoint;
-                return `Part du territoire : <b>${formatNumber({ number: y, decimals: 2 })} %</b>${surface === undefined ? '' : `<br/>Surface : <b>${hectares(surface)}</b>`}`;
+                const surfaceLine = surface === undefined ? '' : `<br/>Surface : <b>${hectares(surface)}</b>`;
+                return `Part du territoire : <b>${formatNumber({ number: y, decimals: 2 })} %</b>${surfaceLine}`;
             },
         },
         plotOptions: {
@@ -245,7 +247,8 @@ export const shareByMillesime = (server: Highcharts.Options): Highcharts.Options
                     ...dataLabels,
                     formatter(this: Highcharts.PointLabelObject) {
                         const { y = 0, surface } = this.point.options as SharePoint;
-                        return `${formatNumber({ number: y, decimals: 2 })} %${surface === undefined ? '' : `<br/>${hectares(surface)}`}`;
+                        const surfaceLine = surface === undefined ? '' : `<br/>${hectares(surface)}`;
+                        return `${formatNumber({ number: y, decimals: 2 })} %${surfaceLine}`;
                     },
                 },
             },
@@ -304,7 +307,11 @@ type CoverPoint = { name?: string; long_name?: string; color?: string; y?: numbe
 type CoverShare = { name: string; y: number; surface: number; color?: string };
 
 // Le nom complet d'une couverture se termine par des exemples entre parenthèses
-const coverName = ({ long_name: longName, name }: CoverPoint): string => (longName ?? name ?? '').replace(/\s*\(.*$/, '');
+const coverName = ({ long_name: longName, name }: CoverPoint): string => {
+    const text = longName ?? name ?? '';
+    const examples = text.indexOf('(');
+    return examples === -1 ? text : text.slice(0, examples).trimEnd();
+};
 
 const OTHER_COVERS = 'Autres couvertures';
 const OTHER_COVERS_COLOR = '#bdbdbd';
@@ -322,7 +329,7 @@ export const asRankedShares =
         const [sectors] = seriesOf(server);
         const covers = ((sectors?.data ?? []) as CoverPoint[]).filter((cover) => (cover.y ?? 0) > 0).sort((a, b) => b.y - a.y);
         const total = covers.reduce((sum, cover) => sum + cover.y, 0);
-        if (!(total > 0)) return server;
+        if (total <= 0) return server;
         const share = (surface: number, name: string, color?: string): CoverShare => ({ name, y: (surface / total) * 100, surface, color });
         const others = covers.slice(count).reduce((sum, cover) => sum + cover.y, 0);
         // Le format du serveur lit la part d'un secteur, que des barres n'ont pas
@@ -368,11 +375,31 @@ const INCREASE_SERIE = 'Artificialisation';
 const DECREASE_SERIE = 'Désartificialisation';
 
 // Catégorie du serveur : le nom de la couverture, son code dans la nomenclature et une balise de couleur vide
-const coverOfCategory = (category: string): string =>
-    category
-        .replace(/<[^>]*>/g, '')
-        .replace(/\s*\(CS[\d.]+\)\s*$/, '')
-        .trim();
+// Texte sans ses balises. Ce qui suit un « < » jamais refermé est retiré aussi : le résultat ne
+// contient aucun « < », quoi que le serveur envoie.
+const withoutTags = (text: string): string => {
+    let kept = '';
+    let rest = text;
+    for (let open = rest.indexOf('<'); open !== -1; open = rest.indexOf('<')) {
+        const close = rest.indexOf('>', open);
+        kept += rest.slice(0, open);
+        rest = close === -1 ? '' : rest.slice(close + 1);
+    }
+    return kept + rest;
+};
+
+const COVER_CODE_START = '(CS';
+const COVER_CODE = /^[\d.]+$/;
+
+// Texte sans le code de nomenclature qui le termine, « (CS1.1.1.1) »
+const withoutCoverCode = (text: string): string => {
+    const trimmed = text.trimEnd();
+    const start = trimmed.lastIndexOf(COVER_CODE_START);
+    if (start === -1 || !trimmed.endsWith(')')) return text;
+    return COVER_CODE.test(trimmed.slice(start + COVER_CODE_START.length, -1)) ? trimmed.slice(0, start) : text;
+};
+
+const coverOfCategory = (category: string): string => withoutCoverCode(withoutTags(category)).trim();
 
 // Les deux flux d'une couverture, en hectares : l'artificialisation, positive, et la désartificialisation, négative
 type CoverFlows = { name: string; increase: number; decrease: number };

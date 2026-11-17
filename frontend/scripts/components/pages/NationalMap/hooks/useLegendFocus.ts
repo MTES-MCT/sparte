@@ -1,22 +1,21 @@
 import { useCallback, useState } from 'react';
-import type { LegendKey } from '../domain/frame/types';
 
 type Focus = {
     // Légende à laquelle ces lignes appartiennent
     scope: string | null;
-    hovered: LegendKey | null;
-    pinned: LegendKey | null;
+    hovered: number | null;
+    pinned: number | null;
 };
 
 type LegendFocus = {
     // Ligne survolée dans la légende, ou qui y a le focus
-    hovered: LegendKey | null;
+    hovered: number | null;
     // Ligne épinglée par un clic ou un appui : elle reste en avant sans survol
-    pinned: LegendKey | null;
+    pinned: number | null;
     // Ligne dont les territoires restent nets sur la carte, les autres étant estompés
-    dimKey: LegendKey | null;
-    hoverLegend: (key: LegendKey | null) => void;
-    togglePin: (key: LegendKey) => void;
+    dimKey: number | null;
+    hoverLegend: (key: number | null) => void;
+    togglePin: (key: number) => void;
 };
 
 // Ligne de légende mise en avant, par survol ou par épinglage : la seule source de ce que la
@@ -32,9 +31,9 @@ export const useLegendFocus = (scope: string | null): LegendFocus => {
         setStored(focus);
     }
 
-    const hoverLegend = useCallback((key: LegendKey | null) => setStored((current) => ({ ...current, hovered: key })), []);
+    const hoverLegend = useCallback((key: number | null) => setStored((current) => ({ ...current, hovered: key })), []);
     const togglePin = useCallback(
-        (key: LegendKey) => setStored((current) => ({ ...current, pinned: current.pinned === key ? null : key })),
+        (key: number) => setStored((current) => ({ ...current, pinned: current.pinned === key ? null : key })),
         [],
     );
 

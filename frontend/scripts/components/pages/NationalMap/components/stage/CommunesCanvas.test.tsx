@@ -7,7 +7,7 @@ import { StubMap, mapLibreStub } from '../../__fixtures__/mapLibreStub';
 import { CONSO_FRANCE_BY_DEPARTEMENT, FRANCE_BY_DEPARTEMENT } from '../../__fixtures__/nationalMapFixtures';
 import type { HoveredLand } from '../../ClassLegend';
 import { colorChanges, communeColors } from '../../domain/communes/colors';
-import type { CommunesRender, LegendKey, MapFrame } from '../../domain/frame/types';
+import type { CommunesRender, MapFrame } from '../../domain/frame/types';
 import { ZONE_FRANCE, ZONE_HEXAGONE } from '../../zones';
 import CommunesCanvas from './CommunesCanvas';
 import { COMMUNES_FILL, COMMUNES_SOURCE, COMMUNE_OUTLINE, DEPARTMENTS_SOURCE, SEPARATION_SOURCE } from './communesStyle';
@@ -57,7 +57,7 @@ const useFakeTimers = (): void => {
 const RENNES = { land_id: '35238', name: 'Rennes', REGION: '53', DEPART: '35' };
 const AJACCIO = { land_id: '2A004', name: 'Ajaccio', REGION: '94', DEPART: '2A' };
 
-type Options = { highlightedClass?: LegendKey | null; numberedInsets?: boolean; busy?: boolean; touching?: () => boolean; sheetSlot?: HTMLElement | null };
+type Options = { highlightedClass?: number | null; numberedInsets?: boolean; busy?: boolean; touching?: () => boolean; sheetSlot?: HTMLElement | null };
 
 const mount = (frame: MapFrame, options: Options = {}) => {
     const statuses: StageMapStatus[] = [];
@@ -105,7 +105,7 @@ const mountDrawn = (frame: MapFrame, options?: Options) => {
     return mounted;
 };
 
-const stateColors = (frame: MapFrame, highlighted: LegendKey | null = null): Record<string, string> => {
+const stateColors = (frame: MapFrame, highlighted: number | null = null): Record<string, string> => {
     const { ids, colors } = communeColors(rendered(frame), highlighted);
     return Object.fromEntries(ids.map((id, rank) => [id, colors[rank]]));
 };

@@ -181,7 +181,8 @@ section {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 6px;
-    background: rgba(0, 0, 145, 0.06);
+    /* Bleu France à 6 % sur blanc, en couleur pleine : le contraste de l'icône se calcule */
+    background: #f0f0f8;
     color: #000091;
     font-size: 1.25rem;
     line-height: 1;

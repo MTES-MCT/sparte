@@ -219,7 +219,7 @@ const GriddedMapStub = forwardRef<{ exportPng: () => void }, GriddedMapProps>((p
         gridStub.creations += 1;
     }, []);
     useImperativeHandle(ref, () => ({ exportPng: () => undefined }), []);
-    return <div role="img" aria-label={props.ariaLabel} />;
+    return <img alt={props.ariaLabel} />;
 });
 
 GriddedMapStub.displayName = 'GriddedMapStub';
@@ -270,7 +270,7 @@ const CommunesCanvasStub = forwardRef<{ exportPng: () => void }, CommunesCanvasP
         }),
         [],
     );
-    return <div role="img" aria-label={props.ariaLabel} />;
+    return <img alt={props.ariaLabel} />;
 });
 
 CommunesCanvasStub.displayName = 'CommunesCanvasStub';

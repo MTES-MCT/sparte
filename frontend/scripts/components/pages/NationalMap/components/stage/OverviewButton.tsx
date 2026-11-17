@@ -56,7 +56,7 @@ const Button = styled.button<{ $zoomControls: ZoomControlsCorner }>`
 const OverviewButton: React.FC<{ onClick: () => void; zoomControls: ZoomControlsCorner }> = ({ onClick, zoomControls }) => (
     <Button type="button" onClick={onClick} $zoomControls={zoomControls}>
         <i className="bi bi-arrows-angle-contract" aria-hidden="true" />
-        Vue d'ensemble
+        {"Vue d'ensemble"}
     </Button>
 );
 

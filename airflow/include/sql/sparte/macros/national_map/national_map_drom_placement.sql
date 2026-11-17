@@ -1,39 +1,39 @@
 {% macro national_map_drom_placement(regions) %}
 {#
-    Placement des régions d'outre-mer près de l'Hexagone, pour la carte nationale.
+    Placement des régions d’outre-mer près de l’Hexagone, pour la carte nationale.
 
-    En Web Mercator (EPSG:3857) les DROM sont à des milliers de kilomètres de l'Hexagone.
-    Pour tenir sur une seule vue, chacun est posé au centre d'un emplacement fixe, dans les
-    espaces maritimes à l'ouest de l'Hexagone : les quatre îles en grille au large de la
+    En Web Mercator (EPSG:3857) les DROM sont à des milliers de kilomètres de l’Hexagone.
+    Pour tenir sur une seule vue, chacun est posé au centre d’un emplacement fixe, dans les
+    espaces maritimes à l’ouest de l’Hexagone : les quatre îles en grille au large de la
     Bretagne et de la Manche, la Guyane dans le golfe de Gascogne. Il y est ramené à
-    l'échelle de l'Hexagone : Web Mercator étire les longueurs de 1 / cos(latitude), un
-    territoire tropical y est donc dessiné environ 1,4 fois plus petit qu'un territoire de
+    l’échelle de l’Hexagone : Web Mercator étire les longueurs de 1 / cos(latitude), un
+    territoire tropical y est donc dessiné environ 1,4 fois plus petit qu’un territoire de
     même taille situé à 46° N. Le rapport des cosinus de latitude corrige cet écart, sans
     autre déformation.
 
-    C'est la seconde écriture du calcul de `build_base_map`
+    C’est la seconde écriture du calcul de `build_base_map`
     (public_data/domain/national_map.py), qui place les DROM des fonds GeoJSON servis par
     Django : mêmes constantes, mêmes formules. Toute modification doit être faite des deux
-    côtés, et dans le jeu d'essai commun aux deux (test singulier
+    côtés, et dans le jeu d’essai commun aux deux (test singulier
     `national_map_placement_matches_python_on_synthetic_regions`).
 
-    Paramètre `regions` : nom d'une relation ou d'une CTE, avec une ligne par région :
+    Paramètre `regions` : nom d’une relation ou d’une CTE, avec une ligne par région :
         - region_code : code de la région ;
         - geom : géométrie en EPSG:3857.
-    Les régions absentes de `national_map_drom_regions` forment la référence (l'Hexagone et
+    Les régions absentes de `national_map_drom_regions` forment la référence (l’Hexagone et
     la Corse), qui ne bouge pas. Ce nom ne doit pas commencer par `placement_`, préfixe
     réservé aux CTE de la macro.
 
-    Renvoie une requête (utilisable comme corps de CTE) : une ligne par région d'outre-mer
+    Renvoie une requête (utilisable comme corps de CTE) : une ligne par région d’outre-mer
     présente dans `regions`. Colonnes :
         - region_code, name ;
         - scale_factor, x_offset, y_offset : un point (x, y) en EPSG:3857 va en
-          (scale_factor * x + x_offset, scale_factor * y + y_offset), ce qu'applique la
+          (scale_factor * x + x_offset, scale_factor * y + y_offset), ce qu’applique la
           macro `national_map_apply_drom_placement` ;
         - inset_geom : le cartouche, emprise de la région une fois déplacée ;
-        - slot_geom : l'emplacement, cellule au centre de laquelle la région est posée ;
-        - reference_geom : emprise de l'Hexagone et de la Corse ;
-        - separation_geom : polyligne séparant les territoires déplacés de l'Hexagone.
+        - slot_geom : l’emplacement, cellule au centre de laquelle la région est posée ;
+        - reference_geom : emprise de l’Hexagone et de la Corse ;
+        - separation_geom : polyligne séparant les territoires déplacés de l’Hexagone.
     Les géométries sont en EPSG:3857. `reference_geom` et `separation_geom` ne dépendent pas
     de la région : elles sont identiques sur toutes les lignes.
 #}
@@ -48,22 +48,22 @@
 {%- set guyane = "03" -%}
 
 {#-
-    Emplacements, en proportions de l'emprise de référence (largeur `width`, hauteur
-    `height`). La bande ajoutée à gauche reste étroite, pour que l'ensemble garde des
-    proportions proches de la zone d'affichage.
+    Emplacements, en proportions de l’emprise de référence (largeur `width`, hauteur
+    `height`). La bande ajoutée à gauche reste étroite, pour que l’ensemble garde des
+    proportions proches de la zone d’affichage.
 -#}
-{%- set left_band = 0.2 -%}  {#- largeur ajoutée à gauche de l'Hexagone, en `width` -#}
+{%- set left_band = 0.2 -%}  {#- largeur ajoutée à gauche de l’Hexagone, en `width` -#}
 {#- Îles : au-dessus de la Bretagne, sous le niveau du Cotentin -#}
-{%- set islands_x_max = 0.21 -%}  {#- en `width` depuis le bord gauche de l'Hexagone -#}
+{%- set islands_x_max = 0.21 -%}  {#- en `width` depuis le bord gauche de l’Hexagone -#}
 {%- set islands_height = 0.23 -%}  {#- en `height` depuis le haut -#}
-{#- Guyane : golfe de Gascogne, à l'ouest des côtes atlantiques -#}
-{%- set guyane_x_max = 0.165 -%}  {#- en `width` depuis le bord gauche de l'Hexagone -#}
+{#- Guyane : golfe de Gascogne, à l’ouest des côtes atlantiques -#}
+{%- set guyane_x_max = 0.165 -%}  {#- en `width` depuis le bord gauche de l’Hexagone -#}
 {%- set guyane_height = 0.5 -%}  {#- en `height` depuis le bas -#}
 
 {#-
     Ligne de séparation : une seule polyligne, du haut vers le bas, qui contourne la pointe
-    bretonne par l'ouest. Points en (x en `width` depuis le bord gauche, y en `height` depuis
-    le bas) de l'emprise de référence.
+    bretonne par l’ouest. Points en (x en `width` depuis le bord gauche, y en `height` depuis
+    le bas) de l’emprise de référence.
 -#}
 {%- set separation = [
     [0.20, 1.03],
@@ -201,7 +201,7 @@ JOIN (
 
 {% macro national_map_mercator_latitude_cosine(y) -%}
 {#-
-    Cosinus de la latitude d'une ordonnée Web Mercator `y`, en mètres. La latitude vaut
+    Cosinus de la latitude d’une ordonnée Web Mercator `y`, en mètres. La latitude vaut
     atan(sinh(y / R)), R étant le rayon de la sphère de Web Mercator.
 -#}
 cos(atan(sinh(({{ y }}) / 6378137.0)))

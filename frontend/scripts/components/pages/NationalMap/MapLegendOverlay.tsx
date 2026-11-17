@@ -142,7 +142,7 @@ const MapLegendOverlay: React.FC<MapLegendOverlayProps> = ({ placement, open, on
             ) : (
                 <OpenButton type="button" aria-expanded={false} onClick={() => onOpenChange(true)}>
                     <i className="bi bi-list-ul" aria-hidden="true" />
-                    Légende
+                    {'Légende'}
                 </OpenButton>
             )}
         </Wrapper>

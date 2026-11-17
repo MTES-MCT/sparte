@@ -161,6 +161,10 @@ class PdfFooterView(TemplateView):
     template_name = "public_data/pdf_footer.html"
 
 
+# Durée pendant laquelle le navigateur garde les indicateurs et les valeurs de la carte nationale
+NATIONAL_MAP_CACHE_CONTROL = "public, max-age=600"
+
+
 class NationalMapBaseMapView(APIView):
     """Fond de carte « France entière » de la carte nationale, par maille (région ou département).
 
@@ -389,7 +393,7 @@ class NationalMapIndicatorsView(APIView):
             self.CACHE_DURATION,
         )
         response = Response(indicators)
-        response["Cache-Control"] = "public, max-age=600"
+        response["Cache-Control"] = NATIONAL_MAP_CACHE_CONTROL
         return response
 
     def available_years(self, scale):
@@ -512,7 +516,7 @@ class NationalMapArtifIndicatorsView(APIView):
             self.CACHE_DURATION,
         )
         response = Response(indicators)
-        response["Cache-Control"] = "public, max-age=600"
+        response["Cache-Control"] = NATIONAL_MAP_CACHE_CONTROL
         return response
 
     def build(self, scale, parent=None):
@@ -579,7 +583,7 @@ class NationalMapValuesView(APIView):
             body = compressed_body(self.build(scale, key, amount, period, years))
             cache.set(cache_key, body, self.body_duration(period, years))
         response = _gzipped_json_response(request, body)
-        response["Cache-Control"] = "public, max-age=600"
+        response["Cache-Control"] = NATIONAL_MAP_CACHE_CONTROL
         return response
 
     def body_duration(self, period, years):

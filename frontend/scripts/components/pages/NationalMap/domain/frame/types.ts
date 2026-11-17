@@ -65,10 +65,6 @@ export type FrameContext = {
     communes: NationalMapValues | null;
 };
 
-// Ce qui relie un territoire à sa ligne de légende : indice de classe (aplats), case 0 à 8
-// (bivariées), 0 pour tout territoire renseigné d'une carte en cercles
-export type LegendKey = number;
-
 // Un territoire de la carte, avec ce dont l'infobulle et la légende ont besoin
 export type LandPoint = {
     land_id: string;
@@ -80,7 +76,9 @@ export type LandPoint = {
     color?: string;
     valueText: string;
     // null sans donnée
-    legendKey: LegendKey | null;
+    // Ce qui relie un territoire à sa ligne de légende : indice de classe (aplats), case 0 à 8
+    // (bivariées), 0 pour tout territoire renseigné d'une carte en cercles
+    legendKey: number | null;
 };
 
 // Cercle proportionnel d'un territoire
@@ -93,7 +91,7 @@ export type SymbolPoint = {
     // Couleur propre au cercle (signe d'une valeur signée) ; indéfinie pour celle de la carte
     color?: string;
     valueText: string;
-    legendKey: LegendKey;
+    legendKey: number;
 };
 
 // Anneau d'un territoire : deux flux de sens contraire entre deux millésimes
@@ -116,7 +114,7 @@ export type CrossedLand = {
     indicRate: number | null;
     // Couleur et case de la légende du territoire sur la carte, et texte de son infobulle
     color: string;
-    legendKey: LegendKey;
+    legendKey: number;
     valueText: string;
 };
 
@@ -132,7 +130,7 @@ export type Crossing = {
 export type CommuneValue = {
     valueText: string;
     // null sans donnée
-    legendKey: LegendKey | null;
+    legendKey: number | null;
 };
 
 // Ce que le moteur de rendu dessine : des territoires (Highcharts), des carreaux ou toutes les
@@ -299,7 +297,7 @@ export type ScatterPoint = {
     consoRate: number;
     // Couleur et case de la légende du territoire sur la carte, et texte de son infobulle
     color: string;
-    legendKey: LegendKey;
+    legendKey: number;
     valueText: string;
 };
 

@@ -63,7 +63,7 @@ export const dominantGeneration = (lands: { surface_ha: number; artif_years: num
     });
     const ranked = GENERATIONS.map(({ name }) => ({ name, surface: surfaces.get(name) ?? 0 })).filter(({ surface }) => surface > 0);
     if (ranked.length === 0) return DEFAULT_GENERATION;
-    return ranked.reduce((best, candidate) => (candidate.surface >= best.surface ? candidate : best)).name;
+    return ranked.reduce((best, candidate) => (candidate.surface >= best.surface ? candidate : best), ranked[0]).name;
 };
 
 // Image d'une emprise ([xmin, ymin, xmax, ymax] en EPSG:3857), aux proportions de l'emprise

@@ -411,7 +411,7 @@ describe('carte des données carroyées', () => {
     it('remet à la carte carroyée les territoires couverts, ses carreaux et les textes de l’export', () => {
         render(chartElement(GRID));
 
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
         expect(gridStub.props.render).toBe(GRID.frame.render);
         expect(gridStub.props.render.features.map((feature) => feature.properties.land_id)).toEqual(['11', '53', '75', '84', '94']);
         const { scale, clickable, busy, exportInfo, ariaLabel } = gridStub.props;
@@ -487,7 +487,7 @@ describe('carte des sols artificialisés par maille', () => {
     it('est dessinée par la carte de mailles, avec les chiffres clés des cartes de stock', () => {
         render(chartElement(SOILS));
 
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
         expect(gridStub.props.render).toBe(SOILS.frame.render);
         expect(screen.getByLabelText('Chiffres clés')).toHaveTextContent('Part du territoire artificialisée');
         expect(footnote()).toMatch(/^Source : OCS GE \(IGN\)\. Chiffres au millésime n°2 \(2020 à 2023\)\./);
@@ -621,7 +621,7 @@ describe('messages de la carte', () => {
         render(chartElement(NO_VIEW));
 
         expect(screen.getByRole('status')).toHaveTextContent('Chargement de la carte…');
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
     });
 
     it('annonce l’échec du chargement du fond', () => {
@@ -668,7 +668,7 @@ describe('créations du graphique', () => {
         const { rerender } = render(chartElement(CHOROPLETH));
         rerender(chartElement(SYMBOLS));
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
         expect(mark.mock.calls).toEqual([['national-map:chart-create'], ['national-map:chart-create']]);
         mark.mockRestore();
     });
@@ -686,19 +686,19 @@ describe('créations du graphique', () => {
         const { rerender } = render(chartElement(CHOROPLETH));
         rerender(chartElement(CHOROPLETH));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne recrée pas le graphique quand seul l’état de chargement change', () => {
         const { rerender } = render(chartElement(CHOROPLETH));
         rerender(chartElement({ ...CHOROPLETH, pending: true }));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(chartLayer()).toHaveStyle({ opacity: '0.5' });
 
         rerender(chartElement(CHOROPLETH));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(chartLayer()).toHaveStyle({ opacity: '1' });
     });
 
@@ -707,7 +707,7 @@ describe('créations du graphique', () => {
         rerender(chartElement({ ...CHOROPLETH, pending: true }));
         rerender(chartElement({ ...CHOROPLETH, pending: true, error: 'data' }));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('crée le graphique exactement une fois par cadre affiché', () => {
@@ -717,7 +717,7 @@ describe('créations du graphique', () => {
         rerender(chartElement({ ...DIVERGING, pending: true }));
         rerender(chartElement(SYMBOLS));
 
-        expect(chartStub.creations.length).toBe(3);
+        expect(chartStub.creations).toHaveLength(3);
     });
 
     it('ne recrée pas le graphique au survol d’un territoire, dont il met la classe en avant dans la légende', () => {
@@ -729,7 +729,7 @@ describe('créations du graphique', () => {
         act(() => chartStub.hoverLand(null));
 
         expect(activeClasses()).toEqual([]);
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne recrée pas le graphique quand une classe est survolée ou épinglée dans la légende', () => {
@@ -739,7 +739,7 @@ describe('créations du graphique', () => {
         fireEvent.mouseLeave(classButtons()[2]);
         fireEvent.click(classButtons()[2]);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne recrée pas le graphique quand la légende est repliée puis rouverte', () => {
@@ -747,7 +747,7 @@ describe('créations du graphique', () => {
         fireEvent.click(screen.getByRole('button', { name: 'Replier la légende' }));
         fireEvent.click(screen.getByRole('button', { name: 'Légende' }));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne recrée pas le graphique quand le parent lui remet un autre gestionnaire de clic, et appelle le dernier reçu', () => {
@@ -760,7 +760,7 @@ describe('créations du graphique', () => {
         rerender(withHandler(second));
         act(() => chartStub.clickLand('53'));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(first).not.toHaveBeenCalled();
         expect(second).toHaveBeenCalledWith('REGION_53', 'Bretagne');
     });
@@ -780,7 +780,7 @@ describe('créations du graphique', () => {
         act(() => chartStub.clickLand('53'));
 
         expect(onZoneChange).toHaveBeenCalledTimes(1);
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 });
 
@@ -794,7 +794,7 @@ describe('relais vers la carte carroyée', () => {
     it('prépare la carte carroyée, invisible, sous la carte affichée, qui reste avec sa légende et ses chiffres clés', () => {
         render(chartElement(STAGED));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(chartLayer()).toHaveStyle({ opacity: '0.5' });
         expect(legendTitle()).toBe("Consommation d'ENAF (en hectares)");
         expect(screen.getByLabelText('Chiffres clés')).toHaveTextContent("Consommation d'espaces");
@@ -877,7 +877,7 @@ describe('relais vers la carte carroyée', () => {
 
         expect(screen.getByRole('status')).toHaveTextContent('Chargement de la carte…');
         expect(gridLayer()).toHaveStyle({ opacity: '0' });
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
     });
 
     it('démonte la carte carroyée en préparation quand une carte par territoire est demandée à sa place', () => {
@@ -885,7 +885,7 @@ describe('relais vers la carte carroyée', () => {
         rerender(chartElement(CHOROPLETH));
 
         expect(screen.queryByRole('img', { name: GRID.frame.ariaLabel, hidden: true })).toBeNull();
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
     });
 });
 
@@ -1450,7 +1450,7 @@ describe('scène qui change de taille sous la carte affichée', () => {
 
         resizeStage(520, 700);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(chartStub.symbolMaxSize()).toBe(58);
         expect(largestReference()).toBeLessThan(reference);
     });
@@ -1460,7 +1460,7 @@ describe('scène qui change de taille sous la carte affichée', () => {
         resizeStage(520, 700);
         rerender(chartElement(SIGNED_SYMBOLS));
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
         expect((chartStub.options().series[2] as unknown as { maxSize: number }).maxSize).toBe(58);
         expect(chartStub.symbolMaxSize()).toBe(58);
     });
@@ -1469,7 +1469,7 @@ describe('scène qui change de taille sous la carte affichée', () => {
         render(chartElement(CHOROPLETH));
         resizeStage(520, 700);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne recrée pas la carte en anneaux, dont les anneaux de référence suivent le nouveau diamètre', () => {
@@ -1477,7 +1477,7 @@ describe('scène qui change de taille sous la carte affichée', () => {
         const reference = largestReference();
         resizeStage(520, 700);
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
         expect(largestReference()).toBeLessThan(reference);
     });
 
@@ -1518,7 +1518,7 @@ describe('scène qui change de taille sous la carte affichée', () => {
         resizeStage(736, 786);
 
         expect([legendBand(), legendSide()]).toEqual(['140', null]);
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('garde repliée, d’un placement à l’autre, la légende que l’utilisateur a repliée', () => {
@@ -1577,7 +1577,7 @@ describe('carte masquée par l’onglet Informations, sur téléphone', () => {
         rerender(chartElement(SYMBOLS));
         rerender(chartElement(DIVERGING));
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('crée une seule fois, à son retour, la carte du dernier choix', () => {
@@ -1587,7 +1587,7 @@ describe('carte masquée par l’onglet Informations, sur téléphone', () => {
         rerender(chartElement(DIVERGING));
         showMap();
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
         expect(chartStub.options().accessibility.description).toBe(DIVERGING.frame.ariaLabel);
     });
 
@@ -1609,7 +1609,7 @@ describe('carte masquée par l’onglet Informations, sur téléphone', () => {
         hideMap();
         showMap();
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('retire à son retour la carte par territoire qu’une carte carroyée a remplacée, sans en avoir créé d’autre', () => {
@@ -1619,7 +1619,7 @@ describe('carte masquée par l’onglet Informations, sur téléphone', () => {
         showMap();
 
         expect(screen.queryByTestId('highcharts-map')).toBeNull();
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne crée la carte par territoire qui remplace une carte carroyée qu’à son retour', () => {
@@ -1627,11 +1627,11 @@ describe('carte masquée par l’onglet Informations, sur téléphone', () => {
         hideMap();
         rerender(chartElement(SYMBOLS));
 
-        expect(chartStub.creations.length).toBe(0);
+        expect(chartStub.creations).toHaveLength(0);
 
         showMap();
 
-        expect(chartStub.creations.length).toBe(1);
+        expect(chartStub.creations).toHaveLength(1);
     });
 
     it('ne retaille pas les cercles du graphique masqué, et crée le suivant à son diamètre', () => {
@@ -1699,7 +1699,7 @@ describe('mise en avant d’une classe', () => {
         fireEvent.click(classButtons()[1]);
         rerender(chartElement({ frame: france('conso_pct_surface') }));
 
-        expect(chartStub.creations.length).toBe(2);
+        expect(chartStub.creations).toHaveLength(2);
         expect(pinnedClass()).toBe(1);
         expect(chartStub.dimmedLands()).toEqual(landsOutsideClass(1));
     });

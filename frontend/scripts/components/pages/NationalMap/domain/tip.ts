@@ -38,8 +38,28 @@ const FACTS_SEPARATOR = ' · ';
 // (« de 2011 à 2024 », « en 2020 », « entre 2018 et 2021 ») ou à ses millésimes de l'OCS GE
 // (« au millésime n°2 (2020) », « entre le millésime n°1 (2017) et le millésime n°2 (2020) »,
 // voir domain/millesimes.ts)
-const CONTEXT_START =
-    /,\s+(?=soit |en moyenne )|\s+(?=\(|dans ce |(?:de|en|entre) \d{4}\b|au (?:dernier )?millésime\b|entre (?:le|les deux derniers) millésimes?\b)/;
+// Ce qui ouvre le contexte après une virgule, puis après un simple blanc. Motifs « collants » :
+// ils ne sont essayés qu'à la position donnée (voir opensAt).
+const AFTER_COMMA = /soit |en moyenne /y;
+const AFTER_BLANK = [/\(/y, /dans ce /y, /(?:de|en|entre) \d{4}\b/y, /au (?:dernier )?millésime\b/y, /entre (?:le|les deux derniers) millésimes?\b/y];
+const BLANKS = /\s+/g;
+
+const opensAt = (pattern: RegExp, text: string, index: number): boolean => {
+    pattern.lastIndex = index;
+    return pattern.test(text);
+};
+
+// Où finit la valeur et où commence le contexte : au premier blanc suivi d'une ouverture de
+// contexte ; la virgule qui précède « soit » ou « en moyenne » part avec le blanc
+const contextBoundary = (sentence: string): { valueEnd: number; contextStart: number } | null => {
+    for (const blank of sentence.matchAll(BLANKS)) {
+        const start = blank.index ?? 0;
+        const end = start + blank[0].length;
+        if (sentence[start - 1] === ',' && opensAt(AFTER_COMMA, sentence, end)) return { valueEnd: start - 1, contextStart: end };
+        if (AFTER_BLANK.some((pattern) => opensAt(pattern, sentence, end))) return { valueEnd: start, contextStart: end };
+    }
+    return null;
+};
 
 const isQuantity = (text: string): boolean => QUANTITY.test(text);
 
@@ -51,9 +71,9 @@ const joined = (parts: string[], separator: string): string => parts.filter(Bool
 // Valeur et contexte d'une phrase ; sans nombre en tête, elle n'a pas de valeur à mettre en avant
 const splitSentence = (sentence: string): { value: string; context: string } => {
     if (!isQuantity(sentence)) return { value: '', context: sentence };
-    const boundary = CONTEXT_START.exec(sentence);
+    const boundary = contextBoundary(sentence);
     if (!boundary) return { value: sentence, context: '' };
-    return { value: sentence.slice(0, boundary.index), context: unwrapped(sentence.slice(boundary.index + boundary[0].length)) };
+    return { value: sentence.slice(0, boundary.valueEnd), context: unwrapped(sentence.slice(boundary.contextStart)) };
 };
 
 export const tipOf = ({ name, valueText, swatch = null }: TipSource): MapTip => {
