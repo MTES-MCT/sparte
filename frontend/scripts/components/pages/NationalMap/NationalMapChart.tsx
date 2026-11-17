@@ -1,4 +1,4 @@
-import React, { ReactNode, forwardRef, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { ForwardedRef, ReactNode, RefObject, forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import styled from 'styled-components';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
@@ -10,29 +10,17 @@ import { theme } from '@theme';
 import BaseCard from '@components/ui/BaseCard';
 import { downloadChartPng } from '@components/charts/downloadChartPng';
 import type { NationalMapInset } from '@services/api';
-import ClassLegend, { HoveredLand } from './ClassLegend';
-import SymbolLegend from './SymbolLegend';
-import GridLegend from './GridLegend';
-import MapLegendOverlay from './MapLegendOverlay';
+import type { HoveredLand } from './ClassLegend';
 import GriddedMap, { GriddedMapHandle } from './GriddedMap';
 import NationalMapFootnote from './components/NationalMapFootnote';
 import NationalMapKeyFigures from './components/NationalMapKeyFigures';
-import BivariateLegendBody from './components/legend/BivariateLegendBody';
-import BoundaryKey from './components/legend/BoundaryKey';
+import StageLegend from './components/legend/StageLegend';
 import CommunesCanvas, { CommunesCanvasHandle } from './components/stage/CommunesCanvas';
 import TipSheet from './components/stage/TipSheet';
 import type { StageMapStatus } from './components/stage/mapLibre';
-import {
-    HOVERED_POINT_STYLE,
-    PointHandlers,
-    READ_POINT_CLASS,
-    TERRITORY_COLOR,
-    applySymbolMaxSize,
-    buildChartOptions,
-    outlineLand,
-} from './components/stage/territoryOptions';
+import { HOVERED_POINT_STYLE, TERRITORY_COLOR } from './components/stage/territoryOptions';
 import { tipBubbleStyles } from './components/stage/tipView';
-import { symbolMaxSize, symbolRadius } from './values';
+import { useHighlightedLand, usePointHandlers, useTerritoryChart } from './components/stage/useTerritoryChart';
 import {
     ASIDE_WIDTH,
     MOBILE_BREAKPOINT,
@@ -43,25 +31,22 @@ import {
     STACK_BREAKPOINT,
 } from './layoutStyles';
 import type { ViewError } from './domain/frame/buildFrame';
-import { exportInfoOf, exportLegendOf } from './domain/frame/exportImage';
-import type { FrameRender, GridLegendBody, LandPoint, MapFrame } from './domain/frame/types';
-import type { GridStage } from './domain/grid/cells';
+import { GridLegendView, gridExportOf, gridLegendViewOf, legendScopeOf } from './domain/frame/gridLegend';
+import type { FrameRender, MapFrame } from './domain/frame/types';
 import type { LandHighlight } from './domain/landHighlight';
-import { landReadingOf } from './domain/landReading';
-import { parentBoundaryKey } from './domain/parentBoundary';
-import { legendOpenByDefault, legendReservation } from './domain/stage';
-import { useHeld } from './hooks/useHeld';
+import type { LandReading } from './domain/landReading';
+import { useLandReading } from './hooks/useLandReading';
 import { useLegendFocus } from './hooks/useLegendFocus';
-import { useStageSize } from './hooks/useStageSize';
+import { useLive } from './hooks/useLive';
+import { CommunesEngine, GridEngine, shownMapLibreStatus, useCommunesEngine, useGridEngine, useStagedConfirmation } from './hooks/useMapLibreEngines';
+import { useStageLayout } from './hooks/useStageLayout';
+import { useSymbolScale } from './hooks/useSymbolScale';
 import { useTouching } from './hooks/useTouching';
 
 HighchartsMap(Highcharts);
 HighchartsAccessibility(Highcharts);
 HighchartsExporting(Highcharts);
 HighchartsOfflineExporting(Highcharts);
-
-// Opacité des territoires hors de la classe survolée dans la légende
-const DIMMED_OPACITY = 0.2;
 
 // Sur grand écran : la carte dans une carte blanche à gauche, sur toute la hauteur, et une
 // colonne à droite (chiffres clés, note, graphiques) qui défile seule. Sur les écrans
@@ -350,12 +335,7 @@ const AsideSlot = styled.div<{ $stale: boolean }>`
     transition: opacity 0.2s;
 `;
 
-const IDLE_STATUS: StageMapStatus = { ready: false, loading: false, notice: null };
 const NO_INSETS: NationalMapInset[] = [];
-
-// Vue que dessine un moteur : la vue affichée si elle est la sienne, sinon celle qui se prépare
-const frameDrawnBy = (engine: FrameRender['renderer'], shown: MapFrame | null, staged: MapFrame | null): MapFrame | null =>
-    [shown, staged].find((candidate) => candidate?.render.renderer === engine) ?? null;
 
 // Message affiché sur la carte de toutes les communes du pays tant que ses premières tuiles chargent
 const COMMUNES_LOADING = 'Chargement des communes…';
@@ -374,6 +354,254 @@ const CHART_CONTAINER_PROPS = { className: 'national-map-canvas' };
 // elle ne compte pas, le graphique affiché n'est pas recréé.
 const markChartCreated = (chart: Highcharts.Chart) => {
     if (!chart.renderer.forExport) performance.mark('national-map:chart-create');
+};
+
+// Territoires d'outre-mer que la carte affichée rapproche de l'Hexagone ; une carte de mailles
+// en géographie réelle n'en a pas
+const insetsOf = (frame: MapFrame | null): NationalMapInset[] => {
+    if (!frame) return NO_INSETS;
+    const insets = frame.render.renderer === 'grid' ? frame.render.insets : frame.base.insets;
+    return insets ?? NO_INSETS;
+};
+
+// Message du chargement des tuiles de la carte MapLibre affichée
+const tilesLoadingText = ({ render }: MapFrame): string => (render.renderer === 'grid' ? render.cells.texts.loading : COMMUNES_LOADING);
+
+// Place réservée à la légende, telle que la scène la publie : rien quand elle est nulle
+const reservedPx = (size: number): number | undefined => (size > 0 ? size : undefined);
+
+// Messages de la scène tant qu'aucune carte n'y est affichée
+const EmptyStageMessages: React.FC<{ frame: MapFrame | null; error: ViewError | null }> = ({ frame, error }) => {
+    if (frame) return null;
+    return (
+        <>
+            {error && <Message>{ERROR_MESSAGES[error]}</Message>}
+            {!error && <Message role="status">Chargement de la carte…</Message>}
+        </>
+    );
+};
+
+interface StageNoticesProps {
+    // Vue affichée ; null : la scène porte elle-même ses messages (voir EmptyStageMessages)
+    frame: MapFrame | null;
+    error: ViewError | null;
+    pending: boolean;
+    // Nom de la zone demandée, annoncé pendant son chargement
+    targetName: string;
+    // La vue de toutes les communes du pays se prépare sous la carte affichée : ses tuiles chargent
+    communesPreparing: boolean;
+    // État de la carte MapLibre affichée, s'il y en a une
+    mapLibreStatus: StageMapStatus | null;
+}
+
+// Messages centrés sur la carte, et non sur la scène, dont la légende occupe une part
+const StageNotices: React.FC<StageNoticesProps> = ({ frame, error, pending, targetName, communesPreparing, mapLibreStatus }) => {
+    if (!frame) return null;
+    return (
+        <>
+            {error && <Notice role="status">{ERROR_MESSAGES[error]}</Notice>}
+            {!error && pending && <Loading role="status">{communesPreparing ? COMMUNES_LOADING : `Chargement de la carte : ${targetName}…`}</Loading>}
+            {!error && !pending && mapLibreStatus?.loading && <Loading role="status">{tilesLoadingText(frame)}</Loading>}
+        </>
+    );
+};
+
+// Ce que la scène donne à ses deux cartes MapLibre
+type MapLibreScene = {
+    // La vue demandée charge
+    pending: boolean;
+    // Ligne de la légende affichée mise en avant ; null : aucune
+    dimKey: number | null;
+    // Petite carte : des numéros à la place des noms des territoires d'outre-mer
+    compact: boolean;
+    // La légende a sa place à côté de la carte ; sinon son bouton est posé sur la carte
+    legendHasItsPlace: boolean;
+    touching: () => boolean;
+    // Emplacement de la page où la fiche de lecture des écrans tactiles est rendue
+    sheetSlot: HTMLElement | null;
+    onHover: (land: HoveredLand | null) => void;
+    onZoneChange?: (zone: string, name?: string) => void;
+};
+
+interface GridLayerProps {
+    mapRef: RefObject<GriddedMapHandle>;
+    engine: GridEngine;
+    // La carte de mailles est la carte affichée ; sinon elle se prépare sous elle
+    shown: boolean;
+    // Légende de ce qu'elle dessine : ses mailles, ou ce qui les remplace
+    view: GridLegendView;
+    // Place réservée à la légende, en pixels
+    reserved: { top: number; left: number };
+    scene: MapLibreScene;
+}
+
+const GridLayer: React.FC<GridLayerProps> = ({ mapRef, engine, shown, view, reserved, scene }) => {
+    const { frame, render } = engine;
+    if (!render) return null;
+    // Une image remplit toute la scène, sous la légende
+    const covered = render.image ? reserved : undefined;
+    // La classe mise en avant est celle de la légende affichée : des mailles, ou des objets
+    const dimKey = shown ? scene.dimKey : null;
+    const exported = gridExportOf(frame, view);
+
+    return (
+        <MapLibreLayer $staged={!shown} $belowLegendButton={!scene.legendHasItsPlace} $under={covered} aria-hidden={shown ? undefined : true}>
+            <GriddedMap
+                ref={mapRef}
+                zone={frame.base.zone}
+                render={render}
+                scale={frame.base.scale}
+                covered={covered}
+                numberedInsets={scene.compact}
+                highlightedClass={view.replacement ? null : dimKey}
+                highlightedDetailClass={view.replacement ? dimKey : null}
+                clickable={frame.base.clickable}
+                // En préparation, elle n'est pas atténuée : elle apparaîtra nette
+                busy={shown && scene.pending}
+                exportInfo={exported.info}
+                exportLegend={exported.legend}
+                ariaLabel={frame.ariaLabel}
+                onHover={scene.onHover}
+                touching={scene.touching}
+                sheetSlot={scene.sheetSlot}
+                onZoneChange={scene.onZoneChange}
+                onStatusChange={engine.reportStatus}
+                onStageChange={engine.reportStage}
+            />
+        </MapLibreLayer>
+    );
+};
+
+interface CommunesLayerProps {
+    mapRef: RefObject<CommunesCanvasHandle>;
+    engine: CommunesEngine;
+    // La carte de toutes les communes du pays est la carte affichée ; sinon elle se prépare sous elle
+    shown: boolean;
+    scene: MapLibreScene;
+}
+
+const CommunesLayer: React.FC<CommunesLayerProps> = ({ mapRef, engine, shown, scene }) => {
+    const { frame, render, exported } = engine;
+    if (!render) return null;
+    return (
+        <MapLibreLayer $staged={!shown} $belowLegendButton={!scene.legendHasItsPlace} aria-hidden={shown ? undefined : true}>
+            <CommunesCanvas
+                ref={mapRef}
+                exportInfo={exported.info}
+                exportLegend={exported.legend}
+                base={frame.base}
+                render={render}
+                // La classe mise en avant est celle de la légende affichée
+                highlightedClass={shown ? scene.dimKey : null}
+                numberedInsets={scene.compact}
+                // En préparation, elle n'est pas atténuée : elle apparaîtra nette
+                busy={shown && scene.pending}
+                ariaLabel={frame.ariaLabel}
+                onHover={scene.onHover}
+                touching={scene.touching}
+                sheetSlot={scene.sheetSlot}
+                onZoneChange={scene.onZoneChange}
+                onStatusChange={engine.reportStatus}
+            />
+        </MapLibreLayer>
+    );
+};
+
+interface TerritoryLayerProps {
+    chartRef: RefObject<HighchartsReact.RefObject>;
+    // Options du graphique ; null : aucune vue n'est affichée
+    options: Highcharts.Options | null;
+    // La vue demandée charge : la carte montre encore la précédente
+    stale: boolean;
+}
+
+const TerritoryLayer: React.FC<TerritoryLayerProps> = ({ chartRef, options, stale }) => {
+    if (!options) return null;
+    return (
+        <ChartLayer $stale={stale}>
+            <HighchartsReact
+                ref={chartRef}
+                highcharts={Highcharts}
+                constructorType="mapChart"
+                options={options}
+                // Le fond et les classes changent avec la zone et l'indicateur : on recrée le graphique
+                immutable
+                containerProps={CHART_CONTAINER_PROPS}
+                callback={markChartCreated}
+            />
+        </ChartLayer>
+    );
+};
+
+interface MapLibreHintsProps {
+    // État de la carte MapLibre affichée, s'il y en a une
+    status: StageMapStatus | null;
+    legendCoversMap: boolean;
+    legendHasItsPlace: boolean;
+    gridView: GridLegendView;
+}
+
+// Ce qu'une carte MapLibre écrit sur elle : son avis, et ce qu'elle dit de ses objets
+const MapLibreHints: React.FC<MapLibreHintsProps> = ({ status, legendCoversMap, legendHasItsPlace, gridView }) => (
+    <>
+        {status?.notice && !legendCoversMap && (
+            <Banner role="status" $belowLegendButton={!legendHasItsPlace}>
+                {status.notice}
+            </Banner>
+        )}
+        {gridView.stage === 'objects' && gridView.legend?.detail && (
+            <ObjectsHint role="status">
+                <i className="bi bi-hand-index" aria-hidden="true" />
+                {gridView.legend.detail.hint}
+            </ObjectsHint>
+        )}
+    </>
+);
+
+// Sur une petite carte, les noms des territoires d'outre-mer ne tiennent pas : des numéros les
+// remplacent, et leur clé est écrite sous la carte
+const InsetNumbers: React.FC<{ insets: NationalMapInset[] }> = ({ insets }) => (
+    <InsetKey>
+        {insets.map((inset, index) => (
+            <React.Fragment key={inset.zone}>
+                {index > 0 && ' · '}
+                <b>{index + 1}</b> {inset.name}
+            </React.Fragment>
+        ))}
+    </InsetKey>
+);
+
+interface LandSheetProps {
+    slot: HTMLElement | null;
+    // Lecture du territoire touché, qui n'existe que sur la carte par territoire (voir landReadingOf)
+    reading: LandReading | null;
+    onOpen: () => void;
+    onClose: () => void;
+}
+
+// Fiche de lecture du territoire touché sur la carte par territoire
+const LandSheet: React.FC<LandSheetProps> = ({ slot, reading, onOpen, onClose }) => {
+    if (!reading) return null;
+    return <TipSheet slot={slot} tip={reading.tip} action={reading.opens && { label: 'Ouvrir ce territoire', onClick: onOpen }} onClose={onClose} />;
+};
+
+interface FrameSummaryProps {
+    frame: MapFrame | null;
+    // La vue demandée n'est pas encore la vue affichée
+    stale: boolean;
+    // La vue demandée charge
+    busy: boolean;
+}
+
+// Chiffres clés et note de la carte affichée
+const FrameSummary: React.FC<FrameSummaryProps> = ({ frame, stale, busy }) => {
+    if (!frame) return null;
+    return (
+        <AsideSlot aria-busy={busy} $stale={stale}>
+            <NationalMapKeyFigures model={frame.keyFigures} />
+            {frame.footnote && <NationalMapFootnote text={frame.footnote} explainsMillesimes={frame.data.source === 'artif'} />}
+        </AsideSlot>
+    );
 };
 
 interface NationalMapChartProps {
@@ -403,443 +631,127 @@ export interface NationalMapChartHandle {
     exportPng: () => void;
 }
 
+type EngineRefs = {
+    chart: RefObject<HighchartsReact.RefObject>;
+    grid: RefObject<GriddedMapHandle>;
+    communes: RefObject<CommunesCanvasHandle>;
+};
+
+// L'export est demandé au moteur de la vue affichée
+const useExportHandle = (ref: ForwardedRef<NationalMapChartHandle>, renderer: FrameRender['renderer'] | undefined, { chart, grid, communes }: EngineRefs): void => {
+    const gridded = renderer === 'grid';
+    const dense = renderer === 'communes';
+    useImperativeHandle(
+        ref,
+        () => ({
+            exportPng: () => {
+                if (gridded) grid.current?.exportPng();
+                else if (dense) communes.current?.exportPng();
+                else downloadChartPng(chart.current?.chart);
+            },
+        }),
+        [gridded, dense, chart, grid, communes],
+    );
+};
+
 const NationalMapChart = forwardRef<NationalMapChartHandle, NationalMapChartProps>(({ frame, staged, pending, error, targetName, onZoneChange, onStagedPainted, highlight, children }, ref) => {
     const chartRef = useRef<HighchartsReact.RefObject>(null);
+    const gridRef = useRef<GriddedMapHandle>(null);
+    const communesRef = useRef<CommunesCanvasHandle>(null);
     const stageRef = useRef<HTMLDivElement>(null);
     // La vue demandée charge : ce qui reste affiché de la précédente est annoncé comme occupé
     const viewLoading = pending && !error;
 
     // La carte ne dessine que la vue affichée : tout ce qu'elle lit vient du cadre
     const legend = frame?.legend;
-    // Ce que la légende dit du trait de la limite de la zone, quand la carte le dessine
-    const boundaryKey = frame ? parentBoundaryKey(frame.base.parentBoundary, frame.base.parent?.land_type) : null;
     // Moteur de la vue affichée : Highcharts pour une carte par territoire, MapLibre pour les
     // données carroyées et pour toutes les communes du pays
-    const renderer = frame?.render.renderer ?? null;
-    const gridded = renderer === 'grid';
-    const dense = renderer === 'communes';
-    // Chaque moteur MapLibre reçoit sa vue affichée, ou celle qui se prépare sous la carte affichée
-    const gridFrame = frameDrawnBy('grid', frame, staged);
-    const gridRender = gridFrame?.render.renderer === 'grid' ? gridFrame.render : null;
-    const gridMounted = gridRender !== null;
-    const gridRef = useRef<GriddedMapHandle>(null);
-    const [gridStatus, setGridStatus] = useState<StageMapStatus>(IDLE_STATUS);
-    // La carte de mailles dessine, aux grands zooms, les objets réels à la place de ses mailles
-    // Dernière étape annoncée par la carte de mailles, avec l'image pour laquelle elle vaut
-    const [reportedStage, setReportedStage] = useState<{ stage: GridStage; imageKey: string | null } | null>(null);
-    const reportGridStage = useCallback((stage: GridStage, imageKey: string | null) => setReportedStage({ stage, imageKey }), []);
-    const communesFrame = frameDrawnBy('communes', frame, staged);
-    const communesRender = communesFrame?.render.renderer === 'communes' ? communesFrame.render : null;
-    const communesRef = useRef<CommunesCanvasHandle>(null);
-    // Textes et légende de son image exportée
-    const communesExport = useMemo(
-        () => (communesFrame ? { info: exportInfoOf(communesFrame.exportMeta), legend: exportLegendOf(communesFrame.legend) } : null),
-        [communesFrame],
-    );
-    const communesMounted = communesRender !== null;
-    const [communesStatus, setCommunesStatus] = useState<StageMapStatus>(IDLE_STATUS);
-    // État de la carte MapLibre affichée, s'il y en a une
-    const mapLibreStatus = (gridded && gridStatus) || (dense && communesStatus) || null;
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            exportPng: () => {
-                if (gridded) gridRef.current?.exportPng();
-                else if (dense) communesRef.current?.exportPng();
-                else downloadChartPng(chartRef.current?.chart);
-            },
-        }),
-        [gridded, dense],
-    );
-    // Territoire survolé sur la carte
-    const [hoveredLand, setHoveredLand] = useState<HoveredLand | null>(null);
-    // Légende des objets d'une carte de mailles, quand ils ont pris la place des mailles
-    const gridLegend = gridded && legend?.kind === 'grid' ? legend : null;
-    // Une carte qui a une image la montre d'emblée : tant que la carte n'a rien annoncé pour elle,
-    // la légende est celle de l'image, pas celle des mailles
-    const gridImageKey = gridFrame?.render.renderer === 'grid' ? (gridFrame.render.image?.key ?? null) : null;
-    let gridStage: GridStage = gridImageKey ? 'image' : 'cells';
-    if (reportedStage && reportedStage.imageKey === gridImageKey) gridStage = reportedStage.stage;
-    let detailLegend: (GridLegendBody & { title: string }) | null = null;
-    if (gridLegend && gridStage === 'objects') detailLegend = gridLegend.detail;
-    if (gridLegend && gridStage === 'image') detailLegend = gridLegend.image;
-    // Sous l'image, la ligne « pas de donnée » a la couleur de son fond
-    const gridNoData = gridLegend?.noData && gridStage === 'image' && gridLegend.image ? { ...gridLegend.noData, color: gridLegend.image.noDataColor } : (gridLegend?.noData ?? null);
-    // Textes et légende de l'image exportée d'une carte de mailles : ceux de ce qu'elle dessine,
-    // ses mailles, l'image ou les objets
-    const gridExport = gridFrame && {
-        info: exportInfoOf(gridFrame.exportMeta, gridStage),
-        legend: exportLegendOf(gridFrame.legend, gridLegend && { classes: (detailLegend ?? gridLegend).classes, noData: gridNoData }),
-    };
-    // Ligne de légende mise en avant : elle ne vaut que pour la légende affichée
-    const legendScope = legend && detailLegend ? `${legend.signature}|${gridStage}` : (legend?.signature ?? null);
-    const focus = useLegendFocus(legendScope);
-    const activeLegendKey = focus.hovered ?? hoveredLand?.classIndex ?? focus.pinned ?? null;
-
-    // La scène change de taille avec la fenêtre et les onglets mobiles : on recale la carte
-    const reflowChart = useCallback(() => chartRef.current?.chart?.reflow(), []);
-    const stage = useStageSize(stageRef, reflowChart);
-
-    // Légende ouverte ou repliée : le choix de l'utilisateur, qui vaut d'une carte à l'autre ;
-    // sans choix, elle est repliée sur une scène où elle s'ouvrirait par-dessus la carte
-    const [legendChoice, setLegendChoice] = useState<boolean | null>(null);
-    const legendOpen = legendChoice ?? legendOpenByDefault(stage);
-    // Tant que rien n'est affiché, la place réservée est celle de la légende de la vue qui se
-    // prépare : sa carte naît à sa taille définitive, au lieu de se recadrer, et de charger
-    // d'autres tuiles, quand sa légende arrive
-    const reserved = legendReservation(stage, Boolean(legend ?? staged?.legend) && legendOpen);
-    const legendHasItsPlace = reserved.top > 0 || reserved.left > 0;
-    const legendCoversMap = Boolean(legend) && legendOpen && stage.legendPlacement === 'over';
-    // La place réservée change celle laissée à la carte : celle-ci se recale avant la peinture
-    useLayoutEffect(reflowChart, [reserved.top, reserved.left, reflowChart]);
+    const renderer = frame?.render.renderer;
 
     // Ce que les gestionnaires des cartes lisent au moment où ils sont appelés. Eux-mêmes ne
     // changent jamais d'identité : un chargement ou un survol ne recrée pas le graphique.
-    const live = useRef({ pending, staged, onZoneChange, onStagedPainted, highlight });
-    useLayoutEffect(() => {
-        live.current = { pending, staged, onZoneChange, onStagedPainted, highlight };
-    });
-    // État d'une carte MapLibre. Si elle s'annonce dessinée alors que sa vue se prépare, elle peut
-    // remplacer la carte affichée. La vue en préparation est lue à cet instant : l'annonce vaut
-    // pour ce que la carte vient de recevoir, pas pour un rendu passé, et pour son moteur seul.
-    const confirmStaged = useCallback((engine: FrameRender['renderer'], status: StageMapStatus) => {
-        const preparing = live.current.staged;
-        if (status.ready && preparing?.render.renderer === engine) live.current.onStagedPainted?.(preparing.key);
-    }, []);
-    const reportGridStatus = useCallback(
-        (status: StageMapStatus) => {
-            setGridStatus(status);
-            confirmStaged('grid', status);
-        },
-        [confirmStaged],
-    );
-    const reportCommunesStatus = useCallback(
-        (status: StageMapStatus) => {
-            setCommunesStatus(status);
-            confirmStaged('communes', status);
-        },
-        [confirmStaged],
-    );
+    const live = useLive({ pending, staged, onZoneChange, onStagedPainted, highlight });
+    // Chaque moteur MapLibre reçoit sa vue affichée, ou celle qui se prépare sous la carte affichée
+    const confirmStaged = useStagedConfirmation(live);
+    const grid = useGridEngine(frame, staged, confirmStaged);
+    const communes = useCommunesEngine(frame, staged, confirmStaged);
+    const mapLibreStatus = shownMapLibreStatus(frame, grid, communes);
+    useExportHandle(ref, renderer, { chart: chartRef, grid: gridRef, communes: communesRef });
+
+    // Territoire survolé sur la carte
+    const [hoveredLand, setHoveredLand] = useState<HoveredLand | null>(null);
+    // Légende d'une carte de mailles : celle de ce qu'elle dessine, ses mailles, l'image ou les objets
+    const gridView = gridLegendViewOf(frame, grid.render, grid.reportedStage);
+    // Ligne de légende mise en avant : elle ne vaut que pour la légende affichée
+    const focus = useLegendFocus(legendScopeOf(legend, gridView));
+
+    // La scène change de taille avec la fenêtre et les onglets mobiles : on recale la carte
+    const reflowChart = useCallback(() => chartRef.current?.chart?.reflow(), []);
+    const { stage, legendOpen, setLegendOpen, reserved, legendHasItsPlace, legendCoversMap } = useStageLayout(stageRef, reflowChart, legend, staged?.legend);
+
     // Écran tactile : l'appui lit, et la fiche de lecture ouvre (voir pressOutcome). La fiche est
     // rendue dans un emplacement de la page, que les cartes MapLibre reçoivent pour la leur.
     const touching = useTouching();
     const [sheetSlot, setSheetSlot] = useState<HTMLElement | null>(null);
-    // Territoire lu au doigt sur la carte par territoire
-    const [readLandId, setReadLandId] = useState<string | null>(null);
-    const handlers = useMemo<PointHandlers>(
-        () => ({
-            // Pendant un chargement, la carte montre encore la vue précédente : le clic est ignoré
-            // pour ne pas ouvrir un autre territoire que celui attendu
-            onLandClick: (zone, name) => {
-                if (!live.current.pending) live.current.onZoneChange?.(zone, name);
-            },
-            touching,
-            onLandRead: setReadLandId,
-            onLandHover: (point) => {
-                live.current.highlight?.publish('map', point?.land_id ?? null);
-                setHoveredLand((current) => {
-                    if (!point) return null;
-                    const classIndex = point.legendKey ?? null;
-                    return current?.name === point.name && current.classIndex === classIndex
-                        ? current
-                        : { name: point.name, valueText: point.valueText.replace(/<br\/>/g, ', '), classIndex };
-                });
-            },
-        }),
-        [touching],
-    );
-    // Lecture du territoire touché : elle suit la carte affichée, et disparaît avec le territoire
-    const landReading = useMemo(() => landReadingOf(frame, readLandId), [frame, readLandId]);
-    const closeLandReading = useCallback(() => setReadLandId(null), []);
-    const openReadLand = useCallback(() => {
-        const opens = landReading?.opens;
-        if (opens && !live.current.pending) live.current.onZoneChange?.(opens.zone, opens.name);
-    }, [landReading]);
-    // Le territoire lu désigne un territoire du fond quitté
-    const baseKey = frame?.base.key ?? null;
-    useEffect(() => setReadLandId(null), [baseKey]);
-    // Territoire survolé dans le nuage de points : la carte le cerne comme sous le pointeur
-    useEffect(() => {
-        let shown: string | null = null;
-        const landPoint = (landId: string | null) =>
-            landId === null ? undefined : chartRef.current?.chart?.series[0]?.points.find((point) => (point.options as unknown as LandPoint).land_id === landId);
-        return highlight?.subscribe('map', (landId) => {
-            landPoint(shown)?.setState('');
-            shown = landId;
-            landPoint(landId)?.setState('hover');
-        });
-    }, [highlight]);
+    const touched = useLandReading(frame, live);
+    const handlers = usePointHandlers(live, touching, touched.read, setHoveredLand);
+    useHighlightedLand(chartRef, highlight);
 
-    // Échelle des symboles proportionnels, cercles ou anneaux : le diamètre du plus grand dépend du
-    // nombre de territoires et de la taille de la carte à l'écran ; les symboles de référence de la
-    // légende le suivent
-    const symbolLegend = legend?.kind === 'symbols' ? legend : null;
-    const symbolSize = symbolLegend ? symbolMaxSize(symbolLegend.landCount, stage.symbolFactor) : null;
-    const symbolReferences = useMemo(
-        () =>
-            symbolLegend && symbolSize !== null
-                ? symbolLegend.references.map(({ value, label }) => ({ radius: symbolRadius(value, symbolLegend.maxValue, symbolSize), label }))
-                : [],
-        [symbolLegend, symbolSize],
-    );
-
-    // Territoires d'outre-mer que la carte affichée rapproche de l'Hexagone ; une carte de mailles
-    // en géographie réelle n'en a pas. Sur une petite carte, leurs noms ne tiennent pas : des
-    // numéros les remplacent.
-    const insets = (gridded ? gridRender?.insets : frame?.base.insets) ?? NO_INSETS;
+    const symbols = useSymbolScale(legend, stage.symbolFactor);
+    // Sur une petite carte, les noms des territoires d'outre-mer ne tiennent pas : des numéros les
+    // remplacent
+    const insets = insetsOf(frame);
     const numberedInsets = stage.compact && insets.length > 0;
+    const chartOptions = useTerritoryChart(chartRef, frame, handlers, {
+        numberedInsets,
+        symbolSize: symbols.size,
+        hidden: stage.hidden,
+        dimKey: focus.dimKey,
+        readLand: touched.landId,
+    });
 
-    // Une identité d'options vaut une création du graphique : elles ne dépendent que du cadre
-    // affiché et des numéros d'outre-mer. Le diamètre des symboles proportionnels n'est pas une
-    // dépendance, à dessein : il suit la taille de la scène, qui change sans que la carte change.
-    // Le graphique le reçoit à sa création, puis en place.
-    const options = useMemo<Highcharts.Options | null>(
-        () => frame && buildChartOptions(frame, { numberedInsets, symbolMaxSize: symbolSize }, handlers),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [frame, numberedInsets, handlers],
-    );
-    // Tant que la carte est masquée (onglet Informations sur mobile), le graphique garde ses
-    // options : en changer le recréerait dans un conteneur sans taille, à chaque choix fait dans le
-    // menu. À son retour, il reçoit celles de la vue affichée, pour une seule création.
-    const chartOptions = useHeld(options, stage.hidden);
-    useLayoutEffect(() => {
-        const chart = chartRef.current?.chart;
-        // Masqué, le graphique est encore celui d'une vue précédente : ses symboles ne sont pas retaillés
-        if (chart && symbolSize !== null && !stage.hidden) applySymbolMaxSize(chart, symbolSize);
-    }, [symbolSize, chartOptions, stage.hidden]);
-
-    // Ligne de légende mise en avant : les territoires des autres lignes s'estompent. Appliqué avant
-    // la peinture, pour qu'une carte neuve ne soit jamais vue sans l'estompage que montre sa légende.
-    const { dimKey } = focus;
-    useLayoutEffect(() => {
-        const series = chartRef.current?.chart?.series?.[0];
-        if (!series) return;
-        series.points.forEach((point) => {
-            const key = (point.options as unknown as LandPoint).legendKey;
-            const dimmed = dimKey !== null && key !== dimKey;
-            point.graphic?.attr({ 'fill-opacity': dimmed ? DIMMED_OPACITY : 1 });
-        });
-    }, [dimKey, chartOptions]);
-
-    // Le territoire lu au doigt reste cerné sur la carte tant que sa fiche est ouverte, comme sous
-    // le pointeur ; un graphique recréé sous la fiche le cerne de nouveau
-    const readLand = landReading?.landId ?? null;
-    useEffect(() => {
-        const point =
-            readLand === null ? undefined : chartRef.current?.chart?.series?.[0]?.points.find((candidate) => (candidate.options as unknown as LandPoint).land_id === readLand);
-        // Par une classe qui lui est propre, et non par l'état de survol de Highcharts, levé peu
-        // après l'appui ; avec le liseré clair du territoire survolé
-        const dropHalo = outlineLand(point as unknown as Highcharts.Point | undefined);
-        point?.graphic?.addClass(READ_POINT_CLASS);
-        return () => {
-            dropHalo();
-            // Le graphique peut avoir été recréé entre-temps : son ancien point n'a plus de dessin
-            point?.graphic?.removeClass(READ_POINT_CLASS);
-        };
-    }, [readLand, chartOptions]);
-
-    useEffect(() => {
-        if (gridMounted) return;
-        setGridStatus(IDLE_STATUS);
-        setReportedStage(null);
-    }, [gridMounted]);
-    useEffect(() => {
-        if (!communesMounted) setCommunesStatus(IDLE_STATUS);
-    }, [communesMounted]);
-    // La vue de toutes les communes du pays se prépare sous la carte affichée : ses tuiles chargent
-    const communesStaged = communesMounted && !dense;
+    const scene: MapLibreScene = { pending, dimKey: focus.dimKey, compact: stage.compact, legendHasItsPlace, touching, sheetSlot, onHover: setHoveredLand, onZoneChange };
 
     return (
         <Row>
             <MapCard>
                 <Stage ref={stageRef}>
                     <Canvas>
-                        {error && !frame && <Message>{ERROR_MESSAGES[error]}</Message>}
-                        {!error && !frame && <Message role="status">Chargement de la carte…</Message>}
-                        <MapLayers
-                            $top={reserved.top}
-                            $left={reserved.left}
-                            data-legend-band={reserved.top > 0 ? reserved.top : undefined}
-                            data-legend-side={reserved.left > 0 ? reserved.left : undefined}
-                        >
-                            {/* Messages centrés sur la carte, et non sur la scène, dont la légende occupe une part */}
-                            {error && frame && <Notice role="status">{ERROR_MESSAGES[error]}</Notice>}
-                            {!error && frame && pending && (
-                                <Loading role="status">{communesStaged ? COMMUNES_LOADING : `Chargement de la carte : ${targetName}…`}</Loading>
-                            )}
-                            {!error && !pending && mapLibreStatus?.loading && (
-                                <Loading role="status">{gridded && gridRender ? gridRender.cells.texts.loading : COMMUNES_LOADING}</Loading>
-                            )}
-                            {gridRender && (
-                                <MapLibreLayer
-                                    $staged={!gridded}
-                                    $belowLegendButton={!legendHasItsPlace}
-                                    $under={gridRender.image ? reserved : undefined}
-                                    aria-hidden={gridded ? undefined : true}
-                                >
-                                    <GriddedMap
-                                        ref={gridRef}
-                                        zone={gridFrame.base.zone}
-                                        render={gridRender}
-                                        scale={gridFrame.base.scale}
-                                        // Une image remplit toute la scène, sous la légende
-                                        covered={gridRender.image ? reserved : undefined}
-                                        numberedInsets={stage.compact}
-                                        // La classe mise en avant est celle de la légende affichée : des mailles, ou des objets
-                                        highlightedClass={gridded && !detailLegend ? dimKey : null}
-                                        highlightedDetailClass={gridded && detailLegend ? dimKey : null}
-                                        clickable={gridFrame.base.clickable}
-                                        // En préparation, elle n'est pas atténuée : elle apparaîtra nette
-                                        busy={gridded && pending}
-                                        exportInfo={gridExport.info}
-                                        exportLegend={gridExport.legend}
-                                        ariaLabel={gridFrame.ariaLabel}
-                                        onHover={setHoveredLand}
-                                        touching={touching}
-                                        sheetSlot={sheetSlot}
-                                        onZoneChange={onZoneChange}
-                                        onStatusChange={reportGridStatus}
-                                        onStageChange={reportGridStage}
-                                    />
-                                </MapLibreLayer>
-                            )}
-                            {communesRender && (
-                                <MapLibreLayer $staged={!dense} $belowLegendButton={!legendHasItsPlace} aria-hidden={dense ? undefined : true}>
-                                    <CommunesCanvas
-                                        ref={communesRef}
-                                        exportInfo={communesExport.info}
-                                        exportLegend={communesExport.legend}
-                                        base={communesFrame.base}
-                                        render={communesRender}
-                                        // La classe mise en avant est celle de la légende affichée
-                                        highlightedClass={dense ? dimKey : null}
-                                        numberedInsets={stage.compact}
-                                        // En préparation, elle n'est pas atténuée : elle apparaîtra nette
-                                        busy={dense && pending}
-                                        ariaLabel={communesFrame.ariaLabel}
-                                        onHover={setHoveredLand}
-                                        touching={touching}
-                                        sheetSlot={sheetSlot}
-                                        onZoneChange={onZoneChange}
-                                        onStatusChange={reportCommunesStatus}
-                                    />
-                                </MapLibreLayer>
-                            )}
-                            {chartOptions && (
-                                <ChartLayer $stale={pending}>
-                                    <HighchartsReact
-                                        ref={chartRef}
-                                        highcharts={Highcharts}
-                                        constructorType="mapChart"
-                                        options={chartOptions}
-                                        // Le fond et les classes changent avec la zone et l'indicateur : on recrée le graphique
-                                        immutable
-                                        containerProps={CHART_CONTAINER_PROPS}
-                                        callback={markChartCreated}
-                                    />
-                                </ChartLayer>
-                            )}
-                            {mapLibreStatus?.notice && !legendCoversMap && (
-                                <Banner role="status" $belowLegendButton={!legendHasItsPlace}>
-                                    {mapLibreStatus.notice}
-                                </Banner>
-                            )}
-                            {gridStage === 'objects' && gridLegend?.detail && (
-                                <ObjectsHint role="status">
-                                    <i className="bi bi-hand-index" aria-hidden="true" />
-                                    {gridLegend.detail.hint}
-                                </ObjectsHint>
-                            )}
+                        <EmptyStageMessages frame={frame} error={error} />
+                        <MapLayers $top={reserved.top} $left={reserved.left} data-legend-band={reservedPx(reserved.top)} data-legend-side={reservedPx(reserved.left)}>
+                            <StageNotices
+                                frame={frame}
+                                error={error}
+                                pending={pending}
+                                targetName={targetName}
+                                communesPreparing={communes.preparing}
+                                mapLibreStatus={mapLibreStatus}
+                            />
+                            <GridLayer mapRef={gridRef} engine={grid} shown={renderer === 'grid'} view={gridView} reserved={reserved} scene={scene} />
+                            <CommunesLayer mapRef={communesRef} engine={communes} shown={renderer === 'communes'} scene={scene} />
+                            <TerritoryLayer chartRef={chartRef} options={chartOptions} stale={pending} />
+                            <MapLibreHints status={mapLibreStatus} legendCoversMap={legendCoversMap} legendHasItsPlace={legendHasItsPlace} gridView={gridView} />
                         </MapLayers>
-                        {/* Emplacement unique de la légende posée sur la carte : seul son contenu change d'une carte à l'autre */}
-                        {legend && (
-                            <MapLegendOverlay
-                                placement={stage.legendPlacement}
-                                open={legendOpen}
-                                onOpenChange={setLegendChoice}
-                                stale={pending}
-                                busy={viewLoading}
-                            >
-                                {legend.kind === 'classes' && (
-                                    <ClassLegend
-                                        indicatorLabel={legend.title}
-                                        classes={legend.classes}
-                                        counts={legend.counts}
-                                        noDataCount={legend.noDataCount}
-                                        landTypeLabel={legend.landTypeLabel}
-                                        method={legend.method}
-                                        activeClass={activeLegendKey}
-                                        pinnedClass={focus.pinned}
-                                        onHover={focus.hoverLegend}
-                                        onTogglePin={focus.togglePin}
-                                    />
-                                )}
-                                {symbolLegend && (
-                                    <SymbolLegend
-                                        indicatorLabel={symbolLegend.title}
-                                        shape={symbolLegend.shape}
-                                        references={symbolReferences}
-                                        colors={symbolLegend.colors}
-                                        note={symbolLegend.note}
-                                        noDataCount={symbolLegend.noDataCount}
-                                        method={symbolLegend.method}
-                                    />
-                                )}
-                                {legend.kind === 'bivariate' && (
-                                    <BivariateLegendBody
-                                        indicatorLabel={legend.title}
-                                        description={legend.props}
-                                        activeCell={activeLegendKey}
-                                        pinnedCell={focus.pinned}
-                                        onHover={focus.hoverLegend}
-                                        onTogglePin={focus.togglePin}
-                                    />
-                                )}
-                                {legend.kind === 'grid' && (
-                                    <GridLegend
-                                        indicatorLabel={detailLegend?.title ?? legend.title}
-                                        basis={(detailLegend ?? legend).basis}
-                                        classes={(detailLegend ?? legend).classes}
-                                        method={(detailLegend ?? legend).method}
-                                        noData={gridNoData}
-                                        activeClass={activeLegendKey}
-                                        pinnedClass={focus.pinned}
-                                        onTogglePin={focus.togglePin}
-                                    />
-                                )}
-                                {boundaryKey && <BoundaryKey label={boundaryKey} />}
-                            </MapLegendOverlay>
-                        )}
+                        <StageLegend
+                            frame={frame}
+                            placement={stage.legendPlacement}
+                            open={legendOpen}
+                            onOpenChange={setLegendOpen}
+                            stale={pending}
+                            busy={viewLoading}
+                            hoveredLand={hoveredLand}
+                            focus={focus}
+                            gridView={gridView}
+                            symbolReferences={symbols.references}
+                        />
                     </Canvas>
-                    {numberedInsets && (
-                        <InsetKey>
-                            {insets.map((inset, index) => (
-                                <React.Fragment key={inset.zone}>
-                                    {index > 0 && ' · '}
-                                    <b>{index + 1}</b> {inset.name}
-                                </React.Fragment>
-                            ))}
-                        </InsetKey>
-                    )}
+                    {numberedInsets && <InsetNumbers insets={insets} />}
                 </Stage>
                 <SheetSlot ref={setSheetSlot} aria-live="polite" aria-atomic="true" />
-                {landReading && !gridded && !dense && (
-                    <TipSheet
-                        slot={sheetSlot}
-                        tip={landReading.tip}
-                        action={landReading.opens && { label: 'Ouvrir ce territoire', onClick: openReadLand }}
-                        onClose={closeLandReading}
-                    />
-                )}
+                <LandSheet slot={sheetSlot} reading={touched.reading} onOpen={touched.open} onClose={touched.close} />
             </MapCard>
             <Aside aria-label="Chiffres clés et graphiques">
-                {frame && (
-                    <AsideSlot aria-busy={viewLoading} $stale={pending}>
-                        <NationalMapKeyFigures model={frame.keyFigures} />
-                        {frame.footnote && <NationalMapFootnote text={frame.footnote} explainsMillesimes={frame.data.source === 'artif'} />}
-                    </AsideSlot>
-                )}
+                <FrameSummary frame={frame} stale={pending} busy={viewLoading} />
                 {children}
             </Aside>
         </Row>
