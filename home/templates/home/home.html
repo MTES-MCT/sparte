@@ -33,9 +33,14 @@
         <div class="fr-mb-4w">
           <div id="react-search-bar" data-origin="home"></div>
           <p class="fr-text--sm fr-mt-2w fr-mb-0 fr-text--italic">Plus de <strong>175 000</strong> diagnostics déjà réalisés</p>
-          <p class="fr-text--sm fr-mt-2w fr-mb-0">
-            ou <a class="fr-link" href="{% url 'home:national_map' %}"><i class="bi bi-map fr-mr-1v" aria-hidden="true"></i>explorez la carte nationale de l'artificialisation</a>
-          </p>
+          <a class="hero-map-link fr-mt-3w" href="{% url 'home:national_map' %}">
+            <span class="hero-map-link__icon" aria-hidden="true"><i class="bi bi-map"></i></span>
+            <span class="hero-map-link__text">
+              <span class="hero-map-link__title">Explorer la carte nationale</span>
+              <span class="hero-map-link__desc">Carte interactive de la consommation d’espaces NAF</span>
+            </span>
+            <i class="bi bi-arrow-right hero-map-link__arrow" aria-hidden="true"></i>
+          </a>
         </div>
       </div>
     </div>
