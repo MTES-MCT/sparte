@@ -13,11 +13,22 @@ const OcsgeDrawerContext = createContext<OcsgeDrawerContextValue | null>(null);
 
 export const useOcsgeDrawer = () => useContext(OcsgeDrawerContext);
 
+// Section ajoutée au tiroir par une page qui a davantage à expliquer (carte nationale)
+export interface OcsgeDrawerSection {
+    icon: string;
+    title: string;
+    paragraphs: ReactNode[];
+}
+
 interface OcsgeDrawerProviderProps {
     millesimes: Millesime[];
     territoryName: string;
     isInterdepartemental: boolean;
     children: ReactNode;
+    // Sections placées entre la source des données et les millésimes disponibles ; aucune par défaut
+    extraSections?: OcsgeDrawerSection[];
+    // Sans l'ombre du tiroir fermé sur le bord de la page (voir Drawer) ; faux par défaut
+    flushWhenClosed?: boolean;
 }
 
 const Section = styled.div`
@@ -66,6 +77,8 @@ export const OcsgeDrawerProvider: React.FC<OcsgeDrawerProviderProps> = ({
     territoryName,
     isInterdepartemental,
     children,
+    extraSections = [],
+    flushWhenClosed = false,
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -79,6 +92,7 @@ export const OcsgeDrawerProvider: React.FC<OcsgeDrawerProviderProps> = ({
                 isOpen={isOpen}
                 title="Comprendre les données OCS GE"
                 onClose={closeDrawer}
+                flushWhenClosed={flushWhenClosed}
             >
                 <Section>
                     <SectionTitle>
@@ -95,6 +109,18 @@ export const OcsgeDrawerProvider: React.FC<OcsgeDrawerProviderProps> = ({
                         Ces données sont disponibles en téléchargement sur le site de l'IGN : <a href="https://geoservices.ign.fr/ocsge" target="_blank" rel="noopener noreferrer">geoservices.ign.fr</a>
                     </Paragraph>
                 </Section>
+
+                {extraSections.map(({ icon, title, paragraphs }) => (
+                    <Section key={title}>
+                        <SectionTitle>
+                            <i className={icon} />
+                            {title}
+                        </SectionTitle>
+                        {paragraphs.map((paragraph, rank) => (
+                            <Paragraph key={rank}>{paragraph}</Paragraph>
+                        ))}
+                    </Section>
+                ))}
 
                 <Section>
                     <SectionTitle>
