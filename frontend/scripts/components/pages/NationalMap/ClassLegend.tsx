@@ -1,151 +1,178 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { theme } from '@theme';
-import BaseCard from '@components/ui/BaseCard';
-import Badge from '@components/ui/Badge';
-import IconBadge from '@components/ui/IconBadge';
-import { CLASSIFICATION_LABEL, NO_DATA_COLOR, ValueClass } from './values';
+import { NO_DATA_COLOR, ValueClass } from './values';
 
-// Même carte que la légende bivariée des diagnostics : en-tête, classes, panneau de détail au survol
+// Légende des aplats de couleurs, posée sur la carte (voir MapLegendOverlay). Les styles exportés
+// sont ceux que partagent les légendes posées sur la carte. Chacun a deux mises en forme, selon la
+// place que la scène donne à la légende : en bandeau, tout en largeur, ou dans une colonne étroite.
 
-const LegendCard = styled(BaseCard)`
-    display: flex;
-    flex-direction: column;
-`;
+// Sélecteur de la mise en forme en colonne : l'emplacement de la légende porte son placement en attribut
+export const IN_LEGEND_COLUMN = "[data-legend-placement='side'] &";
+// Sélecteur des placements où la méthode se déplie dans le panneau, à la suite de la légende : la
+// colonne, et la légende ouverte par-dessus la carte, dont rien ne doit sortir de la scène
+const METHOD_IN_PANEL = `${IN_LEGEND_COLUMN}, [data-legend-placement='over'] &`;
 
-const Header = styled.div`
-    padding: ${theme.spacing.md};
-    border-bottom: 1px solid ${theme.colors.border};
-`;
+// Marge intérieure du titre : à droite, la place du bouton qui replie la légende
+const TITLE_PADDING = '0.45rem 2.4rem 0.2rem 0.75rem';
 
-const Title = styled.h4`
+// Titre de niveau 2 par son rôle : la feuille de style globale impose sa taille aux balises h2
+export const Title = styled.div.attrs({ role: 'heading', 'aria-level': 2 })`
     margin: 0;
     font-size: ${theme.fontSize.sm};
     font-weight: ${theme.fontWeight.semibold};
     color: ${theme.colors.text};
+
+    ${METHOD_IN_PANEL} {
+        padding: ${TITLE_PADDING};
+        line-height: 1.35;
+    }
 `;
 
-const Subtitle = styled.p`
-    margin: 0.2rem 0 0;
-    font-size: ${theme.fontSize.xs};
+// Légende posée sur la carte. En bandeau : titre, classes sur une ligne (qui passe à la ligne si
+// besoin), méthode dans un volet à droite du titre. En colonne : titre sur plusieurs lignes, une
+// classe par ligne, méthode en dernier. Par-dessus la carte : les classes du bandeau, la méthode en
+// dernier. Le territoire survolé est donné par l'infobulle de la carte.
+export const CompactCard = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+export const CompactHeader = styled.div`
+    display: flex;
+    align-items: baseline;
+    gap: ${theme.spacing.md};
+    padding: ${TITLE_PADDING};
+    line-height: 1.35;
+
+    > :first-child {
+        flex: 1;
+    }
+
+    /* Hors du bandeau, l'en-tête s'efface : le titre reste en tête, la méthode passe sous la légende */
+    ${METHOD_IN_PANEL} {
+        display: contents;
+    }
+`;
+
+// Méthode de calcul. En bandeau, elle s'ouvre sous lui sans en changer la hauteur, dans sa largeur
+// au plus ; en colonne et par-dessus la carte, elle se déplie à la suite de la légende, dans son
+// panneau, qui défile s'il le faut.
+export const MethodDetails = styled.details`
+    flex-shrink: 0;
+    font-size: 0.72rem;
     color: ${theme.colors.textMuted};
+
+    summary {
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    p {
+        position: absolute;
+        top: calc(100% + 4px);
+        right: 0;
+        box-sizing: border-box;
+        width: min(24rem, 100%);
+        margin: 0;
+        padding: 0.5rem 0.75rem;
+        background: ${theme.colors.background};
+        border: 1px solid ${theme.colors.border};
+        border-radius: ${theme.radius.default};
+        font-size: inherit;
+        line-height: 1.4;
+    }
+
+    ${METHOD_IN_PANEL} {
+        order: 1;
+        padding: 0 0.75rem 0.45rem;
+
+        p {
+            position: static;
+            /* Le texte prend la largeur du panneau sans l'élargir */
+            width: 0;
+            min-width: 100%;
+            padding: 0.3rem 0 0;
+            background: none;
+            border: none;
+        }
+    }
 `;
 
-// Méthode de discrétisation, en pied de légende
-const Method = styled.p`
+export const Classes = styled.ul`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.15rem;
     margin: 0;
-    padding: ${theme.spacing.sm} ${theme.spacing.md};
-    border-top: 1px solid ${theme.colors.border};
-    font-size: 0.7rem;
-    line-height: 1.4;
-    color: ${theme.colors.textMuted};
-`;
-
-const Classes = styled.ul`
-    margin: 0;
-    padding: ${theme.spacing.sm} ${theme.spacing.md};
+    padding: 0 0.4rem 0.35rem;
     list-style: none;
+
+    li {
+        padding: 0;
+    }
+
+    /* Marges resserrées : « Donnée non disponible » et son effectif tiennent sur une ligne */
+    ${IN_LEGEND_COLUMN} {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        padding: 0 0.15rem 0.35rem;
+    }
 `;
 
-const ClassRow = styled.li<{ $active: boolean }>`
+// Ligne d'une classe : un bouton, pour que le survol, le doigt et le clavier mettent tous la classe en avant
+export const ClassRow = styled.button<{ $active: boolean; $pinned?: boolean }>`
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.3rem 0.4rem;
+    gap: 0.4rem;
+    padding: 0.2rem 0.4rem;
+    border: none;
     border-radius: 4px;
+    font-family: inherit;
     font-size: ${theme.fontSize.xs};
+    line-height: 1.35;
+    text-align: left;
+    white-space: nowrap;
     color: ${theme.colors.text};
     background: ${({ $active }) => ($active ? theme.colors.backgroundAlt : 'transparent')};
-    cursor: default;
+    box-shadow: ${({ $pinned }) => ($pinned ? `inset 0 0 0 1px ${theme.colors.purple}` : 'none')};
+    cursor: pointer;
     transition: background 0.15s ease;
 
     &:hover {
         background: ${theme.colors.backgroundAlt};
     }
+
+    /* Un libellé plus long que la colonne passe à la ligne plutôt que de déborder sur la carte */
+    ${IN_LEGEND_COLUMN} {
+        width: 100%;
+        white-space: normal;
+    }
 `;
 
-const Swatch = styled.span<{ $color: string; $active: boolean }>`
-    width: 1.5rem;
-    height: 1.1rem;
+export const Swatch = styled.span<{ $color: string; $active: boolean }>`
+    width: 1.1rem;
+    height: 0.9rem;
     flex-shrink: 0;
-    border-radius: 4px;
+    border-radius: 3px;
     background: ${({ $color }) => $color};
     transform: ${({ $active }) => ($active ? 'scale(1.08)' : 'scale(1)')};
     transition: transform 0.15s ease;
 `;
 
+// Nombre de territoires de la classe
 const Count = styled.span`
-    margin-left: auto;
     color: ${theme.colors.textMuted};
-    white-space: nowrap;
-`;
 
-const DetailPanel = styled.div<{ $bgColor: string }>`
-    padding: ${theme.spacing.md} ${theme.spacing.lg};
-    background: ${({ $bgColor }) => $bgColor};
-    border-top: 1px solid ${theme.colors.border};
-    min-height: 7rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-`;
+    &::before {
+        content: '(';
+    }
 
-const DetailHeader = styled.div`
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.sm};
-    margin-bottom: ${theme.spacing.sm};
-`;
-
-const DetailSwatch = styled.div<{ $color: string }>`
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    background: ${({ $color }) => $color};
-    flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-`;
-
-const DetailTitle = styled.div`
-    font-size: ${theme.fontSize.sm};
-    font-weight: ${theme.fontWeight.semibold};
-    color: ${theme.colors.text};
-    line-height: 1.3;
-`;
-
-const MetricRow = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: ${theme.spacing.md};
-    margin-top: ${theme.spacing.sm};
-`;
-
-const MetricLabel = styled.div`
-    display: flex;
-    align-items: center;
-    gap: ${theme.spacing.sm};
-    font-size: ${theme.fontSize.xs};
-    flex: 1;
-`;
-
-const EmptyState = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: ${theme.colors.textMuted};
-    font-size: ${theme.fontSize.sm};
-    text-align: center;
-
-    i {
-        font-size: 1.5rem;
-        margin-bottom: ${theme.spacing.sm};
-        opacity: 0.5;
+    &::after {
+        content: ')';
     }
 `;
 
-const hexToRgba = (hex: string, alpha: number): string => {
+export const hexToRgba = (hex: string, alpha: number): string => {
     const r = Number.parseInt(hex.slice(1, 3), 16);
     const g = Number.parseInt(hex.slice(3, 5), 16);
     const b = Number.parseInt(hex.slice(5, 7), 16);
@@ -165,101 +192,79 @@ interface ClassLegendProps {
     // Nombre de territoires affichés dans chaque classe, puis sans donnée
     counts: number[];
     noDataCount: number;
+    // Nom au pluriel des territoires affichés, pour l'infobulle des effectifs
     landTypeLabel: string;
-    // Territoire survolé sur la carte
-    hoveredLand?: HoveredLand | null;
-    // Appelé quand le pointeur entre sur une classe (ou la quitte : null)
-    onClassHover?: (classIndex: number | null) => void;
+    // Méthode de découpage en classes, donnée dans le volet « Méthode »
+    method: string;
+    // Classe mise en avant : celle survolée ici, celle du territoire survolé sur la carte ou la classe épinglée
+    activeClass: number | null;
+    // Classe épinglée par un appui ou un clic : elle reste en avant sans survol (écrans tactiles, clavier)
+    pinnedClass: number | null;
+    // Appelé avec la classe survolée ou qui reçoit le focus (null : aucune)
+    onHover: (classIndex: number | null) => void;
+    onTogglePin: (classIndex: number) => void;
 }
 
-const ClassLegend: React.FC<ClassLegendProps> = ({ indicatorLabel, classes, counts, noDataCount, landTypeLabel, hoveredLand, onClassHover }) => {
-    const [hoveredClass, setHoveredClass] = useState<number | null>(null);
-    const activeClass = hoveredClass ?? hoveredLand?.classIndex ?? null;
-    const activeColor = activeClass !== null ? classes[activeClass]?.color : undefined;
+// Composant contrôlé : la classe mise en avant est tenue par le parent, qui estompe la carte avec elle
+const ClassLegend: React.FC<ClassLegendProps> = ({
+    indicatorLabel,
+    classes,
+    counts,
+    noDataCount,
+    landTypeLabel,
+    method,
+    activeClass,
+    pinnedClass,
+    onHover,
+    onTogglePin,
+}) => {
+    const leave = () => onHover(null);
 
-    const enter = (index: number) => {
-        setHoveredClass(index);
-        onClassHover?.(index);
-    };
-    const leave = () => {
-        setHoveredClass(null);
-        onClassHover?.(null);
-    };
-
-    const renderDetail = () => {
-        if (hoveredLand?.classIndex === null) {
-            return (
-                <>
-                    <DetailHeader>
-                        <DetailSwatch $color={NO_DATA_COLOR} />
-                        <DetailTitle>{hoveredLand.name}</DetailTitle>
-                    </DetailHeader>
-                    <MetricRow>
-                        <MetricLabel>Donnée non disponible pour ce territoire</MetricLabel>
-                    </MetricRow>
-                </>
-            );
-        }
-        if (activeClass === null || !classes[activeClass]) {
-            return (
-                <EmptyState>
-                    <i className="bi bi-hand-index" aria-hidden="true" />
-                    <span>Survolez une classe ou un territoire pour voir le détail</span>
-                </EmptyState>
-            );
-        }
-        const valueClass = classes[activeClass];
-        return (
-            <>
-                <DetailHeader>
-                    <DetailSwatch $color={valueClass.color} />
-                    <DetailTitle>{valueClass.name}</DetailTitle>
-                </DetailHeader>
-                <MetricRow>
-                    <MetricLabel>
-                        <IconBadge icon="bi bi-geo-alt" size={22} variant="light" />
-                        <span>{landTypeLabel} dans cette classe</span>
-                    </MetricLabel>
-                    <Badge variant="primary" size="sm">{counts[activeClass] ?? 0}</Badge>
-                </MetricRow>
-                {hoveredLand && hoveredLand.classIndex === activeClass && (
-                    <MetricRow>
-                        <MetricLabel>
-                            <IconBadge icon="bi bi-cursor" size={22} variant="light" />
-                            <span>{hoveredLand.name}</span>
-                        </MetricLabel>
-                        <Badge variant="primary" size="sm">{hoveredLand.valueText}</Badge>
-                    </MetricRow>
-                )}
-            </>
-        );
-    };
-
-    return (
-        <LegendCard>
-            <Header>
-                <Title>Légende</Title>
-                <Subtitle>{indicatorLabel}</Subtitle>
-            </Header>
-            <Classes aria-label="Classes de valeurs">
-                {classes.map((valueClass, index) => (
-                    <ClassRow key={valueClass.name} $active={activeClass === index} onMouseEnter={() => enter(index)} onMouseLeave={leave}>
+    const classList = (
+        <Classes aria-label="Classes de valeurs">
+            {classes.map((valueClass, index) => (
+                <li key={valueClass.name}>
+                    <ClassRow
+                        type="button"
+                        $active={activeClass === index}
+                        $pinned={pinnedClass === index}
+                        aria-pressed={pinnedClass === index}
+                        title="Mettre en avant les territoires de cette classe"
+                        onMouseEnter={() => onHover(index)}
+                        onMouseLeave={leave}
+                        onFocus={() => onHover(index)}
+                        onBlur={leave}
+                        onClick={() => onTogglePin(index)}
+                    >
                         <Swatch $color={valueClass.color} $active={activeClass === index} aria-hidden="true" />
                         {valueClass.name}
-                        <Count>{counts[index] ?? 0}</Count>
+                        <Count title={`${landTypeLabel} dans cette classe`}>{counts[index] ?? 0}</Count>
                     </ClassRow>
-                ))}
-                {noDataCount > 0 && (
-                    <ClassRow $active={false}>
+                </li>
+            ))}
+            {noDataCount > 0 && (
+                <li>
+                    <ClassRow as="div" $active={false}>
                         <Swatch $color={NO_DATA_COLOR} $active={false} aria-hidden="true" />
                         Donnée non disponible
                         <Count>{noDataCount}</Count>
                     </ClassRow>
-                )}
-            </Classes>
-            <DetailPanel $bgColor={activeColor ? hexToRgba(activeColor, 0.12) : theme.colors.backgroundAlt}>{renderDetail()}</DetailPanel>
-            <Method>{CLASSIFICATION_LABEL}.</Method>
-        </LegendCard>
+                </li>
+            )}
+        </Classes>
+    );
+
+    return (
+        <CompactCard>
+            <CompactHeader>
+                <Title>{indicatorLabel}</Title>
+                <MethodDetails>
+                    <summary>Méthode</summary>
+                    <p>{method}.</p>
+                </MethodDetails>
+            </CompactHeader>
+            {classList}
+        </CompactCard>
     );
 };
 
