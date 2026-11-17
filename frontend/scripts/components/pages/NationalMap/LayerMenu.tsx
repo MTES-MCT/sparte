@@ -3,18 +3,16 @@ import styled from 'styled-components';
 import { theme } from '@theme';
 import Drawer from '@components/ui/Drawer';
 import IndicatorList from './IndicatorList';
+import StandInNotice from './components/StandInNotice';
+import { mapNameOf } from './domain/mapName';
+import type { View } from './domain/viewProfile';
 import { Indicator, INDICATOR_TYPE_LABELS } from './indicators';
 import { MENU_ACTIVE_BORDER, MENU_ACTIVE_COLOR, MENU_COLOR, MENU_LINE_COLOR } from './layoutStyles';
+import { LAYERS } from './domain/viewState';
 
 // Rubriques de la carte, dans le style du menu latéral des diagnostics. Une seule rubrique
 // est dépliée à la fois ; son sous-menu liste les indicateurs. L'icône d'information ouvre
 // un volet qui décrit les indicateurs de la rubrique.
-export const LAYERS = [
-    "Visualiser la consommation d'ENAF",
-    'Visualiser les espaces artificialisés',
-    "Visualiser l'artificialisation",
-];
-
 const Menu = styled.ul`
     list-style: none;
     margin: 0;
@@ -131,24 +129,45 @@ interface LayerMenuProps {
     // Indicateurs de la rubrique consommation, libellés déjà résolus
     indicators: Indicator[];
     selected: string;
+    // Zone et maille demandées : le menu et le volet disent ce que chaque carte y dessine
+    view: View;
+    // Une ligne du menu est choisie : sa carte s'affiche, ou la dernière carte choisie de sa famille
+    onSelectLine: (id: string) => void;
+    // Une carte est choisie parmi celles de la ligne sélectionnée (destination du carroyage)
     onSelect: (id: string) => void;
     activeCharts: string[];
     onToggleChart: (id: string) => void;
+    // Indicateurs des autres rubriques, par libellé de rubrique ; sans entrée, la rubrique est annoncée « à venir »
+    layerIndicators?: Record<string, Indicator[]>;
 }
 
-const LayerMenu: React.FC<LayerMenuProps> = ({ openLayer, onToggleLayer, indicators, selected, onSelect, activeCharts, onToggleChart }) => {
+const LayerMenu: React.FC<LayerMenuProps> = ({
+    openLayer,
+    onToggleLayer,
+    indicators,
+    selected,
+    view,
+    onSelectLine,
+    onSelect,
+    activeCharts,
+    onToggleChart,
+    layerIndicators,
+}) => {
     const [infoLayer, setInfoLayer] = useState<string | null>(null);
+    const indicatorsOf = (label: string): Indicator[] | undefined => (label === LAYERS[0] ? indicators : layerIndicators?.[label]);
+    const infoIndicators = infoLayer === null ? undefined : indicatorsOf(infoLayer);
 
     return (
         <>
             <Menu aria-label="Rubriques de la carte">
-                {LAYERS.map((label) => {
+                {LAYERS.map((label, index) => {
                     const isOpen = openLayer === label;
-                    const isConso = label === LAYERS[0];
+                    const layerList = indicatorsOf(label);
+                    const contentId = `national-map-layer-${index}`;
                     return (
                         <LayerItem key={label}>
                             <LayerRow $active={isOpen}>
-                                <LayerButton type="button" $active={isOpen} aria-expanded={isOpen} onClick={() => onToggleLayer(label)}>
+                                <LayerButton type="button" $active={isOpen} aria-expanded={isOpen} aria-controls={contentId} onClick={() => onToggleLayer(label)}>
                                     <i className="bi bi-layers" aria-hidden="true" />
                                     <LayerText>{label}</LayerText>
                                     <Chevron className="bi bi-chevron-down" aria-hidden="true" $open={isOpen} />
@@ -158,39 +177,63 @@ const LayerMenu: React.FC<LayerMenuProps> = ({ openLayer, onToggleLayer, indicat
                                 </InfoButton>
                             </LayerRow>
                             {isOpen &&
-                                (isConso ? (
+                                (layerList ? (
                                     <IndicatorList
-                                        name="conso-indicator"
-                                        indicators={indicators}
+                                        id={contentId}
+                                        name={`layer-${index}-indicator`}
+                                        indicators={layerList}
                                         selected={selected}
+                                        view={view}
+                                        onLineChange={onSelectLine}
                                         onChange={onSelect}
                                         activeCharts={activeCharts}
                                         onToggleChart={onToggleChart}
                                     />
                                 ) : (
-                                    <Placeholder>Chiffres clés et légende à venir.</Placeholder>
+                                    <Placeholder id={contentId}>Chiffres clés et légende à venir.</Placeholder>
                                 ))}
                         </LayerItem>
                     );
                 })}
             </Menu>
             <Drawer isOpen={infoLayer !== null} title={infoLayer ?? ''} onClose={() => setInfoLayer(null)}>
-                {infoLayer === LAYERS[0] ? (
+                {infoIndicators ? (
                     <>
-                        <DrawerIntro>
-                            Les cartes s'excluent l'une l'autre ; les graphiques complémentaires s'affichent en plus de la carte
-                            choisie, dans la colonne à droite de celle-ci.
-                        </DrawerIntro>
+                        {infoLayer === LAYERS[0] ? (
+                            <DrawerIntro>
+                                Les cartes s'excluent l'une l'autre ; les graphiques complémentaires s'affichent en plus de la carte
+                                choisie, dans la colonne à droite de celle-ci.
+                            </DrawerIntro>
+                        ) : (
+                            <DrawerIntro>
+                                L'artificialisation est mesurée à partir de l'OCS GE (occupation du sol à grande échelle, IGN), produite
+                                département par département à des dates différentes : chaque production est un millésime, désigné
+                                par son numéro (millésime n°1, n°2…) et suivi de son année. Chaque territoire est représenté à son dernier
+                                millésime, et son artificialisation nette est mesurée entre ses deux derniers millésimes : les valeurs
+                                ne sont pas strictement comparables d'un territoire à l'autre. À la place de la période, qui ne s'applique
+                                pas, la page indique les millésimes représentés et les explique.
+                                Les graphiques complémentaires décrivent la zone affichée, à ses propres millésimes.
+                            </DrawerIntro>
+                        )}
                         <Definitions>
-                            {indicators.map((indicator) => (
-                                <React.Fragment key={indicator.id}>
-                                    <dt>
-                                        {indicator.label}
-                                        <DefinitionType>{INDICATOR_TYPE_LABELS[indicator.type]}</DefinitionType>
-                                    </dt>
-                                    <dd>{indicator.description}</dd>
-                                </React.Fragment>
-                            ))}
+                            {infoIndicators.map((indicator) => {
+                                // La définition d'une carte que la vue demandée ne dessine pas telle quelle le dit aussi
+                                const drawn = indicator.type === 'chart' ? null : mapNameOf(view, indicator);
+                                return (
+                                    <React.Fragment key={indicator.id}>
+                                        <dt>
+                                            {indicator.label}
+                                            <DefinitionType>{INDICATOR_TYPE_LABELS[indicator.type]}</DefinitionType>
+                                        </dt>
+                                        <dd>{indicator.description}</dd>
+                                        {drawn?.standIn && (
+                                            <dd>
+                                                <StandInNotice name={drawn} />
+                                            </dd>
+                                        )}
+                                    </React.Fragment>
+                                );
+                            })}
                         </Definitions>
                     </>
                 ) : (
