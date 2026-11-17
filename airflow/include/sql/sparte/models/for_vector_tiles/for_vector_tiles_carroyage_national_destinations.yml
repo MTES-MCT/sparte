@@ -1,0 +1,87 @@
+
+# Les six modèles ont les mêmes colonnes que `for_vector_tiles_carroyage_national` : elles ne
+# sont décrites qu'une fois, sur le premier, et reprises par une ancre YAML.
+models:
+  - name: for_vector_tiles_carroyage_national_habitat
+    description: >
+      Carroyage de la consommation d'espaces pour l'habitat, allégé pour les tuiles de la carte
+      nationale : mêmes résolutions empilées (carreaux de 1 km, blocs de 2 km et 5 km) et mêmes
+      colonnes que `for_vector_tiles_carroyage_national`. Chaque ligne porte la densité de
+      consommation de cette destination par année (`conso_AAAA`, m² par km², NULL sans
+      consommation). Seuls les carreaux et les blocs où cette destination est consommée au
+      moins une année sont présents.
+    columns: &carroyage_national_destination_columns
+      - name: idcarreau
+        description: >
+          Identifiant du carreau ou du bloc, unique toutes résolutions confondues et identique
+          à celui du carroyage total : « <côté>kmN<nord>E<est> », coordonnées en km du coin
+          sud-ouest dans EPSG:3035.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - unique
+      - name: resolution_km
+        description: Côté du carreau ou du bloc, en km (1 pour les carreaux d'origine).
+        data_type: integer
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: "{{ carroyage_national_resolutions_km() }}"
+                quote: false
+      - name: geom
+        description: Carré de la grille, calculé à partir de ses quatre coins.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_srid_4326
+      - name: REGION
+        description: >
+          Codes des régions que le carreau ou le bloc recoupe : l'union de celles de tous ses
+          carreaux d'origine, quelle que soit la destination.
+        quote: true
+  - name: for_vector_tiles_carroyage_national_activite
+    description: >
+      Carroyage de la consommation d'espaces pour l'activité, allégé pour les tuiles de la carte
+      nationale : mêmes résolutions empilées (carreaux de 1 km, blocs de 2 km et 5 km) et mêmes
+      colonnes que `for_vector_tiles_carroyage_national`. Chaque ligne porte la densité de
+      consommation de cette destination par année (`conso_AAAA`, m² par km², NULL sans
+      consommation). Seuls les carreaux et les blocs où cette destination est consommée au
+      moins une année sont présents.
+    columns: *carroyage_national_destination_columns
+  - name: for_vector_tiles_carroyage_national_mixte
+    description: >
+      Carroyage de la consommation d'espaces pour les usages mixtes, allégé pour les tuiles de la carte
+      nationale : mêmes résolutions empilées (carreaux de 1 km, blocs de 2 km et 5 km) et mêmes
+      colonnes que `for_vector_tiles_carroyage_national`. Chaque ligne porte la densité de
+      consommation de cette destination par année (`conso_AAAA`, m² par km², NULL sans
+      consommation). Seuls les carreaux et les blocs où cette destination est consommée au
+      moins une année sont présents.
+    columns: *carroyage_national_destination_columns
+  - name: for_vector_tiles_carroyage_national_route
+    description: >
+      Carroyage de la consommation d'espaces pour les routes, allégé pour les tuiles de la carte
+      nationale : mêmes résolutions empilées (carreaux de 1 km, blocs de 2 km et 5 km) et mêmes
+      colonnes que `for_vector_tiles_carroyage_national`. Chaque ligne porte la densité de
+      consommation de cette destination par année (`conso_AAAA`, m² par km², NULL sans
+      consommation). Seuls les carreaux et les blocs où cette destination est consommée au
+      moins une année sont présents.
+    columns: *carroyage_national_destination_columns
+  - name: for_vector_tiles_carroyage_national_ferroviaire
+    description: >
+      Carroyage de la consommation d'espaces pour le ferroviaire, allégé pour les tuiles de la carte
+      nationale : mêmes résolutions empilées (carreaux de 1 km, blocs de 2 km et 5 km) et mêmes
+      colonnes que `for_vector_tiles_carroyage_national`. Chaque ligne porte la densité de
+      consommation de cette destination par année (`conso_AAAA`, m² par km², NULL sans
+      consommation). Seuls les carreaux et les blocs où cette destination est consommée au
+      moins une année sont présents.
+    columns: *carroyage_national_destination_columns
+  - name: for_vector_tiles_carroyage_national_inconnu
+    description: >
+      Carroyage de la consommation d'espaces pour une destination inconnue, allégé pour les tuiles de la carte
+      nationale : mêmes résolutions empilées (carreaux de 1 km, blocs de 2 km et 5 km) et mêmes
+      colonnes que `for_vector_tiles_carroyage_national`. Chaque ligne porte la densité de
+      consommation de cette destination par année (`conso_AAAA`, m² par km², NULL sans
+      consommation). Seuls les carreaux et les blocs où cette destination est consommée au
+      moins une année sont présents.
+    columns: *carroyage_national_destination_columns

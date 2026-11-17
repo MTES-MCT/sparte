@@ -1,0 +1,13 @@
+{{
+    config(
+        materialized="table",
+    )
+}}
+
+{#-
+    Carroyage allégé pour la carte nationale, restreint à la consommation d'espaces pour
+    l'habitat : mêmes colonnes et mêmes conventions que
+    `for_vector_tiles_carroyage_national`, où ces choix sont expliqués.
+-#}
+
+{{ carroyage_national_blocs(destination='habitat') }}
