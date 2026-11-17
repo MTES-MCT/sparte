@@ -161,6 +161,79 @@ section {
     max-width: 520px;
 }
 
+.hero-map-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 520px;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(0, 0, 145, 0.16);
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.6);
+    background-image: none;
+    color: #1e1e2f;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.hero-map-link:hover {
+    background-color: #fff;
+    border-color: #000091;
+}
+
+.hero-map-link__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 6px;
+    /* Bleu France à 6 % sur blanc, en couleur pleine : le contraste de l'icône se calcule */
+    background: #f0f0f8;
+    color: #000091;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.hero-map-link__text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.hero-map-link__title {
+    color: #000091;
+    font-weight: 700;
+    line-height: 1.5rem;
+}
+
+.hero-map-link__desc {
+    color: #4a4a5a;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.hero-map-link__arrow {
+    flex-shrink: 0;
+    color: #000091;
+    font-size: 1.25rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.hero-map-link:hover .hero-map-link__arrow {
+    transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-map-link,
+    .hero-map-link__arrow {
+        transition: none;
+    }
+}
+
 /* 
 * Section: Product
 */

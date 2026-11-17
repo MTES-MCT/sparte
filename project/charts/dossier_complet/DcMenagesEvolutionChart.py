@@ -4,6 +4,11 @@ from project.charts.constants import (
     CONSOMMATION_TOTALE_COLOR,
     INSEE_CREDITS,
 )
+from project.charts.mixins.NationalMapChartMixin import (
+    IN_HECTARES,
+    NationalMapChartMixin,
+    period_text,
+)
 from public_data.models import LandConso, LandDcMenages
 
 
@@ -130,3 +135,14 @@ class DcMenagesEvolutionChart(DiagnosticChart):
                 for c in conso_qs
             ],
         }
+
+
+class DcMenagesEvolutionChartNationalMap(NationalMapChartMixin, DcMenagesEvolutionChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Consommation d'ENAF et nombre de ménages, par année"
+
+    @property
+    def national_map_subtitle(self):
+        period = period_text(self.params["start_date"], self.params["end_date"])
+        return f"{IN_HECTARES} par année et en nombre de ménages aux recensements, {period}"

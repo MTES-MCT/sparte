@@ -1,4 +1,9 @@
 from project.charts.base_project_chart import DiagnosticChart
+from project.charts.mixins.NationalMapChartMixin import (
+    IN_HECTARES,
+    NationalMapChartMixin,
+    period_text,
+)
 from public_data.domain.containers import PublicDataContainer
 
 CENSUS_YEARS = {2011, 2016, 2022}
@@ -161,3 +166,14 @@ class PopulationConsoProgressionChart(DiagnosticChart):
             "rows": rows,
             "boldFirstColumn": True,
         }
+
+
+class PopulationConsoProgressionChartNationalMap(NationalMapChartMixin, PopulationConsoProgressionChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Consommation d'ENAF et population, par année"
+
+    @property
+    def national_map_subtitle(self):
+        period = period_text(self.params["start_date"], self.params["end_date"])
+        return f"{IN_HECTARES} par année et en nombre d'habitants aux recensements, {period}"

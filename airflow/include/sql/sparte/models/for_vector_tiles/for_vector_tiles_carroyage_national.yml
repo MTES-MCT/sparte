@@ -1,0 +1,37 @@
+
+models:
+  - name: for_vector_tiles_carroyage_national
+    description: >
+      Carroyage de la consommation d'espaces allégé pour les tuiles de la carte nationale, en
+      plusieurs résolutions empilées : les carreaux de 1 km × 1 km d'origine, et des blocs de
+      2 km et 5 km de côté alignés sur la même grille (EPSG:3035), servis aux petits zooms.
+      Chaque ligne porte une densité de consommation par année, en m² par km² (NULL sans
+      consommation) : pour un carreau de 1 km c'est sa consommation, pour un bloc c'est la
+      consommation du bloc divisée par sa surface entière.
+    columns:
+      - name: idcarreau
+        description: >
+          Identifiant du carreau ou du bloc, unique toutes résolutions confondues :
+          « <côté>kmN<nord>E<est> », coordonnées en km du coin sud-ouest dans EPSG:3035.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - unique
+      - name: resolution_km
+        description: Côté du carreau ou du bloc, en km (1 pour les carreaux d'origine).
+        data_type: integer
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: "{{ carroyage_national_resolutions_km() }}"
+                quote: false
+      - name: geom
+        description: Carré de la grille, calculé à partir de ses quatre coins.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_srid_4326
+      - name: REGION
+        description: Codes des régions que le carreau ou le bloc recoupe (union de celles de ses carreaux).
+        quote: true

@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}{{ page_title }}{% endblock pagetitle %}
+
+{% block body_class %}national-map{% endblock body_class %}
+
+{# L'en-tête et le pied de page sont rendus par React, comme sur le tableau de bord #}
+{% block top_navigation %}{% endblock top_navigation %}
+{% block footer %}{% endblock footer %}
+
+{# Pas de bulle de chat ni de widget Messages : ils recouvriraient la carte #}
+{% block crisp %}{% endblock crisp %}
+{% block messages_widget %}{% endblock messages_widget %}
+
+{% block content %}
+<div id="react-national-map"></div>
+{% endblock content %}

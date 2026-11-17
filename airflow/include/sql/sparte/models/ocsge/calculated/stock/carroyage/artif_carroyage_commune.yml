@@ -1,0 +1,56 @@
+models:
+  - name: artif_carroyage_commune
+    description: >
+      Surface artificialisée et surface couverte par l'OCS GE, par commune et par maille
+      carrée d'une grille fine (côté : première valeur de `carroyage_artif_resolutions_m`),
+      au dernier millésime de chaque département. La grille est celle de la projection
+      d'origine du territoire. Base du modèle `for_vector_tiles_sols_artificialises_national`.
+      Les règles qui comparent ce modèle aux tables d'artificialisation existantes sont dans
+      les tests singuliers artif_carroyage_commune_*.
+    columns:
+      - name: commune_code
+        description: Code INSEE de la commune des objets OCS GE.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: code
+                to: ref('commune')
+      - name: departement
+        description: Département de livraison de l'OCS GE.
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: year
+        description: Année du dernier millésime OCS GE du département.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: srid
+        description: Projection d'origine du territoire, dans laquelle la grille est carrée.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: x
+        description: Colonne de la maille, soit l'abscisse de son coin sud-ouest divisée par son côté.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: y
+        description: Ligne de la maille, soit l'ordonnée de son coin sud-ouest divisée par son côté.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: surface_artif
+        description: Surface artificialisée de la commune dans la maille, en m² (0 s'il n'y en a pas).
+        data_type: double precision
+        data_tests:
+          - not_null
+          - is_positive_number
+      - name: surface_totale
+        description: Surface de la commune couverte par l'OCS GE dans la maille, en m².
+        data_type: double precision
+        data_tests:
+          - not_null
+          - is_positive_number

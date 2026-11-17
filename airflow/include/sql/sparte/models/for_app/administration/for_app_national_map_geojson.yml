@@ -1,0 +1,44 @@
+models:
+  - name: for_app_national_map_geojson
+    description: >
+      Fonds de la carte nationale : une FeatureCollection GeoJSON (EPSG:3857, coordonnées
+      arrondies au mètre) par territoire parent et par maille affichée. Les règles qui
+      comparent ce modèle à `land` (nombre d'entités, géométries présentes, pas de doublon)
+      sont dans les tests singuliers national_map_geojson_*.
+    columns:
+      - name: land_id
+        description: Identifiant du territoire parent (NATION pour la France entière).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: land_id
+                to: ref('land')
+      - name: land_type
+        description: Type du territoire parent (NATION, REGION, DEPART ou EPCI).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [NATION, REGION, DEPART, EPCI]
+      - name: child_land_type
+        description: Maille des entités de la FeatureCollection, toujours plus fine que le parent.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [REGION, DEPART, EPCI, COMM]
+      - name: geojson
+        description: >
+          FeatureCollection des territoires de la maille sous le parent ; chaque entité porte
+          land_id et name. Pour un département à la maille EPCI, le membre `parent_boundary`
+          porte en plus la limite du département (coordonnées d'un MultiLineString).
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - land_id
+              - land_type
+              - child_land_type

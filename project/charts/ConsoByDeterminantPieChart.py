@@ -1,5 +1,10 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import CEREMA_CREDITS
+from project.charts.mixins.NationalMapChartMixin import (
+    IN_HECTARES,
+    NationalMapChartMixin,
+    period_text,
+)
 from public_data.domain.containers import PublicDataContainer
 
 
@@ -132,3 +137,13 @@ class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
                 }
             },
         }
+
+
+class ConsoByDeterminantPieChartNationalMap(NationalMapChartMixin, ConsoByDeterminantPieChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Répartition de la consommation d'ENAF par destination"
+
+    @property
+    def national_map_subtitle(self):
+        return f"{IN_HECTARES}, {period_text(self.params['start_date'], self.params['end_date'])}"
