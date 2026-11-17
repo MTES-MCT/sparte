@@ -124,7 +124,7 @@ export const chartStub: ChartStub = {
         chartStub.exportCopy = NO_EXPORT;
     },
     exportCopy: NO_EXPORT,
-    options: () => chartStub.creations[chartStub.creations.length - 1],
+    options: () => chartStub.creations.at(-1)!,
     dimmedLands: () => {
         const lands = chartStub.chart?.series[0].points ?? [];
         return lands.filter((point) => point.fillOpacity < 1).map((point) => point.options.land_id as string);

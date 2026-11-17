@@ -4,5 +4,8 @@ require('@testing-library/jest-dom');
 const { TextEncoder, TextDecoder } = require('node:util');
 Object.assign(global, { TextEncoder, TextDecoder });
 
+// jsdom n'expose pas structuredClone ; les graphiques ne clonent que des options JSON.
+global.structuredClone ??= (value) => JSON.parse(JSON.stringify(value));
+
 // jsdom n'implémente pas le canvas 2D, que lottie-web (via Feedback) interroge dès son import.
 HTMLCanvasElement.prototype.getContext = () => ({ fillStyle: '', fillRect: () => {} });

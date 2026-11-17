@@ -59,7 +59,7 @@ const unique = (years: number[]): number[] => [...new Set(years.filter((year) =>
 export const yearsRange = (years: number[]): string => {
     const sorted = unique(years);
     if (sorted.length === 0) return '';
-    const [first, last] = [sorted[0], sorted[sorted.length - 1]];
+    const [first, last] = [sorted[0], sorted.at(-1)];
     return first === last ? String(first) : `${first} à ${last}`;
 };
 

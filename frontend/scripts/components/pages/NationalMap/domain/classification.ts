@@ -57,7 +57,7 @@ const segmentsOf = (bounds: number[], from?: number, to?: number): Segment[] =>
 // Une classe sans borne réunit toutes les valeurs : elle est nommée par leur étendue.
 const nameOf = ({ from, to }: Segment, text: (value: number) => string, unit: string, sorted: Float64Array): string => {
     if (from === undefined && to === undefined) {
-        const [min, max] = [sorted[0], sorted[sorted.length - 1]];
+        const [min, max] = [sorted[0], sorted.at(-1)!];
         return min === max ? `${text(min)}${unit}` : `De ${text(min)} à ${text(max)}${unit}`;
     }
     if (from === undefined) return `Moins de ${text(to)}${unit}`;

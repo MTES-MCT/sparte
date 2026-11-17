@@ -35,6 +35,6 @@ const decimalsOf = (step: number): number => [0, 1, 2].find((decimals) => Number
 // entier, avec les décimales du pas à chaque graduation
 export const tickLabel = (value: number, step: number): string => {
     if (value === 0) return '0';
-    const { size, symbol } = TICK_UNITS.find((unit) => decimalsOf(step / unit.size) === 0) ?? TICK_UNITS[TICK_UNITS.length - 1];
+    const { size, symbol } = TICK_UNITS.find((unit) => decimalsOf(step / unit.size) === 0) ?? TICK_UNITS.at(-1)!;
     return `${formatNumber({ number: value / size, decimals: decimalsOf(step / size) })}${symbol}`;
 };

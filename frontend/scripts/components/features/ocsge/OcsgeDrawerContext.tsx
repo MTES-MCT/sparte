@@ -17,7 +17,7 @@ export const useOcsgeDrawer = () => useContext(OcsgeDrawerContext);
 export interface OcsgeDrawerSection {
     icon: string;
     title: string;
-    paragraphs: ReactNode[];
+    paragraphs: string[];
 }
 
 interface OcsgeDrawerProviderProps {
@@ -116,8 +116,8 @@ export const OcsgeDrawerProvider: React.FC<OcsgeDrawerProviderProps> = ({
                             <i className={icon} />
                             {title}
                         </SectionTitle>
-                        {paragraphs.map((paragraph, rank) => (
-                            <Paragraph key={rank}>{paragraph}</Paragraph>
+                        {paragraphs.map((paragraph) => (
+                            <Paragraph key={paragraph}>{paragraph}</Paragraph>
                         ))}
                     </Section>
                 ))}

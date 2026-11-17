@@ -42,7 +42,7 @@ const samePosition = (a: Position, b: Position): boolean => a[0] === b[0] && a[1
 
 // Anneau sans son dernier point quand il répète le premier, orienté dans le sens demandé
 const oriented = (ring: Ring, counterClockwise: boolean): Ring => {
-    const open = ring.length > 1 && samePosition(ring[0], ring[ring.length - 1]) ? ring.slice(0, -1) : ring;
+    const open = ring.length > 1 && samePosition(ring[0], ring.at(-1)!) ? ring.slice(0, -1) : ring;
     return signedArea(open) > 0 === counterClockwise ? open : [...open].reverse();
 };
 

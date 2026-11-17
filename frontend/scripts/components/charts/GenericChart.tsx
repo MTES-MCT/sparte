@@ -180,7 +180,7 @@ const GenericChart = ({
     )
   }
 
-  const parsedChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
+  const parsedChartOptions = structuredClone(chartOptions.highcharts_options || {})
   const mutableChartOptions = transformOptions ? transformOptions(parsedChartOptions) : parsedChartOptions
 
   const pieSeries = mutableChartOptions._pieSeries

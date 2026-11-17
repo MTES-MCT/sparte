@@ -6,14 +6,18 @@
     manquant et un fond inattendu.
 */
 
+{% set nation = "'" ~ var("NATION") ~ "'" %}
+{% set parent_types %}'{{ var("REGION") }}', '{{ var("DEPARTEMENT") }}', '{{ var("EPCI") }}'{% endset %}
+{% set land_table = ref('land') %}
+
 WITH expected AS (
     SELECT
-        '{{ var("NATION") }}' AS land_id,
-        '{{ var("NATION") }}' AS land_type,
+        {{ nation }} AS land_id,
+        {{ nation }} AS land_type,
         land_type AS child_land_type,
         count(*) AS expected_features
-    FROM {{ ref('land') }}
-    WHERE land_type IN ('{{ var("REGION") }}', '{{ var("DEPARTEMENT") }}', '{{ var("EPCI") }}')
+    FROM {{ land_table }}
+    WHERE land_type IN ({{ parent_types }})
     GROUP BY land_type
 
     UNION ALL
@@ -22,10 +26,10 @@ WITH expected AS (
         split_part(parent_key, '_', 1) AS land_type,
         child.land_type AS child_land_type,
         count(DISTINCT child.land_id) AS expected_features
-    FROM {{ ref('land') }} AS child
+    FROM {{ land_table }} AS child
     CROSS JOIN unnest(child.parent_keys) AS parent_key
     WHERE child.land_type IN ('{{ var("DEPARTEMENT") }}', '{{ var("EPCI") }}', '{{ var("COMMUNE") }}')
-        AND split_part(parent_key, '_', 1) IN ('{{ var("REGION") }}', '{{ var("DEPARTEMENT") }}', '{{ var("EPCI") }}')
+        AND split_part(parent_key, '_', 1) IN ({{ parent_types }})
     GROUP BY 1, 2, 3
 ),
 

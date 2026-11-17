@@ -125,7 +125,7 @@ const meanOf = (values: YearValue[]): number => values.reduce((sum, { value }) =
 const meanSegment = (values: YearValue[], color: string): Highcharts.SeriesLineOptions => {
     const mean = meanOf(values);
     const first = values[0];
-    const last = values[values.length - 1];
+    const last = values.at(-1)!;
     return {
         type: 'line',
         name: `Moyenne ${periodLabel(first.year, last.year)} : ${formatNumber({ number: mean, decimals: mean < 10 ? 1 : 0 })} ha`,
@@ -145,7 +145,7 @@ const meanSegment = (values: YearValue[], color: string): Highcharts.SeriesLineO
 const evolutionColor = (before: YearValue[], after: YearValue[]): string => {
     const change = meanOf(after) - meanOf(before);
     if (change === 0) return NEUTRAL_COLOR;
-    return change > 0 ? INCREASE_PALETTE[INCREASE_PALETTE.length - 1] : DECREASE_PALETTE[0];
+    return change > 0 ? INCREASE_PALETTE.at(-1)! : DECREASE_PALETTE[0];
 };
 
 // Consommation par an, avec le rythme moyen de deux périodes : les années avant `splitYear`, puis
@@ -261,7 +261,7 @@ export const shareByMillesime = (server: Highcharts.Options): Highcharts.Options
 // hectares ; null s'il n'en montre qu'un
 export const surfaceChangeOf = (options: Highcharts.Options): number | null => {
     const surfaces = sharePointsOf(options).map(({ surface }) => surface);
-    const [first, last] = [surfaces[0], surfaces[surfaces.length - 1]];
+    const [first, last] = [surfaces[0], surfaces.at(-1)];
     return surfaces.length >= 2 && first !== undefined && last !== undefined ? last - first : null;
 };
 
