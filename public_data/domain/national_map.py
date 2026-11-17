@@ -18,13 +18,19 @@ facteur 1/cos(latitude), l'Hexagone (vers 46° N) est donc dessiné environ 1,45
 plus grand qu'un territoire équatorial de même taille. Chaque DROM est remis à
 l'échelle de l'Hexagone par le rapport des cosinus de latitude, sans autre
 déformation. La Corse reste à sa position réelle.
+
+Le placement (emprise de référence, facteur et translation de chaque DROM, cartouches,
+séparation) est calculé une seule fois, sur le fond national par région, puis appliqué
+aux entités de toutes les mailles : un même lieu garde la même position sur la carte
+quand on passe des régions aux départements, aux EPCI ou aux communes. Les tuiles de
+communes suivent le même placement, écrit une seconde fois en SQL (macro dbt
+``national_map_drom_placement``) ; un jeu d'essai commun garde les deux écritures.
 """
 
 from __future__ import annotations
 
-import copy
 import math
-from typing import Any
+from typing import Any, Mapping, NamedTuple, Sequence
 
 # Code région -> (préfixe des codes département et commune, nom affiché)
 DROM: dict[str, tuple[str, str]] = {
@@ -47,6 +53,8 @@ SCALES = ("REGION", "DEPART", "EPCI", "COMM")
 SCALES_REQUIRING_PARENT = ("COMM",)
 # Niveaux emboîtés, du plus large au plus fin : un parent n'affiche que des mailles plus fines
 LEVELS = ("NATION", "REGION", "DEPART", "EPCI", "COMM")
+# Niveaux des ancêtres affichés dans le fil d'Ariane d'un territoire parent
+ANCESTOR_LEVELS = ("REGION", "DEPART")
 
 
 def is_finer_than_parent(parent_type: str, scale: str) -> bool:
@@ -54,9 +62,26 @@ def is_finer_than_parent(parent_type: str, scale: str) -> bool:
     return parent_type in LEVELS and scale in LEVELS and LEVELS.index(scale) > LEVELS.index(parent_type)
 
 
-# Version du format de la réponse : à incrémenter à chaque changement de structure,
-# avec la constante homonyme du front, pour invalider les caches serveur et navigateur.
-FORMAT_VERSION = 5
+def ancestor_ids(parent_keys: list[str | None] | None) -> list[tuple[str, str]]:
+    """(type, identifiant) des ancêtres d'un territoire, d'après ses clés de parents (``REGION_75``).
+
+    Seuls les niveaux du fil d'Ariane sont gardés ; les clés nulles sont ignorées.
+    """
+    ancestors = []
+    for key in parent_keys or []:
+        land_type, _, land_id = (key or "").partition("_")
+        if land_type in ANCESTOR_LEVELS:
+            ancestors.append((land_type, land_id))
+    return ancestors
+
+
+# Version du format de la réponse : à incrémenter à chaque changement de structure ou de
+# contenu calculé (placement des DROM par exemple), avec la constante homonyme du front,
+# pour invalider les caches serveur et navigateur.
+FORMAT_VERSION = 8
+
+# Membre de la FeatureCollection précalculée qui porte la limite du territoire parent
+PARENT_BOUNDARY_MEMBER = "parent_boundary"
 
 # Grille des îles, de gauche à droite puis de haut en bas
 ISLANDS_GRID = (("01", "02"), ("04", "06"))
@@ -149,7 +174,10 @@ def features_bbox(features: list[dict[str, Any]]) -> BBox:
 
 
 def _transform(geometry: dict[str, Any], factor: float, source: BBox, target: BBox) -> dict[str, Any]:
-    """Homothétie de rapport ``factor`` : le centre de ``source`` arrive au centre de ``target``."""
+    """Homothétie de rapport ``factor`` : le centre de ``source`` arrive au centre de ``target``.
+
+    Renvoie une nouvelle géométrie : celle reçue n'est pas modifiée.
+    """
     sx = (source[0] + source[2]) / 2
     sy = (source[1] + source[3]) / 2
     tx = (target[0] + target[2]) / 2
@@ -161,12 +189,11 @@ def _transform(geometry: dict[str, Any], factor: float, source: BBox, target: BB
     def ring(r):
         return [point(p) for p in r]
 
-    result = copy.deepcopy(geometry)
     if geometry["type"] == "Polygon":
-        result["coordinates"] = [ring(r) for r in geometry["coordinates"]]
+        coordinates = [ring(r) for r in geometry["coordinates"]]
     else:
-        result["coordinates"] = [[ring(r) for r in polygon] for polygon in geometry["coordinates"]]
-    return result
+        coordinates = [[ring(r) for r in polygon] for polygon in geometry["coordinates"]]
+    return {**geometry, "coordinates": coordinates}
 
 
 def _slots(hexagone_bbox: BBox) -> dict[str, BBox]:
@@ -207,19 +234,124 @@ def _moved_bbox(source: BBox, factor: float, target: BBox) -> BBox:
     return (tx - half_width, ty - half_height, tx + half_width, ty + half_height)
 
 
+class DromPlacement(NamedTuple):
+    """Déplacement d'une région d'outre-mer : homothétie amenant le centre de ``source`` au centre de ``slot``."""
+
+    zone: str  # code de la région
+    name: str
+    factor: float  # rapport de l'homothétie, qui rend ses dimensions réelles à la région
+    source: BBox  # emprise de la région à sa position réelle
+    slot: BBox  # cellule d'accueil
+
+    @property
+    def inset(self) -> BBox:
+        """Cartouche : emprise de la région une fois déplacée."""
+        return _moved_bbox(self.source, self.factor, self.slot)
+
+    @property
+    def offset(self) -> tuple[float, float]:
+        """Translation de l'écriture affine du même déplacement : (x, y) va en (factor·x + dx, factor·y + dy).
+
+        C'est sous cette forme que le placement dbt des tuiles est appliqué (``ST_Affine``).
+        """
+        return (
+            (self.slot[0] + self.slot[2]) / 2 - (self.source[0] + self.source[2]) / 2 * self.factor,
+            (self.slot[1] + self.slot[3]) / 2 - (self.source[1] + self.source[3]) / 2 * self.factor,
+        )
+
+    def move(self, geometry: dict[str, Any]) -> dict[str, Any]:
+        """Nouvelle géométrie, déplacée ; celle reçue n'est pas modifiée."""
+        return _transform(geometry, self.factor, self.source, self.slot)
+
+
+class Placement(NamedTuple):
+    """Placement des DROM autour de l'Hexagone, commun à toutes les mailles d'un même fond."""
+
+    reference: BBox  # emprise de l'Hexagone et de la Corse, dont tout le reste découle
+    droms: tuple[DromPlacement, ...]  # dans l'ordre des emplacements : îles en grille, puis Guyane
+    separation: list[list[float]]
+
+
+def compute_placement(by_zone: Mapping[str, Sequence[dict[str, Any]]]) -> Placement | None:
+    """Placement des DROM d'après les entités d'une maille, regroupées par zone d'affichage.
+
+    None sans entité dans l'Hexagone ni en Corse : il n'y a alors pas d'emprise de référence,
+    et rien n'est déplacé (fond d'une région d'outre-mer affichée seule).
+    """
+    hexagone = [*by_zone.get(ZONE_HEXAGONE, ()), *by_zone.get(ZONE_CORSE, ())]
+    if not hexagone:
+        return None
+    reference = features_bbox(hexagone)
+    droms = []
+    for code, slot in _slots(reference).items():
+        members = by_zone.get(code)
+        if not members:
+            continue
+        source = features_bbox(members)
+        droms.append(DromPlacement(code, DROM[code][1], true_scale_factor(source, reference), source, slot))
+    return Placement(reference, tuple(droms), separation_line(reference))
+
+
+def reference_placement(regions_geojson: dict[str, Any]) -> Placement | None:
+    """Placement de référence, calculé sur le fond national par région.
+
+    Les fonds nationaux des autres mailles l'appliquent au lieu de le recalculer sur leurs
+    propres entités, dont l'emprise diffère de quelques mètres (géométries généralisées
+    séparément) à plusieurs dizaines de kilomètres : Ouessant et Sein, sans EPCI, manquent à
+    la maille EPCI, ce qui y décalait l'Hexagone de 38 km et les cartouches de 34 à 42 km.
+    """
+    by_zone: dict[str, list[dict[str, Any]]] = {}
+    for feature in regions_geojson.get("features", []):
+        by_zone.setdefault(land_zone("REGION", feature["properties"]["land_id"]), []).append(feature)
+    return compute_placement(by_zone)
+
+
+def parent_boundary(geojson: dict[str, Any]) -> list[list[list[float]]] | None:
+    """Limite du territoire parent précalculée avec le fond : une liste de lignes, ou None.
+
+    dbt ne la calcule que pour les fonds dont les entités peuvent déborder du parent : un
+    département à la maille EPCI, dont les EPCI à cheval sur plusieurs départements sont
+    dessinés en entier (modèle ``land_national_map_parent_boundary_geom``). Elle est tracée
+    sur les limites d'EPCI du fond lui-même : elle se confond avec elles partout où elle les
+    longe, ce qu'aucun contour du département simplifié à part ne garantit.
+
+    None pour tous les autres fonds, pour un fond construit avant ce calcul et pour le fond
+    de repli (``LandGeoJSON``) : la carte s'affiche alors sans cette limite.
+    """
+    lines = [line for line in geojson.get(PARENT_BOUNDARY_MEMBER) or [] if len(line) >= 2]
+    return lines or None
+
+
 def build_base_map(
     geojson: dict[str, Any],
     scale: str,
     has_conso_by_land: dict[str, bool],
     region_by_land: dict[str, str] | None = None,
+    placement: Placement | None = None,
 ) -> dict[str, Any]:
     """Construit le fond de carte : features déplacées, emprises des DROM et territoires sans données.
 
     Chaque feature reçoit ``zone`` (zone d'affichage servant au placement) et ``region``
     (code de la région qui contient le territoire, utilisé pour cibler une région).
+
+    ``placement`` est le placement de référence des fonds nationaux (``reference_placement``) :
+    cartouches et séparation sont alors identiques d'une maille à l'autre. Sans lui, il est
+    calculé sur les entités reçues : c'est le cas du fond national par région, qui est la
+    référence, et des fonds d'un territoire parent, cadrés sur leurs seules entités.
+
+    ``parent_boundary`` : limite du territoire parent quand le fond en porte une (voir
+    ``parent_boundary``), dans les coordonnées des entités. Elle n'est jamais déplacée : seul le
+    fond d'un parent en porte une, et il ne contient pas à la fois l'Hexagone et un DROM.
+
+    Le GeoJSON reçu n'est pas modifié, mais les entités renvoyées partagent avec lui leurs
+    géométries tant qu'elles ne sont pas déplacées : l'appelant ne doit pas les modifier sur place.
     """
     region_by_land = region_by_land or {}
-    features = [copy.deepcopy(f) for f in geojson.get("features", [])]
+    # Copie superficielle : seules les propriétés sont complétées, et un DROM déplacé reçoit une
+    # nouvelle géométrie. Une copie profonde de milliers de communes coûtait plusieurs dixièmes
+    # de seconde, à chaque fond de carte.
+    features = [{**f, "properties": dict(f["properties"])} for f in geojson.get("features", [])]
+    by_zone: dict[str, list[dict[str, Any]]] = {}
     for feature in features:
         properties = feature["properties"]
         land_id = properties["land_id"]
@@ -227,23 +359,27 @@ def build_base_map(
         properties["has_conso"] = bool(has_conso_by_land.get(land_id, False))
         properties["region"] = land_id if scale == "REGION" else region_by_land.get(land_id)
         properties["zone"] = land_zone(scale, land_id, properties["region"])
+        by_zone.setdefault(properties["zone"], []).append(feature)
 
-    hexagone = [f for f in features if f["properties"]["zone"] in (ZONE_HEXAGONE, ZONE_CORSE)]
+    if placement is None:
+        placement = compute_placement(by_zone)
     insets: list[dict[str, Any]] = []
     separation: list[list[float]] = []
 
-    if hexagone:
-        hexagone_bbox = features_bbox(hexagone)
-        separation = separation_line(hexagone_bbox)
-        for code, target in _slots(hexagone_bbox).items():
-            members = [f for f in features if f["properties"]["zone"] == code]
+    if placement is not None:
+        separation = placement.separation
+        for drom in placement.droms:
+            members = by_zone.get(drom.zone)
             if not members:
                 continue
-            source = features_bbox(members)
-            factor = true_scale_factor(source, hexagone_bbox)
             for feature in members:
-                feature["geometry"] = _transform(feature["geometry"], factor, source, target)
-            insets.append({"zone": code, "name": DROM[code][1], "bbox": list(_moved_bbox(source, factor, target))})
+                feature["geometry"] = drom.move(feature["geometry"])
+            # `source_bbox` : emprise du territoire à sa position réelle. Une image de cette emprise
+            # (flux WMS de l'IGN) se pose telle quelle sur `bbox`, celle du territoire déplacé :
+            # le déplacement est une homothétie.
+            insets.append(
+                {"zone": drom.zone, "name": drom.name, "bbox": list(drom.inset), "source_bbox": list(drom.source)},
+            )
 
     no_conso_data = sorted(
         {f["properties"]["name"] for f in features if not f["properties"]["has_conso"]},
@@ -252,6 +388,8 @@ def build_base_map(
     return {
         "scale": scale,
         "geojson": {"type": "FeatureCollection", "features": features},
+        # Sans objet si des entités ont été déplacées : la limite ne les suivrait pas
+        "parent_boundary": None if insets else parent_boundary(geojson),
         "insets": insets,
         "separation": separation,
         "no_conso_data": no_conso_data,

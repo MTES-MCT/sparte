@@ -2,7 +2,7 @@
 Indicateurs de la carte nationale : consommation d'ENAF par territoire et cartes bivariées.
 
 Logique pure, sans accès à la base : les vues de ``public_data.views`` lisent les tables
-dbt et passent ici des dictionnaires simples.
+dbt et passent ici des structures simples (dictionnaires, tuples).
 
 Conventions :
 
@@ -21,7 +21,7 @@ Conventions :
 
 from __future__ import annotations
 
-from typing import Any, Iterable, Mapping, NamedTuple
+from typing import Any, Iterable, Mapping, NamedTuple, Sequence
 
 M2_PER_HA = 10_000
 
@@ -37,7 +37,7 @@ CONSO_FIELDS = ("total",) + DESTINATIONS
 
 # Version du format de la réponse « indicateurs » : à incrémenter à chaque changement
 # de structure pour invalider les caches serveur.
-INDICATORS_FORMAT_VERSION = 2
+INDICATORS_FORMAT_VERSION = 4
 
 Period = tuple[int, int]
 # (conso_t1, conso_t2, indic_t1, indic_t2) : bornes hautes des deux premiers tertiles
@@ -51,6 +51,16 @@ class Bivariate(NamedTuple):
     conso_label: str
     indicator_label: str
     indicator_unit: str = "%"
+
+    @property
+    def conso_rate_column(self) -> str:
+        """Colonne du taux de consommation dans la table compacte des taux (``NationalMapBivariateRate``)."""
+        return f"conso_rate_{self.conso_field}"
+
+    @property
+    def indic_rate_column(self) -> str:
+        """Colonne du taux de l'indicateur dans la table compacte des taux."""
+        return f"indic_rate_{self.indicator}"
 
 
 BIVARIATES: dict[str, Bivariate] = {
@@ -68,16 +78,26 @@ BIVARIATES: dict[str, Bivariate] = {
         "Consommation annuelle pour l'habitat",
         "Évolution du nombre de ménages",
     ),
-    # dbt croise la population avec la consommation totale, pas avec la seule
-    # consommation pour l'habitat : c'est ce couple qui existe dans les tables.
+    # dbt ne stocke pas ce couple tel quel : la vue croise le taux de consommation pour
+    # l'habitat (lignes ménages) et l'évolution de la population (lignes population).
     "bivariate_habitat_population": Bivariate(
         "population",
-        "total",
+        "habitat",
         ("#74c476", "#006d2c", "#e34a33", "#fdcc8a"),
-        "Consommation annuelle totale",
+        "Consommation annuelle pour l'habitat",
         "Évolution de la population",
     ),
 }
+
+# Colonnes de taux lues dans la table compacte, sans doublon : le taux de consommation pour
+# l'habitat sert à deux cartes
+BIVARIATE_RATE_COLUMNS: tuple[str, ...] = tuple(
+    dict.fromkeys(
+        column
+        for bivariate in BIVARIATES.values()
+        for column in (bivariate.conso_rate_column, bivariate.indic_rate_column)
+    )
+)
 
 
 def round_value(value: float | None, decimals: int = 2) -> float | None:
@@ -185,6 +205,58 @@ def bivariate_class(
     }
 
 
+def cross_bivariate_rates(
+    rows: Iterable[tuple[str, str, str, float | None, float | None]],
+) -> dict[str, dict[str, tuple[float | None, float | None]]]:
+    """Taux par carte bivariée et par territoire, à partir des lignes de taux de dbt.
+
+    ``rows`` : (indicateur, destination de la consommation, territoire, taux de consommation,
+    taux de l'indicateur). Le taux de consommation ne dépend que de la destination et le taux
+    de l'indicateur que de l'indicateur : on les lit séparément, ce qui permet de croiser aussi
+    un couple que dbt ne stocke pas tel quel (population × habitat, à partir des lignes
+    ménages × habitat et population × total).
+    """
+    conso_rates: dict[str, dict[str, float | None]] = {}
+    indic_rates: dict[str, dict[str, float | None]] = {}
+    for indicator, conso_field, land_id, conso_rate, indic_rate in rows:
+        conso_rates.setdefault(conso_field, {})[land_id] = conso_rate
+        indic_rates.setdefault(indicator, {})[land_id] = indic_rate
+    rates = {}
+    for key, bivariate in BIVARIATES.items():
+        indic = indic_rates.get(bivariate.indicator, {})
+        rates[key] = {
+            land_id: (conso_rate, indic.get(land_id))
+            for land_id, conso_rate in conso_rates.get(bivariate.conso_field, {}).items()
+        }
+    return rates
+
+
+def rates_from_columns(
+    rows: Iterable[Sequence[Any]],
+) -> dict[str, dict[str, tuple[float | None, float | None]]]:
+    """Taux par carte bivariée et par territoire, à partir des lignes de la table compacte des taux.
+
+    ``rows`` : (territoire, puis un taux par colonne de ``BIVARIATE_RATE_COLUMNS``, dans cet ordre).
+    Même résultat que ``cross_bivariate_rates`` sur les lignes d'origine : un territoire ne figure
+    sur une carte que s'il a un taux de consommation pour sa destination. Dans la table compacte,
+    un taux de consommation absent signifie que la ligne d'origine n'existe pas (dbt garantit qu'il
+    n'est jamais nul dans une ligne d'origine).
+    """
+    positions = {column: index for index, column in enumerate(BIVARIATE_RATE_COLUMNS, start=1)}
+    columns = [
+        (key, positions[bivariate.conso_rate_column], positions[bivariate.indic_rate_column])
+        for key, bivariate in BIVARIATES.items()
+    ]
+    rates: dict[str, dict[str, tuple[float | None, float | None]]] = {key: {} for key in BIVARIATES}
+    for row in rows:
+        land_id = row[0]
+        for key, conso_position, indic_position in columns:
+            conso_rate = row[conso_position]
+            if conso_rate is not None:
+                rates[key][land_id] = (conso_rate, row[indic_position])
+    return rates
+
+
 def bivariate_description(bivariate: Bivariate, thresholds: Thresholds | None) -> dict[str, Any]:
     """Palette, seuils et libellés d'une carte bivariée (seuils à None s'ils n'existent pas pour la période)."""
     return {
@@ -200,29 +272,56 @@ def bivariate_description(bivariate: Bivariate, thresholds: Thresholds | None) -
 # --- Consommation par année et par période ------------------------------------------
 
 
-def group_by_land(rows: Iterable[Mapping[str, Any]]) -> dict[str, dict[int, dict[str, float]]]:
-    """Lignes ``LandConso`` -> territoire -> année -> consommations (m²)."""
-    by_land: dict[str, dict[int, dict[str, float]]] = {}
+# Consommations d'un millésime en m², dans l'ordre de ``CONSO_FIELDS`` (None si non renseignée).
+# Des séquences plutôt que des dictionnaires : à la maille commune, plusieurs dizaines de milliers
+# de millésimes sont lus et sommés à chaque réponse.
+Vintage = Sequence[float | None]
+TOTAL_POSITION = CONSO_FIELDS.index("total")
+
+
+def group_by_land(rows: Iterable[Sequence[Any]]) -> dict[str, dict[int, Vintage]]:
+    """Lignes ``LandConso`` -> territoire -> année -> consommations (m²).
+
+    ``rows`` : (territoire, année, puis une consommation par champ de ``CONSO_FIELDS``, dans cet ordre).
+    """
+    by_land: dict[str, dict[int, Vintage]] = {}
     for row in rows:
-        by_land.setdefault(row["land_id"], {})[row["year"]] = {field: row.get(field) or 0 for field in CONSO_FIELDS}
+        by_land.setdefault(row[0], {})[row[1]] = row[2:]
     return by_land
 
 
-def period_sum(conso_by_year: Mapping[int, Mapping[str, float]], period: Period) -> dict[str, float] | None:
-    """Somme des consommations (m²) sur les millésimes de la période ; None si aucun n'est renseigné."""
+def _vintages(conso_by_year: Mapping[int, Vintage], period: Period) -> list[Vintage]:
+    """Millésimes renseignés de la période, par année croissante."""
     start_year, end_year = period
-    vintages = [conso_by_year[year] for year in range(start_year, end_year + 1) if year in conso_by_year]
+    return [conso_by_year[year] for year in range(start_year, end_year + 1) if year in conso_by_year]
+
+
+def period_sum(conso_by_year: Mapping[int, Vintage], period: Period) -> dict[str, float] | None:
+    """Somme de chaque consommation (m²) sur les millésimes de la période ; None si aucun n'est renseigné."""
+    vintages = _vintages(conso_by_year, period)
     if not vintages:
         return None
-    return {field: sum(vintage.get(field) or 0 for vintage in vintages) for field in CONSO_FIELDS}
+    return {field: sum(vintage[position] or 0 for vintage in vintages) for position, field in enumerate(CONSO_FIELDS)}
 
 
-def _total_ha(total: Mapping[str, float] | None) -> float | None:
-    return None if total is None else total["total"] / M2_PER_HA
+def period_total(conso_by_year: Mapping[int, Vintage], period: Period) -> float | None:
+    """Consommation totale (m²) sur les millésimes de la période ; None si aucun n'est renseigné.
+
+    Même valeur que ``period_sum(...)["total"]``, sans sommer les destinations : les périodes de
+    référence n'utilisent que le total.
+    """
+    vintages = _vintages(conso_by_year, period)
+    if not vintages:
+        return None
+    return sum(vintage[TOTAL_POSITION] or 0 for vintage in vintages)
 
 
-def _annual_mean_ha(total: Mapping[str, float] | None, period: Period) -> float | None:
-    total_ha = _total_ha(total)
+def _to_ha(surface_m2: float | None) -> float | None:
+    return None if surface_m2 is None else surface_m2 / M2_PER_HA
+
+
+def _annual_mean_ha(total_m2: float | None, period: Period) -> float | None:
+    total_ha = _to_ha(total_m2)
     return None if total_ha is None else total_ha / year_count(period)
 
 
@@ -238,21 +337,22 @@ def relative_change(before: float | None, after: float | None) -> float | None:
 
 def land_indicators(
     surface_ha: float,
-    conso_by_year: Mapping[int, Mapping[str, float]],
+    conso_by_year: Mapping[int, Vintage],
     period: Period,
     fixed: Mapping[str, Period],
     bivariate_rates: Mapping[str, tuple[float | None, float | None]],
     bivariate_thresholds: Mapping[str, Thresholds | None],
 ) -> dict[str, Any]:
-    """Indicateurs d'un territoire pour la période demandée et les périodes de référence."""
-    selection = period_sum(conso_by_year, period)
-    p1 = period_sum(conso_by_year, fixed["p1"])
-    p2 = period_sum(conso_by_year, fixed["p2"])
-    total = period_sum(conso_by_year, fixed["total"])
+    """Indicateurs d'un territoire pour la période demandée, et évolution entre les périodes de référence.
 
-    conso_ha = _total_ha(selection)
-    p1_mean = _annual_mean_ha(p1, fixed["p1"])
-    p2_mean = _annual_mean_ha(p2, fixed["p2"])
+    Les cumuls et les moyennes annuelles des périodes de référence ne sont pas servis à part : ce
+    sont ``conso_ha`` demandé sur ces périodes, que ``fixed_periods`` donne dans l'en-tête de la réponse.
+    """
+    selection = period_sum(conso_by_year, period)
+    conso_ha = _to_ha(selection["total"]) if selection else None
+    p1_mean, p2_mean = (
+        _annual_mean_ha(period_total(conso_by_year, fixed[name]), fixed[name]) for name in ("p1", "p2")
+    )
 
     return {
         "surface_ha": round_value(surface_ha),
@@ -262,12 +362,7 @@ def land_indicators(
             f"conso_{destination}_ha": round_value(selection[destination] / M2_PER_HA) if selection else None
             for destination in DESTINATIONS
         },
-        "annual_conso_2011_2021": round_value(p1_mean),
-        "annual_conso_2021_end": round_value(p2_mean),
         "conso_evolution_between_periods": round_value(relative_change(p1_mean, p2_mean)),
-        "conso_2011_end": round_value(_total_ha(total)),
-        "conso_2011_2021": round_value(_total_ha(p1)),
-        "conso_2021_end": round_value(_total_ha(p2)),
         **{key: bivariate_class(bivariate_rates.get(key), bivariate_thresholds.get(key)) for key in BIVARIATES},
     }
 
@@ -277,7 +372,7 @@ def build_indicators(
     period: Period,
     years: Period,
     surfaces: Mapping[str, float],
-    conso: Mapping[str, Mapping[int, Mapping[str, float]]],
+    conso: Mapping[str, Mapping[int, Vintage]],
     bivariate_rates: Mapping[str, Mapping[str, tuple[float | None, float | None]]],
     bivariate_thresholds: Mapping[str, Thresholds | None],
 ) -> dict[str, Any]:
@@ -285,7 +380,7 @@ def build_indicators(
 
     * ``years`` : première et dernière années disponibles ;
     * ``surfaces`` : territoire -> surface en hectares (tous les territoires de la maille) ;
-    * ``conso`` : territoire -> année -> consommations en m² ;
+    * ``conso`` : territoire -> année -> consommations en m², dans l'ordre de ``CONSO_FIELDS`` ;
     * ``bivariate_rates`` : carte bivariée -> territoire -> (taux de consommation, taux de l'indicateur) ;
     * ``bivariate_thresholds`` : carte bivariée -> seuils de la période, ou None s'ils n'existent pas.
     """
