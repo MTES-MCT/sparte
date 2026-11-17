@@ -18,4 +18,14 @@ urlpatterns = [
         views.NationalMapIndicatorsView.as_view(),
         name="national-map-indicators",
     ),
+    path(
+        "national-map/artif-indicators",
+        views.NationalMapArtifIndicatorsView.as_view(),
+        name="national-map-artif-indicators",
+    ),
+    path(
+        "national-map/values",
+        views.NationalMapValuesView.as_view(),
+        name="national-map-values",
+    ),
 ]
