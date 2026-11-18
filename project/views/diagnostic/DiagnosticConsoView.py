@@ -3,4 +3,4 @@ from .DiagnosticBaseView import DiagnosticBaseView
 
 class DiagnosticConsoView(DiagnosticBaseView):
     template_name = "project/pages/consommation.html"
-    page_section = "Consommation d'espaces NAF"
+    page_section = "Consommation d'ENAF"

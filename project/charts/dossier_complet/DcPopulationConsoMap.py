@@ -1,3 +1,4 @@
+from project.charts.periods import conso_period_short
 from public_data.models import AdminRef
 
 from .DcBivariateConsoMap import DcBivariateConsoMap
@@ -58,7 +59,7 @@ class DcPopulationConsoMap(DcBivariateConsoMap):
             "headers": [
                 AdminRef.get_label(self.child_land_type),
                 "Évolution de la population (%/an)",
-                f"Consommation {self.start_date}-{self.end_date} (ha/an)",
+                f"Consommation {conso_period_short(self.start_date, self.end_date)} (ha/an)",
                 "Catégorie",
             ],
             "boldFirstColumn": True,

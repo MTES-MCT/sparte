@@ -15,6 +15,7 @@ from django.db.models import Sum
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import HIGHLIGHT_COLOR, INSEE_CREDITS
 from project.charts.mixins.ComparisonChartMixin import ComparisonChartMixin
+from project.charts.periods import conso_period_short, with_definite_article
 from public_data.models import LandConso, LandDcPopulation
 
 logger = logging.getLogger(__name__)
@@ -174,9 +175,9 @@ class DcConsoComparisonBubbleChart(ComparisonChartMixin, DiagnosticChart):
             "title": {
                 "text": (
                     f"{self.conso_label} au regard de "
-                    f"{self.indicator_name.lower()} de {self.land.name} "
+                    f"{with_definite_article(self.indicator_name)} de {self.land.name} "
                     f"et des territoires de comparaison "
-                    f"({self.params['start_date']} - {self.params['end_date']})"
+                    f"({conso_period_short(self.params['start_date'], self.params['end_date'])})"
                 )
             },
             "xAxis": {

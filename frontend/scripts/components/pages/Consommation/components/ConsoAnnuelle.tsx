@@ -3,7 +3,7 @@ import Kpi from "@components/ui/Kpi";
 import GenericChart from "@components/charts/GenericChart";
 import Button from "@components/ui/Button";
 import Loader from "@components/ui/Loader";
-import { formatNumber } from "@utils/formatUtils";
+import { formatNumber, formatFirstJanuary, formatConsoYearEnd } from "@utils/formatUtils";
 import { useMapDrilldown } from "@components/charts/consommation/BivariateMap";
 import { useConsommationControls } from "../context/ConsommationControlsContext";
 
@@ -67,7 +67,7 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
         <div className="fr-col-12 fr-col-xl-4 fr-grid-row" ref={consoCardRef}>
           <Kpi
             icon="bi-bar-chart"
-            label="Consommation d'espaces"
+            label="Consommation d'ENAF mesurée"
             value={
               isLoadingConso || totalConsoHa === null ? (
                 <Loader size={32} />
@@ -82,8 +82,8 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
             badge="Donnée clé"
             footer={{
               type: "period",
-              from: String(startYear),
-              to: String(endYear),
+              from: formatFirstJanuary(startYear),
+              to: formatConsoYearEnd(endYear),
             }}
           />
         </div>
@@ -168,7 +168,7 @@ export const ConsoAnnuelle: React.FC<ConsoAnnuelleProps> = ({
               <div>
                 <h6 className="fr-mb-0">Comprendre la carte</h6>
                 <p className="fr-text--xs fr-mb-0">
-                  Cette carte permet de visualiser la consommation d'espaces NAF
+                  Cette carte permet de visualiser la consommation d'ENAF
                   relative à la surface de chaque territoire, représentée par
                   l'intensité de la couleur : plus la teinte est foncée, plus la
                   consommation d'espaces est importante par rapport à la surface

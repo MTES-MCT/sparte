@@ -1,5 +1,6 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
+from project.charts.periods import conso_period_short
 from public_data.models import LandDcCreationsEntreprises
 
 
@@ -27,7 +28,7 @@ class DcCreationsEntreprisesChart(DiagnosticChart):
 
         return super().param | {
             "chart": {"type": "line"},
-            "title": {"text": f"Créations d'entreprises - {self.land.name} (2012-2024)"},
+            "title": {"text": f"Créations d'entreprises - {self.land.name} ({conso_period_short(2012, 2024)})"},
             "credits": INSEE_CREDITS,
             "xAxis": {"categories": categories},
             "yAxis": {"title": {"text": "Nombre de créations"}},

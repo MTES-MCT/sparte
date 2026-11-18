@@ -121,7 +121,7 @@ const Downloads: React.FC<DownloadsProps> = ({ landData }) => {
                             <ActionCard
                                 icon="fr-icon-bar-chart-box-line"
                                 title="Rapport Complet"
-                                description="Analyse détaillée de l'évolution de la consommation d'espaces NAF (naturels, agricoles et forestiers) et de l'artificialisation des sols."
+                                description="Analyse détaillée de l'évolution de la consommation d'espaces naturels, agricoles et forestiers (ENAF) et de l'artificialisation des sols."
                                 onClick={() => guardedAction(() => handleCreateReportOfType('rapport-complet'))}
                                 disabled={isCreating}
                             />

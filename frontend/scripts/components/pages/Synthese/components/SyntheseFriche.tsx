@@ -47,7 +47,7 @@ const SyntheseFriche: React.FC<SyntheseFricheProps> = ({
               },
               {
                 icon: "bi bi-droplet-fill",
-                label: "Surfaces imperméables",
+                label: "Surfaces imperméabilisées",
                 value: `${formatNumber({ number: friche_sans_projet_surface_imper })} ha`,
               },
             ],

@@ -10,7 +10,7 @@ from public_data.domain.containers import PublicDataContainer
 
 class LogementVacantConsoProgressionChart(DiagnosticChart):
     """
-    Graphique d'évolution de la consommation d'espaces NAF et de la vacance des logements.
+    Graphique d'évolution de la consommation d'ENAF et de la vacance des logements.
     Les logements vacants sont affichés en aires empilées (parc privé en bas + bailleurs sociaux dessus).
     La consommation est affichée en colonnes.
     La consommation peut ne pas couvrir toutes les années (ex: 2024), dans ce cas les valeurs sont null.
@@ -235,7 +235,7 @@ class LogementVacantConsoProgressionChart(DiagnosticChart):
         }
 
         return super().param | {
-            "title": {"text": "Évolution de la consommation d'espaces NAF et de la vacance des logements"},
+            "title": {"text": "Évolution de la consommation d'ENAF et de la vacance des logements"},
             "credits": {"enabled": False},
             "plotOptions": {
                 "column": {"borderWidth": 0, "stacking": "normal"},
@@ -253,7 +253,7 @@ class LogementVacantConsoProgressionChart(DiagnosticChart):
                 },
                 {
                     "labels": {"style": {"color": "#6a6af4"}},
-                    "title": {"text": "Consommation d'espaces NAF (ha)", "style": {"color": "#6a6af4"}},
+                    "title": {"text": "Consommation d'ENAF (ha)", "style": {"color": "#6a6af4"}},
                 },
             ],
             "tooltip": {"headerFormat": "<b>{point.key}</b><br/>", "shared": True},
