@@ -23,7 +23,7 @@ class RedisDummyCache(DummyCache):
         return True
 
 
-def build_caches(redis_url: str | None) -> dict[str, Any]:
+def build_caches(redis_url: str | None, redis_password: str | None) -> dict[str, Any]:
     """Réglage ``CACHES`` : Redis si une URL est donnée, sinon un cache factice.
 
     Sans URL, rien n'est mis en cache et aucun appel ne part vers Redis : le site reste servi
@@ -40,6 +40,7 @@ def build_caches(redis_url: str | None) -> dict[str, Any]:
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "MAX_ENTRIES": 1000,
+                "PASSWORD": redis_password,
             },
         }
     }

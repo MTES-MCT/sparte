@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import tempfile
+from pathlib import Path
 from typing import Literal
 
 import pendulum
@@ -33,6 +34,7 @@ from include.data.ocsge.normalization import (
 )
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.utils import (
+    get_dbt_command_from_directory,
     get_geom_field_name,
     get_shapefile_or_geopackage_fields,
     get_shapefile_or_geopackage_first_layer_name,
@@ -42,8 +44,8 @@ from include.utils import (
 )
 
 from airflow.exceptions import AirflowSkipException
-from airflow.sdk import dag, task
-from airflow.sdk.definitions.param import Param
+
+from airflow.sdk import Param, dag, task
 
 log = logging.getLogger(__name__)
 
@@ -64,7 +66,7 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
     return paths
 
 
-with open("include/data/ocsge/sources.json", "r") as f:
+with open(Path(__file__).resolve().parents[1] / "include/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 
@@ -342,7 +344,7 @@ def ocsge():  # noqa: C901
         config = context["params"]["config"]
         dataset = get_from_config(config, "dataset")
         dbt_select = " ".join([vars["dbt_selector_staging"] for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt test -s ' + dbt_select
+        return get_dbt_command_from_directory("dbt test -s " + dbt_select)
 
     @task.python(trigger_rule="all_success")
     def delete_previously_loaded_data_in_dw(**context) -> dict:
@@ -398,7 +400,7 @@ def ocsge():  # noqa: C901
             raise AirflowSkipException
 
         dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s ' + dbt_select
+        return get_dbt_command_from_directory("dbt build -s " + dbt_select)
 
     @task.python(trigger_rule="all_done")
     def log_to_mattermost(**context):

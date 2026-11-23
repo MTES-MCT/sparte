@@ -3,8 +3,7 @@ from include.container import InfraContainer
 from include.dbt import DbtBuild
 from pendulum import datetime
 
-from airflow.sdk import dag, task
-from airflow.sdk.definitions.param import Param
+from airflow.sdk import Param, dag, task
 
 ZLV_OPENDATA_URLS = [
     {

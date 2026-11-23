@@ -244,20 +244,20 @@ class CacheSettingsTests(SimpleTestCase):
     """`USE_REDIS=0` doit couper tout accès à Redis sans casser le code qui appelle le cache."""
 
     def test_redis_cache_is_used_when_an_url_is_given(self) -> None:
-        caches = build_caches(redis_url="redis://redis:6379/0")
+        caches = build_caches(redis_url="redis://redis:6379/0", redis_password="your_redis_password")
 
         self.assertEqual(caches["default"]["BACKEND"], "django_redis.cache.RedisCache")
         self.assertEqual(caches["default"]["LOCATION"], "redis://redis:6379/0")
 
     def test_no_redis_is_configured_without_url(self) -> None:
-        caches = build_caches(redis_url=None)
+        caches = build_caches(redis_url=None, redis_password=None)
 
         self.assertEqual(caches, {"default": {"BACKEND": "config.cache_backends.RedisDummyCache"}})
 
     def test_cache_calls_made_by_the_code_work_without_redis(self) -> None:
         from django.core.cache import caches
 
-        with override_settings(CACHES=build_caches(redis_url=None)):
+        with override_settings(CACHES=build_caches(redis_url=None, redis_password=None)):
             cache = caches["default"]
             cache.set("chart:x", {"a": 1}, timeout=60)
             # rien n'est gardé : chaque lecture est un défaut de cache

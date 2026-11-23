@@ -12,8 +12,7 @@ from datetime import datetime, timedelta
 
 from include.dbt import DbtBuild
 
-from airflow.sdk import dag
-from airflow.sdk.definitions.param import Param
+from airflow.sdk import Param, dag
 
 default_args = {
     "owner": "airflow",

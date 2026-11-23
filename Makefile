@@ -110,6 +110,12 @@ createsuperuser: ## Crée un superutilisateur Django
 	docker compose exec -it django python manage.py createsuperuser
 
 # ──────────────────────────────────────────────
+# Webpack
+# ──────────────────────────────────────────────
+collectstatic:
+	docker compose exec -it django python manage.py collectstatic --noinput
+
+# ──────────────────────────────────────────────
 # Build / Qualité
 # ──────────────────────────────────────────────
 

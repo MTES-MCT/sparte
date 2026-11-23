@@ -8,6 +8,7 @@ Ce DAG :
 4. Rend les fichiers publics
 """
 
+
 import pendulum
 from include.container import DomainContainer as Container
 from include.container import InfraContainer
@@ -15,8 +16,7 @@ from include.utils import multiline_string_to_single_line
 from include.vector_tiles import geojson_to_pmtiles_on_s3
 
 from airflow.exceptions import AirflowSkipException
-from airflow.sdk import dag, task
-from airflow.sdk.definitions.param import Param
+from airflow.sdk import Param, dag, task
 
 
 def get_geojson_filename(year_index: int) -> str:

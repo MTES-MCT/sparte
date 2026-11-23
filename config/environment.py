@@ -18,5 +18,4 @@ def get_environment() -> dict:
     return {
         "vector_tiles_location": settings.VECTOR_TILES_LOCATION,
         "geojson_location": settings.GEOJSON_LOCATION,
-        "matomo_container_src": settings.MATOMO_CONTAINER_SRC,
     }
