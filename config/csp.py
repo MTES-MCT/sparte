@@ -12,10 +12,15 @@ from typing import Any
 from csp.constants import NONCE, SELF, UNSAFE_INLINE
 
 METABASE = "https://sparte-metabase.osc-secnum-fr1.scalingo.io"
+# Ressources générées dans le navigateur (workers, export PNG des graphiques Highcharts)
+BLOB = "blob:"
 MATOMO = "https://stats.beta.gouv.fr"
 CRISP_CLIENT = "https://client.crisp.chat"
 # Widget Messages de l'ANCT (La Suite)
 LA_SUITE = "https://beta.gouv.fr"
+# Centre d'aide Crisp (domaine personnalisé) : les articles ouverts depuis la messagerie
+# s'affichent dans un cadre servi par ce domaine
+CRISP_HELPDESK = "https://aide.mondiagartif.beta.gouv.fr"
 # Fond de plan OpenStreetMap des cartes : tuiles chargées par MapLibre en fetch (connect-src)
 OSM_TILES = "https://tile.openstreetmap.org"
 # Serveur de développement webpack (bundle, styles, rechargement à chaud), servi en HTTP
@@ -42,13 +47,14 @@ def build_csp_directives(
     Report-Only pour collecter les violations sans surveiller la console du navigateur.
     """
     directives: dict[str, Any] = {
-        "default-src": [SELF, METABASE, "blob:", MATOMO],
-        "worker-src": [SELF, "blob:"],
+        "default-src": [SELF, METABASE, BLOB, MATOMO],
+        "worker-src": [SELF, BLOB],
         "script-src": [SELF, MATOMO, CRISP_CLIENT, "https://settings.crisp.chat", LA_SUITE, NONCE],
         "style-src": [SELF, UNSAFE_INLINE, "https://cdn.jsdelivr.net", CRISP_CLIENT, MATOMO, LA_SUITE],
         "img-src": [
             SELF,
             "data:",
+            BLOB,
             "https://data.geopf.fr",
             OSM_TILES,
             "https://s3.fr-par.scw.cloud",
@@ -57,9 +63,18 @@ def build_csp_directives(
             "https://image.crisp.chat",
             "https://storage.crisp.chat",
             LA_SUITE,
+            # Pixel de suivi Matomo : balise <noscript> et requêtes de matomo.js émises en image
+            MATOMO,
             airflow_s3_base_url,
         ],
-        "frame-src": [SELF, "https://game.crisp.chat", "https://plugins.crisp.chat", METABASE, MATOMO],
+        "frame-src": [
+            SELF,
+            "https://game.crisp.chat",
+            "https://plugins.crisp.chat",
+            CRISP_HELPDESK,
+            METABASE,
+            MATOMO,
+        ],
         "media-src": [CRISP_CLIENT],
         "font-src": [SELF, "data:", "https://cdn.jsdelivr.net", CRISP_CLIENT, MATOMO],
         "connect-src": [

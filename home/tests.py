@@ -8,6 +8,8 @@ from django.test import SimpleTestCase, TestCase, modify_settings, override_sett
 
 from config.cache_backends import build_caches
 from config.csp import (
+    CRISP_HELPDESK,
+    MATOMO,
     OSM_TILES,
     WEBPACK_DEV_SERVER,
     WEBPACK_DEV_SERVER_WS,
@@ -214,12 +216,30 @@ class ContentSecurityPolicyTests(TestCase):
         self.assertNotIn("http:", policy)
         self.assertNotIn("ws:", policy)
 
+    def test_browser_generated_images_are_allowed(self) -> None:
+        # L'export PNG des graphiques et cartes Highcharts charge l'image depuis une URL blob:
+        directives = build_csp_directives(local=False, **HTTPS_SOURCES)
+
+        self.assertIn("blob:", directives["img-src"])
+
     def test_openstreetmap_tiles_are_allowed(self) -> None:
         # Fond de plan des cartes : tuiles demandées en fetch par MapLibre (connect-src) ou en image (img-src)
         directives = build_csp_directives(local=False, **HTTPS_SOURCES)
 
         self.assertIn(OSM_TILES, directives["connect-src"])
         self.assertIn(OSM_TILES, directives["img-src"])
+
+    def test_matomo_tracking_pixel_is_allowed(self) -> None:
+        # Balise <noscript> de utils/matomo_code.html et requêtes de matomo.js émises en image
+        directives = build_csp_directives(local=False, **HTTPS_SOURCES)
+
+        self.assertIn(MATOMO, directives["img-src"])
+
+    def test_crisp_helpdesk_frame_is_allowed(self) -> None:
+        # Les articles du centre d'aide ouverts depuis la messagerie Crisp s'affichent dans un cadre
+        directives = build_csp_directives(local=False, **HTTPS_SOURCES)
+
+        self.assertIn(CRISP_HELPDESK, directives["frame-src"])
 
     def test_report_uri_is_added_only_when_configured(self) -> None:
         report_uri = "https://sentry.example.org/api/21/security/?sentry_key=abc"
