@@ -17,6 +17,7 @@ import environ
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
 
+from config.cache_backends import build_caches
 from config.csp import build_csp_directives
 
 OFFICIAL_VERSION = "9.0.0"
@@ -336,28 +337,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CACHES
 # https://docs.djangoproject.com/en/4.2/topics/cache/
 
-CACHES: Dict[str, Any] = {}
+# Interrupteur de Redis : `USE_REDIS=0` coupe tout accès à Redis, par exemple pendant une
+# panne ou une maintenance de l'addon. Le site reste servi, sans cache : les graphiques et
+# les sitemaps sont recalculés à chaque requête et les limitations de débit ne limitent plus.
+# `CACHE_DB_URL` n'est alors plus lue.
+USE_REDIS = env.bool("USE_REDIS", default=ENVIRONMENT != "local")
 
+CACHES: Dict[str, Any] = build_caches(
+    redis_url=env.str("CACHE_DB_URL") if USE_REDIS else None,
+    redis_password=env.str("CACHE_DB_PASSWORD", default=None) if USE_REDIS else None,
+)
 
-if ENVIRONMENT == "local":
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-        }
-    }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": env.str("CACHE_DB_URL"),
-            "TIMEOUT": 60 * 15,  # 15 minutes
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "MAX_ENTRIES": 1000,
-                "PASSWORD": env.str("CACHE_DB_PASSWORD", default=""),
-            },
-        }
-    }
+if USE_REDIS:
     FANCY_REMEMBER_ALL_URLS = True
     FANCY_REMEMBER_STATS_ALL_URLS = True
 # SESSION

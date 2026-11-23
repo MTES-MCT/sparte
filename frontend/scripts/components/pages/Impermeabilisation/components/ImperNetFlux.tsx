@@ -3,6 +3,7 @@ import GenericChart from "@components/charts/GenericChart";
 import { DepartmentSelector } from "@components/features/ocsge/DepartmentSelector";
 import { MillesimeDisplay } from "@components/features/ocsge/MillesimeDisplay";
 import { ImpermeabilisationDiffMap } from "@components/map/ui/ImpermeabilisationDiffMap";
+import { hasOcsgeFlux } from "@utils/fluxUtils";
 import { LandType } from "@services/types/land";
 import BaseCard from "@components/ui/BaseCard";
 import { useImpermeabilisationContext } from "../context/ImpermeabilisationContext";
@@ -15,11 +16,13 @@ export const ImperNetFlux: React.FC = () => {
     millesimes,
     isInterdepartemental,
     landImperStockIndex,
+    landImperFluxIndex,
     byDepartementNetFlux,
     setByDepartementNetFlux,
   } = useImpermeabilisationContext();
 
   const maxIndex = Math.max(...millesimes.map((m) => m.index));
+  const hasDiff = hasOcsgeFlux(landImperFluxIndex?.flux_imper, landImperFluxIndex?.flux_desimper);
 
   return (
     <div className="fr-mb-5w">
@@ -31,7 +34,7 @@ export const ImperNetFlux: React.FC = () => {
           between={true}
         />
       </h2>
-      {land_type !== LandType.REGION && (
+      {land_type !== LandType.REGION && hasDiff && (
         <div className="fr-mb-5w">
           <ImpermeabilisationDiffMap landData={landData} />
         </div>
