@@ -14,7 +14,15 @@ class Command(BaseCommand):
 
         for key in cache:
             try:
-                caches[key].clear()
+                backend = caches[key]
+                if hasattr(backend, "client"):
+                    # django-redis ignore les erreurs de Redis (IGNORE_EXCEPTIONS) : passer par le
+                    # client redis-py pour qu'un cache non vidé au déploiement reste une erreur
+                    # visible. FLUSHDB ASYNC répond tout de suite, même sur une grosse base : le
+                    # vidage ne dépasse pas SOCKET_TIMEOUT et ne bloque pas Redis pour le site.
+                    backend.client.get_client(write=True).flushdb(asynchronous=True)
+                else:
+                    backend.clear()
             except InvalidCacheBackendError:
                 self.stderr.write('Cache "%s" is invalid!\n' % key)
             else:
