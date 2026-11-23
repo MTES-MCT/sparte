@@ -246,7 +246,7 @@ class CacheSettingsTests(SimpleTestCase):
     def test_redis_cache_is_used_when_an_url_is_given(self) -> None:
         caches = build_caches(redis_url="redis://redis:6379/0")
 
-        self.assertEqual(caches["default"]["BACKEND"], "django_redis.cache.RedisCache")
+        self.assertEqual(caches["default"]["BACKEND"], "config.cache_backends.LoggingRedisCache")
         self.assertEqual(caches["default"]["LOCATION"], "redis://redis:6379/0")
 
     def test_no_redis_is_configured_without_url(self) -> None:
@@ -266,6 +266,64 @@ class CacheSettingsTests(SimpleTestCase):
             self.assertIsNone(cache.delete_pattern("*project/1/*"))
             # appel du script de déploiement (commande clear_cache)
             cache.clear()
+
+
+class RedisUnavailableTests(SimpleTestCase):
+    """Redis configuré mais injoignable : le site répond sans cache au lieu de renvoyer une erreur 500."""
+
+    # Port fermé : la connexion est refusée tout de suite, aucun Redis n'est nécessaire.
+    UNREACHABLE_REDIS = "redis://127.0.0.1:1/0"
+
+    def test_redis_options_tolerate_an_outage(self) -> None:
+        options = build_caches(redis_url="redis://redis:6379/0")["default"]["OPTIONS"]
+
+        self.assertIs(options["IGNORE_EXCEPTIONS"], True)
+        self.assertEqual(options["SOCKET_CONNECT_TIMEOUT"], 1)
+        self.assertEqual(options["SOCKET_TIMEOUT"], 2)
+        self.assertIn("retry_on_error", options["CONNECTION_POOL_KWARGS"])
+
+    def test_cache_calls_do_not_raise_when_redis_is_unreachable(self) -> None:
+        from django.core.cache import caches
+
+        with override_settings(CACHES=build_caches(redis_url=self.UNREACHABLE_REDIS)):
+            cache = caches["default"]
+            with self.assertLogs("django_redis.cache", level="ERROR"):
+                # lecture d'un graphique : défaut de cache, la vue calcule sa réponse
+                self.assertEqual(cache.get("chart:x", "défaut"), "défaut")
+                cache.set("chart:x", {"a": 1}, timeout=60)
+                # appel fait à l'enregistrement d'un projet
+                cache.delete_pattern("*project/1/*")
+
+    def test_ignored_errors_are_always_logged(self) -> None:
+        from django.core.cache import caches
+
+        # Aucun réglage à poser : sans journal, une panne de Redis passerait inaperçue.
+        with override_settings(CACHES=build_caches(redis_url=self.UNREACHABLE_REDIS)):
+            with self.assertLogs("django_redis.cache", level="ERROR") as logs:
+                caches["default"].get("chart:x")
+
+        self.assertEqual(len(logs.records), 1)
+        self.assertIsNotNone(logs.records[0].exc_info)
+
+    def test_clear_cache_command_still_fails_when_redis_is_unreachable(self) -> None:
+        from django.core.management import call_command
+        from redis.exceptions import ConnectionError as RedisConnectionError
+
+        # Un cache non vidé au déploiement doit rester une erreur visible.
+        with override_settings(CACHES=build_caches(redis_url=self.UNREACHABLE_REDIS)):
+            with self.assertRaises(RedisConnectionError):
+                call_command("clear_cache")
+
+    def test_clear_cache_command_works_without_redis(self) -> None:
+        from io import StringIO
+
+        from django.core.management import call_command
+
+        out = StringIO()
+        with override_settings(CACHES=build_caches(redis_url=None)):
+            call_command("clear_cache", stdout=out)
+
+        self.assertIn('Cache "default" has been cleared!', out.getvalue())
 
 
 class SriStaticTemplateTagTests(SimpleTestCase):
