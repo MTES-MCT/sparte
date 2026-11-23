@@ -94,9 +94,9 @@ class TerritorialisationMap(DiagnosticChart):
         headers = [
             "Territoire",
             "Objectif (%)",
-            "Conso. 2011-2020 (ha)",
-            "Conso. depuis 2021 (ha)",
-            "Conso. max 2021-2030 (ha)",
+            "Conso. 1er janv. 2011 – 1er janv. 2021 (ha)",
+            "Conso. 1er janv. 2021 – 1er janv. 2025 (ha)",
+            "Conso. max 1er janv. 2021 – 1er janv. 2031 (ha)",
         ]
 
         return {
@@ -140,11 +140,14 @@ class TerritorialisationMap(DiagnosticChart):
                 "map": geojson,
             },
             "title": {
-                "text": f"Objectifs de réduction de la consommation d'espaces NAF des {self.get_children_land_types_label()} territorialisés dans le {self.get_document_name()} de {self.land.name}",  # noqa
+                "text": f"Objectifs de réduction de la consommation d'ENAF des {self.get_children_land_types_label()} territorialisés dans le {self.get_document_name()} de {self.land.name}",  # noqa
                 "style": {"fontSize": "16px", "fontWeight": "600"},
             },
             "subtitle": {
-                "text": "Réduction pour la période 2021-2031 par rapport à la période 2011-2020",
+                "text": (
+                    "Réduction pour la période du 1er janvier 2021 au 1er janvier 2031 "
+                    "par rapport à celle du 1er janvier 2011 au 1er janvier 2021"
+                ),
                 "style": {"fontSize": "12px", "color": "#666"},
             },
             "mapNavigation": {"enabled": True},

@@ -14,7 +14,7 @@ export const LogementVacantExternalServices: React.FC = () => {
           <ExternalServiceTile
             imageUrl={zeroLogementVacantImage}
             imageAlt="Logo de Zéro Logement Vacant"
-            title="Réduisez votre consommation d'espaces NAF en mobilisant le parc de logements vacants grâce à Zéro Logement Vacant"
+            title="Réduisez votre consommation d'ENAF en mobilisant le parc de logements vacants grâce à Zéro Logement Vacant"
             description="Zéro Logement Vacant est un outil gratuit qui accompagne les territoires dans leur démarche de remise sur le marché des logements vacants."
             href="https://zerologementvacant.beta.gouv.fr/zero-logement-vacant/la-plateforme/?src=mda"
           />

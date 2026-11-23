@@ -13,17 +13,17 @@ const BUBBLE_CHARTS = [
   {
     chartId: "population_conso_comparison_chart",
     label: "Population",
-    description: "Ce graphique compare la consommation d'espaces NAF au regard de l'évolution démographique.",
+    description: "Ce graphique compare la consommation d'ENAF au regard de l'évolution démographique.",
   },
   {
     chartId: "dc_menages_conso_comparison_chart",
     label: "Ménages",
-    description: "Ce graphique compare la consommation d'espaces NAF à destination de l'habitat au regard de l'évolution du nombre de ménages.",
+    description: "Ce graphique compare la consommation d'ENAF à destination de l'habitat au regard de l'évolution du nombre de ménages.",
   },
   {
     chartId: "dc_emploi_conso_comparison_chart",
     label: "Emploi",
-    description: "Ce graphique compare la consommation d'espaces NAF à destination de l'activité au regard de l'évolution de l'emploi.",
+    description: "Ce graphique compare la consommation d'ENAF à destination de l'activité au regard de l'évolution de l'emploi.",
   },
 ];
 
@@ -141,8 +141,8 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
               <p className="fr-text--xs fr-mb-0">
                 Cette carte affiche votre territoire (surligné en bleu) et les
                 territoires de comparaison. La couleur indique la consommation
-                d'espaces NAF relative à la surface du territoire, et la taille
-                des bulles représente la consommation d'espaces NAF totale.
+                d'ENAF relative à la surface du territoire, et la taille
+                des bulles représente la consommation d'ENAF totale.
               </p>
             </div>
           </GenericChart>
@@ -172,7 +172,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
               <div>
                 <h6 className="fr-mb-0">À propos</h6>
                 <p className="fr-text--xs fr-mb-0">
-                  Ce graphique détaille la consommation d'espaces NAF année par
+                  Ce graphique détaille la consommation d'ENAF année par
                   année de {selectedTerritory.name}, ventilée par destination.
                 </p>
               </div>
@@ -190,13 +190,13 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
               <div>
                 <h6 className="fr-mb-0">À propos</h6>
                 <p className="fr-text--xs fr-mb-0">
-                  Ce graphique compare la consommation d'espaces NAF de votre
+                  Ce graphique compare la consommation d'ENAF de votre
                   territoire avec celle de d'autres territoires, sélectionnés en
                   fonction de leur proximité géographique.
                 </p>
                 <p className="fr-text--xs fr-mb-0">
                   Cliquez sur un territoire pour voir le détail année par année de
-                  sa consommation d'espaces NAF.
+                  sa consommation d'ENAF.
                 </p>
               </div>
             </GenericChart>
@@ -217,7 +217,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
             <div>
               <h6 className="fr-mb-0">À propos</h6>
               <p className="fr-text--xs fr-mb-0">
-                Ce graphique compare la consommation d'espaces NAF
+                Ce graphique compare la consommation d'ENAF
                 proportionnelle à la surface totale du territoire. Les
                 territoires sont représentés sous forme de treemap où la taille
                 reflète la surface du territoire.
@@ -232,14 +232,14 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
               Ce graphique représente chaque territoire par un rectangle, dont
               la taille est proportionnelle à sa surface. Plus le rectangle est
               grand, plus le territoire est vaste. La couleur des rectangles
-              reflète le rapport entre la surface d'espaces NAF consommée et la
+              reflète le rapport entre la surface d'ENAF consommée et la
               surface totale du territoire. Plus la couleur est foncée, plus la
-              consommation d'espaces NAF est intense.
+              consommation d'ENAF est intense.
             </p>
             <p className="fr-text--xs fr-mb-0">
               Par exemple, un rectangle de petite taille et de couleur intense
               correspond à un territoire peu étendu ayant consommé une part
-              significative de ses espaces NAF.
+              significative de ses espaces naturels, agricoles et forestiers.
             </p>
           </GuideContent>
         </div>
@@ -285,7 +285,7 @@ export const ConsoComparison: React.FC<ConsoComparisonProps> = ({
               <p className="fr-text--xs fr-mb-0">
                 Ce graphique représente chaque territoire par une bulle, dont
                 la taille est proportionnelle à sa population. La position des
-                bulles sur l'axe vertical indique la consommation d'espaces NAF
+                bulles sur l'axe vertical indique la consommation d'ENAF
                 relative à la surface du territoire et l'axe horizontal indique
                 l'évolution de l'indicateur sélectionné.
               </p>

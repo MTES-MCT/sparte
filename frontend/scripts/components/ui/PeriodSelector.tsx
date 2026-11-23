@@ -9,6 +9,15 @@ interface PeriodSelectorProps {
   maxYear: number;
   onStartYearChange: (year: number) => void;
   onEndYearChange: (year: number) => void;
+  /**
+   * Décalage appliqué à l'année de fin affichée (pas à la valeur transmise).
+   * Avec 1, une fin en 2024 s'affiche 2025 : la période s'arrête au 1er janvier 2025.
+   */
+  endYearOffset?: number;
+  /** Préfixe des dates affichées dans les boutons, par ex. « 1er janv. ». */
+  datePrefix?: string;
+  /** Intitulé affiché en tête des listes d'années, par ex. « Au 1er janvier ». */
+  dropdownCaption?: React.ReactNode;
 }
 
 const Wrapper = styled.div`
@@ -61,6 +70,14 @@ const Dropdown = styled.div`
   max-width: 200px;
 `;
 
+const DropdownCaption = styled.p`
+  flex-basis: 100%;
+  margin: 0 0 0.25rem;
+  padding: 0.125rem 0.25rem;
+  font-size: ${theme.fontSize.xs};
+  color: ${theme.colors.textMuted};
+`;
+
 const YearOption = styled.button<{ $selected?: boolean; $disabled?: boolean }>`
   display: inline-flex;
   align-items: center;
@@ -93,7 +110,11 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   maxYear,
   onStartYearChange,
   onEndYearChange,
+  endYearOffset = 0,
+  datePrefix,
+  dropdownCaption,
 }) => {
+  const formatButton = (year: number) => (datePrefix ? `${datePrefix} ${year}` : String(year));
   const [open, setOpen] = useState<OpenDropdown>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -111,20 +132,21 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
 
   return (
     <Wrapper ref={wrapperRef} onBlur={handleBlur}>
-      <YearButton onClick={() => handleToggle("start")} aria-label="Année de début">
-        {startYear}
+      <YearButton onClick={() => handleToggle("start")} aria-label={`Début de la période : ${formatButton(startYear)}`}>
+        {formatButton(startYear)}
         <i className="bi bi-chevron-down" style={{ fontSize: "0.6em", marginLeft: 4 }} />
       </YearButton>
 
-      <Dash>-</Dash>
+      <Dash>–</Dash>
 
-      <YearButton onClick={() => handleToggle("end")} aria-label="Année de fin">
-        {endYear}
+      <YearButton onClick={() => handleToggle("end")} aria-label={`Fin de la période : ${formatButton(endYear + endYearOffset)}`}>
+        {formatButton(endYear + endYearOffset)}
         <i className="bi bi-chevron-down" style={{ fontSize: "0.6em", marginLeft: 4 }} />
       </YearButton>
 
       {open === "start" && (
         <Dropdown style={{ right: 0 }}>
+          {dropdownCaption && <DropdownCaption>{dropdownCaption}</DropdownCaption>}
           {years.map((year) => {
             const disabled = year >= endYear;
             return (
@@ -149,6 +171,7 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
 
       {open === "end" && (
         <Dropdown style={{ right: 0 }}>
+          {dropdownCaption && <DropdownCaption>{dropdownCaption}</DropdownCaption>}
           {years.map((year) => {
             const disabled = year <= startYear;
             return (
@@ -164,7 +187,7 @@ const PeriodSelector: React.FC<PeriodSelectorProps> = ({
                   }
                 }}
               >
-                {year}
+                {year + endYearOffset}
               </YearOption>
             );
           })}

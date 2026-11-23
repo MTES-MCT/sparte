@@ -67,7 +67,7 @@ class ObjectiveChart(DiagnosticChart):
 
     @property
     def conso_2011_2020(self) -> float:
-        """Calcule la consommation cumulée 2011-2020 en hectares."""
+        """Calcule la consommation cumulée du 1er janvier 2011 au 1er janvier 2021 en hectares."""
         conso_data = LandConso.objects.filter(
             land_id=self.land.land_id,
             land_type=self.land.land_type,
@@ -325,7 +325,10 @@ class ObjectiveChartExport(ObjectiveChart):
     def param(self):
         return super().param | {
             "title": {
-                "text": f"Trajectoire de consommation d'espaces NAF à {self.land.name} entre 2021 et 2031 (en ha)"
+                "text": (
+                    f"Trajectoire de consommation d'ENAF à {self.land.name} "
+                    "(1er janv. 2021 – 1er janv. 2031, en ha)"
+                )
             },
             "credits": CEREMA_CREDITS,
         }

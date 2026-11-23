@@ -77,11 +77,11 @@ const LogementVacantAbstract: React.FC<LogementVacantAbstractProps> = ({
 
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_SOCIAL_ET_LE_PRIVE_PARTIELLEMENT_SECRETISE]: (
             <p className="fr-text--sm fr-mb-0">
-                Il y a au moins{" "}
+                D'après les données disponibles, il y a environ{" "}
                 <strong>{logements_vacants_status_details.logements_vacants_parc_general} {pluralize(logements_vacants_status_details.logements_vacants_parc_general, "logement vacant")}</strong>{" "}
                 sur le territoire de <strong>{name}</strong>, soit{" "}
                 <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_general_percent })}%</strong> du parc total.{" "}
-                <strong>L'exploitation des logements vacants semble être un levier actionnable pour ce territoire (chiffres potentiellement sous-estimés).</strong>
+                <strong>L'exploitation des logements vacants semble être un levier actionnable pour ce territoire.</strong>
             </p>
         ),
 
@@ -127,7 +127,7 @@ const LogementVacantAbstract: React.FC<LogementVacantAbstractProps> = ({
 
         [LogementVacantStatusEnum.GISEMENT_POTENTIEL_DANS_LE_PRIVE_PARTIELLEMENT_SECRETISE]: (
             <p className="fr-text--sm fr-mb-0">
-                Il y a au moins{" "}
+                D'après les données disponibles, il y a environ{" "}
                 <strong>{logements_vacants_status_details.logements_vacants_parc_prive} {pluralize(logements_vacants_status_details.logements_vacants_parc_prive ?? 0, "logement vacant")}</strong>{" "}
                 dans le parc privé sur le territoire de <strong>{name}</strong>, soit{" "}
                 <strong>{formatNumber({ number: logements_vacants_status_details.logements_vacants_parc_prive_percent })}%</strong> du parc privé.{" "}

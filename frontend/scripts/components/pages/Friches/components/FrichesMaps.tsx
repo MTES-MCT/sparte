@@ -76,7 +76,7 @@ export const FrichesMaps: React.FC = () => {
           />
         </div>
         <div>
-          <h2>Surfaces imperméables des friches</h2>
+          <h2>Surfaces imperméabilisées des friches</h2>
           <FrichesImpermeableMap
             landData={landData}
             frichesData={frichesData}
