@@ -1,0 +1,62 @@
+models:
+  - name: for_app_national_map_bivariate_rate
+    description: >
+      Taux des cartes bivariées de la carte nationale : une ligne par territoire et par
+      période, une colonne par taux, triée par maille, période puis territoire. Les valeurs
+      sont celles de for_app_bivariate_land_rate (test singulier
+      national_map_bivariate_rate_matches_source).
+    columns:
+      - name: land_type
+        description: Maille du territoire, parmi celles affichées par la carte.
+        data_type: text
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [REGION, DEPART, EPCI, COMM]
+      - name: start_year
+        description: Premier millésime de la période.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: end_year
+        description: Dernier millésime de la période, toujours postérieur au premier.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: land_id
+        data_type: character varying
+        data_tests:
+          - not_null
+      # L'application considère qu'un taux de consommation absent signifie « pas de ligne
+      # dans for_app_bivariate_land_rate » : ces deux colonnes ne doivent jamais être nulles.
+      - name: conso_rate_activite
+        description: Taux annuel de consommation pour l'activité (lignes « emploi » de la source).
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: conso_rate_habitat
+        description: Taux annuel de consommation pour l'habitat (lignes « menages » de la source).
+        data_type: numeric
+        data_tests:
+          - not_null
+      - name: indic_rate_emploi
+        description: Évolution annuelle de l'emploi, nulle si l'INSEE ne la fournit pas.
+        data_type: numeric
+      - name: indic_rate_menages
+        description: Évolution annuelle du nombre de ménages, nulle si l'INSEE ne la fournit pas.
+        data_type: numeric
+      - name: indic_rate_population
+        description: Évolution annuelle de la population, nulle si l'INSEE ne la fournit pas.
+        data_type: numeric
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - land_type
+              - start_year
+              - end_year
+              - land_id
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "start_year < end_year"

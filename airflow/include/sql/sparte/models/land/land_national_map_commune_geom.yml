@@ -1,0 +1,62 @@
+models:
+  - name: land_national_map_commune_geom
+    description: >
+      Géométries allégées des communes pour la carte nationale, dans leur projection
+      d'origine. Deux lignes par commune : une à l'échelle de sa région, une à l'échelle de
+      son département, avec une tolérance proportionnelle à l'emprise de ce parent. Les
+      frontières partagées restent identiques entre les communes d'un même parent. Les
+      règles qui comparent ce modèle à `land` (aucune commune perdue, surface proche de
+      l'origine) sont dans les tests singuliers national_map_geom_*.
+    columns:
+      - name: land_id
+        description: Code INSEE de la commune.
+        data_tests:
+          - not_null
+      - name: land_type
+        description: Toujours COMM.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [COMM]
+      - name: parent_land_type
+        description: Type du parent à l'échelle duquel la commune est simplifiée (REGION ou DEPART).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [REGION, DEPART]
+      - name: parent_land_id
+        description: Identifiant de ce parent, région ou département de la commune.
+        data_tests:
+          - not_null
+      - name: tolerance
+        description: >
+          Tolérance de simplification appliquée, en mètres : un millième de la plus grande
+          dimension de l'emprise du parent.
+        data_tests:
+          - not_null
+      - name: is_simplified
+        description: >
+          Faux quand la commune, trop petite pour la tolérance, n'a pas pu être simplifiée
+          et garde le simple_geom de `land`.
+        data_tests:
+          - not_null
+      - name: geom
+        description: >
+          Géométrie allégée (MultiPolygon), sans les îlots plus petits que le carré de la
+          tolérance.
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+    data_tests:
+      # Type surfacique : une ligne ou un point ne dessinerait aucun aplat sur la carte
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "GeometryType(geom) = 'MULTIPOLYGON' AND ST_Area(geom) > 0"
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - land_id
+              - parent_land_type

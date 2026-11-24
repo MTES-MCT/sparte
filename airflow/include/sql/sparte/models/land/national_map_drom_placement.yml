@@ -1,0 +1,70 @@
+models:
+  - name: national_map_drom_placement
+    description: >
+      Placement des régions d'outre-mer près de l'Hexagone pour la carte nationale : une
+      ligne par région déplacée, calculée sur les régions de `land_national_map_geom`. Lu par
+      les tuiles de communes (`for_vector_tiles_communes_national`). C'est la seconde
+      écriture du calcul de `public_data/domain/national_map.py` : l'accord entre les deux
+      est gardé par le test singulier
+      `national_map_placement_matches_python_on_synthetic_regions`, les autres règles par les
+      tests singuliers national_map_placement_*. Toutes les géométries sont en EPSG:3857.
+    columns:
+      - name: region_code
+        description: Code de la région d'outre-mer.
+        data_tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values: "{{ national_map_drom_regions().keys() | list }}"
+      - name: name
+        description: Nom affiché sur le cartouche.
+        data_tests:
+          - not_null
+      - name: scale_factor
+        description: >
+          Facteur qui ramène la région à l'échelle de l'Hexagone en Web Mercator : rapport
+          des cosinus de latitude.
+        data_tests:
+          - not_null
+      - name: x_offset
+        description: >
+          Translation en x, en mètres, appliquée après le facteur : un point (x, y) va en
+          (scale_factor * x + x_offset, scale_factor * y + y_offset).
+        data_tests:
+          - not_null
+      - name: y_offset
+        description: Translation en y, en mètres, appliquée après le facteur.
+        data_tests:
+          - not_null
+      - name: inset_geom
+        description: Cartouche, rectangle d'emprise de la région une fois déplacée.
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: slot_geom
+        description: Emplacement, rectangle au centre duquel la région est posée.
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: reference_geom
+        description: >
+          Rectangle d'emprise de l'Hexagone et de la Corse, qui ne bougent pas. Identique
+          sur toutes les lignes.
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: separation_geom
+        description: >
+          Polyligne qui sépare les territoires déplacés de l'Hexagone. Identique sur toutes
+          les lignes.
+        data_tests:
+          - not_null
+          - is_valid_geom
+    data_tests:
+      - dbt_utils.expression_is_true:
+          name: national_map_drom_placement_geoms_are_in_3857
+          arguments:
+            expression: >
+              ST_SRID(inset_geom) = 3857 AND ST_SRID(slot_geom) = 3857
+              AND ST_SRID(reference_geom) = 3857 AND ST_SRID(separation_geom) = 3857

@@ -1,0 +1,48 @@
+models:
+  - name: land_national_map_geom
+    description: >
+      Géométries très simplifiées des régions, départements et EPCI pour la carte nationale,
+      dans la projection d'origine de chaque territoire. Les frontières partagées entre
+      voisins restent identiques. Une ligne par territoire de `land` : les règles qui
+      comparent ce modèle à `land` (aucun territoire perdu, surface proche de l'origine)
+      sont dans les tests singuliers national_map_geom_*.
+    columns:
+      - name: land_id
+        description: Identifiant du territoire.
+        data_tests:
+          - not_null
+      - name: land_type
+        description: Type de territoire (REGION, DEPART ou EPCI).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [REGION, DEPART, EPCI]
+      - name: tolerance
+        description: Tolérance de simplification appliquée, en mètres.
+        data_tests:
+          - not_null
+      - name: is_simplified
+        description: >
+          Faux quand le territoire, trop petit pour la tolérance, n'a pas pu être simplifié
+          et garde le simple_geom de `land`.
+        data_tests:
+          - not_null
+      - name: geom
+        description: >
+          Géométrie très simplifiée (MultiPolygon), sans les îlots plus petits que le carré
+          de la tolérance.
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+    data_tests:
+      # Type surfacique : une ligne ou un point ne dessinerait aucun aplat sur la carte
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "GeometryType(geom) = 'MULTIPOLYGON' AND ST_Area(geom) > 0"
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - land_id
+              - land_type

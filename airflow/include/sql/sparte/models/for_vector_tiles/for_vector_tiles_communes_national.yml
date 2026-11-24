@@ -1,0 +1,61 @@
+models:
+  - name: for_vector_tiles_communes_national
+    description: >
+      Communes de toute la France pour les tuiles de la carte nationale
+      (`communes_national.pmtiles`) : une ligne par commune de `land`, avec les seuls
+      attributs lus par la carte. Les communes d'outre-mer sont déplacées près de l'Hexagone
+      selon `national_map_drom_placement` ; l'Hexagone et la Corse gardent leur position
+      réelle. Les règles qui comparent ce modèle à `land` et au placement sont dans les
+      tests singuliers national_map_communes_*.
+    columns:
+      - name: land_id
+        description: >
+          Code INSEE de la commune. C'est l'identifiant des entités dans les tuiles : la
+          carte y joint ses valeurs. Une chaîne, les codes de Corse (2A, 2B) n'étant pas
+          numériques.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - unique
+      - name: name
+        description: Nom de la commune, affiché au survol.
+        data_type: character varying
+        data_tests:
+          - not_null
+      - name: REGION
+        description: Code de la région de la commune.
+        data_type: character varying
+        quote: true
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: code
+                to: ref('region')
+      - name: DEPART
+        description: Code du département de la commune.
+        data_type: character varying
+        quote: true
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                field: code
+                to: ref('departement')
+      - name: geom
+        description: >
+          Géométrie simplifiée de la commune (simple_geom de `land`), en EPSG:4326. Pour une
+          commune d'outre-mer, c'est sa position sur la carte, près de l'Hexagone, et non sa
+          position réelle.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+    data_tests:
+      # Type surfacique : une ligne ou un point ne dessinerait aucun aplat sur la carte
+      - dbt_utils.expression_is_true:
+          name: for_vector_tiles_communes_national_geom_is_a_surface
+          arguments:
+            expression: "GeometryType(geom) = 'MULTIPOLYGON' AND ST_Area(geom) > 0"

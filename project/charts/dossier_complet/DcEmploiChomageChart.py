@@ -1,5 +1,6 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import INSEE_CREDITS
+from project.charts.mixins.NationalMapChartMixin import NationalMapChartMixin
 from public_data.models import LandDcActiviteChomage
 
 
@@ -105,3 +106,14 @@ class DcEmploiChomageChart(DiagnosticChart):
                 },
             ],
         }
+
+
+class DcEmploiChomageChartNationalMap(NationalMapChartMixin, DcEmploiChomageChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Emploi et chômage des 15-64 ans"
+
+    @property
+    def national_map_subtitle(self):
+        # Les trois recensements du graphique, quelle que soit la période choisie sur la carte
+        return "En nombre de personnes, aux recensements de 2011, 2016 et 2022"

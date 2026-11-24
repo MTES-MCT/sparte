@@ -1,0 +1,79 @@
+models:
+  - name: for_vector_tiles_sols_artificialises_national
+    description: >
+      Part artificialisée (OCS GE, dernier millésime de chaque département) de mailles
+      carrées, en plusieurs résolutions empilées, pour les tuiles de la carte nationale
+      (`sols_artificialises_national.pmtiles`). Les mailles d'outre-mer figurent deux fois :
+      à leur position réelle et déplacées près de l'Hexagone. Les règles qui comparent ce
+      modèle aux mailles fines et au placement sont dans les tests singuliers
+      sols_artificialises_national_*.
+    columns:
+      - name: id
+        description: >
+          Identifiant de la maille, unique toutes résolutions confondues :
+          « <côté>m<projection>E<colonne>N<ligne> », suivi de « -cartouche » pour la copie
+          déplacée d'une maille d'outre-mer. Il ne sert pas à la carte : le DAG ne l'écrit
+          pas dans les tuiles.
+        data_type: character varying
+        data_tests:
+          - not_null
+          - unique
+      - name: resolution_m
+        description: Côté de la maille, en mètres.
+        data_type: integer
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: "{{ carroyage_artif_resolutions_m() }}"
+                quote: false
+      - name: part_artif
+        description: >
+          Part artificialisée de la surface que l'OCS GE couvre dans la maille, en
+          pourcentage entier (0 : moins de 0,5 %).
+        data_type: integer
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100
+      - name: annee_min
+        description: Plus ancienne année de millésime des objets OCS GE de la maille.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: annee_max
+        description: >
+          Plus récente année de millésime des objets OCS GE de la maille : différente de
+          annee_min pour une maille à cheval sur des départements aux millésimes différents.
+        data_type: integer
+        data_tests:
+          - not_null
+      - name: placement
+        description: >
+          NULL dans l'Hexagone et en Corse. Outre-mer : 'reel' pour la maille à sa position
+          réelle, 'cartouche' pour sa copie déplacée près de l'Hexagone.
+        data_type: text
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["reel", "cartouche"]
+      - name: geom
+        description: Carré de la maille, calculé à partir de ses quatre coins, en EPSG:4326.
+        data_type: user-defined
+        data_tests:
+          - not_null
+          - is_srid_4326
+      - name: REGION
+        description: Codes des régions des communes de la maille.
+        quote: true
+        data_tests:
+          - not_null
+      - name: DEPART
+        description: Codes des départements de livraison de l'OCS GE présents dans la maille.
+        quote: true
+        data_tests:
+          - not_null
+      - name: EPCI
+        description: >
+          Codes des EPCI des communes de la maille, jusqu'à la résolution de
+          `carroyage_artif_epci_max_resolution_m` ; NULL au-delà.
+        quote: true

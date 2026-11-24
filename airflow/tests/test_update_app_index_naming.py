@@ -14,6 +14,7 @@ sous le même nom, et `CREATE INDEX IF NOT EXISTS` n'en crée qu'un.
 from dags.update_app import (
     POSTGRES_MAX_IDENTIFIER_LENGTH,
     get_btree_index_request,
+    get_gin_index_request,
     get_index_name,
 )
 
@@ -90,3 +91,21 @@ def test_la_requete_reprend_le_nom_tronque_pour_les_tables_longues():
     nom = get_index_name(f"app_swap.{TABLE_LONGUE}", COLONNES_MILLESIMES)
     assert f"CREATE INDEX IF NOT EXISTS {nom} ON app_swap.{TABLE_LONGUE} " in requete
     assert len(nom) == POSTGRES_MAX_IDENTIFIER_LENGTH
+
+
+def test_l_index_des_taux_de_la_carte_nationale_garde_un_nom_stable():
+    """73 caractères une fois concaténé : tronqué, donc épinglé pour repérer tout changement de nom."""
+    table = "app_swap.public_data_national_map_bivariate_rate"
+    colonnes = ["land_type", "start_year", "end_year"]
+    assert get_index_name(table, colonnes) == "public_data_national_map_bivariate_rate_land_type_star_f0f3f134"
+    assert get_btree_index_request(table, colonnes) == (
+        "CREATE INDEX IF NOT EXISTS public_data_national_map_bivariate_rate_land_type_star_f0f3f134 "
+        "ON app_swap.public_data_national_map_bivariate_rate USING btree (land_type, start_year, end_year);"
+    )
+
+
+def test_la_requete_gin_indexe_une_colonne_tableau():
+    assert get_gin_index_request("app_swap.public_data_land", "parent_keys") == (
+        "CREATE INDEX IF NOT EXISTS public_data_land_parent_keys_gin_idx "
+        "ON app_swap.public_data_land USING gin (parent_keys);"
+    )

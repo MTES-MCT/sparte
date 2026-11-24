@@ -1,5 +1,10 @@
 from project.charts.base_project_chart import DiagnosticChart
 from project.charts.constants import DEFAULT_VALUE_DECIMALS
+from project.charts.mixins.NationalMapChartMixin import (
+    IN_HECTARES,
+    NationalMapChartMixin,
+    period_range,
+)
 from public_data.models import LandConso
 
 
@@ -87,3 +92,18 @@ class ConsoAnnualChart(DiagnosticChart):
             },
             "legend": {"enabled": False},
         }
+
+
+class ConsoAnnualChartNationalMap(NationalMapChartMixin, ConsoAnnualChart):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Consommation d'ENAF par année"
+
+    @property
+    def national_map_period(self):
+        # Toutes les années connues, quelle que soit la période choisie sur la carte
+        return period_range(self.data.first().year, self.data.last().year)
+
+    @property
+    def national_map_subtitle(self):
+        return IN_HECTARES

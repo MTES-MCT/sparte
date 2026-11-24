@@ -2,7 +2,7 @@ import React, { useEffect, ReactNode } from 'react';
 import styled from 'styled-components';
 import Button from '@components/ui/Button';
 
-const DrawerContainer = styled.div<{ $isOpen: boolean }>`
+const DrawerContainer = styled.div<{ $isOpen: boolean; $flushWhenClosed: boolean }>`
     position: fixed;
     top: 0;
     right: 0;
@@ -15,6 +15,8 @@ const DrawerContainer = styled.div<{ $isOpen: boolean }>`
     transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
     transition: transform 0.3s ease-in-out;
     z-index: 1001;
+    /* Fermé, le tiroir est juste hors de l'écran : son ombre déborde sur le bord droit de la page */
+    ${({ $isOpen, $flushWhenClosed }) => !$isOpen && $flushWhenClosed && 'box-shadow: none;'}
 `;
 
 const ButtonContainer = styled.div`
@@ -55,9 +57,12 @@ interface DrawerProps {
     title: string;
     children: ReactNode;
     onClose: () => void;
+    // Retire l'ombre du tiroir fermé, qui dépasse sinon de quelques pixels sur le bord droit de la
+    // page. Faux par défaut : les pages existantes gardent leur rendu.
+    flushWhenClosed?: boolean;
 }
 
-const Drawer: React.FC<DrawerProps> = ({ isOpen, title, children, onClose }) => {
+const Drawer: React.FC<DrawerProps> = ({ isOpen, title, children, onClose, flushWhenClosed = false }) => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -72,7 +77,7 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, title, children, onClose }) => 
     return (
         <>
             <Overlay $isOpen={isOpen} onClick={onClose} />
-            <DrawerContainer $isOpen={isOpen}>
+            <DrawerContainer $isOpen={isOpen} $flushWhenClosed={flushWhenClosed}>
                 <ButtonContainer>
                     <Button
                         type="button"

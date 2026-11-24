@@ -1,0 +1,59 @@
+models:
+  - name: land_national_map_parent_boundary_geom
+    description: >
+      Limite d'un territoire parent tracée sur le fond de la carte nationale, pour les
+      mailles dont les entités peuvent déborder du parent : aujourd'hui le département à la
+      maille EPCI (un EPCI à cheval sur plusieurs départements est dessiné en entier). La
+      limite est construite à partir des géométries d'EPCI du fond (land_national_map_geom) :
+      elle coïncide avec leurs limites partout où elle les longe, et ne s'en écarte que pour
+      traverser un EPCI à cheval. Projection d'origine du territoire. Les règles qui la
+      comparent au fond et à `land` sont dans les tests singuliers
+      national_map_parent_boundary_*.
+    columns:
+      - name: land_id
+        description: Identifiant du territoire parent.
+        data_tests:
+          - not_null
+      - name: land_type
+        description: Type du territoire parent (DEPART).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [DEPART]
+      - name: child_land_type
+        description: Maille du fond sur lequel la limite est tracée (EPCI).
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [EPCI]
+      - name: straddling_count
+        description: >
+          Nombre d'entités de la maille à cheval sur plusieurs parents de ce type. À zéro,
+          la limite est le contour extérieur des entités du fond : le fond de la carte
+          (for_app_national_map_geojson) ne la sert pas.
+        data_tests:
+          - not_null
+      - name: surface
+        description: >
+          Surface enclose par la limite, en m² : celle du parent dans la couverture
+          simplifiée de la maille.
+        data_tests:
+          - not_null
+      - name: geom
+        description: Limite du parent (MultiLineString), une ligne fermée par contour ou par trou.
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "GeometryType(geom) = 'MULTILINESTRING' AND ST_Length(geom) > 0"
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - land_id
+              - land_type
+              - child_land_type

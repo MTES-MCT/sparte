@@ -9,10 +9,12 @@ from .LandModel import (
     LandModelSerializer,
     LandModelViewset,
 )
+from .NationalMapGeoJSON import NationalMapGeoJSON
 
 __all__ = [
     "AdminRef",
     "LandGeoJSON",
+    "NationalMapGeoJSON",
     "LandModel",
     "LandModelViewset",
     "LandModelSerializer",

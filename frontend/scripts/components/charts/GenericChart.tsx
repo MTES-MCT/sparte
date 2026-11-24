@@ -72,6 +72,9 @@ type GenericChartProps = {
   showMailleIndicator?: boolean;
   onPointClick?: (point: { land_id: string; land_type: string; name: string }) => void;
   onPointHover?: (point: { color: string; name: string; value: number; land_id?: string; land_type?: string; pointOptions?: Record<string, any> } | null) => void;
+  // Ajuste les options Highcharts reçues du serveur avant le rendu (par exemple pour une colonne étroite).
+  // Le tableau de données et la fenêtre de détails gardent les options d'origine.
+  transformOptions?: (options: Highcharts.Options) => Highcharts.Options;
 }
 
 const ChartCard = styled.div`
@@ -131,6 +134,7 @@ const GenericChart = ({
   showMailleIndicator = false,
   onPointClick,
   onPointHover,
+  transformOptions,
 } : GenericChartProps) => {
   const chartRef = useRef<any>(null);
   const [isExplorerOpen, setIsExplorerOpen] = useState(false);
@@ -176,7 +180,8 @@ const GenericChart = ({
     )
   }
 
-  const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions.highcharts_options || {}))
+  const parsedChartOptions = structuredClone(chartOptions.highcharts_options || {})
+  const mutableChartOptions = transformOptions ? transformOptions(parsedChartOptions) : parsedChartOptions
 
   const pieSeries = mutableChartOptions._pieSeries
   delete mutableChartOptions._pieSeries

@@ -1,6 +1,6 @@
 from .DcCreationsEntreprisesChart import DcCreationsEntreprisesChart
 from .DcCspRepartitionChart import DcCspRepartitionChart
-from .DcEmploiChomageChart import DcEmploiChomageChart
+from .DcEmploiChomageChart import DcEmploiChomageChart, DcEmploiChomageChartNationalMap
 from .DcEmploiConsoComparisonChart import DcEmploiConsoComparisonChart
 from .DcEmploiConsoMap import DcEmploiConsoMap
 from .DcEmploiVsConsoChart import DcEmploiVsConsoChart
@@ -24,7 +24,10 @@ from .DcMenagesConsoComparisonChart import (
     DcMenagesConsoComparisonChartExport,
 )
 from .DcMenagesConsoMap import DcMenagesConsoMap
-from .DcMenagesEvolutionChart import DcMenagesEvolutionChart
+from .DcMenagesEvolutionChart import (
+    DcMenagesEvolutionChart,
+    DcMenagesEvolutionChartNationalMap,
+)
 from .DcPopulationConsoMap import DcPopulationConsoMap
 from .DcPopulationEvolutionChart import DcPopulationEvolutionChart
 from .DcPopulationPyramidChart import DcPopulationPyramidChart
@@ -38,6 +41,7 @@ __all__ = [
     "DcCreationsEntreprisesChart",
     "DcCspRepartitionChart",
     "DcEmploiChomageChart",
+    "DcEmploiChomageChartNationalMap",
     "DcEmploiMap",
     "DcEmploiConsoComparisonChart",
     "DcEmploiConsoMap",
@@ -54,6 +58,7 @@ __all__ = [
     "DcMenagesConsoComparisonChartExport",
     "DcMenagesConsoMap",
     "DcMenagesEvolutionChart",
+    "DcMenagesEvolutionChartNationalMap",
     "DcPauvreteMap",
     "DcPopulationEvolutionChart",
     "DcPopulationConsoMap",

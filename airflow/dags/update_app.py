@@ -77,6 +77,12 @@ def get_btree_index_request(table_name: str, columns_name: list[str]):
     return f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING btree ({', '.join(columns_name)});"
 
 
+def get_gin_index_request(table_name: str, column_name: str):
+    """Index GIN sur une colonne tableau, pour les recherches par appartenance (`@>`)."""
+    idx_name = get_index_name(table_name, [column_name, "gin"])
+    return f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING gin ({column_name});"
+
+
 def build_ogr2ogr_command(
     from_table: str,
     to_table: str,
@@ -116,6 +122,7 @@ def copy_table_from_datawarehouse_to_app(
     geom_type=None,
     custom_columns_type: dict[str, str] = None,
     btree_index_columns: list[list[str]] = None,
+    gin_index_columns: list[str] = None,
 ):
     # to_table désigne la destination finale ; la copie, elle, atterrit dans SWAP_SCHEMA
     # et n'est publiée que par swap_tables(), une fois toutes les copies terminées.
@@ -154,6 +161,9 @@ def copy_table_from_datawarehouse_to_app(
     if btree_index_columns:
         for columns in btree_index_columns:
             index_requests.append(get_btree_index_request(staging_table, columns))
+
+    for column in gin_index_columns or []:
+        index_requests.append(get_gin_index_request(staging_table, column))
 
     conn = get_psycopg_connection(environment)
     try:
@@ -286,6 +296,7 @@ def drop_swap_schema(environment: str) -> None:
                 "copy_public_data_landartiffluxusagecompositionindex",
                 "copy_public_data_land",
                 "copy_public_data_land_geojson",
+                "copy_public_data_national_map_geojson",
                 "copy_public_data_landfrichepollution",
                 "copy_public_data_landfrichestatut",
                 "copy_public_data_landfrichesurfacerank",
@@ -309,6 +320,7 @@ def drop_swap_schema(environment: str) -> None:
                 "copy_public_data_bivariate_land_rate",
                 "copy_public_data_bivariate_conso_threshold",
                 "copy_public_data_bivariate_indic_threshold",
+                "copy_public_data_national_map_bivariate_rate",
             ],
             type="array",
         ),
@@ -759,6 +771,8 @@ def update_app():  # noqa: C901
             btree_index_columns=[
                 ["land_id", "land_type", "child_land_types", "parent_keys"],
             ],
+            # Recherche des territoires d'un parent (parent_keys @> ARRAY['REGION_75'])
+            gin_index_columns=["parent_keys"],
         )
 
     @task.python
@@ -766,6 +780,20 @@ def update_app():  # noqa: C901
         return copy_table_from_datawarehouse_to_app(
             from_table="public_for_app.for_app_land_geojson",
             to_table="public.public_data_land_geojson",
+            environment=context["params"]["environment"],
+            custom_columns_type={
+                "geojson": "jsonb",
+            },
+            btree_index_columns=[
+                ["land_id", "land_type", "child_land_type"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_national_map_geojson(**context):
+        return copy_table_from_datawarehouse_to_app(
+            from_table="public_for_app.for_app_national_map_geojson",
+            to_table="public.public_data_national_map_geojson",
             environment=context["params"]["environment"],
             custom_columns_type={
                 "geojson": "jsonb",
@@ -1015,6 +1043,23 @@ def update_app():  # noqa: C901
         )
 
     @task.python
+    def copy_public_data_national_map_bivariate_rate(**context):
+        # Le modèle dbt est trié par maille, période puis territoire, et ogr2ogr recopie les
+        # lignes dans l'ordre où il les lit : une maille et une période restent contiguës, ce
+        # que l'index exploite. land_id n'y figure pas : il le grossirait d'environ 100 Mo pour
+        # quelques millisecondes, la carte lisant toujours une période entière.
+        # À copier dans le même run que copy_public_data_bivariate_land_rate, dont cette
+        # table reprend les valeurs.
+        return copy_table_from_datawarehouse_to_app(
+            from_table="public_for_app.for_app_national_map_bivariate_rate",
+            to_table="public.public_data_national_map_bivariate_rate",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_type", "start_year", "end_year"],
+            ],
+        )
+
+    @task.python
     def prepare_swap_schema(**context):
         reset_swap_schema(context["params"]["environment"])
 
@@ -1078,6 +1123,7 @@ def update_app():  # noqa: C901
         copy_public_data_landartiffluxusagecompositionindex(),
         copy_public_data_land(),
         copy_public_data_land_geojson(),
+        copy_public_data_national_map_geojson(),
         copy_public_data_landfrichepollution(),
         copy_public_data_landfrichestatut(),
         copy_public_data_landfrichesurfacerank(),
@@ -1101,6 +1147,7 @@ def update_app():  # noqa: C901
         copy_public_data_bivariate_land_rate(),
         copy_public_data_bivariate_conso_threshold(),
         copy_public_data_bivariate_indic_threshold(),
+        copy_public_data_national_map_bivariate_rate(),
     ]
 
     prepare = prepare_swap_schema().as_setup()

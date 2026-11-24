@@ -1,4 +1,8 @@
 from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
+from project.charts.mixins.NationalMapChartMixin import (
+    NationalMapChartMixin,
+    flux_subtitle,
+)
 from public_data.models.artificialisation import (
     LandArtifFluxCouvertureComposition,
     LandArtifFluxCouvertureCompositionIndex,
@@ -60,3 +64,15 @@ class ArtifFluxByCouvertureExport(ArtifFluxByCouverture):
                 }
             },
         }
+
+
+class ArtifFluxByCouvertureNationalMap(NationalMapChartMixin, ArtifFluxByCouverture):
+    """Graphique complémentaire de la carte nationale : seuls le titre et le sous-titre changent."""
+
+    national_map_title = "Artificialisation et désartificialisation par type de couverture du sol"
+
+    @property
+    def national_map_subtitle(self):
+        # Comme pour le graphique du diagnostic, le flux est mesuré depuis le millésime précédent
+        new_index = int(self.params["millesime_new_index"])
+        return flux_subtitle(new_index - 1, new_index, self.data.first())

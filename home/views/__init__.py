@@ -5,6 +5,7 @@ from .HomeRapportLocalView import HomeRapportLocalView
 from .HomeView import HomeView
 from .LegalNoticeView import LegalNoticeView
 from .MaintenanceView import MaintenanceView
+from .NationalMapView import NationalMapView
 from .NewsletterConfirmationSubscriptionView import (
     NewsletterConfirmationSubscriptionView,
 )
@@ -23,6 +24,7 @@ __all__ = [
     "HomeView",
     "LegalNoticeView",
     "MaintenanceView",
+    "NationalMapView",
     "NewsletterSubscriptionView",
     "NewsletterEmailValidationView",
     "NewsletterConfirmationSubscriptionView",

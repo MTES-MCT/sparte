@@ -1,5 +1,5 @@
 from .ComparisonMap import ComparisonMap, ComparisonMapExport
-from .ConsoAnnualChart import ConsoAnnualChart
+from .ConsoAnnualChart import ConsoAnnualChart, ConsoAnnualChartNationalMap
 from .ConsoMap import (
     ConsoMap,
     ConsoMapBubble,
@@ -11,6 +11,7 @@ from .ConsoMap import (
 
 __all__ = [
     "ConsoAnnualChart",
+    "ConsoAnnualChartNationalMap",
     "ConsoMap",
     "ConsoMapBubble",
     "ConsoMapBubbleExport",
