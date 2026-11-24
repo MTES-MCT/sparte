@@ -3,7 +3,7 @@ from project.charts.constants import DEFAULT_VALUE_DECIMALS
 from project.charts.mixins.NationalMapChartMixin import (
     IN_HECTARES,
     NationalMapChartMixin,
-    period_text,
+    period_range,
 )
 from public_data.models import LandConso
 
@@ -100,6 +100,10 @@ class ConsoAnnualChartNationalMap(NationalMapChartMixin, ConsoAnnualChart):
     national_map_title = "Consommation d'ENAF par année"
 
     @property
-    def national_map_subtitle(self):
+    def national_map_period(self):
         # Toutes les années connues, quelle que soit la période choisie sur la carte
-        return f"{IN_HECTARES}, {period_text(self.data.first().year, self.data.last().year)}"
+        return period_range(self.data.first().year, self.data.last().year)
+
+    @property
+    def national_map_subtitle(self):
+        return IN_HECTARES

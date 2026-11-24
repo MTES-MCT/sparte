@@ -1,14 +1,14 @@
 """
 Titres des graphiques complémentaires de la carte nationale (/carte).
 
-La carte nationale réutilise des graphiques écrits pour le diagnostic, dont le titre nomme le
-territoire et la période (« … à Auvergne-Rhône-Alpes (2011 - 2024) »). Dans sa colonne, le
-territoire est déjà nommé en tête de page et la place manque : chaque graphique y a une variante,
-qui hérite de celui du diagnostic et ne change que ses textes, selon une règle unique :
+La carte nationale réutilise des graphiques écrits pour le diagnostic. Chaque graphique y a une
+variante, qui hérite de celui du diagnostic et ne change que ses textes, selon une règle unique :
 
-- titre : ce que le graphique montre, en une ligne courte, dans les mots de la ligne du menu qui
-  l'a fait afficher, sans le nom du territoire ni la période ;
-- sous-titre : l'unité d'abord, puis la période ou les millésimes réellement représentés ;
+- titre : au format du diagnostic, « sujet - territoire (période) ». Le sujet dit ce que le
+  graphique montre dans les mots de la ligne du menu qui l'a fait afficher ; la période est celle
+  des années réellement représentées (« 2011 - 2024 ») ;
+- sous-titre : l'unité ; pour un graphique de l'OCS GE, dont le titre ne porte pas de période,
+  l'unité puis les millésimes réellement représentés ;
 - un millésime de l'OCS GE est désigné comme sur le reste du site, par son index (« millésime
   n°2 »), que la page explique, suivi des années du territoire entre parenthèses : le diagnostic
   ne donne que l'index pour un territoire à cheval sur des départements, et que l'année pour les
@@ -24,10 +24,10 @@ NBSP = "\u00a0"
 IN_HECTARES = "En hectares"
 
 
-def period_text(start_year, end_year) -> str:
-    """« de 2011 à 2024 », ou « en 2024 » pour une seule année."""
+def period_range(start_year, end_year) -> str:
+    """« 2011 - 2024 », comme dans les titres du diagnostic, ou « 2024 » pour une seule année."""
     start_year, end_year = int(start_year), int(end_year)
-    return f"en {start_year}" if start_year == end_year else f"de {start_year} à {end_year}"
+    return str(start_year) if start_year == end_year else f"{start_year} - {end_year}"
 
 
 def millesime_years(item, suffix: str = "") -> list[int]:
@@ -83,8 +83,19 @@ class NationalMapChartMixin:
     changent. À placer avant la classe du graphique dans les bases de la variante.
     """
 
-    # Titre de la variante
+    # Sujet du titre de la variante
     national_map_title = ""
+
+    @property
+    def national_map_period(self) -> str:
+        """Période à la fin du titre (voir ``period_range``) ; vide quand le sous-titre date le graphique."""
+        return ""
+
+    @property
+    def national_map_full_title(self) -> str:
+        """« sujet - territoire (période) », comme les titres du diagnostic."""
+        period = self.national_map_period
+        return f"{self.national_map_title} - {self.land.name}" + (f" ({period})" if period else "")
 
     @property
     def national_map_subtitle(self) -> str:
@@ -95,13 +106,12 @@ class NationalMapChartMixin:
         param = super().param
         return param | {
             # Le style que le graphique donne à son titre est gardé
-            "title": {**param.get("title", {}), "text": self.national_map_title},
+            "title": {**param.get("title", {}), "text": self.national_map_full_title},
             "subtitle": {"text": self.national_map_subtitle},
         }
 
     def get_param(self):
         param = super().get_param()
-        # L'image téléchargée prend pour nom le titre du graphique : le territoire, qu'il ne nomme
-        # plus, y est ajouté pour que deux images ne portent pas le même nom
+        # L'image téléchargée prend pour nom le sujet du graphique et le territoire
         param["exporting"] = {**param["exporting"], "filename": f"{self.national_map_title} - {self.land.name}"}
         return param

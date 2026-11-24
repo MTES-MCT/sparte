@@ -2,7 +2,7 @@ from project.charts.base_project_chart import DiagnosticChart
 from project.charts.mixins.NationalMapChartMixin import (
     IN_HECTARES,
     NationalMapChartMixin,
-    period_text,
+    period_range,
 )
 from public_data.domain.containers import PublicDataContainer
 
@@ -174,6 +174,9 @@ class PopulationConsoProgressionChartNationalMap(NationalMapChartMixin, Populati
     national_map_title = "Consommation d'ENAF et population, par année"
 
     @property
+    def national_map_period(self):
+        return period_range(self.params["start_date"], self.params["end_date"])
+
+    @property
     def national_map_subtitle(self):
-        period = period_text(self.params["start_date"], self.params["end_date"])
-        return f"{IN_HECTARES} par année et en nombre d'habitants aux recensements, {period}"
+        return f"{IN_HECTARES} par année et en nombre d'habitants aux recensements"

@@ -30,7 +30,7 @@ from project.charts.mixins.NationalMapChartMixin import (
     millesime_number,
     millesime_tick,
     millesime_years,
-    period_text,
+    period_range,
     years_range,
 )
 
@@ -117,8 +117,8 @@ CASES = [
         CONSO_PARAMS,
         {"data": CONSO_YEARS},
         "Évolution annuelle de la consommation d'espaces par destination à Rhône (2011 - 2024)",
-        "Consommation d'ENAF par année et par destination",
-        "En hectares, de 2011 à 2024",
+        "Consommation d'ENAF par année et par destination - Rhône (2011 - 2024)",
+        "En hectares",
     ),
     (
         "pie_determinant",
@@ -126,8 +126,8 @@ CASES = [
         CONSO_PARAMS,
         {"data": yearly_conso(2024)},
         "Consommation d'espaces par destination à Rhône (2011 - 2024)",
-        "Répartition de la consommation d'ENAF par destination",
-        "En hectares, de 2011 à 2024",
+        "Répartition de la consommation d'ENAF par destination - Rhône (2011 - 2024)",
+        "En hectares",
     ),
     (
         "conso_annual",
@@ -135,8 +135,8 @@ CASES = [
         {},
         {"data": CONSO_YEARS},
         "Consommation annuelle d'espaces NAF de Rhône (2011-2024)",
-        "Consommation d'ENAF par année",
-        "En hectares, de 2011 à 2024",
+        "Consommation d'ENAF par année - Rhône (2011 - 2024)",
+        "En hectares",
     ),
     (
         "population_conso_progression_chart",
@@ -149,8 +149,8 @@ CASES = [
             }
         },
         "Évolution de la consommation d'espaces NAF et de la population - Rhône (2011 - 2024)",
-        "Consommation d'ENAF et population, par année",
-        "En hectares par année et en nombre d'habitants aux recensements, de 2011 à 2024",
+        "Consommation d'ENAF et population, par année - Rhône (2011 - 2024)",
+        "En hectares par année et en nombre d'habitants aux recensements",
     ),
     (
         "dc_menages_evolution",
@@ -158,8 +158,8 @@ CASES = [
         CONSO_PARAMS,
         {"menages_data": CENSUS, "conso_data": CONSO_YEARS},
         "Ménages et consommation d'espaces - Rhône (2011 - 2024)",
-        "Consommation d'ENAF et nombre de ménages, par année",
-        "En hectares par année et en nombre de ménages aux recensements, de 2011 à 2024",
+        "Consommation d'ENAF et nombre de ménages, par année - Rhône (2011 - 2024)",
+        "En hectares par année et en nombre de ménages aux recensements",
     ),
     (
         "dc_emploi_chomage",
@@ -167,7 +167,7 @@ CASES = [
         {},
         {"data": CENSUS},
         "Activité et chômage (15-64 ans) - Rhône",
-        "Emploi et chômage des 15-64 ans",
+        "Emploi et chômage des 15-64 ans - Rhône",
         "En nombre de personnes, aux recensements de 2011, 2016 et 2022",
     ),
     (
@@ -176,7 +176,7 @@ CASES = [
         {},
         {"data": Rows([stock([2017], 10.0, 1), stock([2020], 10.5, 2)])},
         "Evolution du stock de surfaces artificialisées de Rhône entre 2017 et 2020",
-        "Part du territoire artificialisée",
+        "Part du territoire artificialisée - Rhône",
         "En\u00a0% de la surface du territoire, aux millésimes n°1 (2017) et n°2 (2020)",
     ),
     (
@@ -185,7 +185,7 @@ CASES = [
         MILLESIME_PARAMS,
         {"data": [cover([2020])]},
         "Surfaces artificialisées par couverture  en 2020",
-        "Surfaces artificialisées par type de couverture du sol",
+        "Surfaces artificialisées par type de couverture du sol - Rhône",
         "En\u00a0% des surfaces artificialisées, au millésime n°2 (2020)",
     ),
     (
@@ -194,7 +194,7 @@ CASES = [
         MILLESIME_PARAMS,
         {"data": flux([2017], [2020])},
         "Artificialisation nette entre 2017 et 2020",
-        "Artificialisation, désartificialisation et artificialisation nette",
+        "Artificialisation, désartificialisation et artificialisation nette - Rhône",
         "En hectares, entre le millésime n°1 (2017) et le millésime n°2 (2020)",
     ),
     (
@@ -203,7 +203,7 @@ CASES = [
         MILLESIME_PARAMS,
         {"data": Rows([flux([2017], [2020])])},
         "Artificialisation par couverture entre 2017 et 2020",
-        "Artificialisation et désartificialisation par type de couverture du sol",
+        "Artificialisation et désartificialisation par type de couverture du sol - Rhône",
         "En hectares, entre le millésime n°1 (2017) et le millésime n°2 (2020)",
     ),
 ]
@@ -260,16 +260,17 @@ class NationalMapChartsTest(TestCase):
                 options, _ = self.build(chart_id + NATIONAL_MAP_SUFFIX, klass, params, data)
                 self.assertEqual(options["title"]["text"], title)
                 self.assertEqual(options["subtitle"], {"text": subtitle})
-                # L'image téléchargée garde le nom du territoire, que le titre ne donne plus
-                self.assertEqual(options["exporting"]["filename"], f"{title} - Rhône")
+                # L'image téléchargée prend pour nom le sujet et le territoire, sans la période
+                self.assertEqual(options["exporting"]["filename"], title.split(" (")[0])
 
-    def test_titles_do_not_name_the_land_and_stay_short(self):
+    def test_titles_follow_the_diagnostic_format(self):
+        """« sujet - territoire (période) » ; la période n'est pas répétée dans le sous-titre."""
         for chart_id, klass, params, data, _, _, _ in CASES:
             with self.subTest(chart=chart_id):
                 options, _ = self.build(chart_id + NATIONAL_MAP_SUFFIX, klass, params, data)
-                self.assertNotIn("Rhône", options["title"]["text"] + options["subtitle"]["text"])
-                # Deux à trois lignes au plus dans la colonne de la carte
-                self.assertLessEqual(len(options["title"]["text"]), 75)
+                self.assertRegex(options["title"]["text"], r"^[^()]+ - Rhône( \(\d{4} - \d{4}\))?$")
+                if options["title"]["text"].endswith(")"):
+                    self.assertNotRegex(options["subtitle"]["text"], r"\d{4}")
 
     def test_national_map_charts_only_change_the_texts(self):
         for chart_id, klass, params, data, _, _, _ in CASES:
@@ -352,15 +353,15 @@ class NationalMapChartsTest(TestCase):
         options, table = self.build(
             "dc_emploi_chomage" + NATIONAL_MAP_SUFFIX, DcEmploiChomageChart, {}, {"data": None}
         )
-        self.assertEqual(options["title"]["text"], "Emploi et chômage des 15-64 ans")
+        self.assertEqual(options["title"]["text"], "Emploi et chômage des 15-64 ans - Rhône")
         self.assertEqual(options["series"], [])
         self.assertIsNone(table)
 
 
 class NationalMapTextsTest(TestCase):
-    def test_period_text(self):
-        self.assertEqual(period_text("2011", "2024"), "de 2011 à 2024")
-        self.assertEqual(period_text(2024, 2024), "en 2024")
+    def test_period_range(self):
+        self.assertEqual(period_range("2011", "2024"), "2011 - 2024")
+        self.assertEqual(period_range(2024, 2024), "2024")
 
     def test_years_range(self):
         self.assertEqual(years_range([2020]), "2020")

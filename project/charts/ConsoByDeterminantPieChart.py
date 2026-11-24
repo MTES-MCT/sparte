@@ -3,7 +3,7 @@ from project.charts.constants import CEREMA_CREDITS
 from project.charts.mixins.NationalMapChartMixin import (
     IN_HECTARES,
     NationalMapChartMixin,
-    period_text,
+    period_range,
 )
 from public_data.domain.containers import PublicDataContainer
 
@@ -145,5 +145,9 @@ class ConsoByDeterminantPieChartNationalMap(NationalMapChartMixin, ConsoByDeterm
     national_map_title = "Répartition de la consommation d'ENAF par destination"
 
     @property
+    def national_map_period(self):
+        return period_range(self.params["start_date"], self.params["end_date"])
+
+    @property
     def national_map_subtitle(self):
-        return f"{IN_HECTARES}, {period_text(self.params['start_date'], self.params['end_date'])}"
+        return IN_HECTARES

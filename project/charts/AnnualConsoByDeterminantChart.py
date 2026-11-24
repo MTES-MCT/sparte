@@ -7,7 +7,7 @@ from project.charts.constants import (
 from project.charts.mixins.NationalMapChartMixin import (
     IN_HECTARES,
     NationalMapChartMixin,
-    period_text,
+    period_range,
 )
 from project.utils import add_total_line_column
 from public_data.domain.containers import PublicDataContainer
@@ -181,5 +181,9 @@ class AnnualConsoByDeterminantChartNationalMap(NationalMapChartMixin, AnnualCons
     national_map_title = "Consommation d'ENAF par année et par destination"
 
     @property
+    def national_map_period(self):
+        return period_range(self.params["start_date"], self.params["end_date"])
+
+    @property
     def national_map_subtitle(self):
-        return f"{IN_HECTARES}, {period_text(self.params['start_date'], self.params['end_date'])}"
+        return IN_HECTARES

@@ -7,7 +7,7 @@ from project.charts.constants import (
 from project.charts.mixins.NationalMapChartMixin import (
     IN_HECTARES,
     NationalMapChartMixin,
-    period_text,
+    period_range,
 )
 from public_data.models import LandConso, LandDcMenages
 
@@ -143,6 +143,9 @@ class DcMenagesEvolutionChartNationalMap(NationalMapChartMixin, DcMenagesEvoluti
     national_map_title = "Consommation d'ENAF et nombre de ménages, par année"
 
     @property
+    def national_map_period(self):
+        return period_range(self.params["start_date"], self.params["end_date"])
+
+    @property
     def national_map_subtitle(self):
-        period = period_text(self.params["start_date"], self.params["end_date"])
-        return f"{IN_HECTARES} par année et en nombre de ménages aux recensements, {period}"
+        return f"{IN_HECTARES} par année et en nombre de ménages aux recensements"
