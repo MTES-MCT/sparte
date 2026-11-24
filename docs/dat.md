@@ -64,7 +64,7 @@ graph TB
 ```
 
 ### Stack technique
-- **Backend** : Django 3.2+ (Python 3.11), Django REST Framework, Gunicorn (9 workers)
+- **Backend** : Django 3.2+ (Python 3.14), Django REST Framework, Gunicorn (9 workers)
 - **Frontend** : React 18, TypeScript 5.6, DSFR (Design Système de l'État), Webpack 5
 - **Base de données** : PostgreSQL 17 avec PostGIS 3.5
 - **Cache** : Redis (cache des graphiques, sessions)
