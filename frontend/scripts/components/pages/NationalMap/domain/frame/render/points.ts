@@ -17,7 +17,7 @@ const landOf = ({ properties }: NationalMapFeature, scale: string): Pick<LandPoi
     zone: landToZone({ land_type: scale, land_id: properties.land_id }),
 });
 
-// Territoire que la réponse ne connaît pas : en gris, annoncé sans donnée s'il n'en a jamais
+// Territoire que la réponse ne connaît pas : hachuré, annoncé sans donnée s'il n'en a jamais
 export const absentPoint = (feature: NationalMapFeature, scale: string): UnkeyedPoint => ({
     ...landOf(feature, scale),
     value: null,

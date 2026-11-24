@@ -60,13 +60,14 @@ const CHART_SPECS: Record<ComplementaryChart, ChartSpec> = {
     artif_flux_by_cover: { serverChart: 'artif_flux_by_couverture_national_map', sources: OCSGE, period: 'none', nationwide: true, millesimes: 'last-two' },
 };
 
-// Un graphique tel que son emplacement le monte. `containerProps` garde son identité d'un rendu à l'autre.
+// Un graphique tel que son emplacement le monte. `containerProps` garde son identité d'un rendu à
+// l'autre. Hauteur minimale : le graphique s'agrandit quand son titre prend plus de lignes.
 type Chart = ChartSpec & { id: ComplementaryChart; containerProps: { style: React.CSSProperties } };
 
 const CHARTS = new Map<string, Chart>(
     (Object.entries(CHART_SPECS) as [ComplementaryChart, ChartSpec][]).map(([id, spec]) => [
         id,
-        { ...spec, id, containerProps: { style: { height: `${chartHeight(id)}px`, width: '100%' } } },
+        { ...spec, id, containerProps: { style: { minHeight: `${chartHeight(id)}px`, width: '100%' } } },
     ]),
 );
 

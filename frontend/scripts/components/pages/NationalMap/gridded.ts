@@ -227,25 +227,26 @@ export const isolatedInset = <T extends Inset>(insets: T[], [x, y]: [number, num
     insets.find(({ bbox: [west, south, east, north] }) => x >= west && x <= east && y >= south && y <= north && viewWidth <= Math.max(east - west, north - south) * INSET_VIEW_WIDTHS) ??
     null;
 
-// Sur une image détaillée, les limites s'effacent aux vues larges, où des centaines de traits la
-// recouvriraient, et reprennent leur force quand la carte se rapproche. Zooms de la carte entre
-// lesquels le trait passe de son opacité la plus faible à la plus forte, par maille.
+// Par-dessus les carreaux, les mailles ou l'image, les limites s'effacent aux vues larges, où des
+// centaines de traits recouvriraient la donnée, et reprennent leur force quand la carte se
+// rapproche. Zooms de la carte entre lesquels le trait passe de son opacité la plus faible à la
+// plus forte, par maille.
 type BorderFade = { from: number; to: number; faint: number; strong: number };
-const BORDER_FADES_ON_IMAGE: Record<string, BorderFade> = {
+const BORDER_FADES_OVER_DATA: Record<string, BorderFade> = {
     REGION: { from: 4, to: 6, faint: 0.8, strong: 0.95 },
     DEPART: { from: 4, to: 7, faint: 0.55, strong: 0.9 },
     EPCI: { from: 5, to: 8.5, faint: 0.22, strong: 0.85 },
     COMM: { from: 8, to: 11, faint: 0.2, strong: 0.75 },
 };
-const borderFade = (scale: string): BorderFade => BORDER_FADES_ON_IMAGE[scale] ?? BORDER_FADES_ON_IMAGE.EPCI;
+const borderFade = (scale: string): BorderFade => BORDER_FADES_OVER_DATA[scale] ?? BORDER_FADES_OVER_DATA.EPCI;
 
-export const borderOpacityOnImage = (scale: string): ExpressionSpecification => {
+export const borderOpacityOverData = (scale: string): ExpressionSpecification => {
     const { from, to, faint, strong } = borderFade(scale);
     return ['interpolate', ['linear'], ['zoom'], from, faint, to, strong];
 };
 
-// Le liseré clair n'apparaît qu'avec le trait fort : sous un trait effacé, il ne ferait que voiler l'image
-export const haloOpacityOnImage = (scale: string): ExpressionSpecification | number => {
+// Le liseré clair n'apparaît qu'avec le trait fort : sous un trait effacé, il ne ferait que voiler la donnée
+export const haloOpacityOverData = (scale: string): ExpressionSpecification | number => {
     if (!landBorderStyle(scale).halo) return 0;
     const { from, to } = borderFade(scale);
     return ['interpolate', ['linear'], ['zoom'], (from + to) / 2, 0, to, HALO_OPACITY];

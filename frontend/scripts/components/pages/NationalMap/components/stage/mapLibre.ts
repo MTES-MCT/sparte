@@ -7,6 +7,8 @@ import * as maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
 import { FRENCH_LOCALE } from '@components/map/constants/config';
 import type { Bounds } from '../../gridded';
+import { SOIL_IMAGE_PROTOCOL, soilImageProtocol } from '../../domain/grid/soilRecolor';
+import { NO_DATA_PATTERN_ID, noDataPatternImage } from '../../domain/noData';
 import { TipSource, tipOf } from '../../domain/tip';
 import { STACK_BREAKPOINT } from '../../layoutStyles';
 import { TERRITORY_COLOR } from './territoryOptions';
@@ -99,6 +101,24 @@ const pmtilesProtocol = (): Protocol => {
     return protocol;
 };
 
+// Protocole des images de l'OCS GE recolorées : un enregistrement suffit, lui aussi
+let soilProtocolAdded = false;
+const addSoilImageProtocol = (): void => {
+    if (soilProtocolAdded) return;
+    soilProtocolAdded = true;
+    maplibregl.addProtocol(SOIL_IMAGE_PROTOCOL, soilImageProtocol);
+};
+
+// Motif des territoires sans donnée : la carte le reçoit quand une couche le demande, y compris
+// après un changement de style
+const provideNoDataPattern = (map: maplibregl.Map): void => {
+    map.setMissingStyleImageResolver((id) => {
+        if (id !== NO_DATA_PATTERN_ID || map.hasImage(id)) return;
+        const pixelRatio = Math.min(3, Math.max(1, Math.round(window.devicePixelRatio || 1)));
+        map.addImage(id, noDataPatternImage(pixelRatio), { pixelRatio });
+    });
+};
+
 // Présence de chaque fichier de tuiles (son en-tête se lit), vérifiée une seule fois par adresse
 const availability = new Map<string, Promise<boolean>>();
 const isAvailable = (url: string): Promise<boolean> => {
@@ -171,6 +191,7 @@ type StageMapOptions = {
 // défile : la molette zoome directement. null si le navigateur ne peut pas la créer (WebGL absent).
 export const createStageMap = (container: HTMLElement, { controls, maxZoom }: StageMapOptions): maplibregl.Map | null => {
     pmtilesProtocol();
+    addSoilImageProtocol();
     const scrollingPage = window.matchMedia(SCROLLING_PAGE);
     let map: maplibregl.Map;
     try {
@@ -193,6 +214,7 @@ export const createStageMap = (container: HTMLElement, { controls, maxZoom }: St
     } catch {
         return null;
     }
+    provideNoDataPattern(map);
     map.touchZoomRotate.disableRotation();
     map.keyboard.disableRotation();
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), controls);

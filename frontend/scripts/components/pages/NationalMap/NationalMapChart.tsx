@@ -6,6 +6,7 @@ import HighchartsMap from 'highcharts/modules/map';
 import HighchartsAccessibility from 'highcharts/modules/accessibility';
 import HighchartsExporting from 'highcharts/modules/exporting';
 import HighchartsOfflineExporting from 'highcharts/modules/offline-exporting';
+import HighchartsPatternFill from 'highcharts/modules/pattern-fill';
 import { theme } from '@theme';
 import BaseCard from '@components/ui/BaseCard';
 import { downloadChartPng } from '@components/charts/downloadChartPng';
@@ -47,6 +48,8 @@ HighchartsMap(Highcharts);
 HighchartsAccessibility(Highcharts);
 HighchartsExporting(Highcharts);
 HighchartsOfflineExporting(Highcharts);
+// Hachures des territoires sans donnée
+HighchartsPatternFill(Highcharts);
 
 // Sur grand écran : la carte dans une carte blanche à gauche, sur toute la hauteur, et une
 // colonne à droite (chiffres clés, note, graphiques) qui défile seule. Sur les écrans

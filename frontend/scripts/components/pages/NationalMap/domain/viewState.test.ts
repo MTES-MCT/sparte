@@ -13,12 +13,12 @@ describe('parseView', () => {
     });
 
     it("[URL] reprend la vue décrite par l'adresse", () => {
-        expect(parseView('?zone=REGION_53&scale=EPCI&start=2015&end=2020&indicator=artif_net_ha')).toEqual({
+        expect(parseView('?zone=REGION_53&scale=EPCI&start=2015&end=2020&indicator=artif_desartif_ha')).toEqual({
             zone: 'REGION_53',
             scale: 'EPCI',
             startYear: 2015,
             endYear: 2020,
-            indicatorId: 'artif_net_ha',
+            indicatorId: 'artif_desartif_ha',
         });
     });
 
@@ -102,7 +102,7 @@ describe('requestedIndicator', () => {
             unit: '%',
             label: expect.stringContaining('{{end}}'),
         });
-        expect(requestedIndicator({ ...DEFAULT_VIEW, indicatorId: 'artif_net_ha' })).toMatchObject({ id: 'artif_net_ha', source: 'ocsge' });
+        expect(requestedIndicator({ ...DEFAULT_VIEW, indicatorId: 'artif_desartif_ha' })).toMatchObject({ id: 'artif_desartif_ha', source: 'ocsge' });
     });
 
     it('rend la première carte du menu pour un identifiant inconnu ou réservé à un graphique', () => {
@@ -157,7 +157,7 @@ describe('initialViewState', () => {
 
     it.each([
         ['artif_pct', ARTIF_STOCK],
-        ['artif_net_ha', ARTIF_FLUX],
+        ['artif_desartif_ha', ARTIF_FLUX],
     ])("[URL] déplie la rubrique de l'indicateur d'artificialisation « %s »", (indicator, rubrique) => {
         expect(initialViewState(`?indicator=${indicator}`)).toMatchObject({ openRubrique: rubrique, lastIndicatorByRubrique: { [rubrique]: indicator } });
     });
@@ -191,7 +191,7 @@ describe('viewReducer', () => {
     });
 
     describe('carte des sols artificialisés : ses territoires ne servent qu’à ouvrir une zone', () => {
-        const SOILS = 'artif_pct_gridded';
+        const SOILS = 'artif_soils';
 
         it('s’ouvre par région sur le pays quand l’adresse ne dit pas la maille', () => {
             expect(parseView(`?indicator=${SOILS}`)).toMatchObject({ zone: 'FRANCE', scale: 'REGION' });
@@ -293,20 +293,20 @@ describe('viewReducer', () => {
     });
 
     it("[Rubriques] choisit une carte sans déplier ni replier de rubrique, et la retient pour sa rubrique", () => {
-        const state = stateAfter('', { type: 'indicatorSelected', id: 'conso_ha' }, { type: 'indicatorSelected', id: 'artif_ha' });
+        const state = stateAfter('', { type: 'indicatorSelected', id: 'conso_ha' }, { type: 'indicatorSelected', id: 'artif_pct' });
 
-        expect(state.request.indicatorId).toBe('artif_ha');
+        expect(state.request.indicatorId).toBe('artif_pct');
         expect(state.openRubrique).toBe(CONSO);
-        expect(state.lastIndicatorByRubrique).toEqual({ [CONSO]: 'conso_ha', [ARTIF_STOCK]: 'artif_ha' });
+        expect(state.lastIndicatorByRubrique).toEqual({ [CONSO]: 'conso_ha', [ARTIF_STOCK]: 'artif_pct' });
     });
 
     it("[Rubriques] déplie une rubrique jamais ouverte sur sa première carte, et replie l'autre", () => {
-        expect(stateAfter('', { type: 'rubriqueToggled', id: ARTIF_STOCK })).toMatchObject({ openRubrique: ARTIF_STOCK, request: { indicatorId: 'artif_pct_gridded' } });
+        expect(stateAfter('', { type: 'rubriqueToggled', id: ARTIF_STOCK })).toMatchObject({ openRubrique: ARTIF_STOCK, request: { indicatorId: 'artif_soils' } });
         expect(stateAfter('', { type: 'rubriqueToggled', id: ARTIF_FLUX })).toMatchObject({
             openRubrique: ARTIF_FLUX,
-            request: { indicatorId: 'artif_net_pct_surface' },
+            request: { indicatorId: 'artif_net_annual_pct_surface' },
         });
-        expect(stateAfter('?indicator=artif_net_ha', { type: 'rubriqueToggled', id: CONSO })).toMatchObject({
+        expect(stateAfter('?indicator=artif_desartif_ha', { type: 'rubriqueToggled', id: CONSO })).toMatchObject({
             openRubrique: CONSO,
             request: { indicatorId: 'conso_pct_surface' },
         });
@@ -317,12 +317,12 @@ describe('viewReducer', () => {
             '',
             { type: 'indicatorSelected', id: 'bivariate_habitat_menages' },
             { type: 'rubriqueToggled', id: ARTIF_FLUX },
-            { type: 'indicatorSelected', id: 'artif_net_ha' },
+            { type: 'indicatorSelected', id: 'artif_desartif_ha' },
             { type: 'rubriqueToggled', id: CONSO },
         );
 
         expect(state).toMatchObject({ openRubrique: CONSO, request: { indicatorId: 'bivariate_habitat_menages' } });
-        expect(viewReducer(state, { type: 'rubriqueToggled', id: ARTIF_FLUX })).toMatchObject({ openRubrique: ARTIF_FLUX, request: { indicatorId: 'artif_net_ha' } });
+        expect(viewReducer(state, { type: 'rubriqueToggled', id: ARTIF_FLUX })).toMatchObject({ openRubrique: ARTIF_FLUX, request: { indicatorId: 'artif_desartif_ha' } });
     });
 
     it('[Rubriques] laisse la carte en place quand on replie sa rubrique, puis quand on la redéplie', () => {

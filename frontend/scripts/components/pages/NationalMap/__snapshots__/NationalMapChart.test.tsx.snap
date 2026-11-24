@@ -186,7 +186,18 @@ exports[`carte bivariée remet à Highcharts la couleur de la classe croisée de
       ],
       "joinBy": "land_id",
       "name": "Territoires",
-      "nullColor": "#dcdcdc",
+      "nullColor": {
+        "pattern": {
+          "backgroundColor": "#ffffff",
+          "height": 6,
+          "path": {
+            "d": "M 0 6 L 6 0 M -1 1 L 1 -1 M 5 7 L 7 5",
+            "stroke": "#9c9c9c",
+            "strokeWidth": 1.5,
+          },
+          "width": 6,
+        },
+      },
       "states": {
         "hover": {
           "borderColor": "#1a1a1a",
@@ -417,7 +428,19 @@ exports[`carte en anneaux remet à Highcharts des territoires qui portent leurs 
       "cursor": "pointer",
       "data": [
         {
-          "color": "#dcdcdc",
+          "borderColor": "#9c9c9c",
+          "color": {
+            "pattern": {
+              "backgroundColor": "#ffffff",
+              "height": 6,
+              "path": {
+                "d": "M 0 6 L 6 0 M -1 1 L 1 -1 M 5 7 L 7 5",
+                "stroke": "#9c9c9c",
+                "strokeWidth": 1.5,
+              },
+              "width": 6,
+            },
+          },
           "land_id": "03",
           "legendKey": null,
           "name": "Guyane",
@@ -482,7 +505,18 @@ exports[`carte en anneaux remet à Highcharts des territoires qui portent leurs 
       ],
       "joinBy": "land_id",
       "name": "Territoires",
-      "nullColor": "#dcdcdc",
+      "nullColor": {
+        "pattern": {
+          "backgroundColor": "#ffffff",
+          "height": 6,
+          "path": {
+            "d": "M 0 6 L 6 0 M -1 1 L 1 -1 M 5 7 L 7 5",
+            "stroke": "#9c9c9c",
+            "strokeWidth": 1.5,
+          },
+          "width": 6,
+        },
+      },
       "states": {
         "hover": {
           "borderColor": "#1a1a1a",
@@ -629,31 +663,31 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
       {
         "color": "#e3e3fd",
         "from": undefined,
-        "name": "Jusqu'à 0,02 %",
-        "to": 0.02,
-      },
-      {
-        "color": "#b1b1f1",
-        "from": 0.02,
-        "name": "De 0,02 à 0,33 %",
+        "name": "Moins de 0,33 %",
         "to": 0.33,
       },
       {
-        "color": "#7f7fe6",
+        "color": "#b1b1f1",
         "from": 0.33,
-        "name": "De 0,33 à 0,55 %",
-        "to": 0.55,
+        "name": "De 0,33 à 0,53 %",
+        "to": 0.53,
       },
       {
-        "color": "#4b4bc8",
-        "from": 0.55,
-        "name": "De 0,55 à 0,83 %",
+        "color": "#7f7fe6",
+        "from": 0.53,
+        "name": "De 0,53 à 0,83 %",
         "to": 0.83,
       },
       {
-        "color": "#000091",
+        "color": "#4b4bc8",
         "from": 0.83,
-        "name": "Plus de 0,83 %",
+        "name": "De 0,83 à 0,94 %",
+        "to": 0.94,
+      },
+      {
+        "color": "#000091",
+        "from": 0.94,
+        "name": "0,94 % et plus",
         "to": undefined,
       },
     ],
@@ -747,6 +781,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
       "cursor": "pointer",
       "data": [
         {
+          "color": "#e3e3fd",
           "land_id": "03",
           "legendKey": 0,
           "name": "Guyane",
@@ -755,6 +790,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
           "zone": "REGION_03",
         },
         {
+          "color": "#e3e3fd",
           "land_id": "06",
           "legendKey": 0,
           "name": "Mayotte",
@@ -763,6 +799,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
           "zone": "REGION_06",
         },
         {
+          "color": "#000091",
           "land_id": "11",
           "legendKey": 4,
           "name": "Île-de-France",
@@ -771,6 +808,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
           "zone": "REGION_11",
         },
         {
+          "color": "#4b4bc8",
           "land_id": "53",
           "legendKey": 3,
           "name": "Bretagne",
@@ -779,6 +817,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
           "zone": "REGION_53",
         },
         {
+          "color": "#7f7fe6",
           "land_id": "75",
           "legendKey": 2,
           "name": "Nouvelle-Aquitaine",
@@ -787,6 +826,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
           "zone": "REGION_75",
         },
         {
+          "color": "#7f7fe6",
           "land_id": "84",
           "legendKey": 2,
           "name": "Auvergne-Rhône-Alpes",
@@ -795,6 +835,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
           "zone": "REGION_84",
         },
         {
+          "color": "#b1b1f1",
           "land_id": "94",
           "legendKey": 1,
           "name": "Corse",
@@ -805,7 +846,18 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
       ],
       "joinBy": "land_id",
       "name": "Territoires",
-      "nullColor": "#dcdcdc",
+      "nullColor": {
+        "pattern": {
+          "backgroundColor": "#ffffff",
+          "height": 6,
+          "path": {
+            "d": "M 0 6 L 6 0 M -1 1 L 1 -1 M 5 7 L 7 5",
+            "stroke": "#9c9c9c",
+            "strokeWidth": 1.5,
+          },
+          "width": 6,
+        },
+      },
       "states": {
         "hover": {
           "borderColor": "#1a1a1a",
@@ -918,7 +970,7 @@ exports[`carte en aplat de couleur remet à Highcharts un point par territoire e
 exports[`carte en aplat divergent remet à Highcharts les classes bleues et orangées et le millésime de chaque territoire 1`] = `
 {
   "accessibility": {
-    "description": "Carte de la France entière par territoire, indicateur Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire). Les régions d'outre-mer sont placées à gauche de l'Hexagone.",
+    "description": "Carte de la France entière par territoire, indicateur Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an). Les régions d'outre-mer sont placées à gauche de l'Hexagone.",
     "point": {
       "valueDescriptionFormat": "{point.name} : {point.valueText}",
     },
@@ -952,25 +1004,31 @@ exports[`carte en aplat divergent remet à Highcharts les classes bleues et oran
       {
         "color": "#b5d5e8",
         "from": undefined,
-        "name": "Jusqu'à 0 %",
+        "name": "Moins de 0 % par an",
         "to": 0,
       },
       {
-        "color": "#fdc086",
+        "color": "#ffffbf",
         "from": 0,
-        "name": "De 0 à +0,11 %",
-        "to": 0.1144,
+        "name": "0 % par an",
+        "to": 0.001,
+      },
+      {
+        "color": "#fdc086",
+        "from": 0.001,
+        "name": "De +0,001 à +0,052 % par an",
+        "to": 0.052,
       },
       {
         "color": "#ef8a62",
-        "from": 0.1144,
-        "name": "De +0,11 à +0,16 %",
-        "to": 0.1557,
+        "from": 0.052,
+        "name": "De +0,052 à +0,069 % par an",
+        "to": 0.069,
       },
       {
         "color": "#b2182b",
-        "from": 0.1557,
-        "name": "Plus de +0,16 %",
+        "from": 0.069,
+        "name": "+0,069 % par an et plus",
         "to": undefined,
       },
     ],
@@ -1002,7 +1060,7 @@ exports[`carte en aplat divergent remet à Highcharts les classes bleues et oran
         },
         "layout": "vertical",
         "title": {
-          "text": "%",
+          "text": "% par an",
         },
         "verticalAlign": "middle",
       },
@@ -1019,12 +1077,12 @@ exports[`carte en aplat divergent remet à Highcharts les classes bleues et oran
           "fontSize": "20px",
           "fontWeight": "600",
         },
-        "text": "Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)",
+        "text": "Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an)",
       },
     },
     "enabled": false,
     "fallbackToExportServer": false,
-    "filename": "carte-france-region-artif_net_pct_surface",
+    "filename": "carte-france-region-artif_net_annual_pct_surface",
     "sourceHeight": 900,
     "sourceWidth": 1400,
   },
@@ -1064,6 +1122,19 @@ exports[`carte en aplat divergent remet à Highcharts les classes bleues et oran
       "cursor": "pointer",
       "data": [
         {
+          "borderColor": "#9c9c9c",
+          "color": {
+            "pattern": {
+              "backgroundColor": "#ffffff",
+              "height": 6,
+              "path": {
+                "d": "M 0 6 L 6 0 M -1 1 L 1 -1 M 5 7 L 7 5",
+                "stroke": "#9c9c9c",
+                "strokeWidth": 1.5,
+              },
+              "width": 6,
+            },
+          },
           "land_id": "03",
           "legendKey": null,
           "name": "Guyane",
@@ -1072,57 +1143,74 @@ exports[`carte en aplat divergent remet à Highcharts les classes bleues et oran
           "zone": "REGION_03",
         },
         {
+          "color": "#ffffbf",
           "land_id": "06",
-          "legendKey": 0,
+          "legendKey": 1,
           "name": "Mayotte",
           "value": 0,
-          "valueText": "0,00 % entre le millésime n°1 (2020) et le millésime n°2 (2023)",
+          "valueText": "0,000 % par an entre le millésime n°1 (2020) et le millésime n°2 (2023)",
           "zone": "REGION_06",
         },
         {
+          "color": "#b2182b",
           "land_id": "11",
+          "legendKey": 4,
+          "name": "Île-de-France",
+          "value": 0.0692,
+          "valueText": "0,069 % par an entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)",
+          "zone": "REGION_11",
+        },
+        {
+          "color": "#ef8a62",
+          "land_id": "53",
           "legendKey": 3,
-          "name": "Île-de-France",
-          "value": 0.2369,
-          "valueText": "0,24 % entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)",
-          "zone": "REGION_11",
+          "name": "Bretagne",
+          "value": 0.0519,
+          "valueText": "0,052 % par an entre le millésime n°1 (2017 à 2019) et le millésime n°2 (2020 à 2022)",
+          "zone": "REGION_53",
         },
         {
-          "land_id": "53",
+          "color": "#fdc086",
+          "land_id": "75",
           "legendKey": 2,
-          "name": "Bretagne",
-          "value": 0.1557,
-          "valueText": "0,16 % entre le millésime n°1 (2017 à 2019) et le millésime n°2 (2020 à 2022)",
-          "zone": "REGION_53",
-        },
-        {
-          "land_id": "75",
-          "legendKey": 1,
           "name": "Nouvelle-Aquitaine",
-          "value": 0.1144,
-          "valueText": "0,11 % entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2021 à 2023)",
+          "value": 0.0361,
+          "valueText": "0,036 % par an entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2021 à 2023)",
           "zone": "REGION_75",
         },
         {
+          "color": "#fdc086",
           "land_id": "84",
-          "legendKey": 1,
+          "legendKey": 2,
           "name": "Auvergne-Rhône-Alpes",
-          "value": 0.0855,
-          "valueText": "0,09 % entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2020 à 2023)",
+          "value": 0.0289,
+          "valueText": "0,029 % par an entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2020 à 2023)",
           "zone": "REGION_84",
         },
         {
+          "color": "#b5d5e8",
           "land_id": "94",
           "legendKey": 0,
           "name": "Corse",
-          "value": -0.0561,
-          "valueText": "-0,06 % entre le millésime n°1 (2019) et le millésime n°2 (2021)",
+          "value": -0.0281,
+          "valueText": "-0,028 % par an entre le millésime n°1 (2019) et le millésime n°2 (2021)",
           "zone": "REGION_94",
         },
       ],
       "joinBy": "land_id",
       "name": "Territoires",
-      "nullColor": "#dcdcdc",
+      "nullColor": {
+        "pattern": {
+          "backgroundColor": "#ffffff",
+          "height": 6,
+          "path": {
+            "d": "M 0 6 L 6 0 M -1 1 L 1 -1 M 5 7 L 7 5",
+            "stroke": "#9c9c9c",
+            "strokeWidth": 1.5,
+          },
+          "width": 6,
+        },
+      },
       "states": {
         "hover": {
           "borderColor": "#1a1a1a",
@@ -1165,381 +1253,6 @@ exports[`carte en aplat divergent remet à Highcharts les classes bleues et oran
         },
       },
       "type": "mapline",
-    },
-    {
-      "data": [
-        {
-          "geometry": {
-            "coordinates": [
-              250000,
-              100000,
-            ],
-            "type": "Point",
-          },
-          "name": "Mayotte",
-        },
-        {
-          "geometry": {
-            "coordinates": [
-              50000,
-              100000,
-            ],
-            "type": "Point",
-          },
-          "name": "Guyane",
-        },
-      ],
-      "dataLabels": {
-        "enabled": true,
-        "format": "{point.name}",
-        "style": {
-          "color": "#000091",
-          "fontSize": "0.8rem",
-          "fontWeight": "600",
-          "textOutline": "none",
-        },
-        "verticalAlign": "bottom",
-        "y": -2,
-      },
-      "enableMouseTracking": false,
-      "marker": {
-        "enabled": false,
-      },
-      "name": "Noms des territoires d'outre-mer",
-      "showInLegend": false,
-      "states": {
-        "inactive": {
-          "opacity": 1,
-        },
-      },
-      "type": "mappoint",
-    },
-  ],
-  "title": {
-    "text": undefined,
-  },
-  "tooltip": {
-    "animation": false,
-    "backgroundColor": "transparent",
-    "borderWidth": 0,
-    "distance": 14,
-    "followPointer": true,
-    "hideDelay": 80,
-    "padding": 0,
-    "shadow": false,
-    "useHTML": true,
-  },
-}
-`;
-
-exports[`carte en cercles d’une valeur signée remet à Highcharts des cercles à la taille de la valeur absolue, rouges ou bleus selon le signe 1`] = `
-{
-  "accessibility": {
-    "description": "Carte de la France entière par territoire, indicateur Artificialisation nette entre les deux derniers millésimes (en hectares). Les régions d'outre-mer sont placées à gauche de l'Hexagone.",
-    "point": {
-      "valueDescriptionFormat": "{point.name} : {point.valueText}",
-    },
-  },
-  "chart": {
-    "animation": false,
-    "backgroundColor": "transparent",
-    "events": {},
-    "map": [
-      "03",
-      "06",
-      "11",
-      "53",
-      "75",
-      "84",
-      "94",
-    ],
-    "panning": {
-      "enabled": false,
-    },
-    "spacing": [
-      8,
-      8,
-      8,
-      8,
-    ],
-  },
-  "colorAxis": undefined,
-  "credits": {
-    "enabled": false,
-  },
-  "exporting": {
-    "chartOptions": {
-      "chart": {
-        "backgroundColor": "#ffffff",
-        "spacing": [
-          24,
-          24,
-          24,
-          24,
-        ],
-      },
-      "credits": {
-        "enabled": true,
-        "text": "Mon Diagnostic Artificialisation · données IGN (OCS GE)",
-      },
-      "legend": {
-        "align": "right",
-        "enabled": false,
-        "itemStyle": {
-          "fontSize": "13px",
-          "fontWeight": "400",
-        },
-        "layout": "vertical",
-        "title": {
-          "text": "ha",
-        },
-        "verticalAlign": "middle",
-      },
-      "subtitle": {
-        "align": "left",
-        "style": {
-          "fontSize": "14px",
-        },
-        "text": "France entière · par région · Millésimes n°1 (2017 à 2020) et n°2 (2020 à 2023) · surface des cercles proportionnelle à la valeur (maximum : 9 736,3 ha)",
-      },
-      "title": {
-        "align": "left",
-        "style": {
-          "fontSize": "20px",
-          "fontWeight": "600",
-        },
-        "text": "Artificialisation nette entre les deux derniers millésimes (en hectares)",
-      },
-    },
-    "enabled": false,
-    "fallbackToExportServer": false,
-    "filename": "carte-france-region-artif_net_ha",
-    "sourceHeight": 900,
-    "sourceWidth": 1400,
-  },
-  "legend": {
-    "enabled": false,
-  },
-  "mapNavigation": {
-    "enabled": false,
-  },
-  "mapView": {
-    "padding": [
-      12,
-      4,
-      4,
-      16,
-    ],
-  },
-  "plotOptions": {
-    "map": {
-      "point": {
-        "events": {},
-      },
-    },
-    "mapbubble": {
-      "point": {
-        "events": {},
-      },
-    },
-    "series": {
-      "animation": false,
-    },
-  },
-  "series": [
-    {
-      "borderColor": "#c3c3dd",
-      "borderWidth": 0.6,
-      "cursor": "pointer",
-      "data": [
-        {
-          "color": "#dcdcdc",
-          "land_id": "03",
-          "legendKey": null,
-          "name": "Guyane",
-          "value": null,
-          "valueText": "Donnée non disponible",
-          "zone": "REGION_03",
-        },
-        {
-          "color": "#eeeef8",
-          "land_id": "06",
-          "legendKey": 0,
-          "name": "Mayotte",
-          "value": 0,
-          "valueText": "0,0 ha entre le millésime n°1 (2020) et le millésime n°2 (2023)",
-          "zone": "REGION_06",
-        },
-        {
-          "color": "#eeeef8",
-          "land_id": "11",
-          "legendKey": 0,
-          "name": "Île-de-France",
-          "value": 2857.82,
-          "valueText": "2 857,8 ha entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)",
-          "zone": "REGION_11",
-        },
-        {
-          "color": "#eeeef8",
-          "land_id": "53",
-          "legendKey": 0,
-          "name": "Bretagne",
-          "value": 4273.81,
-          "valueText": "4 273,8 ha entre le millésime n°1 (2017 à 2019) et le millésime n°2 (2020 à 2022)",
-          "zone": "REGION_53",
-        },
-        {
-          "color": "#eeeef8",
-          "land_id": "75",
-          "legendKey": 0,
-          "name": "Nouvelle-Aquitaine",
-          "value": 9736.3,
-          "valueText": "9 736,3 ha entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2021 à 2023)",
-          "zone": "REGION_75",
-        },
-        {
-          "color": "#eeeef8",
-          "land_id": "84",
-          "legendKey": 0,
-          "name": "Auvergne-Rhône-Alpes",
-          "value": 6052.63,
-          "valueText": "6 052,6 ha entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2020 à 2023)",
-          "zone": "REGION_84",
-        },
-        {
-          "color": "#eeeef8",
-          "land_id": "94",
-          "legendKey": 0,
-          "name": "Corse",
-          "value": -491.11,
-          "valueText": "-491,1 ha entre le millésime n°1 (2019) et le millésime n°2 (2021)",
-          "zone": "REGION_94",
-        },
-      ],
-      "joinBy": "land_id",
-      "name": "Territoires",
-      "nullColor": "#dcdcdc",
-      "states": {
-        "hover": {
-          "borderColor": "#1a1a1a",
-          "borderWidth": 2,
-          "brightness": 0,
-        },
-        "inactive": {
-          "opacity": 1,
-        },
-      },
-      "type": "map",
-    },
-    {
-      "color": "#8f8fb8",
-      "data": [
-        {
-          "geometry": {
-            "coordinates": [
-              [
-                350000,
-                200000,
-              ],
-              [
-                350000,
-                -100000,
-              ],
-            ],
-            "type": "LineString",
-          },
-        },
-      ],
-      "enableMouseTracking": false,
-      "lineWidth": 1,
-      "name": "Séparation des territoires d'outre-mer",
-      "nullColor": "#8f8fb8",
-      "showInLegend": false,
-      "states": {
-        "inactive": {
-          "opacity": 1,
-        },
-      },
-      "type": "mapline",
-    },
-    {
-      "color": "#b2182b",
-      "cursor": "pointer",
-      "data": [
-        {
-          "color": "#b2182b",
-          "land_id": "75",
-          "legendKey": 0,
-          "name": "Nouvelle-Aquitaine",
-          "valueText": "9 736,3 ha entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2021 à 2023)",
-          "z": 9736.3,
-          "zone": "REGION_75",
-        },
-        {
-          "color": "#b2182b",
-          "land_id": "84",
-          "legendKey": 0,
-          "name": "Auvergne-Rhône-Alpes",
-          "valueText": "6 052,6 ha entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2020 à 2023)",
-          "z": 6052.63,
-          "zone": "REGION_84",
-        },
-        {
-          "color": "#b2182b",
-          "land_id": "53",
-          "legendKey": 0,
-          "name": "Bretagne",
-          "valueText": "4 273,8 ha entre le millésime n°1 (2017 à 2019) et le millésime n°2 (2020 à 2022)",
-          "z": 4273.81,
-          "zone": "REGION_53",
-        },
-        {
-          "color": "#b2182b",
-          "land_id": "11",
-          "legendKey": 0,
-          "name": "Île-de-France",
-          "valueText": "2 857,8 ha entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)",
-          "z": 2857.82,
-          "zone": "REGION_11",
-        },
-        {
-          "color": "#2166ac",
-          "land_id": "94",
-          "legendKey": 0,
-          "name": "Corse",
-          "valueText": "-491,1 ha entre le millésime n°1 (2019) et le millésime n°2 (2021)",
-          "z": 491.11,
-          "zone": "REGION_94",
-        },
-      ],
-      "joinBy": "land_id",
-      "marker": {
-        "fillOpacity": 0.55,
-        "lineColor": "#ffffff",
-        "lineWidth": 1,
-      },
-      "maxSize": 64,
-      "minSize": 3,
-      "name": "Artificialisation nette entre les deux derniers millésimes (en hectares)",
-      "showInLegend": false,
-      "sizeBy": "area",
-      "states": {
-        "hover": {
-          "halo": {
-            "size": 0,
-          },
-          "marker": {
-            "lineColor": "#1a1a1a",
-            "lineWidth": 2,
-          },
-        },
-        "inactive": {
-          "opacity": 1,
-        },
-      },
-      "type": "mapbubble",
-      "zMax": 9736.3,
-      "zMin": 0,
     },
     {
       "data": [

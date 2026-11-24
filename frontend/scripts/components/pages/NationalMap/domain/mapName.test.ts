@@ -43,11 +43,10 @@ describe('nom de la carte en anneaux', () => {
         });
     });
 
-    it('porte alors le nom de la carte de l’artificialisation nette en pourcentage, que la vue dessine aussi', () => {
+    it('porte alors le nom de ce que la vue dessine : l’artificialisation nette en pourcentage de la surface', () => {
         const view = { zone: 'FRANCE', scale: 'COMM' };
 
-        expect(mapNameOf(view, RINGS).label).toBe(mapNameOf(view, indicatorOf('artif_net_pct_surface')).label);
-        expect(mapNameOf(view, indicatorOf('artif_net_pct_surface')).standIn).toBeNull();
+        expect(mapNameOf(view, RINGS).label).toBe('Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)');
     });
 });
 
@@ -64,7 +63,7 @@ describe('nom des cartes du catalogue', () => {
     });
 
     it('n’est remplacé, pour toutes les communes du pays, que pour les cartes en hectares par territoire', () => {
-        expect(standIns.map(({ id }) => id)).toEqual(['conso_ha', 'conso_habitat_ha', 'conso_activite_ha', 'artif_ha', 'artif_desartif_ha', 'artif_net_ha', 'artif_net_annual_ha']);
+        expect(standIns.map(({ id }) => id)).toEqual(['conso_ha', 'conso_habitat_ha', 'conso_activite_ha', 'artif_desartif_ha']);
     });
 
     it('est alors celui de la version relative, jamais en hectares', () => {
@@ -136,7 +135,7 @@ describe('jamais d’aplat sous un titre en valeur absolue', () => {
         expect(inHectares.filter(({ profile }) => !isFlat(profile) && profile.mode !== 'symbols' && profile.mode !== 'rings').map(at)).toEqual([]);
         // Le seul aplat : toutes les communes d'une zone nationale
         expect(flat.filter(({ view }) => !isDenseView(view)).map(at)).toEqual([]);
-        expect(flat).toHaveLength(2 * 7);
+        expect(flat).toHaveLength(2 * 4);
         flat.forEach(({ indicator, profile, name }) => {
             expect(profile.drawn.key).toBe(indicator.relative.key);
             expect(name).toEqual({ label: indicator.relative.label, standIn: expect.stringContaining('rapportée à la surface de chaque commune') });

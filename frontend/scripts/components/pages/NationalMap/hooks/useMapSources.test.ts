@@ -70,7 +70,7 @@ describe('useMapSources', () => {
     });
 
     it('demande l’artificialisation des départements et la colonne des communes pour une carte OCS GE', () => {
-        expect(queriesOf(view({ scale: 'COMM', indicatorId: 'artif_net_ha' }))).toMatchObject({
+        expect(queriesOf(view({ scale: 'COMM', indicatorId: 'artif_desartif_ha' }))).toMatchObject({
             base: { scale: 'DEPART' },
             artif: { scale: 'DEPART' },
             values: { scale: 'COMM', key: 'artif_net_pct_surface', amount: 'artif_net_ha' },

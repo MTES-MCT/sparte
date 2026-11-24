@@ -1,6 +1,6 @@
 import type { NationalMapValues } from '@services/api';
 import {
-    COMMUNES_ARTIF_HA,
+    COMMUNES_ARTIF_SHARE,
     COMMUNES_ARTIF_NET_SHARE,
     COMMUNES_CONSO_EVOLUTION,
     COMMUNES_CONSO_HA,
@@ -11,22 +11,11 @@ import {
 } from '../../../__fixtures__/communesFixtures';
 import { communesFrame } from '../../../__fixtures__/frames';
 import { ARTIF_FRANCE_BY_DEPARTEMENT, CONSO_FRANCE_BY_DEPARTEMENT, FRANCE_BY_DEPARTEMENT } from '../../../__fixtures__/nationalMapFixtures';
-import * as values from '../../../values';
 import { communeColors } from '../../communes/colors';
 import { NEUTRAL_COLOR } from '../../classification';
+import { destinationPalette } from '../../grid/consoColors';
 import type { FrameRender, LegendModel, MapFrame } from '../types';
 import { NO_DATA_KEY, OUTSIDE_ZONE_KEY } from './communes';
-
-// Les seuils naturels restent les vrais, sous surveillance : la vue dense ne doit jamais les calculer
-jest.mock('../../../values', () => {
-    const actual = jest.requireActual('../../../values');
-    return {
-        ...actual,
-        jenksBreaks: jest.fn(actual.jenksBreaks),
-        naturalBreaksClasses: jest.fn(actual.naturalBreaksClasses),
-        divergingClasses: jest.fn(actual.divergingClasses),
-    };
-});
 
 // Les nombres sont formatés avec des espaces insécables, étroites pour les milliers
 const plain = (text: string): string => text.replace(/[  ]/g, ' ');
@@ -65,26 +54,25 @@ describe('aplat des communes d’une zone nationale', () => {
         expect(render.departments.map((feature) => feature.properties.name)).toEqual(["Côtes-d'Armor", 'Ille-et-Vilaine', 'Paris', 'Vaucluse']);
     });
 
-    it('découpe les valeurs des communes affichées en classes par quantiles et compte chaque classe', () => {
+    it('découpe les valeurs des communes affichées en classes par seuils naturels et compte chaque classe', () => {
         const legend = legendOf(SHARE, 'classes');
 
-        // Neuf communes renseignées : 0 ; 0,02 ; 0,2 ; 1,19 ; 1,54 ; 2,45 ; 2,86 ; 2,95 ; 3,94
+        // Neuf communes renseignées : 0 ; 0,02 ; 0,2 | 1,19 ; 1,54 | 2,45 | 2,86 ; 2,95 | 3,94
         expect(legend.classes.map((valueClass) => plain(valueClass.name))).toEqual([
-            'Moins de 0,02 %',
-            'De 0,02 à 1,19 %',
+            'Moins de 1,19 %',
             'De 1,19 à 2,45 %',
-            'De 2,45 à 2,95 %',
-            '2,95 % et plus',
+            'De 2,45 à 2,86 %',
+            'De 2,86 à 3,94 %',
+            '3,94 % et plus',
         ]);
-        expect(legend.counts).toEqual([1, 2, 2, 2, 2]);
+        expect(legend.counts).toEqual([3, 2, 1, 2, 1]);
         expect(legend).toMatchObject({
             title: "Consommation d'ENAF (en pourcentage de la surface communale)",
             noDataCount: 4,
             landTypeLabel: 'Communes',
         });
         expect(legend.method).toBe(
-            'Classes par quantiles, calculées sur les communes affichées : chacune réunit à peu près le même nombre de communes. ' +
-                'Une valeur égale à une borne appartient à la classe supérieure',
+            'Classes par seuils naturels (méthode de Jenks), calculées sur les communes affichées. Une valeur égale à une borne appartient à la classe supérieure',
         );
     });
 
@@ -92,8 +80,8 @@ describe('aplat des communes d’une zone nationale', () => {
         const legend = legendOf(SHARE, 'classes');
         const keys = keysOf(SHARE);
 
-        // Kourou (0,02), Ajaccio (1,19), Rennes (2,45) et Toulouse (2,95) sont sur une borne : classe supérieure
-        expect(keys).toMatchObject({ '75056': 0, '97304': 1, '69123': 1, '2A004': 2, '22278': 2, '35238': 3, '84007': 3, '31555': 4, '97302': 4 });
+        // Ajaccio (1,19), Rennes (2,45), Avignon (2,86) et Cayenne (3,94) sont sur une borne : classe supérieure
+        expect(keys).toMatchObject({ '75056': 0, '97304': 0, '69123': 0, '2A004': 1, '22278': 1, '35238': 2, '84007': 3, '31555': 3, '97302': 4 });
         const counted = legend.classes.map((_, index) => Object.values(keys).filter((key) => key === index).length);
         expect(counted).toEqual(legend.counts);
         expect(communes(SHARE).palette).toEqual(legend.classes.map((valueClass) => valueClass.color));
@@ -105,7 +93,7 @@ describe('aplat des communes d’une zone nationale', () => {
     });
 
     it('dit la valeur d’une commune et la période choisie', () => {
-        expect(communes(SHARE).describe('35238')).toEqual({ valueText: expect.any(String), legendKey: 3 });
+        expect(communes(SHARE).describe('35238')).toEqual({ valueText: expect.any(String), legendKey: 2 });
         expect(valueText(SHARE, '35238')).toBe('2,45 % de 2011 à 2024');
     });
 
@@ -114,17 +102,17 @@ describe('aplat des communes d’une zone nationale', () => {
     });
 
     it('classe la valeur arrondie à la précision d’affichage : une commune à -75,85 % est dans la classe de -75,9 %', () => {
-        const column = { ...communesColumn('conso_evolution_between_periods', [-80, -75.85, -75.9, -60, -40, -20]), start_year: null as number | null, end_year: null as number | null };
+        const column = { ...communesColumn('conso_evolution_between_periods', [-90, -75.85, -75.9, -89, -75, -20]), start_year: null as number | null, end_year: null as number | null };
         const frame = france('conso_evolution_between_periods', column);
         const { classes } = legendOf(frame, 'classes');
 
-        // Trois classes de baisses : la deuxième commence à -75,9
+        // Trois classes de baisses : -90 et -89 | -75,9 (deux fois) et -75 | -20 ; la deuxième commence à -75,9
         expect(classes.map(({ from, to }) => [from, to])).toEqual([
             [undefined, -75.9],
-            [-75.9, -40],
-            [-40, undefined],
+            [-75.9, -20],
+            [-20, undefined],
         ]);
-        expect(Array.from(communes(frame).legendKeys)).toEqual([0, 1, 1, 1, 2, 2]);
+        expect(Array.from(communes(frame).legendKeys)).toEqual([0, 1, 1, 0, 1, 2]);
         expect(valueText(frame, '00001')).toBe('-75,9 %');
     });
 });
@@ -173,6 +161,16 @@ describe('zone Hexagone', () => {
 describe('carte en hectares sur la vue dense', () => {
     const HECTARES = france('conso_ha', COMMUNES_CONSO_HA);
 
+    it('garde à la carte d’une destination sa couleur : ses classes en sont des nuances, aux mêmes bornes', () => {
+        // Ce que l'API rend pour la carte de l'activité : sa part de la surface, et ses hectares
+        const activity = france('conso_activite_ha', { ...COMMUNES_CONSO_HA, key: 'conso_activite_pct_surface', amount: 'conso_activite_ha' });
+        const colors = legendOf(activity, 'classes').classes.map((valueClass) => valueClass.color);
+
+        expect(colors).toEqual(destinationPalette('activite').slice(0, colors.length));
+        expect(colors).not.toEqual(legendOf(HECTARES, 'classes').classes.map((valueClass) => valueClass.color));
+        expect(Array.from(communes(activity).legendKeys)).toEqual(Array.from(communes(HECTARES).legendKeys));
+    });
+
     it('dessine la version relative, avec les mêmes classes que la carte en pourcentage', () => {
         const share = france('conso_pct_surface', COMMUNES_CONSO_SHARE);
 
@@ -185,7 +183,7 @@ describe('carte en hectares sur la vue dense', () => {
         const legend = legendOf(HECTARES, 'classes');
 
         expect(legend.title).toBe("Consommation d'ENAF (en pourcentage de la surface communale)");
-        expect(legend.method).toContain('Classes par quantiles, calculées sur les communes affichées');
+        expect(legend.method).toContain('Classes par seuils naturels (méthode de Jenks), calculées sur les communes affichées');
         expect(legend.method).toContain(
             "À l'échelle du pays, des cercles proportionnels par commune ne seraient pas lisibles : la carte représente la valeur rapportée à la surface de chaque commune, et les hectares sont donnés au survol",
         );
@@ -206,49 +204,21 @@ describe('évolution sur la vue dense', () => {
         const frame = france('conso_evolution_between_periods', COMMUNES_CONSO_EVOLUTION);
         const legend = legendOf(frame, 'classes');
 
-        // Cinq baisses (-100 ; -78,1 ; -72,8 ; -54,9 ; -30,0) et quatre hausses (2,6 ; 3,8 ; 28,6 ; 96,0), sans valeur nulle
+        // Cinq baisses (-100 | -78,1 ; -72,8 ; -54,9 | -30,0) et quatre hausses (2,6 ; 3,8 | 28,6 | 96,0), sans valeur nulle
         expect(legend.classes.map((valueClass) => plain(valueClass.name))).toEqual([
             'Moins de −78,1 %',
-            'De −78,1 à −54,9 %',
-            'De −54,9 à 0 %',
-            'De 0 à +3,8 %',
-            'De +3,8 à +28,6 %',
-            '+28,6 % et plus',
+            'De −78,1 à −30,0 %',
+            'De −30,0 à 0 %',
+            'De 0 à +28,6 %',
+            'De +28,6 à +96,0 %',
+            '+96,0 % et plus',
         ]);
-        expect(legend.counts).toEqual([1, 2, 2, 1, 1, 2]);
+        expect(legend.counts).toEqual([1, 3, 1, 2, 1, 1]);
         expect(legend.method).toContain('de part et d’autre de zéro');
         // Sans période dans la colonne : le texte ne rappelle pas la période choisie
         expect(valueText(frame, '22278')).toBe('-78,1 %');
     });
 
-    it('réserve une classe aux communes dont l’artificialisation nette est nulle', () => {
-        const frame = communesFrame('FRANCE', 'artif_net_pct_surface', COMMUNES_ARTIF_NET_SHARE, RESPONSES);
-        const legend = legendOf(frame, 'classes');
-        const neutral = legend.classes.findIndex((valueClass) => valueClass.color === NEUTRAL_COLOR);
-
-        expect(plain(legend.classes[neutral].name)).toBe('0 %');
-        // L'Île-de-Sein
-        expect(keysOf(frame)['29083']).toBe(neutral);
-        expect(legend.counts[neutral]).toBe(1);
-        // Paris, seule baisse
-        expect(keysOf(frame)['75056']).toBe(0);
-        expect(valueText(frame, '75056')).toBe('-0,01 % entre le millésime n°1 (2018) et le millésime n°2 (2021)');
-    });
-});
-
-describe('artificialisation sur la vue dense', () => {
-    const STOCK = communesFrame('FRANCE', 'artif_ha', COMMUNES_ARTIF_HA, RESPONSES);
-
-    it('dessine la part artificialisée et donne au survol les hectares et le millésime de la commune', () => {
-        expect(legendOf(STOCK, 'classes').title).toBe('Part du territoire artificialisée (en pourcentage)');
-        expect(valueText(STOCK, '35238')).toBe('71,7 %, soit 3 610 ha au millésime n°2 (2020)');
-        expect(valueText(STOCK, '97611')).toBe('19,1 %, soit 800 ha au millésime n°2 (2023)');
-    });
-
-    it('marque sans donnée les communes que l’OCS GE ne couvre pas', () => {
-        expect(keysOf(STOCK)).toMatchObject({ '97302': NO_DATA_KEY, '97304': NO_DATA_KEY });
-        expect(legendOf(STOCK, 'classes').noDataCount).toBe(2);
-    });
 });
 
 describe('carte en anneaux sur la vue dense', () => {
@@ -256,13 +226,22 @@ describe('carte en anneaux sur la vue dense', () => {
     const NET_WITH_HECTARES = { ...COMMUNES_ARTIF_NET_SHARE, amount: 'artif_net_ha', amounts: [0.17, 4.63, 0, 14.83, 49.29, 25.09, 8.56, -1.44, 5.53, null, null, 7.57, 19.22] };
     const RINGS = communesFrame('FRANCE', 'artif_desartif_ha', NET_WITH_HECTARES, RESPONSES);
 
-    it('dessine en aplat l’artificialisation nette rapportée à la surface, comme la carte de l’artificialisation nette en hectares', () => {
-        const net = communesFrame('FRANCE', 'artif_net_ha', NET_WITH_HECTARES, RESPONSES);
-
+    it('dessine en aplat l’artificialisation nette rapportée à la surface', () => {
         expect(communes(RINGS).mode).toBe('choropleth');
         expect(legendOf(RINGS, 'classes').title).toBe('Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)');
-        expect(Array.from(communes(RINGS).legendKeys)).toEqual(Array.from(communes(net).legendKeys));
-        expect(legendOf(RINGS, 'classes').classes).toEqual(legendOf(net, 'classes').classes);
+        expect(legendOf(RINGS, 'classes').method).toContain('de part et d’autre de zéro');
+    });
+
+    it('réserve une classe aux communes dont l’artificialisation nette est nulle', () => {
+        const legend = legendOf(RINGS, 'classes');
+        const neutral = legend.classes.findIndex((valueClass) => valueClass.color === NEUTRAL_COLOR);
+
+        expect(plain(legend.classes[neutral].name)).toBe('0 %');
+        // L'Île-de-Sein
+        expect(keysOf(RINGS)['29083']).toBe(neutral);
+        expect(legend.counts[neutral]).toBe(1);
+        // Paris, seule baisse
+        expect(keysOf(RINGS)['75056']).toBe(0);
     });
 
     it('donne au survol la part dessinée, les hectares nets et les millésimes de la commune', () => {
@@ -342,21 +321,5 @@ describe('charge de la vue dense', () => {
         });
 
         expect(Math.min(...durations)).toBeLessThan(200);
-    });
-
-    it('ne calcule jamais de seuils naturels, dont le coût croît comme le carré du nombre de communes', () => {
-        jest.mocked(values.jenksBreaks).mockClear();
-        jest.mocked(values.naturalBreaksClasses).mockClear();
-        jest.mocked(values.divergingClasses).mockClear();
-
-        france('conso_pct_surface', COLUMN);
-        france('conso_ha', COMMUNES_CONSO_HA);
-        france('conso_evolution_between_periods', COMMUNES_CONSO_EVOLUTION);
-        france('bivariate_habitat_menages', COMMUNES_HABITAT_MENAGES);
-        communesFrame('FRANCE', 'artif_net_pct_surface', COMMUNES_ARTIF_NET_SHARE, RESPONSES);
-
-        expect(values.jenksBreaks).not.toHaveBeenCalled();
-        expect(values.naturalBreaksClasses).not.toHaveBeenCalled();
-        expect(values.divergingClasses).not.toHaveBeenCalled();
     });
 });

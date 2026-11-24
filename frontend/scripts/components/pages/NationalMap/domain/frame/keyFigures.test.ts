@@ -94,14 +94,14 @@ describe('chiffres clés des espaces artificialisés', () => {
         const uncovered = { scale: 'REGION', lands: { '03': ARTIF_FRANCE_BY_REGION.lands['03'] } };
 
         expect(artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_pct', uncovered).keyFigures).toEqual({ kind: 'empty', message: 'Aucune donnée OCS GE pour cette zone.' });
-        expect(artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_ha', uncovered).keyFigures.kind).toBe('empty');
+        expect(artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_annual_pct_surface', uncovered).keyFigures.kind).toBe('empty');
         expect(artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_desartif_ha', uncovered).keyFigures.kind).toBe('empty');
     });
 });
 
 describe('chiffres clés de l’artificialisation', () => {
     it('donne le flux net et son rythme annuel, signés, entre les millésimes des territoires renseignés', () => {
-        const { keyFigures } = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_pct_surface', ARTIF_FRANCE_BY_REGION);
+        const { keyFigures } = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_annual_pct_surface', ARTIF_FRANCE_BY_REGION);
 
         expect(read(keyFigures)).toEqual([
             ['Artificialisation nette', '+22 429', 'ha'],
@@ -122,8 +122,8 @@ describe('chiffres clés de l’artificialisation', () => {
         expect(new Set(footers(keyFigures).map(({ from }) => from))).toEqual(new Set(['Millésimes n°1 et n°2']));
     });
 
-    it('garde pour la carte en anneaux les deux premiers chiffres clés des autres cartes de flux, à la même place', () => {
-        const net = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_ha', ARTIF_FRANCE_BY_REGION).keyFigures;
+    it('garde pour la carte en anneaux les deux premiers chiffres clés de l’autre carte de flux, à la même place', () => {
+        const net = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_annual_pct_surface', ARTIF_FRANCE_BY_REGION).keyFigures;
         const ringed = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_desartif_ha', ARTIF_FRANCE_BY_REGION).keyFigures;
 
         expect(figuresOf(ringed).slice(0, 2)).toEqual(figuresOf(net));
@@ -132,7 +132,7 @@ describe('chiffres clés de l’artificialisation', () => {
     it('écrit une désartificialisation nette avec le signe moins du clavier', () => {
         const corsica = { scale: 'REGION', lands: { '94': ARTIF_FRANCE_BY_REGION.lands['94'] } };
 
-        expect(read(artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_ha', corsica).keyFigures)).toEqual([
+        expect(read(artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_net_annual_pct_surface', corsica).keyFigures)).toEqual([
             ['Artificialisation nette', '-491', 'ha'],
             ['Rythme annuel moyen', '-246', 'ha/an'],
         ]);

@@ -26,7 +26,7 @@ const GRID_FOOTNOTE_FRANCE =
 // carte. Rien à dire : null.
 export const missingDataSentence = (names: string[], wholeFrance: boolean): string | null => {
     const intro = "Les données de consommation d'espaces ne sont pas disponibles pour";
-    const shown = names.length > 0 ? `${names.join(', ')} (en gris sur la carte)` : '';
+    const shown = names.length > 0 ? `${names.join(', ')} (hachurés sur la carte)` : '';
     if (!wholeFrance) return shown ? `${intro} ${shown}.` : null;
     const offMap = `${COLLECTIVITIES_OFF_MAP}, qui ne figurent pas sur la carte.`;
     return shown ? `${intro} ${shown}, ni pour ${offMap}` : `${intro} ${offMap}`;
@@ -85,7 +85,7 @@ const UNCOMPUTED_CAUSES: Record<string, string> = {
 };
 const UNCOMPUTED_DEFAULT_CAUSE = 'cette valeur ne peut pas y être calculée';
 
-// Communes affichées en gris alors qu'elles ont des données : la légende les compte avec les
+// Communes hachurées alors qu'elles ont des données : la légende les compte avec les
 // communes sans donnée, la note dit pourquoi. null quand il n'y en a pas, ou que la réponse ne
 // permet pas de les compter (communes sans donnée non nommées, hors de la France entière).
 const uncomputedSentence = ({ base, communes, indicator }: FrameContext): string | null => {
@@ -104,8 +104,8 @@ const uncomputedSentence = ({ base, communes, indicator }: FrameContext): string
     const uncomputed = grey - (listed ? listedWithoutData : count);
     if (uncomputed <= 0) return null;
     const cause = UNCOMPUTED_CAUSES[indicator.id] ?? UNCOMPUTED_DEFAULT_CAUSE;
-    const others = uncomputed === 1 ? 'Une autre commune est' : `${formatNumber({ number: uncomputed, decimals: 0 })} autres communes sont`;
-    return `${others} en gris : ${cause}.`;
+    const others = uncomputed === 1 ? 'Une autre commune est hachurée' : `${formatNumber({ number: uncomputed, decimals: 0 })} autres communes sont hachurées`;
+    return `${others} : ${cause}.`;
 };
 
 const communesConsoFootnote = (ctx: FrameContext): string | null => {
@@ -117,7 +117,7 @@ const communesConsoFootnote = (ctx: FrameContext): string | null => {
 const MAX_NAMED_UNCOUNTED = 6;
 
 // Carte des sols artificialisés par maille : la note des cartes de stock, sans leur phrase sur les
-// territoires en gris. Un territoire que l'OCS GE ne couvre qu'en partie n'y est pas gris : ses
+// territoires hachurés. Un territoire que l'OCS GE ne couvre qu'en partie ne l'est pas : ses
 // mailles couvertes sont dessinées, et seuls les chiffres clés le laissent de côté. Le millésime
 // annoncé est celui des chiffres : l'image vient de l'IGN, qui la publie par génération de
 // millésimes. Son année peut être plus récente que celle des chiffres, ou plus ancienne pour un

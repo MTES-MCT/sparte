@@ -90,11 +90,10 @@ export const COMMUNES_HABITAT_MENAGES: NationalMapBivariateColumns = {
 // Millésimes du stock d'artificialisation : un jeu par millésime rencontré, le dernier pour les communes sans OCS GE
 const STOCK_YEARS: NationalMapYearSet[] = [{ artif_years: [2022], artif_index: 2 }, { artif_years: [2021], artif_index: 2 }, { artif_years: [2020], artif_index: 2 }, { artif_years: [2023], artif_index: 2 }, { artif_years: [] }];
 
-// Carte en hectares de la surface artificialisée : la part du territoire, accompagnée des hectares
-export const COMMUNES_ARTIF_HA: NationalMapValueColumns = {
-    ...header('artif_pct', 'artif_ha', NO_PERIOD, WITHOUT_OCSGE),
+// Part du territoire artificialisée de chaque commune
+export const COMMUNES_ARTIF_SHARE: NationalMapValueColumns = {
+    ...header('artif_pct', null, NO_PERIOD, WITHOUT_OCSGE),
     values: [2.06, 70.53, 37.43, 19.87, 81.45, 71.74, 84.7, 83.31, 48.12, N, N, 41.04, 19.12],
-    amounts: [4.94, 1355.93, 20.71, 1644.88, 9618.88, 3609.58, 4057.01, 8783.49, 3130.23, N, N, 262.61, 799.99],
     year_sets: STOCK_YEARS,
     year_set_index: [0, 1, 1, 1, 0, 2, 2, 1, 1, 4, 4, 3, 3],
 };

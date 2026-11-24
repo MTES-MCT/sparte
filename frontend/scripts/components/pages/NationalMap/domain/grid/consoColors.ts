@@ -36,3 +36,15 @@ export const CLASS_LIGHTNESS = [90, 78, 66, 54, 42];
 // Couleurs des classes d'une destination, de la plus claire à la plus sombre
 export const destinationPalette = (destination: ColoredDestination): string[] =>
     CLASS_LIGHTNESS.map((lightness) => shadeOfLightness(DESTINATION_COLORS[destination], lightness));
+
+// Couleur des cercles d'une carte en hectares d'une destination. Les cercles sont à demi
+// transparents sur le fond lavande des territoires, où une couleur pastel vire au gris : l'habitat
+// garde sa couleur, déjà soutenue, et l'activité prend un turquoise plus saturé de la même teinte.
+// Une destination sans couleur propre ici prend une nuance sombre de la sienne.
+const SYMBOL_COLORS: Partial<Record<ColoredDestination, string>> = {
+    habitat: DESTINATION_COLORS.habitat,
+    activite: '#289e98',
+};
+const SYMBOL_LIGHTNESS = CLASS_LIGHTNESS[3];
+export const destinationSymbolColor = (destination: ColoredDestination): string =>
+    SYMBOL_COLORS[destination] ?? shadeOfLightness(DESTINATION_COLORS[destination], SYMBOL_LIGHTNESS);

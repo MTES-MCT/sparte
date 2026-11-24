@@ -3,14 +3,11 @@ import {
     ARTIF_FLUX_INDICATORS,
     ARTIF_INDICATORS,
     ARTIF_STOCK_INDICATORS,
-    SIGNED_SYMBOL_COLORS,
     artifFootnote,
     artifTotals,
     artifValueNote,
     findArtifIndicator,
     isArtifFluxIndicator,
-    signedSymbolColor,
-    symbolMagnitude,
 } from './artifIndicators';
 import { CONSO_INDICATORS, renderModeOf, usesSymbols } from './indicators';
 
@@ -52,9 +49,7 @@ const noData = (): NationalMapArtifLand =>
     });
 
 const stock = ARTIF_STOCK_INDICATORS[0];
-const netPct = ARTIF_FLUX_INDICATORS.find((i) => i.id === 'artif_net_pct_surface')!;
-const netHa = ARTIF_FLUX_INDICATORS.find((i) => i.id === 'artif_net_ha')!;
-const annualHa = ARTIF_FLUX_INDICATORS.find((i) => i.id === 'artif_net_annual_ha')!;
+const annualPct = ARTIF_FLUX_INDICATORS.find((i) => i.id === 'artif_net_annual_pct_surface')!;
 const rings = ARTIF_FLUX_INDICATORS.find((i) => i.id === 'artif_desartif_ha')!;
 
 describe('déclaration des indicateurs', () => {
@@ -66,8 +61,8 @@ describe('déclaration des indicateurs', () => {
     });
 
     it('ne dessine en mailles que la carte des sols artificialisés, rangée avant les cartes par territoire', () => {
-        expect(ARTIF_INDICATORS.filter((indicator) => renderModeOf(indicator) === 'grid').map(({ id }) => id)).toEqual(['artif_pct_gridded']);
-        expect(ARTIF_STOCK_INDICATORS.map(({ id }) => id)).toEqual(['artif_pct_gridded', 'artif_pct', 'artif_ha']);
+        expect(ARTIF_INDICATORS.filter((indicator) => renderModeOf(indicator) === 'grid').map(({ id }) => id)).toEqual(['artif_soils']);
+        expect(ARTIF_STOCK_INDICATORS.map(({ id }) => id)).toEqual(['artif_soils', 'artif_pct']);
     });
 
     it('ne partage en anneaux que la carte des deux flux, que des cercles ne dessinent pas', () => {
@@ -99,25 +94,11 @@ describe('déclaration des indicateurs', () => {
     });
 
     it('retrouve un indicateur par son identifiant', () => {
-        expect(findArtifIndicator('artif_ha')?.unit).toBe('ha');
+        expect(findArtifIndicator('artif_desartif_ha')?.unit).toBe('ha');
         expect(findArtifIndicator('conso_ha')).toBeUndefined();
         expect(findArtifIndicator(null)).toBeUndefined();
-        expect(isArtifFluxIndicator(netHa)).toBe(true);
+        expect(isArtifFluxIndicator(rings)).toBe(true);
         expect(isArtifFluxIndicator(stock)).toBe(false);
-    });
-});
-
-describe('cercles d’une valeur signée', () => {
-    it('porte la valeur absolue par la taille', () => {
-        expect(symbolMagnitude(-12, netHa)).toBe(12);
-        expect(symbolMagnitude(12, netHa)).toBe(12);
-        expect(symbolMagnitude(-12, { signed: false })).toBe(-12);
-    });
-
-    it('porte le signe par la couleur : bleu pour une baisse, rouge pour une hausse', () => {
-        expect(signedSymbolColor(-1, netHa)).toBe(SIGNED_SYMBOL_COLORS.decrease);
-        expect(signedSymbolColor(1, netHa)).toBe(SIGNED_SYMBOL_COLORS.increase);
-        expect(signedSymbolColor(1, {})).toBeUndefined();
     });
 });
 
@@ -128,14 +109,14 @@ describe('artifValueNote', () => {
     });
 
     it('précise les deux millésimes du flux', () => {
-        expect(artifValueNote(land(), netPct)).toBe(' entre le millésime n°1 (2018) et le millésime n°2 (2021)');
+        expect(artifValueNote(land(), annualPct)).toBe(' entre le millésime n°1 (2018) et le millésime n°2 (2021)');
         expect(artifValueNote(land(), rings)).toBe(' entre le millésime n°1 (2018) et le millésime n°2 (2021)');
-        expect(artifValueNote(land({ artif_net_years_old: [2017, 2018] }), netHa)).toBe(' entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)');
+        expect(artifValueNote(land({ artif_net_years_old: [2017, 2018] }), rings)).toBe(' entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)');
     });
 
     it('ne dit rien pour un territoire sans donnée', () => {
         expect(artifValueNote(noData(), stock)).toBe('');
-        expect(artifValueNote(noData(), netPct)).toBe('');
+        expect(artifValueNote(noData(), annualPct)).toBe('');
     });
 });
 
@@ -158,24 +139,23 @@ describe('artifFootnote', () => {
     });
 
     it('donne les deux millésimes et l’étendue de leurs années pour le flux', () => {
-        const text = artifFootnote([land(), land({ artif_net_years_old: [2016], artif_net_years_new: [2019] })], netPct);
+        const text = artifFootnote([land(), land({ artif_net_years_old: [2016], artif_net_years_new: [2019] })], rings);
         expect(text).toContain('Évolution mesurée entre le millésime n°1 (2016 à 2018) et le millésime n°2 (2019 à 2021).');
         expect(text).toContain('ne sont pas strictement comparables');
-        expect(text).not.toContain('Cercles');
         expect(text).not.toContain('rythme annuel');
     });
 
-    it('explique les couleurs des cercles signés et le rythme annuel', () => {
-        expect(artifFootnote([land()], netHa)).toContain('cercles bleus : désartificialisation nette');
-        expect(artifFootnote([land()], annualHa)).toContain('Le rythme annuel divise le flux');
-        expect(artifFootnote([land()], netHa)).toContain('entre le millésime n°1 (2018) et le millésime n°2 (2021). Cercles rouges');
+    it('explique le rythme annuel sur la carte qui en dessine un', () => {
+        expect(artifFootnote([land()], annualPct)).toContain(
+            'entre le millésime n°1 (2018) et le millésime n°2 (2021). Le rythme annuel divise le flux de chaque département par la durée entre ses deux millésimes.',
+        );
     });
 
     it('compte les territoires qui n’ont qu’un millésime, où aucune évolution ne se mesure', () => {
         const single = land({ artif_index: 1, artif_net_ha: null, artif_net_years_old: [], artif_net_years_new: [], artif_net_index_old: null, artif_net_index_new: null });
-        expect(artifFootnote([land(), single], netPct)).toContain(' Un territoire n’a qu’un millésime (en gris) : il en faut deux pour mesurer une évolution.');
-        expect(artifFootnote([single, single], netPct)).toBe(
-            'Source : OCS GE (IGN). 2 territoires n’ont qu’un millésime (en gris) : il en faut deux pour mesurer une évolution.',
+        expect(artifFootnote([land(), single], rings)).toContain(' Un territoire n’a qu’un millésime (hachurés) : il en faut deux pour mesurer une évolution.');
+        expect(artifFootnote([single, single], rings)).toBe(
+            'Source : OCS GE (IGN). 2 territoires n’ont qu’un millésime (hachurés) : il en faut deux pour mesurer une évolution.',
         );
         // Une carte de stock les montre : elle n'a rien à en dire
         expect(artifFootnote([land(), single], stock)).not.toContain('qu’un millésime');
@@ -186,14 +166,14 @@ describe('artifFootnote', () => {
     });
 
     it('nomme les territoires sans donnée, ou les compte s’ils sont nombreux', () => {
-        expect(artifFootnote([land(), noData()], stock, ['Guyane'])).toContain('Donnée non disponible pour Guyane (en gris)');
+        expect(artifFootnote([land(), noData()], stock, ['Guyane'])).toContain('Donnée non disponible pour Guyane (hachurés)');
         const many = Array.from({ length: 22 }, (_, i) => `Commune ${i}`);
-        expect(artifFootnote([land()], stock, many)).toContain('Donnée non disponible pour 22 territoires (en gris)');
+        expect(artifFootnote([land()], stock, many)).toContain('Donnée non disponible pour 22 territoires (hachurés)');
     });
 
     it('le dit quand aucun territoire n’a de donnée', () => {
         expect(artifFootnote([noData()], stock, ['Guyane'])).toBe(
-            'Source : OCS GE (IGN). Donnée non disponible pour Guyane (en gris) : la couverture OCS GE y est incomplète.',
+            'Source : OCS GE (IGN). Donnée non disponible pour Guyane (hachurés) : la couverture OCS GE y est incomplète.',
         );
         expect(artifFootnote([], stock)).toContain('Aucune donnée');
     });

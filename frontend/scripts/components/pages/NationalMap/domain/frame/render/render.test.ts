@@ -20,9 +20,8 @@ const france = (indicatorId: string, conso = CONSO_FRANCE_BY_REGION): MapFrame =
 const franceArtif = (indicatorId: string): MapFrame => artifFrame('FRANCE', FRANCE_BY_REGION, indicatorId, ARTIF_FRANCE_BY_REGION);
 
 const CHOROPLETH = france('conso_pct_surface');
-const DIVERGING = franceArtif('artif_net_pct_surface');
+const DIVERGING = franceArtif('artif_net_annual_pct_surface');
 const SYMBOLS = france('conso_ha');
-const SIGNED_SYMBOLS = franceArtif('artif_net_ha');
 const RINGS = franceArtif('artif_desartif_ha');
 const BIVARIATE = france('bivariate_habitat_menages');
 const BIVARIATE_WITHOUT_THRESHOLDS = france('bivariate_habitat_menages', CONSO_FRANCE_BY_REGION_IN_2024);
@@ -59,39 +58,57 @@ describe('aplat de couleur', () => {
         const legend = legendOf(CHOROPLETH, 'classes');
 
         expect(territory(CHOROPLETH).mode).toBe('choropleth');
-        expect(legend.classes.map((valueClass) => plain(valueClass.name))).toEqual(["Jusqu'à 0,02 %", 'De 0,02 à 0,33 %', 'De 0,33 à 0,55 %', 'De 0,55 à 0,83 %', 'Plus de 0,83 %']);
+        // Chaque borne est la plus petite valeur de la classe qu'elle ouvre
+        expect(legend.classes.map((valueClass) => plain(valueClass.name))).toEqual(['Moins de 0,33 %', 'De 0,33 à 0,53 %', 'De 0,53 à 0,83 %', 'De 0,83 à 0,94 %', '0,94 % et plus']);
         expect(legend.counts).toEqual([2, 1, 2, 1, 1]);
         expect(legend).toMatchObject({
             title: "Consommation d'ENAF (en pourcentage de la surface communale)",
             noDataCount: 0,
             landTypeLabel: 'Régions',
-            method: 'Classes par seuils naturels (méthode de Jenks), calculées sur les territoires affichés',
+            method: 'Classes par seuils naturels (méthode de Jenks), calculées sur les territoires affichés. Une valeur égale à une borne appartient à la classe supérieure',
         });
     });
 
-    it('laisse la couleur des territoires aux classes, et fait suivre la valeur de la période', () => {
-        expect(pointOf(CHOROPLETH, '53')).toEqual({ land_id: '53', name: 'Bretagne', zone: 'REGION_53', value: 0.83, valueText: '0,83 % de 2011 à 2024', legendKey: 3 });
+    it('pose sur chaque territoire la couleur de sa classe, et fait suivre la valeur de la période', () => {
+        // La Bretagne est sur une borne : elle est peinte de la classe qu'elle ouvre, où la légende la compte
+        expect(pointOf(CHOROPLETH, '53')).toEqual({
+            land_id: '53',
+            name: 'Bretagne',
+            zone: 'REGION_53',
+            value: 0.83,
+            valueText: '0,83 % de 2011 à 2024',
+            color: '#4b4bc8',
+            legendKey: 3,
+        });
+        expect(legendOf(CHOROPLETH, 'classes').classes[3]).toMatchObject({ from: 0.83, color: '#4b4bc8' });
     });
 
-    it('sépare les baisses des hausses à zéro pour une évolution, et compte à part les territoires sans donnée', () => {
+    it('sépare les baisses des hausses pour une évolution, range les valeurs nulles à part et compte à part les territoires sans donnée', () => {
         const legend = legendOf(DIVERGING, 'classes');
 
-        expect(legend.classes.map((valueClass) => plain(valueClass.name))).toEqual(["Jusqu'à 0 %", 'De 0 à +0,11 %', 'De +0,11 à +0,16 %', 'Plus de +0,16 %']);
-        expect(legend.classes.map((valueClass) => valueClass.color)).toEqual(['#b5d5e8', '#fdc086', '#ef8a62', '#b2182b']);
-        expect(legend.counts).toEqual([2, 2, 1, 1]);
+        expect(legend.classes.map((valueClass) => plain(valueClass.name))).toEqual([
+            'Moins de 0 % par an',
+            '0 % par an',
+            'De +0,001 à +0,052 % par an',
+            'De +0,052 à +0,069 % par an',
+            '+0,069 % par an et plus',
+        ]);
+        expect(legend.classes.map((valueClass) => valueClass.color)).toEqual(['#b5d5e8', '#ffffbf', '#fdc086', '#ef8a62', '#b2182b']);
+        expect(legend.counts).toEqual([1, 1, 2, 1, 1]);
         expect(legend.noDataCount).toBe(1);
-        expect(legend.method).toBe('Classes par seuils naturels (méthode de Jenks), calculées de part et d’autre de zéro sur les territoires affichés');
+        expect(legend.method).toContain('de part et d’autre de zéro sur les territoires affichés');
+        expect(legend.method).toContain('les valeurs nulles forment une classe à part');
     });
 
     it('fait suivre une valeur OCS GE des millésimes du territoire, et ne dit rien de plus d’un territoire sans donnée', () => {
         expect(valueTexts(DIVERGING)).toEqual([
             'Donnée non disponible',
-            '0,00 % entre le millésime n°1 (2020) et le millésime n°2 (2023)',
-            '0,24 % entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)',
-            '0,16 % entre le millésime n°1 (2017 à 2019) et le millésime n°2 (2020 à 2022)',
-            '0,11 % entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2021 à 2023)',
-            '0,09 % entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2020 à 2023)',
-            '-0,06 % entre le millésime n°1 (2019) et le millésime n°2 (2021)',
+            '0,000 % par an entre le millésime n°1 (2020) et le millésime n°2 (2023)',
+            '0,069 % par an entre le millésime n°1 (2017 à 2018) et le millésime n°2 (2021)',
+            '0,052 % par an entre le millésime n°1 (2017 à 2019) et le millésime n°2 (2020 à 2022)',
+            '0,036 % par an entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2021 à 2023)',
+            '0,029 % par an entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2020 à 2023)',
+            '-0,028 % par an entre le millésime n°1 (2019) et le millésime n°2 (2021)',
         ]);
         expect(valueTexts(franceArtif('artif_pct')).slice(1, 4)).toEqual(['11,6 % au millésime n°2 (2023)', '20,9 % au millésime n°2 (2021)', '12,3 % au millésime n°2 (2020 à 2022)']);
     });
@@ -117,6 +134,13 @@ describe('cercles proportionnels', () => {
         expect(render.symbols.map((symbol) => symbol.name)).toEqual(['Nouvelle-Aquitaine', 'Auvergne-Rhône-Alpes', 'Bretagne', 'Île-de-France', 'Corse', 'Guyane']);
         expect(render).toMatchObject({ maxValue: 47150.91, color: '#000091' });
         expect(plain(pointOf(SYMBOLS, '53').valueText)).toBe('22 824 ha de 2011 à 2024, soit 1 630 ha par an');
+    });
+
+    it('donne aux cercles d’une destination sa couleur, et le bleu du site à ceux de toutes les destinations', () => {
+        expect(symbols(france('conso_habitat_ha')).color).toBe('#6a6af4');
+        expect(symbols(france('conso_activite_ha')).color).toBe('#289e98');
+        expect(legendOf(france('conso_activite_ha'), 'symbols').colors).toEqual([{ color: '#289e98', label: null }]);
+        expect(symbols(SYMBOLS).color).toBe('#000091');
     });
 
     it('ne dessine pas de cercle pour une valeur nulle', () => {
@@ -154,7 +178,8 @@ describe('cercles proportionnels', () => {
         it('n’est pas donnée quand elle s’écrirait zéro, ni pour un territoire sans valeur', () => {
             const texts = valueTexts(overDecade(0, 0.4, 0.6, null));
 
-            expect(texts.slice(0, 3)).toEqual(['0 ha de 2011 à 2020', '0 ha de 2011 à 2020', '1 ha de 2011 à 2020, soit 0,1 ha par an']);
+            // Sous dix hectares, le cumul garde une décimale : moins d'un hectare ne se lit pas « 0 ha »
+            expect(texts.slice(0, 3)).toEqual(['0 ha de 2011 à 2020', '0,4 ha de 2011 à 2020', '0,6 ha de 2011 à 2020, soit 0,1 ha par an']);
             expect(texts[3]).not.toContain('par an');
         });
 
@@ -171,45 +196,11 @@ describe('cercles proportionnels', () => {
         });
     });
 
-    describe('d’une valeur signée', () => {
-        it('porte la valeur absolue par la taille et le signe par la couleur', () => {
-            const render = symbols(SIGNED_SYMBOLS);
-
-            expect(render.symbols.map(({ name, z, color }) => [name, z, color])).toEqual([
-                ['Nouvelle-Aquitaine', 9736.3, '#b2182b'],
-                ['Auvergne-Rhône-Alpes', 6052.63, '#b2182b'],
-                ['Bretagne', 4273.81, '#b2182b'],
-                ['Île-de-France', 2857.82, '#b2182b'],
-                ['Corse', 491.11, '#2166ac'],
-            ]);
-            expect(render).toMatchObject({ maxValue: 9736.3, color: '#b2182b' });
-        });
-
-        it('laisse en gris, hors de la légende, le territoire sans donnée', () => {
-            expect(pointOf(SIGNED_SYMBOLS, '03')).toMatchObject({ value: null, color: '#dcdcdc', valueText: 'Donnée non disponible', legendKey: null });
-            expect(legendOf(SIGNED_SYMBOLS, 'symbols').noDataCount).toBe(1);
-        });
-
-        it.failing('la légende des cercles signés expose les deux couleurs', () => {
-            expect(legendOf(SIGNED_SYMBOLS, 'symbols').colors.map(({ color }) => color)).toEqual(['#b2182b', '#2166ac']);
-        });
-    });
-
-    it.failing('aucune référence de cercle ne finit par ,0', () => {
-        const labels = legendOf(SIGNED_SYMBOLS, 'symbols').references.map(({ label }) => plain(label));
-
-        expect(labels).toHaveLength(3);
-        expect(labels.filter((label) => /,0 /.test(label))).toEqual([]);
-    });
-
-    it.each([
-        ['valeur positive', SYMBOLS],
-        ['valeur signée', SIGNED_SYMBOLS],
-    ])('donne la même clé de légende à tout territoire renseigné (%s)', (_kind, frame) => {
-        const { points } = symbols(frame);
+    it('donne la même clé de légende à tout territoire renseigné', () => {
+        const { points } = symbols(SYMBOLS);
 
         points.forEach((point) => expect(point.legendKey).toBe(point.value === null ? null : 0));
-        expect(points.filter((point) => point.legendKey === null)).toHaveLength(legendOf(frame, 'symbols').noDataCount);
+        expect(points.filter((point) => point.legendKey === null)).toHaveLength(legendOf(SYMBOLS, 'symbols').noDataCount);
     });
 });
 
@@ -530,9 +521,9 @@ describe('données carroyées', () => {
 });
 
 describe('sols artificialisés par maille', () => {
-    const SOILS = franceArtif('artif_pct_gridded');
+    const SOILS = franceArtif('artif_soils');
     const BRETAGNE: NationalMapArtifIndicators = { scale: 'DEPART', lands: {} };
-    const BRETAGNE_SOILS = artifFrame('REGION_53', BRETAGNE_BY_DEPARTEMENT, 'artif_pct_gridded', BRETAGNE);
+    const BRETAGNE_SOILS = artifFrame('REGION_53', BRETAGNE_BY_DEPARTEMENT, 'artif_soils', BRETAGNE);
 
     it('garde, sur la France entière, les territoires d’outre-mer rapprochés de l’Hexagone, leurs noms et la ligne qui les sépare', () => {
         expect(grid(SOILS).features).toBe(SOILS.base.features);
@@ -579,8 +570,8 @@ describe('sols artificialisés par maille', () => {
 
         expect(detail.title).toBe('Nature des sols');
         expect(detail.classes).toEqual([
-            { color: '#ff9b93', name: 'Sol artificialisé' },
-            { color: '#b4ff8d', name: 'Sol non artificialisé' },
+            { color: '#fa4b42', name: 'Sol artificialisé' },
+            { color: '#dcebd2', name: 'Sol non artificialisé' },
         ]);
         expect(detail.classes).toBe(grid(SOILS).detail.classes);
         // Les objets gardent la légende de l'image qu'ils remplacent : seul change ce qu'on peut en faire

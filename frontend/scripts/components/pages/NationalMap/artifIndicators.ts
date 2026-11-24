@@ -50,17 +50,17 @@ const STOCK_CHARTS = ARTIF_STOCK_CHARTS.map(({ id }) => id);
 const FLUX_CHARTS = ARTIF_FLUX_CHARTS.map(({ id }) => id);
 
 // L'ordre est celui du menu, et la première carte est celle qui s'affiche à l'ouverture de la
-// rubrique : l'image des sols, qui montre l'artificialisation là où elle est, puis les cartes par
-// territoire, la part avant les hectares.
+// rubrique : l'image des sols, qui montre l'artificialisation là où elle est, puis la part par
+// territoire. La surface en hectares n'a pas de carte : ses cercles ne se lisaient qu'aux mailles
+// les plus larges, et elle reste donnée par les chiffres clés.
 export const ARTIF_STOCK_INDICATORS: Indicator[] = [
     {
-        id: 'artif_pct_gridded',
+        id: 'artif_soils',
         label: 'Sols artificialisés',
         description:
             'Image de l’OCS GE publiée par l’IGN : chaque objet y est dessiné, artificialisé ou non, du pays entier jusqu’à la rue. En zoomant jusqu’à la commune, la carte dessine les objets eux-mêmes, que l’on peut survoler.',
         type: 'map',
-        unit: '%',
-        decimals: 0,
+        // Ni unité ni décimales : la carte dessine une nature de sol, pas une valeur par territoire
         gridded: true,
         source: 'ocsge',
         // L'image recouvre les territoires, qui ne servent qu'à ouvrir une zone : le pays se parcourt
@@ -80,38 +80,15 @@ export const ARTIF_STOCK_INDICATORS: Indicator[] = [
         source: 'ocsge',
         charts: STOCK_CHARTS,
     },
-    {
-        id: 'artif_ha',
-        label: 'Surface artificialisée (en hectares)',
-        description: 'Surface artificialisée au dernier millésime OCS GE du territoire.',
-        type: 'map',
-        unit: 'ha',
-        decimals: 0,
-        relative: {
-            key: 'artif_pct',
-            label: 'Part du territoire artificialisée (en pourcentage)',
-            unit: '%',
-            decimals: 1,
-        },
-        source: 'ocsge',
-        charts: STOCK_CHARTS,
-    },
 ];
 
-// Comme pour la consommation, les cartes en pourcentage passent avant les cartes en hectares
+// La rubrique s'ouvre sur le rythme annuel en pourcentage : la durée entre deux millésimes va de 2 à
+// 5 ans selon les départements, et seule une valeur ramenée à l'année et à la surface se compare
+// d'un territoire à l'autre. Les anneaux montrent ensuite les deux flux bruts, en hectares.
+// L'artificialisation nette sur toute la durée, en pourcentage ou en hectares, et son rythme annuel
+// en hectares n'ont pas de carte : la première reste la version relative des anneaux sur la vue de
+// toutes les communes du pays, les autres sont données par les chiffres clés et l'infobulle.
 export const ARTIF_FLUX_INDICATORS: Indicator[] = [
-    {
-        id: 'artif_net_pct_surface',
-        label: 'Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)',
-        description:
-            'Surfaces artificialisées moins surfaces désartificialisées entre les deux derniers millésimes OCS GE du territoire, rapportées à sa superficie.',
-        type: 'map',
-        unit: '%',
-        decimals: 2,
-        palette: 'diverging',
-        source: 'ocsge',
-        charts: FLUX_CHARTS,
-    },
     {
         id: 'artif_net_annual_pct_surface',
         label: 'Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an)',
@@ -133,6 +110,9 @@ export const ARTIF_FLUX_INDICATORS: Indicator[] = [
         unit: 'ha',
         decimals: 1,
         rings: true,
+        // Par EPCI, presque aucun anneau du pays n'atteint la taille où son partage se lit : la carte
+        // s'y ouvre par département
+        openingScales: { NATION: 'DEPART' },
         // À l'échelle de toutes les communes du pays, la carte est celle de l'artificialisation nette
         relative: {
             key: 'artif_net_pct_surface',
@@ -140,42 +120,6 @@ export const ARTIF_FLUX_INDICATORS: Indicator[] = [
             unit: '%',
             decimals: 2,
             amount: 'artif_net_ha',
-        },
-        signed: true,
-        source: 'ocsge',
-        charts: FLUX_CHARTS,
-    },
-    {
-        id: 'artif_net_ha',
-        label: 'Artificialisation nette entre les deux derniers millésimes (en hectares)',
-        description:
-            'Surfaces artificialisées moins surfaces désartificialisées entre les deux derniers millésimes OCS GE du territoire. Une valeur négative est une désartificialisation nette.',
-        type: 'map',
-        unit: 'ha',
-        decimals: 1,
-        relative: {
-            key: 'artif_net_pct_surface',
-            label: 'Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)',
-            unit: '%',
-            decimals: 2,
-        },
-        signed: true,
-        source: 'ocsge',
-        charts: FLUX_CHARTS,
-    },
-    {
-        id: 'artif_net_annual_ha',
-        label: 'Rythme annuel d’artificialisation nette (en hectares par an)',
-        description:
-            'Artificialisation nette entre les deux derniers millésimes OCS GE, divisée par le nombre d’années qui les séparent (de 2 à 5 ans selon les départements).',
-        type: 'map',
-        unit: 'ha/an',
-        decimals: 1,
-        relative: {
-            key: 'artif_net_annual_pct_surface',
-            label: 'Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an)',
-            unit: '%/an',
-            decimals: 3,
         },
         signed: true,
         source: 'ocsge',
@@ -192,20 +136,11 @@ export const isArtifFluxIndicator = (indicator: Pick<Indicator, 'id'>): boolean 
 // Indicateurs en rythme annuel : le flux de chaque département est divisé par la durée entre ses millésimes
 const isAnnualIndicator = (indicator: Pick<Indicator, 'unit'>): boolean => indicator.unit === 'ha/an' || indicator.unit === '%/an';
 
-// --- Symboles proportionnels d'une valeur signée ou de deux flux -----------------------
+// --- Anneaux de deux flux ---------------------------------------------------------------
 
 // Rouge pour l'artificialisation, bleu pour la désartificialisation (jamais vert / rouge) : couleur
-// du cercle d'une valeur nette selon son signe, et des deux arcs d'un anneau
+// des deux arcs d'un anneau
 export const SIGNED_SYMBOL_COLORS = { increase: '#b2182b', decrease: '#2166ac' };
-
-// Grandeur portée par la taille du cercle : la valeur absolue d'un indicateur signé
-export const symbolMagnitude = (value: number, indicator: Pick<Indicator, 'signed'>): number => (indicator.signed ? Math.abs(value) : value);
-
-// Couleur du cercle d'une valeur signée ; undefined pour garder la couleur par défaut de la carte
-export const signedSymbolColor = (value: number, indicator: Pick<Indicator, 'signed'>): string | undefined => {
-    if (!indicator.signed) return undefined;
-    return value < 0 ? SIGNED_SYMBOL_COLORS.decrease : SIGNED_SYMBOL_COLORS.increase;
-};
 
 // --- Millésimes -------------------------------------------------------------------------
 // Tous les textes qui désignent un millésime viennent de domain/millesimes.ts : « millésime n°2
@@ -227,15 +162,15 @@ const MAX_NAMED_MISSING = 6;
 const missingSentence = (missingNames: string[]): string => {
     if (missingNames.length === 0) return '';
     const cause = 'la couverture OCS GE y est incomplète';
-    if (missingNames.length > MAX_NAMED_MISSING) return ` Donnée non disponible pour ${missingNames.length} territoires (en gris) : ${cause}.`;
-    return ` Donnée non disponible pour ${missingNames.join(', ')} (en gris) : ${cause}.`;
+    if (missingNames.length > MAX_NAMED_MISSING) return ` Donnée non disponible pour ${missingNames.length} territoires (hachurés) : ${cause}.`;
+    return ` Donnée non disponible pour ${missingNames.join(', ')} (hachurés) : ${cause}.`;
 };
 
 // Territoires qui n'ont qu'un millésime : une carte de flux n'a rien à y mesurer
 const withoutFluxSentence = (count: number): string => {
     if (count === 0) return '';
     const lands = count === 1 ? 'Un territoire n’a' : `${count} territoires n’ont`;
-    return ` ${lands} qu’un millésime (en gris) : il en faut deux pour mesurer une évolution.`;
+    return ` ${lands} qu’un millésime (hachurés) : il en faut deux pour mesurer une évolution.`;
 };
 
 const SOURCE = 'Source : OCS GE (IGN).';
@@ -259,8 +194,7 @@ export const artifFootnote = (
     const comparability = reading.varies ? COMPARABILITY : '';
     if (kind === 'stock') return `${SOURCE} ${subject} ${reading.long}.${comparability}${missing}`;
     const annual = isAnnualIndicator(indicator) ? ' Le rythme annuel divise le flux de chaque département par la durée entre ses deux millésimes.' : '';
-    const colors = indicator.signed ? ' Cercles rouges : artificialisation nette ; cercles bleus : désartificialisation nette.' : '';
-    return `${SOURCE} Évolution mesurée ${reading.long}.${comparability}${annual}${colors}${withoutFlux}${missing}`;
+    return `${SOURCE} Évolution mesurée ${reading.long}.${comparability}${annual}${withoutFlux}${missing}`;
 };
 
 // --- Chiffres clés ----------------------------------------------------------------------

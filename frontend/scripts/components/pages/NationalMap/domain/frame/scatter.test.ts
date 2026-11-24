@@ -27,7 +27,7 @@ const crossingOf = (lands: CrossedLand[]): Crossing => ({
 const bivariate = (lands: CrossedLand[] | null): FrameRender => ({ renderer: 'territory', mode: 'bivariate', points: [], crossing: lands && crossingOf(lands) });
 
 const context = (scale = 'DEPART', period: Period | null = { startYear: 2011, endYear: 2024 }): FrameContext =>
-    ({ base: { zone: 'REGION_53', scale }, indicator: { id: 'bivariate_habitat_menages' }, period }) as FrameContext;
+    ({ base: { zone: 'REGION_53', scale, title: 'Bretagne' }, indicator: { id: 'bivariate_habitat_menages' }, period }) as FrameContext;
 
 // `count` territoires aux taux étalés régulièrement : le n-ième a pour taux n centièmes et n dixièmes
 const spread = (count: number): CrossedLand[] => Array.from({ length: count }, (_, index) => land(index, index / 100, index / 10, index % 9));
@@ -124,25 +124,25 @@ describe('construction du nuage', () => {
         expect([y.label, y.unit]).toEqual(["Consommation annuelle pour l'habitat", '% par an']);
     });
 
-    it('dit dans son titre ce qu’est un point, à la maille affichée', () => {
-        expect(modelOf(SCATTER).title).toBe('Un point par département');
-        expect(modelOf(scatterOf(context('REGION'), bivariate(LANDS))).title).toBe('Un point par région');
-        expect(modelOf(scatterOf(context('COMM'), bivariate(LANDS))).title).toBe('Un point par commune');
-        expect(modelOf(scatterOf(context('EPCI'), bivariate(LANDS))).title).toBe('Un point par EPCI');
+    it('dit dans son titre ce qu’est un point, à la maille affichée, puis le territoire et la période, comme les titres du serveur', () => {
+        expect(modelOf(SCATTER).title).toBe('Un point par département - Bretagne (2011 - 2024)');
+        expect(modelOf(scatterOf(context('REGION'), bivariate(LANDS))).title).toBe('Un point par région - Bretagne (2011 - 2024)');
+        expect(modelOf(scatterOf(context('COMM'), bivariate(LANDS))).title).toBe('Un point par commune - Bretagne (2011 - 2024)');
+        expect(modelOf(scatterOf(context('EPCI'), bivariate(LANDS))).title).toBe('Un point par EPCI - Bretagne (2011 - 2024)');
     });
 
-    it('dit en sous-titre ce que montre chaque axe, l’unité, la période et le sens des tirets', () => {
+    it('dit en sous-titre ce que montre chaque axe, l’unité et le sens des tirets', () => {
         expect(subtitleLines(SCATTER)).toEqual([
             "↑ Consommation annuelle pour l'habitat",
             '→ Évolution du nombre de ménages',
-            'En % par an, de 2011 à 2024. Tirets : seuils des classes de la carte.',
+            'En % par an. Tirets : seuils des classes de la carte.',
         ]);
     });
 
     it('suit la période de la carte affichée', () => {
         const single = scatterOf(context('DEPART', { startYear: 2023, endYear: 2023 }), bivariate(LANDS));
 
-        expect(subtitleLines(single)[2]).toBe('En % par an, en 2023. Tirets : seuils des classes de la carte.');
+        expect(modelOf(single).title).toBe('Un point par département - Bretagne (2023)');
     });
 
     it('se décrit pour les lecteurs d’écran', () => {

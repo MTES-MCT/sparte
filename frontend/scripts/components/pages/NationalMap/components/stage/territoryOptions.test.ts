@@ -89,7 +89,7 @@ describe('image exportée', () => {
     });
 
     it('donne en sous-titre, pour l’OCS GE, les millésimes représentés à la place de la période', () => {
-        expect(exported(optionsOf(artif('artif_net_pct_surface'))).subtitle.text).toBe('France entière · par région · Millésimes n°1 (2017 à 2020) et n°2 (2020 à 2023)');
+        expect(exported(optionsOf(artif('artif_net_annual_pct_surface'))).subtitle.text).toBe('France entière · par région · Millésimes n°1 (2017 à 2020) et n°2 (2020 à 2023)');
     });
 
     it('crédite le Cerema pour la consommation et l’IGN pour l’OCS GE', () => {
@@ -97,7 +97,7 @@ describe('image exportée', () => {
             enabled: true,
             text: 'Mon Diagnostic Artificialisation · données Cerema (fichiers fonciers)',
         });
-        expect(exported(optionsOf(artif('artif_net_pct_surface'))).credits.text).toBe('Mon Diagnostic Artificialisation · données IGN (OCS GE)');
+        expect(exported(optionsOf(artif('artif_net_annual_pct_surface'))).credits.text).toBe('Mon Diagnostic Artificialisation · données IGN (OCS GE)');
     });
 
     it('dessine la légende des classes d’un aplat, titrée par son unité', () => {
@@ -148,7 +148,8 @@ describe('carte en anneaux', () => {
 
         expect(seriesTypes(options)).toEqual(['map', 'mapline', 'mappoint']);
         expect(options.colorAxis).toBeUndefined();
-        expect(seriesOf(options)[0].borderColor).toBe(seriesOf(optionsOf(artif('artif_net_ha'), { numberedInsets: false, symbolMaxSize: 64 }))[0].borderColor);
+        // Le même contour que sur une carte en cercles
+        expect(seriesOf(options)[0].borderColor).toBe(seriesOf(optionsOf(france('conso_ha'), { numberedInsets: false, symbolMaxSize: 64 }))[0].borderColor);
         expect(exported(options).legend.enabled).toBe(false);
     });
 
@@ -191,7 +192,7 @@ describe('carte en anneaux', () => {
 
     it('n’écoute les rendus du graphique que pour une carte en anneaux', () => {
         expect(optionsOf(france('conso_ha'), { numberedInsets: false, symbolMaxSize: 64 }).chart.events.render).toBeUndefined();
-        expect(optionsOf(artif('artif_net_pct_surface')).chart.events.render).toBeUndefined();
+        expect(optionsOf(artif('artif_net_annual_pct_surface')).chart.events.render).toBeUndefined();
         expect('render' in optionsOf(france('conso_pct_surface')).chart.events).toBe(false);
     });
 });

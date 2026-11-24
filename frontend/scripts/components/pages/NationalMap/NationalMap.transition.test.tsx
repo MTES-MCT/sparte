@@ -240,13 +240,15 @@ describe('nuage de points des cartes bivariées', () => {
     it('place les territoires de la carte affichée, sans rien demander au serveur', () => {
         openTwelveRegions();
 
-        expect(scatter()).toBe('Un point par région, 12 points');
+        expect(scatter()).toBe('Un point par région - France entière (2011 - 2024), 12 points');
         expect(mockPrefetchChart).not.toHaveBeenCalled();
     });
 
     it('dit à sa place pourquoi il n’est pas dessiné quand la carte montre moins de dix territoires', () => {
-        openFranceByRegion();
-        fireEvent.click(screen.getByRole('radio', { name: /évolution des ménages/ }));
+        // Ouverte par l'adresse : choisie dans le menu, la carte bivariée passerait à sa maille d'ouverture, l'EPCI
+        deliverBaseMap(FRANCE_BY_REGION);
+        deliverConso(FRANCE_BY_REGION, CONSO_FRANCE_BY_REGION);
+        openPage(BY_REGION_HOUSEHOLDS);
 
         expect(scatter()).toBeNull();
         expect(screen.getByText("Le nuage de points n'est pas dessiné pour moins de dix territoires.")).toBeInTheDocument();
@@ -260,7 +262,7 @@ describe('nuage de points des cartes bivariées', () => {
 
         fireEvent.click(screen.getByRole('checkbox', { name: /nuage de points/ }));
 
-        expect(scatter()).toBe('Un point par région, 12 points');
+        expect(scatter()).toBe('Un point par région - France entière (2011 - 2024), 12 points');
     });
 
     it('apprend de la carte le territoire survolé, et lui désigne le sien', () => {
@@ -457,7 +459,7 @@ describe('vue chargée', () => {
 
         expect(breadcrumb()).toEqual(['France entière', 'Mayotte']);
         expect(screen.getByText(/^Les données de consommation/)).toHaveTextContent(
-            "Les données de consommation d'espaces ne sont pas disponibles pour CA de Dembeni / Mamoudzou, CC de Petite-Terre (en gris sur la carte).",
+            "Les données de consommation d'espaces ne sont pas disponibles pour CA de Dembeni / Mamoudzou, CC de Petite-Terre (hachurés sur la carte).",
         );
     });
 
@@ -497,9 +499,9 @@ describe('rubriques du menu', () => {
         openFranceByRegion();
         fireEvent.click(screen.getByRole('button', { name: 'Visualiser les espaces artificialisés' }));
 
-        expect(mapChoices()).toEqual(['artif_pct_gridded', 'artif_pct', 'artif_ha']);
-        expect(selectedMap()).toBe('artif_pct_gridded');
-        expect(window.location.search).toBe('?zone=FRANCE&scale=REGION&start=2011&end=2024&indicator=artif_pct_gridded');
+        expect(mapChoices()).toEqual(['artif_soils', 'artif_pct']);
+        expect(selectedMap()).toBe('artif_soils');
+        expect(window.location.search).toBe('?zone=FRANCE&scale=REGION&start=2011&end=2024&indicator=artif_soils');
     });
 
     it('affiche, pour l’artificialisation, ses chiffres clés, sa note et ses graphiques, sans période à choisir', () => {
@@ -507,16 +509,17 @@ describe('rubriques du menu', () => {
         fireEvent.click(screen.getByRole('button', { name: "Visualiser l'artificialisation" }));
         deliverArtif(FRANCE_BY_REGION, ARTIF_FRANCE_BY_REGION);
 
-        expect(mapChoices()).toEqual(['artif_net_pct_surface', 'artif_net_annual_pct_surface', 'artif_desartif_ha', 'artif_net_ha', 'artif_net_annual_ha']);
-        expect(selectedMap()).toBe('artif_net_pct_surface');
-        expect(mapLegend()).toHaveTextContent('Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)');
+        expect(mapChoices()).toEqual(['artif_net_annual_pct_surface', 'artif_desartif_ha']);
+        expect(selectedMap()).toBe('artif_net_annual_pct_surface');
+        expect(mapLegend()).toHaveTextContent('Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an)');
         expect(keyFigures()).toHaveTextContent('+22 429 haArtificialisation nette');
         expect(keyFigures()).toHaveTextContent('+7 132 ha/anRythme annuel moyen');
         expect(keyFigures()).toHaveTextContent('Millésimes n°1 et n°2');
         expect(screen.getByText(/^Source : OCS GE/)).toHaveTextContent(
             'Source : OCS GE (IGN). Évolution mesurée entre le millésime n°1 (2017 à 2020) et le millésime n°2 (2020 à 2023). ' +
                 'Les années diffèrent selon les départements : les valeurs ne sont pas strictement comparables d’un territoire à l’autre. ' +
-                'Donnée non disponible pour Guyane (en gris) : la couverture OCS GE y est incomplète.',
+                'Le rythme annuel divise le flux de chaque département par la durée entre ses deux millésimes. ' +
+                'Donnée non disponible pour Guyane (hachurés) : la couverture OCS GE y est incomplète.',
         );
         // À la place du sélecteur de période : les millésimes représentés, qui ouvrent leur explication
         const badge = screen.getByRole('button', { name: 'Millésimes n°1 (2017 à 2020) et n°2 (2020 à 2023). Qu’est-ce qu’un millésime ?' });
@@ -831,14 +834,14 @@ describe('première carte d’une rubrique d’artificialisation', () => {
         // s'ouvre sur l'image des sols, qui se prépare sous la carte affichée (voir plus bas)
         fireEvent.click(screen.getByRole('button', { name: "Visualiser l'artificialisation" }));
 
-        expect(selectedMap()).toBe('artif_net_pct_surface');
+        expect(selectedMap()).toBe('artif_net_annual_pct_surface');
         expect(mapLegend()).toHaveTextContent("Consommation d'ENAF (en hectares)");
         expect(keyFigures().textContent).toBe(before.keyFigures);
         expect(charts()).toEqual(before.charts);
 
         deliverArtif(FRANCE_BY_REGION, ARTIF_FRANCE_BY_REGION);
 
-        expect(mapLegend()).toHaveTextContent('Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)');
+        expect(mapLegend()).toHaveTextContent('Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an)');
         expect(keyFigures()).toHaveTextContent('Artificialisation nette');
         expect(charts()).toEqual(['artif_net_flux_national_map NATION/NATION millésimes 1 et 2', 'artif_flux_by_couverture_national_map NATION/NATION millésimes 1 et 2']);
     });
@@ -858,7 +861,7 @@ describe('carte des sols artificialisés par maille', () => {
     it('se prépare sous la carte par territoire, puis la remplace avec sa légende, les chiffres clés du stock et ses deux graphiques', () => {
         openSoils();
 
-        expect(window.location.search).toBe('?zone=FRANCE&scale=REGION&start=2011&end=2024&indicator=artif_pct_gridded');
+        expect(window.location.search).toBe('?zone=FRANCE&scale=REGION&start=2011&end=2024&indicator=artif_soils');
         expect(soilsMap()).not.toBeNull();
         expect(mapLegend()).toHaveTextContent("Consommation d'ENAF (en hectares)");
 
@@ -904,10 +907,10 @@ describe('carte des sols artificialisés par maille', () => {
     it('rouvre la carte de l’adresse', () => {
         deliverBaseMap(FRANCE_BY_REGION);
         deliverArtif(FRANCE_BY_REGION, ARTIF_FRANCE_BY_REGION);
-        openPage('?zone=FRANCE&scale=REGION&indicator=artif_pct_gridded');
+        openPage('?zone=FRANCE&scale=REGION&indicator=artif_soils');
         act(() => gridStub.reportStatus({ ready: true }));
 
-        expect(selectedMap()).toBe('artif_pct_gridded');
+        expect(selectedMap()).toBe('artif_soils');
         expect(gridStub.props.render.cells.file).toBe('sols_artificialises_national.pmtiles');
         expect(mapLegend()).toHaveTextContent('Nature des sols');
     });
@@ -1176,7 +1179,7 @@ describe('toutes les communes d’une zone nationale', () => {
         expect(selectedMap()).toBe('conso_pct_surface');
         expect(communesMap()).not.toBeNull();
         expect(territoryMap()).toBeNull();
-        expect(mapLegend()).toHaveTextContent('Classes par quantiles');
+        expect(mapLegend()).toHaveTextContent('Classes par seuils naturels');
         expect(keyFigures()).toHaveTextContent("Consommation d'espaces");
     });
 
@@ -1235,7 +1238,7 @@ describe('toutes les communes d’une zone nationale', () => {
             expect(territoryMap()).toBeNull();
             expect(communesStub.creations).toBe(1);
             expect(mapLegend()).toBe(legendNode);
-            expect(mapLegend()).toHaveTextContent('Classes par quantiles');
+            expect(mapLegend()).toHaveTextContent('Classes par seuils naturels');
             expect(screen.queryByRole('status')).toBeNull();
             expect(chartStub.creations).toHaveLength(1);
         });
@@ -1251,7 +1254,7 @@ describe('toutes les communes d’une zone nationale', () => {
             jest.useRealTimers();
 
             expect(territoryMap()).toBeNull();
-            expect(mapLegend()).toHaveTextContent('Classes par quantiles');
+            expect(mapLegend()).toHaveTextContent('Classes par seuils naturels');
             expect(screen.getByRole('status')).toHaveTextContent('Chargement des communes…');
         });
 
@@ -1282,7 +1285,7 @@ describe('toutes les communes d’une zone nationale', () => {
 
         // La colonne de la carte en hectares charge : la carte et la légende affichées restent
         expect(communesStub.props.busy).toBe(true);
-        expect(mapLegend()).toHaveTextContent('Classes par quantiles');
+        expect(mapLegend()).toHaveTextContent('Classes par seuils naturels');
 
         deliverValues(COMMUNES_CONSO_HA);
 

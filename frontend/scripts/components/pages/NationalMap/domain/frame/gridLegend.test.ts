@@ -8,7 +8,7 @@ const CHOROPLETH = france('conso_pct_surface');
 // Carte de mailles sans image ni objets
 const GRID = france('conso_ha_gridded');
 // Carte de mailles que remplacent une image, puis des objets aux grands zooms
-const SOILS = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_pct_gridded', ARTIF_FRANCE_BY_REGION);
+const SOILS = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_soils', ARTIF_FRANCE_BY_REGION);
 
 const gridRenderOf = ({ render }: MapFrame): GridRender => {
     if (render.renderer !== 'grid') throw new Error('carte de mailles attendue');

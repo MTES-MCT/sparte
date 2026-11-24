@@ -3,6 +3,8 @@
 // cartes de mailles et à la carte de toutes les communes du pays.
 import type * as maplibregl from 'maplibre-gl';
 import { showErrorToast } from '@components/ui/Toast';
+import { NO_DATA_HATCH_BACKGROUND, NO_DATA_HATCH_COLOR, NO_DATA_HATCH_STEP_PX } from '../../domain/noData';
+import { NO_DATA_COLOR } from '../../values';
 import type { ExportLegend, MapImageInfo } from '../../domain/frame/exportImage';
 
 const TEXT_COLOR = '#161616';
@@ -23,13 +25,36 @@ export const legendHeight = (legend: ExportLegend): number =>
 
 type Pen = { context: CanvasRenderingContext2D; px: (value: number) => number; font: (size: number, weight?: number) => string };
 
+// Pastille du « sans donnée » : les hachures des cartes, des traits gris qui montent vers la droite sur fond blanc
+const drawHatch = ({ context, px }: Pick<Pen, 'context' | 'px'>, left: number, top: number, width: number, height: number): void => {
+    const step = px(NO_DATA_HATCH_STEP_PX);
+    context.save();
+    context.fillStyle = NO_DATA_HATCH_BACKGROUND;
+    context.fillRect(left, top, width, height);
+    context.beginPath();
+    context.rect(left, top, width, height);
+    context.clip();
+    context.strokeStyle = NO_DATA_HATCH_COLOR;
+    context.lineWidth = px(1.5);
+    context.beginPath();
+    for (let offset = -height; offset < width; offset += step) {
+        context.moveTo(left + offset, top + height);
+        context.lineTo(left + offset + height, top);
+    }
+    context.stroke();
+    context.restore();
+};
+
 // Lignes « couleur, libellé », l'une sous l'autre ; rend l'ordonnée qui suit la dernière
 const drawRows = ({ context, px, font }: Pen, rows: { color: string; name: string }[], left: number, top: number): number => {
     context.font = font(13);
     rows.forEach(({ color, name }, index) => {
         const y = top + px(ROW_HEIGHT) * index + px(ROW_HEIGHT) / 2;
-        context.fillStyle = color;
-        context.fillRect(left, y - px(SWATCH.height) / 2, px(SWATCH.width), px(SWATCH.height));
+        if (color === NO_DATA_COLOR) drawHatch({ context, px }, left, y - px(SWATCH.height) / 2, px(SWATCH.width), px(SWATCH.height));
+        else {
+            context.fillStyle = color;
+            context.fillRect(left, y - px(SWATCH.height) / 2, px(SWATCH.width), px(SWATCH.height));
+        }
         // Un liseré : une classe très claire se détache du fond blanc
         context.strokeStyle = '#dddddd';
         context.lineWidth = 1;

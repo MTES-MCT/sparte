@@ -8,7 +8,8 @@ import { getLandTypeLabel } from '@utils/landUtils';
 import { artifValueNote } from '../../../artifIndicators';
 import { formatValue, periodLabel } from '../../../values';
 import { isRegionInZone } from '../../../zones';
-import { quantileClasses, roundToDisplay, signedQuantileClasses, valueClassIndex } from '../../classification';
+import { destinationPalette } from '../../grid/consoColors';
+import { classificationMethod, naturalClasses, roundToDisplay, signedNaturalClasses, valueClassIndex } from '../../classification';
 import { mapNameOf } from '../../mapName';
 import type { ViewProfile } from '../../viewProfile';
 import type { CommuneValue, FrameContext, FrameRender, LegendModel } from '../types';
@@ -22,14 +23,6 @@ export const NO_DATA_KEY = -1;
 export const OUTSIDE_ZONE_KEY = -2;
 
 const SCALE = 'COMM';
-
-const QUANTILE_METHOD =
-    'Classes par quantiles, calculées sur les communes affichées : chacune réunit à peu près le même nombre de communes. ' +
-    'Une valeur égale à une borne appartient à la classe supérieure';
-const SIGNED_QUANTILE_METHOD =
-    'Classes par quantiles, calculées de part et d’autre de zéro sur les communes affichées : les baisses et les hausses sont ' +
-    'découpées séparément en classes de même effectif, et les valeurs nulles forment une classe à part. ' +
-    'Une valeur égale à une borne appartient à la classe supérieure';
 
 type Built = { render: FrameRender; legend: LegendModel };
 
@@ -58,7 +51,7 @@ const describer = (ids: string[], legendKeys: Int8Array, valueText: (rank: numbe
     };
 };
 
-// Aplat d'une valeur relative : classes par quantiles des communes affichées
+// Aplat d'une valeur relative : classes par seuils naturels des communes affichées
 const buildValueClasses = (ctx: FrameContext, communes: NationalMapValueColumns, { drawn }: ViewProfile): Built => {
     const { base, indicator, period } = ctx;
     // Carte en hectares : la méthode dit ce que la carte dessine à leur place, comme la ligne du menu
@@ -80,7 +73,9 @@ const buildValueClasses = (ctx: FrameContext, communes: NationalMapValueColumns,
             shownValues.push(roundToDisplay(values[rank], drawn));
         }
     });
-    const classes = drawn.diverging ? signedQuantileClasses(shownValues, drawn) : quantileClasses(shownValues, drawn);
+    // Une carte d'une destination garde sa couleur : ses classes en sont des nuances
+    const palette = indicator.destination ? destinationPalette(indicator.destination) : undefined;
+    const classes = drawn.diverging ? signedNaturalClasses(shownValues, drawn) : naturalClasses(shownValues, drawn, palette);
     const counts = classes.map(() => 0);
     shownRanks.forEach((rank, index) => {
         const key = valueClassIndex(shownValues[index], classes);
@@ -95,7 +90,7 @@ const buildValueClasses = (ctx: FrameContext, communes: NationalMapValueColumns,
         const drawnText = formatValue(roundToDisplay(values[rank], drawn), drawn);
         const amount = amounts?.[rank] ?? null;
         // Arrondis comme la valeur dessinée : de très petits hectares négatifs ne s'écrivent pas « -0,0 ha »
-        const amountText = amount === null ? '' : `, soit ${formatValue(roundToDisplay(amount, indicator), indicator)}`;
+        const amountText = amount === null ? '' : `, soit ${formatValue(amount, indicator)}`;
         const yearsNote = yearSets && yearSetIndex ? artifValueNote(yearSets[yearSetIndex[rank]], indicator) : '';
         return `${drawnText}${amountText}${periodText}${yearsNote}`;
     };
@@ -118,7 +113,7 @@ const buildValueClasses = (ctx: FrameContext, communes: NationalMapValueColumns,
             counts,
             noDataCount,
             landTypeLabel: getLandTypeLabel(SCALE, true),
-            method: [drawn.diverging ? SIGNED_QUANTILE_METHOD : QUANTILE_METHOD, ...(standIn ? [standIn] : [])].join('. '),
+            method: [classificationMethod('communes', Boolean(drawn.diverging)), ...(standIn ? [standIn] : [])].join('. '),
         },
     };
 };

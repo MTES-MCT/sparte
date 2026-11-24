@@ -32,9 +32,10 @@ describe('communeColors', () => {
 
         expect(colors).toMatchObject({
             '75056': SEQUENTIAL_PALETTE[0],
-            '69123': SEQUENTIAL_PALETTE[1],
-            '2A004': SEQUENTIAL_PALETTE[2],
-            '35238': SEQUENTIAL_PALETTE[3],
+            '69123': SEQUENTIAL_PALETTE[0],
+            '2A004': SEQUENTIAL_PALETTE[1],
+            '35238': SEQUENTIAL_PALETTE[2],
+            '31555': SEQUENTIAL_PALETTE[3],
             '97302': SEQUENTIAL_PALETTE[4],
             '09304': NO_DATA_COLOR,
             '97611': NO_DATA_COLOR,
@@ -47,15 +48,15 @@ describe('communeColors', () => {
 
         expect(colors).toMatchObject({ '2A004': OUTSIDE_ZONE_COLOR, '97302': OUTSIDE_ZONE_COLOR, '97611': OUTSIDE_ZONE_COLOR });
         expect(colors['35238']).toBe(SEQUENTIAL_PALETTE[3]);
-        // Sans donnée dans la zone : en gris
+        // Sans donnée dans la zone : la couleur du « sans donnée », que la carte hachure
         expect(colors['09304']).toBe(NO_DATA_COLOR);
     });
 
     it('estompe les communes des autres classes, et celles sans donnée, quand une classe est mise en avant', () => {
-        const colors = byId(communeColors(FRANCE, 4));
+        const colors = byId(communeColors(FRANCE, 3));
 
-        expect(colors).toMatchObject({ '31555': SEQUENTIAL_PALETTE[4], '97302': SEQUENTIAL_PALETTE[4] });
-        expect(colors).toMatchObject({ '75056': FADED.first, '09304': FADED.noData });
+        expect(colors).toMatchObject({ '84007': SEQUENTIAL_PALETTE[3], '31555': SEQUENTIAL_PALETTE[3] });
+        expect(colors).toMatchObject({ '75056': FADED.first, '97302': FADED.last, '09304': FADED.noData });
         expect(byId(communeColors(FRANCE, 0))).toMatchObject({ '75056': SEQUENTIAL_PALETTE[0], '97302': FADED.last });
     });
 
@@ -77,7 +78,7 @@ describe('colorChanges', () => {
         const changes = colorChanges(null, PLAIN);
 
         expect(changes).toHaveLength(13);
-        expect(changes).toContainEqual({ id: '35238', color: SEQUENTIAL_PALETTE[3] });
+        expect(changes).toContainEqual({ id: '35238', color: SEQUENTIAL_PALETTE[2] });
     });
 
     it('ne pose rien quand rien ne change', () => {
@@ -87,18 +88,21 @@ describe('colorChanges', () => {
     it('ne pose, pour une mise en avant, que les couleurs des communes à estomper', () => {
         const changes = colorChanges(PLAIN, communeColors(FRANCE, 4));
 
-        // Les deux communes de la classe mise en avant gardent leur couleur
-        expect(changes.map(({ id }) => id)).toEqual(['09304', '22278', '29083', '2A004', '35238', '69123', '75056', '84007', '97304', '97608', '97611']);
+        // La commune de la classe mise en avant, Cayenne, garde sa couleur
+        expect(changes.map(({ id }) => id).sort()).toEqual(['09304', '22278', '29083', '2A004', '31555', '35238', '69123', '75056', '84007', '97304', '97608', '97611']);
         expect(changes).toContainEqual({ id: '75056', color: FADED.first });
     });
 
     it('ne pose, d’une classe mise en avant à une autre, que les couleurs des deux classes', () => {
         const changes = colorChanges(communeColors(FRANCE, 4), communeColors(FRANCE, 0));
 
-        expect(changes).toEqual([
-            { id: '31555', color: FADED.last },
+        const byCommune = [...changes].sort((a, b) => a.id.localeCompare(b.id));
+
+        expect(byCommune).toEqual([
+            { id: '69123', color: SEQUENTIAL_PALETTE[0] },
             { id: '75056', color: SEQUENTIAL_PALETTE[0] },
             { id: '97302', color: FADED.last },
+            { id: '97304', color: SEQUENTIAL_PALETTE[0] },
         ]);
     });
 
@@ -130,15 +134,14 @@ describe('colorChanges', () => {
         expect(colorChanges(PLAIN, copy)).toEqual([]);
     });
 
-    it('ne touche, pour une mise en avant sur 34 875 communes, qu’aux quatre cinquièmes d’entre elles', () => {
+    it('ne touche, pour une mise en avant sur 34 875 communes, qu’aux communes des autres classes', () => {
         const render = renderOf('FRANCE', 'conso_pct_surface', communesColumn('conso_pct_surface', realisticShares(34875)));
         const plain = communeColors(render, null);
         const highlighted = communeColors(render, 2);
         const changes = colorChanges(plain, highlighted);
         const kept = highlighted.colors.filter((color) => color === SEQUENTIAL_PALETTE[2]).length;
 
+        expect(kept).toBeGreaterThan(0);
         expect(changes).toHaveLength(34875 - kept);
-        expect(kept / 34875).toBeGreaterThan(0.18);
-        expect(kept / 34875).toBeLessThan(0.22);
     });
 });

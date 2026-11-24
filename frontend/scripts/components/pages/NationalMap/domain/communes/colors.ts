@@ -20,6 +20,10 @@ const dimmed = (color: string): string => {
     return `#${mixed.map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
 };
 
+// Couleur estompée d'une commune sans donnée : le style de la carte y reconnaît les communes dont
+// les hachures s'estompent (voir communesStyle.ts)
+export const DIMMED_NO_DATA_COLOR = dimmed(NO_DATA_COLOR);
+
 // Couleur de chaque commune, par identifiant : `colors` suit l'ordre de `ids`
 export type CommuneColors = { ids: string[]; colors: string[] };
 
@@ -28,7 +32,7 @@ export type CommuneColors = { ids: string[]; colors: string[] };
 // communes des autres lignes, et celles sans donnée, prennent la version estompée de leur couleur.
 export const communeColors = ({ ids, legendKeys, palette }: CommunesRender, highlighted: number | null): CommuneColors => {
     const faded = palette.map(dimmed);
-    const noData = highlighted === null ? NO_DATA_COLOR : dimmed(NO_DATA_COLOR);
+    const noData = highlighted === null ? NO_DATA_COLOR : DIMMED_NO_DATA_COLOR;
     const colors = new Array<string>(ids.length);
     for (let rank = 0; rank < ids.length; rank += 1) {
         const key = legendKeys[rank];

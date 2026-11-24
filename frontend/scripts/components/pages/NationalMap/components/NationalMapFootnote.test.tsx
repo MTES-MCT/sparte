@@ -4,7 +4,7 @@ import NationalMapFootnote from './NationalMapFootnote';
 import { resizeObserverStub } from '../__fixtures__/resizeObserverStub';
 
 const SHORT = 'Source : OCS GE (IGN).';
-const LONG = "Les données de consommation d'espaces ne sont pas disponibles pour Mayotte (en gris sur la carte), ni pour Saint-Pierre-et-Miquelon.";
+const LONG = "Les données de consommation d'espaces ne sont pas disponibles pour Mayotte (hachurés sur la carte), ni pour Saint-Pierre-et-Miquelon.";
 const OTHER_LONG = "Carroyage de 1 km × 1 km de la consommation d'espaces (Cerema, fichiers fonciers), disponible pour l'Hexagone et la Corse.";
 
 // jsdom ne calcule aucune mise en page : le paragraphe rend les hauteurs que le test lui donne.

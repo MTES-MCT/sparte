@@ -11,6 +11,8 @@
 //   Seul le contour de la commune sélectionnée change un filtre, au clic.
 import type { ExpressionSpecification, FilterSpecification, GeoJSONSourceSpecification, LayerSpecification, VectorSourceSpecification } from 'maplibre-gl';
 import { LAND_BORDER_COLOR, LAND_HALO_COLOR } from '../../gridded';
+import { DIMMED_NO_DATA_COLOR } from '../../domain/communes/colors';
+import { NO_DATA_PATTERN_ID } from '../../domain/noData';
 import { NO_DATA_COLOR } from '../../values';
 import { SEPARATION_COLOR, TERRITORY_COLOR } from './territoryOptions';
 
@@ -20,6 +22,9 @@ export const communesTilesUrl = (tilesLocation: string): string => `${tilesLocat
 export const COMMUNES_SOURCE = 'national-map-communes';
 export const COMMUNES_SOURCE_LAYER = 'communes_national';
 export const COMMUNES_FILL = 'national-map-communes-fill';
+export const COMMUNES_NO_DATA = 'national-map-communes-no-data';
+// Opacité des hachures d'une commune sans donnée estompée par une mise en avant de la légende
+const NO_DATA_DIMMED_OPACITY = 0.3;
 const COMMUNES_LINE = 'national-map-communes-line';
 export const COMMUNE_OUTLINE = 'national-map-commune-outline';
 
@@ -106,6 +111,31 @@ export const COMMUNES_LAYERS: { layer: LayerSpecification; beforeId?: string }[]
             paint: {
                 'fill-color': ['to-color', ['feature-state', 'color'], NO_DATA_COLOR],
                 // Sans lissage : il borderait chaque commune d'un pixel qui déborde sur ses voisines
+                'fill-antialias': false,
+            },
+        },
+        beforeId: DEPARTMENTS_HALO,
+    },
+    {
+        // Hachures des communes sans donnée, par-dessus leur aplat : la couleur posée sur une commune
+        // dit si elle est sans donnée, et si elle est estompée par une mise en avant de la légende.
+        // Une commune sans couleur posée est sans donnée, comme pour l'aplat.
+        layer: {
+            id: COMMUNES_NO_DATA,
+            type: 'fill',
+            source: COMMUNES_SOURCE,
+            'source-layer': COMMUNES_SOURCE_LAYER,
+            paint: {
+                'fill-pattern': NO_DATA_PATTERN_ID,
+                'fill-opacity': [
+                    'match',
+                    ['coalesce', ['feature-state', 'color'], NO_DATA_COLOR],
+                    NO_DATA_COLOR,
+                    1,
+                    DIMMED_NO_DATA_COLOR,
+                    NO_DATA_DIMMED_OPACITY,
+                    0,
+                ],
                 'fill-antialias': false,
             },
         },

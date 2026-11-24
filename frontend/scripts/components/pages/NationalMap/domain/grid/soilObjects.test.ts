@@ -145,7 +145,7 @@ describe('objets décrits au moteur', () => {
         const [artificial, natural] = SOIL_IMAGE_CLASSES.map(({ color }) => color);
 
         expect(OBJECTS.color).toEqual(['case', IS_ARTIFICIAL, artificial, natural]);
-        expect([artificial, natural]).toEqual(['#ff9b93', '#b4ff8d']);
+        expect([artificial, natural]).toEqual(['#fa4b42', '#dcebd2']);
     });
 
     it('estompe les objets de l’autre nature quand une ligne de la légende est mise en avant', () => {

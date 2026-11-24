@@ -1,7 +1,7 @@
 // Cercles proportionnels : une valeur absolue (hectares) se lit à la surface d'un cercle posé sur
 // le territoire, jamais en aplat de couleur, qui ferait ressortir les territoires les plus grands.
-import { SIGNED_SYMBOL_COLORS, signedSymbolColor, symbolMagnitude } from '../../../artifIndicators';
-import { NO_DATA_COLOR, formatValue, symbolReferenceValues } from '../../../values';
+import { destinationSymbolColor } from '../../grid/consoColors';
+import { NO_DATA_COLOR, formatValue, referenceDecimals, symbolReferenceValues } from '../../../values';
 import type { FrameContext, FrameRender, LandPoint, LegendModel, SymbolPoint } from '../types';
 import { legendSignature, noDataCountOf, valuePoints } from './points';
 
@@ -23,16 +23,14 @@ export const buildSymbols = (ctx: FrameContext): { render: FrameRender; legend: 
         color: point.value === null ? NO_DATA_COLOR : SYMBOL_BASE_COLOR,
         legendKey: point.value === null ? null : 0,
     }));
-    // Valeur signée : la taille porte la valeur absolue, la couleur le signe ; pas de cercle pour une valeur nulle
+    // Pas de cercle pour une valeur nulle
     const symbols: SymbolPoint[] = points
-        .flatMap(({ land_id, name, zone, value, valueText, legendKey }) =>
-            value === null ? [] : [{ land_id, name, zone, z: symbolMagnitude(value, indicator), color: signedSymbolColor(value, indicator), valueText, legendKey }],
-        )
+        .flatMap(({ land_id, name, zone, value, valueText, legendKey }) => (value === null ? [] : [{ land_id, name, zone, z: value, valueText, legendKey }]))
         .filter((symbol) => symbol.z > 0)
         .sort((a, b) => b.z - a.z);
     const maxValue = symbols.length > 0 ? symbols[0].z : 0;
-    // Valeur signée : rouge pour une hausse ; le bleu d'une baisse est porté par chaque cercle
-    const color = indicator.signed ? SIGNED_SYMBOL_COLORS.increase : SYMBOL_COLOR;
+    // Une carte d'une destination prend sa couleur, comme sa carte carroyée et ses graphiques
+    const color = indicator.destination ? destinationSymbolColor(indicator.destination) : SYMBOL_COLOR;
     return {
         render: { renderer: 'territory', mode: 'symbols', points, symbols, maxValue, color },
         legend: {
@@ -40,7 +38,7 @@ export const buildSymbols = (ctx: FrameContext): { render: FrameRender; legend: 
             shape: 'circle',
             signature: legendSignature(ctx),
             title: indicator.label,
-            references: symbolReferenceValues(maxValue, indicator.decimals ?? 0).map((value) => ({ value, label: formatValue(value, indicator) })),
+            references: symbolReferenceValues(maxValue, referenceDecimals(maxValue, indicator)).map((value) => ({ value, label: formatValue(value, indicator) })),
             maxValue,
             landCount: base.features.length,
             colors: [{ color, label: null }],

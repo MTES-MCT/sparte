@@ -18,8 +18,8 @@ import type * as Highcharts from 'highcharts';
 import { theme } from '@theme';
 import { formatNumber } from '@utils/formatUtils';
 import { GRID_DESTINATIONS, GridDestination } from '../indicators';
-import { formatSigned, periodLabel } from '../values';
-import { asRankedShares, flowsAsBars, flowsByCover, focusedOn, inTwoPanels, shareByMillesime, surfaceChangeOf, withPeriodMeans } from './chartCompositions';
+import { formatSigned } from '../values';
+import { asRankedShares, flowsAsBars, flowsByCover, focusedOn, onTwoAxes, shareByMillesime, surfaceChangeOf, withPeriodMeans } from './chartCompositions';
 import { roundTicks, tickLabel } from './chartTicks';
 
 const NARROW_CHART_MAX_WIDTH = 520;
@@ -65,17 +65,25 @@ const NBSP = '\u00a0';
 
 export type ChartPeriod = { startYear: number; endYear: number };
 
-// Ce que les textes d'un graphique disent de la vue, en plus de ce qu'en dit le serveur : pour la
-// consommation, la période choisie ; pour l'OCS GE, le territoire décrit quand les chiffres clés
-// de la carte portent sur un autre ensemble
+// Ce que les textes d'un graphique disent de la vue, en plus de ce qu'en dit le serveur : pour
+// l'OCS GE, le territoire décrit quand les chiffres clés de la carte portent sur un autre ensemble
 export type ChartContext = {
-    // null pour une carte de l'OCS GE
-    period: ChartPeriod | null;
     // null pour une carte de la consommation
     scope: string | null;
 };
 
-// Sous-titre que le serveur donne au graphique : l'unité, puis la période ou les millésimes
+// Titre que le serveur donne au graphique, au format du diagnostic : « sujet - territoire (période) »
+const TITLE_SEPARATOR = ' - ';
+const serverTitle = (options: Highcharts.Options): string => options.title?.text ?? '';
+
+// Même titre avec un autre sujet : le territoire et la période du serveur sont gardés
+const retitled = (options: Highcharts.Options, subject: string): string => {
+    const title = serverTitle(options);
+    const cut = title.indexOf(TITLE_SEPARATOR);
+    return cut < 0 ? subject : subject + title.slice(cut);
+};
+
+// Sous-titre que le serveur donne au graphique : l'unité, puis les millésimes pour l'OCS GE
 const serverSubtitle = (options: Highcharts.Options): string => options.subtitle?.text ?? '';
 
 // Sous-titre du serveur suivi d'une précision ; sans lui, la précision seule
@@ -114,11 +122,6 @@ type ChartLayout = {
 };
 
 const DEFAULT_HEIGHT = 300;
-// Deux panneaux l'un sous l'autre : de quoi lire le second
-const TWO_PANELS_HEIGHT = 340;
-
-// « de 2011 à 2024 » : période d'un graphique de la consommation, toujours connue quand il est dessiné
-const chosenPeriod = ({ period }: ChartContext): string => (period ? periodLabel(period.startYear, period.endYear) : '');
 
 // Axe des valeurs : sans titre, l'unité étant dite en sous-titre. Ses graduations sont données à
 // Highcharts au lieu d'être calculées par lui, comme celles des années : il les calcule avant que
@@ -143,8 +146,6 @@ const valueAxis = (tickCount: number): Highcharts.YAxisOptions => ({
     },
 });
 const VALUE_AXIS = valueAxis(4);
-// Un panneau a la moitié de la hauteur, au plus : trois graduations s'y lisent
-const PANEL_AXIS = valueAxis(3);
 
 // Axe des valeurs de barres horizontales, sous le tracé : il s'arrête aux valeurs extrêmes, pour
 // que les barres prennent toute la largeur, et ne garde des graduations rondes que celles qui y
@@ -172,8 +173,8 @@ const YEARLY_BARS: NarrowLayout = () => ({
 });
 
 // Consommation par année d'une destination, devant le total. Le serveur n'a que le graphique de
-// toutes les destinations : le titre de celui-ci est écrit ici, à toute largeur, dans les mots
-// des cartes de la destination, et son sous-titre complète celui du serveur. `serie` : nom que
+// toutes les destinations : le sujet du titre de celui-ci est écrit ici, à toute largeur, dans
+// les mots des cartes de la destination, et son sous-titre complète celui du serveur. `serie` : nom que
 // le serveur donne à la série de la destination.
 const destinationByYear = (serie: string, destination: GridDestination): ChartLayout => ({
     compose: (server) => {
@@ -182,7 +183,7 @@ const destinationByYear = (serie: string, destination: GridDestination): ChartLa
         if (focused === server) return server;
         return {
             ...focused,
-            title: { ...server.title, text: `Consommation d'ENAF ${GRID_DESTINATIONS[destination].complement}, par année` },
+            title: { ...server.title, text: retitled(server, `Consommation d'ENAF ${GRID_DESTINATIONS[destination].complement}, par année`) },
             subtitle: { ...server.subtitle, text: completed(serverSubtitle(server), 'devant le total') },
         };
     },
@@ -192,25 +193,24 @@ const destinationByYear = (serie: string, destination: GridDestination): ChartLa
 // Ce que le sous-titre dit quand la grandeur de l'Insee n'a pas deux valeurs à relier
 const TOO_FEW_CENSUSES = 'moins de deux recensements sur cette période';
 
-// Consommation par année et grandeur de l'Insee aux recensements, en deux panneaux. Un titre
-// d'axe prendrait une bande de la colonne : ils sont retirés, et le sous-titre, qui remplace
-// celui du serveur, dit l'unité et le panneau de chaque grandeur. `count` : ce que la grandeur de
-// l'Insee dénombre.
+// Consommation par année et grandeur de l'Insee aux recensements, sur le même tracé, comme dans
+// le diagnostic. Un titre d'axe prendrait une bande de la colonne : ils sont retirés, et le
+// sous-titre, qui remplace celui du serveur, dit l'unité, le dessin et l'axe de chaque grandeur.
+// `count` : ce que la grandeur de l'Insee dénombre.
 const consoOverInsee = (count: string): ChartLayout => ({
-    height: TWO_PANELS_HEIGHT,
-    compose: inTwoPanels,
-    narrow: (context, options) => {
-        // Deux axes : les deux panneaux. Un seul : la grandeur de l'Insee n'a pas d'évolution à montrer.
+    compose: onTwoAxes,
+    narrow: (_context, options) => {
+        // Deux axes : les deux grandeurs. Un seul : la grandeur de l'Insee n'a pas d'évolution à montrer.
         const axes = Array.isArray(options.yAxis) ? options.yAxis : [options.yAxis ?? {}];
         const texts =
             axes.length === 2
-                ? `En hectares par année (en haut) et en ${count} aux recensements (en bas), ${chosenPeriod(context)}`
-                : `En hectares par année, ${chosenPeriod(context)}${NBSP}; ${TOO_FEW_CENSUSES}`;
+                ? `En hectares par année (barres, axe de gauche) et en ${count} aux recensements (courbe, axe de droite)`
+                : `En hectares par année${NBSP}; ${TOO_FEW_CENSUSES}`;
         return {
             subtitle: subtitle(texts),
             xAxis: [yearAxis(options, MAX_YEAR_LABELS)],
             // Autant d'entrées que d'axes : Highcharts retirerait ceux qui manquent
-            yAxis: axes.map(() => (axes.length === 2 ? PANEL_AXIS : VALUE_AXIS)),
+            yAxis: axes.map(() => VALUE_AXIS),
             // La source est déjà dite sous le graphique, où la mention du serveur recouvrirait la légende
             credits: { enabled: false },
         };
@@ -244,7 +244,7 @@ const CHART_LAYOUTS = {
     conso_by_year_and_destination: { narrow: YEARLY_BARS },
     conso_habitat_by_year: destinationByYear('Habitat', 'habitat'),
     conso_activite_by_year: destinationByYear('Activité', 'activite'),
-    // Depuis 2011, quelle que soit la période choisie : le serveur lit les années du sous-titre dans ses données
+    // Depuis 2011, quelle que soit la période choisie : le serveur lit les années du titre dans ses données
     conso_by_year: {
         compose: withPeriodMeans(SECOND_REFERENCE_PERIOD_START),
         narrow: () => ({
@@ -255,8 +255,8 @@ const CHART_LAYOUTS = {
     // Répartition : les parts sont lues dans la légende, les étiquettes autour du disque ne
     // tiennent pas. Le sous-titre du serveur, qui annonce des hectares, est remplacé.
     destination_share: {
-        narrow: (context) => ({
-            subtitle: subtitle(`En${NBSP}% de la consommation, ${chosenPeriod(context)}`),
+        narrow: () => ({
+            subtitle: subtitle(`En${NBSP}% de la consommation`),
             legend: {
                 labelFormatter(this: Highcharts.Point | Highcharts.Series) {
                     const share = (this as Highcharts.Point).percentage ?? 0;
@@ -334,8 +334,29 @@ export type ComplementaryChart = keyof typeof CHART_LAYOUTS;
 
 const layoutOf = (chart: ComplementaryChart): ChartLayout => CHART_LAYOUTS[chart];
 
-// Hauteur de l'emplacement d'un graphique, en pixels
+// Hauteur de l'emplacement d'un graphique, en pixels, tant que ses textes n'en demandent pas plus
 export const chartHeight = (chart: ComplementaryChart): number => layoutOf(chart).height ?? DEFAULT_HEIGHT;
+
+// Place prévue, dans la hauteur d'un graphique, pour ses textes : un titre de deux lignes, un
+// sous-titre, les années et la légende. Le reste est le tracé.
+const TEXT_ROOM = 130;
+
+// Hauteur qu'un graphique étroit doit avoir pour que son tracé garde celle que sa présentation
+// prévoit. Le titre nomme le territoire et la période : pour un nom long, il prend quatre lignes
+// dans la colonne, que le tracé perdrait. `base` : hauteur de l'emplacement ; la hauteur rendue
+// ne lui est jamais inférieure.
+export const heightKeepingPlot = (base: number, chartHeightNow: number, plotHeight: number): number =>
+    Math.max(base, Math.round(chartHeightNow + (base - TEXT_ROOM) - plotHeight));
+
+// À chaque dessin, un graphique étroit prend la hauteur que demandent ses textes ; son
+// emplacement, qui n'a qu'une hauteur minimale, le suit. Un graphique large (image exportée,
+// plein écran) garde la hauteur qu'on lui donne.
+const keepingPlotHeight = (base: number) =>
+    function resize(this: Highcharts.Chart): void {
+        if (this.chartWidth > NARROW_CHART_MAX_WIDTH) return;
+        const needed = heightKeepingPlot(base, this.chartHeight, this.plotHeight);
+        if (Math.abs(needed - this.chartHeight) > 1) this.setSize(undefined, needed, false);
+    };
 
 const mergeOptions = (base: Highcharts.Options, extra: Highcharts.Options): Highcharts.Options => ({
     ...base,
@@ -361,6 +382,7 @@ export const withChartLayout =
         const options = withoutFixedHeight(compose ? compose(server) : server);
         return {
             ...options,
+            chart: { ...options.chart, events: { ...options.chart?.events, render: keepingPlotHeight(chartHeight(chart)) } },
             responsive: {
                 rules: [...(options.responsive?.rules ?? []), { condition: { maxWidth: NARROW_CHART_MAX_WIDTH }, chartOptions: mergeOptions(NARROW_COMMON, narrow(context, options)) }],
             },

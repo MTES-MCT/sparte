@@ -20,7 +20,7 @@ jest.mock('@services/api', () => ({
 
 const LANDS_FILL = 'national-map-lands-fill';
 const GRID_FILL = 'national-map-grid-fill';
-const SOILS_BRETAGNE = artifFrame('REGION_53', BRETAGNE_BY_DEPARTEMENT, 'artif_pct_gridded', { scale: 'DEPART', lands: {} });
+const SOILS_BRETAGNE = artifFrame('REGION_53', BRETAGNE_BY_DEPARTEMENT, 'artif_soils', { scale: 'DEPART', lands: {} });
 const CELL = { DEPART: '["35"]', part_artif: 23, resolution_m: 250, annee_min: 2020, annee_max: 2020 };
 const LAND = { land_id: '35', name: 'Ille-et-Vilaine' };
 const SQUARE = { type: 'Polygon', coordinates: [[[0, 0], [1, 0.1], [1.1, 1], [0, 1.1], [0, 0]]] };

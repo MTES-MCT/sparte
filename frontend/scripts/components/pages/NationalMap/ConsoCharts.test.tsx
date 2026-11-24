@@ -43,7 +43,7 @@ type ChartProps = Land & {
     id: string;
     params: ChartParams;
     sources: string[];
-    containerProps: { style: { height: string } };
+    containerProps: { style: { minHeight: string } };
     transformOptions: (options: Highcharts.Options) => Highcharts.Options;
 };
 
@@ -299,7 +299,7 @@ describe('graphiques complémentaires', () => {
         render(chartsElement({ land: NATION }));
 
         expect(narrowTexts('chart_determinant_national_map')).toEqual([SERVER_TITLE, SERVER_SUBTITLE]);
-        expect(narrowTexts('pie_determinant_national_map')).toEqual([SERVER_TITLE, 'En\u00a0% de la consommation, de 2011 à 2024']);
+        expect(narrowTexts('pie_determinant_national_map')).toEqual([SERVER_TITLE, 'En\u00a0% de la consommation']);
     });
 });
 
@@ -354,18 +354,16 @@ describe('changement de vue', () => {
         expect(busySlots()).toEqual([false, false]);
     });
 
-    it('garde l’ancienne période, dans le graphique et dans son sous-titre, jusqu’à la réponse de la nouvelle', () => {
+    it('garde le graphique de l’ancienne période jusqu’à la réponse de la nouvelle', () => {
         answer({ land: NATION });
         const { rerender } = render(chartsElement({ land: NATION }));
         rerender(chartsElement({ land: NATION, startYear: 2015 }));
 
         expect(shownCharts()).toEqual(['chart_determinant_national_map NATION/NATION 2011-2024', 'pie_determinant_national_map NATION/NATION 2011-2024']);
-        expect(narrowTexts('pie_determinant_national_map')[1]).toBe('En\u00a0% de la consommation, de 2011 à 2024');
 
         answer({ land: NATION, startYear: 2015 });
 
         expect(shownCharts()).toEqual(['chart_determinant_national_map NATION/NATION 2015-2024', 'pie_determinant_national_map NATION/NATION 2015-2024']);
-        expect(narrowTexts('pie_determinant_national_map')[1]).toBe('En\u00a0% de la consommation, de 2015 à 2024');
     });
 
     it('laisse en place le graphique conservé quand l’autre est décoché', () => {
@@ -508,13 +506,13 @@ describe('graphiques de chaque carte de consommation', () => {
         expect(drawnSeries('chart_determinant_national_map', server)).toEqual(['Activité', 'Total']);
     });
 
-    it('donne plus de hauteur à l’emplacement d’un graphique en deux panneaux', () => {
+    it('donne à chaque graphique la hauteur minimale de son emplacement', () => {
         render(chartsElement({ land: BRETAGNE, charts: chartsOf('conso_habitat_ha') }));
 
-        expect(mockCharts.renders.map((props) => [props.id, props.containerProps.style.height])).toEqual([
+        expect(mockCharts.renders.map((props) => [props.id, props.containerProps.style.minHeight])).toEqual([
             ['chart_determinant_national_map', '300px'],
             ['pie_determinant_national_map', '300px'],
-            ['population_conso_progression_chart_national_map', '340px'],
+            ['population_conso_progression_chart_national_map', '300px'],
         ]);
     });
 
@@ -729,13 +727,9 @@ describe('graphiques de chaque carte de l’OCS GE', () => {
 
     it.each([
         ['artif_pct', STOCK],
-        ['artif_pct_gridded', STOCK],
-        ['artif_ha', STOCK],
-        ['artif_net_pct_surface', FLUX],
+        ['artif_soils', STOCK],
         ['artif_net_annual_pct_surface', FLUX],
         ['artif_desartif_ha', FLUX],
-        ['artif_net_ha', FLUX],
-        ['artif_net_annual_ha', FLUX],
     ])('affiche pour une région les graphiques que le catalogue donne à la carte %s', (mapId, expected) => {
         describeLand(BRETAGNE, BRETAGNE_DETAIL);
         render(ocsgeElement({ land: BRETAGNE, charts: artifChartsOf(mapId) }));
@@ -749,14 +743,10 @@ describe('graphiques de chaque carte de l’OCS GE', () => {
 
         expect(described).toEqual([...STOCK_CHARTS, ...FLUX_CHARTS]);
         expect(ARTIF_INDICATORS.map((map) => [map.id, artifChartsOf(map.id)])).toEqual([
-            ['artif_pct_gridded', STOCK_CHARTS],
+            ['artif_soils', STOCK_CHARTS],
             ['artif_pct', STOCK_CHARTS],
-            ['artif_ha', STOCK_CHARTS],
-            ['artif_net_pct_surface', FLUX_CHARTS],
             ['artif_net_annual_pct_surface', FLUX_CHARTS],
             ['artif_desartif_ha', FLUX_CHARTS],
-            ['artif_net_ha', FLUX_CHARTS],
-            ['artif_net_annual_ha', FLUX_CHARTS],
         ]);
     });
 
@@ -799,7 +789,7 @@ describe('graphiques de chaque carte de l’OCS GE', () => {
         ['artif_synthese_national_map', 'pie_artif_by_couverture_national_map', 'artif_net_flux_national_map', 'artif_flux_by_couverture_national_map'].forEach((id) =>
             expect(narrowTexts(id)).toEqual([SERVER_TITLE, SERVER_SUBTITLE]),
         );
-        expect(mockCharts.renders.map((props) => props.containerProps.style.height)).toEqual(['260px', '300px', '300px', '400px']);
+        expect(mockCharts.renders.map((props) => props.containerProps.style.minHeight)).toEqual(['260px', '300px', '300px', '400px']);
     });
 
     it('ne demande la fiche du territoire que pour une carte de l’OCS GE', () => {
@@ -861,7 +851,7 @@ describe('territoire que les graphiques de l’OCS GE décrivent', () => {
         describeLand(NATION, FRANCE_DETAIL);
         render(chartsElement({ land: NATION, charts: STOCK_CHARTS, ocsge: { surfaceHa: 63_764_822, hasMissing: true } }));
 
-        expect(narrowTexts('artif_synthese_national_map')[1]).toBe(`${SERVER_SUBTITLE}. France, territoires en gris compris.`);
+        expect(narrowTexts('artif_synthese_national_map')[1]).toBe(`${SERVER_SUBTITLE}. France, territoires hachurés compris.`);
     });
 
     it('met le sous-titre à jour quand la maille change, sans remonter le graphique ni le redemander', () => {

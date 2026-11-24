@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { GRID_DESTINATIONS } from '../../indicators';
 import { lightnessOf } from '../shades';
-import { ALL_DESTINATIONS, CLASS_LIGHTNESS, ColoredDestination, DESTINATION_COLORS, destinationPalette } from './consoColors';
+import { ALL_DESTINATIONS, CLASS_LIGHTNESS, ColoredDestination, DESTINATION_COLORS, destinationPalette, destinationSymbolColor } from './consoColors';
 
 const DESTINATIONS = Object.keys(DESTINATION_COLORS) as ColoredDestination[];
 
@@ -56,5 +56,17 @@ describe('couleurs des classes d’une destination', () => {
 
     it('fige les couleurs de l’activité', () => {
         expect(destinationPalette('activite')).toEqual(['#c8e5e4', '#8ac4c1', '#6e9c9a', '#537675', '#3a5251']);
+    });
+});
+
+describe('couleur des cercles d’une destination', () => {
+    it('garde la couleur de l’habitat et prend pour l’activité un turquoise plus soutenu, de clarté voisine de celle de l’habitat', () => {
+        expect(destinationSymbolColor('habitat')).toBe(DESTINATION_COLORS.habitat);
+        expect(destinationSymbolColor('activite')).toBe('#289e98');
+        expect(Math.abs(lightnessOf(destinationSymbolColor('activite')) - lightnessOf(destinationSymbolColor('habitat')))).toBeLessThan(10);
+    });
+
+    it('donne aux autres destinations une nuance sombre de leur couleur, à la clarté d’une classe du carroyage', () => {
+        expect(lightnessOf(destinationSymbolColor('route'))).toBeCloseTo(CLASS_LIGHTNESS[3], 0);
     });
 });

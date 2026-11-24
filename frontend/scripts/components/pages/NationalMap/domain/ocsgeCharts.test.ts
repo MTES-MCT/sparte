@@ -69,12 +69,12 @@ describe('territoire que les graphiques décrivent, quand ce n’est pas l’ens
     });
 
     it('dit que le graphique compte les territoires sans donnée de la carte', () => {
-        // La France par département : la Guyane, en gris, pèse dans les graphiques de la nation
-        expect(chartScopeOf(FRANCE, { surfaceHa: 63_764_822, hasMissing: true })).toBe('France, territoires en gris compris');
+        // La France par département : la Guyane, hachurée, pèse dans les graphiques de la nation
+        expect(chartScopeOf(FRANCE, { surfaceHa: 63_764_822, hasMissing: true })).toBe('France, territoires hachurés compris');
     });
 
     it('dit l’un et l’autre quand les deux écarts se cumulent', () => {
-        expect(chartScopeOf(ILLE_ET_VILAINE, { surfaceHa: 749_863, hasMissing: true })).toBe('Ille-et-Vilaine dans ses limites exactes, territoires en gris compris');
+        expect(chartScopeOf(ILLE_ET_VILAINE, { surfaceHa: 749_863, hasMissing: true })).toBe('Ille-et-Vilaine dans ses limites exactes, territoires hachurés compris');
     });
 
     it('ne dit rien d’une zone plus grande que les territoires affichés, tous avec des données : l’Hexagone, que la nation remplace', () => {

@@ -30,6 +30,8 @@ jest.mock(
             touchZoomRotate = { disableRotation: (): void => undefined };
             keyboard = { disableRotation: (): void => undefined };
             controls: string[] = [];
+            images = new Map<string, { image: { width: number; height: number }; options: Record<string, unknown> }>();
+            missingImage: ((id: string) => void) | null = null;
             private readonly listeners = new Map<string, Listener[]>();
 
             constructor(readonly options: Record<string, unknown>) {
@@ -59,6 +61,18 @@ jest.mock(
 
             addControl(_control: unknown, position: string): void {
                 this.controls.push(position);
+            }
+
+            setMissingStyleImageResolver(resolver: (id: string) => void): void {
+                this.missingImage = resolver;
+            }
+
+            hasImage(id: string): boolean {
+                return this.images.has(id);
+            }
+
+            addImage(id: string, image: { width: number; height: number }, options: Record<string, unknown>): void {
+                this.images.set(id, { image, options });
             }
 
             cameraForBounds(): Camera {
@@ -140,6 +154,8 @@ type FakeMap = {
     fitZoom: number;
     gestures: { enabled: boolean };
     controls: string[];
+    images: Map<string, { image: { width: number; height: number }; options: Record<string, unknown> }>;
+    missingImage: ((id: string) => void) | null;
     fire: (type: string, data?: Record<string, unknown>) => void;
 };
 const fakeLibrary = (): { Map: { instances: FakeMap[]; webgl: boolean }; prewarms: number } => jest.requireMock('maplibre-gl');
@@ -185,6 +201,21 @@ describe('création', () => {
 
         expect(map.options).toMatchObject({ cooperativeGestures: false, trackResize: false, dragRotate: false });
         expect(map.controls).toEqual(['bottom-left']);
+    });
+
+    it('fournit le motif des territoires sans donnée quand une couche le demande, et lui seul', () => {
+        const map = create();
+
+        map.missingImage?.('une-autre-image');
+        expect(map.images.size).toBe(0);
+
+        map.missingImage?.('national-map-no-data');
+        map.missingImage?.('national-map-no-data');
+        expect([...map.images.keys()]).toEqual(['national-map-no-data']);
+        const { image, options } = map.images.get('national-map-no-data') as unknown as { image: { width: number; height: number }; options: { pixelRatio: number } };
+        // Un carreau carré, à la densité de l'écran
+        expect(image.width).toBe(image.height);
+        expect(image.width).toBe(6 * options.pixelRatio);
     });
 
     it('rend les gestes coopératifs quand la page défile sous la carte, et suit le passage d’une largeur à l’autre', () => {

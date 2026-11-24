@@ -88,17 +88,20 @@ export const scatterOf = ({ base, indicator, period }: FrameContext, render: Fra
     }));
     const moved = points.filter((point) => point.x !== point.indicRate || point.y !== point.consoRate).length;
     const perLand = `un point par ${scaleName(base.scale)}`;
+    // « 2011 - 2024 », comme dans les titres du serveur, ou « 2023 » pour une seule année
+    const yearsOf = ({ startYear, endYear }: { startYear: number; endYear: number }): string => (startYear === endYear ? String(startYear) : `${startYear} - ${endYear}`);
     const measured = RATE_UNIT + (period ? `, ${periodLabel(period.startYear, period.endYear)}` : '');
     return {
         kind: 'points',
         model: {
-            // Le titre dit ce qu'est un point ; les deux taux sont nommés par les flèches de leurs
-            // axes, comme dans la légende de la carte
-            title: upperFirst(perLand),
+            // Le titre dit ce qu'est un point, puis le territoire et la période, comme ceux des autres
+            // graphiques ; les deux taux sont nommés par les flèches de leurs axes, comme dans la
+            // légende de la carte
+            title: `${upperFirst(perLand)} - ${base.title}${period ? ` (${yearsOf(period)})` : ''}`,
             subtitle: [
                 `↑ ${y.label}`,
                 `→ ${x.label}`,
-                `En ${measured}. Tirets : seuils des classes de la carte.`,
+                `En ${RATE_UNIT}. Tirets : seuils des classes de la carte.`,
                 ...displacedTexts(moved, crossing.lands.length - placed.length),
             ].join('<br/>'),
             description:

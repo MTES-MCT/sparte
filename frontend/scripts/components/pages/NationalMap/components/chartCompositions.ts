@@ -28,18 +28,15 @@ const valueCount = (serie: ServerSerie): number => (serie.data ?? []).filter((po
 // restent ainsi réservées aux destinations, les mêmes d'un graphique à l'autre
 const NEUTRAL_COLOR = '#3a3a3a';
 
-// --- Consommation et grandeur de l'Insee : un axe par panneau ---------------------------
+// --- Consommation et grandeur de l'Insee : deux axes sur le même tracé ------------------
 
 // Axes des graphiques qui croisent la consommation et une grandeur de l'Insee, dans l'ordre où le
 // serveur les rend
 const INSEE_AXIS = 0;
 const CONSO_AXIS = 1;
 
-// Place de chaque panneau dans la zone de tracé ; l'intervalle laisse lire les graduations extrêmes
-const CONSO_PANEL = { top: '0%', height: '52%' };
-const INSEE_PANEL = { top: '62%', height: '38%' };
-// Place d'un axe seul. Elle est dite en toutes lettres : quand le graphique est mis à jour d'une
-// période à l'autre, l'axe gardé conserverait sinon la place du panneau qu'il occupait.
+// Place d'un axe : tout le tracé. Elle est dite en toutes lettres : un graphique mis à jour en
+// place garderait sinon la place qu'un axe occupait dans une présentation précédente.
 const WHOLE_PLOT = { top: '0%', height: '100%' };
 
 const axisOf = (serie: ServerSerie): number => (typeof serie.yAxis === 'number' ? serie.yAxis : 0);
@@ -47,37 +44,40 @@ const axisOf = (serie: ServerSerie): number => (typeof serie.yAxis === 'number' 
 // Chaque série a sa ligne de légende : le serveur en rattache parfois une à une autre sans la nommer
 const namedInLegend = ({ linkedTo, ...serie }: ServerSerie): ServerSerie => serie;
 
-// Deux échelles superposées deviennent deux panneaux qui partagent l'axe des années : la
-// consommation en haut, la grandeur de l'Insee en bas, chacune sur son axe, à gauche. La grandeur
-// de l'Insee passe au gris neutre, avec son axe, et garde le même repère d'une mise à jour à
-// l'autre. Quand elle n'a pas deux valeurs à relier (un recensement au plus dans la période,
-// territoire sans donnée), il ne reste que la consommation, sur un seul axe.
-export const inTwoPanels = (server: Highcharts.Options): Highcharts.Options => {
+// Comme dans le diagnostic, la grandeur de l'Insee est tracée par-dessus les barres de la
+// consommation : les hectares se lisent sur l'axe de gauche, la grandeur de l'Insee sur celui de
+// droite, qui n'ajoute pas ses lignes à celles de la consommation. La grandeur de l'Insee passe
+// au gris neutre, avec son axe, et garde le même repère d'une mise à jour à l'autre. Quand elle
+// n'a pas deux valeurs à relier (un recensement au plus dans la période, territoire sans donnée),
+// il ne reste que la consommation, sur un seul axe.
+export const onTwoAxes = (server: Highcharts.Options): Highcharts.Options => {
     const axes = Array.isArray(server.yAxis) ? server.yAxis : [];
     if (axes.length !== 2) return server;
     const series = seriesOf(server).map(namedInLegend);
     const insee = axes[INSEE_AXIS];
-    const conso = { ...axes[CONSO_AXIS], opposite: false };
+    const conso = { ...axes[CONSO_AXIS], ...WHOLE_PLOT, opposite: false };
 
     if (!series.some((serie) => axisOf(serie) === INSEE_AXIS && valueCount(serie) >= 2)) {
         const consoSeries = series.filter((serie) => axisOf(serie) === CONSO_AXIS).map((serie) => ({ ...serie, yAxis: 0 }));
-        return { ...server, yAxis: [{ ...conso, ...WHOLE_PLOT }], series: asOptions(consoSeries) };
+        return { ...server, yAxis: [conso], series: asOptions(consoSeries) };
     }
     return {
         ...server,
-        // `offset: 0` : sans lui, Highcharts décale le second axe posé du même côté
         yAxis: [
             {
                 ...insee,
-                ...INSEE_PANEL,
-                offset: 0,
-                opposite: false,
+                ...WHOLE_PLOT,
+                opposite: true,
+                gridLineWidth: 0,
                 title: { ...insee.title, style: { ...insee.title?.style, color: NEUTRAL_COLOR } },
                 labels: { ...insee.labels, style: { ...insee.labels?.style, color: NEUTRAL_COLOR } },
             },
-            { ...conso, ...CONSO_PANEL, offset: 0 },
+            conso,
         ],
-        series: asOptions(series.map((serie) => (axisOf(serie) === INSEE_AXIS ? { ...serie, color: NEUTRAL_COLOR, marker: { ...serie.marker, symbol: 'circle' } } : serie))),
+        // La courbe passe devant les barres
+        series: asOptions(
+            series.map((serie) => (axisOf(serie) === INSEE_AXIS ? { ...serie, color: NEUTRAL_COLOR, zIndex: 2, marker: { ...serie.marker, symbol: 'circle' } } : serie)),
+        ),
     };
 };
 

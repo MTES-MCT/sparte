@@ -18,6 +18,7 @@ import type { ValueClass } from '../../values';
 import { zoneToLand } from '../../zones';
 import type { GridImage } from './cells';
 import { clipsImage } from './imageClip';
+import { SOIL_ARTIFICIAL_COLOR, SOIL_NATURAL_COLOR, recoloredUrl } from './soilRecolor';
 
 const WMTS_URL = 'https://data.geopf.fr/wmts';
 const WMS_URL = 'https://data.geopf.fr/wms-r';
@@ -69,15 +70,18 @@ export const dominantGeneration = (lands: { surface_ha: number; artif_years: num
 // Image d'une emprise ([xmin, ymin, xmax, ymax] en EPSG:3857), aux proportions de l'emprise
 export const ignArtifInsetImage = (generation: string, [xmin, ymin, xmax, ymax]: [number, number, number, number]): string => {
     const height = Math.max(1, Math.round((INSET_IMAGE_WIDTH_PX * (ymax - ymin)) / (xmax - xmin)));
-    return (
+    return recoloredUrl(
         `${WMS_URL}?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=${LAYER_PREFIX}.${generation}&STYLES=&CRS=EPSG:3857` +
-        `&BBOX=${[xmin, ymin, xmax, ymax].map(Math.round).join(',')}&WIDTH=${INSET_IMAGE_WIDTH_PX}&HEIGHT=${height}&FORMAT=image/png&TRANSPARENT=TRUE`
+            `&BBOX=${[xmin, ymin, xmax, ymax].map(Math.round).join(',')}&WIDTH=${INSET_IMAGE_WIDTH_PX}&HEIGHT=${height}&FORMAT=image/png&TRANSPARENT=TRUE`,
     );
 };
 
+// Les adresses passent par le protocole de recoloration (voir soilRecolor.ts)
 export const ignArtifTiles = (generation: string): string =>
-    `${WMTS_URL}?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=${LAYER_PREFIX}.${generation}&STYLE=normal&FORMAT=image/png` +
-    `&TILEMATRIXSET=${TILE_MATRIX_SET}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`;
+    recoloredUrl(
+        `${WMTS_URL}?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=${LAYER_PREFIX}.${generation}&STYLE=normal&FORMAT=image/png` +
+            `&TILEMATRIXSET=${TILE_MATRIX_SET}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}`,
+    );
 
 // Zoom de la carte à partir duquel MapLibre demande le premier niveau publié : pour une image, il
 // arrondit le niveau au plus proche, et des tuiles de 256 px sont demandées un niveau plus haut
@@ -105,13 +109,14 @@ export const imageBounds = (zone: string, [[west, south], [east, north]]: [[numb
     return [west - marginX, south - marginY, east + marginX, north + marginY];
 };
 
-// Fond sous l'image, visible là où elle est transparente : pas de donnée OCS GE
+// Fond sous l'image, visible là où elle est transparente : pas de donnée OCS GE. Les hachures du
+// « sans donnée » sont dessinées par-dessus (voir gridLayers.ts).
 export const SOIL_IMAGE_LAND_COLOR = '#ffffff';
 
-// Couleurs de l'image à l'écran, mesurées sur des captures avec le réglage de `soilImage`
+// Couleurs de l'image à l'écran : celles que la recoloration donne à ses tuiles
 export const SOIL_IMAGE_CLASSES: ValueClass[] = [
-    { color: '#ff9b93', name: 'Sol artificialisé' },
-    { color: '#b4ff8d', name: 'Sol non artificialisé' },
+    { color: SOIL_ARTIFICIAL_COLOR, name: 'Sol artificialisé' },
+    { color: SOIL_NATURAL_COLOR, name: 'Sol non artificialisé' },
 ];
 
 // Ce que la légende dit de l'image
@@ -137,10 +142,9 @@ export const soilImage = (zone: string, generation: string = DEFAULT_GENERATION)
         boundsOf: (lands) => imageBounds(zone, lands),
         landColor: SOIL_IMAGE_LAND_COLOR,
         clipped: clipsImage(zone),
-        // Réglage retenu sur captures : deux passes et une saturation de 0,3 donnent à l'écran un vert
-        // #b4ff8d et un rouge #ff9b93 ; au-delà, le vert devient criard
-        passes: 2,
-        saturation: 0.3,
+        // Les tuiles arrivent recolorées et opaques : une passe, sans retouche
+        passes: 1,
+        saturation: 0,
         contrast: 0,
         insetImage: (sourceBbox) => ignArtifInsetImage(generation, sourceBbox),
         caption: `image de l'OCS GE (IGN), sols artificialisés ou non · génération ${generation}`,

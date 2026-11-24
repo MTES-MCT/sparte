@@ -1,6 +1,6 @@
 import type { NationalMapBaseMap } from '@services/api';
 import {
-    COMMUNES_ARTIF_HA,
+    COMMUNES_ARTIF_SHARE,
     COMMUNES_CONSO_EVOLUTION,
     COMMUNES_CONSO_HA,
     COMMUNES_CONSO_SHARE,
@@ -192,10 +192,10 @@ describe('ce que le cadre dit de la vue', () => {
     });
 
     describe('carte des sols artificialisés par maille', () => {
-        const SOILS = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_pct_gridded', ARTIF_FRANCE_BY_REGION);
+        const SOILS = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_soils', ARTIF_FRANCE_BY_REGION);
 
         it('lit l’artificialisation des territoires affichés, sans période dans son identité', () => {
-            expect(SOILS).toMatchObject({ key: 'FRANCE|REGION|artif_pct_gridded', period: null, data: { source: 'artif' }, render: { renderer: 'grid', mode: 'grid' } });
+            expect(SOILS).toMatchObject({ key: 'FRANCE|REGION|artif_soils', period: null, data: { source: 'artif' }, render: { renderer: 'grid', mode: 'grid' } });
             expect(SOILS.shownOcsge).not.toBeNull();
             expect(SOILS.scatter).toBeNull();
         });
@@ -210,7 +210,7 @@ describe('ce que le cadre dit de la vue', () => {
                 subtitle: 'France entière · part artificialisée par maille · dernier millésime OCS GE de chaque département',
                 detailSubtitle: 'France entière · objets OCS GE, artificialisés ou non · dernier millésime de chaque département',
                 imageSubtitle: "France entière · image de l'OCS GE (IGN), sols artificialisés ou non · génération 2021-2023",
-                filename: 'carte-france-artif_pct_gridded',
+                filename: 'carte-france-artif_soils',
                 credits: 'Mon Diagnostic Artificialisation · données IGN (OCS GE)',
             });
         });
@@ -223,13 +223,13 @@ describe('ce que le cadre dit de la vue', () => {
 
         it('se dessine sur le fond des départements pour toutes les communes du pays, sans colonne de valeurs', () => {
             const frame = buildFrame({
-                request: { zone: 'FRANCE', scale: 'COMM', startYear: 2011, endYear: 2024, indicatorId: 'artif_pct_gridded' },
-                indicator: indicatorOf('artif_pct_gridded'),
+                request: { zone: 'FRANCE', scale: 'COMM', startYear: 2011, endYear: 2024, indicatorId: 'artif_soils' },
+                indicator: indicatorOf('artif_soils'),
                 base: FRANCE_BY_DEPARTEMENT,
                 artif: ARTIF_FRANCE_BY_DEPARTEMENT,
             });
 
-            expect(frame).toMatchObject({ key: 'FRANCE|COMM|artif_pct_gridded', communes: null, render: { renderer: 'grid', features: FRANCE_BY_DEPARTEMENT.geojson.features } });
+            expect(frame).toMatchObject({ key: 'FRANCE|COMM|artif_soils', communes: null, render: { renderer: 'grid', features: FRANCE_BY_DEPARTEMENT.geojson.features } });
         });
     });
 
@@ -272,7 +272,7 @@ describe('nuage de points des territoires affichés par une carte bivariée', ()
         const { points, title, x, y } = frame.scatter.model;
         const byLand = new Map(frame.render.points.map((point) => [point.land_id, point]));
 
-        expect(title).toBe('Un point par région');
+        expect(title).toBe('Un point par région - France entière (2011 - 2024)');
         expect(points.map((point) => point.land_id)).toEqual(TWELVE_REGIONS);
         points.forEach((point) => {
             const { color, legendKey, valueText, name } = byLand.get(point.land_id);
@@ -309,7 +309,7 @@ describe('étendue des territoires affichés, que les graphiques d’une carte O
         const { lands } = ARTIF_FRANCE_BY_REGION;
         const surfaceHa = ['11', '53', '75', '84'].reduce((total, id) => total + lands[id].surface_ha, 0);
 
-        expect(artifFrame('HEXAGONE', FRANCE_BY_REGION, 'artif_net_ha', ARTIF_FRANCE_BY_REGION).shownOcsge).toEqual({ surfaceHa, hasMissing: false });
+        expect(artifFrame('HEXAGONE', FRANCE_BY_REGION, 'artif_desartif_ha', ARTIF_FRANCE_BY_REGION).shownOcsge).toEqual({ surfaceHa, hasMissing: false });
     });
 
     it('ne signale rien quand tous les territoires affichés ont des données', () => {
@@ -390,10 +390,10 @@ describe('cadre de toutes les communes d’une zone nationale', () => {
     });
 
     it('lit l’artificialisation des départements pour une carte OCS GE, sans attendre la consommation', () => {
-        const frame = buildFrame(communes({ indicator: indicatorOf('artif_ha'), conso: undefined, artif: ARTIF_FRANCE_BY_DEPARTEMENT, values: COMMUNES_ARTIF_HA }));
+        const frame = buildFrame(communes({ indicator: indicatorOf('artif_pct'), conso: undefined, artif: ARTIF_FRANCE_BY_DEPARTEMENT, values: COMMUNES_ARTIF_SHARE }));
 
-        expect(frame).toMatchObject({ key: 'FRANCE|COMM|artif_ha', data: { source: 'artif', response: ARTIF_FRANCE_BY_DEPARTEMENT }, period: null });
-        expect(buildFrame(communes({ indicator: indicatorOf('artif_ha'), artif: ARTIF_FRANCE_BY_REGION, values: COMMUNES_ARTIF_HA }))).toBeNull();
+        expect(frame).toMatchObject({ key: 'FRANCE|COMM|artif_pct', data: { source: 'artif', response: ARTIF_FRANCE_BY_DEPARTEMENT }, period: null });
+        expect(buildFrame(communes({ indicator: indicatorOf('artif_pct'), artif: ARTIF_FRANCE_BY_REGION, values: COMMUNES_ARTIF_SHARE }))).toBeNull();
     });
 
     it('tire ses chiffres clés des départements, comme la vue par département', () => {

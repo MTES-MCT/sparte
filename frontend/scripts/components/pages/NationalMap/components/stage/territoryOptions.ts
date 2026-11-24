@@ -8,6 +8,7 @@ import type { FrameBase, LandPoint, MapFrame } from '../../domain/frame/types';
 import { landSwatch } from '../../domain/landReading';
 import { PARENT_BOUNDARY_STYLE } from '../../domain/parentBoundary';
 import { pressOutcome, tipOf } from '../../domain/tip';
+import { NO_DATA_HATCH_COLOR, NO_DATA_HIGHCHARTS_PATTERN } from '../../domain/noData';
 import { NO_DATA_COLOR, SYMBOL_MIN_SIZE, ValueClass, symbolMaxSize as symbolMaxSizeOf } from '../../values';
 import { renderRings, resizeRings } from './ringsLayer';
 import { TIP_OFFSET_PX, tipMarkup } from './tipView';
@@ -264,7 +265,8 @@ export const buildChartOptions =(frame: MapFrame, { numberedInsets, symbolMaxSiz
         },
         mapNavigation: { enabled: false },
         mapView: { padding: viewPadding(base, numberedInsets) },
-        // Classes de couleurs des aplats ; les bivariées et les cartes en cercles colorent chaque point directement
+        // Classes de couleurs des aplats, pour la légende de l'image exportée. Chaque territoire porte déjà la
+        // couleur de sa classe (voir render/choropleth.ts) : la carte et la légende de la page ne peuvent pas diverger
         colorAxis: classes.length > 0 ? { dataClasses: classes, dataClassColor: 'category' } : undefined,
         // La légende de la page est dessinée en HTML par le composant de la carte ; celle de
         // Highcharts ne sert qu'à l'image exportée (voir exporting.chartOptions)
@@ -293,8 +295,12 @@ export const buildChartOptions =(frame: MapFrame, { numberedInsets, symbolMaxSiz
                 type: 'map',
                 name: 'Territoires',
                 joinBy: 'land_id',
-                data: territory.points,
-                nullColor: NO_DATA_COLOR,
+                // Un territoire sans donnée est hachuré, qu'il porte la couleur du « sans donnée » ou aucune valeur.
+                // Son contour prend le gris des hachures : sur le fond blanc de la carte, un contour blanc ne le fermerait pas.
+                data: territory.points.map((point) =>
+                    point.color === NO_DATA_COLOR || point.value === null ? { ...point, color: NO_DATA_HIGHCHARTS_PATTERN, borderColor: NO_DATA_HATCH_COLOR } : point,
+                ),
+                nullColor: NO_DATA_HIGHCHARTS_PATTERN,
                 borderColor: symbols || rings ? SYMBOL_BASE_BORDER : '#ffffff',
                 borderWidth: 0.6,
                 cursor: clickable ? 'pointer' : 'default',

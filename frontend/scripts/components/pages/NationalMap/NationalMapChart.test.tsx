@@ -10,6 +10,7 @@ import { COMMUNES_CONSO_EVOLUTION, COMMUNES_CONSO_HA, COMMUNES_CONSO_SHARE } fro
 import { chartStub, communesStub, gridStub } from './__fixtures__/engineStubs';
 import { resizeObserverStub } from './__fixtures__/resizeObserverStub';
 import { artifFrame, communesFrame, consoFrame } from './__fixtures__/frames';
+import { NO_DATA_HIGHCHARTS_PATTERN } from './domain/noData';
 import {
     ARTIF_FRANCE_BY_REGION,
     BRETAGNE_BY_DEPARTEMENT,
@@ -48,10 +49,10 @@ const NO_VIEW: View = { frame: null, pending: true };
 const CHOROPLETH: View = { frame: france('conso_pct_surface') };
 const CHOROPLETH_IN_2024: View = { frame: france('conso_pct_surface', CONSO_FRANCE_BY_REGION_IN_2024) };
 const SYMBOLS: View = { frame: france('conso_ha') };
+const HABITAT_SYMBOLS: View = { frame: france('conso_habitat_ha') };
 const BIVARIATE: View = { frame: france('bivariate_habitat_menages') };
 const GRID: View = { frame: france('conso_ha_gridded') };
-const DIVERGING: View = { frame: artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_net_pct_surface', ARTIF_FRANCE_BY_REGION) };
-const SIGNED_SYMBOLS: View = { frame: artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_net_ha', ARTIF_FRANCE_BY_REGION) };
+const DIVERGING: View = { frame: artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_net_annual_pct_surface', ARTIF_FRANCE_BY_REGION) };
 const RINGS: View = { frame: artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_desartif_ha', ARTIF_FRANCE_BY_REGION) };
 
 // Toutes les communes d'une zone nationale, sur le fond et les chiffres clés des départements
@@ -153,15 +154,17 @@ describe('carte en aplat de couleur', () => {
         render(chartElement(CHOROPLETH));
 
         expect(legendTitle()).toBe("Consommation d'ENAF (en pourcentage de la surface communale)");
-        expect(classRows()).toEqual(["Jusqu'à 0,02 % (2)", 'De 0,02 à 0,33 % (1)', 'De 0,33 à 0,55 % (2)', 'De 0,55 à 0,83 % (1)', 'Plus de 0,83 % (1)']);
-        expect(legendMethod()).toBe('Classes par seuils naturels (méthode de Jenks), calculées sur les territoires affichés.');
+        expect(classRows()).toEqual(['Moins de 0,33 % (2)', 'De 0,33 à 0,53 % (1)', 'De 0,53 à 0,83 % (2)', 'De 0,83 à 0,94 % (1)', '0,94 % et plus (1)']);
+        expect(legendMethod()).toBe(
+            'Classes par seuils naturels (méthode de Jenks), calculées sur les territoires affichés. Une valeur égale à une borne appartient à la classe supérieure.',
+        );
     });
 
     it('signale dans la colonne le territoire sans donnée et les collectivités absentes de la France entière', () => {
         render(chartElement(CHOROPLETH));
 
         expect(footnote()).toBe(
-            "Les données de consommation d'espaces ne sont pas disponibles pour Mayotte (en gris sur la carte), ni pour " +
+            "Les données de consommation d'espaces ne sont pas disponibles pour Mayotte (hachurés sur la carte), ni pour " +
                 'Saint-Pierre-et-Miquelon, Saint-Barthélemy, Saint-Martin, Wallis-et-Futuna, la Polynésie française, la Nouvelle-Calédonie ' +
                 'et les Terres australes et antarctiques françaises, qui ne figurent pas sur la carte.',
         );
@@ -191,7 +194,7 @@ describe('carte en aplat de couleur', () => {
         render(chartElement({ frame: consoFrame('REGION_06', MAYOTTE_BY_EPCI, 'conso_pct_surface', CONSO_MAYOTTE_BY_EPCI) }));
 
         expect(footnote()).toBe(
-            "Les données de consommation d'espaces ne sont pas disponibles pour CA de Dembeni / Mamoudzou, CC de Petite-Terre (en gris sur la carte).",
+            "Les données de consommation d'espaces ne sont pas disponibles pour CA de Dembeni / Mamoudzou, CC de Petite-Terre (hachurés sur la carte).",
         );
     });
 
@@ -203,14 +206,20 @@ describe('carte en aplat de couleur', () => {
 });
 
 describe('carte en aplat divergent', () => {
-    it('sépare les baisses des hausses à zéro et compte à part les territoires sans donnée', () => {
+    it('sépare les baisses des hausses, range les valeurs nulles à part et compte à part les territoires sans donnée', () => {
         render(chartElement(DIVERGING));
 
-        expect(legendTitle()).toBe('Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)');
-        expect(classRows()).toEqual(["Jusqu'à 0 % (2)", 'De 0 à +0,11 % (2)', 'De +0,11 à +0,16 % (1)', 'Plus de +0,16 % (1)', 'Donnée non disponible (1)']);
-        expect(legendMethod()).toBe(
-            'Classes par seuils naturels (méthode de Jenks), calculées de part et d’autre de zéro sur les territoires affichés.',
-        );
+        expect(legendTitle()).toBe('Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an)');
+        expect(classRows()).toEqual([
+            'Moins de 0 % par an (1)',
+            '0 % par an (1)',
+            'De +0,001 à +0,052 % par an (2)',
+            'De +0,052 à +0,069 % par an (1)',
+            '+0,069 % par an et plus (1)',
+            'Donnée non disponible (1)',
+        ]);
+        expect(legendMethod()).toMatch(/^Classes par seuils naturels \(méthode de Jenks\), calculées de part et d’autre de zéro sur les territoires affichés/);
+        expect(legendMethod()).toContain('les valeurs nulles forment une classe à part');
     });
 
     it('affiche dans la colonne la note de la source OCS GE, à la place de celle de la consommation', () => {
@@ -244,22 +253,6 @@ describe('carte en cercles proportionnels', () => {
     });
 });
 
-describe('carte en cercles d’une valeur signée', () => {
-    it('compte dans la légende le territoire sans donnée', () => {
-        render(chartElement(SIGNED_SYMBOLS));
-
-        expect(legendTitle()).toBe('Artificialisation nette entre les deux derniers millésimes (en hectares)');
-        expect(plain(within(legend()).getByRole('img').getAttribute('aria-label'))).toBe('Cercles de référence : 5 000,0 ha, 2 000,0 ha, 200,0 ha');
-        expect(within(legend()).getByText('Donnée non disponible')).toHaveTextContent('Donnée non disponible(1)');
-    });
-
-    it('remet à Highcharts des cercles à la taille de la valeur absolue, rouges ou bleus selon le signe', () => {
-        render(chartElement(SIGNED_SYMBOLS));
-
-        expect(comparableOptions()).toMatchSnapshot();
-    });
-});
-
 describe('carte en anneaux', () => {
     it('pose sur la carte les anneaux de référence, les deux couleurs nommées et ce qu’il faut savoir pour les lire', () => {
         render(chartElement(RINGS));
@@ -285,7 +278,7 @@ describe('carte en anneaux', () => {
     });
 
     it('ne nomme aucune couleur et n’ajoute rien à la légende d’une carte en cercles', () => {
-        render(chartElement(SIGNED_SYMBOLS));
+        render(chartElement(SYMBOLS));
 
         expect(within(legend()).queryByRole('list', { name: 'Couleurs des anneaux' })).toBeNull();
         expect(within(legend()).queryByText(/Sous 12 px/)).toBeNull();
@@ -295,7 +288,8 @@ describe('carte en anneaux', () => {
         render(chartElement(RINGS));
 
         expect(chartStub.options().colorAxis).toBeUndefined();
-        expect(new Set(landPoints().map((point) => point.color))).toEqual(new Set(['#eeeef8', '#dcdcdc']));
+        // Fond neutre des territoires renseignés, hachures de ceux qui ne le sont pas
+        expect(new Set(landPoints().map((point) => point.color))).toEqual(new Set(['#eeeef8', NO_DATA_HIGHCHARTS_PATTERN]));
         expect(chartStub.options().series.map((series) => series.type)).toEqual(['map', 'mapline', 'mappoint']);
     });
 
@@ -386,10 +380,10 @@ describe('carte bivariée', () => {
         expect(comparableOptions()).toMatchSnapshot();
     });
 
-    it('laisse les territoires en gris quand la période n’a pas de seuils', () => {
+    it('hachure les territoires quand la période n’a pas de seuils', () => {
         render(chartElement({ frame: france('bivariate_habitat_menages', CONSO_FRANCE_BY_REGION_IN_2024) }));
 
-        expect(landPoints().map(({ color, valueText }) => [color, valueText])).toEqual(landPoints().map(() => ['#dcdcdc', 'Donnée non disponible']));
+        expect(landPoints().map(({ color, valueText }) => [color, valueText])).toEqual(landPoints().map(() => [NO_DATA_HIGHCHARTS_PATTERN, 'Donnée non disponible']));
     });
 
     it('garde la grille et ses niveaux, sans intervalles, quand la période n’a pas de seuils', () => {
@@ -478,7 +472,7 @@ describe('carte des données carroyées', () => {
 });
 
 describe('carte des sols artificialisés par maille', () => {
-    const SOILS: View = { frame: artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_pct_gridded', ARTIF_FRANCE_BY_REGION) };
+    const SOILS: View = { frame: artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_soils', ARTIF_FRANCE_BY_REGION) };
     // La carte annonce ce qu'elle dessine : l'image de l'IGN, ses mailles (son secours, sous le premier
     // niveau de l'image ou quand elle ne répond pas) ou les objets
     const draws = (stage: 'cells' | 'image' | 'objects'): void => act(() => gridStub.props.onStageChange(stage, gridStub.props.render.image?.key ?? null));
@@ -906,11 +900,11 @@ describe('carte de toutes les communes du pays', () => {
         expect(communesLayer()).toHaveStyle({ opacity: '1', 'pointer-events': 'auto' });
     });
 
-    it('pose sur la carte la légende des quantiles et, dans la colonne, les chiffres clés et la note', () => {
+    it('pose sur la carte la légende des classes et, dans la colonne, les chiffres clés et la note', () => {
         render(chartElement(DENSE));
 
         expect(legendTitle()).toBe("Consommation d'ENAF (en pourcentage de la surface communale)");
-        expect(legendMethod()).toMatch(/^Classes par quantiles, calculées sur les communes affichées/);
+        expect(legendMethod()).toMatch(/^Classes par seuils naturels \(méthode de Jenks\), calculées sur les communes affichées/);
         expect(classRows().at(-1)).toBe('Donnée non disponible (4)');
         expect(screen.getByLabelText('Chiffres clés')).toHaveTextContent("Consommation d'espaces");
         expect(within(aside()).getByText(/^Les données de consommation/)).toBeInTheDocument();
@@ -976,7 +970,7 @@ describe('carte de toutes les communes du pays', () => {
 
             expect(chartStub.creations).toHaveLength(1);
             expect(chartLayer()).toHaveStyle({ opacity: '0.5' });
-            expect(classRows()[0]).toBe("Jusqu'à 0,02 % (2)");
+            expect(classRows()[0]).toBe('Moins de 0,33 % (2)');
             expect(screen.getByLabelText('Chiffres clés')).toHaveTextContent("Consommation d'espaces");
             expect(communesLayer()).toHaveStyle({ opacity: '0', 'pointer-events': 'none' });
             expect(communesLayer()).toHaveAttribute('aria-hidden', 'true');
@@ -1026,7 +1020,7 @@ describe('carte de toutes les communes du pays', () => {
             expect(chartStub.creations).toHaveLength(1);
             expect(communesStub.props).toBeNull();
             expect(screen.queryByRole('img', { name: DENSE.frame.ariaLabel, hidden: true })).toBeNull();
-            expect(classRows()[0]).toBe("Jusqu'à 0,02 % (2)");
+            expect(classRows()[0]).toBe('Moins de 0,33 % (2)');
         });
 
         it('prépare sans rien afficher la vue ouverte par son adresse', () => {
@@ -1195,13 +1189,13 @@ describe('place réservée à la légende', () => {
     it('réserve la même bande en haut de la carte quelle que soit la représentation', () => {
         const { rerender } = render(chartElement(CHOROPLETH));
         const band = legendBand();
-        const others = [DIVERGING, SYMBOLS, SIGNED_SYMBOLS, RINGS, BIVARIATE, GRID].map((view) => {
+        const others = [DIVERGING, SYMBOLS, RINGS, BIVARIATE, GRID].map((view) => {
             rerender(chartElement(view));
             return legendBand();
         });
 
         expect(band).toBe('140');
-        expect(others).toEqual([band, band, band, band, band, band]);
+        expect(others).toEqual([band, band, band, band, band]);
     });
 
     it('garde à la légende en bande ses classes en ligne et sa méthode dans un volet posé sous elle', () => {
@@ -1371,12 +1365,12 @@ describe('place réservée à la légende', () => {
 
         it('réserve la même colonne quelle que soit la représentation', () => {
             const { rerender } = render(chartElement(CHOROPLETH));
-            const others = [DIVERGING, SYMBOLS, SIGNED_SYMBOLS, RINGS, BIVARIATE, GRID].map((view) => {
+            const others = [DIVERGING, SYMBOLS, RINGS, BIVARIATE, GRID].map((view) => {
                 rerender(chartElement(view));
                 return [legendSide(), legendBand()];
             });
 
-            expect(others).toEqual(Array(6).fill(['220', null]));
+            expect(others).toEqual(Array(5).fill(['220', null]));
         });
 
         it('met la légende en colonne : une classe par ligne, la méthode à leur suite', () => {
@@ -1458,7 +1452,7 @@ describe('scène qui change de taille sous la carte affichée', () => {
     it('crée la carte en cercles suivante au diamètre que demande alors la scène', () => {
         const { rerender } = render(chartElement(SYMBOLS));
         resizeStage(520, 700);
-        rerender(chartElement(SIGNED_SYMBOLS));
+        rerender(chartElement(HABITAT_SYMBOLS));
 
         expect(chartStub.creations).toHaveLength(2);
         expect((chartStub.options().series[2] as unknown as { maxSize: number }).maxSize).toBe(58);

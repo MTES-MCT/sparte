@@ -57,8 +57,8 @@ describe('useViewState', () => {
             '/carte?zone=REGION_53&scale=COMM&start=2014&end=2024&indicator=conso_ha',
             '/carte?zone=REGION_53&scale=COMM&start=2014&end=2019&indicator=conso_ha',
             '/carte?zone=REGION_53&scale=COMM&start=2014&end=2019&indicator=conso_pct_surface',
-            '/carte?zone=REGION_53&scale=COMM&start=2014&end=2019&indicator=artif_net_pct_surface',
-            '/carte?zone=REGION_53&scale=COMM&start=2015&end=2018&indicator=artif_net_pct_surface',
+            '/carte?zone=REGION_53&scale=COMM&start=2014&end=2019&indicator=artif_net_annual_pct_surface',
+            '/carte?zone=REGION_53&scale=COMM&start=2015&end=2018&indicator=artif_net_annual_pct_surface',
         ]);
         expect(pushState).not.toHaveBeenCalled();
     });

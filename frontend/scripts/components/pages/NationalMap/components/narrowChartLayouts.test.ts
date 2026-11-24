@@ -1,18 +1,16 @@
 import Highcharts from 'highcharts';
 import { coverFlowsChart, coversChart, flowsChart, shareChart } from '../__fixtures__/ocsgeChartFixtures';
-import { ChartContext, ChartPeriod, ComplementaryChart, chartHeight, withChartLayout } from './narrowChartLayouts';
+import { ChartContext, ComplementaryChart, chartHeight, heightKeepingPlot, withChartLayout } from './narrowChartLayouts';
 
 // Présentation des graphiques complémentaires : ce que chacun dessine des options du serveur, et
 // la règle que Highcharts applique à un graphique étroit, lue telle qu'elle leur est ajoutée.
 
-// Vue d'une carte de la consommation : une période
-const consoView = (period: ChartPeriod): ChartContext => ({ period, scope: null });
+// Vue d'une carte de la consommation : la période est dans le titre que donne le serveur
+const PERIOD: ChartContext = { scope: null };
 
-const PERIOD = consoView({ startYear: 2011, endYear: 2024 });
-
-// Vue d'une carte de l'OCS GE : pas de période, et le territoire que ses graphiques décrivent
-// quand ce n'est pas l'ensemble des territoires affichés
-const ocsgeView = (scope: string | null = null): ChartContext => ({ period: null, scope });
+// Vue d'une carte de l'OCS GE : le territoire que ses graphiques décrivent quand ce n'est pas
+// l'ensemble des territoires affichés
+const ocsgeView = (scope: string | null = null): ChartContext => ({ scope });
 
 const OCSGE = ocsgeView();
 
@@ -30,7 +28,7 @@ const CHARTS: ComplementaryChart[] = [
 const OCSGE_CHARTS: ComplementaryChart[] = ['artif_share_by_millesime', 'artif_by_cover', 'artif_and_desartif', 'artif_flux_by_cover'];
 const ALL_CHARTS = [...CHARTS, ...OCSGE_CHARTS];
 
-// Vue d'essai d'un graphique : une période pour la consommation, aucune pour l'OCS GE
+// Vue d'essai d'un graphique
 const viewOf = (chart: ComplementaryChart): ChartContext => (OCSGE_CHARTS.includes(chart) ? OCSGE : PERIOD);
 
 // Titre et sous-titre que le serveur donne à un graphique, dans sa variante « carte nationale »
@@ -128,7 +126,6 @@ describe('règle des graphiques étroits', () => {
 
     it.each<ComplementaryChart>(['conso_by_year_and_destination', 'conso_by_year', 'employment_by_census'])('garde le titre et le sous-titre que le serveur donne à %s', (chart) => {
         expect(narrowTexts(chart)).toEqual([SERVER_TITLE, SERVER_SUBTITLE]);
-        expect(narrowTexts(chart, {}, consoView({ startYear: 2015, endYear: 2020 }))).toEqual([SERVER_TITLE, SERVER_SUBTITLE]);
     });
 
     it('ne liste aucune série, que Highcharts retirerait ou créerait pour s’y conformer', () => {
@@ -137,19 +134,19 @@ describe('règle des graphiques étroits', () => {
 });
 
 describe('graduations des axes de valeurs', () => {
-    // Axes des valeurs que la règle décrit pour un graphique : un seul, ou un par panneau
+    // Axes des valeurs que la règle décrit pour un graphique : un seul, ou un par grandeur
     const axesOf = (chart: ComplementaryChart): Highcharts.YAxisOptions[] => [narrowRule(chart, householdsChart()).yAxis].flat() as Highcharts.YAxisOptions[];
     // Graduations et libellés que l'axe donne à Highcharts, une fois ses extrêmes connus
     const ticksOf = (axis: Highcharts.YAxisOptions, min: number, max: number): number[] => axis.tickPositioner.call({ min, max } as Highcharts.Axis);
     const labelsOf = (axis: Highcharts.YAxisOptions, tickPositions: number[]): string[] =>
         tickPositions.map((value) => axis.labels.formatter.call({ value, axis: { tickPositions } } as Highcharts.AxisLabelsFormatterContextObject));
 
-    it.each(CHARTS.filter((chart) => chart !== 'destination_share'))('donne à l’axe des valeurs de %s quatre graduations, trois par panneau, et leurs libellés', (chart) => {
+    it.each(CHARTS.filter((chart) => chart !== 'destination_share'))('donne à chaque axe des valeurs de %s quatre graduations et leurs libellés', (chart) => {
         const axes = axesOf(chart);
 
         expect(axes.length).toBeGreaterThan(0);
         axes.forEach((axis) => {
-            expect(ticksOf(axis, 0, 30943)).toEqual(axes.length === 2 ? [0, 20000, 40000] : [0, 12000, 24000, 36000]);
+            expect(ticksOf(axis, 0, 30943)).toEqual([0, 12000, 24000, 36000]);
             expect(labelsOf(axis, [0, 12000, 24000, 36000])).toEqual(['0', '12k', '24k', '36k']);
         });
     });
@@ -164,15 +161,15 @@ describe('graduations des axes de valeurs', () => {
 });
 
 describe('hauteur des graphiques', () => {
-    it('donne plus de hauteur aux graphiques en deux panneaux, et à chaque graphique de l’OCS GE celle de ses barres', () => {
+    it('donne à chaque graphique de l’OCS GE la hauteur de ses barres, et aux autres la même', () => {
         expect(ALL_CHARTS.map((chart) => [chart, chartHeight(chart)])).toEqual([
             ['conso_by_year_and_destination', 300],
             ['conso_habitat_by_year', 300],
             ['conso_activite_by_year', 300],
             ['conso_by_year', 300],
             ['destination_share', 300],
-            ['conso_and_population_by_year', 340],
-            ['conso_and_households_by_year', 340],
+            ['conso_and_population_by_year', 300],
+            ['conso_and_households_by_year', 300],
             ['employment_by_census', 300],
             ['artif_share_by_millesime', 260],
             ['artif_by_cover', 300],
@@ -184,7 +181,7 @@ describe('hauteur des graphiques', () => {
     it('retire la hauteur que le serveur fixe pour un diagnostic : celle de l’emplacement s’applique', () => {
         const options = withChartLayout('conso_by_year', PERIOD)(annualChart());
 
-        expect(options.chart).toEqual({ type: 'column', animation: false });
+        expect(options.chart).toEqual({ type: 'column', animation: false, events: { render: expect.any(Function) } });
     });
 });
 
@@ -212,6 +209,12 @@ describe('consommation par année d’une destination', () => {
         expect(narrowTexts(chart, destinationsChart())).toEqual([title, `${SERVER_SUBTITLE}, devant le total`]);
     });
 
+    it('garde le territoire et la période du titre du serveur, au format du diagnostic', () => {
+        const server = { ...destinationsChart(), title: { text: "Consommation d'ENAF par année et par destination - Bretagne (2011 - 2024)" } };
+
+        expect(withChartLayout('conso_habitat_by_year', PERIOD)(server).title.text).toBe("Consommation d'ENAF à destination de l'habitat, par année - Bretagne (2011 - 2024)");
+    });
+
     it('garde le titre du serveur quand il ne rend pas la série de la destination', () => {
         expect(narrowTexts('conso_habitat_by_year', { series: [{ type: 'column', name: 'Total' }] })).toEqual([SERVER_TITLE, SERVER_SUBTITLE]);
     });
@@ -231,30 +234,29 @@ describe('consommation par an et rythme moyen des deux périodes de référence'
 
 });
 
-describe('consommation et grandeur de l’Insee en deux panneaux', () => {
+describe('consommation et grandeur de l’Insee sur le même tracé', () => {
     const rule = (categories: string[], insee?: (number | null)[]) => narrowRule('conso_and_households_by_year', householdsChart(categories, insee));
 
-    it('retire le titre de chaque axe et dit en sous-titre l’unité et le panneau de chaque grandeur', () => {
+    it('retire le titre de chaque axe et dit en sous-titre l’unité, le dessin et l’axe de chaque grandeur', () => {
         const axes = rule(years(2011, 2024)).yAxis as Highcharts.YAxisOptions[];
 
         expect(axes.map((axis) => axis.title.text)).toEqual([undefined, undefined]);
         expect(narrowTexts('conso_and_households_by_year', householdsChart())).toEqual([
             SERVER_TITLE,
-            'En hectares par année (en haut) et en nombre de ménages aux recensements (en bas), de 2011 à 2024',
+            'En hectares par année (barres, axe de gauche) et en nombre de ménages aux recensements (courbe, axe de droite)',
         ]);
         expect(narrowTexts('conso_and_population_by_year', householdsChart())).toEqual([
             SERVER_TITLE,
-            "En hectares par année (en haut) et en nombre d'habitants aux recensements (en bas), de 2011 à 2024",
+            "En hectares par année (barres, axe de gauche) et en nombre d'habitants aux recensements (courbe, axe de droite)",
         ]);
     });
 
     it('ne décrit qu’un axe et dit pourquoi quand la période n’a pas deux recensements', () => {
-        const period = consoView({ startYear: 2017, endYear: 2021 });
         const server = householdsChart(years(2017, 2021));
 
-        expect(narrowRule('conso_and_households_by_year', server, period).yAxis).toHaveLength(1);
-        expect(narrowTexts('conso_and_households_by_year', server, period)[1]).toBe('En hectares par année, de 2017 à 2021\u00a0; moins de deux recensements sur cette période');
-        expect(narrowTexts('conso_and_population_by_year', server, period)[1]).toBe('En hectares par année, de 2017 à 2021\u00a0; moins de deux recensements sur cette période');
+        expect(narrowRule('conso_and_households_by_year', server).yAxis).toHaveLength(1);
+        expect(narrowTexts('conso_and_households_by_year', server)[1]).toBe('En hectares par année\u00a0; moins de deux recensements sur cette période');
+        expect(narrowTexts('conso_and_population_by_year', server)[1]).toBe('En hectares par année\u00a0; moins de deux recensements sur cette période');
     });
 
     it('décrit toujours un axe au moins, même sans réponse exploitable du serveur', () => {
@@ -287,9 +289,6 @@ describe('emploi et chômage aux recensements', () => {
         expect(axis.labels.rotation).toBe(0);
     });
 
-    it('ne cite pas la période choisie', () => {
-        expect(narrowTexts('employment_by_census', server, consoView({ startYear: 2015, endYear: 2020 }))).toEqual(narrowTexts('employment_by_census', server));
-    });
 });
 
 describe('graphiques des cartes de l’OCS GE', () => {
@@ -384,14 +383,14 @@ describe('présentation appliquée par Highcharts', () => {
     describe('consommation et ménages', () => {
         const households = (categories?: string[]) => withChartLayout('conso_and_households_by_year', PERIOD)(householdsChart(categories));
         const SERIES = ['Consommation totale', 'Consommation habitat', 'Ménages'];
-        const NARROW = { title: "Consommation d'ENAF et nombre de ménages, par année", legend: SERIES, series: SERIES, sides: ['gauche', 'gauche'], axisTitles: [undefined, undefined] as string[] };
+        const NARROW = { title: "Consommation d'ENAF et nombre de ménages, par année", legend: SERIES, series: SERIES, sides: ['droite', 'gauche'], axisTitles: [undefined, undefined] as string[] };
 
-        // Place de chaque axe dans la zone de tracé, dans l'ordre du serveur : les ménages en bas, la
-        // consommation en haut. jsdom ne calcule aucune géométrie : seules les options sont lues.
+        // Place de chaque axe dans la zone de tracé, dans l'ordre du serveur : les ménages puis la
+        // consommation, superposés. jsdom ne calcule aucune géométrie : seules les options sont lues.
         const panels = () => chart.yAxis.map(({ options }) => [(options as Highcharts.YAxisOptions).top, (options as Highcharts.YAxisOptions).height]);
         const TWO_PANELS = [
-            ['62%', '38%'],
-            ['0%', '52%'],
+            ['0%', '100%'],
+            ['0%', '100%'],
         ];
 
         it('donne au graphique de la colonne son titre court, ses trois lignes de légende, ses axes sans titre et sept années', () => {
@@ -402,7 +401,7 @@ describe('présentation appliquée par Highcharts', () => {
             expect(writtenYears()).toEqual(['2011', '2013', '2015', '2017', '2019', '2021', '2023']);
         });
 
-        it('rend au graphique agrandi les titres du serveur, toujours en deux panneaux, puis reprend sa présentation étroite', () => {
+        it('rend au graphique agrandi les titres du serveur, toujours sur deux axes, puis reprend sa présentation étroite', () => {
             drawAt(272, households(), 340);
             chart.setSize(900, 500, false);
 
@@ -415,7 +414,7 @@ describe('présentation appliquée par Highcharts', () => {
             expect(drawn()).toEqual(NARROW);
         });
 
-        it('passe à un seul axe pour une période sans recensement, puis revient aux deux panneaux, sans recréer le graphique', () => {
+        it('passe à un seul axe pour une période sans recensement, puis revient aux deux axes, sans recréer le graphique', () => {
             drawAt(272, households(), 340);
             // Mise à jour telle que la fait le composant React de Highcharts : une entrée par série et par axe
             chart.update(households(years(2017, 2021)), true, true, false);
@@ -538,5 +537,33 @@ describe('présentation appliquée par Highcharts', () => {
 
             expect(drawn()).toMatchObject({ title: "Consommation d'ENAF par année", legend: LEGEND });
         });
+    });
+});
+
+describe('hauteur d’un graphique étroit', () => {
+    // Faux graphique Highcharts : ce que lit la règle, et la hauteur qu'elle demande
+    const drawn = (chartWidth: number, chartHeightNow: number, plotHeight: number) => {
+        const setSize = jest.fn();
+        const { render } = withChartLayout('conso_and_population_by_year', PERIOD)({}).chart.events;
+        render.call({ chartWidth, chartHeight: chartHeightNow, plotHeight, setSize } as unknown as Highcharts.Chart, undefined);
+        return setSize;
+    };
+
+    it('grandit de ce que son titre prend au tracé, et pas plus', () => {
+        // Emplacement de 300 px : un tracé de 170 px est prévu ; il n'en reste que 78 sous un titre de quatre lignes
+        expect(heightKeepingPlot(300, 300, 78)).toBe(392);
+        expect(drawn(284, 300, 78)).toHaveBeenCalledWith(undefined, 392, false);
+        // Une fois agrandi, le tracé a sa hauteur : rien n'est redemandé
+        expect(drawn(284, 392, 170)).not.toHaveBeenCalled();
+    });
+
+    it('revient à la hauteur de son emplacement quand le titre raccourcit, jamais en dessous', () => {
+        expect(drawn(284, 392, 220)).toHaveBeenCalledWith(undefined, 342, false);
+        expect(heightKeepingPlot(300, 392, 400)).toBe(300);
+        expect(drawn(284, 300, 240)).not.toHaveBeenCalled();
+    });
+
+    it('laisse sa hauteur à un graphique large : image exportée, plein écran', () => {
+        expect(drawn(1136, 400, 100)).not.toHaveBeenCalled();
     });
 });

@@ -17,7 +17,7 @@ import { cellColorExpression } from './domain/grid/cells';
 import { ignArtifTiles } from './domain/grid/soilImage';
 import { soilZoneFilter } from './domain/grid/soilCells';
 import GriddedMap from './GriddedMap';
-import { borderOpacityOnImage, haloOpacityOnImage, lineWidthExpression } from './gridded';
+import { borderOpacityOverData, haloOpacityOverData, lineWidthExpression } from './gridded';
 import { ZONE_FRANCE } from './zones';
 import { exportInfoOf, exportLegendOf } from './domain/frame/exportImage';
 
@@ -48,15 +48,16 @@ jest.mock('@services/api', () => ({
 }));
 
 const LANDS_FILL = 'national-map-lands-fill';
+const LANDS_NO_DATA = 'national-map-lands-no-data';
 const LANDS_HALO = 'national-map-lands-halo';
 const GRID_SOURCE = 'national-map-grid';
 const GRID_FILL = 'national-map-grid-fill';
 const SEPARATION_SOURCE = 'national-map-grid-separation';
 const LANDS_LINE = 'national-map-lands-line';
-// Image : un palier pour les vues larges (tuiles réduites de moitié), un pour les autres, deux passes chacun
+// Image : un palier pour les vues larges (tuiles réduites de moitié), un pour les autres, une passe chacun
 const IMAGE_SOURCES = ['national-map-image-0', 'national-map-image-1'];
-const WIDE_IMAGE_LAYERS = ['national-map-image-0-0', 'national-map-image-0-1'];
-const IMAGE_LAYERS = ['national-map-image-1-0', 'national-map-image-1-1'];
+const WIDE_IMAGE_LAYERS = ['national-map-image-0-0'];
+const IMAGE_LAYERS = ['national-map-image-1-0'];
 const IMAGE_MASK_SOURCE = 'national-map-image-mask';
 const IMAGE_MASK_FILL = 'national-map-image-mask-fill';
 const OBJECTS_35 = 'national-map-detail-35';
@@ -64,9 +65,9 @@ const OBJECTS_22 = 'national-map-detail-22';
 
 const france = (indicatorId: string, conso = CONSO_FRANCE_BY_REGION): MapFrame => consoFrame(ZONE_FRANCE, FRANCE_BY_REGION, indicatorId, conso);
 const bretagne = (indicatorId: string): MapFrame => consoFrame('REGION_53', BRETAGNE_BY_DEPARTEMENT, indicatorId, CONSO_BRETAGNE_BY_DEPARTEMENT);
-const SOILS_FRANCE = artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_pct_gridded', ARTIF_FRANCE_BY_REGION);
-const SOILS_BRETAGNE = artifFrame('REGION_53', BRETAGNE_BY_DEPARTEMENT, 'artif_pct_gridded', { scale: 'DEPART', lands: {} });
-const SOILS_MAYOTTE = artifFrame('REGION_06', MAYOTTE_BY_EPCI, 'artif_pct_gridded', { scale: 'EPCI', lands: {} });
+const SOILS_FRANCE = artifFrame(ZONE_FRANCE, FRANCE_BY_REGION, 'artif_soils', ARTIF_FRANCE_BY_REGION);
+const SOILS_BRETAGNE = artifFrame('REGION_53', BRETAGNE_BY_DEPARTEMENT, 'artif_soils', { scale: 'DEPART', lands: {} });
+const SOILS_MAYOTTE = artifFrame('REGION_06', MAYOTTE_BY_EPCI, 'artif_soils', { scale: 'EPCI', lands: {} });
 
 const gridOf = ({ render: drawn }: MapFrame): GridRender => {
     if (drawn.renderer !== 'grid') throw new Error('rendu de mailles attendu');
@@ -241,10 +242,22 @@ describe('mailles des sols artificialisés', () => {
         expect(gridLayer().beforeId).toBe(LANDS_HALO);
     });
 
-    it('dessine les territoires en gris : sans maille, c’est la donnée qui manque', () => {
+    it('hachure les territoires : sans maille, c’est la donnée qui manque', () => {
         mount(SOILS_BRETAGNE);
 
         expect(lastPaint(LANDS_FILL, 'fill-color')).toBe('#dcdcdc');
+        expect(layerOf(LANDS_NO_DATA)).toMatchObject({ type: 'fill', paint: { 'fill-pattern': 'national-map-no-data' } });
+        expect(lastPaint(LANDS_NO_DATA, 'fill-opacity')).toBe(1);
+        // Les hachures sont juste au-dessus du fond, sous les mailles
+        const order = theMap().layers.map((layer) => layer.id);
+        expect(order.indexOf(LANDS_NO_DATA)).toBe(order.indexOf(LANDS_FILL) + 1);
+        expect(order.indexOf(LANDS_NO_DATA)).toBeLessThan(order.indexOf(GRID_FILL));
+    });
+
+    it('ne hachure pas le fond des carreaux de la consommation : sans carreau, il n’y a pas de consommation', () => {
+        mount(bretagne('conso_ha_gridded'));
+
+        expect(lastPaint(LANDS_NO_DATA, 'fill-opacity')).toBe(0);
     });
 
     it('remplace les carreaux de la consommation par les mailles des sols sur la même carte, et inversement', () => {
@@ -340,7 +353,7 @@ describe('objets OCS GE aux grands zooms', () => {
         expect(landStub.asked[0]).toEqual({ land_type: 'REGION', land_id: '53' });
         expect(theMap().sources.get(OBJECTS_35).spec).toEqual({ type: 'vector', url: 'pmtiles://https://tuiles.test/vector_tiles/occupation_du_sol_2_35.pmtiles' });
         expect(layerOf(OBJECTS_35)).toMatchObject({ source: OBJECTS_35, 'source-layer': 'occupation_du_sol_2_35', minzoom: 13, filter: ['==', ['get', 'REGION'], '53'], beforeId: LANDS_HALO });
-        expect(layerOf(OBJECTS_35).paint['fill-color']).toEqual(['case', ['==', ['get', 'is_artificial'], true], '#ff9b93', '#b4ff8d']);
+        expect(layerOf(OBJECTS_35).paint['fill-color']).toEqual(['case', ['==', ['get', 'is_artificial'], true], '#fa4b42', '#dcebd2']);
         expect(theMap().getLayer(OBJECTS_22)).toBeUndefined();
     });
 
@@ -534,7 +547,7 @@ describe('caméra', () => {
     const SOILS_BRETAGNE_OTHER_SCALE = artifFrame(
         'REGION_53',
         { ...BRETAGNE_BY_DEPARTEMENT, geojson: { ...BRETAGNE_BY_DEPARTEMENT.geojson, features: BRETAGNE_BY_DEPARTEMENT.geojson.features.slice(0, 2) } },
-        'artif_pct_gridded',
+        'artif_soils',
         { scale: 'DEPART', lands: {} },
     );
 
@@ -590,16 +603,26 @@ describe('limites des territoires', () => {
     const LANDS_LINE = 'national-map-lands-line';
     const epci = (frame: MapFrame): MapFrame => ({ ...frame, base: { ...frame.base, scale: 'EPCI' } });
 
-    it('amincit le trait des EPCI et efface son liseré sous le zoom du pays, sans toucher aux autres mailles', () => {
+    it('amincit le trait des EPCI sous le zoom du pays, sans toucher aux autres mailles', () => {
         const { show } = mount(epci(SOILS_FRANCE));
 
         expect(lastPaint(LANDS_LINE, 'line-width')).toEqual(lineWidthExpression(0.9, 5));
-        expect(lastPaint(LANDS_HALO, 'line-opacity')).toEqual(['interpolate', ['linear'], ['zoom'], 4, 0, 5, 0.85]);
 
         show(SOILS_FRANCE);
 
         expect(lastPaint(LANDS_LINE, 'line-width')).toEqual(lineWidthExpression(1.4));
-        expect(lastPaint(LANDS_HALO, 'line-opacity')).toBe(0.85);
+    });
+
+    it('efface les limites et leur liseré aux vues larges, où elles recouvriraient les carreaux, selon la maille', () => {
+        const { show } = mount(epci(SOILS_FRANCE));
+
+        expect(lastPaint(LANDS_LINE, 'line-opacity')).toEqual(borderOpacityOverData('EPCI'));
+        expect(lastPaint(LANDS_HALO, 'line-opacity')).toEqual(haloOpacityOverData('EPCI'));
+
+        show(SOILS_FRANCE);
+
+        expect(lastPaint(LANDS_LINE, 'line-opacity')).toEqual(borderOpacityOverData('REGION'));
+        expect(lastPaint(LANDS_HALO, 'line-opacity')).toEqual(haloOpacityOverData('REGION'));
     });
 });
 
@@ -622,10 +645,11 @@ describe('image de l’IGN', () => {
             bounds: [-5.3, 41.2, 9.7, 51.2],
             attribution: '© IGN – OCS GE',
         });
-        // Deux passes de la même source : ses couleurs sont translucides
+        // Une seule passe : les tuiles arrivent recolorées et opaques
         IMAGE_LAYERS.forEach((id) => expect(layerOf(id)).toMatchObject({ source: IMAGE_SOURCES[1], minzoom: 4.5, beforeId: LANDS_HALO }));
         IMAGE_LAYERS.forEach((id) => expect(layerOf(id)).not.toHaveProperty('maxzoom'));
-        expect(theMap().layers.findIndex((layer) => layer.id === IMAGE_LAYERS[1])).toBeLessThan(theMap().layers.findIndex((layer) => layer.id === GRID_FILL));
+        expect(layerOf('national-map-image-1-1')).toBeUndefined();
+        expect(theMap().layers.findIndex((layer) => layer.id === IMAGE_LAYERS[0])).toBeLessThan(theMap().layers.findIndex((layer) => layer.id === GRID_FILL));
     });
 
     it('demande les mêmes tuiles réduites de moitié aux vues plus larges, jusqu’au zoom où elles se lisent en vraie grandeur', () => {
@@ -641,6 +665,8 @@ describe('image de l’IGN', () => {
         expect(stage()).toBe('image');
         expect(lastPaint(GRID_FILL, 'fill-opacity')).toBe(0);
         expect(lastPaint(LANDS_FILL, 'fill-color')).toEqual(['step', ['zoom'], '#dcdcdc', 3.5, '#ffffff']);
+        // Là où l'image est transparente, le fond hachuré dit qu'il n'y a pas de donnée OCS GE
+        expect(lastPaint(LANDS_NO_DATA, 'fill-opacity')).toEqual(['step', ['zoom'], 1, 3.5, 1]);
     });
 
     it('ne revient à ses mailles que sous le premier niveau de l’image, et les efface de nouveau en zoomant', () => {
@@ -677,7 +703,7 @@ describe('image de l’IGN', () => {
             expect(spec).toMatchObject({ type: 'image', url: image.insetImage(real) });
             expect((spec as { coordinates: number[][] }).coordinates).toHaveLength(4);
             expect(layerOf(`national-map-inset-${zone}-0`)).toMatchObject({ source: `national-map-inset-${zone}`, minzoom: 3.5, beforeId: LANDS_HALO });
-            expect(layerOf(`national-map-inset-${zone}-1`)).toBeDefined();
+            expect(layerOf(`national-map-inset-${zone}-1`)).toBeUndefined();
         });
 
         show(SOILS_BRETAGNE, WITH_IMAGE);
@@ -688,17 +714,17 @@ describe('image de l’IGN', () => {
         });
     });
 
-    it('efface les limites aux vues larges, où elles recouvriraient l’image, et leur rend leur force sans elle', () => {
-        const france = artifFrame(ZONE_FRANCE, { ...FRANCE_BY_REGION, scale: 'EPCI' }, 'artif_pct_gridded', { ...ARTIF_FRANCE_BY_REGION, scale: 'EPCI' });
+    it('efface les limites aux vues larges, où elles recouvriraient l’image, et les garde effacées sur les mailles', () => {
+        const france = artifFrame(ZONE_FRANCE, { ...FRANCE_BY_REGION, scale: 'EPCI' }, 'artif_soils', { ...ARTIF_FRANCE_BY_REGION, scale: 'EPCI' });
         mount(france, WITH_IMAGE);
 
-        expect(lastPaint(LANDS_LINE, 'line-opacity')).toEqual(borderOpacityOnImage('EPCI'));
-        expect(lastPaint(LANDS_HALO, 'line-opacity')).toEqual(haloOpacityOnImage('EPCI'));
+        expect(lastPaint(LANDS_LINE, 'line-opacity')).toEqual(borderOpacityOverData('EPCI'));
+        expect(lastPaint(LANDS_HALO, 'line-opacity')).toEqual(haloOpacityOverData('EPCI'));
 
         zoomTo(3);
 
-        expect(lastPaint(LANDS_LINE, 'line-opacity')).toBe(1);
-        expect(lastPaint(LANDS_HALO, 'line-opacity')).toEqual(['interpolate', ['linear'], ['zoom'], 4, 0, 5, 0.85]);
+        expect(lastPaint(LANDS_LINE, 'line-opacity')).toEqual(borderOpacityOverData('EPCI'));
+        expect(lastPaint(LANDS_HALO, 'line-opacity')).toEqual(haloOpacityOverData('EPCI'));
     });
 
     it('retire l’image en passant à une carte qui n’en a pas, et la remet au retour', () => {
@@ -809,7 +835,7 @@ describe('image de l’IGN', () => {
         it('garde la source de l’image d’une zone à l’autre d’une même génération : ses tuiles restent dessinées sous le nouveau masque', () => {
             // Une autre zone, de mêmes génération et emprise de tuiles : seule l'identité de l'image change
             const parent = { land_type: 'DEPART', land_id: '35', name: 'Ille-et-Vilaine', ancestors: [] as [] };
-            const ille = artifFrame('DEPART_35', { ...BRETAGNE_BY_DEPARTEMENT, scale: 'EPCI', parent }, 'artif_pct_gridded', { scale: 'EPCI', lands: {} });
+            const ille = artifFrame('DEPART_35', { ...BRETAGNE_BY_DEPARTEMENT, scale: 'EPCI', parent }, 'artif_soils', { scale: 'EPCI', lands: {} });
             const { show } = mount(SOILS_BRETAGNE, WITH_IMAGE);
             const since = theMap().mark();
             show(ille, WITH_IMAGE);

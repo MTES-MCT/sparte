@@ -15,6 +15,7 @@ import {
     GRID_FILL,
     GridLands,
     LANDS_FILL,
+    LANDS_NO_DATA,
     LANDS_LINE,
     LANDS_SOURCE,
     LAST_ZOOM,
@@ -30,11 +31,12 @@ import {
     imageMaskOf,
     insetImagesOf,
     landsColor,
+    landsHatchOpacity,
     placedImage,
     removeImage,
     removeStaleInsetImages,
     showHiddenCells,
-    styleBordersOnImage,
+    fadeBordersOverData,
 } from './gridLayers';
 import { addLabels } from './mapLibre';
 import { drawParentBoundary } from './parentBoundaryLayer';
@@ -82,13 +84,14 @@ export const useLandsOnImage = (mapRef: MapRef, ready: boolean, { lands, scale, 
     useEffect(() => {
         const map = mapRef.current;
         if (!map || !ready || !map.getLayer(LANDS_LINE)) return;
-        styleBordersOnImage(map, scale, imageShown);
-    }, [mapRef, ready, lands, scale, imageShown]);
+        fadeBordersOverData(map, scale);
+    }, [mapRef, ready, lands, scale]);
 
     useEffect(() => {
         const map = mapRef.current;
         if (!map || !ready || !map.getLayer(LANDS_FILL)) return;
         map.setPaintProperty(LANDS_FILL, 'fill-color', landsColor(landColor, image));
+        if (map.getLayer(LANDS_NO_DATA)) map.setPaintProperty(LANDS_NO_DATA, 'fill-opacity', landsHatchOpacity(landColor, image));
     }, [mapRef, ready, lands, landColor, image]);
 };
 

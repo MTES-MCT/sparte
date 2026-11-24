@@ -50,13 +50,14 @@ export type Indicator = {
     // Mailles carrées servies en tuiles vectorielles, et non valeurs par territoire : carreaux de
     // 1 km × 1 km de la consommation, mailles des sols artificialisés
     gridded?: boolean;
-    // Carte carroyée d'une seule destination de la consommation ; sans elle, toutes les destinations
+    // Carte d'une seule destination de la consommation, carroyée ou en hectares par territoire : elle
+    // en prend la couleur ; sans elle, toutes les destinations
     destination?: GridDestination;
     // Pour une carte qui partage sa ligne du menu avec d'autres : sa place dans leur choix
     menuChoice?: MenuChoice;
     // Maille à laquelle la carte s'ouvre, par niveau de zone (NATION, REGION…), quand ce n'est pas
     // celle de la zone (voir defaultScale) : pour une carte dont les territoires ne portent pas de
-    // valeur et ne servent qu'à se repérer et à ouvrir une zone
+    // valeur et ne servent qu'à se repérer et à ouvrir une zone, ou qui ne se lit bien qu'à une maille
     openingScales?: Record<string, string>;
     // Source OCS GE (artificialisation) : millésimes propres à chaque département, sans période à choisir
     source?: 'ocsge';
@@ -144,6 +145,10 @@ const griddedDestinationMap = (destination: GridDestination): Indicator => {
     };
 };
 
+// Les cartes bivariées s'ouvrent par EPCI sur toute zone qui en propose : la maille où le
+// croisement de deux rythmes se lit le mieux
+const BIVARIATE_OPENING_SCALES = { NATION: 'EPCI', REGION: 'EPCI', DEPART: 'EPCI' };
+
 // L'ordre du catalogue est celui du menu, et sa première carte est celle de l'ouverture de la page.
 // Les représentations relatives passent avant les absolues : elles comparent les territoires
 // quelle que soit leur taille.
@@ -190,6 +195,7 @@ export const CONSO_INDICATORS: Indicator[] = [
             "Croise, pour chaque territoire, le rythme annuel de consommation d'ENAF à destination de l'activité et l'évolution du nombre d'emplois sur la période sélectionnée, classés chacun en trois niveaux.",
         type: 'bivariate_map',
         usesPeriod: true,
+        openingScales: BIVARIATE_OPENING_SCALES,
         charts: ACTIVITY_EMPLOYMENT_CHARTS,
     },
     {
@@ -199,6 +205,7 @@ export const CONSO_INDICATORS: Indicator[] = [
             "Croise, pour chaque territoire, le rythme annuel de consommation d'ENAF à destination de l'habitat et l'évolution du nombre de ménages sur la période sélectionnée, classés chacun en trois niveaux.",
         type: 'bivariate_map',
         usesPeriod: true,
+        openingScales: BIVARIATE_OPENING_SCALES,
         charts: HABITAT_HOUSEHOLDS_CHARTS,
     },
     {
@@ -208,6 +215,7 @@ export const CONSO_INDICATORS: Indicator[] = [
             "Croise, pour chaque territoire, le rythme annuel de consommation d'ENAF à destination de l'habitat et l'évolution de la population sur la période sélectionnée, classés chacun en trois niveaux.",
         type: 'bivariate_map',
         usesPeriod: true,
+        openingScales: BIVARIATE_OPENING_SCALES,
         charts: HABITAT_POPULATION_CHARTS,
     },
     // Représentations absolues : hectares
@@ -234,6 +242,7 @@ export const CONSO_INDICATORS: Indicator[] = [
         type: 'map',
         unit: 'ha',
         decimals: 0,
+        destination: 'habitat',
         relative: {
             key: 'conso_habitat_pct_surface',
             label: "Consommation d'ENAF à destination de l'habitat (en pourcentage de la surface communale)",
@@ -250,6 +259,7 @@ export const CONSO_INDICATORS: Indicator[] = [
         type: 'map',
         unit: 'ha',
         decimals: 0,
+        destination: 'activite',
         relative: {
             key: 'conso_activite_pct_surface',
             label: "Consommation d'ENAF à destination de l'activité (en pourcentage de la surface communale)",

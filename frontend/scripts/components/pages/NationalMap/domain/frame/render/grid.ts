@@ -8,7 +8,7 @@ import { GRID_DESTINATIONS } from '../../../indicators';
 import { NO_DATA_COLOR, formatValue, periodLabel } from '../../../values';
 import { chartsLandOf } from '../../../zones';
 import { SOIL_CLASSES, SOIL_METHOD_LABEL, SOIL_NO_DATA_LABEL, soilCells } from '../../grid/soilCells';
-import { SOIL_IMAGE_BASIS, SOIL_IMAGE_CLASSES, SOIL_IMAGE_LAND_COLOR, dominantGeneration, soilImage, soilImageMethod } from '../../grid/soilImage';
+import { SOIL_IMAGE_BASIS, SOIL_IMAGE_CLASSES, dominantGeneration, soilImage, soilImageMethod } from '../../grid/soilImage';
 import { SOIL_OBJECTS_BASIS, SOIL_OBJECTS_HINT, SOIL_OBJECTS_METHOD_LABEL, SOIL_OBJECT_CLASSES, soilObjects } from '../../grid/soilObjects';
 import type { FrameBase, FrameContext, FrameRender, LegendModel, Period } from '../types';
 import { legendSignature } from './points';
@@ -126,7 +126,7 @@ const buildSoilGrid = ({ base, indicator, data }: FrameContext): { render: Frame
                 classes: SOIL_IMAGE_CLASSES,
                 basis: SOIL_IMAGE_BASIS,
                 method: soilImageMethod(image),
-                noDataColor: SOIL_IMAGE_LAND_COLOR,
+                noDataColor: NO_DATA_COLOR,
             },
         },
     };

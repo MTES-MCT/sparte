@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { theme } from '@theme';
+import { swatchBackground } from './domain/noData';
 import { NO_DATA_COLOR, ValueClass } from './values';
 
 // Légende des aplats de couleurs, posée sur la carte (voir MapLegendOverlay). Les styles exportés
@@ -154,7 +155,8 @@ export const Swatch = styled.span<{ $color: string; $active: boolean }>`
     height: 0.9rem;
     flex-shrink: 0;
     border-radius: 3px;
-    background: ${({ $color }) => $color};
+    /* La pastille du « sans donnée » porte les hachures de la carte */
+    background: ${({ $color }) => swatchBackground($color)};
     transform: ${({ $active }) => ($active ? 'scale(1.08)' : 'scale(1)')};
     transition: transform 0.15s ease;
 `;

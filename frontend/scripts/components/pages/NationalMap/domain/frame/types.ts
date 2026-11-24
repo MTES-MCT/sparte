@@ -268,7 +268,7 @@ export type KeyFigure = {
 export type ShownOcsge = {
     // Surface de tous les territoires affichés, en hectares
     surfaceHa: number;
-    // Certains sont sans donnée, en gris sur la carte
+    // Certains sont sans donnée, hachurés sur la carte
     hasMissing: boolean;
 };
 

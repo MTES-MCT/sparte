@@ -1,5 +1,5 @@
 import type { NationalMapValues } from '@services/api';
-import { COMMUNES_ARTIF_HA, COMMUNES_CONSO_HA, COMMUNES_HABITAT_MENAGES } from '../__fixtures__/communesFixtures';
+import { COMMUNES_ARTIF_SHARE, COMMUNES_CONSO_HA, COMMUNES_HABITAT_MENAGES } from '../__fixtures__/communesFixtures';
 import { artifFrame, communesFrame, consoFrame, indicatorOf } from '../__fixtures__/frames';
 import {
     ARTIF_FRANCE_BY_DEPARTEMENT,
@@ -37,9 +37,9 @@ describe('isDenseView', () => {
 
 // --- Profil figé de chaque carte ----------------------------------------------------------
 
-// Méthode de classes : seuils naturels, quantiles, seuils nationaux fournis par l'API (bivariées),
+// Méthode de classes : seuils naturels, seuils nationaux fournis par l'API (bivariées),
 // bornes fixes (carroyage) ; null pour des cercles ou des anneaux, qui n'ont pas de classes
-type ClassMethod = 'jenks' | 'quantiles' | 'thresholds' | 'fixed' | null;
+type ClassMethod = 'jenks' | 'thresholds' | 'fixed' | null;
 
 type Drawing = {
     renderer: string;
@@ -62,7 +62,7 @@ const drawing = (renderer: string, mode: string, key: string, unit: IndicatorUni
 });
 
 // Une carte de mailles dessine ses mailles de la même façon sur toutes les vues
-const gridded = (id: string, unit: IndicatorUnit = 'ha'): [string, Drawing, Drawing] => [id, drawing('grid', 'grid', id, unit, 'fixed'), drawing('grid', 'grid', id, unit, 'fixed')];
+const gridded = (id: string, unit: IndicatorUnit | null = 'ha'): [string, Drawing, Drawing] => [id, drawing('grid', 'grid', id, unit, 'fixed'), drawing('grid', 'grid', id, unit, 'fixed')];
 
 // Pour chaque carte du catalogue, dans l'ordre du menu : ce qu'elle dessine sur une vue par
 // territoire, puis sur la vue de toutes les communes du pays. Modifier une ligne, c'est changer
@@ -73,7 +73,7 @@ const MAPS: [string, Drawing, Drawing][] = [
     [
         'conso_pct_surface',
         drawing('territory', 'choropleth', 'conso_pct_surface', '%', 'jenks'),
-        drawing('communes', 'choropleth', 'conso_pct_surface', '%', 'quantiles'),
+        drawing('communes', 'choropleth', 'conso_pct_surface', '%', 'jenks'),
     ],
     gridded('conso_ha_gridded'),
     gridded('conso_habitat_ha_gridded'),
@@ -85,7 +85,7 @@ const MAPS: [string, Drawing, Drawing][] = [
     [
         'conso_evolution_between_periods',
         drawing('territory', 'choropleth', 'conso_evolution_between_periods', '%', 'jenks'),
-        drawing('communes', 'choropleth', 'conso_evolution_between_periods', '%', 'quantiles'),
+        drawing('communes', 'choropleth', 'conso_evolution_between_periods', '%', 'jenks'),
     ],
     [
         'bivariate_activite_emplois',
@@ -105,53 +105,33 @@ const MAPS: [string, Drawing, Drawing][] = [
     [
         'conso_ha',
         drawing('territory', 'symbols', 'conso_ha', 'ha', null),
-        drawing('communes', 'choropleth', 'conso_pct_surface', '%', 'quantiles', 'conso_ha'),
+        drawing('communes', 'choropleth', 'conso_pct_surface', '%', 'jenks', 'conso_ha'),
     ],
     [
         'conso_habitat_ha',
         drawing('territory', 'symbols', 'conso_habitat_ha', 'ha', null),
-        drawing('communes', 'choropleth', 'conso_habitat_pct_surface', '%', 'quantiles', 'conso_habitat_ha'),
+        drawing('communes', 'choropleth', 'conso_habitat_pct_surface', '%', 'jenks', 'conso_habitat_ha'),
     ],
     [
         'conso_activite_ha',
         drawing('territory', 'symbols', 'conso_activite_ha', 'ha', null),
-        drawing('communes', 'choropleth', 'conso_activite_pct_surface', '%', 'quantiles', 'conso_activite_ha'),
+        drawing('communes', 'choropleth', 'conso_activite_pct_surface', '%', 'jenks', 'conso_activite_ha'),
     ],
-    gridded('artif_pct_gridded', '%'),
+    gridded('artif_soils', null),
     [
         'artif_pct',
         drawing('territory', 'choropleth', 'artif_pct', '%', 'jenks'),
-        drawing('communes', 'choropleth', 'artif_pct', '%', 'quantiles'),
-    ],
-    [
-        'artif_ha',
-        drawing('territory', 'symbols', 'artif_ha', 'ha', null),
-        drawing('communes', 'choropleth', 'artif_pct', '%', 'quantiles', 'artif_ha'),
-    ],
-    [
-        'artif_net_pct_surface',
-        drawing('territory', 'choropleth', 'artif_net_pct_surface', '%', 'jenks'),
-        drawing('communes', 'choropleth', 'artif_net_pct_surface', '%', 'quantiles'),
+        drawing('communes', 'choropleth', 'artif_pct', '%', 'jenks'),
     ],
     [
         'artif_net_annual_pct_surface',
         drawing('territory', 'choropleth', 'artif_net_annual_pct_surface', '%/an', 'jenks'),
-        drawing('communes', 'choropleth', 'artif_net_annual_pct_surface', '%/an', 'quantiles'),
+        drawing('communes', 'choropleth', 'artif_net_annual_pct_surface', '%/an', 'jenks'),
     ],
     [
         'artif_desartif_ha',
         drawing('territory', 'rings', 'artif_desartif_ha', 'ha', null),
-        drawing('communes', 'choropleth', 'artif_net_pct_surface', '%', 'quantiles', 'artif_net_ha'),
-    ],
-    [
-        'artif_net_ha',
-        drawing('territory', 'symbols', 'artif_net_ha', 'ha', null),
-        drawing('communes', 'choropleth', 'artif_net_pct_surface', '%', 'quantiles', 'artif_net_ha'),
-    ],
-    [
-        'artif_net_annual_ha',
-        drawing('territory', 'symbols', 'artif_net_annual_ha', 'ha/an', null),
-        drawing('communes', 'choropleth', 'artif_net_annual_pct_surface', '%/an', 'quantiles', 'artif_net_annual_ha'),
+        drawing('communes', 'choropleth', 'artif_net_pct_surface', '%', 'jenks', 'artif_net_ha'),
     ],
 ];
 
@@ -168,7 +148,7 @@ const expectedProfile = ({ renderer, mode, key, unit, amount }: Drawing): Announ
 // Ce que le cadre construit dessine vraiment
 const drawnBy = ({ render, legend }: MapFrame): Pick<Drawing, 'renderer' | 'mode' | 'classes'> => {
     const methods: Record<string, ClassMethod> = { grid: 'fixed', bivariate: 'thresholds', symbols: null };
-    const byValue = legend.kind === 'classes' && legend.method.includes('quantiles') ? 'quantiles' : 'jenks';
+    const byValue = legend.kind === 'classes' && legend.method.includes('méthode de Jenks') ? 'jenks' : null;
     return { renderer: render.renderer, mode: render.mode, classes: legend.kind === 'classes' ? byValue : methods[legend.kind] };
 };
 
@@ -185,7 +165,7 @@ const territoryFrame = (indicator: Indicator): MapFrame =>
 const columnOf = (indicator: Indicator, { key, amount }: Drawing): NationalMapValues => {
     if (indicator.type === 'bivariate_map') return { ...COMMUNES_HABITAT_MENAGES, key };
     const period = indicator.usesPeriod ? { start_year: 2011, end_year: 2024 } : { start_year: null as number | null, end_year: null as number | null };
-    const { amounts, ...column } = isOcsge(indicator) ? COMMUNES_ARTIF_HA : COMMUNES_CONSO_HA;
+    const { amounts, ...column } = isOcsge(indicator) ? COMMUNES_ARTIF_SHARE : COMMUNES_CONSO_HA;
     return { ...column, ...period, key, amount, ...(amount ? { amounts } : {}) };
 };
 
@@ -198,7 +178,7 @@ const denseFrame = (indicator: Indicator, expected: Drawing): MapFrame =>
     });
 
 describe('profil des cartes selon la vue', () => {
-    it('couvre les vingt-trois cartes du catalogue, dans son ordre', () => {
+    it('couvre les dix-neuf cartes du catalogue, dans son ordre', () => {
         expect(MAPS.map(([id]) => id)).toEqual(CATALOG.map((indicator) => indicator.id));
     });
 
@@ -218,7 +198,7 @@ describe('profil des cartes selon la vue', () => {
     });
 
     // La légende de l'image des sols titre la grandeur de ses classes, et non la carte (voir render/grid.ts)
-    const LEGEND_OWN_TITLES: Record<string, string> = { artif_pct_gridded: 'Part des sols artificialisés' };
+    const LEGEND_OWN_TITLES: Record<string, string> = { artif_soils: 'Part des sols artificialisés' };
 
     it.each(MAPS)('%s : la légende, l’image exportée et les lecteurs d’écran nomment la carte dessinée, comme le menu', (id, _, dense) => {
         const indicator = indicatorOf(id);
@@ -241,22 +221,18 @@ describe('profil des cartes selon la vue', () => {
         });
     });
 
-    it('ne dessine jamais d’hectares en aplat : sur la vue dense, les sept cartes en hectares passent par leur version relative', () => {
+    it('ne dessine jamais d’hectares en aplat : sur la vue dense, les quatre cartes en hectares passent par leur version relative', () => {
         const dense = MAPS.map(([id, , drawn]) => ({ id, ...drawn }));
         const relative = dense.filter(({ amount }) => amount !== null);
 
         expect(relative.map(({ id }) => id)).toEqual(CATALOG.filter(({ unit, gridded }) => !gridded && (unit === 'ha' || unit === 'ha/an')).map(({ id }) => id));
-        expect(relative).toHaveLength(7);
+        expect(relative).toHaveLength(4);
         expect(dense.filter(({ mode, unit }) => mode !== 'grid' && (unit === 'ha' || unit === 'ha/an'))).toEqual([]);
         expect(dense.filter(({ mode }) => mode === 'symbols' || mode === 'rings')).toEqual([]);
     });
 
-    it('dessine la carte en anneaux, sur la vue dense, comme celle de l’artificialisation nette en hectares', () => {
-        const [, , rings] = MAPS.find(([id]) => id === 'artif_desartif_ha');
-        const [, , net] = MAPS.find(([id]) => id === 'artif_net_ha');
-
-        expect(rings).toEqual(net);
-        expect(viewProfileOf(BY_COMMUNE, indicatorOf('artif_desartif_ha')).drawn).toEqual(viewProfileOf(BY_COMMUNE, indicatorOf('artif_net_ha')).drawn);
+    it('dessine la carte en anneaux, sur la vue dense, par l’artificialisation nette en pourcentage de la surface', () => {
+        expect(viewProfileOf(BY_COMMUNE, indicatorOf('artif_desartif_ha')).drawn).toMatchObject({ key: 'artif_net_pct_surface', unit: '%', decimals: 2, diverging: true });
     });
 
     it('demande le fond des départements sur la vue dense, celui de la maille ailleurs', () => {
@@ -286,10 +262,6 @@ describe('version relative déclarée par le catalogue', () => {
 
         expect(twins.map(({ indicator, twin }) => [indicator.id, twin.id])).toEqual([
             ['conso_ha', 'conso_pct_surface'],
-            ['artif_ha', 'artif_pct'],
-            ['artif_desartif_ha', 'artif_net_pct_surface'],
-            ['artif_net_ha', 'artif_net_pct_surface'],
-            ['artif_net_annual_ha', 'artif_net_annual_pct_surface'],
         ]);
         twins.forEach(({ indicator, twin }) => {
             expect(indicator.relative).toMatchObject({ key: twin.id, label: twin.label, unit: twin.unit, decimals: twin.decimals });
@@ -328,7 +300,7 @@ describe('valuesQueryOf', () => {
 
     it('ne donne pas la période à une carte qui n’en dépend pas : en changer ne recharge rien', () => {
         expect(valuesQueryOf(request(), indicatorOf('conso_evolution_between_periods'))).toEqual({ scale: 'COMM', key: 'conso_evolution_between_periods' });
-        expect(valuesQueryOf(request(), indicatorOf('artif_net_ha'))).toEqual({ scale: 'COMM', key: 'artif_net_pct_surface', amount: 'artif_net_ha' });
+        expect(valuesQueryOf(request(), indicatorOf('artif_desartif_ha'))).toEqual({ scale: 'COMM', key: 'artif_net_pct_surface', amount: 'artif_net_ha' });
     });
 
     it('demande pour la carte en anneaux les hectares nets, que l’API sert, et non ses deux flux', () => {
@@ -368,7 +340,7 @@ describe('answersValuesQuery', () => {
     });
 
     it('n’attend pas de période d’une réponse qui n’en dépend pas', () => {
-        expect(answersValuesQuery(COMMUNES_ARTIF_HA, { scale: 'COMM', key: 'artif_pct', amount: 'artif_ha' })).toBe(true);
-        expect(answersValuesQuery(COMMUNES_ARTIF_HA, { scale: 'COMM', key: 'artif_pct', amount: 'artif_ha', start_year: 2011, end_year: 2024 })).toBe(false);
+        expect(answersValuesQuery(COMMUNES_ARTIF_SHARE, { scale: 'COMM', key: 'artif_pct' })).toBe(true);
+        expect(answersValuesQuery(COMMUNES_ARTIF_SHARE, { scale: 'COMM', key: 'artif_pct', start_year: 2011, end_year: 2024 })).toBe(false);
     });
 });

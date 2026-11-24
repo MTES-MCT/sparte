@@ -9,15 +9,15 @@ const plain = (text: string): string => text.replace(/[  ]/g, ' ');
 
 type Territory = Extract<FrameRender, { renderer: 'territory' }>;
 const CLASSES = [
-    { from: 0, to: 1, color: '#aaaaaa', name: 'Jusqu’à 1 %' },
-    { from: 1, to: 2, color: '#555555', name: 'De 1 à 2 %' },
+    { to: 1, color: '#aaaaaa', name: 'Moins de 1 %' },
+    { from: 1, color: '#555555', name: '1 % et plus' },
 ];
 const choropleth = { renderer: 'territory', mode: 'choropleth', points: [], classes: CLASSES } as Territory;
 
 describe('landSwatch', () => {
-    it('donne la couleur de la classe dont le territoire est peint, la classe supérieure pour une valeur égale à une borne', () => {
+    it('donne la couleur de la classe du territoire, celle dont il est peint et où la légende le compte', () => {
         expect(landSwatch(choropleth, { value: 0.4, legendKey: 0 })).toBe('#aaaaaa');
-        expect(landSwatch(choropleth, { value: 1, legendKey: 0 })).toBe('#555555');
+        expect(landSwatch(choropleth, { value: 1, legendKey: 1 })).toBe('#555555');
     });
 
     it('reprend la couleur propre au territoire d’une carte bivariée', () => {

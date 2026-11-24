@@ -40,7 +40,7 @@ describe('génération montrée pour les territoires affichés', () => {
 describe('adresses du flux', () => {
     it('demande une tuile de la couche des surfaces artificialisées de la génération, au format du flux WMTS', () => {
         expect(ignArtifTiles('2017-2020')).toBe(
-            'https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OCSGE.ARTIF.2017-2020&STYLE=normal&FORMAT=image/png' +
+            'ign-artif://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OCSGE.ARTIF.2017-2020&STYLE=normal&FORMAT=image/png' +
                 '&TILEMATRIXSET=PM_6_16&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
         );
     });
@@ -48,7 +48,7 @@ describe('adresses du flux', () => {
     it('demande l’image d’un cartouche pour l’emprise réelle du territoire, à ses proportions', () => {
         // La Réunion : 68 782 m de large pour 61 304 m de haut
         expect(ignArtifInsetImage('2021-2023', [6146737.4, -2438098.2, 6215519.1, -2376794.3])).toBe(
-            'https://data.geopf.fr/wms-r?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=OCSGE.ARTIF.2021-2023&STYLES=&CRS=EPSG:3857' +
+            'ign-artif://data.geopf.fr/wms-r?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=OCSGE.ARTIF.2021-2023&STYLES=&CRS=EPSG:3857' +
                 '&BBOX=6146737,-2438098,6215519,-2376794&WIDTH=512&HEIGHT=456&FORMAT=image/png&TRANSPARENT=TRUE',
         );
     });

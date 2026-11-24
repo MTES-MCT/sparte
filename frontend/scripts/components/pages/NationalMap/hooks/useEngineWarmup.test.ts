@@ -32,7 +32,7 @@ describe('useEngineWarmup', () => {
 
     it('prépare MapLibre seul pour une carte de mailles, dont le fichier dépend de la vue', () => {
         renderHook(() => useEngineWarmup(view({ indicatorId: 'conso_ha_gridded' })));
-        renderHook(() => useEngineWarmup(view({ zone: 'REGION_53', scale: 'DEPART', indicatorId: 'artif_pct_gridded' })));
+        renderHook(() => useEngineWarmup(view({ zone: 'REGION_53', scale: 'DEPART', indicatorId: 'artif_soils' })));
 
         expect(mapLibreStub.prepared).toEqual([null, null]);
     });

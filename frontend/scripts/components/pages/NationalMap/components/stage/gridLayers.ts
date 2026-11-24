@@ -9,20 +9,24 @@ import { imageMask } from '../../domain/grid/imageClip';
 import {
     LAND_BORDER_COLOR,
     LAND_HALO_COLOR,
-    borderOpacityOnImage,
+    borderOpacityOverData,
     haloOpacityExpression,
-    haloOpacityOnImage,
+    haloOpacityOverData,
     landBorderStyle,
     lineWidthExpression,
     mercatorToLngLat,
     toLngLatCollection,
 } from '../../gridded';
+import { NO_DATA_PATTERN_ID } from '../../domain/noData';
 import type { Bounds } from '../../gridded';
+import { NO_DATA_COLOR } from '../../values';
 import { STAGE_BACKGROUND_COLOR } from './mapLibre';
 import { SEPARATION_COLOR } from './territoryOptions';
 
 export const LANDS_SOURCE = 'national-map-lands';
 export const LANDS_FILL = 'national-map-lands-fill';
+// Hachures du fond, là où il signifie « pas de donnée » (voir landsHatchOpacity)
+export const LANDS_NO_DATA = 'national-map-lands-no-data';
 export const LANDS_HALO = 'national-map-lands-halo';
 export const LANDS_LINE = 'national-map-lands-line';
 const SEPARATION_SOURCE = 'national-map-grid-separation';
@@ -77,6 +81,12 @@ export const drawLands = (map: maplibregl.Map, lands: GridLands, landColor: stri
     } else {
         map.addSource(LANDS_SOURCE, { type: 'geojson', data });
         map.addLayer({ id: LANDS_FILL, type: 'fill', source: LANDS_SOURCE, paint: { 'fill-color': landColor } });
+        map.addLayer({
+            id: LANDS_NO_DATA,
+            type: 'fill',
+            source: LANDS_SOURCE,
+            paint: { 'fill-pattern': NO_DATA_PATTERN_ID, 'fill-opacity': landsHatchOpacity(landColor, null) },
+        });
         const joined = { 'line-join': 'round', 'line-cap': 'round' } as const;
         map.addLayer({ id: LANDS_HALO, type: 'line', source: LANDS_SOURCE, layout: joined, paint: { 'line-color': LAND_HALO_COLOR } });
         map.addLayer({ id: LANDS_LINE, type: 'line', source: LANDS_SOURCE, layout: joined, paint: { 'line-color': LAND_BORDER_COLOR } });
@@ -88,17 +98,26 @@ export const drawLands = (map: maplibregl.Map, lands: GridLands, landColor: stri
     map.setPaintProperty(LANDS_HALO, 'line-opacity', haloOpacityExpression(border));
 };
 
-// Sur l'image, les limites s'effacent aux vues larges, où elles la recouvriraient
-export const styleBordersOnImage = (map: maplibregl.Map, scale: string, pictured: boolean): void => {
-    const border = landBorderStyle(scale);
-    map.setPaintProperty(LANDS_LINE, 'line-opacity', pictured ? borderOpacityOnImage(scale) : 1);
-    map.setPaintProperty(LANDS_HALO, 'line-opacity', pictured ? haloOpacityOnImage(scale) : haloOpacityExpression(border));
+// Les limites sont dessinées par-dessus la donnée : elles s'effacent aux vues larges, où elles la
+// recouvriraient, que la carte montre des carreaux, des mailles ou l'image
+export const fadeBordersOverData = (map: maplibregl.Map, scale: string): void => {
+    map.setPaintProperty(LANDS_LINE, 'line-opacity', borderOpacityOverData(scale));
+    map.setPaintProperty(LANDS_HALO, 'line-opacity', haloOpacityOverData(scale));
 };
 
 // Couleur des territoires là où aucune maille n'est dessinée : elle dépend de ce que les mailles
 // mesurent. Sous l'image, translucide, le fond est celui qu'elle attend.
 export const landsColor = (landColor: string, image: GridImage | null): maplibregl.ExpressionSpecification | string =>
     image ? (['step', ['zoom'], landColor, image.fromZoom, image.landColor] as maplibregl.ExpressionSpecification) : landColor;
+
+// Opacité des hachures du fond : pleines là où le fond signifie « pas de donnée », c'est-à-dire
+// sous l'image, visible où elle est transparente, et sous des mailles dont le fond est celui du
+// « sans donnée » (sols artificialisés) ; nulles sous les carreaux de la consommation, dont le
+// fond dit « aucune consommation ».
+export const landsHatchOpacity = (landColor: string, image: GridImage | null): maplibregl.ExpressionSpecification | number => {
+    const underCells = landColor === NO_DATA_COLOR ? 1 : 0;
+    return image ? (['step', ['zoom'], underCells, image.fromZoom, 1] as maplibregl.ExpressionSpecification) : underCells;
+};
 
 // Image à dessiner, avec l'emprise de ses tuiles. `key` : la source suit l'adresse de ses tuiles
 // et leur emprise, non la zone : d'une zone à l'autre d'une même génération, les tuiles déjà

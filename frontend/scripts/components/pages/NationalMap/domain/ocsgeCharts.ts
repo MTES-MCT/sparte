@@ -35,6 +35,6 @@ const SAME_SURFACE_TOLERANCE = 0.001;
 // l'OCS GE en couvre. Null quand les deux ensembles sont les mêmes.
 export const chartScopeOf = ({ name, surface }: Pick<LandDetailResultType, 'name' | 'surface'>, shown: ShownOcsge): string | null => {
     const limits = shown.surfaceHa > surface * (1 + SAME_SURFACE_TOLERANCE) ? ' dans ses limites exactes' : '';
-    const missing = shown.hasMissing ? ', territoires en gris compris' : '';
+    const missing = shown.hasMissing ? ', territoires hachurés compris' : '';
     return limits || missing ? `${name}${limits}${missing}` : null;
 };

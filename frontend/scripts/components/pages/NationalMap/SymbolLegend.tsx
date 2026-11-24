@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { theme } from '@theme';
 import { CompactCard, CompactHeader, IN_LEGEND_COLUMN, MethodDetails, Title, hexToRgba } from './ClassLegend';
 import { ringArcPath, ringArcs } from './domain/rings';
-import { NO_DATA_COLOR } from './values';
+import { NO_DATA_CSS_BACKGROUND } from './domain/noData';
 
 // Légende des cartes en symboles proportionnels, cercles ou anneaux : symboles de référence
 // emboîtés, posés sur la même base, chacun relié à sa valeur. Pour des anneaux, un anneau témoin
@@ -112,7 +112,7 @@ const NoDataSwatch = styled.span`
     height: 0.9rem;
     flex-shrink: 0;
     border-radius: 3px;
-    background: ${NO_DATA_COLOR};
+    background: ${NO_DATA_CSS_BACKGROUND};
 `;
 
 const NoDataCount = styled.span`
@@ -196,12 +196,15 @@ const SymbolLegend: React.FC<SymbolLegendProps> = ({ indicatorLabel, shape, refe
     const width = labelX + Math.max(...references.map((r) => r.label.length), 0) * LABEL_CHAR_WIDTH;
     // Libellé à la hauteur du sommet de son symbole, repoussé vers le bas s'il touche le précédent
     let previousY = PADDING - LABEL_GAP;
-    const rows = references.map((reference) => {
+    const stacked = references.map((reference) => {
         const top = base - reference.radius * 2;
         const labelY = Math.max(Math.min(top, base), previousY + LABEL_GAP);
         previousY = labelY;
         return { ...reference, top, labelY };
     });
+    // De petits symboles repoussent la pile sous le dessin : elle remonte d'autant
+    const overflow = Math.max(0, previousY - base);
+    const rows = stacked.map((row) => ({ ...row, labelY: row.labelY - overflow }));
 
     const noData = noDataCount > 0 && (
         <NoData>

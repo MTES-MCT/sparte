@@ -75,14 +75,10 @@ const MAPS: MapProfile[] = [
     mapProfile('conso_ha',                        'conso',       'symbols',    'ha',    0,    null,        true,   null,    false, PERIOD, "Consommation d'ENAF (en hectares)"),
     mapProfile('conso_habitat_ha',                'conso',       'symbols',    'ha',    0,    null,        true,   null,    false, HABITAT, "Consommation d'ENAF à destination de l'habitat (en hectares)"),
     mapProfile('conso_activite_ha',               'conso',       'symbols',    'ha',    0,    null,        true,   null,    false, ACTIVITE, "Consommation d'ENAF à destination de l'activité (en hectares)"),
-    mapProfile('artif_pct_gridded',               'artif_stock', 'grid',       '%',     0,    null,        false,  'ocsge', false, STOCK,  'Sols artificialisés'),
+    mapProfile('artif_soils',                     'artif_stock', 'grid',       null,    null, null,        false,  'ocsge', false, STOCK,  'Sols artificialisés'),
     mapProfile('artif_pct',                       'artif_stock', 'choropleth', '%',     1,    null,        false,  'ocsge', false, STOCK,  'Part du territoire artificialisée (en pourcentage)'),
-    mapProfile('artif_ha',                        'artif_stock', 'symbols',    'ha',    0,    null,        false,  'ocsge', false, STOCK,  'Surface artificialisée (en hectares)'),
-    mapProfile('artif_net_pct_surface',           'artif_flux',  'choropleth', '%',     2,    'diverging', false,  'ocsge', false, FLUX,   'Artificialisation nette entre les deux derniers millésimes (en pourcentage de la surface du territoire)'),
     mapProfile('artif_net_annual_pct_surface',    'artif_flux',  'choropleth', '%/an',  3,    'diverging', false,  'ocsge', false, FLUX,   'Rythme annuel d’artificialisation nette (en pourcentage de la surface du territoire par an)'),
     mapProfile('artif_desartif_ha',               'artif_flux',  'rings',      'ha',    1,    null,        false,  'ocsge', true,  FLUX,   'Artificialisation et désartificialisation entre les deux derniers millésimes (en hectares)'),
-    mapProfile('artif_net_ha',                    'artif_flux',  'symbols',    'ha',    1,    null,        false,  'ocsge', true,  FLUX,   'Artificialisation nette entre les deux derniers millésimes (en hectares)'),
-    mapProfile('artif_net_annual_ha',             'artif_flux',  'symbols',    'ha/an', 1,    null,        false,  'ocsge', true,  FLUX,   'Rythme annuel d’artificialisation nette (en hectares par an)'),
 ];
 
 const CHARTS = [
@@ -121,7 +117,7 @@ const catalogMaps = (): MapProfile[] =>
     );
 
 describe('profil du catalogue des indicateurs', () => {
-    it('décrit les vingt-trois cartes, dans l’ordre du catalogue', () => {
+    it('décrit les dix-neuf cartes, dans l’ordre du catalogue', () => {
         expect(catalogMaps()).toEqual(MAPS);
     });
 
@@ -132,24 +128,21 @@ describe('profil du catalogue des indicateurs', () => {
         expect(charts).toEqual(CHARTS);
     });
 
-    it('répartit les cartes en six cartes en cercles, une en anneaux, cinq aplats, trois bivariées et huit cartes de mailles', () => {
+    it('répartit les cartes en trois cartes en cercles, une en anneaux, quatre aplats, trois bivariées et huit cartes de mailles', () => {
         const maps = catalogMaps();
         const count = (mode: RenderMode) => maps.filter((map) => map.mode === mode).length;
         expect({ symbols: count('symbols'), rings: count('rings'), choropleth: count('choropleth'), bivariate: count('bivariate'), grid: count('grid') }).toEqual({
-            symbols: 6,
+            symbols: 3,
             rings: 1,
-            choropleth: 5,
+            choropleth: 4,
             bivariate: 3,
             grid: 8,
         });
         expect(maps.filter((map) => map.signed).map((map) => [map.id, map.mode])).toEqual([
             ['artif_desartif_ha', 'rings'],
-            ['artif_net_ha', 'symbols'],
-            ['artif_net_annual_ha', 'symbols'],
         ]);
         expect(maps.filter((map) => map.palette === 'diverging').map((map) => [map.id, map.mode])).toEqual([
             ['conso_evolution_between_periods', 'choropleth'],
-            ['artif_net_pct_surface', 'choropleth'],
             ['artif_net_annual_pct_surface', 'choropleth'],
         ]);
     });
@@ -166,7 +159,7 @@ describe('profil du catalogue des indicateurs', () => {
     });
 
     it('ouvre chaque rubrique sur une représentation relative', () => {
-        expect(CATALOG.map(([, indicators]) => indicators[0].id)).toEqual(['conso_pct_surface', 'artif_pct_gridded', 'artif_net_pct_surface']);
+        expect(CATALOG.map(([, indicators]) => indicators[0].id)).toEqual(['conso_pct_surface', 'artif_soils', 'artif_net_annual_pct_surface']);
     });
 
     it('ne représente jamais des hectares en aplat de couleur par territoire', () => {

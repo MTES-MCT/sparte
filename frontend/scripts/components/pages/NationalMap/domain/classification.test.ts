@@ -1,6 +1,6 @@
 import { realisticShares } from '../__fixtures__/communesFixtures';
 import { DECREASE_PALETTE, INCREASE_PALETTE, SEQUENTIAL_PALETTE, ValueClass } from '../values';
-import { NEUTRAL_COLOR, quantileClasses, roundToDisplay, signedQuantileClasses, valueClassIndex } from './classification';
+import { NEUTRAL_COLOR, jenksBounds, naturalClasses, roundToDisplay, signedNaturalClasses, valueClassIndex } from './classification';
 
 // Les nombres sont formatés avec des espaces insécables, étroites pour les milliers
 const plain = (text: string): string => text.replace(/[  ]/g, ' ');
@@ -48,22 +48,96 @@ describe('roundToDisplay', () => {
     });
 });
 
-describe('quantileClasses', () => {
-    it('découpe 5 000 valeurs réalistes en cinq classes de 18 à 22 % de l’effectif', () => {
+// Somme des variances à l'intérieur des classes que découpent des bornes (chaque borne ouvre une classe)
+const withinVariance = (sorted: number[], bounds: number[]): number => {
+    const groups = [...bounds, Infinity].map((to, index) => sorted.filter((value) => value < to && (index === 0 || value >= bounds[index - 1])));
+    return groups.reduce((total, group) => {
+        const mean = group.reduce((sum, value) => sum + value, 0) / group.length;
+        return total + group.reduce((sum, value) => sum + (value - mean) ** 2, 0);
+    }, 0);
+};
+
+// Tous les choix de `count` bornes parmi les valeurs distinctes, sauf la première
+const everyBounds = (distinct: number[], count: number): number[][] => {
+    if (count === 0) return [[]];
+    return distinct.flatMap((bound, index) => (index === 0 ? [] : everyBounds(distinct.slice(index), count - 1).map((rest) => [bound, ...rest])));
+};
+
+describe('jenksBounds', () => {
+    const bounded = (values: number[], count: number): number[] => jenksBounds(Float64Array.from(values).sort(), count);
+
+    it('sépare des groupes nettement distincts, chaque borne étant la plus petite valeur de la classe qu’elle ouvre', () => {
+        expect(bounded([1, 2, 3, 10, 11, 12, 100, 101, 102], 3)).toEqual([10, 100]);
+        expect(bounded([1, 2, 3, 10, 11, 12], 2)).toEqual([10]);
+    });
+
+    it('ne fait pas plus de classes que de valeurs distinctes', () => {
+        expect(bounded([], 3)).toEqual([]);
+        expect(bounded([5], 3)).toEqual([]);
+        expect(bounded([5, 5, 5], 3)).toEqual([]);
+        expect(bounded([1, 2], 5)).toEqual([2]);
+        expect(bounded([1, 1, 1, 2, 2, 7], 5)).toEqual([2, 7]);
+    });
+
+    it('tient compte du nombre de territoires qui partagent une valeur', () => {
+        // Une fois chacune, les valeurs se partagent en deux paires ; répétée cent fois, la valeur 4
+        // attire à elle ses voisines et seule la plus forte reste à part
+        expect(bounded([0, 4, 6, 10], 2)).toEqual([6]);
+        expect(bounded([0, ...Array.from({ length: 100 }, () => 4), 6, 10], 2)).toEqual([10]);
+    });
+
+    it('rend le découpage de plus petite variance à l’intérieur des classes', () => {
+        const samples = [
+            [3, 7, 8, 15, 16, 16, 21, 40, 41, 44, 90],
+            [0, 0, 0, 1, 1, 2, 5, 5, 6, 9, 30, 31],
+            [-12, -11.5, -4, -3.9, -3.8, 0.2, 0.4, 7, 7.5, 19],
+        ];
+        samples.forEach((sample) => {
+            const sorted = [...sample].sort((a, b) => a - b);
+            const distinct = [...new Set(sorted)];
+            [2, 3, 4].forEach((count) => {
+                const best = Math.min(...everyBounds(distinct, count - 1).map((bounds) => withinVariance(sorted, bounds)));
+                expect(withinVariance(sorted, bounded(sample, count))).toBeCloseTo(best, 8);
+            });
+        });
+    });
+
+    it('classe les 34 875 communes du pays en moins d’une demi-seconde', () => {
+        const values = Float64Array.from(realisticShares(34875)).sort();
+        const start = performance.now();
+        const bounds = jenksBounds(values, 5);
+
+        expect(bounds).toHaveLength(4);
+        expect(performance.now() - start).toBeLessThan(500);
+    });
+});
+
+describe('naturalClasses', () => {
+    it('découpe des valeurs en autant de classes que de couleurs', () => {
         const values = realisticShares(5000);
-        const classes = quantileClasses(values, SHARE);
-        const shares = countsOf(values, classes).map((count) => (100 * count) / values.length);
+        const classes = naturalClasses(values, SHARE);
 
         expect(classes).toHaveLength(5);
-        shares.forEach((share) => {
-            expect(share).toBeGreaterThanOrEqual(18);
-            expect(share).toBeLessThanOrEqual(22);
-        });
         expect(colors(classes)).toEqual(SEQUENTIAL_PALETTE);
+        expect(countsOf(values, classes).reduce((sum, count) => sum + count, 0)).toBe(values.length);
+        // Les bornes se suivent sans trou, de la classe ouverte du bas à celle du haut
+        expect(classes[0].from).toBeUndefined();
+        expect(classes[4].to).toBeUndefined();
+        for (let i = 1; i < classes.length; i += 1) expect(classes[i].from).toBe(classes[i - 1].to);
+    });
+
+    it('réunit les valeurs proches : sur une distribution très dissymétrique, la première classe rassemble la plupart des territoires', () => {
+        // Propriété connue des seuils naturels, à l'inverse de classes de même effectif : la carte
+        // montre où sont les valeurs fortes, pas un classement des territoires par rang
+        const values = realisticShares(5000);
+        const counts = countsOf(values, naturalClasses(values, SHARE));
+
+        expect(counts[0] / values.length).toBeGreaterThan(0.5);
+        expect(counts[4]).toBeGreaterThan(0);
     });
 
     it('prend pour borne la plus petite valeur de la classe qu’elle ouvre', () => {
-        const classes = quantileClasses([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], { unit: 'ha', decimals: 0 });
+        const classes = naturalClasses([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], { unit: 'ha', decimals: 0 });
 
         expect(bounds(classes)).toEqual([
             [undefined, 3],
@@ -76,46 +150,48 @@ describe('quantileClasses', () => {
     });
 
     it('nomme les classes selon la règle de borne : la borne supérieure d’une classe n’en fait pas partie', () => {
-        const classes = quantileClasses([0.01, 0.05, 0.09, 0.15, 0.22, 0.3, 0.43, 0.6, 0.9, 2.5], SHARE);
+        const classes = naturalClasses([0.01, 0.05, 0.09, 0.15, 0.22, 0.3, 0.43, 0.6, 0.9, 2.5], SHARE);
 
-        expect(names(classes)).toEqual(['Moins de 0,09 %', 'De 0,09 à 0,22 %', 'De 0,22 à 0,43 %', 'De 0,43 à 0,90 %', '0,90 % et plus']);
+        expect(names(classes)).toEqual(['Moins de 0,22 %', 'De 0,22 à 0,43 %', 'De 0,43 à 0,90 %', 'De 0,90 à 2,50 %', '2,50 % et plus']);
     });
 
-    it('ne sépare pas des ex æquo : moins de classes quand trop de territoires partagent une valeur', () => {
+    it('ne sépare pas des ex æquo : une classe par valeur quand les valeurs distinctes sont moins nombreuses que les couleurs', () => {
         const values = [0, 0, 0, 0, 0, 0, 0, 1, 2, 3];
-        const classes = quantileClasses(values, SHARE);
+        const classes = naturalClasses(values, SHARE);
 
         expect(bounds(classes)).toEqual([
-            [undefined, 2],
-            [2, undefined],
+            [undefined, 1],
+            [1, 2],
+            [2, 3],
+            [3, undefined],
         ]);
-        expect(countsOf(values, classes)).toEqual([8, 2]);
+        expect(countsOf(values, classes)).toEqual([7, 1, 1, 1]);
     });
 
     it('répartit des classes moins nombreuses que les couleurs sur toute la palette, de la plus claire à la plus foncée', () => {
         const [lightest, , middle, , darkest] = SEQUENTIAL_PALETTE;
 
-        expect(colors(quantileClasses([0, 0, 0, 0, 0, 0, 0, 1, 2, 3], SHARE))).toEqual([lightest, darkest]);
-        expect(colors(quantileClasses([0, 0, 0, 0, 0, 1, 1, 2, 3, 4], SHARE))).toEqual([lightest, middle, darkest]);
-        expect(colors(quantileClasses([4, 4, 4], SHARE))).toEqual([lightest]);
+        expect(colors(naturalClasses([0, 0, 0, 0, 0, 0, 0, 3, 3, 3], SHARE))).toEqual([lightest, darkest]);
+        expect(colors(naturalClasses([0, 0, 0, 0, 0, 1, 1, 4, 4, 4], SHARE))).toEqual([lightest, middle, darkest]);
+        expect(colors(naturalClasses([4, 4, 4], SHARE))).toEqual([lightest]);
     });
 
-    it('réunit dans une seule classe des valeurs que rien ne sépare, et la nomme par leur étendue', () => {
-        expect(names(quantileClasses([4, 4, 4], SHARE))).toEqual(['4,00 %']);
-        expect(names(quantileClasses([1, 1, 1, 1, 1, 1, 1, 1, 1, 2], SHARE))).toEqual(['De 1,00 à 2,00 %']);
+    it('réunit dans une seule classe des valeurs toutes égales, nommée par cette valeur', () => {
+        expect(names(naturalClasses([4, 4, 4], SHARE))).toEqual(['4,00 %']);
+        expect(names(naturalClasses([1, 1, 1, 1, 1, 1, 1, 1, 1, 2], SHARE))).toEqual(['Moins de 2,00 %', '2,00 % et plus']);
     });
 
     it('ne rend aucune classe sans valeur', () => {
-        expect(quantileClasses([], SHARE)).toEqual([]);
+        expect(naturalClasses([], SHARE)).toEqual([]);
     });
 });
 
-describe('signedQuantileClasses', () => {
+describe('signedNaturalClasses', () => {
     // Six baisses, deux valeurs nulles, six hausses
     const VALUES = [-60, -50, -40, -30, -20, -10, 0, 0, 5, 10, 15, 20, 25, 30];
 
     it('découpe séparément les baisses et les hausses, trois classes au plus de chaque côté, autour d’une classe neutre', () => {
-        const classes = signedQuantileClasses(VALUES, EVOLUTION);
+        const classes = signedNaturalClasses(VALUES, EVOLUTION);
 
         expect(bounds(classes)).toEqual([
             [undefined, -40],
@@ -130,7 +206,7 @@ describe('signedQuantileClasses', () => {
     });
 
     it('réserve la classe neutre aux valeurs exactement nulles', () => {
-        const classes = signedQuantileClasses(VALUES, EVOLUTION);
+        const classes = signedNaturalClasses(VALUES, EVOLUTION);
 
         expect(valueClassIndex(0, classes)).toBe(3);
         expect(valueClassIndex(-0.1, classes)).toBe(2);
@@ -139,10 +215,10 @@ describe('signedQuantileClasses', () => {
     });
 
     it('colore les baisses en bleu et les hausses en orangé puis rouge, les plus claires au plus près de zéro', () => {
-        expect(colors(signedQuantileClasses(VALUES, EVOLUTION))).toEqual([...DECREASE_PALETTE, NEUTRAL_COLOR, ...INCREASE_PALETTE]);
+        expect(colors(signedNaturalClasses(VALUES, EVOLUTION))).toEqual([...DECREASE_PALETTE, NEUTRAL_COLOR, ...INCREASE_PALETTE]);
         // Une seule classe d'un côté : sa couleur la plus claire ; deux classes : la plus claire et la plus foncée
-        expect(colors(signedQuantileClasses([-3, -3, 0, 4, 4], EVOLUTION))).toEqual([DECREASE_PALETTE[2], NEUTRAL_COLOR, INCREASE_PALETTE[0]]);
-        expect(colors(signedQuantileClasses([-2, -2, -1, -1, 1, 1, 2, 2], EVOLUTION))).toEqual([
+        expect(colors(signedNaturalClasses([-3, -3, 0, 4, 4], EVOLUTION))).toEqual([DECREASE_PALETTE[2], NEUTRAL_COLOR, INCREASE_PALETTE[0]]);
+        expect(colors(signedNaturalClasses([-2, -2, -1, -1, 1, 1, 2, 2], EVOLUTION))).toEqual([
             DECREASE_PALETTE[0],
             DECREASE_PALETTE[2],
             INCREASE_PALETTE[0],
@@ -151,7 +227,7 @@ describe('signedQuantileClasses', () => {
     });
 
     it('signe les libellés', () => {
-        expect(names(signedQuantileClasses(VALUES, EVOLUTION))).toEqual([
+        expect(names(signedNaturalClasses(VALUES, EVOLUTION))).toEqual([
             'Moins de −40,0 %',
             'De −40,0 à −20,0 %',
             'De −20,0 à 0 %',
@@ -163,7 +239,7 @@ describe('signedQuantileClasses', () => {
     });
 
     it('n’ouvre pas de classe neutre sans valeur nulle : zéro sépare alors les baisses des hausses', () => {
-        const classes = signedQuantileClasses([-2, -1, 1, 2], EVOLUTION);
+        const classes = signedNaturalClasses([-2, -1, 1, 2], EVOLUTION);
 
         expect(bounds(classes)).toEqual([
             [undefined, -1],
@@ -175,15 +251,15 @@ describe('signedQuantileClasses', () => {
     });
 
     it('ne garde que les couleurs du côté présent', () => {
-        expect(colors(signedQuantileClasses([1, 2, 3, 4, 5, 6], EVOLUTION))).toEqual(INCREASE_PALETTE);
-        expect(colors(signedQuantileClasses([-6, -5, -4, -3, -2, -1], EVOLUTION))).toEqual(DECREASE_PALETTE);
-        expect(names(signedQuantileClasses([0, 0], EVOLUTION))).toEqual(['0 %']);
-        expect(signedQuantileClasses([], EVOLUTION)).toEqual([]);
+        expect(colors(signedNaturalClasses([1, 2, 3, 4, 5, 6], EVOLUTION))).toEqual(INCREASE_PALETTE);
+        expect(colors(signedNaturalClasses([-6, -5, -4, -3, -2, -1], EVOLUTION))).toEqual(DECREASE_PALETTE);
+        expect(names(signedNaturalClasses([0, 0], EVOLUTION))).toEqual(['0 %']);
+        expect(signedNaturalClasses([], EVOLUTION)).toEqual([]);
     });
 });
 
 describe('valueClassIndex', () => {
-    const CLASSES = quantileClasses([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], { unit: 'ha', decimals: 0 });
+    const CLASSES = naturalClasses([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], { unit: 'ha', decimals: 0 });
 
     it('range une valeur égale à une borne dans la classe supérieure', () => {
         expect([3, 5, 7, 9].map((bound) => valueClassIndex(bound, CLASSES))).toEqual([1, 2, 3, 4]);
@@ -195,6 +271,6 @@ describe('valueClassIndex', () => {
     });
 
     it('range toute valeur dans la seule classe d’un découpage sans borne', () => {
-        expect(valueClassIndex(7, quantileClasses([4, 4, 4], SHARE))).toBe(0);
+        expect(valueClassIndex(7, naturalClasses([4, 4, 4], SHARE))).toBe(0);
     });
 });

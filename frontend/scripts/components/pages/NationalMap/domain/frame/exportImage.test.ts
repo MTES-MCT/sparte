@@ -10,7 +10,7 @@ const CHOROPLETH = france('conso_pct_surface');
 const BIVARIATE = france('bivariate_habitat_menages');
 const SYMBOLS = france('conso_ha');
 const GRID = france('conso_ha_gridded');
-const SOILS = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_pct_gridded', ARTIF_FRANCE_BY_REGION);
+const SOILS = artifFrame('FRANCE', FRANCE_BY_REGION, 'artif_soils', ARTIF_FRANCE_BY_REGION);
 
 const gridLegendOf = ({ legend }: MapFrame): Extract<LegendModel, { kind: 'grid' }> => {
     if (legend.kind !== 'grid') throw new Error('légende de mailles attendue');

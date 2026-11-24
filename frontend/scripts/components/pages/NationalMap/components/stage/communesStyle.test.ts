@@ -1,6 +1,8 @@
 import type { LayerSpecification } from 'maplibre-gl';
 import { NO_DATA_COLOR } from '../../values';
-import { COMMUNES_FILL, COMMUNES_LAYERS, COMMUNES_SOURCE, COMMUNE_OUTLINE, DEPARTMENTS_SOURCE, FRAME_LAYERS, FRAME_SOURCES, communeOutlineFilter, communesSource } from './communesStyle';
+import { DIMMED_NO_DATA_COLOR } from '../../domain/communes/colors';
+import { NO_DATA_PATTERN_ID } from '../../domain/noData';
+import { COMMUNES_FILL, COMMUNES_NO_DATA, COMMUNES_LAYERS, COMMUNES_SOURCE, COMMUNE_OUTLINE, DEPARTMENTS_SOURCE, FRAME_LAYERS, FRAME_SOURCES, communeOutlineFilter, communesSource } from './communesStyle';
 
 const readsFeatureState = (layer: LayerSpecification): boolean => JSON.stringify(layer).includes('feature-state');
 const sourceOf = (layer: LayerSpecification): string => (layer as { source: string }).source;
@@ -17,10 +19,10 @@ describe('style de la carte des communes du pays', () => {
         expect(communesLayers.every((layer) => (layer as { 'source-layer': string })['source-layer'] === 'communes_national')).toBe(true);
     });
 
-    it('n’a qu’une couche de la source des communes qui lise l’état d’entité : l’aplat', () => {
+    it('n’a que deux couches de la source des communes qui lisent l’état d’entité : l’aplat et les hachures du « sans donnée »', () => {
         const stateReaders = communesLayers.filter((layer) => sourceOf(layer) === COMMUNES_SOURCE && readsFeatureState(layer)).map((layer) => layer.id);
 
-        expect(stateReaders).toEqual([COMMUNES_FILL]);
+        expect(stateReaders).toEqual([COMMUNES_FILL, COMMUNES_NO_DATA]);
         // Les repères ne lisent que l'état de leur propre source
         expect(FRAME_LAYERS.filter((layer) => sourceOf(layer) === COMMUNES_SOURCE)).toEqual([]);
         expect(FRAME_LAYERS.filter(readsFeatureState).map(sourceOf)).toEqual([DEPARTMENTS_SOURCE]);
@@ -29,6 +31,16 @@ describe('style de la carte des communes du pays', () => {
     it('colore l’aplat par l’état « color » de chaque commune, gris à défaut, sans lissage', () => {
         expect(layerOf(COMMUNES_FILL).paint).toEqual({ 'fill-color': ['to-color', ['feature-state', 'color'], NO_DATA_COLOR], 'fill-antialias': false });
         expect(layerOf(COMMUNES_FILL).filter).toBeUndefined();
+    });
+
+    it('hachure les communes sans donnée d’après la couleur posée sur elles, et estompe leurs hachures avec elles', () => {
+        const { paint } = layerOf(COMMUNES_NO_DATA) as { paint: Record<string, unknown> };
+
+        expect(paint['fill-pattern']).toBe(NO_DATA_PATTERN_ID);
+        // Pleines pour la couleur du « sans donnée », y compris tant qu'aucune couleur n'est posée ;
+        // atténuées pour sa version estompée ; absentes pour toute autre couleur
+        expect(paint['fill-opacity']).toEqual(['match', ['coalesce', ['feature-state', 'color'], NO_DATA_COLOR], NO_DATA_COLOR, 1, DIMMED_NO_DATA_COLOR, 0.3, 0]);
+        expect(DIMMED_NO_DATA_COLOR).not.toBe(NO_DATA_COLOR);
     });
 
     it('ne dessine les contours des communes qu’à partir du zoom 7', () => {
@@ -42,6 +54,7 @@ describe('style de la carte des communes du pays', () => {
 
         expect(COMMUNES_LAYERS.map(({ layer, beforeId }) => [layer.id, beforeId])).toEqual([
             [COMMUNES_FILL, firstFrameLayer],
+            [COMMUNES_NO_DATA, firstFrameLayer],
             [expect.any(String), firstFrameLayer],
             [COMMUNE_OUTLINE, undefined],
         ]);

@@ -1,6 +1,6 @@
 import type * as Highcharts from 'highcharts';
 import { DECREASE_PALETTE, INCREASE_PALETTE } from '../values';
-import { asRankedShares, flowsAsBars, flowsByCover, focusedOn, inTwoPanels, shareByMillesime, surfaceChangeOf, withPeriodMeans } from './chartCompositions';
+import { asRankedShares, flowsAsBars, flowsByCover, focusedOn, onTwoAxes, shareByMillesime, surfaceChangeOf, withPeriodMeans } from './chartCompositions';
 
 // Ce que les graphiques complémentaires dessinent des options du serveur. Les options d'essai
 // reprennent la forme des réponses du serveur, réduites à ce que les compositions lisent.
@@ -15,7 +15,7 @@ type Serie = { name: string; type?: string; color?: string; yAxis?: number; link
 const seriesOf = (options: Highcharts.Options): Serie[] => options.series as Serie[];
 const axesOf = (options: Highcharts.Options): Highcharts.YAxisOptions[] => options.yAxis as Highcharts.YAxisOptions[];
 
-describe('consommation et grandeur de l’Insee en deux panneaux', () => {
+describe('consommation et grandeur de l’Insee sur le même tracé', () => {
     // Recensements de 2011, 2016 et 2022 sur une période de 2011 à 2024
     const CENSUSES = [996439, null, null, null, null, 1051779, null, null, null, null, null, 1109850, null, null];
 
@@ -36,26 +36,31 @@ describe('consommation et grandeur de l’Insee en deux panneaux', () => {
             ],
         }) as Highcharts.Options;
 
-    const percent = (value: unknown): number => Number(String(value).replace('%', ''));
+    it('superpose les deux grandeurs, comme le diagnostic : la consommation sur l’axe de gauche, la grandeur de l’Insee sur celui de droite', () => {
+        const [insee, conso] = axesOf(onTwoAxes(serverChart()));
 
-    it('pose les deux axes à gauche, la consommation en haut et la grandeur de l’Insee en bas, sans qu’ils se recouvrent', () => {
-        const [insee, conso] = axesOf(inTwoPanels(serverChart()));
+        expect([insee.opposite, conso.opposite]).toEqual([true, false]);
+        // Tout le tracé pour chacune, dit en toutes lettres pour un graphique mis à jour en place
+        expect([insee.top, insee.height, conso.top, conso.height]).toEqual(['0%', '100%', '0%', '100%']);
+    });
 
-        expect([insee.opposite, conso.opposite]).toEqual([false, false]);
-        expect([insee.offset, conso.offset]).toEqual([0, 0]);
-        expect(percent(conso.top)).toBe(0);
-        expect(percent(conso.top) + percent(conso.height)).toBeLessThan(percent(insee.top));
-        expect(percent(insee.top) + percent(insee.height)).toBe(100);
+    it('ne trace que les lignes de la consommation, et passe la courbe devant les barres', () => {
+        const options = onTwoAxes(serverChart());
+        const [insee, conso] = axesOf(options);
+
+        expect(insee.gridLineWidth).toBe(0);
+        expect(conso.gridLineWidth).toBeUndefined();
+        expect(seriesOf(options).map((serie) => (serie as { zIndex?: number }).zIndex)).toEqual([undefined, undefined, 2]);
     });
 
     it('garde les titres d’axe du serveur, pour le graphique agrandi', () => {
-        const [insee, conso] = axesOf(inTwoPanels(serverChart()));
+        const [insee, conso] = axesOf(onTwoAxes(serverChart()));
 
         expect([insee.title.text, conso.title.text]).toEqual(['Nombre de ménages', "Consommation d'espaces (ha)"]);
     });
 
     it('passe la grandeur de l’Insee et son axe au gris neutre, et garde aux séries de la consommation leurs couleurs', () => {
-        const options = inTwoPanels(serverChart());
+        const options = onTwoAxes(serverChart());
         const [insee, conso] = axesOf(options);
 
         expect(seriesOf(options).map((serie) => [serie.name, serie.color])).toEqual([
@@ -68,7 +73,7 @@ describe('consommation et grandeur de l’Insee en deux panneaux', () => {
     });
 
     it('donne sa ligne de légende à la série que le serveur rattache à une autre', () => {
-        expect(seriesOf(inTwoPanels(serverChart())).map((serie) => serie.linkedTo)).toEqual([undefined, undefined, undefined]);
+        expect(seriesOf(onTwoAxes(serverChart())).map((serie) => serie.linkedTo)).toEqual([undefined, undefined, undefined]);
     });
 
     it.each([
@@ -76,9 +81,9 @@ describe('consommation et grandeur de l’Insee en deux panneaux', () => {
         ['un seul recensement dans la période', [null, 1051779, null, null, null]],
         ['aucune valeur rendue', []],
     ])('ne garde que la consommation, sur un seul axe à gauche, quand la grandeur de l’Insee n’a pas d’évolution à montrer : %s', (_case, insee) => {
-        const options = inTwoPanels(serverChart(insee));
+        const options = onTwoAxes(serverChart(insee));
 
-        // Toute la zone de tracé, dite en toutes lettres : l'axe d'un graphique mis à jour en place garderait sinon la place d'un panneau
+        // Toute la zone de tracé, dite en toutes lettres : l'axe d'un graphique mis à jour en place garderait sinon la place qu'il occupait
         expect(axesOf(options).map((axis) => [axis.title.text, axis.opposite, axis.top, axis.height])).toEqual([["Consommation d'espaces (ha)", false, '0%', '100%']]);
         expect(seriesOf(options).map((serie) => [serie.name, serie.yAxis])).toEqual([
             ['Consommation totale', 0],
@@ -86,8 +91,8 @@ describe('consommation et grandeur de l’Insee en deux panneaux', () => {
         ]);
     });
 
-    it('garde les deux panneaux dès que la période compte deux recensements, reliés par des repères ronds', () => {
-        const options = inTwoPanels(serverChart([null, 1051779, null, null, null, null, null, 1109850]));
+    it('garde les deux grandeurs dès que la période compte deux recensements, reliés par des repères ronds', () => {
+        const options = onTwoAxes(serverChart([null, 1051779, null, null, null, null, null, 1109850]));
 
         expect(axesOf(options)).toHaveLength(2);
         expect(seriesOf(options)[2]).toMatchObject({ name: 'Ménages', marker: { symbol: 'circle' } });
@@ -97,9 +102,9 @@ describe('consommation et grandeur de l’Insee en deux panneaux', () => {
         const empty: Highcharts.Options = { series: [] };
         const server = serverChart();
         const before = JSON.stringify(server);
-        inTwoPanels(server);
+        onTwoAxes(server);
 
-        expect(inTwoPanels(empty)).toBe(empty);
+        expect(onTwoAxes(empty)).toBe(empty);
         expect(JSON.stringify(server)).toBe(before);
     });
 });

@@ -14,79 +14,25 @@ export type ValueClass = { from?: number; to?: number; color: string; name: stri
 
 type Formatting = Pick<Indicator, 'unit' | 'decimals'>;
 
+// Hectares sous dix, sur une carte qui les écrit sans décimale : un chiffre après la virgule, comme
+// leur moyenne annuelle, sans quoi une consommation de moins d'un hectare se lirait « 0 ha ». Une
+// valeur entière, comme une référence de la légende, reste écrite sans décimale.
+const SMALL_HECTARES = 10;
+const shownDecimals = (value: number, { unit, decimals = 1 }: Formatting): number =>
+    unit === 'ha' && decimals === 0 && Math.abs(value) < SMALL_HECTARES && !Number.isInteger(value) ? 1 : decimals;
+
+// Décimales des cercles de référence d'une carte dont la plus grande valeur est `maxValue` : sous
+// dix hectares, des références d'un dixième d'hectare, sans quoi la légende n'aurait qu'un cercle
+export const referenceDecimals = (maxValue: number, { unit, decimals = 0 }: Formatting): number => (unit === 'ha' && maxValue < SMALL_HECTARES ? Math.max(decimals, 1) : decimals);
+
 export const formatValue = (value: number | null | undefined, indicator: Formatting): string => {
     if (value === null || value === undefined || Number.isNaN(value)) return 'Donnée non disponible';
-    const number = formatNumber({ number: value, decimals: indicator.decimals ?? 1 });
+    const decimals = shownDecimals(value, indicator);
+    // Une valeur qui s'arrondit à zéro s'écrit comme zéro, sans signe ni décimale de plus
+    const zero = Math.round(value * 10 ** decimals) === 0;
+    const number = formatNumber({ number: zero ? 0 : value, decimals: zero ? (indicator.decimals ?? 1) : decimals });
     return indicator.unit ? `${number} ${UNIT_LABELS[indicator.unit]}` : number;
 };
-
-// Programmation dynamique de Fisher–Jenks. Pour les l premiers éléments découpés en j classes,
-// `lowerLimits[l][j]` est l'indice (1-based) du premier élément de la dernière classe et
-// `variances[l][j]` la somme des variances intra-classe minimale.
-type JenksTables = { lowerLimits: Int32Array; variances: Float64Array; at: (l: number, j: number) => number };
-
-// Essaie `lower` comme début de la dernière classe pour les l premiers éléments, en 2..k classes
-const relaxJenksClasses = (tables: JenksTables, k: number, l: number, lower: number, variance: number): void => {
-    const { lowerLimits, variances, at } = tables;
-    for (let j = 2; j <= k; j += 1) {
-        const candidate = variance + variances[at(lower - 1, j - 1)];
-        if (variances[at(l, j)] >= candidate) {
-            lowerLimits[at(l, j)] = lower;
-            variances[at(l, j)] = candidate;
-        }
-    }
-};
-
-const jenksTables = (sorted: number[], k: number): JenksTables => {
-    const n = sorted.length;
-    const at = (l: number, j: number) => l * (k + 1) + j;
-    const tables: JenksTables = { lowerLimits: new Int32Array((n + 1) * (k + 1)), variances: new Float64Array((n + 1) * (k + 1)).fill(Infinity), at };
-    for (let j = 1; j <= k; j += 1) {
-        tables.lowerLimits[at(1, j)] = 1;
-        tables.variances[at(1, j)] = 0;
-    }
-    for (let l = 2; l <= n; l += 1) {
-        let sum = 0;
-        let sumSquares = 0;
-        // Parcourt les débuts de classe possibles, du dernier élément vers le premier (m éléments dans la classe)
-        for (let m = 1; m <= l; m += 1) {
-            const lower = l - m + 1;
-            const value = sorted[lower - 1];
-            sum += value;
-            sumSquares += value * value;
-            const variance = sumSquares - (sum * sum) / m;
-            if (lower > 1) relaxJenksClasses(tables, k, l, lower, variance);
-        }
-        tables.lowerLimits[at(l, 1)] = 1;
-        tables.variances[at(l, 1)] = sumSquares - (sum * sum) / l;
-    }
-    return tables;
-};
-
-// Seuils naturels de Jenks : partition d'une liste triée en k classes qui minimise la
-// variance intra-classe (O(k·n²)). Renvoie les k + 1 bornes, du minimum au maximum,
-// chaque borne étant une valeur observée.
-export const jenksBreaks = (sorted: number[], k: number): number[] => {
-    const n = sorted.length;
-    if (n === 0) return [];
-    if (k >= n) return [...sorted];
-    const { lowerLimits, at } = jenksTables(sorted, k);
-    const breaks = new Array<number>(k + 1);
-    breaks[0] = sorted[0];
-    breaks[k] = sorted[n - 1];
-    let remaining = n;
-    for (let j = k; j > 1; j -= 1) {
-        breaks[j - 1] = sorted[lowerLimits[at(remaining, j)] - 2];
-        remaining = lowerLimits[at(remaining, j)] - 1;
-    }
-    return breaks;
-};
-
-// Bornes intérieures d'une partition de Jenks en `count` classes, sans doublon
-const innerBounds = (sorted: number[], count: number): number[] =>
-    jenksBreaks(sorted, count)
-        .slice(1, -1)
-        .filter((bound, index, bounds) => index === 0 || bound > bounds[index - 1]);
 
 // Libellé d'une classe d'après ses bornes ; une borne extrême absente est ouverte
 const className = (from: number | undefined, to: number | undefined, format: (v: number) => string, unit: string, single: number): string => {
@@ -112,49 +58,12 @@ export const unitSuffix = (indicator: Formatting): string => (indicator.unit ? `
 export const fixedClasses = (bounds: number[], palette: string[], format: (v: number) => string, unit: string): ValueClass[] =>
     classesFromBounds(bounds, palette.slice(0, bounds.length + 1), format, unit, bounds[0]);
 
-// Découpe les valeurs en classes par seuils naturels (Jenks), avec autant de classes que de
-// couleurs quand les valeurs distinctes le permettent. Les bornes sont des valeurs observées ;
-// une valeur égale à une borne appartient à la classe inférieure, comme dans Highcharts.
-export const naturalBreaksClasses = (values: number[], palette: string[], indicator: Formatting): ValueClass[] => {
-    const sorted = values.filter((v) => Number.isFinite(v)).sort((a, b) => a - b);
-    if (sorted.length === 0) return [];
-    const bounds = innerBounds(sorted, Math.min(palette.length, new Set(sorted).size));
-    const format = (v: number) => formatNumber({ number: v, decimals: indicator.decimals ?? 1 });
-    return classesFromBounds(bounds, palette.slice(0, bounds.length + 1), format, unitSuffix(indicator), sorted[0]);
-};
-
 // Nombre signé : « +12,5 », « −3,0 », « 0 »
 export const formatSigned = (value: number, decimals: number): string => {
     if (value === 0) return '0';
     const number = formatNumber({ number: Math.abs(value), decimals });
     return `${value > 0 ? '+' : '−'}${number}`;
 };
-
-// Classes d'une évolution, de part et d'autre de zéro : les baisses (valeurs négatives ou nulles)
-// et les hausses sont découpées séparément par seuils naturels, avec une borne fixe à zéro.
-// Les couleurs gardent ainsi leur sens : jamais de bleu pour une hausse ni de rouge pour une baisse.
-export const divergingClasses = (values: number[], indicator: Formatting): ValueClass[] => {
-    const sorted = values.filter((v) => Number.isFinite(v)).sort((a, b) => a - b);
-    if (sorted.length === 0) return [];
-    const decreases = sorted.filter((v) => v <= 0);
-    const increases = sorted.filter((v) => v > 0);
-    const side = (part: number[], palette: string[]) =>
-        part.length === 0 ? [] : innerBounds(part, Math.min(palette.length, new Set(part).size));
-    const decreaseBounds = side(decreases, DECREASE_PALETTE);
-    const increaseBounds = side(increases, INCREASE_PALETTE);
-    const zero = decreases.length > 0 && increases.length > 0 ? [0] : [];
-    // Les classes les plus proches de zéro prennent les couleurs les plus claires
-    const colors = [
-        ...(decreases.length > 0 ? DECREASE_PALETTE.slice(DECREASE_PALETTE.length - decreaseBounds.length - 1) : []),
-        ...(increases.length > 0 ? INCREASE_PALETTE.slice(0, increaseBounds.length + 1) : []),
-    ];
-    const format = (v: number) => formatSigned(v, indicator.decimals ?? 1);
-    return classesFromBounds([...decreaseBounds, ...zero, ...increaseBounds], colors, format, unitSuffix(indicator), sorted[0]);
-};
-
-export const CLASSIFICATION_LABEL = 'Classes par seuils naturels (méthode de Jenks), calculées sur les territoires affichés';
-export const DIVERGING_CLASSIFICATION_LABEL =
-    'Classes par seuils naturels (méthode de Jenks), calculées de part et d’autre de zéro sur les territoires affichés';
 
 // --- Cercles proportionnels (valeurs absolues) ---------------------------------------
 
