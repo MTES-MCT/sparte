@@ -22,7 +22,7 @@ Guide des fichiers de configuration situés à la racine du projet.
 
 | Fichier | Description |
 |---------|-------------|
-| `Dockerfile` | Image Docker du backend Django (Python 3.11 + GDAL) |
+| `Dockerfile` | Image Docker du backend Django (Python 3.14 + GDAL) |
 | `Dockerfile.frontend` | Image Docker du frontend (Node 20 + Webpack dev server) |
 | `docker-compose.yml` | Orchestration des services : PostgreSQL, Redis, S3 local, Django, frontend, export-server |
 | `Procfile` | Point d'entrée pour le déploiement Scalingo (Gunicorn) |
@@ -42,7 +42,7 @@ Guide des fichiers de configuration situés à la racine du projet.
 | `pytest.ini` | Configuration de pytest (options, répertoire de tests) |
 | `.bandit` | Configuration de Bandit (analyse de sécurité Python) |
 | `flake8` | Configuration de Flake8 (linting Python) |
-| `.python-version` | Version de Python utilisée (3.11) |
+| `.python-version` | Version de Python utilisée (3.14) |
 | `manage.py` | CLI Django (migrations, serveur, commandes custom) |
 | `required_parameters.json` | Paramètres par défaut chargés en base via `manage.py load_param` |
 
